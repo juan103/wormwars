@@ -166,6 +166,62 @@ experiment was run.
 
 ---
 
+## M9 — full N2 / SH / RD experiment, motor gains calibrated
+
+K=5, R=3: five independent SH graphs and five RD graphs with three runs each, and fifteen runs of
+N2, so every condition has **15 runs**. 25 generations, population 32, 8 worlds per strain, 400
+ticks. Motor gains calibrated per graph so every condition's random population starts with the same
+mean |forward| and |turn|. 45 runs, 0.897 GPU-hours.
+
+### Final held-out score — **no separation**
+
+| condition | score | graphs x runs |
+|---|---|---|
+| N2 | 1.4115 [1.3661, 1.4526] | 1g x 15r |
+| SH | 1.4581 [1.3851, 1.5515] | 5g x 15r |
+| RD | 1.4521 [1.3982, 1.5103] | 5g x 15r |
+
+| contrast | difference | P(first > second) | verdict |
+|---|---|---|---|
+| N2 - SH | -0.047 [-0.148, +0.039] | 0.167 | no separation |
+| N2 - RD | -0.041 [-0.113, +0.029] | 0.130 | no separation |
+| SH - RD | +0.006 [-0.090, +0.114] | 0.524 | no separation |
+
+N2's mean sits inside the spread of the individual control graphs (SH graph means 1.384-1.607,
+RD graph means 1.406-1.530) rather than at either end of it.
+
+### Speed of improvement (area under the fitness curve) — **N2 is slower**
+
+| condition | AUC |
+|---|---|
+| N2 | 1.3586 [1.3441, 1.3732] |
+| SH | 1.4586 [1.4329, 1.4836] |
+| RD | 1.4705 [1.4385, 1.5056] |
+
+| contrast | difference | P(first > second) | verdict |
+|---|---|---|---|
+| N2 - SH | **-0.100 [-0.129, -0.070]** | 0.000 | **N2 < SH** |
+| N2 - RD | **-0.112 [-0.150, -0.077]** | 0.000 | **N2 < RD** |
+| SH - RD | -0.012 [-0.055, +0.029] | 0.288 | no separation |
+
+Per GPU-hour, neither contrast separates (P = 0.052 and 0.027 against SH and RD).
+
+### What this says
+
+With the nuisance variable removed, on this task, with this interface:
+
+- **the real wiring reaches the same final performance as its degree-preserving shuffles and as
+  random sparse graphs of the same size** -- a null result on "ends up better";
+- **it gets there more slowly**, consistently and with a tight interval -- a *negative* result on
+  "evolves faster";
+- **shuffles and random graphs are indistinguishable from each other** on everything measured,
+  which is itself worth noting: preserving the real degree sequence bought nothing either.
+
+This is one task, one interface, one search algorithm and one set of bounds. It is not a statement
+about biological wiring in general, and the project's README says so in the same words.
+
+---
+
 ## M7 — coevolution
 
 2 runs, 20 generations, population 16, 40 v 40, stage 1, 0.069 GPU-hours.

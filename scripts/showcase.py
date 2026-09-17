@@ -83,7 +83,12 @@ def main():
         f"{args.size} v {args.size} in a {world.side}x{world.side} arena, "
         f"{args.ticks} ticks, stage {args.stage}"
     )
-    rec = Recorder(worlds=(0,), field_every=8).attach(world)
+    # A 2000v2000 arena is ~312 cells a side; recording every field every 8 ticks would be a
+    # quarter of a gigabyte of RAM. Scale the field interval with the arena so the recording stays
+    # manageable at any size. Bodies are still recorded every tick.
+    field_every = max(8, int(world.side**2 * args.ticks / 4_000_000))
+    rec = Recorder(worlds=(0,), field_every=field_every).attach(world)
+    print(f"recording bodies every tick, fields every {field_every} ticks")
 
     if args.device == "cuda":
         torch.cuda.reset_peak_memory_stats()
@@ -107,6 +112,7 @@ def main():
     out = _Path(args.out)
     rec.save(out / "replay.npz")
     replay = Replay.load(out / "replay.npz")
+    print(f"recorded {replay.n_ticks} body frames, {len(replay.field_ticks)} field frames")
     print("contact sheet:", contact_sheet(replay, out / "sheet.png", show="food"))
     print("attack view  :", contact_sheet(replay, out / "attack.png", show="attack"))
     print("field panel  :", panel(replay, out / "panel.png"))
