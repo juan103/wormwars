@@ -1,0 +1,11 @@
+# Pinned to the versions actually installed and verified on this machine
+# (Python 3.13.x, Windows 11, RTX 5080 / sm_120).
+# torch must be a CUDA 12.8+/13.x build: earlier wheels have no sm_120 kernels.
+torch==2.12.0+cu130      # install from https://download.pytorch.org/whl/cu130
+numpy==2.4.4
+pandas==3.0.2
+openpyxl==3.1.5          # only used by scripts/fetch_connectome.py
+matplotlib==3.10.9       # viewer + plots
+scipy==1.17.1            # bootstrap / stats only
+PyYAML==6.0.3
+pytest==9.0.2

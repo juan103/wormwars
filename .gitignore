@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+data/raw/*.xlsx
+data/cache/*.npz
+runs/**/*.npz
+runs/**/*.pt
+*.gif
+*.mp4
+.venv/
