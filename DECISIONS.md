@@ -131,3 +131,55 @@ genome and many worlds run the same strain, the implementation uses `[strains, 3
 caller mapping (world, swarm) to a strain index. Same computation, but one strain's weights are
 materialised once regardless of how many worlds use it. Measured throughput with this layout:
 5-6 M wey-ticks/s (e.g. 64 strains x 2048 weys = 131 072 weys at 26.3 ms/tick, 1.29 GB peak VRAM).
+
+## D014 — Motor gains, because the read-out is small near rest (M3)
+
+The specified read-out is a difference of two means of `tanh(v)`. Near rest those means are both
+close to zero and strongly correlated, so a random genome produces |forward| ~ 0.10 and |turn| ~ 0.16
+after the /2 normalisation (measured over 32 random genomes, 60 ticks). Mapped straight onto speed
+that is a mean step of 0.009-0.038 cells/tick against a 0.35 maximum: an unevolved population is
+effectively motionless, and there is almost nothing for selection to act on.
+
+Fix: `world.forward_gain = 4.0` and `world.turn_gain = 2.0`, applied before the [-1, 1] clamp. The
+read-out formula itself is untouched. Measured afterwards: mean step 0.085 cells/tick (24% of
+maximum), and per-strain final swarm energy over 32 random strains spans 0 to 447 (std 91) -- a
+usable fitness gradient. `init_bias_std` also went 0.1 -> 0.5 so neurons have some spontaneous
+activity to begin with.
+
+## D015 — Food patches have hard support (M3)
+
+Gaussian patches put a little food in every cell of the arena, so weys could feed wherever they
+spawned and never had to travel. Patches are now `max(0, 1 - (d/r)^2)^2`, which is exactly zero
+outside radius r. Visible in the viewer as compact patches with bare ground between them.
+
+`metabolic_drain` also went 0.012 -> 0.035 per tick. At 0.012 a wey that did nothing at all survived
+the whole 600-tick match on its 12 starting energy, so foraging was optional. At 0.035 a full match
+costs 21 energy and doing nothing is fatal at around tick 340 -- which is what the viewer shows.
+
+## D016 — Hazards keep clear of spawn boxes (M3)
+
+Hazards are placed at random but rejected within `hazard_spawn_clearance` (6 cells) of a spawn box
+centre, retried up to 20 times. Without it a swarm could be cooked where it stood before it had any
+chance to act, which measures nothing about foraging.
+
+## D017 — Measured crowding behaviour (M3)
+
+Twenty weys forced into a 0.06-cell cloud, then left to run:
+
+| tick | max body density | position std | weys in the densest cell |
+|---|---|---|---|
+| 0 | 5.78 | 0.07 | 20 |
+| 10 | 4.33 | 0.79 | 6 |
+| 40 | 1.78 | 1.93 | 4 |
+| 120 | 1.33 | 2.60 | 2 |
+
+So a swarm cannot collapse into a single cell: `crowd_threshold = 0.8` on the blurred body field,
+with resistance `1 - 0.6*tanh(density - threshold)` and a push of 0.10 cells/tick down the density
+gradient, disperses a maximally packed swarm within ~40 ticks.
+
+## D018 — Sensors sample bilinearly, combat samples nearest-cell (M3)
+
+Senses use bilinear sampling so gradients are smooth and climbable. Everything on the damage path
+(attack deposit, damage sampling, bite credit) uses nearest-cell, because the bite-credit rule needs
+the splat to be the *exact* adjoint of the sample, and nearest-cell splat/sample are exactly adjoint
+by construction. `tests/test_fields.py` asserts the adjoint identity directly.

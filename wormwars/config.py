@@ -35,7 +35,7 @@ class BrainConfig:
     # initialisation
     init_w_scale: float = 0.2  # |W| = init_w_scale * anat / mean(anat), random sign
     init_g_scale: float = 0.05  # G = init_g_scale * anat / mean(anat), >= 0
-    init_bias_std: float = 0.1
+    init_bias_std: float = 0.5
     init_tau_log_uniform: bool = True
     dale: bool = False  # one sign per presynaptic neuron
     # input
@@ -45,6 +45,93 @@ class BrainConfig:
     @property
     def dt(self) -> float:
         return 1.0 / self.substeps
+
+
+@dataclass
+class WorldConfig:
+    """The arena, the bodies and the energy economy.
+
+    Lengths are in cells, angles in radians, time in ticks. Arena size is not here: it is derived
+    from headcount at construction so that starting density stays constant across swarm sizes.
+    """
+
+    n_swarms: int = 1
+    weys_per_swarm: int = 20
+    max_ticks: int = 600
+    cells_per_wey: float = 24.0  # arena area / total weys, held constant across headcounts
+    min_side: int = 24
+
+    # --- body and movement ---
+    body_length: float = 1.6  # head to tail; mid point sits halfway
+    max_speed: float = 0.35  # cells per tick at full forward drive
+    reverse_fraction: float = 0.4  # backward drive is this much of forward
+    max_turn: float = 0.30  # radians per tick at full turn drive
+    # The read-out is a difference of means of tanh, which is small near rest: a random genome
+    # produces |forward| ~ 0.10 and |turn| ~ 0.16 (measured). These gains map that onto a usable
+    # fraction of full speed before the [-1, 1] clamp, so an unevolved population actually moves
+    # and selection has behaviour to act on. See DECISIONS.md D014.
+    forward_gain: float = 4.0
+    turn_gain: float = 2.0
+
+    # --- energy ---
+    start_energy: float = 12.0
+    max_energy: float = 40.0
+    body_mass: float = 6.0  # becomes a corpse pellet on death; exists from tick 0
+    metabolic_drain: float = 0.035  # per tick; over max_ticks this exceeds start_energy
+    move_cost: float = 0.020  # per cell travelled
+    hazard_damage: float = 0.25  # per tick at full hazard intensity
+    eat_rate: float = 0.60  # maximum intake per tick per wey
+
+    # --- fields ---
+    pheromone_deposit: float = 1.0
+    pheromone_decay: float = 0.93
+    pheromone_diffusion: float = 0.35
+    sense_scale_food: float = 0.35  # field value -> injected current
+    sense_scale_pheromone: float = 0.35
+    sense_scale_hazard: float = 2.0
+    sense_scale_damage: float = 2.0
+    sense_scale_collision: float = 2.0
+
+    # --- crowding ---
+    body_splat: float = 1.0  # deposited per body point
+    crowd_threshold: float = 0.8  # density above which movement is resisted
+    crowd_resist: float = 0.6  # fraction of speed removed at full crowding
+    crowd_push: float = 0.10  # cells per tick pushed down the density gradient
+    crowd_blur: int = 1
+
+
+@dataclass
+class MapConfig:
+    """Per-world randomisation. Every field is a range, sampled independently per world."""
+
+    food_patches: tuple[int, int] = (3, 6)
+    food_patch_radius: tuple[float, float] = (2.5, 5.0)
+    food_per_patch: tuple[float, float] = (70.0, 160.0)
+    food_centre_bias: float = 0.62  # patches land within this fraction of the arena half-extent
+    hazard_patches: tuple[int, int] = (1, 4)
+    hazard_radius: tuple[float, float] = (2.0, 4.0)
+    hazard_strength: tuple[float, float] = (0.5, 1.0)
+    hazard_spawn_clearance: float = 6.0  # hazards are kept this far from a spawn box centre
+    spawn_margin: float = 3.0  # weys start this far inside the wall
+    spawn_spread: float = 0.28  # spawn box half-width, as a fraction of the arena
+    food_regen: float = 0.0  # energy added per patch per tick (a ledger source when nonzero)
+
+
+@dataclass
+class CombatConfig:
+    """Stage 1 is automatic biting; stage 2 gates the bite and the bite-sized mouthful on pump.
+
+    The geometry numbers here are the ones the scripted flank tests tune: they decide whether being
+    T-boned is actually punishing.
+    """
+
+    attack_strength: float = 1.0  # deposited into the cell ahead of the head
+    attack_offset: float = 0.9  # how far ahead of the head the deposit lands, in cells
+    attack_blur: int = 1  # "a very light blur"
+    damage_k: float = 0.55  # damage per unit of sampled enemy attack
+    head_armor: float = 0.25  # the head samples count this much
+    transfer_fraction: float = 0.5  # of capped damage, this much reaches the attacker
+    pump_cost: float = 0.10  # energy per tick at full pump (stage 2)
 
 
 @dataclass
@@ -59,6 +146,9 @@ class MutationConfig:
 @dataclass
 class Config:
     brain: BrainConfig = field(default_factory=BrainConfig)
+    world: WorldConfig = field(default_factory=WorldConfig)
+    map: MapConfig = field(default_factory=MapConfig)
+    combat: CombatConfig = field(default_factory=CombatConfig)
     mutation: MutationConfig = field(default_factory=MutationConfig)
 
     @classmethod
