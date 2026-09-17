@@ -102,38 +102,41 @@ class Ledger:
 
 
 class StrainAssignment:
-    """Maps (world, swarm) pairs onto strain-major brain batches.
+    """Maps one swarm column's (world -> strain) choice onto a strain-major brain batch.
 
-    The brain wants `[strains, weys, neurons]`; the world is `[worlds, swarms, weys, ...]`. Every
-    strain must own the same number of (world, swarm) pairs so the brain batch is rectangular --
-    evaluation schedules are built that way on purpose.
+    The brain wants `[strains, weys, neurons]`; the world is `[worlds, weys, ...]` for this column.
+    Strains that appear fewer times than the busiest one are padded with unused slots, so a schedule
+    does not have to be perfectly balanced. Padding costs compute, never correctness: padded slots
+    are never read back.
     """
 
     def __init__(self, strain_of: Tensor, n_strains: int):
         flat = strain_of.reshape(-1)
         counts = torch.bincount(flat, minlength=n_strains)
-        if int(counts.min()) != int(counts.max()):
-            raise ValueError(
-                f"every strain must appear the same number of times; counts range "
-                f"{int(counts.min())}..{int(counts.max())}"
-            )
         self.n_strains = n_strains
-        self.pairs_per_strain = int(counts[0])
-        self.order = torch.argsort(flat, stable=True)
-        self.strain_of = strain_of
+        self.n_slots = int(counts.max())
+        self.counts = counts
+        order = torch.argsort(flat, stable=True)
+        starts = torch.cumsum(counts, 0) - counts
+        rank = torch.arange(flat.numel(), device=flat.device) - starts[flat[order]]
+        slot = flat[order] * self.n_slots + rank
+        self.slot_of = torch.empty_like(flat)
+        self.slot_of[order] = slot
+        self.padding_fraction = 1.0 - flat.numel() / max(n_strains * self.n_slots, 1)
 
     def to_brain(self, x: Tensor) -> Tensor:
-        """[worlds, swarms, weys, C] -> [strains, pairs*weys, C]"""
-        ws = x.shape[0] * x.shape[1]
-        flat = x.reshape(ws, x.shape[2], x.shape[3])
-        return flat[self.order].reshape(self.n_strains, -1, x.shape[3])
+        """[worlds, weys, C] -> [strains, slots*weys, C]"""
+        n, weys, c = x.shape
+        buf = torch.zeros(
+            self.n_strains * self.n_slots, weys, c, device=x.device, dtype=x.dtype
+        )
+        buf[self.slot_of] = x
+        return buf.reshape(self.n_strains, self.n_slots * weys, c)
 
-    def from_brain(self, y: Tensor, worlds: int, swarms: int, weys: int) -> Tensor:
-        """[strains, pairs*weys, C] -> [worlds, swarms, weys, C]"""
-        pairs = y.reshape(worlds * swarms, weys, y.shape[-1])
-        out = torch.empty_like(pairs)
-        out[self.order] = pairs
-        return out.reshape(worlds, swarms, weys, y.shape[-1])
+    def from_brain(self, y: Tensor, worlds: int, weys: int) -> Tensor:
+        """[strains, slots*weys, C] -> [worlds, weys, C]"""
+        buf = y.reshape(self.n_strains * self.n_slots, weys, y.shape[-1])
+        return buf[self.slot_of]
 
 
 def world_seed(run_seed: int, world_index: int) -> int:
@@ -160,15 +163,27 @@ class World:
         self,
         cfg: Config,
         iface: Interface,
-        brain: Brain,
+        brain: Brain | list[Brain],
         strain_of: Tensor,
         run_seed: int,
         world_ids: np.ndarray | None = None,
         device: str | torch.device = "cpu",
         dtype: torch.dtype = torch.float32,
         combat_stage: int = 0,
+        swarm_sizes: Tensor | np.ndarray | None = None,
+        swap_sides: Tensor | np.ndarray | None = None,
     ):
-        self.cfg, self.iface, self.brain = cfg, iface, brain
+        """
+        `brain` may be one Brain shared by every swarm, or one per swarm. Per-swarm brains are what
+        make a match between two *different* graphs possible at all: N2 and SH have different masks,
+        so they cannot share a weight tensor.
+
+        `swarm_sizes [worlds, swarms]` gives each swarm's real headcount; the wey axis is padded to
+        the largest and the surplus weys start dead. `swap_sides [worlds]` exchanges the two spawn
+        boxes, which is how paired evaluation gets the same map played from both sides without
+        touching which swarm index is which strain.
+        """
+        self.cfg, self.iface = cfg, iface
         self.device = torch.device(device)
         self.dtype = dtype
         self.combat_stage = combat_stage
@@ -176,11 +191,29 @@ class World:
 
         strain_of = strain_of.to(self.device)
         self.n_worlds, self.n_swarms = int(strain_of.shape[0]), int(strain_of.shape[1])
-        self.n_weys = wcfg.weys_per_swarm
-        self.assign = StrainAssignment(strain_of, brain.n_strains)
+        self.brains = list(brain) if isinstance(brain, (list, tuple)) else [brain] * self.n_swarms
+        if len(self.brains) != self.n_swarms:
+            raise ValueError(f"{len(self.brains)} brains for {self.n_swarms} swarms")
+        self.brain = self.brains[0]
+        if swarm_sizes is None:
+            swarm_sizes = torch.full(
+                (self.n_worlds, self.n_swarms), wcfg.weys_per_swarm, dtype=torch.long
+            )
+        self.swarm_sizes = torch.as_tensor(swarm_sizes, dtype=torch.long, device=self.device)
+        self.n_weys = int(self.swarm_sizes.max())
+        self.swap_sides = (
+            torch.zeros(self.n_worlds, dtype=torch.bool, device=self.device)
+            if swap_sides is None
+            else torch.as_tensor(swap_sides, dtype=torch.bool, device=self.device)
+        )
+        self.assigns = [
+            StrainAssignment(strain_of[:, s], self.brains[s].n_strains)
+            for s in range(self.n_swarms)
+        ]
+        self.assign = self.assigns[0]
         self.ch = Channels(self.n_swarms)
 
-        total = self.n_swarms * self.n_weys
+        total = int(self.swarm_sizes.sum(dim=1).max())
         self.side = arena_side(cfg, total)
         self.H = self.W = self.side
         self.run_seed = int(run_seed)
@@ -197,12 +230,24 @@ class World:
         self.heading = torch.zeros(
             self.n_worlds, self.n_swarms, self.n_weys, device=self.device, dtype=dtype
         )
-        self.energy = torch.full_like(self.heading, wcfg.start_energy)
-        self.alive = torch.ones_like(self.heading, dtype=torch.bool)
+        # weys beyond a swarm's real headcount are padding: dead from tick 0, no energy, no body
+        # mass, and they never leave a corpse
+        index = torch.arange(self.n_weys, device=self.device).view(1, 1, -1)
+        self.alive = index < self.swarm_sizes.unsqueeze(-1)
+        self.energy = torch.where(
+            self.alive, torch.full_like(self.heading, wcfg.start_energy), torch.zeros_like(self.heading)
+        )
         self.pump = torch.zeros_like(self.heading)
         self.last_damage_taken = torch.zeros_like(self.heading)
         self.last_damage_dealt = torch.zeros_like(self.heading)
-        self.v = brain.initial_state(self.assign.pairs_per_strain * self.n_weys)
+        # tactics accounting: damage received at head / mid / tail, and how often a wey turned
+        # toward the side it was bitten from
+        self.damage_by_point = torch.zeros(3, dtype=torch.float64, device=self.device)
+        self.turn_toward_damage = torch.zeros(2, dtype=torch.float64, device=self.device)
+        self.v = [
+            self.brains[s].initial_state(self.assigns[s].n_slots * self.n_weys)
+            for s in range(self.n_swarms)
+        ]
         self.ledger = Ledger.zeros(self.n_worlds, self.device)
         self.tick_count = 0
         self.recorder = None
@@ -250,20 +295,37 @@ class World:
         for w in range(self.n_worlds):
             rng = np.random.default_rng(world_seed(self.run_seed, int(self.world_ids[w])))
 
-            # spawn boxes first, so hazards can be kept clear of them
-            spawn_centres = []
-            for s in range(self.n_swarms):
+            # Spawn boxes first, so hazards can be kept clear of them.
+            #
+            # Every random draw here is indexed by *side*, not by swarm, and the draws happen in a
+            # fixed side order. Swapping sides is then an exact relabelling of who stands where: the
+            # same map, the same two spawn clouds, the two swarms exchanged. If the jitter were
+            # drawn per swarm index instead, swapping would also reshuffle the starting positions
+            # and "the same seed from both sides" would not be the same fight.
+            half = mcfg.spawn_spread * W / 2
+            radius = (W / 2 - mcfg.spawn_margin) * 0.82
+            sides = []
+            for side in range(self.n_swarms):
                 if self.n_swarms == 1:
                     ang = rng.uniform(0, 2 * np.pi)
                 else:
-                    ang = np.pi * s + rng.uniform(-0.35, 0.35)
-                radius = (W / 2 - mcfg.spawn_margin) * 0.82
-                bx, by = cx + np.cos(ang) * radius, cy + np.sin(ang) * radius
-                spawn_centres.append((bx, by))
-                half = mcfg.spawn_spread * W / 2
-                pos[w, s, :, 0] = np.clip(bx + rng.uniform(-half, half, self.n_weys), 1.2, W - 1.2)
-                pos[w, s, :, 1] = np.clip(by + rng.uniform(-half, half, self.n_weys), 1.2, H - 1.2)
-                head[w, s] = rng.uniform(0, 2 * np.pi, self.n_weys)
+                    ang = np.pi * side + rng.uniform(-0.35, 0.35)
+                sides.append(
+                    (
+                        cx + np.cos(ang) * radius,
+                        cy + np.sin(ang) * radius,
+                        rng.uniform(-half, half, self.n_weys),
+                        rng.uniform(-half, half, self.n_weys),
+                        rng.uniform(0, 2 * np.pi, self.n_weys),
+                    )
+                )
+            spawn_centres = [(bx, by) for bx, by, *_ in sides]
+            swap = bool(self.swap_sides[w])
+            for s in range(self.n_swarms):
+                bx, by, jx, jy, jh = sides[(s + 1) % self.n_swarms if swap else s]
+                pos[w, s, :, 0] = np.clip(bx + jx, 1.2, W - 1.2)
+                pos[w, s, :, 1] = np.clip(by + jy, 1.2, H - 1.2)
+                head[w, s] = jh
 
             centres = []
             for _ in range(rng.integers(*mcfg.food_patches, endpoint=True)):
@@ -387,10 +449,10 @@ class World:
 
     def _build_current(self, signals: dict[str, Tensor]) -> Tensor:
         iface, bcfg = self.iface, self.cfg.brain
-        shape = (self.n_worlds, self.n_swarms, self.n_weys, self.brain.n)
+        shape = (self.n_worlds, self.n_swarms, self.n_weys, self.brains[0].n)
         current = torch.zeros(shape, device=self.device, dtype=self.dtype)
         values = torch.stack([signals[name] for name in iface.signal_names], dim=-1)
-        flat = current.reshape(-1, self.brain.n)
+        flat = current.reshape(-1, self.brains[0].n)
         flat.index_add_(
             1,
             self._sensor_idx,
@@ -425,9 +487,13 @@ class World:
         signals = self._sensor_signals(sampled)
         current = self._build_current(signals)
 
-        # 2. think
-        self.v = self.brain.step(self.v, self.assign.to_brain(current))
-        v_world = self.assign.from_brain(self.v, self.n_worlds, self.n_swarms, self.n_weys)
+        # 2. think -- one brain per swarm, so two graphs can meet in the same world
+        cols = []
+        for s in range(self.n_swarms):
+            a = self.assigns[s]
+            self.v[s] = self.brains[s].step(self.v[s], a.to_brain(current[:, s]))
+            cols.append(a.from_brain(self.v[s], self.n_worlds, self.n_weys))
+        v_world = torch.stack(cols, dim=1)
         forward, turn, pump = self._read_motors(v_world)
         self.pump = pump * alive_f
 
@@ -586,6 +652,7 @@ class World:
         received = torch.zeros_like(deposit)
         share = scale.unsqueeze(-1).unsqueeze(1)  # [Wd, 1, victim, wey, 1]
         capped_per_src = raw_per_src * share * alive_f.unsqueeze(1).unsqueeze(-1)
+        self.damage_by_point += capped_per_src.sum(dim=(0, 1, 2, 3)).double()
         for s in range(n_sw):
             splat_into(received, s, body, capped_per_src[:, s].reshape(Wd, -1))
         # 6. the adjoint of step 2 is the same blur, because the kernel is symmetric
@@ -684,6 +751,25 @@ class World:
     def energy_ledger_error(self) -> Tensor:
         """[worlds] -- how far the books are from balancing. Must stay at rounding level."""
         return self.total_energy() - (self.start_energy_total + self.ledger.net())
+
+    @property
+    def head_damage(self) -> float:
+        return float(self.damage_by_point[0])
+
+    @property
+    def flank_damage(self) -> float:
+        """Damage landed on mid and tail -- the share a flanking tactic produces."""
+        return float(self.damage_by_point[1:].sum())
+
+    def neuron_state(self) -> Tensor:
+        """[worlds, swarms, weys, neurons] -- the brain state laid back out over the world."""
+        return torch.stack(
+            [
+                self.assigns[s].from_brain(self.v[s], self.n_worlds, self.n_weys)
+                for s in range(self.n_swarms)
+            ],
+            dim=1,
+        )
 
     def swarm_energy(self) -> Tensor:
         """[worlds, swarms] -- surviving energy, the raw material of the match score."""

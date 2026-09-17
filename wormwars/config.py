@@ -169,6 +169,17 @@ class EvoConfig:
     holdout_seed_base: int = 900_000_000  # disjoint from the training span
     eval_ticks: int = 0  # 0 means use world.max_ticks
 
+    # --- coevolution (milestone 7) ---
+    opponents_self: int = 3  # opponents drawn from the current population
+    opponents_hof: int = 2  # opponents drawn from this run's hall of fame
+    coevo_worlds: int = 2  # map seeds per generation (each played from both sides)
+    coevo_sizes: tuple[int, int] = (40, 40)
+    coevo_lopsided: bool = False  # also play headcount-swapped copies
+    hof_capacity: int = 12
+    suite_every: int = 5  # generations between frozen-suite evaluations
+    suite_size: int = 6
+    suite_worlds: int = 8
+
 
 @dataclass
 class Config:

@@ -99,7 +99,7 @@
     },
     "evo": {
       "population": 32,
-      "generations": 30,
+      "generations": 25,
       "elites": 3,
       "truncation": 8,
       "worlds_per_strain": 8,
@@ -111,7 +111,19 @@
       "train_seed_base": 0,
       "train_seed_span": 1000000,
       "holdout_seed_base": 900000000,
-      "eval_ticks": 0
+      "eval_ticks": 0,
+      "opponents_self": 3,
+      "opponents_hof": 2,
+      "coevo_worlds": 2,
+      "coevo_sizes": [
+        40,
+        40
+      ],
+      "coevo_lopsided": false,
+      "hof_capacity": 12,
+      "suite_every": 5,
+      "suite_size": 6,
+      "suite_worlds": 8
     }
   },
   "connectome": {
@@ -123,7 +135,64 @@
     "cache_sha256": "43b87aa172a0042b9dce734b15bdf1c87efe3a33ac1cc0d9cd03255a60c96d4a",
     "citation": "Cook SJ, Jarrell TA, Brittin CA, Wang Y, Bloniarz AE, Yakovlev MA, Nguyen KCQ, Tang LT-H, Bayer EA, Duerr JS, Bulow HE, Hobert O, Hall DH, Emmons SW (2019). Whole-animal connectomes of both Caenorhabditis elegans sexes. Nature 571:63-71."
   },
-  "graphs": {},
+  "graphs": {
+    "N2": {
+      "condition": "N2",
+      "chem_edges": 3709,
+      "gap_edges": 1091,
+      "chem_weight_sum": 20965.0,
+      "self_loops": 38,
+      "chem_in_degree_sd": 9.20895694112592
+    },
+    "SH1": {
+      "condition": "SH",
+      "chem_edges": 3709,
+      "gap_edges": 1091,
+      "chem_weight_sum": 20965.0,
+      "self_loops": 20,
+      "chem_in_degree_sd": 9.20895694112592
+    },
+    "SH2": {
+      "condition": "SH",
+      "chem_edges": 3709,
+      "gap_edges": 1091,
+      "chem_weight_sum": 20965.0,
+      "self_loops": 16,
+      "chem_in_degree_sd": 9.20895694112592
+    },
+    "SH3": {
+      "condition": "SH",
+      "chem_edges": 3709,
+      "gap_edges": 1091,
+      "chem_weight_sum": 20965.0,
+      "self_loops": 10,
+      "chem_in_degree_sd": 9.20895694112592
+    },
+    "RD1": {
+      "condition": "RD",
+      "chem_edges": 3709,
+      "gap_edges": 1091,
+      "chem_weight_sum": 20965.0,
+      "self_loops": 11,
+      "chem_in_degree_sd": 3.1816298870568267
+    },
+    "RD2": {
+      "condition": "RD",
+      "chem_edges": 3709,
+      "gap_edges": 1091,
+      "chem_weight_sum": 20965.0,
+      "self_loops": 16,
+      "chem_in_degree_sd": 3.3735807214158373
+    },
+    "RD3": {
+      "condition": "RD",
+      "chem_edges": 3709,
+      "gap_edges": 1091,
+      "chem_weight_sum": 20965.0,
+      "self_loops": 6,
+      "chem_in_degree_sd": 3.4655715194980874
+    }
+  },
   "seed_scheme": "A run has one integer run_seed. World w of that run uses world_seed(run_seed, world_id) = splitmix64(run_seed * 2**32 + world_id), which seeds a numpy default_rng used for that world's map, hazards and spawn. Training world ids for generation g are drawn from numpy.random.default_rng([run_seed, g, 0xC0FFEE]) within [train_seed_base, train_seed_base + train_seed_span); held-out ids are the fixed range [holdout_seed_base, holdout_seed_base + holdout_worlds) and are never used for selection. Torch RNG for genome initialisation and mutation is a single generator seeded with run_seed.",
   "environment": {
     "python": "3.13.3",
@@ -156,18 +225,19 @@
     ]
   },
   "extra": {
-    "script": "evolve_forage.py",
+    "script": "experiment.py",
     "args": {
-      "runs": 3,
-      "generations": 30,
+      "k": 3,
+      "runs": 2,
+      "generations": 25,
       "population": 32,
       "worlds": 8,
       "ticks": 400,
       "holdout": 32,
-      "islands": 1,
-      "out": "runs/m4",
+      "out": "runs/m5",
       "device": "cuda",
-      "base_seed": 1000
+      "base_seed": 20000,
+      "conditions": "N2,SH,RD"
     }
   }
 }

@@ -8,3 +8,5 @@ runs/**/*.pt
 *.gif
 *.mp4
 .venv/
+runs/**/*.png
+runs/**/*.log

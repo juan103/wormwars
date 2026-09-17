@@ -1,105 +1,105 @@
 N2: 302 neurons (pharyngeal=20, sensory=83, inter=81, motor=116, other=2), 3709 chemical edges, 1091 gap junctions, weight_kind=em_sections
 population 32, 30 generations, 8 worlds/strain, 400 ticks, device cuda
-  [N2 run00] g0000 best  0.862 mean  0.375 holdout  0.818   4.35s  patient-jackdaw
-  [N2 run00] g0001 best  1.011 mean  0.546   2.11s  clever-jackdaw
-  [N2 run00] g0002 best  0.996 mean  0.572   2.13s  clever-jackdaw
-  [N2 run00] g0003 best  1.181 mean  0.699   2.11s  clever-jackdaw
-  [N2 run00] g0004 best  1.258 mean  0.810   2.11s  calm-finch
-  [N2 run00] g0005 best  1.203 mean  0.756 holdout  1.274   4.01s  ancient-cicada
-  [N2 run00] g0006 best  1.399 mean  0.920   2.09s  calm-finch
-  [N2 run00] g0007 best  1.321 mean  0.729   2.10s  marble-hare
-  [N2 run00] g0008 best  1.275 mean  0.806   2.11s  marble-hare
-  [N2 run00] g0009 best  1.540 mean  0.919   2.08s  placid-gannet
-  [N2 run00] g0010 best  1.535 mean  0.897 holdout  1.334   4.01s  lunar-shrew
-  [N2 run00] g0011 best  1.663 mean  0.953   2.08s  frosty-wigeon
-  [N2 run00] g0012 best  1.419 mean  0.855   2.10s  velvet-stoat
-  [N2 run00] g0013 best  1.369 mean  0.944   2.08s  sunken-adder
-  [N2 run00] g0014 best  1.440 mean  0.990   2.10s  frosty-wigeon
-  [N2 run00] g0015 best  1.579 mean  1.026 holdout  1.393   3.99s  frosty-wigeon
-  [N2 run00] g0016 best  1.518 mean  1.050   2.09s  misty-dipper
-  [N2 run00] g0017 best  1.344 mean  1.031   2.10s  steady-quail
-  [N2 run00] g0018 best  1.186 mean  0.821   2.08s  wary-finch
-  [N2 run00] g0019 best  1.324 mean  1.016   2.11s  fierce-wigeon
-  [N2 run00] g0020 best  1.231 mean  0.785 holdout  1.386   4.03s  coral-newt
-  [N2 run00] g0021 best  1.480 mean  1.037   2.12s  dusty-skua
-  [N2 run00] g0022 best  1.359 mean  1.063   2.08s  frosty-kestrel
-  [N2 run00] g0023 best  1.459 mean  0.953   2.10s  sudden-tern
-  [N2 run00] g0024 best  1.320 mean  0.941   2.10s  sudden-tern
-  [N2 run00] g0025 best  1.454 mean  1.042 holdout  1.418   3.97s  ancient-mole
-  [N2 run00] g0026 best  1.570 mean  1.226   2.09s  ivory-crane
-  [N2 run00] g0027 best  1.869 mean  1.297   2.09s  velvet-petrel
-  [N2 run00] g0028 best  1.564 mean  1.045   2.09s  velvet-petrel
-  [N2 run00] g0029 best  1.744 mean  1.179 holdout  1.406   3.99s  umber-stoat
-  run 0: champion 1.406 vs random 0.405 (best of 32: 1.015)  86s
-  [N2 run01] g0000 best  1.145 mean  0.374 holdout  1.202   3.96s  rough-siskin
-  [N2 run01] g0001 best  1.221 mean  0.418   2.06s  rough-siskin
-  [N2 run01] g0002 best  1.312 mean  0.630   2.03s  slender-pipit
-  [N2 run01] g0003 best  1.472 mean  0.957   2.06s  frosty-jackdaw
-  [N2 run01] g0004 best  1.333 mean  0.798   2.04s  quiet-tern
-  [N2 run01] g0005 best  1.468 mean  0.872 holdout  1.329   3.96s  lunar-ferret
-  [N2 run01] g0006 best  1.443 mean  0.825   2.06s  lunar-ferret
-  [N2 run01] g0007 best  1.152 mean  0.813   2.05s  tawny-bison
-  [N2 run01] g0008 best  1.354 mean  0.756   2.06s  tawny-bison
-  [N2 run01] g0009 best  1.414 mean  0.943   2.07s  frosty-otter
-  [N2 run01] g0010 best  1.352 mean  0.827 holdout  1.353   3.97s  frosty-otter
-  [N2 run01] g0011 best  1.240 mean  0.716   2.10s  rusty-hoopoe
-  [N2 run01] g0012 best  1.417 mean  0.706   2.09s  mild-lemur
-  [N2 run01] g0013 best  1.192 mean  0.787   2.08s  lunar-ferret
-  [N2 run01] g0014 best  1.213 mean  0.798   2.06s  bitter-finch
-  [N2 run01] g0015 best  1.356 mean  0.986 holdout  1.388   3.95s  rapid-bison
-  [N2 run01] g0016 best  1.347 mean  1.008   2.06s  olive-gecko
-  [N2 run01] g0017 best  1.258 mean  0.992   2.08s  rapid-puffin
-  [N2 run01] g0018 best  1.541 mean  1.210   2.08s  olive-dormouse
-  [N2 run01] g0019 best  1.646 mean  1.043   2.07s  placid-jackdaw
-  [N2 run01] g0020 best  1.641 mean  1.143 holdout  1.453   3.97s  placid-jackdaw
-  [N2 run01] g0021 best  1.592 mean  0.926   2.06s  placid-jackdaw
-  [N2 run01] g0022 best  1.446 mean  1.044   2.05s  placid-jackdaw
-  [N2 run01] g0023 best  1.422 mean  0.976   2.07s  sable-egret
-  [N2 run01] g0024 best  1.512 mean  1.113   2.07s  placid-jackdaw
-  [N2 run01] g0025 best  1.696 mean  1.200 holdout  1.337   3.96s  gilded-ermine
-  [N2 run01] g0026 best  1.140 mean  0.797   2.04s  crimson-quail
-  [N2 run01] g0027 best  1.433 mean  0.938   2.05s  wild-dormouse
-  [N2 run01] g0028 best  1.318 mean  0.897   2.05s  wild-dormouse
-  [N2 run01] g0029 best  1.577 mean  1.165 holdout  1.453   4.02s  placid-jackdaw
-  run 1: champion 1.453 vs random 0.462 (best of 32: 1.177)  85s
-  [N2 run02] g0000 best  1.059 mean  0.317 holdout  1.119   3.92s  keen-civet
-  [N2 run02] g0001 best  1.358 mean  0.748   2.05s  glossy-heron
-  [N2 run02] g0002 best  1.585 mean  1.161   2.25s  olive-tern
-  [N2 run02] g0003 best  1.528 mean  1.044   2.06s  violet-gecko
-  [N2 run02] g0004 best  1.413 mean  1.069   2.08s  steady-stoat
-  [N2 run02] g0005 best  1.491 mean  1.024 holdout  1.291   4.37s  keen-ibex
-  [N2 run02] g0006 best  1.182 mean  0.808   2.33s  ancient-ermine
-  [N2 run02] g0007 best  1.547 mean  1.010   2.10s  velvet-elver
-  [N2 run02] g0008 best  1.491 mean  1.013   2.08s  violet-gecko
-  [N2 run02] g0009 best  1.481 mean  1.151   2.06s  velvet-elver
-  [N2 run02] g0010 best  1.207 mean  0.854 holdout  1.357   3.97s  violet-roach
-  [N2 run02] g0011 best  1.342 mean  0.953   2.06s  misty-dormouse
-  [N2 run02] g0012 best  1.425 mean  0.907   2.07s  dusty-dipper
-  [N2 run02] g0013 best  1.590 mean  0.969   2.06s  dusty-dipper
-  [N2 run02] g0014 best  1.497 mean  1.024   2.07s  dusty-dipper
-  [N2 run02] g0015 best  1.410 mean  1.084 holdout  1.309   3.99s  marble-boar
-  [N2 run02] g0016 best  1.525 mean  1.069   2.04s  dusty-dipper
-  [N2 run02] g0017 best  1.839 mean  1.207   2.05s  dusty-dipper
-  [N2 run02] g0018 best  1.288 mean  0.900   2.05s  glossy-bittern
-  [N2 run02] g0019 best  1.393 mean  0.886   2.06s  stormy-hare
-  [N2 run02] g0020 best  1.298 mean  1.105 holdout  1.369   3.97s  idle-smelt
-  [N2 run02] g0021 best  1.524 mean  1.113   2.05s  olive-gannet
-  [N2 run02] g0022 best  1.438 mean  1.106   2.04s  flint-gecko
-  [N2 run02] g0023 best  1.290 mean  0.904   2.06s  marble-dunlin
-  [N2 run02] g0024 best  1.508 mean  1.291   2.06s  sudden-badger
-  [N2 run02] g0025 best  1.104 mean  0.770 holdout  1.323   3.96s  sudden-badger
-  [N2 run02] g0026 best  1.420 mean  1.184   2.05s  lucid-coot
-  [N2 run02] g0027 best  1.596 mean  1.167   2.06s  lucid-coot
-  [N2 run02] g0028 best  1.374 mean  0.897   2.07s  wild-skua
-  [N2 run02] g0029 best  1.746 mean  1.266 holdout  1.376   3.95s  wild-skua
-  run 2: champion 1.376 vs random 0.455 (best of 32: 1.026)  85s
+  [N2 run00] g0000 best  0.845 mean  0.373 holdout  0.819   4.40s  patient-jackdaw
+  [N2 run00] g0001 best  1.219 mean  0.562   2.12s  patient-quail
+  [N2 run00] g0002 best  1.215 mean  0.651   2.13s  velvet-dipper
+  [N2 run00] g0003 best  1.333 mean  0.774   2.10s  bright-mole
+  [N2 run00] g0004 best  1.295 mean  0.890   2.10s  bright-mole
+  [N2 run00] g0005 best  1.342 mean  0.792 holdout  1.426   3.99s  steady-petrel
+  [N2 run00] g0006 best  1.378 mean  0.848   2.09s  steady-petrel
+  [N2 run00] g0007 best  1.387 mean  0.816   2.09s  steady-petrel
+  [N2 run00] g0008 best  1.417 mean  0.831   2.11s  stern-pika
+  [N2 run00] g0009 best  1.495 mean  1.008   2.09s  stern-pika
+  [N2 run00] g0010 best  1.545 mean  0.910 holdout  1.399   3.96s  calm-jackdaw
+  [N2 run00] g0011 best  1.686 mean  0.930   2.07s  sudden-bream
+  [N2 run00] g0012 best  1.399 mean  0.975   2.10s  sudden-bream
+  [N2 run00] g0013 best  1.376 mean  1.014   2.08s  glossy-crow
+  [N2 run00] g0014 best  1.491 mean  0.943   2.11s  sudden-bream
+  [N2 run00] g0015 best  1.649 mean  0.981 holdout  1.418   3.94s  sudden-bream
+  [N2 run00] g0016 best  1.591 mean  0.835   2.08s  patient-boar
+  [N2 run00] g0017 best  1.370 mean  0.836   2.09s  eager-dunlin
+  [N2 run00] g0018 best  1.259 mean  0.794   2.08s  fierce-kestrel
+  [N2 run00] g0019 best  1.388 mean  0.797   2.08s  eager-ermine
+  [N2 run00] g0020 best  1.227 mean  0.894 holdout  1.393   3.96s  sombre-gecko
+  [N2 run00] g0021 best  1.472 mean  0.923   2.09s  eager-ermine
+  [N2 run00] g0022 best  1.411 mean  0.930   2.08s  sombre-gecko
+  [N2 run00] g0023 best  1.501 mean  0.956   2.07s  placid-weasel
+  [N2 run00] g0024 best  1.359 mean  0.883   2.06s  eager-dunlin
+  [N2 run00] g0025 best  1.453 mean  0.947 holdout  1.429   3.96s  eager-dunlin
+  [N2 run00] g0026 best  1.551 mean  1.075   2.07s  wary-vole
+  [N2 run00] g0027 best  1.964 mean  1.211   2.07s  eager-dunlin
+  [N2 run00] g0028 best  1.470 mean  0.982   2.08s  fierce-plover
+  [N2 run00] g0029 best  1.730 mean  1.063 holdout  1.414   3.97s  glossy-finch
+  run 0: champion 1.414 vs random 0.390 (best of 32: 0.980)  86s
+  [N2 run01] g0000 best  1.133 mean  0.366 holdout  1.187   3.92s  rough-siskin
+  [N2 run01] g0001 best  1.200 mean  0.454   2.03s  rough-siskin
+  [N2 run01] g0002 best  1.284 mean  0.531   2.02s  slender-pipit
+  [N2 run01] g0003 best  1.460 mean  0.890   2.03s  frosty-jackdaw
+  [N2 run01] g0004 best  1.283 mean  0.826   2.03s  quiet-tern
+  [N2 run01] g0005 best  1.397 mean  0.703 holdout  1.261   4.54s  quiet-wigeon
+  [N2 run01] g0006 best  1.364 mean  0.876   2.34s  frosty-jackdaw
+  [N2 run01] g0007 best  1.162 mean  0.781   2.38s  swift-tern
+  [N2 run01] g0008 best  1.306 mean  0.870   2.37s  lunar-hare
+  [N2 run01] g0009 best  1.408 mean  0.831   2.29s  lunar-hare
+  [N2 run01] g0010 best  1.285 mean  0.804 holdout  1.230   4.54s  stormy-roach
+  [N2 run01] g0011 best  1.194 mean  0.856   2.33s  slender-crow
+  [N2 run01] g0012 best  1.405 mean  1.050   2.29s  sombre-smelt
+  [N2 run01] g0013 best  1.205 mean  0.821   2.17s  amber-hare
+  [N2 run01] g0014 best  1.156 mean  0.874   2.06s  wild-cicada
+  [N2 run01] g0015 best  1.272 mean  0.960 holdout  1.343   3.93s  grave-plover
+  [N2 run01] g0016 best  1.348 mean  0.986   2.04s  grave-plover
+  [N2 run01] g0017 best  1.236 mean  0.877   2.03s  crimson-merlin
+  [N2 run01] g0018 best  1.591 mean  1.184   2.04s  glossy-lemur
+  [N2 run01] g0019 best  1.514 mean  1.025   2.04s  bitter-weasel
+  [N2 run01] g0020 best  1.552 mean  1.053 holdout  1.369   3.95s  noble-weasel
+  [N2 run01] g0021 best  1.311 mean  0.799   2.05s  noble-weasel
+  [N2 run01] g0022 best  1.454 mean  0.887   2.05s  patient-smelt
+  [N2 run01] g0023 best  1.469 mean  0.922   2.17s  noble-weasel
+  [N2 run01] g0024 best  1.436 mean  1.018   2.14s  rapid-otter
+  [N2 run01] g0025 best  1.668 mean  1.181 holdout  1.381   3.96s  mild-roach
+  [N2 run01] g0026 best  1.072 mean  0.859   2.04s  dapper-wren
+  [N2 run01] g0027 best  1.404 mean  1.044   2.05s  dapper-wren
+  [N2 run01] g0028 best  1.263 mean  0.976   2.05s  crimson-puffin
+  [N2 run01] g0029 best  1.529 mean  1.107 holdout  1.398   3.98s  idle-merlin
+  run 1: champion 1.398 vs random 0.459 (best of 32: 1.179)  87s
+  [N2 run02] g0000 best  1.047 mean  0.308 holdout  1.095   3.93s  keen-civet
+  [N2 run02] g0001 best  1.285 mean  0.714   2.03s  tawny-raven
+  [N2 run02] g0002 best  1.541 mean  1.037   2.04s  olive-tern
+  [N2 run02] g0003 best  1.481 mean  0.995   2.07s  placid-dormouse
+  [N2 run02] g0004 best  1.357 mean  1.027   2.06s  placid-dormouse
+  [N2 run02] g0005 best  1.487 mean  0.983 holdout  1.309   3.95s  solemn-auk
+  [N2 run02] g0006 best  1.204 mean  0.839   2.04s  ancient-hare
+  [N2 run02] g0007 best  1.498 mean  0.995   2.06s  ancient-hare
+  [N2 run02] g0008 best  1.475 mean  0.967   2.07s  solemn-auk
+  [N2 run02] g0009 best  1.484 mean  1.073   2.05s  ancient-hare
+  [N2 run02] g0010 best  1.166 mean  0.845 holdout  1.331   3.95s  silent-godwit
+  [N2 run02] g0011 best  1.329 mean  0.992   2.04s  wild-skua
+  [N2 run02] g0012 best  1.401 mean  1.108   2.05s  marble-ermine
+  [N2 run02] g0013 best  1.607 mean  1.037   2.07s  marble-ermine
+  [N2 run02] g0014 best  1.456 mean  1.061   2.09s  bright-raven
+  [N2 run02] g0015 best  1.416 mean  1.103 holdout  1.380   3.96s  idle-merlin
+  [N2 run02] g0016 best  1.548 mean  1.206   2.04s  gilded-lapwing
+  [N2 run02] g0017 best  1.850 mean  1.178   2.06s  mild-gannet
+  [N2 run02] g0018 best  1.288 mean  0.876   2.05s  idle-adder
+  [N2 run02] g0019 best  1.386 mean  0.888   2.07s  keen-wren
+  [N2 run02] g0020 best  1.321 mean  1.085 holdout  1.309   3.96s  dusty-roach
+  [N2 run02] g0021 best  1.507 mean  1.021   2.04s  lucid-smelt
+  [N2 run02] g0022 best  1.422 mean  1.028   2.05s  stormy-cod
+  [N2 run02] g0023 best  1.261 mean  0.949   2.06s  steady-hare
+  [N2 run02] g0024 best  1.510 mean  1.151   2.06s  lucid-dormouse
+  [N2 run02] g0025 best  1.128 mean  0.852 holdout  1.367   3.97s  lucid-dormouse
+  [N2 run02] g0026 best  1.427 mean  1.014   2.06s  hollow-hare
+  [N2 run02] g0027 best  1.609 mean  1.273   2.05s  grave-dipper
+  [N2 run02] g0028 best  1.380 mean  0.843   2.08s  grave-dipper
+  [N2 run02] g0029 best  1.731 mean  1.023 holdout  1.382   3.99s  grave-dipper
+  run 2: champion 1.382 vs random 0.446 (best of 32: 1.027)  84s
 
 === held-out seeds, never used for selection ===
  run   champion  random mean  random best    ratio
-   0      1.406        0.405        1.015     3.47x
-   1      1.453        0.462        1.177     3.14x
-   2      1.376        0.455        1.026     3.02x
+   0      1.414        0.390        0.980     3.62x
+   1      1.398        0.459        1.179     3.04x
+   2      1.382        0.446        1.027     3.10x
 
-champion 1.412 +- 0.032  |  random 0.441 +- 0.025  |  best-of-population random 1.072
+champion 1.398 +- 0.013  |  random 0.432 +- 0.030  |  best-of-population random 1.062
 every run improved on the best random strain: True
 total GPU-hours: 0.071

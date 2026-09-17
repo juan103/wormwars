@@ -66,9 +66,7 @@ class Recorder:
         self.alive.append(cpu(world.alive))
         self.pump.append(cpu(world.pump))
         if self.record_neurons:
-            v = world.assign.from_brain(
-                world.v, world.n_worlds, world.n_swarms, world.n_weys
-            )
+            v = world.neuron_state()
             if self.neuron_subset is not None:
                 v = v[..., list(self.neuron_subset)]
             self.neurons.append(cpu(v))
