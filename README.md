@@ -62,25 +62,47 @@ foraging and not an accounting exploit. It still works when eating requires pump
 coevolved swarms learn to flank: **88% of the damage they deal lands on an enemy's flank or tail**
 rather than its head, which is exactly what the measured combat geometry rewards.
 
-**On the claim under test, the first answer is negative.** In the reduced pipeline check (K=3,
-R=2, 18 runs) the real wiring did *worse* than both controls:
+**On the claim under test, the answer is: no, and slower.** The full experiment is K=5, R=3 --
+five independent SH graphs and five RD graphs with three runs each, and fifteen runs of N2, so every
+condition has **15 runs**. It was run twice, with and without per-graph motor gain calibration
+(see below). Held-out foraging score, hierarchical bootstrap over graphs and runs:
 
-| condition | held-out foraging score |
-|---|---|
-| N2 | 1.369 [1.266, 1.470] |
-| SH | 1.550 [1.427, 1.657] |
-| RD | 1.501 [1.433, 1.577] |
+| condition | final score (calibrated) | speed of improvement |
+|---|---|---|
+| N2 | 1.412 [1.366, 1.453] | 1.359 [1.344, 1.373] |
+| SH | 1.458 [1.385, 1.552] | 1.459 [1.433, 1.484] |
+| RD | 1.452 [1.398, 1.510] | 1.471 [1.439, 1.506] |
 
-N2 - SH = -0.181 [-0.329, -0.030]; N2 - RD = -0.132 [-0.260, -0.006]; SH and RD indistinguishable.
+- **Final performance: a null.** No contrast separates (N2 - SH P = 0.167, N2 - RD P = 0.130).
+  N2's mean sits inside the spread of the individual control graphs, not at either end.
+- **Speed of improvement: N2 is slower**, and clearly so: N2 - SH = -0.100 [-0.129, -0.070] and
+  N2 - RD = -0.112 [-0.150, -0.077], both P = 0.000.
+- **SH and RD are indistinguishable from each other** on everything measured, so preserving the
+  real degree sequence bought nothing either.
 
-Two things were then checked. It is **not** an artifact of the parameter bounds: champions of all
-three conditions sit nowhere near them and use the parameter space identically. But there **is** a
-confound: the raw magnitude of the motor read-out is a property of the graph, and N2 is the weakest
-of the seven graphs tested. The motor gain was hand-tuned on N2, so under one fixed gain the
-controls simply move more before evolution starts, and foraging rewards moving. The full experiment
-is therefore run **both ways** -- one fixed gain, and per-graph gains calibrated so every condition
-starts from the same motor output magnitude (`wormwars/calibration.py`). Reporting only the
-friendlier number would not be a result.
+The real wiring, on this task with this interface, **reaches the same ceiling as its own shuffles
+and as random graphs of the same size, and takes longer to get there.**
+
+### The confound, and why the experiment was run twice
+
+A first pass (K=3, R=2) found N2 significantly *worse* on final score too. Two checks followed. It
+is **not** an artifact of the parameter bounds: champions of all three conditions sit nowhere near
+them and use the parameter space identically. But there **is** a confound: the raw magnitude of the
+motor read-out is a property of the graph, and N2 is the weakest of the seven graphs tested. The
+motor gain was hand-tuned on N2, so under one fixed gain the controls simply move more before
+evolution starts, and foraging rewards moving.
+
+Running it both ways separates the two:
+
+| contrast | one fixed gain | gains calibrated |
+|---|---|---|
+| N2 - SH, final score | **-0.110 [-0.185, -0.026]** | -0.047 [-0.148, +0.039] |
+| N2 - SH, speed | **-0.118 [-0.160, -0.080]** | **-0.100 [-0.129, -0.070]** |
+
+The final-score deficit was mostly the confound. The speed deficit is not: it survives calibration
+almost intact, and is the more robust of the two findings. N2 scores identically in both arms
+(1.4115), because N2 is the calibration reference and only the controls moved -- which doubles as a
+check that the pipeline is deterministic.
 
 Also measured, and predicted in `DECISIONS.md` D008 before the experiment was run: in N2 the pump
 neurons sit **three graph hops** from any sensor, because all somatic-pharyngeal traffic goes

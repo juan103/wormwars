@@ -1,0 +1,165 @@
+[
+  {
+    "worlds": 8,
+    "swarms": 1,
+    "size": 20,
+    "weys": 160,
+    "arena": 24,
+    "ms_per_tick": 4.77455499979745,
+    "wey_ticks_per_s": 33510.97641702476,
+    "peak_vram_mb": 39.7255859375
+  },
+  {
+    "worlds": 32,
+    "swarms": 1,
+    "size": 20,
+    "weys": 640,
+    "arena": 24,
+    "ms_per_tick": 4.829551666625775,
+    "wey_ticks_per_s": 132517.4766060933,
+    "peak_vram_mb": 45.2685546875
+  },
+  {
+    "worlds": 128,
+    "swarms": 1,
+    "size": 20,
+    "weys": 2560,
+    "arena": 24,
+    "ms_per_tick": 4.920636666550611,
+    "wey_ticks_per_s": 520257.8799207647,
+    "peak_vram_mb": 68.15283203125
+  },
+  {
+    "worlds": 512,
+    "swarms": 1,
+    "size": 20,
+    "weys": 10240,
+    "arena": 24,
+    "ms_per_tick": 6.291230000109256,
+    "wey_ticks_per_s": 1627662.635100317,
+    "peak_vram_mb": 158.193359375
+  },
+  {
+    "worlds": 2048,
+    "swarms": 1,
+    "size": 20,
+    "weys": 40960,
+    "arena": 24,
+    "ms_per_tick": 19.530046666720104,
+    "wey_ticks_per_s": 2097281.2148880986,
+    "peak_vram_mb": 519.69677734375
+  },
+  {
+    "worlds": 16,
+    "swarms": 2,
+    "size": 20,
+    "weys": 640,
+    "arena": 33,
+    "ms_per_tick": 7.763241666543763,
+    "wey_ticks_per_s": 82439.78836291096,
+    "peak_vram_mb": 43.212890625
+  },
+  {
+    "worlds": 64,
+    "swarms": 2,
+    "size": 20,
+    "weys": 2560,
+    "arena": 33,
+    "ms_per_tick": 7.690975000150502,
+    "wey_ticks_per_s": 332857.66758439655,
+    "peak_vram_mb": 60.08544921875
+  },
+  {
+    "worlds": 16,
+    "swarms": 2,
+    "size": 50,
+    "weys": 1600,
+    "arena": 51,
+    "ms_per_tick": 7.752716666436754,
+    "wey_ticks_per_s": 206379.26920852895,
+    "peak_vram_mb": 51.1748046875
+  },
+  {
+    "worlds": 64,
+    "swarms": 2,
+    "size": 50,
+    "weys": 6400,
+    "arena": 51,
+    "ms_per_tick": 8.179634999639045,
+    "wey_ticks_per_s": 782431.0009288217,
+    "peak_vram_mb": 91.7900390625
+  },
+  {
+    "worlds": 16,
+    "swarms": 2,
+    "size": 100,
+    "weys": 3200,
+    "arena": 72,
+    "ms_per_tick": 7.797958333200464,
+    "wey_ticks_per_s": 410363.8238711446,
+    "peak_vram_mb": 65.203125
+  },
+  {
+    "worlds": 64,
+    "swarms": 2,
+    "size": 100,
+    "weys": 12800,
+    "arena": 72,
+    "ms_per_tick": 9.375971666789459,
+    "wey_ticks_per_s": 1365191.8387657632,
+    "peak_vram_mb": 145.7080078125
+  },
+  {
+    "worlds": 16,
+    "swarms": 2,
+    "size": 200,
+    "weys": 6400,
+    "arena": 100,
+    "ms_per_tick": 8.16579166663966,
+    "wey_ticks_per_s": 783757.4434021402,
+    "peak_vram_mb": 91.7890625
+  },
+  {
+    "worlds": 64,
+    "swarms": 2,
+    "size": 200,
+    "weys": 25600,
+    "arena": 100,
+    "ms_per_tick": 13.374396666768007,
+    "wey_ticks_per_s": 1914105.0350038984,
+    "peak_vram_mb": 251.33544921875
+  },
+  {
+    "worlds": 1,
+    "swarms": 2,
+    "size": 500,
+    "weys": 1000,
+    "arena": 157,
+    "ms_per_tick": 7.888039998942987,
+    "wey_ticks_per_s": 126774.20501594845,
+    "peak_vram_mb": 41.09814453125,
+    "showcase": true
+  },
+  {
+    "worlds": 1,
+    "swarms": 2,
+    "size": 1000,
+    "weys": 2000,
+    "arena": 222,
+    "ms_per_tick": 7.75685499975225,
+    "wey_ticks_per_s": 257836.4556336143,
+    "peak_vram_mb": 49.3681640625,
+    "showcase": true
+  },
+  {
+    "worlds": 1,
+    "swarms": 2,
+    "size": 2000,
+    "weys": 4000,
+    "arena": 312,
+    "ms_per_tick": 7.682570000179112,
+    "wey_ticks_per_s": 520659.10234553594,
+    "peak_vram_mb": 67.3193359375,
+    "showcase": true
+  }
+]

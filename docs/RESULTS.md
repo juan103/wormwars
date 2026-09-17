@@ -206,6 +206,29 @@ RD graph means 1.406-1.530) rather than at either end of it.
 
 Per GPU-hour, neither contrast separates (P = 0.052 and 0.027 against SH and RD).
 
+### The same experiment without calibration
+
+Identical seeds, one fixed motor gain for every graph. N2's configuration is unchanged by
+calibration, so N2 reproduces **exactly** (1.4115 in both arms) -- an internal check that the
+pipeline is deterministic and that only the controls moved.
+
+| condition | uncalibrated | calibrated |
+|---|---|---|
+| N2 | 1.4115 [1.3661, 1.4526] | 1.4115 [1.3661, 1.4526] |
+| SH | 1.5214 [1.4470, 1.5804] | 1.4581 [1.3851, 1.5515] |
+| RD | 1.4825 [1.4343, 1.5379] | 1.4521 [1.3982, 1.5103] |
+
+| contrast | uncalibrated | calibrated |
+|---|---|---|
+| N2 - SH (final) | **-0.110 [-0.185, -0.026]**, P=0.005 | -0.047 [-0.148, +0.039], P=0.167 |
+| N2 - RD (final) | **-0.071 [-0.141, -0.007]**, P=0.014 | -0.041 [-0.113, +0.029], P=0.130 |
+| N2 - SH (AUC) | **-0.118 [-0.160, -0.080]**, P=0.000 | **-0.100 [-0.129, -0.070]**, P=0.000 |
+| N2 - RD (AUC) | **-0.144 [-0.178, -0.106]**, P=0.000 | **-0.112 [-0.150, -0.077]**, P=0.000 |
+
+So the apparent *final-score* deficit was mostly the motor-scale confound: matching the read-out
+magnitude removes it. The *speed* deficit survives calibration essentially intact, and is the more
+robust of the two findings.
+
 ### What this says
 
 With the nuisance variable removed, on this task, with this interface:
