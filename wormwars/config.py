@@ -144,12 +144,37 @@ class MutationConfig:
 
 
 @dataclass
+class EvoConfig:
+    """One evolutionary run.
+
+    Seed pools are disjoint by construction: `train` world ids drive selection, `holdout` ids are
+    never used for selection and are where absolute progress is measured.
+    """
+
+    population: int = 32
+    generations: int = 40
+    elites: int = 3
+    truncation: int = 8  # the top this many strains are the parents
+    worlds_per_strain: int = 6  # evaluation worlds per strain per generation
+    holdout_worlds: int = 24
+    islands: int = 1
+    migrate_every: int = 10  # generations between migrations (islands only)
+    migrants: int = 1
+    chunk_worlds: int = 512  # rollouts are split into chunks of at most this many worlds
+    train_seed_base: int = 0  # world ids 0 .. train_seed_span-1
+    train_seed_span: int = 1_000_000
+    holdout_seed_base: int = 900_000_000  # disjoint from the training span
+    eval_ticks: int = 0  # 0 means use world.max_ticks
+
+
+@dataclass
 class Config:
     brain: BrainConfig = field(default_factory=BrainConfig)
     world: WorldConfig = field(default_factory=WorldConfig)
     map: MapConfig = field(default_factory=MapConfig)
     combat: CombatConfig = field(default_factory=CombatConfig)
     mutation: MutationConfig = field(default_factory=MutationConfig)
+    evo: EvoConfig = field(default_factory=EvoConfig)
 
     @classmethod
     def from_yaml(cls, path: str | Path | None = None) -> "Config":

@@ -1,0 +1,171 @@
+{
+  "config": {
+    "brain": {
+      "substeps": 8,
+      "tau_min": 0.5,
+      "tau_max": 20.0,
+      "w_max": 3.0,
+      "g_max": 2.0,
+      "b_max": 2.0,
+      "init_w_scale": 0.2,
+      "init_g_scale": 0.05,
+      "init_bias_std": 0.5,
+      "init_tau_log_uniform": true,
+      "dale": false,
+      "input_gain": 1.0,
+      "input_max": 5.0
+    },
+    "world": {
+      "n_swarms": 1,
+      "weys_per_swarm": 20,
+      "max_ticks": 400,
+      "cells_per_wey": 24.0,
+      "min_side": 24,
+      "body_length": 1.6,
+      "max_speed": 0.35,
+      "reverse_fraction": 0.4,
+      "max_turn": 0.3,
+      "forward_gain": 4.0,
+      "turn_gain": 2.0,
+      "start_energy": 12.0,
+      "max_energy": 40.0,
+      "body_mass": 6.0,
+      "metabolic_drain": 0.035,
+      "move_cost": 0.02,
+      "hazard_damage": 0.25,
+      "eat_rate": 0.6,
+      "pheromone_deposit": 1.0,
+      "pheromone_decay": 0.93,
+      "pheromone_diffusion": 0.35,
+      "sense_scale_food": 0.35,
+      "sense_scale_pheromone": 0.35,
+      "sense_scale_hazard": 2.0,
+      "sense_scale_damage": 2.0,
+      "sense_scale_collision": 2.0,
+      "body_splat": 1.0,
+      "crowd_threshold": 0.8,
+      "crowd_resist": 0.6,
+      "crowd_push": 0.1,
+      "crowd_blur": 1
+    },
+    "map": {
+      "food_patches": [
+        3,
+        6
+      ],
+      "food_patch_radius": [
+        2.5,
+        5.0
+      ],
+      "food_per_patch": [
+        70.0,
+        160.0
+      ],
+      "food_centre_bias": 0.62,
+      "hazard_patches": [
+        1,
+        4
+      ],
+      "hazard_radius": [
+        2.0,
+        4.0
+      ],
+      "hazard_strength": [
+        0.5,
+        1.0
+      ],
+      "hazard_spawn_clearance": 6.0,
+      "spawn_margin": 3.0,
+      "spawn_spread": 0.28,
+      "food_regen": 0.0
+    },
+    "combat": {
+      "attack_strength": 1.0,
+      "attack_offset": 0.9,
+      "attack_blur": 1,
+      "damage_k": 0.55,
+      "head_armor": 0.25,
+      "transfer_fraction": 0.5,
+      "pump_cost": 0.1
+    },
+    "mutation": {
+      "w_sigma": 0.08,
+      "g_sigma": 0.04,
+      "tau_sigma": 0.15,
+      "bias_sigma": 0.05,
+      "p_mutate": 1.0
+    },
+    "evo": {
+      "population": 32,
+      "generations": 6,
+      "elites": 3,
+      "truncation": 8,
+      "worlds_per_strain": 6,
+      "holdout_worlds": 32,
+      "islands": 1,
+      "migrate_every": 10,
+      "migrants": 1,
+      "chunk_worlds": 512,
+      "train_seed_base": 0,
+      "train_seed_span": 1000000,
+      "holdout_seed_base": 900000000,
+      "eval_ticks": 0
+    }
+  },
+  "connectome": {
+    "label": "N2",
+    "weight_kind": "em_sections",
+    "n_neurons": 302,
+    "source_sha256": "1f4fdbf84746b69b49a8da0816f52787860ce349b638dce37924ba80f90c70c9",
+    "cache_path": "D:\\Claude\\random\\wormWars\\data\\cache\\cook2019_herm.npz",
+    "cache_sha256": "43b87aa172a0042b9dce734b15bdf1c87efe3a33ac1cc0d9cd03255a60c96d4a",
+    "citation": "Cook SJ, Jarrell TA, Brittin CA, Wang Y, Bloniarz AE, Yakovlev MA, Nguyen KCQ, Tang LT-H, Bayer EA, Duerr JS, Bulow HE, Hobert O, Hall DH, Emmons SW (2019). Whole-animal connectomes of both Caenorhabditis elegans sexes. Nature 571:63-71."
+  },
+  "graphs": {},
+  "seed_scheme": "A run has one integer run_seed. World w of that run uses world_seed(run_seed, world_id) = splitmix64(run_seed * 2**32 + world_id), which seeds a numpy default_rng used for that world's map, hazards and spawn. Training world ids for generation g are drawn from numpy.random.default_rng([run_seed, g, 0xC0FFEE]) within [train_seed_base, train_seed_base + train_seed_span); held-out ids are the fixed range [holdout_seed_base, holdout_seed_base + holdout_worlds) and are never used for selection. Torch RNG for genome initialisation and mutation is a single generator seeded with run_seed.",
+  "environment": {
+    "python": "3.13.3",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "torch": "2.12.0+cu130",
+    "torch_cuda": "13.0",
+    "packages": {
+      "torch": "2.12.0+cu130",
+      "numpy": "2.4.4",
+      "scipy": "1.17.1",
+      "matplotlib": "3.10.9",
+      "pyyaml": "6.0.3",
+      "pandas": "3.0.2",
+      "openpyxl": "3.1.5"
+    },
+    "git_commit": "34d878cc867241b01237a5f719b32b34bda9abdf",
+    "git_dirty": true,
+    "gpu": "NVIDIA GeForce RTX 5080",
+    "gpu_capability": [
+      12,
+      0
+    ],
+    "gpu_arch_list": [
+      "sm_75",
+      "sm_80",
+      "sm_86",
+      "sm_90",
+      "sm_100",
+      "sm_120"
+    ]
+  },
+  "extra": {
+    "script": "evolve_forage.py",
+    "args": {
+      "runs": 1,
+      "generations": 6,
+      "population": 32,
+      "worlds": 6,
+      "ticks": 400,
+      "holdout": 32,
+      "islands": 1,
+      "out": "runs/m4-pilot",
+      "device": "cuda",
+      "base_seed": 1000
+    }
+  }
+}

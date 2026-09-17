@@ -1,0 +1,74 @@
+[
+  {
+    "generation": 0,
+    "best": 0.8188843727111816,
+    "mean": 0.3794529438018799,
+    "median": 0.3530832827091217,
+    "holdout_best": 0.8176363110542297,
+    "holdout_mean": 0.8176363110542297,
+    "elapsed_s": 4.304690999997547,
+    "evaluations": 192,
+    "ledger_error": 0.0002483190837665461,
+    "best_nickname": "patient-jackdaw"
+  },
+  {
+    "generation": 1,
+    "best": 1.0299791097640991,
+    "mean": 0.48597848415374756,
+    "median": 0.4608132839202881,
+    "holdout_best": 0.9723893404006958,
+    "holdout_mean": 0.9723893404006958,
+    "elapsed_s": 3.9522293000190984,
+    "evaluations": 192,
+    "ledger_error": 0.0002433918125461787,
+    "best_nickname": "eager-ferret"
+  },
+  {
+    "generation": 2,
+    "best": 1.4686447381973267,
+    "mean": 0.669813871383667,
+    "median": 0.6419413685798645,
+    "holdout_best": 1.2814921140670776,
+    "holdout_mean": 1.2814921140670776,
+    "elapsed_s": 3.9683599999989383,
+    "evaluations": 192,
+    "ledger_error": 0.00044615320257435087,
+    "best_nickname": "wild-wigeon"
+  },
+  {
+    "generation": 3,
+    "best": 1.2574795484542847,
+    "mean": 0.716942310333252,
+    "median": 0.6683169007301331,
+    "holdout_best": 1.2814921140670776,
+    "holdout_mean": 1.2814921140670776,
+    "elapsed_s": 3.960206299991114,
+    "evaluations": 192,
+    "ledger_error": 0.0003676421183627099,
+    "best_nickname": "wild-wigeon"
+  },
+  {
+    "generation": 4,
+    "best": 1.409227967262268,
+    "mean": 0.9432461261749268,
+    "median": 0.9200246334075928,
+    "holdout_best": 1.3029108047485352,
+    "holdout_mean": 1.3029108047485352,
+    "elapsed_s": 3.979564200009918,
+    "evaluations": 192,
+    "ledger_error": 0.0008861824463224366,
+    "best_nickname": "stormy-swift"
+  },
+  {
+    "generation": 5,
+    "best": 1.2512694597244263,
+    "mean": 0.6754713654518127,
+    "median": 0.5863953232765198,
+    "holdout_best": 1.3029108047485352,
+    "holdout_mean": 1.3029108047485352,
+    "elapsed_s": 3.9779622000060044,
+    "evaluations": 192,
+    "ledger_error": 0.000799849396571517,
+    "best_nickname": "stormy-swift"
+  }
+]
