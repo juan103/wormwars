@@ -91,6 +91,9 @@ def save_population(path, genome: Genome, **meta) -> Path:
     meta = {
         "graph": spec.label,
         "weight_kind": spec.weight_kind,
+        "n_chem": spec.n_chem,
+        "n_gap": spec.n_gap,
+        "n_neurons": spec.n,
         "n_strains": genome.n_strains,
         "brain_config": dataclasses.asdict(genome.cfg),
         "nicknames": [nickname(genome, i) for i in range(genome.n_strains)],
@@ -109,8 +112,14 @@ def save_population(path, genome: Genome, **meta) -> Path:
 
 
 def load_genome(
-    path, spec: BrainSpec, cfg: BrainConfig | None = None, device="cpu"
+    path, spec: BrainSpec, cfg: BrainConfig | None = None, device="cpu", strain: int | None = None
 ) -> tuple[Genome, dict]:
+    """Load one genome, or a whole saved population.
+
+    `strain` selects a single strain from a population file. The mask is validated against the
+    *stored array shapes*, not against metadata, so a file saved by an older writer still fails
+    loudly if it does not fit the spec.
+    """
     d = np.load(Path(path), allow_pickle=True)
     meta = json.loads(str(d["meta"]))
     if meta["graph"] != spec.label:
@@ -118,23 +127,26 @@ def load_genome(
             f"genome was evolved on graph {meta['graph']!r} but the spec is {spec.label!r}. "
             "Genomes are mask-specific and are not transferable between graphs."
         )
-    if meta["n_chem"] != spec.n_chem or meta["n_gap"] != spec.n_gap:
+    t = lambda k: torch.from_numpy(np.atleast_2d(d[k])).to(device)  # noqa: E731
+    w, g, tau, bias = t("w"), t("g"), t("tau"), t("bias")
+    if w.shape[1] != spec.n_chem or g.shape[1] != spec.n_gap or tau.shape[1] != spec.n:
         raise ValueError(
-            f"edge counts differ: genome has {meta['n_chem']}/{meta['n_gap']}, "
-            f"spec has {spec.n_chem}/{spec.n_gap}"
+            f"genome does not fit the mask: stored {w.shape[1]} W / {g.shape[1]} G / "
+            f"{tau.shape[1]} neurons, spec wants {spec.n_chem} / {spec.n_gap} / {spec.n}"
         )
     cfg = cfg or BrainConfig(**meta["brain_config"])
-    t = lambda k: torch.from_numpy(np.atleast_2d(d[k])).to(device)  # noqa: E731
     dale = d["dale"]
     genome = Genome(
         spec.to(device),
         cfg,
-        w=t("w"),
-        g=t("g"),
-        tau=t("tau"),
-        bias=t("bias"),
+        w=w,
+        g=g,
+        tau=tau,
+        bias=bias,
         dale_sign=None if dale.size == 0 else torch.from_numpy(np.atleast_2d(dale)).to(device),
     )
+    if strain is not None:
+        genome = genome.select([strain])
     return genome, meta
 
 

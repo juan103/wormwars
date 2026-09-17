@@ -195,3 +195,30 @@ def test_suite_respects_the_parameter_bounds(parts):
     assert suite.w.abs().max() <= cfg.brain.w_max + 1e-6
     assert suite.bias.abs().max() <= cfg.brain.b_max + 1e-6
     assert suite.tau.min() >= cfg.brain.tau_min - 1e-6
+
+
+def test_a_saved_population_round_trips(parts, tmp_path):
+    con, iface, spec = parts
+    from wormwars.evo.genomes import load_genome, save_population
+
+    cfg = Config()
+    pop = Genome.random(spec, cfg.brain, 5, generator=torch.Generator().manual_seed(11))
+    path = save_population(tmp_path / "pop.npz", pop, run=0)
+    back, meta = load_genome(path, spec, cfg.brain)
+    assert back.n_strains == 5 and meta["n_strains"] == 5
+    torch.testing.assert_close(back.w, pop.w, rtol=0, atol=0)
+    one, _ = load_genome(path, spec, cfg.brain, strain=3)
+    assert one.n_strains == 1
+    torch.testing.assert_close(one.w[0], pop.w[3], rtol=0, atol=0)
+
+
+def test_loading_a_genome_onto_the_wrong_graph_is_refused(parts, tmp_path):
+    con, iface, spec = parts
+    from wormwars.evo.genomes import load_genome, save_genome
+
+    cfg = Config()
+    g = Genome.random(spec, cfg.brain, 1, generator=torch.Generator().manual_seed(12))
+    path = save_genome(tmp_path / "g.npz", g)
+    sh_spec = BrainSpec.from_connectome(shuffled(con, seed=9))
+    with pytest.raises(ValueError, match="not transferable"):
+        load_genome(path, sh_spec, cfg.brain)
