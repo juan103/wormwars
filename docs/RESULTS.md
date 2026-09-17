@@ -121,14 +121,83 @@ was shorter than the attack blur. See `DECISIONS.md` D019.
 
 ---
 
-## M5 — N2 / SH / RD foraging comparison
+## M5 — N2 / SH / RD foraging comparison (pipeline check, K=3, R=2)
 
-See `runs/m5/REPORT.md`. Summarised in the README.
+Held-out foraging score, hierarchical bootstrap over graphs and runs, 18 runs, 0.345 GPU-hours:
+
+| condition | score | graphs x runs |
+|---|---|---|
+| N2 | **1.369** [1.266, 1.470] | 1g x 6r |
+| SH | **1.550** [1.427, 1.657] | 3g x 6r |
+| RD | **1.501** [1.433, 1.577] | 3g x 6r |
+
+| contrast | difference | P(first > second) | verdict |
+|---|---|---|---|
+| N2 - SH | -0.181 [-0.329, -0.030] | 0.009 | **N2 < SH** |
+| N2 - RD | -0.132 [-0.260, -0.006] | 0.020 | **N2 < RD** |
+| SH - RD | +0.049 [-0.084, +0.176] | 0.767 | no separation |
+
+The same ordering holds for speed of improvement (area under the fitness curve: N2 1.376,
+SH 1.434, RD 1.515) and for score per GPU-hour. N2's mean sits below **all six** SH and RD graph
+means individually.
+
+**The real wiring did worse than both controls on this task.** Two things were then checked:
+
+- *Not a bounds artifact.* Champions are nowhere near the parameter bounds, and all three conditions
+  use the parameter space identically: |W| at bound 0.004% (N2) / 0.009% (SH) / 0.013% (RD),
+  G at zero 12.6% / 13.3% / 14.3%, tau median 3.10 / 3.11 / 3.01.
+- *There is a confound.* The raw magnitude of the motor read-out is a property of the graph, and N2
+  is the weakest of all seven graphs tested: mean |forward| before gain 0.0815 for N2 against
+  0.102-0.159 for the controls. `forward_gain` was tuned on N2, so under a single fixed gain the
+  controls simply move more before evolution starts, and foraging rewards moving.
+  `wormwars/calibration.py` equalises this; M9 reports the experiment **both ways**.
+
+Graph distances, measured, sensors to motors (chemical + gap, shortest path):
+
+| graph | mean | max | sensors to pump (MC) |
+|---|---|---|---|
+| N2 | 1.35 | 3 | **3, 3** |
+| SH1-3 | 1.00-1.05 | 1-2 | 1-2 |
+| RD1-3 | 1.05-1.40 | 2 | 1-2 |
+
+N2's pump neurons are three hops from any sensor because everything must pass the two-neuron
+RIP-I1 bridge; in every control they are one or two. Predicted in `DECISIONS.md` D008 before the
+experiment was run.
 
 ---
 
 ## M7 — coevolution
 
+2 runs, 20 generations, population 16, 40 v 40, stage 1, 0.069 GPU-hours.
+
+| | run 0 + run 1 |
+|---|---|
+| score vs the frozen suite, first measured generation | **+0.059 ± 0.026** |
+| score vs the frozen suite, final generation | **+0.156 ± 0.005** |
+| improved | **2 / 2 runs** |
+| share of damage landed on mid/tail rather than head, final generation | **0.884** |
+
+Coevolved swarms learned to flank: 88% of the damage they deal lands on an enemy's flank or tail
+rather than its head, which is exactly what the measured combat geometry rewards.
+
 Paired evaluation is exact: a match played as (A=swarm0, B=swarm1, sides unswapped) and as
 (B=swarm0, A=swarm1, sides swapped) gives **exactly negated scores**, asserted as a test. That holds
 because spawn jitter is drawn per *side* in a fixed order, so a side swap is a pure relabelling.
+
+---
+
+## M8 — foraging still evolves when eating requires pumping
+
+Stage 2: eating demand is scaled by pump intensity and pumping costs energy every tick, so a wey
+must learn to open its mouth as well as find food. 3 runs, 30 generations, held-out seeds.
+
+| run | champion | random mean | best of 32 random | ratio |
+|---|---|---|---|---|
+| 0 | 0.874 | 0.119 | 0.325 | 7.33x |
+| 1 | 0.781 | 0.095 | 0.281 | 8.26x |
+| 2 | 0.775 | 0.080 | 0.273 | 9.74x |
+
+**champion 0.810 ± 0.045 vs random 0.098 ± 0.016**, every run above the best of 32 random strains.
+The *ratio* is much larger than at stage 0 (8.3x vs 3.2x) because random weys are far worse when
+eating is gated: 0.098 against 0.432. Absolute scores are lower in both arms, as they should be --
+pumping costs energy and pumping at nothing wastes it.

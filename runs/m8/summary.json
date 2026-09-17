@@ -1,0 +1,50 @@
+[
+  {
+    "run": 0,
+    "run_seed": 5000,
+    "champion_holdout": 0.8741819858551025,
+    "random_holdout_mean": 0.1192108541727066,
+    "random_holdout_best_of_pop": 0.325040340423584,
+    "random_holdout_std": 0.09006325155496597,
+    "champion_alive": 10.28125,
+    "random_alive": 2.119140625,
+    "champion_eaten": 451.7728271484375,
+    "random_eaten": 101.44613647460938,
+    "wall_seconds": 119.68233889999101,
+    "evaluations": 7680,
+    "champion_id": "N2-run00-g0029-r1",
+    "nickname": "mellow-wigeon"
+  },
+  {
+    "run": 1,
+    "run_seed": 5001,
+    "champion_holdout": 0.780935525894165,
+    "random_holdout_mean": 0.0945557951927185,
+    "random_holdout_best_of_pop": 0.28122565150260925,
+    "random_holdout_std": 0.0798083022236824,
+    "champion_alive": 6.75,
+    "random_alive": 1.5791015625,
+    "champion_eaten": 349.603759765625,
+    "random_eaten": 92.0643081665039,
+    "wall_seconds": 118.73654800001532,
+    "evaluations": 7680,
+    "champion_id": "N2-run01-g0029-r1",
+    "nickname": "quiet-shrew"
+  },
+  {
+    "run": 2,
+    "run_seed": 5002,
+    "champion_holdout": 0.7749547958374023,
+    "random_holdout_mean": 0.07953604310750961,
+    "random_holdout_best_of_pop": 0.27324724197387695,
+    "random_holdout_std": 0.06952544301748276,
+    "champion_alive": 7.125,
+    "random_alive": 1.646484375,
+    "champion_eaten": 391.63397216796875,
+    "random_eaten": 79.06727600097656,
+    "wall_seconds": 118.62043229999836,
+    "evaluations": 7680,
+    "champion_id": "N2-run02-g0029-r1",
+    "nickname": "mellow-finch"
+  }
+]

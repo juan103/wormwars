@@ -1,0 +1,94 @@
+[
+  {
+    "run": 0,
+    "run_seed": 30000,
+    "suite_first": 0.03226006403565407,
+    "suite_last": 0.1612296849489212,
+    "suite_curve": [
+      [
+        0,
+        0.03226006403565407
+      ],
+      [
+        5,
+        0.1437884122133255
+      ],
+      [
+        10,
+        0.15417101979255676
+      ],
+      [
+        15,
+        0.1612296849489212
+      ],
+      [
+        19,
+        0.1612296849489212
+      ]
+    ],
+    "flank_share_first": 0.0,
+    "flank_share_last": 0.8814208310845117,
+    "hall_of_fame": [
+      "misty-crane",
+      "mellow-petrel",
+      "mild-ermine",
+      "mellow-lemur",
+      "mellow-lemur",
+      "mellow-lemur",
+      "winter-elver",
+      "glossy-curlew",
+      "glossy-curlew",
+      "winter-elver",
+      "winter-elver",
+      "glossy-curlew"
+    ],
+    "suite_version": 1,
+    "seconds": 125.00655550000374
+  },
+  {
+    "run": 1,
+    "run_seed": 30001,
+    "suite_first": 0.0848265066742897,
+    "suite_last": 0.1505468338727951,
+    "suite_curve": [
+      [
+        0,
+        0.0848265066742897
+      ],
+      [
+        5,
+        0.15390931069850922
+      ],
+      [
+        10,
+        0.15892167389392853
+      ],
+      [
+        15,
+        0.17440640926361084
+      ],
+      [
+        19,
+        0.1505468338727951
+      ]
+    ],
+    "flank_share_first": 0.8804287525227423,
+    "flank_share_last": 0.8857313891869733,
+    "hall_of_fame": [
+      "swift-egret",
+      "mild-bittern",
+      "bright-ibex",
+      "rapid-weasel",
+      "velvet-tern",
+      "tidy-eider",
+      "lunar-raven",
+      "gentle-petrel",
+      "gentle-petrel",
+      "mellow-linnet",
+      "misty-otter",
+      "mild-wren"
+    ],
+    "suite_version": 1,
+    "seconds": 124.5545751999889
+  }
+]
