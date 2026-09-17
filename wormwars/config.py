@@ -210,6 +210,12 @@ class Config:
             bad = set(sub) - known
             if bad:
                 raise ValueError(f"unknown field(s) in config section {name!r}: {sorted(bad)}")
+            # YAML has no tuples, so a range written as [2.5, 5.0] arrives as a list. Coerce it,
+            # or a config loaded from YAML would not be interchangeable with the defaults.
+            sub = dict(sub)
+            for g in dataclasses.fields(section_cls):
+                if g.name in sub and str(g.type).startswith("tuple") and isinstance(sub[g.name], list):
+                    sub[g.name] = tuple(sub[g.name])
             kwargs[name] = section_cls(**sub)
         return cls(**kwargs)
 

@@ -87,3 +87,32 @@ def test_config_copy_is_deep():
     other.world.forward_gain = 99.0
     other.evo.population = 7
     assert cfg.world.forward_gain == 4.0 and cfg.evo.population == 32
+
+
+def test_default_yaml_matches_the_dataclass_defaults():
+    """configs/default.yaml is the documented surface of every knob; it must not drift."""
+    from pathlib import Path
+
+    path = Path(__file__).resolve().parents[1] / "configs" / "default.yaml"
+    assert path.exists(), "configs/default.yaml is missing"
+    assert Config.from_yaml(path).to_dict() == Config().to_dict()
+
+
+def test_unknown_config_keys_are_errors(tmp_path):
+    bad = tmp_path / "c.yaml"
+    bad.write_text("world: {not_a_field: 1}\n", encoding="utf-8")
+    with pytest.raises(ValueError, match="not_a_field"):
+        Config.from_yaml(bad)
+    bad.write_text("nonsense: {}\n", encoding="utf-8")
+    with pytest.raises(ValueError, match="nonsense"):
+        Config.from_yaml(bad)
+
+
+def test_yaml_ranges_load_as_tuples():
+    """YAML has no tuples; a range must still arrive as one so configs are interchangeable."""
+    from pathlib import Path
+
+    path = Path(__file__).resolve().parents[1] / "configs" / "default.yaml"
+    cfg = Config.from_yaml(path)
+    assert isinstance(cfg.map.food_patches, tuple)
+    assert isinstance(cfg.evo.coevo_sizes, tuple)

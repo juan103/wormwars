@@ -19,13 +19,13 @@ dying, biting -- only moves energy between those four pots. `energy_ledger_error
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field as dc_field
+from dataclasses import dataclass
 
 import numpy as np
 import torch
 from torch import Tensor
 
-from .brain import Brain, inject
+from .brain import Brain
 from .config import Config
 from .fields import (
     blur,

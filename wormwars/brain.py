@@ -328,12 +328,3 @@ class Brain:
         in_deg = torch.bincount(self.genome.spec.chem_j, minlength=self.n).max().item()
         cfg = self.cfg
         return cfg.b_max + cfg.w_max * float(in_deg) + cfg.input_max
-
-
-def inject(current: Tensor, neuron_idx: Tensor, values: Tensor, gain: Tensor) -> Tensor:
-    """Scatter sensor channel values into the input current tensor.
-
-    `current [S,B,N]`, `neuron_idx [C]`, `values [S,B,C]`, `gain [C]`. Channels that name the same
-    neuron accumulate, which is why this is an index_add rather than an assignment.
-    """
-    return current.index_add_(2, neuron_idx, values * gain)
