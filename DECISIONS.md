@@ -233,3 +233,24 @@ inefficiency sink is defined as `damage taken by victims - energy gained by atta
 absorbs both the configured `transfer_fraction` loss and this geometric residue, and the energy
 ledger balances exactly whatever the geometry does. Energy that would push an attacker past
 `max_energy` is also booked there rather than silently created or dropped.
+
+## D021 — Matches are grouped by total headcount before batching (M7)
+
+Arena area scales with headcount so starting density stays constant, but a batch of worlds shares
+one grid, and `arena_side` takes the largest matchup in the batch. Mixing a 50v50 with a 200v200 in
+one batch would therefore hand the small match a four-times-emptier arena than its own headcount
+calls for -- a silent fairness bug in exactly the varied-size evaluation the spec asks for.
+
+`play()` now groups matches by **total** headcount before chunking, and restores the caller's order
+afterwards. Grouping by the total (not by the pair) keeps 50v200 and 200v50 in the same batch, which
+is what paired evaluation of lopsided matchups needs. A test plays a small match alone and again
+inside a mixed batch and requires the same score.
+
+## D022 — Varying swarm sizes are a property of the generation, not of the candidate (M7)
+
+When `coevo_vary_sizes` is on, each generation draws `coevo_size_pairs` headcount pairs from
+[50, 200], and **every** candidate plays **every** opponent at **every** drawn pair, from both
+spawn sides, with the headcounts swapped as well. Size therefore varies the test without varying who
+gets the easy draw. Measured on a sample schedule: 4 candidates x 2 opponents x 2 worlds x 2 pairs
+x 2 side swaps x 2 headcount swaps = 128 matches, exactly 32 per candidate, exactly 32 of each of
+the four (size_a, size_b) combinations.

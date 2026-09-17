@@ -54,30 +54,52 @@ class MatchResult:
     ledger_error: float
 
 
+def sample_sizes(
+    rng: np.random.Generator,
+    n: int,
+    size_range: tuple[int, int] = (50, 200),
+    lopsided_fraction: float = 0.5,
+) -> list[tuple[int, int]]:
+    """`n` headcount pairs drawn from `size_range`, some of them deliberately lopsided.
+
+    Every pair is used for *all* candidates against *all* opponents, so the schedule stays balanced:
+    varying size varies the test, not who gets the easy draw.
+    """
+    lo, hi = size_range
+    out = []
+    for _ in range(n):
+        a = int(rng.integers(lo, hi + 1))
+        b = a if rng.random() >= lopsided_fraction else int(rng.integers(lo, hi + 1))
+        out.append((a, b))
+    return out
+
+
 def build_schedule(
     n_candidates: int,
     n_opponents: int,
     world_ids: np.ndarray,
     rng: np.random.Generator,
-    sizes: tuple[int, int] = (100, 100),
+    sizes: tuple[int, int] | list[tuple[int, int]] = (100, 100),
     lopsided: bool = False,
 ) -> list[Match]:
     """Every candidate against every opponent, on every world id, from both sides.
 
-    With `lopsided`, each (candidate, opponent, world) also gets its headcounts swapped, so an
-    advantage from being the bigger swarm cancels out.
+    `sizes` is one headcount pair, or a list of pairs to play in addition to each other. With
+    `lopsided`, each unequal pair also gets its headcounts swapped, so an advantage from being the
+    bigger swarm cancels out.
     """
+    size_list = [tuple(sizes)] if isinstance(sizes, tuple) else [tuple(s) for s in sizes]
     matches: list[Match] = []
     for wid in world_ids:
-        size_a, size_b = sizes
-        pairs = [(size_a, size_b)]
-        if lopsided and size_a != size_b:
-            pairs.append((size_b, size_a))
-        for sa, sb in pairs:
-            for swap in (False, True):
-                for a in range(n_candidates):
-                    for b in range(n_opponents):
-                        matches.append(Match(a, b, int(wid), swap, sa, sb))
+        for size_a, size_b in size_list:
+            pairs = [(size_a, size_b)]
+            if lopsided and size_a != size_b:
+                pairs.append((size_b, size_a))
+            for sa, sb in pairs:
+                for swap in (False, True):
+                    for a in range(n_candidates):
+                        for b in range(n_opponents):
+                            matches.append(Match(a, b, int(wid), swap, sa, sb))
     rng.shuffle(matches)
     return matches
 
@@ -101,13 +123,28 @@ def play(
     column's brain batch rectangular and lets A and B be different graphs.
     """
     brains = [Brain(genome_a), Brain(genome_b)]
-    n = len(matches)
     out = {k: [] for k in ("score", "ea", "eb", "aa", "ab")}
     flank = head = 0.0
     worst_err = 0.0
 
-    for lo in range(0, n, chunk_worlds):
-        part = matches[lo : lo + chunk_worlds]
+    # Arena area scales with headcount to hold starting density constant, and a batch shares one
+    # arena -- so matches are grouped by TOTAL headcount before chunking. Mixing a 50v50 with a
+    # 200v200 in one batch would give the small match a four-times-emptier arena than it should
+    # have. Grouping by the total keeps 50v200 and 200v50 together, which is what paired
+    # evaluation of lopsided matchups needs.
+    order: list[int] = []
+    groups: dict[int, list[int]] = {}
+    for i, m in enumerate(matches):
+        groups.setdefault(m.size_a + m.size_b, []).append(i)
+    batches: list[list[int]] = []
+    for total in sorted(groups):
+        idx = groups[total]
+        for lo in range(0, len(idx), chunk_worlds):
+            batches.append(idx[lo : lo + chunk_worlds])
+
+    for batch in batches:
+        order.extend(batch)
+        part = [matches[i] for i in batch]
         strain_of = torch.tensor([[m.a, m.b] for m in part], dtype=torch.long)
         sizes = torch.tensor([[m.size_a, m.size_b] for m in part], dtype=torch.long)
         swap = torch.tensor([m.swap_sides for m in part], dtype=torch.bool)
@@ -133,6 +170,10 @@ def play(
         worst_err = max(worst_err, world.energy_ledger_error().abs().max().item())
 
     cat = {k: np.concatenate(v) for k, v in out.items()}
+    # results came back grouped by headcount; put them back in the caller's order
+    inverse = np.empty(len(order), dtype=np.int64)
+    inverse[np.asarray(order)] = np.arange(len(order))
+    cat = {k: v[inverse] for k, v in cat.items()}
     return MatchResult(
         score=cat["score"], energy_a=cat["ea"], energy_b=cat["eb"],
         alive_a=cat["aa"], alive_b=cat["ab"],
@@ -282,9 +323,15 @@ def coevolve(
         )
 
         ids = pool.train_ids(g, e.coevo_worlds)
+        sizes = (
+            sample_sizes(rng, e.coevo_size_pairs, tuple(e.coevo_size_range),
+                         e.coevo_lopsided_fraction)
+            if e.coevo_vary_sizes
+            else tuple(e.coevo_sizes)
+        )
         matches = build_schedule(
             e.population, opponents.n_strains, ids, rng,
-            sizes=tuple(e.coevo_sizes), lopsided=e.coevo_lopsided,
+            sizes=sizes, lopsided=e.coevo_lopsided or e.coevo_vary_sizes,
         )
         res = play(cfg, iface, pop, opponents, matches, run_seed, device, combat_stage,
                    chunk_worlds=e.chunk_worlds)

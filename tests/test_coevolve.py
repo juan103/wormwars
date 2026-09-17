@@ -222,3 +222,61 @@ def test_loading_a_genome_onto_the_wrong_graph_is_refused(parts, tmp_path):
     sh_spec = BrainSpec.from_connectome(shuffled(con, seed=9))
     with pytest.raises(ValueError, match="not transferable"):
         load_genome(path, sh_spec, cfg.brain)
+
+
+def test_arena_density_is_constant_across_headcounts(parts):
+    """Arena area scales with headcount, so starting density must not depend on swarm size."""
+    con, iface, spec = parts
+    from wormwars.world import arena_side
+
+    cfg = Config()
+    for total in (40, 100, 200, 400, 2000):
+        side = arena_side(cfg, total)
+        interior = (side - 2) ** 2
+        density = total / interior
+        expected = 1.0 / cfg.world.cells_per_wey
+        assert density == pytest.approx(expected, rel=0.12), (
+            f"{total} weys -> {density:.4f} weys/cell, wanted {expected:.4f}"
+        )
+
+
+def test_mixed_headcount_batches_do_not_share_one_arena(parts):
+    """A 50v50 batched with a 200v200 must not be handed the big arena.
+
+    Matches are grouped by total headcount before chunking; this checks the outcome, by playing a
+    small match alone and then inside a mixed batch and requiring the same result.
+    """
+    con, iface, spec = parts
+    cfg = small_cfg(ticks=50)
+    ga = Genome.random(spec, cfg.brain, 1, generator=torch.Generator().manual_seed(21))
+    gb = Genome.random(spec, cfg.brain, 1, generator=torch.Generator().manual_seed(22))
+    small = Match(0, 0, 31, False, 8, 8)
+    big = Match(0, 0, 31, False, 30, 30)
+    alone = play(cfg, iface, ga, gb, [small], run_seed=6, combat_stage=1)
+    mixed = play(cfg, iface, ga, gb, [big, small, big], run_seed=6, combat_stage=1)
+    assert mixed.score[1] == pytest.approx(alone.score[0], abs=1e-5)
+
+
+def test_results_come_back_in_the_order_they_were_asked_for(parts):
+    con, iface, spec = parts
+    cfg = small_cfg(ticks=30)
+    ga = Genome.random(spec, cfg.brain, 1, generator=torch.Generator().manual_seed(23))
+    gb = Genome.random(spec, cfg.brain, 1, generator=torch.Generator().manual_seed(24))
+    ms = [
+        Match(0, 0, 1, False, 20, 20),
+        Match(0, 0, 2, False, 6, 6),
+        Match(0, 0, 3, False, 20, 20),
+    ]
+    res = play(cfg, iface, ga, gb, ms, run_seed=7, combat_stage=1)
+    per_match = [play(cfg, iface, ga, gb, [m], run_seed=7, combat_stage=1).score[0] for m in ms]
+    np.testing.assert_allclose(res.score, per_match, atol=1e-5)
+
+
+def test_sampled_sizes_stay_in_range_and_include_lopsided():
+    from wormwars.evo.coevolve import sample_sizes
+
+    rng = np.random.default_rng(0)
+    pairs = sample_sizes(rng, 200, size_range=(50, 200), lopsided_fraction=0.5)
+    assert all(50 <= a <= 200 and 50 <= b <= 200 for a, b in pairs)
+    assert any(a != b for a, b in pairs), "no lopsided matchups were generated"
+    assert any(a == b for a, b in pairs), "no even matchups were generated"

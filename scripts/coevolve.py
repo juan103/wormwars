@@ -38,6 +38,13 @@ def main():
     ap.add_argument("--worlds", type=int, default=2, help="map seeds per generation")
     ap.add_argument("--stage", type=int, default=1, choices=(1, 2))
     ap.add_argument("--lopsided", action="store_true")
+    ap.add_argument(
+        "--vary-sizes", action="store_true",
+        help="draw headcounts per generation from --size-range instead of using --size, including "
+             "lopsided matchups (each played with the headcounts swapped as well)",
+    )
+    ap.add_argument("--size-range", type=int, nargs=2, default=(50, 200))
+    ap.add_argument("--size-pairs", type=int, default=2)
     ap.add_argument("--graph", default="N2")
     ap.add_argument("--out", default="runs/m7")
     ap.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
@@ -52,6 +59,9 @@ def main():
     cfg.evo.coevo_worlds = args.worlds
     cfg.evo.coevo_sizes = (args.size, args.size)
     cfg.evo.coevo_lopsided = args.lopsided
+    cfg.evo.coevo_vary_sizes = args.vary_sizes
+    cfg.evo.coevo_size_range = tuple(args.size_range)
+    cfg.evo.coevo_size_pairs = args.size_pairs
 
     con = load_connectome()
     iface = load_interface(con)
@@ -64,7 +74,10 @@ def main():
     print(con.summary())
     print(
         f"coevolution stage {args.stage}: {args.runs} runs x {args.generations} generations, "
-        f"population {args.population}, {args.size}v{args.size}, {args.ticks} ticks, "
+        f"population {args.population}, "
+        + (f"sizes {args.size_range[0]}-{args.size_range[1]} ({args.size_pairs} pairs/generation, "
+           f"lopsided included), " if args.vary_sizes else f"{args.size}v{args.size}, ")
+        + f"{args.ticks} ticks, "
         f"{args.worlds} map seeds/generation on {args.device}"
     )
 

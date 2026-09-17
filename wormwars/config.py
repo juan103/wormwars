@@ -173,8 +173,14 @@ class EvoConfig:
     opponents_self: int = 3  # opponents drawn from the current population
     opponents_hof: int = 2  # opponents drawn from this run's hall of fame
     coevo_worlds: int = 2  # map seeds per generation (each played from both sides)
-    coevo_sizes: tuple[int, int] = (40, 40)
+    coevo_sizes: tuple[int, int] = (40, 40)  # used when coevo_vary_sizes is false
     coevo_lopsided: bool = False  # also play headcount-swapped copies
+    # Standard fights are 100v100; across worlds sizes vary in this range, including lopsided
+    # matchups. Arena area scales with headcount so starting density is unchanged.
+    coevo_vary_sizes: bool = False
+    coevo_size_range: tuple[int, int] = (50, 200)
+    coevo_size_pairs: int = 2  # distinct headcount pairs per generation
+    coevo_lopsided_fraction: float = 0.5
     hof_capacity: int = 12
     suite_every: int = 5  # generations between frozen-suite evaluations
     suite_size: int = 6
