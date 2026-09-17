@@ -91,3 +91,43 @@ They differ only in how they are wired, which is precisely the variable under te
 Motors read the bounded output `tanh(v)`, not the raw voltage, so forward drive and turn are bounded
 by construction and cannot be driven by a neuron running away to large |v|. Pump is
 `sigmoid(gain * mean(tanh(v_MC)))` with gain 4.0, so the full [0,1] range is reachable.
+
+## D011 — dt and substeps chosen by measured refinement, not by stability (M2)
+
+Measured relative deviation between `substeps` and a 512-substep reference, over 40 ticks, max over
+neurons, normalised by max|v| of the reference:
+
+| genome | substeps=2 | 4 | 8 | 16 |
+|---|---|---|---|---|
+| random | 0.0423 | 0.0176 | 0.0083 | 0.0040 |
+| extreme (every bound saturated) | 0.0127 | 0.00021 | 0.00001 | 0.00001 |
+| all tau at tau_min, all G at g_max | 0.00054 | 0.00002 | 0.00001 | 0.00002 |
+
+The scheme converges at first order (error halves per halving of dt), as expected.
+
+Two things worth recording because they are counter-intuitive:
+
+- The *extreme* corner is not the hard case. With every bound saturated, neurons slam into a fixed
+  point within a tick or two and every dt agrees. The hard case is a **random** genome with tau
+  spread across the allowed decade and a half, where the trajectory is genuinely transient.
+- Raising `tau_min` therefore does **not** improve accuracy. Measured: at substeps=4 the random-genome
+  error is 0.0176 at tau_min=0.5, 0.0303 at tau_min=1.0 and 0.0328 at tau_min=2.0. Slower neurons
+  mean longer transients, and longer transients mean more accumulated dt error.
+
+Chosen: **substeps = 8, dt = 0.125, tau in [0.5, 20] ticks**, worst-case relative deviation 0.83%.
+substeps=4 would be twice as fast at 1.76%. The 2x compute is worth it for a tool whose conclusions
+depend on the trajectories, and the brain is not the dominant cost of a tick.
+
+## D012 — Dense masked matmul beats sparse, measured (M2)
+
+At 6.46% mask density, one strain, 4096 weys, RTX 5080: dense `bmm` 0.467 ms/tick vs sparse CSR
+`torch.sparse.mm` 2.513 ms/tick. **Dense is 5.4x faster**, so dense it is. The genome still stores
+only the 5 404 values on the mask; dense matrices are materialised for the forward pass.
+
+## D013 — Brains are batched per strain, not per world (M2)
+
+The spec suggests weights shaped `[worlds, swarms, 302, 302]`. Since every wey in a swarm shares one
+genome and many worlds run the same strain, the implementation uses `[strains, 302, 302]` with the
+caller mapping (world, swarm) to a strain index. Same computation, but one strain's weights are
+materialised once regardless of how many worlds use it. Measured throughput with this layout:
+5-6 M wey-ticks/s (e.g. 64 strains x 2048 weys = 131 072 weys at 26.3 ms/tick, 1.29 GB peak VRAM).
