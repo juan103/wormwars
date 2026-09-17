@@ -1,0 +1,50 @@
+[
+  {
+    "run": 0,
+    "run_seed": 1000,
+    "champion_holdout": 1.406486988067627,
+    "random_holdout_mean": 0.4053785800933838,
+    "random_holdout_best_of_pop": 1.0146095752716064,
+    "random_holdout_std": 0.23885847628116608,
+    "champion_alive": 18.46875,
+    "random_alive": 6.2451171875,
+    "champion_eaten": 479.13800048828125,
+    "random_eaten": 111.7753677368164,
+    "wall_seconds": 85.98414019998745,
+    "evaluations": 7680,
+    "champion_id": "N2-run00-g0029-r1",
+    "nickname": "umber-stoat"
+  },
+  {
+    "run": 1,
+    "run_seed": 1001,
+    "champion_holdout": 1.4530212879180908,
+    "random_holdout_mean": 0.46206530928611755,
+    "random_holdout_best_of_pop": 1.1766782999038696,
+    "random_holdout_std": 0.2794327735900879,
+    "champion_alive": 15.96875,
+    "random_alive": 6.87890625,
+    "champion_eaten": 466.9125061035156,
+    "random_eaten": 125.86740112304688,
+    "wall_seconds": 84.52301420000731,
+    "evaluations": 7680,
+    "champion_id": "N2-run01-g0029-r1",
+    "nickname": "placid-jackdaw"
+  },
+  {
+    "run": 2,
+    "run_seed": 1002,
+    "champion_holdout": 1.375570297241211,
+    "random_holdout_mean": 0.45539605617523193,
+    "random_holdout_best_of_pop": 1.0261998176574707,
+    "random_holdout_std": 0.26869484782218933,
+    "champion_alive": 18.0625,
+    "random_alive": 6.796875,
+    "champion_eaten": 443.4803466796875,
+    "random_eaten": 124.62666320800781,
+    "wall_seconds": 85.29297229999793,
+    "evaluations": 7680,
+    "champion_id": "N2-run02-g0029-r1",
+    "nickname": "wild-skua"
+  }
+]

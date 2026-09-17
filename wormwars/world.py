@@ -200,6 +200,8 @@ class World:
         self.energy = torch.full_like(self.heading, wcfg.start_energy)
         self.alive = torch.ones_like(self.heading, dtype=torch.bool)
         self.pump = torch.zeros_like(self.heading)
+        self.last_damage_taken = torch.zeros_like(self.heading)
+        self.last_damage_dealt = torch.zeros_like(self.heading)
         self.v = brain.initial_state(self.assign.pairs_per_strain * self.n_weys)
         self.ledger = Ledger.zeros(self.n_worlds, self.device)
         self.tick_count = 0
@@ -527,8 +529,87 @@ class World:
         self.fields[:, ch.FOOD] = food - taken * share
         self.fields[:, ch.PELLET] = pellet - taken * (1.0 - share)
 
-    def _combat(self) -> None:  # filled in at milestone 6
-        raise NotImplementedError("combat arrives in milestone 6")
+    def bite_points(self) -> Tensor:
+        """[worlds, swarms, weys, 2] -- the cell just ahead of each head, where the bite lands."""
+        off = self.cfg.combat.attack_offset
+        c, s = torch.cos(self.heading), torch.sin(self.heading)
+        return self.pos + torch.stack((c, s), dim=-1) * off
+
+    def _combat(self) -> None:
+        """Stage 1: automatic biting. Stage 2: the deposit is scaled by pump intensity.
+
+        Energy accounting. A victim loses exactly `capped` energy, capped at what it has left. The
+        attacking swarm collects that damage back through the adjoint of the attack blur, and
+        `transfer_fraction` of what it collects becomes energy. Everything a victim lost that did
+        not end up in an attacker is booked as `ledger.inefficiency`, so the books balance whatever
+        the geometry does.
+        """
+        ccfg, wcfg, ch = self.cfg.combat, self.cfg.world, self.ch
+        n_sw, Wd, B = self.n_swarms, self.n_worlds, self.n_weys
+        alive_f = self.alive.to(self.dtype)
+
+        # 1. deposit, one cell ahead of each head, on the attacker's own attack channel
+        deposit = torch.zeros(Wd, n_sw, self.H, self.W, device=self.device, dtype=self.dtype)
+        strength = ccfg.attack_strength * alive_f
+        if self.combat_stage >= 2:
+            strength = strength * self.pump
+        bite = self.bite_points()
+        for s in range(n_sw):
+            splat_into(deposit, s, bite[:, s], strength[:, s])
+
+        # 2. a very light blur, symmetric and normalised so it is its own adjoint
+        blurred = blur(deposit, ccfg.attack_blur)
+        self.fields[:, ch.ATTACK : ch.ATTACK + n_sw] = blurred
+
+        # 3. every wey samples every attack field at head, mid and tail
+        body = self.body_points()  # [Wd, S*B*3, 2]
+        sampled = sample_nearest(blurred, body).reshape(Wd, n_sw, n_sw, B, len(BODY_POINTS))
+        # sampled[w, src, victim_swarm, wey, point]
+        armor = torch.tensor(
+            [ccfg.head_armor, 1.0, 1.0], device=self.device, dtype=self.dtype
+        ).view(1, 1, 1, 1, 3)
+        # damage a victim would take from each attacking swarm, before capping
+        raw_per_src = ccfg.damage_k * (sampled * armor)  # [Wd, src, victim, wey, point]
+        own = torch.arange(n_sw, device=self.device)
+        raw_per_src[:, own, own] = 0.0  # no friendly fire
+        raw_point = raw_per_src.sum(dim=1)  # [Wd, victim, wey, point]
+        raw_total = raw_point.sum(dim=-1) * alive_f  # [Wd, victim, wey]
+
+        # 4. cap at the victim's remaining energy, then take it
+        capped = torch.minimum(raw_total, self.energy)
+        scale = torch.where(raw_total > 0, capped / raw_total.clamp_min(1e-12), torch.zeros_like(capped))
+        self.energy -= capped
+        self.last_damage_taken = capped
+
+        # 5. bite credit. Splat each victim's capped per-point damage, attributed to the attacking
+        #    swarm that caused it, onto that swarm's damage-received grid.
+        received = torch.zeros_like(deposit)
+        share = scale.unsqueeze(-1).unsqueeze(1)  # [Wd, 1, victim, wey, 1]
+        capped_per_src = raw_per_src * share * alive_f.unsqueeze(1).unsqueeze(-1)
+        for s in range(n_sw):
+            splat_into(received, s, body, capped_per_src[:, s].reshape(Wd, -1))
+        # 6. the adjoint of step 2 is the same blur, because the kernel is symmetric
+        credit = blur(received, ccfg.attack_blur)
+
+        # 7. each attacker collects from its own bite cell, in proportion to its share of the
+        #    deposit there
+        credit_at = sample_nearest(credit, bite.reshape(Wd, -1, 2)).reshape(Wd, n_sw, n_sw, B)
+        deposit_at = sample_nearest(deposit, bite.reshape(Wd, -1, 2)).reshape(Wd, n_sw, n_sw, B)
+        mine = torch.arange(n_sw, device=self.device)
+        credit_mine = credit_at[:, mine, mine]  # [Wd, swarm, wey]
+        deposit_mine = deposit_at[:, mine, mine]
+        collected = torch.where(
+            deposit_mine > 0,
+            credit_mine * strength / deposit_mine.clamp_min(1e-12),
+            torch.zeros_like(credit_mine),
+        )
+        gain = ccfg.transfer_fraction * collected
+        headroom = (wcfg.max_energy - self.energy).clamp_min(0.0)
+        gain = torch.minimum(gain, headroom) * alive_f
+        self.energy += gain
+        self.last_damage_dealt = collected
+        # everything the victims lost that did not arrive anywhere is the stated inefficiency
+        self.ledger.inefficiency += (capped.sum(dim=(1, 2)) - gain.sum(dim=(1, 2))).double()
 
     def _reap(self) -> None:
         """A wey with no energy dies and leaves a pellet worth its body mass."""

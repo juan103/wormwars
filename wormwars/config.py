@@ -62,7 +62,7 @@ class WorldConfig:
     min_side: int = 24
 
     # --- body and movement ---
-    body_length: float = 1.6  # head to tail; mid point sits halfway
+    body_length: float = 2.4  # head to tail; mid point sits halfway (tuned by the flank tests)
     max_speed: float = 0.35  # cells per tick at full forward drive
     reverse_fraction: float = 0.4  # backward drive is this much of forward
     max_turn: float = 0.30  # radians per tick at full turn drive
@@ -131,6 +131,9 @@ class CombatConfig:
     damage_k: float = 0.55  # damage per unit of sampled enemy attack
     head_armor: float = 0.25  # the head samples count this much
     transfer_fraction: float = 0.5  # of capped damage, this much reaches the attacker
+    # The flank targets the scripted-geometry tests enforce (DECISIONS.md D019).
+    max_flank_payback: float = 0.10  # a T-boned or rear-bitten wey may deal back at most this
+    max_head_on_asymmetry: float = 1.5  # head-on must be within this factor of an even trade
     pump_cost: float = 0.10  # energy per tick at full pump (stage 2)
 
 

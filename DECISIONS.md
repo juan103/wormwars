@@ -183,3 +183,53 @@ Senses use bilinear sampling so gradients are smooth and climbable. Everything o
 (attack deposit, damage sampling, bite credit) uses nearest-cell, because the bite-credit rule needs
 the splat to be the *exact* adjoint of the sample, and nearest-cell splat/sample are exactly adjoint
 by construction. `tests/test_fields.py` asserts the adjoint identity directly.
+
+## D019 — The flank rule, measured and then tuned (M6)
+
+The flank rule is a hypothesis about geometry, so it was measured before being believed.
+
+**First attempt** (`body_length = 1.6`, `attack_offset = 0.9`, `attack_blur = 1`), exact lattice
+positions: T-boned payback **0.556**, head-on asymmetry **5.0**. Both bad. The body was smaller than
+the 3x3 blur, so a flanked wey's own bite cell reached back onto its attacker.
+
+**The measurement was also wrong.** Placing weys on exact lattice coordinates measures the cell
+grid's phase, not the geometry: weys move continuously and never sit on lattice points. Duels are
+now averaged over a grid of sub-cell offsets applied to *both* weys, which leaves the relative pose
+untouched and averages out the phase. Ratios are only taken at gaps where a fight is actually
+happening (the victim takes at least half the peak damage for that pose); at long gaps the numbers
+are lattice noise.
+
+**Chosen**: `body_length = 2.4`, `attack_offset = 0.9`, `attack_blur = 1`, `head_armor = 0.25`,
+`damage_k = 0.55`. Measured, 8x8 sub-cell phases, damage per tick:
+
+| gap | head-on A / B | T-bone A / B | rear A / B |
+|---|---|---|---|
+| 0.40 | 0.0764 / 0.0840 | **0.0000** / 0.1203 | **0.0000** / 0.1241 |
+| 0.90 | 0.0611 / 0.0687 | **0.0000** / 0.1203 | **0.0000** / 0.1146 |
+| 1.40 | 0.0306 / 0.0382 | **0.0000** / 0.1203 | **0.0000** / 0.0840 |
+| 1.90 | 0.0153 / 0.0153 | **0.0000** / 0.1203 | **0.0000** / 0.0611 |
+
+- **T-boned payback: 0.000.** **Rear-bitten payback: 0.000.** (limit `max_flank_payback` = 0.10)
+- **Head-on asymmetry: 1.17** (limit `max_head_on_asymmetry` = 1.5), and head-on peaks at 0.084
+  damage against 0.120 for a flank -- so head-on is both even *and* weak, which is the point.
+  Flanking is a **1.43x** better trade before counting that it costs nothing.
+
+An alternative that also passed the ratios, `body_length = 1.6, attack_offset = 1.2`, was rejected:
+its head-on damage (0.1375) equalled its flank damage, so head-on was even but not *weak*.
+
+At 0.12 damage/tick a continuously flanked wey dies in about 100 ticks; a head-on grind takes about
+170. Crowding was re-checked at the longer body: a maximally packed swarm still disperses (max
+density 3.89 -> 1.44, spread 0.03 -> 2.45 cells in 120 ticks).
+
+**Cost of this choice:** the milestone-4 numbers were measured at `body_length = 1.6`. They are
+re-run at the final configuration rather than left stale.
+
+## D020 — Bite credit follows the spec's rule, and the residue is booked honestly (M6)
+
+Each attacker collects `(its deposit / the cell's total deposit) x blur(damage_received)[its bite
+cell]`. Because the blurred damage grid also has mass on cells where nobody deposited, the total
+collected is slightly less than the total damage dealt. That shortfall is not swept anywhere: the
+inefficiency sink is defined as `damage taken by victims - energy gained by attackers`, so it
+absorbs both the configured `transfer_fraction` loss and this geometric residue, and the energy
+ledger balances exactly whatever the geometry does. Energy that would push an attacker past
+`max_energy` is also booked there rather than silently created or dropped.
