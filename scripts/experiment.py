@@ -28,6 +28,7 @@ import torch
 _sys.path.insert(0, str(_Path(__file__).resolve().parents[1]))
 
 from wormwars.analysis import area_under_curve, compare, hierarchical_bootstrap, per_graph_table
+from wormwars import calibration as calib
 from wormwars.brain import BrainSpec
 from wormwars.config import Config
 from wormwars.connectome import load_connectome
@@ -52,6 +53,12 @@ def main():
     ap.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
     ap.add_argument("--base-seed", type=int, default=20000)
     ap.add_argument("--conditions", default=",".join(CONDITIONS))
+    ap.add_argument(
+        "--calibrate", action="store_true",
+        help="match each graph's motor gain so a random population produces the same mean "
+             "|forward| and |turn| as N2 at the hand-chosen gain. Removes a nuisance variable "
+             "(raw read-out scale) that is not the claim under test. See wormwars/calibration.py.",
+    )
     args = ap.parse_args()
 
     cfg = Config()
@@ -73,6 +80,25 @@ def main():
     # N2 has one graph but must end up with the same number of runs as the others
     runs_per_graph = {c: (args.k * args.runs if c == "N2" else args.runs) for c in conditions}
 
+    # Motor gain calibration, if asked for. N2 is the reference, so N2's own behaviour is
+    # unchanged and only the controls move.
+    cfg_for: dict[str, Config] = {}
+    calibrations: dict[str, dict] = {}
+    if args.calibrate:
+        ref = calib.reference_from(con, cfg, iface)
+        print(f"calibrating motor gains to N2: |forward| {ref[0]:.4f}, |turn| {ref[1]:.4f}")
+        for cond, gl in graphs.items():
+            for g in gl:
+                c = calib.calibrate(g, cfg, iface, reference=ref)
+                cfg_for[g.label] = calib.apply(cfg, c)
+                calibrations[g.label] = c.as_dict()
+                print(f"  {g.label:<5} raw |fwd| {c.raw_forward:.4f} -> gain {c.forward_gain:.3f}; "
+                      f"raw |turn| {c.raw_turn:.4f} -> gain {c.turn_gain:.3f}")
+    else:
+        for gl in graphs.values():
+            for g in gl:
+                cfg_for[g.label] = cfg
+
     graph_meta = {}
     for cond, gl in graphs.items():
         for g in gl:
@@ -84,6 +110,7 @@ def main():
                 "chem_weight_sum": d["chem_weight_sum"],
                 "self_loops": d["self_loops"],
                 "chem_in_degree_sd": float(d["chem_in_degree"].std()),
+                "calibration": calibrations.get(g.label),
             }
     write_bundle(out, cfg, con, graphs=graph_meta,
                  extra={"script": "experiment.py", "args": vars(args)})
@@ -102,15 +129,16 @@ def main():
     for cond in conditions:
         for graph in graphs[cond]:
             spec = BrainSpec.from_connectome(graph, device=args.device)
+            gcfg = cfg_for[graph.label]
             for r in range(runs_per_graph[cond]):
                 seed_counter += 1
                 t0 = time.perf_counter()
                 res = evolve(
-                    cfg, iface, spec, run=r, run_seed=seed_counter, device=args.device,
+                    gcfg, iface, spec, run=r, run_seed=seed_counter, device=args.device,
                     out_dir=out, holdout_every=max(1, args.generations // 5), verbose=False,
                 )
-                pool = SeedPool(cfg, seed_counter)
-                held = rollout(cfg, iface, res.champion, pool.holdout, seed_counter, args.device)
+                pool = SeedPool(gcfg, seed_counter)
+                held = rollout(gcfg, iface, res.champion, pool.holdout, seed_counter, args.device)
                 hist = res.history()
                 rec = {
                     "condition": cond,
@@ -136,10 +164,10 @@ def main():
                 )
 
     (out / "records.json").write_text(json.dumps(records, indent=2), encoding="utf-8")
-    report(records, out, time.perf_counter() - t_all)
+    report(records, out, time.perf_counter() - t_all, calibrated=args.calibrate)
 
 
-def report(records, out: _Path, wall: float) -> None:
+def report(records, out: _Path, wall: float, calibrated: bool = False) -> None:
     by_cond: dict[str, dict[str, list[float]]] = defaultdict(lambda: defaultdict(list))
     auc_cond: dict[str, dict[str, list[float]]] = defaultdict(lambda: defaultdict(list))
     per_hour: dict[str, dict[str, list[float]]] = defaultdict(lambda: defaultdict(list))
@@ -149,6 +177,16 @@ def report(records, out: _Path, wall: float) -> None:
         per_hour[r["condition"]][r["graph"]].append(r["holdout"] / (r["seconds"] / 3600))
 
     lines = ["# N2 / SH / RD comparison", ""]
+    lines.append(
+        "**Motor gains are calibrated per graph** (each graph's random population produces the "
+        "same mean |forward| and |turn| as N2 does at the hand-chosen gain), so this compares "
+        "control rather than raw read-out scale."
+        if calibrated else
+        "**Motor gains are NOT calibrated**: every graph uses the single hand-chosen gain, which "
+        "was tuned on N2. Graphs whose wiring happens to drive the read-out harder start out "
+        "moving more. See `wormwars/calibration.py`."
+    )
+    lines.append("")
     lines.append(f"Total wall time {wall / 3600:.3f} h over {len(records)} runs.")
     lines.append("")
     lines.append("Scores are held-out foraging score (surviving swarm energy / starting energy),")

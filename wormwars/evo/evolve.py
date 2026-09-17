@@ -190,7 +190,7 @@ def _breed_islands(genome, fit, island_of, cfg, gen_t) -> Genome:
     parts = []
     for isl in range(cfg.evo.islands):
         idx = np.flatnonzero(island_of == isl)
-        sub_cfg = Config(**{**cfg.to_dict()})
+        sub_cfg = cfg.copy()
         sub = genome.select(list(idx))
         sub_cfg.evo.population = len(idx)
         sub_cfg.evo.elites = max(1, cfg.evo.elites // cfg.evo.islands)

@@ -38,6 +38,11 @@ def main():
     ap.add_argument("--out", default="runs/m4")
     ap.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
     ap.add_argument("--base-seed", type=int, default=1000)
+    ap.add_argument(
+        "--stage", type=int, default=0, choices=(0, 2),
+        help="0: eating is automatic. 2: eating demand is gated on pump intensity and pumping costs "
+             "energy, so a forager must learn to open its mouth as well as find food.",
+    )
     args = ap.parse_args()
 
     cfg = Config()
@@ -57,7 +62,7 @@ def main():
 
     print(con.summary())
     print(
-        f"population {cfg.evo.population}, {cfg.evo.generations} generations, "
+        f"stage {args.stage}, population {cfg.evo.population}, {cfg.evo.generations} generations, "
         f"{cfg.evo.worlds_per_strain} worlds/strain, {cfg.world.max_ticks} ticks, "
         f"device {args.device}"
     )
@@ -67,7 +72,8 @@ def main():
         run_seed = args.base_seed + run
         t0 = time.perf_counter()
         res = evolve(cfg, iface, spec, run=run, run_seed=run_seed, device=args.device,
-                     out_dir=out, holdout_every=max(1, args.generations // 6))
+                     combat_stage=args.stage, out_dir=out,
+                     holdout_every=max(1, args.generations // 6))
         pool = SeedPool(cfg, run_seed)
 
         # --- the comparison: champion vs random-weight weys, same held-out worlds ---
@@ -75,8 +81,10 @@ def main():
         baseline = Genome.random(
             spec, cfg.brain, cfg.evo.population, generator=gen_r, device=args.device
         )
-        champ = rollout(cfg, iface, res.champion, pool.holdout, run_seed, args.device)
-        base = rollout(cfg, iface, baseline, pool.holdout, run_seed, args.device)
+        champ = rollout(cfg, iface, res.champion, pool.holdout, run_seed, args.device,
+                        combat_stage=args.stage)
+        base = rollout(cfg, iface, baseline, pool.holdout, run_seed, args.device,
+                       combat_stage=args.stage)
         base_per_strain = base.per_strain()
 
         row = {

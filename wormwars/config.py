@@ -216,6 +216,11 @@ class Config:
     def to_dict(self) -> dict[str, Any]:
         return dataclasses.asdict(self)
 
+    def copy(self) -> "Config":
+        """A deep copy. `Config(**cfg.to_dict())` does NOT work: asdict flattens the sections to
+        plain dicts, so the sections have to be rebuilt."""
+        return Config.from_dict(dataclasses.asdict(self))
+
 
 def _resolve(f: dataclasses.Field) -> type:
     # dataclass field types are strings under `from __future__ import annotations`

@@ -85,7 +85,7 @@ def duel(
 ) -> DuelResult:
     """One combat step between two weys in a scripted pose, brains bypassed."""
     cfg = cfg or Config()
-    cfg = Config(**cfg.to_dict()) if not isinstance(cfg, Config) else cfg
+    cfg = cfg if isinstance(cfg, Config) else Config.from_dict(cfg)
     wcfg = cfg.world
     saved_swarms, saved_weys = wcfg.n_swarms, wcfg.weys_per_swarm
     wcfg.n_swarms, wcfg.weys_per_swarm = 2, 1
