@@ -1,0 +1,64 @@
+# Sensor and motor interface.
+#
+# EVERY ENTRY HERE IS A MODELLING CHOICE, NOT A BIOLOGICAL FACT. The neurons below are named
+# because the real worm uses them for something loosely analogous, but what they receive here is a
+# game quantity invented for this game, and the read-outs are linear combinations chosen by hand.
+# The experiment tests this interface together with the wiring; it does not test the biology.
+#
+# Only individual neuron names appear here. Class names are never used: if a neuron is missing from
+# the dataset the interface fails loudly rather than substituting a sibling.
+#
+# Read-out and injection both use the neuron's bounded output tanh(v), not the raw voltage.
+
+# Bilateral sampling geometry, in world units (see WorldConfig.cell_size for scale).
+sampling:
+  forward_offset: 0.6   # sample points sit this far ahead of the head
+  lateral_offset: 0.5   # ... and this far to each side of the heading
+
+sensors:
+  # --- food scent, left and right of the head ---
+  # All three pairs receive the same left/right food concentration. They differ only in how they
+  # are wired, which is exactly the variable under test.
+  - {signal: food_left,            neurons: [AWAL], gain: 1.0}
+  - {signal: food_right,           neurons: [AWAR], gain: 1.0}
+  - {signal: food_left,            neurons: [AWCL], gain: 1.0}
+  - {signal: food_right,           neurons: [AWCR], gain: 1.0}
+  - {signal: food_left,            neurons: [ASEL], gain: 1.0}
+  - {signal: food_right,           neurons: [ASER], gain: 1.0}
+
+  # --- teammate pheromone ---
+  - {signal: ally_pheromone_left,  neurons: [ASKL], gain: 1.0}
+  - {signal: ally_pheromone_right, neurons: [ASKR], gain: 1.0}
+
+  # --- enemy pheromone ---
+  - {signal: enemy_pheromone_left, neurons: [ADLL], gain: 1.0}
+  - {signal: enemy_pheromone_right,neurons: [ADLR], gain: 1.0}
+
+  # --- hazard heat ---
+  - {signal: hazard_left,          neurons: [AFDL], gain: 1.0}
+  - {signal: hazard_right,         neurons: [AFDR], gain: 1.0}
+
+  # --- damage taken, left and right, so that "turn towards what bit you" is learnable ---
+  - {signal: damage_left,          neurons: [ASHL], gain: 1.0}
+  - {signal: damage_right,         neurons: [ASHR], gain: 1.0}
+
+  # --- front collision: left, right and centre ---
+  - {signal: collision_front_left, neurons: [ALML], gain: 1.0}
+  - {signal: collision_front_right,neurons: [ALMR], gain: 1.0}
+  - {signal: collision_front,      neurons: [AVM],  gain: 1.0}
+
+  # --- rear collision ---
+  - {signal: collision_rear_left,  neurons: [PLML], gain: 1.0}
+  - {signal: collision_rear_right, neurons: [PLMR], gain: 1.0}
+
+motors:
+  forward:
+    plus:  [AVBL, AVBR, PVCL, PVCR]
+    minus: [AVAL, AVAR, AVDL, AVDR, AVEL, AVER]
+  turn:
+    plus:  [SMDDL, SMDDR, RMDDL, RMDDR]   # -> one side in 2D
+    minus: [SMDVL, SMDVR, RMDVL, RMDVR]   # -> the other
+  pump:
+    neurons: [MCL, MCR]
+    squash: sigmoid    # mean(tanh(v)) -> sigmoid(pump_gain * mean) in [0, 1]
+    gain: 4.0

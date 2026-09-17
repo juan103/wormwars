@@ -57,3 +57,37 @@ The sheets include body-wall muscles, pharyngeal muscles, and end organs as colu
 is 302×302 over neurons only, so those columns are dropped. The motor read-out is taken from neuron
 voltages, not from muscle cells. Recorded because it discards real anatomy: the weys' motor output
 is a linear read of named motor neurons, and the muscle layer is not simulated.
+
+## D007 — Autapses kept, gap self-edges dropped (M1)
+
+The published chemical matrix has 38 autapses (117 EM sections in total). They are kept: they are
+real published entries and `W_ii * tanh(v_i)` is a genuine dynamical term, not an artifact. To keep
+the conditions matched, SH and RD graphs are allowed self-loops too.
+
+The gap sheet has 14 self-entries. Those are dropped, because `G_ii * (v_i - v_i)` is identically
+zero in the model; keeping them would only corrupt the implicit denominator of the integrator.
+
+## D008 — Observation: the pharynx hangs off a two-neuron bridge (M1)
+
+Measured, not assumed: the only wiring between the somatic and pharyngeal nervous systems is the
+gap junction pair `I1L-RIPL` and `I1R-RIPR` (weight 2 each), plus one chemical synapse `M1 -> RIPL`.
+Since the pump read-out is `MCL`/`MCR`, all pump control in N2 must pass through that bridge, while
+SH/RD shuffles will connect the pharynx to the body broadly. This is a structural prediction, not a
+bug: if SH/RD beat N2 specifically at pump-gated eating (milestone 8), this is the first suspect.
+Recorded now so it cannot be rationalised after the fact.
+
+## D009 — Bilateral sensors are directional wherever it is free (M1)
+
+The spec pairs sensors left/right. Damage (`ASHL`/`ASHR`) and collisions (`ALML`/`ALMR`/`AVM`,
+`PLML`/`PLMR`) are sampled at the same left/right offsets as the chemical senses rather than being
+scalar broadcasts. It costs nothing (the bilateral sampling machinery already exists) and it makes
+"turn to face what bit you" learnable, which milestone 10 measures. `AVM` gets the centre sample.
+
+The three food pairs (`AWA`, `AWC`, `ASE`) all receive the *same* left/right food concentration.
+They differ only in how they are wired, which is precisely the variable under test.
+
+## D010 — Read-out and injection both use tanh(v) (M1)
+
+Motors read the bounded output `tanh(v)`, not the raw voltage, so forward drive and turn are bounded
+by construction and cannot be driven by a neuron running away to large |v|. Pump is
+`sigmoid(gain * mean(tanh(v_MC)))` with gain 4.0, so the full [0,1] range is reachable.
