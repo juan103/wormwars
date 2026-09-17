@@ -246,6 +246,37 @@ class Brain:
         self.bias = genome.bias
         self.c = self.cfg.dt / self.tau  # [S, N]
         self.den = 1.0 + self.c * (1.0 + self.g_row)  # [S, N], constant across ticks
+        # Optional per-strain silencing mask, [S, 1, N] of 1.0 (alive) / 0.0 (silenced). Kept per
+        # strain so that dozens of different ablations of the same champion run in one batch.
+        self.silence_mask: Tensor | None = None
+
+    def silence(self, per_strain: list[list[int]] | None) -> "Brain":
+        """Clamp the named neurons to zero after every substep, one neuron list per strain.
+
+        A silenced neuron emits tanh(0) = 0 and contributes nothing to the gap coupling, which is
+        the cleanest definition of "this cell is not participating" in a rate model.
+        """
+        if per_strain is None:
+            self.silence_mask = None
+            return self
+        if len(per_strain) != self.n_strains:
+            raise ValueError(f"{len(per_strain)} ablations for {self.n_strains} strains")
+        mask = torch.ones(self.n_strains, 1, self.n, device=self.device, dtype=self.W.dtype)
+        for s, idx in enumerate(per_strain):
+            if idx:
+                mask[s, 0, torch.as_tensor(list(idx), device=self.device)] = 0.0
+        self.silence_mask = mask
+        return self
+
+    def cut_gap(self, pairs: list[list[tuple[int, int]]]) -> "Brain":
+        """Zero specific gap junctions per strain, e.g. the RIP-I1 bridge. Symmetric, in place."""
+        for s, plist in enumerate(pairs):
+            for i, j in plist:
+                self.G[s, i, j] = 0.0
+                self.G[s, j, i] = 0.0
+        self.g_row = self.G.sum(dim=2)
+        self.den = 1.0 + self.c * (1.0 + self.g_row)
+        return self
 
     @property
     def n_strains(self) -> int:
@@ -275,10 +306,13 @@ class Brain:
         den = den.unsqueeze(1)
         drive = self.bias.unsqueeze(1) + current  # [S, B, N]
         Wt = self.W.transpose(1, 2)  # so that (tanh v) @ Wt gives sum_j W_ij tanh(v_j)
+        mask = self.silence_mask
         for _ in range(k):
             chem = torch.bmm(torch.tanh(v), Wt)
             gap = torch.bmm(v, self.G)  # G symmetric, so no transpose needed
             v = (v + c * (drive + chem + gap)) / den
+            if mask is not None:
+                v = v * mask
         return v
 
     def activity(self, v: Tensor) -> Tensor:

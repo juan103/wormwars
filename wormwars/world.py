@@ -497,6 +497,16 @@ class World:
         forward, turn, pump = self._read_motors(v_world)
         self.pump = pump * alive_f
 
+        # tactics: did a wey that is being bitten turn toward the side the bite came from?
+        # Heading increases toward the left-hand normal, so turn > 0 means turning left.
+        dl, dr = signals["damage_left"], signals["damage_right"]
+        eps = 1e-6
+        asked = (dl + dr > eps) & ((dl - dr).abs() > eps) & (turn.abs() > eps) & self.alive
+        toward = asked & (torch.sign(dl - dr) == torch.sign(turn))
+        self.turn_toward_damage += torch.stack(
+            (toward.sum().double(), asked.sum().double())
+        )
+
         # 3. act: turn, then move, resisted and deflected by crowding, blocked by walls
         self.heading = (self.heading + wcfg.max_turn * turn * alive_f) % (2 * torch.pi)
         self._points = None

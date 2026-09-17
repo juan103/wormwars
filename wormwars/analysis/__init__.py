@@ -1,3 +1,17 @@
+from .ablation import (
+    EMERGENT_TARGETS,
+    RIP_I1_BRIDGE,
+    AblationSpec,
+    TacticsReport,
+    emergent_checks,
+    evaluate_ablations,
+    implementation_checks,
+    matched_random,
+    profile_correlation,
+    sensitivity,
+    tactics_from_world,
+)
+from .geometry import duel, duel_mean, head_on_asymmetry, sweep, worst_payback
 from .stats import (
     BootstrapResult,
     Comparison,
@@ -8,7 +22,23 @@ from .stats import (
 )
 
 __all__ = [
+    "AblationSpec",
     "BootstrapResult",
+    "EMERGENT_TARGETS",
+    "RIP_I1_BRIDGE",
+    "TacticsReport",
+    "duel",
+    "duel_mean",
+    "emergent_checks",
+    "evaluate_ablations",
+    "head_on_asymmetry",
+    "implementation_checks",
+    "matched_random",
+    "profile_correlation",
+    "sensitivity",
+    "sweep",
+    "tactics_from_world",
+    "worst_payback",
     "Comparison",
     "area_under_curve",
     "compare",

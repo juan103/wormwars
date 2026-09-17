@@ -58,6 +58,7 @@ def rollout(
     chunk_worlds: int | None = None,
     ticks: int | None = None,
     recorder=None,
+    brain_hook=None,
 ) -> RolloutResult:
     """Play every strain on every world id, single swarm.
 
@@ -77,6 +78,9 @@ def rollout(
         hi = min(lo + strains_per_chunk, S)
         sub = genome.select(list(range(lo, hi)))
         brain = Brain(sub)
+        if brain_hook is not None:
+            # lets callers modify the brain per chunk (e.g. apply a different ablation per strain)
+            brain_hook(brain, lo, hi)
         n_sub = hi - lo
         strain_of = torch.arange(n_sub, device=device).repeat_interleave(n_ids).reshape(-1, 1)
         ids = np.tile(world_ids, n_sub)
