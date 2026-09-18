@@ -94,16 +94,16 @@ Implementation checks labelled as such; emergent tests vs matched random ablatio
 ## Milestone 11 — scaling `[x]`
 wey-ticks/s and peak VRAM vs worlds and swarm size; chunked rollouts; then scale.
 
-## Milestone 12 — Minecraft bridge `[ ]` — **blocked on one question**
+## Milestone 12 — Minecraft bridge `[ ]` — **deferred, by request**
 
-Not started. No Minecraft installation was found on this machine (no `.minecraft`, no Bedrock UWP
-package, no CurseForge / Prism / Modrinth / ATLauncher directory), so which edition and mod loader
-to target cannot be decided from here. **Which Minecraft do you use?** Java with Fabric, Java with
-Forge/NeoForge, Bedrock, or something else?
+Not started, and deliberately so. No Minecraft installation exists on this machine (no `.minecraft`,
+no Bedrock UWP package, no CurseForge / Prism / Modrinth / ATLauncher directory), so the edition and
+mod loader could not be determined here, and when asked the answer was to skip it for now.
 
-The Python side is edition-agnostic either way -- a websocket server streaming one chosen world's
-wey positions, headings, energies and states as JSON -- so the answer only decides which
-Minecraft-side client gets written.
+When it is picked up, the split is: the Python side is edition-agnostic -- a websocket server
+streaming one chosen world's wey positions, headings, energies and states as JSON, fed by the
+existing `Recorder` -- and only the Minecraft-side client depends on the answer (a Fabric or
+Forge/NeoForge mod for Java, or the `/connect` websocket command API for Bedrock).
 
 ## Working rules
 
