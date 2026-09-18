@@ -6,7 +6,7 @@
 # NOTE: the git_commit recorded inside each bundle refers to a commit hash from BEFORE the
 # author-identity rewrite. See commit-hash-map.txt in this folder and PROVENANCE.md.
 
-f59c782072da9c602e6e79fec4911c9bd8e42495586d06e80ce2782a8e4df0c3  DECISIONS.md
+83ec4956a427752480096ef2e219930e0987439ae16d9a39e1505d15ced82629  DECISIONS.md
 bb9048556fcac2d312cd5fb5e6050ab535f3a84db73b0bb291cce78604961e2f  PROVENANCE.md
 90264e3cef927085da1bdfeaec552301089ad1810d91c6fb952e648d285eeb9a  RESULTS.md
 310450627bc540ef4feb40da6d418fd09bdce676555ad798245dbd1f77733d71  SUMMARY.md

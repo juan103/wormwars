@@ -68,6 +68,12 @@ def test_every_committed_npz_loads_without_pickle():
 def test_no_committed_genome_reproduces_the_anatomical_weights():
     """An unevolved genome leaks the connectome's weights; an evolved one does not.
 
+    Measured two ways, because normalising by the mean is defeatable. `clamp_(0, g_max)` clips the
+    4 gap junctions of 1091 that start above g_max, which moves mean(g) by ~8% and makes a
+    mean-normalised comparison fail on every entry at once -- reading 0% for a vector that is still
+    99.6% anatomical. Fixing the scale by the median ratio cannot be moved by four entries. Both
+    are checked and the worse answer is the one that counts (DECISIONS.md D028).
+
     Skips cleanly when the connectome has not been fetched, because it needs the real weights to
     compare against and this repository deliberately does not ship them.
     """
@@ -93,12 +99,23 @@ def test_no_committed_genome_reproduces_the_anatomical_weights():
     }
 
     def proportional_fraction(values, reference):
+        """Worst of two scale estimates: the mean, and the median of the per-entry ratio."""
         v = np.abs(np.asarray(values, dtype=np.float64))
-        if v.shape != reference.shape or v.mean() <= 0:
+        if v.shape != reference.shape:
             return 0.0
-        return float(np.isclose(v / v.mean(), reference / reference.mean(), rtol=1e-3).mean())
+        best = 0.0
+        if v.mean() > 0:
+            best = float(
+                np.isclose(v / v.mean(), reference / reference.mean(), rtol=1e-3).mean()
+            )
+        ok = reference > 0
+        if ok.any():
+            scale = float(np.median(v[ok] / reference[ok]))
+            if np.isfinite(scale) and scale > 0:
+                best = max(best, float(np.isclose(v, scale * reference, rtol=1e-3).mean()))
+        return best
 
-    LIMIT = 0.01  # 1%: chance agreement measures 0.0-0.2% across all committed genomes
+    LIMIT = 0.01  # 1%: the worst committed genome measures 0.46% under either normalisation
     offenders = []
     for rel in [f for f in tracked_files() if f.endswith(".npz")]:
         d = np.load(ROOT / rel, allow_pickle=False)
@@ -116,6 +133,154 @@ def test_no_committed_genome_reproduces_the_anatomical_weights():
     assert not offenders, (
         "committed genomes reproduce the connectome's anatomical weights:\n  "
         + "\n  ".join(offenders)
+    )
+
+
+def test_no_committed_file_contains_graph_structure():
+    """Not the genomes -- the GRAPHS: N2's wiring, and the SH and RD controls.
+
+    The proportionality guard above cannot see a control graph. SH carries the real anatomical
+    weights in permuted positions and the real degree sequence, so nothing about it is proportional
+    to anything. This looks for the structures directly, in every tracked file whatever its format:
+
+      * any 302x302 matrix, or any array with 302*302 entries
+      * any integer array of index pairs (an edge list)
+      * any array equal to one of N2's degree sequences, sorted or not
+      * any array whose sorted values are the anatomical weight multiset, up to one scale factor
+
+    The control graphs are built in memory from the fetched connectome plus an integer seed
+    (`wormwars/connectome/graphs.py`, which has no write path). They must never reach a file.
+    """
+    import io
+    import re
+    from collections import Counter
+
+    from wormwars.connectome.loader import DEFAULT_CACHE, N_NEURONS
+
+    N = N_NEURONS
+    refs = {}
+    if DEFAULT_CACHE.exists():  # the anatomy-dependent half of the check
+        from wormwars.connectome import load_connectome
+
+        con = load_connectome()
+        refs["weights"] = {
+            "chemical": np.sort(con.chem[con.chem > 0].astype(np.float64)),
+            "gap": np.sort(con.gap[np.triu(con.gap, 1) > 0].astype(np.float64)),
+        }
+        refs["degrees"] = {
+            "chemical out-degree": (con.chem > 0).sum(1),
+            "chemical in-degree": (con.chem > 0).sum(0),
+            "gap degree": (con.gap > 0).sum(1),
+        }
+        n_chem = int((con.chem > 0).sum())
+        n_gap = int((np.triu(con.gap, 1) > 0).sum())
+        refs["edge_counts"] = {n_chem, n_gap, 2 * n_chem, 2 * n_gap}
+
+    def numeric_arrays(rel, raw):
+        """Every numeric array in one file, whatever the format."""
+        if raw[:4] == b"PK\x03\x04":
+            with np.load(io.BytesIO(raw), allow_pickle=False) as d:
+                return [(k, np.asarray(d[k])) for k in d.files if d[k].dtype.kind in "fiub"]
+        if raw[:6] == b"\x93NUMPY":
+            a = np.load(io.BytesIO(raw), allow_pickle=False)
+            return [("<npy>", a)] if a.dtype.kind in "fiub" else []
+        try:
+            text = raw.decode("utf-8")
+        except UnicodeDecodeError:
+            return []
+        found = []
+        if rel.endswith((".json", ".cff", ".ipynb")):
+            try:
+                obj = json.loads(text)
+            except ValueError:
+                obj = None
+            if obj is not None:
+
+                def numeric(x):
+                    return isinstance(x, (int, float)) and not isinstance(x, bool)
+
+                def rectangular(o):
+                    """A numeric list, or a list of equal-length numeric lists: one array.
+
+                    `[[i, j], [i, j], ...]` is an edge list and `[[...302...], ...]` is a matrix.
+                    Without this they decompose into thousands of length-2 rows and nothing fires.
+                    """
+                    if not isinstance(o, list) or not o:
+                        return None
+                    if all(numeric(x) for x in o):
+                        return np.asarray(o, dtype=np.float64)
+                    rows = [rectangular(x) for x in o]
+                    if any(r is None for r in rows):
+                        return None
+                    shapes = {r.shape for r in rows}
+                    return np.stack(rows) if len(shapes) == 1 else None
+
+                def walk(o, path):
+                    if isinstance(o, dict):
+                        for k, v in o.items():
+                            walk(v, f"{path}.{k}")
+                    elif isinstance(o, list):
+                        block = rectangular(o)
+                        if block is not None:
+                            found.append((path, block))
+                        else:
+                            for i, v in enumerate(o):
+                                walk(v, f"{path}[{i}]")
+
+                walk(obj, "")
+                return found
+        tokens = re.findall(r"-?\d+\.?\d*(?:[eE][-+]?\d+)?", text)
+        if len(tokens) >= 200:
+            try:
+                found.append(("<numbers in text>", np.asarray([float(t) for t in tokens])))
+            except ValueError:
+                pass
+        return found
+
+    def offences(arr):
+        out = []
+        a = np.asarray(arr)
+        if a.ndim >= 2 and a.shape[-2:] == (N, N):
+            out.append(f"is a {N}x{N} matrix (shape {a.shape})")
+        if a.size == N * N:
+            out.append(f"has {N * N} entries, the size of a full adjacency matrix")
+        flat = a.reshape(-1).astype(np.float64)
+        integral = bool(flat.size) and np.all(flat == np.floor(flat)) and np.all(flat >= 0)
+        in_range = integral and float(flat.max()) < N
+        if a.ndim == 2 and a.shape[-1] == 2 and in_range:
+            out.append(f"looks like an edge list (shape {a.shape}, whole-number pairs below {N})")
+        # index vectors split across separate arrays: {"i": [...], "j": [...]}
+        if a.ndim == 1 and in_range and flat.size in refs.get("edge_counts", set()):
+            if np.unique(flat).size > N // 4:
+                out.append(
+                    f"is {flat.size} whole numbers below {N} -- the length of an edge list, so "
+                    f"this looks like one column of neuron indices"
+                )
+        for what, deg in refs.get("degrees", {}).items():
+            d = deg.astype(np.float64)
+            if flat.size == d.size and (
+                np.array_equal(flat, d) or np.array_equal(np.sort(flat), np.sort(d))
+            ):
+                out.append(f"is N2's {what} sequence")
+        for what, w in refs.get("weights", {}).items():
+            if flat.size == w.size:
+                sorted_abs = np.sort(np.abs(flat))
+                if np.allclose(sorted_abs, w, rtol=1e-6, atol=0):
+                    out.append(f"is the anatomical {what} weight multiset")
+                elif sorted_abs.max() > 0 and Counter(
+                    np.round(sorted_abs / sorted_abs.max(), 9).tolist()
+                ) == Counter(np.round(w / w.max(), 9).tolist()):
+                    out.append(f"is the anatomical {what} weight multiset, up to one scale factor")
+        return out
+
+    offenders = []
+    for rel in tracked_files():
+        raw = (ROOT / rel).read_bytes()
+        for key, arr in numeric_arrays(rel, raw):
+            for bad in offences(arr):
+                offenders.append(f"{rel} [{key}] {bad}")
+    assert not offenders, (
+        "committed files contain connectome or control-graph structure:\n  " + "\n  ".join(offenders)
     )
 
 
