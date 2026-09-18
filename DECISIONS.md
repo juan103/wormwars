@@ -385,7 +385,7 @@ reported as suggestive at most, not interpreted.
 
 **And what coevolution did improve, measured rather than inferred.** The energy accounting now
 splits each swarm's gains into eating and biting. The coevolved populations took in 789 393 and
-683 955 energy by eating, against 181 141 and 184 828 for the frozen opponents they beat -- 4.2x
+683 955 energy by eating, against 181 141 and 184 828 for the frozen opponents they beat -- 4.4x
 and 3.7x more -- while biting supplied **0.1-0.3%** of their energy. Coevolution under these
 settings produced better foragers; combat barely contributes.
 

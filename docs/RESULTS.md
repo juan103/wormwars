@@ -492,7 +492,7 @@ From the energy accounting, per swarm, in the same matches:
 | generation 0 | 0 / 1 | 161 431 / 207 062 | 1 / 459 | 0.0% / 0.2% |
 | random | 0 / 1 | 133 792 / 120 686 | 4 / 0 | 0.0% |
 
-The coevolved populations take in **4.2x and 3.7x** more energy by eating than the frozen opponents
+The coevolved populations take in **4.4x and 3.7x** more energy by eating than the frozen opponents
 they beat, while biting supplies **0.1–0.3%** of their energy. This is measured from the energy
 ledger, not inferred: coevolution under these settings produced better foragers, and combat barely
 contributes to the result.

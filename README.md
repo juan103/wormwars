@@ -66,7 +66,7 @@ claimed it learned to flank; that was an artifact of the damage rule's armour we
 retracted — see *Corrections* in [`docs/RESULTS.md`](docs/RESULTS.md) and `DECISIONS.md` D026.
 Re-measured per run against the frozen suite inside the same matches, three of four tactics metrics
 change sign between the two runs, which is what no effect looks like. **Coevolved swarms appear to
-win by foraging, not by fighting:** they take in 4.2x and 3.7x more energy by eating than the
+win by foraging, not by fighting:** they take in 4.4x and 3.7x more energy by eating than the
 opponents they beat, while biting supplies 0.1–0.3% of their energy. With only two coevolution runs,
 all of this is reported per run and no interval over runs is claimed.
 
@@ -128,13 +128,24 @@ handicapped, because in N2 every route from a sensor to the pump neurons crosses
 `RIP↔I1` bridge: **3 graph hops in N2 against 1–2 in all ten control graphs**. Combat and pumping
 were only ever run on N2. The condition where the pharynx should matter has not been tested.
 
-**The evolutionary budget is small, and N2 had not stopped improving when it ran out.** 25
-generations, population 32, 5 404 parameters per genome. From the logs: over the last ten
-generations N2's best fitness rose 1.369 → 1.439 and was **still rising in 13 of 15 runs**, while SH
-was flat (1.497 → 1.500, rising in 7 of 15) and RD rose 1.496 → 1.550 (9 of 15). N2 also started
-lowest. So **"N2 is slower" is established; "N2 ends up equal" is provisional** — the budget expired
-while N2 was still climbing and the controls had largely stopped, and a longer run could separate
-them in either direction.
+**The evolutionary budget is small, and nothing had clearly converged when it ran out.** 25
+generations, population 32, 5 404 parameters per genome. Change in best-of-generation fitness from
+generations 10–14 to generations 20–24:
+
+| | gens 10–14 | gens 20–24 | change | runs where it rose |
+|---|---|---|---|---|
+| N2 | 1.369 | 1.439 | **+0.070** | **13 / 15** (P = 0.004 under a coin flip) |
+| SH | 1.497 | 1.500 | +0.002 | 7 / 15 (P = 0.70) |
+| RD | 1.496 | 1.550 | +0.054 | 9 / 15 (P = 0.30) |
+
+"Rose" means that run's mean best fitness over generations 20–24 exceeded its mean over generations
+10–14. A perfectly flat but noisy curve would be labelled rising in about half of runs, so 7/15 and
+9/15 are close to chance and carry little information; only N2's 13/15 stands out.
+
+**RD was still improving too** (+0.054, nearly as much as N2's +0.070); only SH was flat. So this is
+not a case of N2 climbing while the controls sat still. What it does mean is that **none of the
+three had demonstrably converged**, so **"N2 is slower" is established while "N2 ends up equal" is
+provisional**: a longer run could separate them in either direction.
 
 **Five control graphs, and they disagree with each other.** SH graph means span 1.384–1.607 and RD
 1.406–1.530, against N2's single value of 1.412. N2 is one draw sitting inside that spread. There is
@@ -151,6 +162,20 @@ inside the shuffle range and below one of the random graphs. The clear depth pen
 (3 hops versus 1–2), and the foraging experiment never used the pump. Separately, a real worm cannot
 make that left/right comparison at all: *C. elegans* chemotaxis works by sampling concentration over
 time while moving, not by comparing two sides at once. The interface is our invention, not biology.
+
+**We do not know why N2 improves more slowly.** Graph distance from sensors to the locomotor
+read-out does not explain it, as the numbers above show. Nor do the parameter bounds, which no
+condition comes close to. The cause is simply unidentified, and nothing here should be read as
+having found it.
+
+**The frozen opponent suite cannot measure combat skill.** It is six **random-weight** strains,
+never evolved for anything, and they do not approach opponents: the same six strains dealt 94 and 2
+damage against random opponents but 38 063 and 13 244 against coevolved ones, because contact only
+happens when someone comes to it. Beating the suite therefore means out-foraging passive random
+strains — the coevolved populations ate **4.4× and 3.7×** more than the suite did, while biting
+supplied **0.1–0.3%** of their energy. **Experiment 01 contains no test of combat skill against a
+competent opponent.** The coevolution score going up says the swarms got better at the game; it does
+not say they got better at fighting.
 
 **Combat rests on two runs of one graph.** All coevolution was N2 only: 2 runs, population 16, 20
 generations. No shuffled or random graph was ever coevolved. And the showcase shows the design does
