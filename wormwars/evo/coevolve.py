@@ -63,6 +63,9 @@ class MatchResult:
     attack_points_b: np.ndarray = None
     unanswered_b: np.ndarray = None
     turn_toward_b: np.ndarray = None
+    # energy gained by eating vs by biting, [n_matches, 2] as (side A, side B)
+    energy_eaten: np.ndarray = None
+    energy_from_biting: np.ndarray = None
 
 
 def sample_sizes(
@@ -135,7 +138,7 @@ def play(
     """
     brains = [Brain(genome_a), Brain(genome_b)]
     keys = ("score", "ea", "eb", "aa", "ab",
-            "dp", "ap", "un", "tt", "dpb", "apb", "unb", "ttb")
+            "dp", "ap", "un", "tt", "dpb", "apb", "unb", "ttb", "eat", "bit")
     out = {k: [] for k in keys}
     flank = head = 0.0
     worst_err = 0.0
@@ -186,6 +189,8 @@ def play(
         out["apb"].append(world.attack_points[:, 1].cpu().numpy())
         out["unb"].append(world.unanswered[:, 1].cpu().numpy())
         out["ttb"].append(world.turn_toward_damage[:, 1].cpu().numpy())
+        out["eat"].append(world.energy_eaten.cpu().numpy())
+        out["bit"].append(world.energy_from_biting.cpu().numpy())
         flank += world.flank_damage
         head += world.head_damage
         worst_err = max(worst_err, world.energy_ledger_error().abs().max().item())
@@ -203,6 +208,7 @@ def play(
         unanswered=cat["un"], turn_toward=cat["tt"],
         damage_points_b=cat["dpb"], attack_points_b=cat["apb"],
         unanswered_b=cat["unb"], turn_toward_b=cat["ttb"],
+        energy_eaten=cat["eat"], energy_from_biting=cat["bit"],
     )
 
 

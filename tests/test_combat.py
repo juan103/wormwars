@@ -255,7 +255,11 @@ def test_neither_reference_line_is_the_empirical_null(con):
     Weys converge head-first, so heads take more than their uniform share and the flank share lands
     BELOW its reference line. This is why DECISIONS.md D026 insists the null has to be measured.
     """
-    from wormwars.analysis import chance_flank_share, tactics_from_world
+    from wormwars.analysis import (
+        chance_flank_share,
+        chance_placement_share,
+        tactics_from_world,
+    )
 
     cfg = Config()
     w = build(con, n_worlds=1, cfg=cfg, stage=1)
@@ -271,11 +275,17 @@ def test_neither_reference_line_is_the_empirical_null(con):
         w._combat()
     rep = tactics_from_world(w)
     assert rep.total_damage > 0
-    assert rep.flank_share < chance_flank_share(cfg.combat) - 0.02, (
-        f"measured flank share {rep.flank_share:.4f} did not fall below the reference line"
+    # Direction with a margin, never a specific value: GPU reductions are not bit-exact and the
+    # point being asserted is "below the line", not "equal to 0.793".
+    margin = 0.02
+    assert rep.flank_share < chance_flank_share(cfg.combat) - margin, (
+        f"flank share {rep.flank_share:.4f} did not fall below its reference line "
+        f"{chance_flank_share(cfg.combat):.4f}"
     )
-    assert rep.placement_share < rep.placement_share + 1e-9  # recorded for the report
-    assert 0.0 < rep.placement_share < 1.0
+    assert rep.placement_share < chance_placement_share(cfg.combat) - margin, (
+        f"placement share {rep.placement_share:.4f} did not fall below its reference line "
+        f"{chance_placement_share(cfg.combat):.4f}"
+    )
 
 
 def test_tactics_are_attributed_to_the_attacking_swarm(con):
@@ -310,3 +320,23 @@ def test_unanswered_damage_is_bounded_and_counts_only_untouched_weys(con):
     assert den > 0
     assert 0.0 <= float(num / den) <= 1.0
     assert float(num) <= float(den) + 1e-9
+
+
+def test_energy_source_accounting_splits_eating_from_biting(con):
+    """Energy gained must be attributable to eating or to biting, per swarm."""
+    cfg = Config()
+    w = build(con, n_worlds=2, cfg=cfg, stage=1)
+    centre = w.side / 2
+    gen = torch.Generator().manual_seed(7)
+    w.pos[:] = centre + (torch.rand(w.pos.shape, generator=gen) - 0.5) * 4.0
+    w._points = None
+    w._update_body_field()
+    w.run(120)
+    assert w.energy_eaten.shape == (w.n_worlds, w.n_swarms)
+    assert w.energy_from_biting.shape == (w.n_worlds, w.n_swarms)
+    assert float(w.energy_eaten.min()) >= 0.0
+    assert float(w.energy_from_biting.min()) >= 0.0
+    # biting can only ever move `transfer_fraction` of the damage it caused
+    assert float(w.energy_from_biting.sum()) <= (
+        cfg.combat.transfer_fraction * float(w.damage_points.sum()) + 1e-6
+    )

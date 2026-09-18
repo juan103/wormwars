@@ -258,6 +258,14 @@ class World:
         self.unanswered = z2()
         # (turned toward the side it was bitten from, times it was asymmetrically bitten while turning)
         self.turn_toward_damage = z2()
+        # Where each swarm's energy actually came from: eating (food and corpse pellets) versus
+        # energy transferred from victims by biting. This is what decides whether a swarm wins by
+        # foraging or by fighting, and it is measured rather than inferred.
+        zs = lambda: torch.zeros(  # noqa: E731
+            self.n_worlds, self.n_swarms, dtype=torch.float64, device=self.device
+        )
+        self.energy_eaten = zs()
+        self.energy_from_biting = zs()
         self.v = [
             self.brains[s].initial_state(self.assigns[s].n_slots * self.n_weys)
             for s in range(self.n_swarms)
@@ -619,6 +627,7 @@ class World:
         )
         intake = demand * per_wey
         self.energy += intake
+        self.energy_eaten += intake.sum(dim=2).double()
 
         taken = torch.minimum(demand_grid, avail)
         share = torch.where(avail > 0, food / avail.clamp_min(1e-12), torch.zeros_like(avail))
@@ -709,6 +718,7 @@ class World:
         headroom = (wcfg.max_energy - self.energy).clamp_min(0.0)
         gain = torch.minimum(gain, headroom) * alive_f
         self.energy += gain
+        self.energy_from_biting += gain.sum(dim=2).double()
         self.last_damage_dealt = collected
         # Unanswered damage: what a swarm dealt through weys that took nothing back in the same
         # tick. Flanking, if it exists, should show up here -- hitting someone who cannot hit you

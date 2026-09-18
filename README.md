@@ -64,10 +64,11 @@ two-swarm coevolution improves against a frozen opponent suite (**+0.128 → +0.
 **Coevolution did not produce any measurable combat tactic.** An earlier version of this README
 claimed it learned to flank; that was an artifact of the damage rule's armour weights and has been
 retracted — see *Corrections* in [`docs/RESULTS.md`](docs/RESULTS.md) and `DECISIONS.md` D026.
-Re-measured against the frozen suite inside the same matches, coevolved swarms land bites no further
-back than their unevolved opponents do (placement share difference -0.011 [-0.036, +0.019]), turn
-toward the bite at chance, and their damage is *more* answered than their opponents', not less
-(-0.153 [-0.227, -0.081]).
+Re-measured per run against the frozen suite inside the same matches, three of four tactics metrics
+change sign between the two runs, which is what no effect looks like. **Coevolved swarms appear to
+win by foraging, not by fighting:** they take in 4.2x and 3.7x more energy by eating than the
+opponents they beat, while biting supplies 0.1–0.3% of their energy. With only two coevolution runs,
+all of this is reported per run and no interval over runs is claimed.
 
 **On the claim under test, the answer is: no, and slower.** The full experiment is K=5, R=3 --
 five independent SH graphs and five RD graphs with three runs each, and fifteen runs of N2, so every

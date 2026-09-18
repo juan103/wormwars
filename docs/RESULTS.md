@@ -400,51 +400,94 @@ solutions on the same wiring, not one.
 ### Tactics — no evidence of learned flanking
 
 Measured by `scripts/tactics.py`: 2 runs x 16 strains against the same 6 frozen opponents, on the
-same 8 held-out world ids, at 40 v 40, 400 ticks. Intervals are hierarchical bootstraps over runs
-and strains.
+same 8 held-out world ids, at 40 v 40, 400 ticks. Each figure is a pooled ratio — summed numerators
+over summed denominators — so a match in which almost nothing happened does not weigh as much as a
+real fight.
 
-| group | placement share | unanswered damage | turns toward the bite | total damage dealt |
-|---|---|---|---|---|
-| random strains | 0.856 [0.711, 1.000] | 0.886 [0.657, 1.000] | 0.066 [0.000, 0.198] | **80** |
-| generation 0 | 0.791 [0.659, 0.938] | 0.691 [0.340, 0.969] | 0.369 [0.097, 0.652] | **7 308** |
-| final coevolved | **0.6725** [0.6484, 0.6986] | **0.4991** [0.4080, 0.5788] | **0.5221** [0.3141, 0.7273] | 50 844 |
-| frozen suite, *same matches* | 0.6945 [0.6744, 0.7240] | 0.6657 [0.5811, 0.7378] | 0.3573 [0.2919, 0.4232] | 51 307 |
-| reference line | 0.6667 | — | 0.5 | |
+**There are two runs.** Every number is given per run, side by side. **No interval over runs is
+computed, because an interval over n = 2 says nothing.** The spread quoted across strains is
+*within-run* spread and is not a run-level interval.
 
-**Neither reference line is a null, and that is measurable.** Drop unevolved weys into a dense heap
-with random headings and let them bite for 25 ticks: the flank share comes out at **0.793** and the
-placement share at **0.489**, both *below* their reference lines (0.889 and 0.667). Weys converge on
-each other head-first, so heads take more than a uniform share of contact before any tactic exists.
-An analytic line computed from the armour weights cannot stand in for that.
+**What the frozen suite is.** Six **random-weight** strains, never evolved for anything — not for
+foraging, not for combat. Their diversity comes from spreading the initialisation scale from 0.5x to
+2.0x, not from training (`make_frozen_suite`).
 
-**Random and generation-0 strains cannot serve as the null either.** They barely fight: 80 and 7 308 total
-damage against the coevolved populations' 50 844, with only 3 and 8 strains landing any damage at
-all. Their ratios come from a handful of accidental contacts. The sound comparison is the **frozen
-opponent suite measured inside the very same matches** — unevolved, and guaranteed to have fought
-exactly as much.
+**Why the suite deals heavy damage against coevolved swarms and almost none against random ones.**
+Contact is created by whichever side approaches, and biting is automatic once bodies are close. The
+same six suite strains, on the same worlds, dealt:
 
-Paired, coevolved side minus the frozen side it was fighting, same matches:
-
-| metric | difference | verdict |
+| suite's opponents | damage the suite dealt, run 0 | run 1 |
 |---|---|---|
-| placement share | -0.0112 [-0.0359, +0.0190] | no separation |
-| unanswered damage | **-0.1530 [-0.2268, -0.0812]** | coevolved side **lower** |
-| turns toward the bite | +0.1686 [-0.0722, +0.4331] | no separation |
+| random strains | **94** | **2** |
+| generation 0 | 51 | 7 361 |
+| final coevolved populations | **38 063** | **13 244** |
 
-**There is no evidence that coevolution produced flanking.** Bites do not land further back on
-enemies than an unevolved opponent's do. Turning toward the bite does not separate, and the
-coevolved value (0.522) sits at chance (0.5); the two runs disagree sharply (0.341 and 0.703), which
-is what the wide interval is saying. And unanswered damage runs the *wrong way* for a flanking
-story: the coevolved side's damage is **more** answered than its opponent's, not less.
+The suite did not become more aggressive; the coevolved swarms came to it.
 
-Two further observations point the same way. The coevolved populations deal essentially the same
-total damage as the frozen opponents they beat (50 844 vs 51 307), and in run 1 they deal
-considerably *less* (8 467 vs 13 244) while still winning on score. Whatever coevolution improved,
-it was not the amount or the geometry of damage dealt.
+| metric | group | run 0 | run 1 | within-run spread across strains |
+|---|---|---|---|---|
+| **placement share** | random | 0.7102 | 1.0000 | n = 2 and n = 1 strains with any damage |
+| (armour removed) | generation 0 | 0.8915 | 0.6296 | 0.770–1.000 / 0.622–0.787 |
+| | final coevolved | **0.6571** | **0.6613** | 0.629–0.840 / 0.574–0.786 |
+| | frozen suite, same matches | 0.6500 | 0.6983 | |
+| | *reference line* | *0.6667* | *0.6667* | *not a null* |
+| **unanswered damage** | random | 0.5463 | 1.0000 | |
+| | generation 0 | 0.8836 | 0.2738 | 0.782–1.000 / 0.243–0.898 |
+| | final coevolved | **0.3141** | **0.3559** | 0.142–0.975 / 0.203–0.890 |
+| | frozen suite, same matches | 0.5645 | 0.7260 | |
+| **turns toward the bite** | random | 0.2609 | 0.0000 | |
+| | generation 0 | 0.5590 | 0.5347 | 0.000–0.698 / 0.190–0.943 |
+| | final coevolved | **0.4540** | **0.5839** | 0.153–0.552 / 0.475–0.885 |
+| | frozen suite, same matches | 0.4908 | 0.4502 | |
+| **flank share** (retracted) | final coevolved | 0.8846 | 0.8865 | 0.871–0.955 / 0.843–0.936 |
+| | frozen suite, same matches | 0.8813 | 0.9025 | |
+| | *reference line* | *0.8889* | *0.8889* | *not a null* |
+
+**The suite is a matched comparison, not a null.** Both sides' numbers come out of the same
+engagements and are mechanically coupled — a tick in which A bites B and B bites A is a single event
+counted from both sides — and the side that approaches and the side that is approached have
+different roles in it. It shows whether the coevolved side's damage is shaped differently from its
+opponent's. It does not say what would happen by chance.
+
+Coevolved side minus the suite it was fighting, per run:
+
+| metric | run 0 | run 1 | reading |
+|---|---|---|---|
+| placement share | **+0.0072** | **-0.0370** | signs disagree — no effect |
+| turns toward the bite | **-0.0368** | **+0.1338** | signs disagree — no effect |
+| flank share (retracted) | **+0.0033** | **-0.0160** | signs disagree, both tiny |
+| unanswered damage | -0.2504 | -0.3701 | same sign both runs — **suggestive at most** |
+
+**There is no evidence that coevolution produced flanking.** Three of the four metrics change sign
+between the two runs, which is what no effect looks like. Bites land no further back on enemies than
+the opponent's do, and turning toward the bite sits near chance (0.5) with the runs disagreeing.
+
+The unanswered-damage gap is the one metric with a consistent sign across both runs. It is reported
+as **suggestive at most and is not interpreted here**: n = 2, the two sides' figures are
+mechanically coupled, and their roles in the engagement differ, so the direction of the gap cannot
+be read as a tactic either way.
 
 The combat geometry itself is real and was measured directly (M6): a flank costs the victim 0.120
 damage per tick and the attacker nothing, against 0.084 each way head-on. The rules reward flanking.
-**Evolution did not find it** — at least not within 20 generations of a population of 16.
+**Evolution did not visibly find it** in 20 generations of a population of 16.
+
+### Where the energy actually came from — coevolved swarms win by eating
+
+From the energy accounting, per swarm, in the same matches:
+
+| group | run | energy eaten | energy from biting | biting's share |
+|---|---|---|---|---|
+| final coevolved | 0 | **789 393** | 2 651 | **0.3%** |
+| frozen suite, same matches | 0 | 181 141 | 3 793 | 2.1% |
+| final coevolved | 1 | **683 955** | 468 | **0.1%** |
+| frozen suite, same matches | 1 | 184 828 | 1 133 | 0.6% |
+| generation 0 | 0 / 1 | 161 431 / 207 062 | 1 / 459 | 0.0% / 0.2% |
+| random | 0 / 1 | 133 792 / 120 686 | 4 / 0 | 0.0% |
+
+The coevolved populations take in **4.2x and 3.7x** more energy by eating than the frozen opponents
+they beat, while biting supplies **0.1–0.3%** of their energy. This is measured from the energy
+ledger, not inferred: coevolution under these settings produced better foragers, and combat barely
+contributes to the result.
 
 ---
 
@@ -499,10 +542,11 @@ scored 0.881 and 0.879 on the same metric, against final values of 0.884 and 0.8
 and 0.489 placement share, both below the analytic lines, because they meet each other head-first.
 The null has to be measured, not derived.
 
-**Replaced by:** three metrics that can move — placement share (armor divided out), unanswered
-damage share, and turns-toward-the-bite — measured against the frozen opponent suite inside the same
-matches. Result: **no evidence of learned flanking**, with unanswered damage running the opposite
-way. Numbers in *M10 → Tactics*; reasoning in `DECISIONS.md` D026.
+**Replaced by:** three metrics that can move — placement share (armour divided out), unanswered
+damage share, and turns-toward-the-bite — compared against the frozen opponent suite inside the same
+matches, reported per run because there are only two runs. Result: **no evidence of learned
+flanking**; three of the four metrics change sign between the runs. Numbers in *M10 → Tactics*;
+reasoning in `DECISIONS.md` D026.
 
 **Not affected:** the M6 combat-geometry measurements (the flank rule itself), the M9 N2/SH/RD
 comparison, and the M7 frozen-suite scores. Those are separate measurements and none of them
@@ -515,3 +559,20 @@ The first M7 numbers (+0.059 → +0.156) were measured before food was made to s
 kept here; the difference is the corrected food economy at 40 v 40, not a change in method. Results
 measured at the development size of 20 weys — M4, M5, M8, M9 — are unaffected, because both scaling
 factors are exactly 1 there.
+
+### C3 — tactics figures restated per run, and pooled differently
+
+The first version of the tactics table pooled both runs together and quoted a hierarchical bootstrap
+interval over runs and strains, with each strain's ratio weighted equally regardless of how much it
+had actually fought. Two things changed:
+
+- **Per run, no run-level interval.** With n = 2 runs an interval over runs is not meaningful. The
+  two runs are now shown side by side; spread across strains is reported separately and labelled as
+  within-run.
+- **Pooled ratios.** Each figure is now summed numerators over summed denominators, so a strain that
+  barely fought no longer counts as much as one that fought hard.
+
+The figures therefore differ from the first version (for example the coevolved placement share reads
+0.6571 / 0.6613 per run rather than a pooled 0.6725, and unanswered damage 0.3141 / 0.3559 rather
+than 0.4991). Both are kept here. The difference is the weighting and the grouping, not a different
+measurement, and **the conclusion is unchanged**: no evidence of learned flanking.

@@ -359,12 +359,34 @@ falls below the reference line, so this cannot quietly regress.
 
 **One methodological correction to the correction.** The three groups originally asked for -- random
 strains, generation-0 populations, and the final coevolved populations -- are *not* comparable,
-because the first two barely fight: across 1 536 matches they dealt **80** and **7 308** total
-damage against the coevolved populations' **50 844**, and only 3 and 8 strains respectively landed
-any damage at all. Their ratios are computed from a handful of accidental contacts. They are
-reported, with that caveat, but the sound comparison is the **frozen opponent suite in the same
-matches**: it is unevolved, and by construction it fought exactly the same engagements, dealing
-**51 307** damage to the coevolved side's 50 844.
+because the first two barely fight. Only 1-4 strains of the first two landed any damage at all,
+so their ratios come from a handful of accidental contacts.
 
-**What the measurements say:** no evidence of learned flanking, on any metric. See the Corrections
-section of `docs/RESULTS.md` for the numbers.
+The reason is worth stating because it also explains an apparent oddity. **Contact is created by
+whichever side approaches, and biting is automatic** once bodies are close. The same six frozen
+strains, on the same worlds, dealt 94 and 2 damage against random opponents, and 38 063 and 13 244
+against the coevolved ones. The suite did not get more aggressive; the coevolved swarms came to it.
+
+**The frozen suite is a matched comparison, not a null.** Both sides' numbers come out of the same
+engagements and are mechanically coupled -- a tick in which A bites B and B bites A is one event
+counted from both sides -- and the approaching side and the approached side have different roles in
+it. It answers "is the coevolved side's damage shaped differently from its opponent's", not "what
+would happen by chance". The direction of any gap is therefore not interpreted.
+
+**What the frozen suite is:** six **random-weight** strains, never evolved for anything -- not for
+foraging, not for combat. Their spread comes from initialisation scale (0.5x to 2.0x), not training.
+
+**n = 2 runs.** Every tactics figure is reported per run. No interval over runs is computed, because
+an interval over two numbers says nothing.
+
+**What the measurements say:** no evidence of learned flanking. Three of the four metrics change
+sign between the two runs. The unanswered-damage gap is the one with a consistent sign and is
+reported as suggestive at most, not interpreted.
+
+**And what coevolution did improve, measured rather than inferred.** The energy accounting now
+splits each swarm's gains into eating and biting. The coevolved populations took in 789 393 and
+683 955 energy by eating, against 181 141 and 184 828 for the frozen opponents they beat -- 4.2x
+and 3.7x more -- while biting supplied **0.1-0.3%** of their energy. Coevolution under these
+settings produced better foragers; combat barely contributes.
+
+See the Corrections section of `docs/RESULTS.md` for the full tables.
