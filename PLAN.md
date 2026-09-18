@@ -78,24 +78,32 @@ Shared-food scaling, damage cap, adjoint bite credit, corpse pellets, no friendl
 Scripted-geometry flank tests (head-on / T-bone / nose-to-tail) with measured damage in both
 directions; blur radius, body length, cell size and crowding tuned until the asymmetry target holds.
 
-## Milestone 7 — two-swarm coevolution `[~]`
+## Milestone 7 — two-swarm coevolution `[x]`
 Paired evaluation (side swap, headcount swap), hall of fame, versioned frozen opponent suite
 on held-out seeds.
 
-## Milestone 8 — stage-2 pumping `[~]`
+## Milestone 8 — stage-2 pumping `[x]`
 Re-verify foraging still evolves when eating needs pumping, then coevolve.
 
-## Milestone 9 — full N2/SH/RD experiment + stats `[~]`
+## Milestone 9 — full N2/SH/RD experiment + stats `[x]`
 K=5, R=3 per graph, K·R runs for N2, hierarchical bootstrap, per-evaluation and per-GPU-hour.
 
 ## Milestone 10 — ablation, convergence, tactics `[x]`
 Implementation checks labelled as such; emergent tests vs matched random ablations.
 
-## Milestone 11 — scaling `[~]`
+## Milestone 11 — scaling `[x]`
 wey-ticks/s and peak VRAM vs worlds and swarm size; chunked rollouts; then scale.
 
-## Milestone 12 — Minecraft bridge `[ ]`
-Not touched until 11 is done, and I ask which edition/mod loader first.
+## Milestone 12 — Minecraft bridge `[ ]` — **blocked on one question**
+
+Not started. No Minecraft installation was found on this machine (no `.minecraft`, no Bedrock UWP
+package, no CurseForge / Prism / Modrinth / ATLauncher directory), so which edition and mod loader
+to target cannot be decided from here. **Which Minecraft do you use?** Java with Fabric, Java with
+Forge/NeoForge, Bedrock, or something else?
+
+The Python side is edition-agnostic either way -- a websocket server streaming one chosen world's
+wey positions, headings, energies and states as JSON -- so the answer only decides which
+Minecraft-side client gets written.
 
 ## Working rules
 

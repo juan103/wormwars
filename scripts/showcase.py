@@ -65,6 +65,13 @@ def main():
     ap.add_argument("--b", default=None, help="genome for swarm B (random if omitted)")
     ap.add_argument("--size", type=int, default=2000, help="weys per swarm")
     ap.add_argument("--ticks", type=int, default=600)
+    ap.add_argument(
+        "--scale-ticks", action="store_true",
+        help="scale the match length with the arena. Arena side grows as sqrt(headcount) while wey "
+             "speed is fixed, so crossing a 2000v2000 map takes about ten times as long as a 40v40 "
+             "one. Without this, a big showcase measures endurance rather than tactics.",
+    )
+    ap.add_argument("--tick-reference-weys", type=int, default=80)
     ap.add_argument("--stage", type=int, default=1)
     ap.add_argument("--seed", type=int, default=777)
     ap.add_argument("--out", default="runs/showcase")
@@ -76,6 +83,15 @@ def main():
     cfg.world.n_swarms = 2
     cfg.world.weys_per_swarm = args.size
     cfg.world.max_ticks = args.ticks
+
+    if args.scale_ticks:
+        from wormwars.world import arena_side
+
+        big = arena_side(cfg, 2 * args.size)
+        small = arena_side(cfg, args.tick_reference_weys)
+        cfg.world.max_ticks = int(round(args.ticks * big / small))
+        print(f"match length scaled with the arena: {args.ticks} -> {cfg.world.max_ticks} ticks "
+              f"(arena {small} -> {big})")
 
     con = load_connectome()
     iface = load_interface(con)
@@ -103,7 +119,7 @@ def main():
         f"showcase: {meta_a.get('nickname')} ({meta_a['graph']}) vs "
         f"{meta_b.get('nickname')} ({meta_b['graph']})\n"
         f"{args.size} v {args.size} in a {world.side}x{world.side} arena, "
-        f"{args.ticks} ticks, stage {args.stage}"
+        f"{cfg.world.max_ticks} ticks, stage {args.stage}"
     )
     # A 2000v2000 arena is ~312 cells a side; recording every field every 8 ticks would be a
     # quarter of a gigabyte of RAM. Scale the field interval with the arena so the recording stays

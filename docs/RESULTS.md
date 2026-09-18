@@ -303,3 +303,110 @@ pumping costs energy and pumping at nothing wastes it.
 - A **2 000 v 2 000 showcase** match runs in a 312x312 arena at 520 k wey-ticks/s in 67 MB.
 - Chunked rollout agreement on CUDA: max |score difference| **5.96e-08** on scores of order 1.4.
   Bit-identical on the CPU. See `docs/REPRODUCIBILITY.md`.
+
+---
+
+## M10 — ablation, convergence, tactics
+
+45 champions (15 per condition, from the calibrated M9 arm), 93 ablations each, 32 held-out worlds,
+paired: every ablation of a champion plays exactly the same worlds. Sensitivity is the fractional
+loss against that champion's own unablated baseline (N2 1.404, SH 1.472, RD 1.455 -- matching M9).
+
+Each champion is replayed **at the motor gains it was evolved under**. Getting this wrong the first
+time produced baselines of 0.40 for SH champions whose real score is 1.5, and made every number
+computed from them meaningless (`DECISIONS.md` D024).
+
+### Implementation checks — true by construction, and not evidence about biology
+
+These silence neurons the sensor/motor map names. They verify the interface is wired as configured.
+
+| ablation | N2 | SH | RD |
+|---|---|---|---|
+| turn read-out SMDD | +0.459 | +0.464 | +0.259 |
+| AVB (forward read-out) | +0.217 | +0.203 | +0.259 |
+| AVA (forward read-out) | +0.109 | +0.256 | +0.085 |
+| anterior touch ALM/AVM | +0.109 | +0.062 | +0.257 |
+| food sensors AWC | +0.059 | +0.159 | +0.075 |
+| pump read-out MC | +0.001 | +0.062 | +0.048 |
+
+Silencing the turn read-out costs about 46% of performance, which is what a read-out term should
+cost. Silencing MC costs nothing at stage 0, which is also right: nothing reads the pump when eating
+is automatic.
+
+### Emergent tests — against matched random ablations
+
+These silence interneurons the map does **not** name, each compared with 16 random ablations matched
+on size, neuron class and degree. Mean over 15 champions, +- standard error, with the z-score
+against that condition's own matched controls.
+
+| target | N2 | SH | RD |
+|---|---|---|---|
+| RIA | **+0.396 ± 0.077** (z +1.5) | +0.171 ± 0.054 (z +0.2) | +0.019 ± 0.012 (z -0.5) |
+| RIM | +0.234 ± 0.070 (z +0.8) | +0.084 ± 0.027 (z -0.2) | +0.136 ± 0.046 (z +0.3) |
+| AIZ | +0.165 ± 0.049 (z +0.7) | +0.151 ± 0.050 (z +0.5) | +0.053 ± 0.024 (z -0.3) |
+| AIB | +0.147 ± 0.060 (z +0.3) | +0.173 ± 0.056 (z +0.3) | +0.044 ± 0.017 (z -0.3) |
+| AIY | +0.026 ± 0.008 (z -0.3) | +0.208 ± 0.061 (z +0.9) | +0.007 ± 0.009 (z -0.5) |
+| RIP-I1 bridge | +0.005 ± 0.004 | +0.000 | +0.000 |
+
+**The honest reading: no emergent target is clearly above its matched random controls.** The largest
+effect anywhere is RIA in N2 champions -- silencing two neurons the interface never mentions costs
+40% of performance, and it is the only target whose z-score reaches 1.5 -- but a *matched random*
+pair of interneurons of the same class and degree costs nearly as much on average. This is precisely
+what matched controls are for, and it is why "ablating AIY hurts" would have been the wrong
+conclusion to draw from the raw number.
+
+Cutting the **RIP-I1 bridge** costs nothing, in any condition. That is the expected result and a
+useful negative control: foraging never uses the pump, so severing the only route to the pharynx
+should not matter. It will matter at stage 2, and N2 is the condition with something to lose there.
+
+### Convergence — do independent runs rely on the same neurons?
+
+Correlation between ablation-sensitivity profiles, over all 990 champion pairs:
+
+| comparison | r | pairs |
+|---|---|---|
+| same graph, different runs (N2) | **+0.205** | 105 |
+| same graph, different runs (SH) | +0.181 | 15 |
+| same graph, different runs (RD) | +0.101 | 15 |
+| different conditions | +0.102 | 675 |
+
+Independent runs on the *same* graph do agree more than pairs drawn across different graphs
+(+0.205 vs +0.102 for N2), so there is some convergence -- but it is weak, and the ordering
+N2 > SH > RD is well inside the noise at these sample sizes. Evolution is finding many different
+solutions on the same wiring, not one.
+
+### Tactics
+
+From coevolution (M7): **88.8%** of the damage a coevolved swarm deals lands on an enemy's mid or
+tail rather than its head. The measured geometry makes a flank cost the victim 0.120 damage per tick
+and the attacker nothing, against 0.084 each way head-on, so this is the tactic the rules reward and
+evolution found it.
+
+---
+
+## Showcase — 2000 v 2000, and what it shows
+
+Two strains coevolved at 40 v 40, played at 2 000 a side in a 312x312 arena. Never used for
+selection; this is spectacle and a generalisation test, and it is informative precisely because they
+fail it.
+
+| match length | result | wey-ticks/s | peak VRAM |
+|---|---|---|---|
+| 600 ticks (the standard length) | 227 / 2 000 and 352 / 2 000 alive | 453 k | 68 MB |
+| 4 070 ticks (scaled with the arena) | 5 / 2 000 and 0 / 2 000 alive, ended early at 3 901 | 469 k | 68 MB |
+
+Looking at the replay explains it. **The swarms barely leave their spawn blocks.** The arena side
+grows as sqrt(headcount) while wey speed does not, so crossing a 2 000 v 2 000 map takes about ten
+times as long as crossing a 40 v 40 one, and the standard 600-tick match is simply not long enough
+for strains that learned to reach food about ten cells away. Most of the deaths are starvation in
+place, not combat.
+
+Scaling the match length with the arena (`--scale-ticks`) fixes the travel problem and immediately
+creates another: food does not regenerate, and a wey's metabolic cost over 4 070 ticks is about 142
+energy against a food supply of 23.5 per wey, so a long match is unsurvivable by construction.
+
+Both are reported rather than tuned away. The honest summary is that **this design does not
+generalise across a 50x change in headcount**, for a reason that is structural rather than
+accidental: travel time scales with sqrt(headcount) while speed, match length and food per wey do
+not. Making the showcase comfortable would mean redesigning the economy around it, which is not what
+a generalisation test is for.
