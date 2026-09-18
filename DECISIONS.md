@@ -312,3 +312,59 @@ varied-size run trained at 50-200 but scored the suite at 40v40 and appeared to 
 (+0.113 -> +0.072, 0/2 runs improving). Scored at 100v100 -- the spec's standard fight -- the same
 setup improves (+0.132 -> +0.188, 1/2 runs), and fixed-size coevolution improves more
 (+0.128 -> +0.343, 2/2 runs), which is the expected ordering: a non-stationary objective is harder.
+
+## D026 — RETRACTION: the "learned to flank" claim was an artifact of the armor weights (M7/M10)
+
+**What was claimed.** `RESULTS.md` (M7 and the M10 tactics section) and the README said that
+coevolved swarms "learned to flank", on the evidence that **88.8%** of the damage they dealt landed
+on an enemy's mid or tail rather than its head.
+
+**Why it was wrong.** Damage is `k * (head_armor * a_head + a_mid + a_tail)`. If the attack field
+were simply uniform across a victim's three body points, the mid+tail share would already be
+
+    (1 + 1) / (head_armor + 1 + 1)  =  2 / 2.25  =  0.8889
+
+at the shipped `head_armor = 0.25`. The metric is pinned near 0.889 by the armor weights whatever
+the weys do. The measured 0.888 *is* the reference line, not a result.
+
+Worse, the refutation was already sitting in my own output. `summary.json` records
+`flank_share_first` alongside `flank_share_last`, and generation 0 scored **0.881** and **0.879**
+against final values of 0.884 and 0.897. The metric never moved during coevolution. I quoted the
+final number as evidence of learning without ever comparing it to the starting number.
+
+**Who caught it.** External review of the published results, not me. It was raised as arithmetic
+(`2 / (2 + head_armor)` equals the reported value), and re-measurement confirmed it.
+
+**What replaced it.** `wormwars/analysis/ablation.py` now exposes `chance_flank_share(ccfg)` and
+`chance_placement_share(ccfg)`, computed from the config rather than written down, and
+`World` accumulates three metrics per world and per *attacking* swarm:
+
+- **placement share** — the same body-point distribution with the armor multipliers divided back
+  out, so the reference line drops to 2/3 and any excess is real geometric concentration toward
+  mid and tail;
+- **unanswered damage share** — the fraction of a swarm's damage dealt by weys that took nothing
+  back in the same tick, which is what flanking is actually *for*;
+- **turns toward the bite** — how often a bitten wey turns toward the side it was bitten from
+  (chance 0.5).
+
+All three are O(N), computed from tensors the combat step already produces, and none of them feed
+back into the simulation.
+
+**Neither reference line is a null, and this is measured, not argued.** Weys converge on each other
+head-first, so head contacts are more likely than a uniform share before any tactic exists. Dropping
+unevolved weys into a dense heap with random headings measures a flank share of **0.793** and a
+placement share of **0.489** -- both *below* the analytic lines of 0.889 and 0.667. The null has to
+be measured. `scripts/tactics.py` measures it; `tests/test_combat.py` asserts that a real melee
+falls below the reference line, so this cannot quietly regress.
+
+**One methodological correction to the correction.** The three groups originally asked for -- random
+strains, generation-0 populations, and the final coevolved populations -- are *not* comparable,
+because the first two barely fight: across 1 536 matches they dealt **80** and **7 308** total
+damage against the coevolved populations' **50 844**, and only 3 and 8 strains respectively landed
+any damage at all. Their ratios are computed from a handful of accidental contacts. They are
+reported, with that caveat, but the sound comparison is the **frozen opponent suite in the same
+matches**: it is unevolved, and by construction it fought exactly the same engagements, dealing
+**51 307** damage to the coevolved side's 50 844.
+
+**What the measurements say:** no evidence of learned flanking, on any metric. See the Corrections
+section of `docs/RESULTS.md` for the numbers.

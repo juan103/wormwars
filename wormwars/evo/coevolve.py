@@ -52,6 +52,17 @@ class MatchResult:
     damage_to_flank: float
     damage_to_head: float
     ledger_error: float
+    # Per-match tactics, in the caller's match order, for BOTH sides. Swarm B's numbers come from
+    # exactly the same engagements as swarm A's, which makes B the only available null that is
+    # guaranteed to have been in as many real fights as A.
+    damage_points: np.ndarray = None  # [n_matches, 3] armor-weighted head/mid/tail, side A
+    attack_points: np.ndarray = None  # [n_matches, 3] armor divided out: where bites land, side A
+    unanswered: np.ndarray = None  # [n_matches, 2] (unanswered dealt, total dealt), side A
+    turn_toward: np.ndarray = None  # [n_matches, 2] (turned toward bite, opportunities), side A
+    damage_points_b: np.ndarray = None
+    attack_points_b: np.ndarray = None
+    unanswered_b: np.ndarray = None
+    turn_toward_b: np.ndarray = None
 
 
 def sample_sizes(
@@ -123,7 +134,9 @@ def play(
     column's brain batch rectangular and lets A and B be different graphs.
     """
     brains = [Brain(genome_a), Brain(genome_b)]
-    out = {k: [] for k in ("score", "ea", "eb", "aa", "ab")}
+    keys = ("score", "ea", "eb", "aa", "ab",
+            "dp", "ap", "un", "tt", "dpb", "apb", "unb", "ttb")
+    out = {k: [] for k in keys}
     flank = head = 0.0
     worst_err = 0.0
 
@@ -165,6 +178,14 @@ def play(
         alive = world.n_alive()
         out["aa"].append(alive[:, 0].cpu().numpy())
         out["ab"].append(alive[:, 1].cpu().numpy())
+        out["dp"].append(world.damage_points[:, 0].cpu().numpy())
+        out["ap"].append(world.attack_points[:, 0].cpu().numpy())
+        out["un"].append(world.unanswered[:, 0].cpu().numpy())
+        out["tt"].append(world.turn_toward_damage[:, 0].cpu().numpy())
+        out["dpb"].append(world.damage_points[:, 1].cpu().numpy())
+        out["apb"].append(world.attack_points[:, 1].cpu().numpy())
+        out["unb"].append(world.unanswered[:, 1].cpu().numpy())
+        out["ttb"].append(world.turn_toward_damage[:, 1].cpu().numpy())
         flank += world.flank_damage
         head += world.head_damage
         worst_err = max(worst_err, world.energy_ledger_error().abs().max().item())
@@ -178,6 +199,10 @@ def play(
         score=cat["score"], energy_a=cat["ea"], energy_b=cat["eb"],
         alive_a=cat["aa"], alive_b=cat["ab"],
         damage_to_flank=flank, damage_to_head=head, ledger_error=worst_err,
+        damage_points=cat["dp"], attack_points=cat["ap"],
+        unanswered=cat["un"], turn_toward=cat["tt"],
+        damage_points_b=cat["dpb"], attack_points_b=cat["apb"],
+        unanswered_b=cat["unb"], turn_toward_b=cat["ttb"],
     )
 
 
@@ -273,7 +298,11 @@ class CoevoLog:
     mean: float
     suite_best: float | None
     suite_mean: float | None
+    # `flank_share` is pinned near 2/(2+head_armor) by the armor weights and is NOT evidence of
+    # tactics; it is logged only so the retraction in DECISIONS.md D026 stays checkable.
     flank_share: float
+    placement_share: float  # armor divided out; reference line 2/3
+    unanswered_share: float  # damage dealt by weys that took nothing back that tick
     elapsed_s: float
     matches: int
     ledger_error: float
@@ -353,10 +382,14 @@ def coevolve(
             sm = float(np.median(sres.score))
 
         total_dmg = res.damage_to_flank + res.damage_to_head
+        ap = res.attack_points.sum(axis=0)
+        un = res.unanswered.sum(axis=0)
         entry = CoevoLog(
             generation=g, best=float(fit.max()), mean=float(fit.mean()),
             suite_best=sb, suite_mean=sm,
             flank_share=float(res.damage_to_flank / max(total_dmg, 1e-9)),
+            placement_share=float(ap[1:].sum() / max(ap.sum(), 1e-9)),
+            unanswered_share=float(un[0] / max(un[1], 1e-9)),
             elapsed_s=time.perf_counter() - t0, matches=len(matches),
             ledger_error=res.ledger_error, best_nickname=nickname(pop, best_i),
         )
@@ -365,7 +398,8 @@ def coevolve(
             suite_txt = f" suite {sb:+.3f}" if sb is not None else ""
             print(
                 f"  [{spec.label} coevo run{run:02d}] g{g:04d} best {entry.best:+.3f} "
-                f"mean {entry.mean:+.3f}{suite_txt} flank {entry.flank_share:.2f} "
+                f"mean {entry.mean:+.3f}{suite_txt} place {entry.placement_share:.2f} "
+                f"unans {entry.unanswered_share:.2f} "
                 f"{entry.elapsed_s:5.1f}s {entry.best_nickname}"
             )
         if g < e.generations - 1:

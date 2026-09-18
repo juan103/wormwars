@@ -4,6 +4,10 @@
 
 Absolute progress is the score against the versioned frozen opponent suite on held-out world ids;
 the within-generation score is relative and will drift on its own as opponents improve.
+
+The tactics numbers printed here are descriptive only. To ask whether coevolution produced a tactic,
+use `scripts/tactics.py`, which compares against the frozen suite inside the same matches. Do not
+read "share of damage on mid/tail" as evidence of flanking: DECISIONS.md D026.
 """
 
 from __future__ import annotations
@@ -98,14 +102,18 @@ def main():
             "suite_curve": suite_points,
             "flank_share_first": log[0].flank_share,
             "flank_share_last": log[-1].flank_share,
+            "placement_share_first": log[0].placement_share,
+            "placement_share_last": log[-1].placement_share,
+            "unanswered_share_first": log[0].unanswered_share,
+            "unanswered_share_last": log[-1].unanswered_share,
             "hall_of_fame": [n for _, _, n in hof.entries],
             "suite_version": suite_meta["suite_version"],
             "seconds": time.perf_counter() - t0,
         })
         print(
             f"  run {run}: frozen suite {rows[-1]['suite_first']:+.3f} -> "
-            f"{rows[-1]['suite_last']:+.3f}   flank share "
-            f"{rows[-1]['flank_share_first']:.2f} -> {rows[-1]['flank_share_last']:.2f}   "
+            f"{rows[-1]['suite_last']:+.3f}   placement "
+            f"{rows[-1]['placement_share_first']:.2f} -> {rows[-1]['placement_share_last']:.2f}   "
             f"{rows[-1]['seconds']:.0f}s"
         )
 
@@ -116,8 +124,14 @@ def main():
     print(f"start  {first.mean():+.3f} +- {first.std():.3f}")
     print(f"end    {last.mean():+.3f} +- {last.std():.3f}")
     print(f"gain   {(last - first).mean():+.3f}  (improved in {int((last > first).sum())}/{len(rows)} runs)")
-    fs = np.array([r["flank_share_last"] for r in rows])
-    print(f"share of damage landed on mid/tail rather than head, final generation: {fs.mean():.3f}")
+    ps = np.array([r["placement_share_last"] for r in rows])
+    us = np.array([r["unanswered_share_last"] for r in rows])
+    print(f"placement share (armor removed, reference line 0.667): {ps.mean():.3f}")
+    print(f"unanswered damage share: {us.mean():.3f}")
+    print(
+        "Neither is evidence of tactics on its own -- run scripts/tactics.py, which compares "
+        "against the frozen suite inside the same matches."
+    )
     print(f"total GPU-hours: {sum(r['seconds'] for r in rows) / 3600:.3f}")
 
 

@@ -176,26 +176,71 @@ def profile_correlation(a: np.ndarray, b: np.ndarray) -> float:
     return float(np.corrcoef(a, b)[0, 1])
 
 
+def armor_weights(ccfg) -> tuple[float, float, float]:
+    """The per-body-point multipliers in the damage rule: (head, mid, tail)."""
+    return (float(ccfg.head_armor), 1.0, 1.0)
+
+
+def chance_flank_share(ccfg) -> float:
+    """What "share of damage landed on mid+tail" reads when attack is uniform over the body.
+
+    Damage is `k * (head_armor * a_head + a_mid + a_tail)`. If the attack field were the same at
+    all three body points, the mid+tail share would already be
+    `(1 + 1) / (head_armor + 1 + 1)` -- 0.889 at the shipped `head_armor = 0.25` -- with no tactics
+    involved at all. This is a **reference line, not a null**: see `chance_placement_share`.
+    """
+    w = armor_weights(ccfg)
+    return (w[1] + w[2]) / sum(w)
+
+
+def chance_placement_share(ccfg=None) -> float:
+    """The same reference line once the armor multipliers are divided back out: 2/3.
+
+    Neither reference is the null hypothesis. Weys approach shared food head-first, so head
+    contacts need not be as likely as mid or tail contacts even without any tactic. The null is
+    the **measured** value for random and generation-0 strains under identical conditions.
+    """
+    return 2.0 / 3.0
+
+
 @dataclass
 class TacticsReport:
-    flank_share: float  # damage landed on mid/tail as a fraction of all damage
+    """Four numbers, three of which mean something on their own.
+
+    `flank_share` is kept only so the retracted claim can be re-checked; it is pinned near
+    `chance_flank_share` by the armor weights whatever the weys do.
+    """
+
+    flank_share: float  # armor-weighted damage on mid/tail -- see the warning above
     head_share: float
-    turn_toward_rate: float  # how often a wey turned toward the side it was bitten from
+    placement_share: float  # the same with armor divided out: where bites actually land
+    unanswered_share: float  # damage dealt by weys that took nothing back that tick
+    turn_toward_rate: float  # how often a bitten wey turned toward the bite
     turn_events: int
+    total_damage: float
 
     def __str__(self) -> str:
         return (
-            f"damage to mid/tail {self.flank_share:.3f}, to head {self.head_share:.3f}; "
-            f"turned toward the bite {self.turn_toward_rate:.3f} of {self.turn_events} events"
+            f"placement {self.placement_share:.3f}  unanswered {self.unanswered_share:.3f}  "
+            f"turn-toward {self.turn_toward_rate:.3f} ({self.turn_events} events)  "
+            f"[flank_share {self.flank_share:.3f}, armor-pinned]"
         )
 
 
-def tactics_from_world(world) -> TacticsReport:
-    total = float(world.damage_by_point.sum())
-    toward, events = (float(x) for x in world.turn_toward_damage)
+def tactics_from_world(world, swarm: int | None = None) -> TacticsReport:
+    """Tactics for one swarm, or summed over all of them when `swarm` is None."""
+    sel = slice(None) if swarm is None else slice(swarm, swarm + 1)
+    dmg = world.damage_points[:, sel].sum(dim=(0, 1))
+    place = world.attack_points[:, sel].sum(dim=(0, 1))
+    unans = world.unanswered[:, sel].sum(dim=(0, 1))
+    turn = world.turn_toward_damage[:, sel].sum(dim=(0, 1))
+    total, place_total = float(dmg.sum()), float(place.sum())
     return TacticsReport(
-        flank_share=world.flank_damage / max(total, 1e-12),
-        head_share=world.head_damage / max(total, 1e-12),
-        turn_toward_rate=toward / max(events, 1.0),
-        turn_events=int(events),
+        flank_share=float(dmg[1:].sum()) / max(total, 1e-12),
+        head_share=float(dmg[0]) / max(total, 1e-12),
+        placement_share=float(place[1:].sum()) / max(place_total, 1e-12),
+        unanswered_share=float(unans[0]) / max(float(unans[1]), 1e-12),
+        turn_toward_rate=float(turn[0]) / max(float(turn[1]), 1.0),
+        turn_events=int(turn[1]),
+        total_damage=total,
     )

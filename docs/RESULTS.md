@@ -253,26 +253,28 @@ its own as the opponents improve, so it is not the measure of anything.
 
 **Fixed 40 v 40**, 0.071 GPU-hours:
 
-| run | frozen suite, first → last | flank share |
-|---|---|---|
-| 0 | +0.071 → **+0.377** | 0.88 |
-| 1 | +0.185 → **+0.310** | 0.90 |
-| both | **+0.128 ± 0.057 → +0.343 ± 0.033**, improved **2 / 2** | **0.888** |
+| run | frozen suite, first → last |
+|---|---|
+| 0 | +0.071 → **+0.377** |
+| 1 | +0.185 → **+0.310** |
+| both | **+0.128 ± 0.057 → +0.343 ± 0.033**, improved **2 / 2** |
 
 **Headcounts varying 50–200 per generation, including lopsided pairs** (each played from both spawn
 sides *and* with the headcounts swapped), suite scored at the standard 100 v 100, 0.288 GPU-hours:
 
-| run | frozen suite, first → last | flank share |
-|---|---|---|
-| 0 | +0.168 → +0.165 | 0.88 |
-| 1 | +0.096 → **+0.211** | 0.87 |
-| both | +0.132 ± 0.036 → +0.188 ± 0.023, improved **1 / 2** | 0.876 |
+| run | frozen suite, first → last |
+|---|---|
+| 0 | +0.168 → +0.165 |
+| 1 | +0.096 → **+0.211** |
+| both | +0.132 ± 0.036 → +0.188 ± 0.023, improved **1 / 2** |
 
 Varying the headcount makes the objective non-stationary and progress correspondingly slower, which
 is the expected ordering rather than a surprise.
 
-Coevolved swarms learned to flank: **~88% of the damage they deal lands on an enemy's flank or tail**
-rather than its head, which is exactly what the measured combat geometry rewards.
+Coevolution improves the score against the frozen suite. It does **not** produce any measurable
+combat tactic: see *Tactics* below and the *Corrections* section. An earlier version of this
+document claimed that coevolved swarms "learned to flank"; that claim was an artifact and is
+retracted (`DECISIONS.md` D026).
 
 Paired evaluation is exact: a match played as (A=swarm0, B=swarm1, sides unswapped) and as
 (B=swarm0, A=swarm1, sides swapped) gives **exactly negated scores**, asserted as a test. That holds
@@ -395,12 +397,54 @@ Independent runs on the *same* graph do agree more than pairs drawn across diffe
 N2 > SH > RD is well inside the noise at these sample sizes. Evolution is finding many different
 solutions on the same wiring, not one.
 
-### Tactics
+### Tactics — no evidence of learned flanking
 
-From coevolution (M7): **88.8%** of the damage a coevolved swarm deals lands on an enemy's mid or
-tail rather than its head. The measured geometry makes a flank cost the victim 0.120 damage per tick
-and the attacker nothing, against 0.084 each way head-on, so this is the tactic the rules reward and
-evolution found it.
+Measured by `scripts/tactics.py`: 2 runs x 16 strains against the same 6 frozen opponents, on the
+same 8 held-out world ids, at 40 v 40, 400 ticks. Intervals are hierarchical bootstraps over runs
+and strains.
+
+| group | placement share | unanswered damage | turns toward the bite | total damage dealt |
+|---|---|---|---|---|
+| random strains | 0.856 [0.711, 1.000] | 0.886 [0.657, 1.000] | 0.066 [0.000, 0.198] | **80** |
+| generation 0 | 0.791 [0.659, 0.938] | 0.691 [0.340, 0.969] | 0.369 [0.097, 0.652] | **7 308** |
+| final coevolved | **0.6725** [0.6484, 0.6986] | **0.4991** [0.4080, 0.5788] | **0.5221** [0.3141, 0.7273] | 50 844 |
+| frozen suite, *same matches* | 0.6945 [0.6744, 0.7240] | 0.6657 [0.5811, 0.7378] | 0.3573 [0.2919, 0.4232] | 51 307 |
+| reference line | 0.6667 | — | 0.5 | |
+
+**Neither reference line is a null, and that is measurable.** Drop unevolved weys into a dense heap
+with random headings and let them bite for 25 ticks: the flank share comes out at **0.793** and the
+placement share at **0.489**, both *below* their reference lines (0.889 and 0.667). Weys converge on
+each other head-first, so heads take more than a uniform share of contact before any tactic exists.
+An analytic line computed from the armour weights cannot stand in for that.
+
+**Random and generation-0 strains cannot serve as the null either.** They barely fight: 80 and 7 308 total
+damage against the coevolved populations' 50 844, with only 3 and 8 strains landing any damage at
+all. Their ratios come from a handful of accidental contacts. The sound comparison is the **frozen
+opponent suite measured inside the very same matches** — unevolved, and guaranteed to have fought
+exactly as much.
+
+Paired, coevolved side minus the frozen side it was fighting, same matches:
+
+| metric | difference | verdict |
+|---|---|---|
+| placement share | -0.0112 [-0.0359, +0.0190] | no separation |
+| unanswered damage | **-0.1530 [-0.2268, -0.0812]** | coevolved side **lower** |
+| turns toward the bite | +0.1686 [-0.0722, +0.4331] | no separation |
+
+**There is no evidence that coevolution produced flanking.** Bites do not land further back on
+enemies than an unevolved opponent's do. Turning toward the bite does not separate, and the
+coevolved value (0.522) sits at chance (0.5); the two runs disagree sharply (0.341 and 0.703), which
+is what the wide interval is saying. And unanswered damage runs the *wrong way* for a flanking
+story: the coevolved side's damage is **more** answered than its opponent's, not less.
+
+Two further observations point the same way. The coevolved populations deal essentially the same
+total damage as the frozen opponents they beat (50 844 vs 51 307), and in run 1 they deal
+considerably *less* (8 467 vs 13 244) while still winning on score. Whatever coevolution improved,
+it was not the amount or the geometry of damage dealt.
+
+The combat geometry itself is real and was measured directly (M6): a flank costs the victim 0.120
+damage per tick and the attacker nothing, against 0.084 each way head-on. The rules reward flanking.
+**Evolution did not find it** — at least not within 20 generations of a population of 16.
 
 ---
 
@@ -430,3 +474,44 @@ generalise across a 50x change in headcount**, for a reason that is structural r
 accidental: travel time scales with sqrt(headcount) while speed, match length and food per wey do
 not. Making the showcase comfortable would mean redesigning the economy around it, which is not what
 a generalisation test is for.
+
+---
+
+## Corrections
+
+Things this document previously got wrong, what replaced them, and where the reasoning is recorded.
+Nothing is deleted; the retracted claims are stated here so the correction can be checked.
+
+### C1 — "Coevolved swarms learned to flank" (retracted)
+
+**Claimed:** that coevolved swarms learned to flank, because 88.8% of the damage they dealt landed
+on an enemy's mid or tail rather than its head. Appeared in the M7 section, the M10 tactics section,
+and the README.
+
+**Why it was wrong:** the damage rule weights the head by `head_armor = 0.25` and mid and tail by
+1.0, so a uniform attack across the body already gives `2 / 2.25 = 0.8889`. The reported 88.8% is
+that reference line. The refutation was already in the recorded data: generation-0 populations
+scored 0.881 and 0.879 on the same metric, against final values of 0.884 and 0.897 — it never moved.
+
+**Caught by:** external review of the published results, as arithmetic on the damage rule.
+
+**And the reference line is not the null.** Unevolved weys in a dense heap measure 0.793 flank share
+and 0.489 placement share, both below the analytic lines, because they meet each other head-first.
+The null has to be measured, not derived.
+
+**Replaced by:** three metrics that can move — placement share (armor divided out), unanswered
+damage share, and turns-toward-the-bite — measured against the frozen opponent suite inside the same
+matches. Result: **no evidence of learned flanking**, with unanswered damage running the opposite
+way. Numbers in *M10 → Tactics*; reasoning in `DECISIONS.md` D026.
+
+**Not affected:** the M6 combat-geometry measurements (the flank rule itself), the M9 N2/SH/RD
+comparison, and the M7 frozen-suite scores. Those are separate measurements and none of them
+depended on the flank-share number.
+
+### C2 — M7 coevolution figures superseded by a re-run
+
+The first M7 numbers (+0.059 → +0.156) were measured before food was made to scale with headcount
+(`DECISIONS.md` D023). They are superseded by the re-run reported above (+0.128 → +0.343). Both are
+kept here; the difference is the corrected food economy at 40 v 40, not a change in method. Results
+measured at the development size of 20 weys — M4, M5, M8, M9 — are unaffected, because both scaling
+factors are exactly 1 there.

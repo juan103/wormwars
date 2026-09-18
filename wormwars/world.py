@@ -240,10 +240,24 @@ class World:
         self.pump = torch.zeros_like(self.heading)
         self.last_damage_taken = torch.zeros_like(self.heading)
         self.last_damage_dealt = torch.zeros_like(self.heading)
-        # tactics accounting: damage received at head / mid / tail, and how often a wey turned
-        # toward the side it was bitten from
-        self.damage_by_point = torch.zeros(3, dtype=torch.float64, device=self.device)
-        self.turn_toward_damage = torch.zeros(2, dtype=torch.float64, device=self.device)
+        # --- tactics accounting ---
+        # All of these are per world and per *attacking* swarm, because "how does this swarm
+        # fight" cannot be answered by a total summed over both sides. They are pure measurement:
+        # nothing here feeds back into the simulation, and no RNG is consumed.
+        z3 = lambda: torch.zeros(  # noqa: E731
+            self.n_worlds, self.n_swarms, 3, dtype=torch.float64, device=self.device
+        )
+        z2 = lambda: torch.zeros(  # noqa: E731
+            self.n_worlds, self.n_swarms, 2, dtype=torch.float64, device=self.device
+        )
+        # damage dealt, split by which of the victim's body points it landed on (armor-weighted)
+        self.damage_points = z3()
+        # the same, with the armor multiplier divided back out: where bites actually *land*
+        self.attack_points = z3()
+        # (damage dealt by weys that took nothing back this tick, total damage dealt)
+        self.unanswered = z2()
+        # (turned toward the side it was bitten from, times it was asymmetrically bitten while turning)
+        self.turn_toward_damage = z2()
         self.v = [
             self.brains[s].initial_state(self.assigns[s].n_slots * self.n_weys)
             for s in range(self.n_swarms)
@@ -510,8 +524,8 @@ class World:
         asked = (dl + dr > eps) & ((dl - dr).abs() > eps) & (turn.abs() > eps) & self.alive
         toward = asked & (torch.sign(dl - dr) == torch.sign(turn))
         self.turn_toward_damage += torch.stack(
-            (toward.sum().double(), asked.sum().double())
-        )
+            (toward.sum(dim=2), asked.sum(dim=2)), dim=2
+        ).double()
 
         # 3. act: turn, then move, resisted and deflected by crowding, blocked by walls
         self.heading = (self.heading + wcfg.max_turn * turn * alive_f) % (2 * torch.pi)
@@ -668,7 +682,12 @@ class World:
         received = torch.zeros_like(deposit)
         share = scale.unsqueeze(-1).unsqueeze(1)  # [Wd, 1, victim, wey, 1]
         capped_per_src = raw_per_src * share * alive_f.unsqueeze(1).unsqueeze(-1)
-        self.damage_by_point += capped_per_src.sum(dim=(0, 1, 2, 3)).double()
+        # [Wd, src, victim, wey, point] -> [Wd, src, point], i.e. damage dealt BY each swarm,
+        # split by where on the victim it landed. Dividing the armor weights back out turns
+        # "damage" into "where the bite landed", which is the quantity the armor weights otherwise
+        # bake a fixed answer into. See DECISIONS.md D026.
+        self.damage_points += capped_per_src.sum(dim=(2, 3)).double()
+        self.attack_points += (capped_per_src / armor).sum(dim=(2, 3)).double()
         for s in range(n_sw):
             splat_into(received, s, body, capped_per_src[:, s].reshape(Wd, -1))
         # 6. the adjoint of step 2 is the same blur, because the kernel is symmetric
@@ -691,6 +710,13 @@ class World:
         gain = torch.minimum(gain, headroom) * alive_f
         self.energy += gain
         self.last_damage_dealt = collected
+        # Unanswered damage: what a swarm dealt through weys that took nothing back in the same
+        # tick. Flanking, if it exists, should show up here -- hitting someone who cannot hit you
+        # is the whole point of getting behind them.
+        untouched = (capped <= 0).to(collected.dtype)
+        self.unanswered += torch.stack(
+            ((collected * untouched).sum(dim=2), collected.sum(dim=2)), dim=2
+        ).double()
         # everything the victims lost that did not arrive anywhere is the stated inefficiency
         self.ledger.inefficiency += (capped.sum(dim=(1, 2)) - gain.sum(dim=(1, 2))).double()
 
@@ -769,12 +795,22 @@ class World:
         return self.total_energy() - (self.start_energy_total + self.ledger.net())
 
     @property
+    def damage_by_point(self) -> Tensor:
+        """[3] -- damage landed on head / mid / tail, summed over worlds and attacking swarms."""
+        return self.damage_points.sum(dim=(0, 1))
+
+    @property
     def head_damage(self) -> float:
         return float(self.damage_by_point[0])
 
     @property
     def flank_damage(self) -> float:
-        """Damage landed on mid and tail -- the share a flanking tactic produces."""
+        """Damage landed on mid and tail.
+
+        NOTE: on its own this is **not** evidence of flanking. The armor weights make a uniform
+        attack across the body produce mid+tail / total = 2 / (2 + head_armor) all by itself.
+        Use `attack_points` (armor divided out) and `unanswered` instead. DECISIONS.md D026.
+        """
         return float(self.damage_by_point[1:].sum())
 
     def neuron_state(self) -> Tensor:

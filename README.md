@@ -59,8 +59,15 @@ Full numbers in [`docs/RESULTS.md`](docs/RESULTS.md); every one of them was meas
 **0.432 ± 0.030** on held-out seeds across 3 independent runs, and every run beat the *best of 32*
 random strains. They keep 16-18 of 20 weys alive against 6-7, and eat 3.7x more food, so this is
 foraging and not an accounting exploit. It still works when eating requires pumping (**8.3x**), and
-coevolved swarms learn to flank: **88% of the damage they deal lands on an enemy's flank or tail**
-rather than its head, which is exactly what the measured combat geometry rewards.
+two-swarm coevolution improves against a frozen opponent suite (**+0.128 → +0.343**, 2/2 runs).
+
+**Coevolution did not produce any measurable combat tactic.** An earlier version of this README
+claimed it learned to flank; that was an artifact of the damage rule's armour weights and has been
+retracted — see *Corrections* in [`docs/RESULTS.md`](docs/RESULTS.md) and `DECISIONS.md` D026.
+Re-measured against the frozen suite inside the same matches, coevolved swarms land bites no further
+back than their unevolved opponents do (placement share difference -0.011 [-0.036, +0.019]), turn
+toward the bite at chance, and their damage is *more* answered than their opponents', not less
+(-0.153 [-0.227, -0.081]).
 
 **On the claim under test, the answer is: no, and slower.** The full experiment is K=5, R=3 --
 five independent SH graphs and five RD graphs with three runs each, and fifteen runs of N2, so every
