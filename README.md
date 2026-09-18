@@ -117,6 +117,51 @@ neurons sit **three graph hops** from any sensor, because all somatic-pharyngeal
 through the two-neuron `RIP<->I1` gap-junction bridge. In every shuffled or random control they are
 one or two hops away.
 
+## Limitations
+
+Stated here, by us, because they bound what the result means.
+
+**The three-way comparison only ever ran on foraging.** N2 against SH and RD was measured on
+single-swarm foraging with automatic eating, and on nothing else. It was never run on combat, and
+never on pump-gated eating — which is exactly where `DECISIONS.md` D008 predicts the real wiring is
+handicapped, because in N2 every route from a sensor to the pump neurons crosses the two-neuron
+`RIP↔I1` bridge: **3 graph hops in N2 against 1–2 in all ten control graphs**. Combat and pumping
+were only ever run on N2. The condition where the pharynx should matter has not been tested.
+
+**The evolutionary budget is small, and N2 had not stopped improving when it ran out.** 25
+generations, population 32, 5 404 parameters per genome. From the logs: over the last ten
+generations N2's best fitness rose 1.369 → 1.439 and was **still rising in 13 of 15 runs**, while SH
+was flat (1.497 → 1.500, rising in 7 of 15) and RD rose 1.496 → 1.550 (9 of 15). N2 also started
+lowest. So **"N2 is slower" is established; "N2 ends up equal" is provisional** — the budget expired
+while N2 was still climbing and the controls had largely stopped, and a longer run could separate
+them in either direction.
+
+**Five control graphs, and they disagree with each other.** SH graph means span 1.384–1.607 and RD
+1.406–1.530, against N2's single value of 1.412. N2 is one draw sitting inside that spread. There is
+only one real connectome, so its interval carries run-to-run variation only while the controls also
+carry graph-to-graph variation; that asymmetry cannot be fixed by more compute.
+
+**The interface probably favours shallow graphs — though by less than we first reported.** Weys are
+given separate left and right food readings, so foraging can be solved by wiring a sensor difference
+almost straight to the turn read-out, and a task solvable in one hop rewards graphs that offer one
+hop. But measured across the ten control graphs actually used, N2 is **not** meaningfully deeper for
+locomotion: mean distance from the mapped sensors to the locomotor read-out is **1.17 in N2**,
+**1.00–1.17 across the five shuffles**, and **1.06–1.39 across the five random graphs** — N2 sits
+inside the shuffle range and below one of the random graphs. The clear depth penalty is to the pump
+(3 hops versus 1–2), and the foraging experiment never used the pump. Separately, a real worm cannot
+make that left/right comparison at all: *C. elegans* chemotaxis works by sampling concentration over
+time while moving, not by comparing two sides at once. The interface is our invention, not biology.
+
+**Combat rests on two runs of one graph.** All coevolution was N2 only: 2 runs, population 16, 20
+generations. No shuffled or random graph was ever coevolved. And the showcase shows the design does
+not generalise across a 50× change in headcount — strains coevolved at 40 v 40 barely leave their
+spawn blocks at 2 000 v 2 000, because arena side grows as √headcount while wey speed does not.
+
+**A wey is not a worm.** No neuromodulation, no plasticity, no biophysics, no muscles, no body
+mechanics. The body is a rigid three-point segment and the motor output is a linear read of named
+motor neurons. The only things taken from biology are the wiring graph and a hand-chosen mapping of
+game quantities onto individual named neurons.
+
 ## Status
 
 See `PLAN.md` for milestones and what has actually been measured. `DECISIONS.md` records modelling

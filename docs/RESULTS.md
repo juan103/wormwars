@@ -152,17 +152,25 @@ means individually.
   controls simply move more before evolution starts, and foraging rewards moving.
   `wormwars/calibration.py` equalises this; M9 reports the experiment **both ways**.
 
-Graph distances, measured, sensors to motors (chemical + gap, shortest path):
+Graph distances, measured over the ten control graphs actually used in M9, shortest path from the
+mapped sensors across chemical and gap edges. **Locomotor read-out and pump read-out are reported
+separately**, because pooling them was misleading (Corrections C4):
 
-| graph | mean | max | sensors to pump (MC) |
+| graph | sensors → locomotor read-out (mean) | max | sensors → pump (MC) |
 |---|---|---|---|
-| N2 | 1.35 | 3 | **3, 3** |
-| SH1-3 | 1.00-1.05 | 1-2 | 1-2 |
-| RD1-3 | 1.05-1.40 | 2 | 1-2 |
+| N2 | **1.17** | 2 | **3, 3** |
+| SH1–SH5 | 1.00, 1.06, 1.00, 1.00, 1.17 | 1–2 | 1–2 |
+| RD1–RD5 | 1.39, 1.06, 1.17, 1.17, 1.28 | 2 | 1–2 |
 
-N2's pump neurons are three hops from any sensor because everything must pass the two-neuron
-RIP-I1 bridge; in every control they are one or two. Predicted in `DECISIONS.md` D008 before the
-experiment was run.
+Two separate facts, and only one of them is large:
+
+- For **locomotion**, N2 is not meaningfully deeper than its controls. Its 1.17 sits inside the
+  shuffle range (1.00–1.17) and below RD1 (1.39). Whatever disadvantages N2 on foraging, a longer
+  sensor-to-motor path is not obviously it.
+- For the **pump**, N2 is clearly deeper: 3 hops against 1–2 in every one of the ten controls,
+  because all somatic-pharyngeal traffic crosses the two-neuron `RIP↔I1` bridge. Predicted in
+  `DECISIONS.md` D008 before the experiment was run — **and never tested**, because the N2/SH/RD
+  comparison was only ever run on foraging with automatic eating.
 
 ---
 
@@ -576,3 +584,17 @@ The figures therefore differ from the first version (for example the coevolved p
 0.6571 / 0.6613 per run rather than a pooled 0.6725, and unanswered damage 0.3141 / 0.3559 rather
 than 0.4991). Both are kept here. The difference is the weighting and the grouping, not a different
 measurement, and **the conclusion is unchanged**: no evidence of learned flanking.
+
+### C4 — sensor-to-motor distance was reported with the pump folded in
+
+An earlier version of the M5 section gave N2's mean sensor-to-motor graph distance as 1.35 with a
+maximum of 3, against 1.00–1.05 for the shuffles, and used it to suggest that N2 routes through
+interneuron layers where the controls go almost straight from sensor to motor.
+
+That figure pooled the locomotor read-out with the **pump** read-out. Separated, and measured across
+all ten control graphs rather than three: the locomotor distance is **1.17 for N2** against
+**1.00–1.17 for the five shuffles** and **1.06–1.39 for the five random graphs** — N2 is inside the
+shuffle range, not outside it. The entire gap was the pump: **3 hops in N2, 1–2 in every control**.
+
+Both are kept. The correction matters because the foraging experiment never used the pump, so the
+one place N2 is measurably deeper is the one place the experiment did not look.
