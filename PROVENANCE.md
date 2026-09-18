@@ -138,15 +138,21 @@ to look at. Recorded here so the result is not a surprise later.
 ## A note on the commit hashes recorded in run bundles
 
 Every run bundle (`runs/*/bundle.json`) records the git commit its experiment ran at. Those
-recorded hashes predate a rewrite of this repository's git history, performed once before
-publication to replace the author and committer identity (which had been a personal email address)
-with a GitHub no-reply address, and to strip a session-URL trailer from the commit messages.
+recorded hashes predate **two** rewrites of this repository's git history, both performed before
+publication and both while the repository was private:
 
-Changing the identity changes every commit hash, so **the commit hashes inside the bundles no
-longer exist in this repository**. They are mapped to their replacements in
-`experiments/01-foraging-n2-vs-controls/commit-hash-map.txt`.
+1. **Identity.** The author and committer fields carried a personal email address and every commit
+   message carried a session-URL trailer. Both were replaced and removed respectively.
+2. **Data hygiene.** One committed file was found to contain a derived form of the connectome's
+   anatomical weights, which this project does not redistribute (`DECISIONS.md` D028). It was
+   removed from every commit; it is regenerated from its seed instead.
 
-Nothing else changed: every file, every tree hash, and every author and committer date is
-byte-identical across the rewrite, so the code a bundle refers to is exactly the code that ran.
+Either rewrite changes every commit hash, so **the commit hashes inside the bundles no longer exist
+in this repository**. They are mapped to their final replacements in
+`experiments/01-foraging-n2-vs-controls/commit-hash-map.txt`, which composes both rewrites so the
+original hash maps straight to the final one.
+
+Nothing else changed: apart from the one removed path, every file and every author and committer
+date is byte-identical across both rewrites, so the code a bundle refers to is the code that ran.
 The bundles were deliberately left as written rather than edited, because a run record should say
 what it recorded at the time.

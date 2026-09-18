@@ -41,7 +41,7 @@ from wormwars.brain import BrainSpec, Genome
 from wormwars.config import Config
 from wormwars.connectome import load_connectome
 from wormwars.evo import SeedPool, load_genome
-from wormwars.evo.coevolve import build_schedule, play
+from wormwars.evo.coevolve import build_schedule, make_frozen_suite, play
 from wormwars.interface import load_interface
 
 METRICS = ("placement", "unanswered", "turn_toward", "flank")
@@ -120,12 +120,17 @@ def main():
     pop_size = int(bargs["population"])
     seeds = [int(bargs["base_seed"]) + i for i in range(int(bargs["runs"]))]
 
-    suite_path = next(run_dir.glob("*frozen-suite*.npz"))
-    suite, suite_meta = load_genome(suite_path, spec, cfg.brain, device=args.device)
+    # The frozen suite is REGENERATED from its seed rather than read from a file. It is an
+    # unevolved population, so its weights are proportional to the connectome's anatomical
+    # weights, and this project does not redistribute those (see NOTICE and DECISIONS.md D028).
+    # make_frozen_suite is deterministic, so this reproduces the suite the runs actually used.
+    suite, suite_meta = make_frozen_suite(
+        spec, cfg, n=cfg.evo.suite_size, device=args.device
+    )
 
     ref = {"flank": chance_flank_share(cfg.combat), "placement": chance_placement_share(cfg.combat)}
     print(
-        f"frozen opponent suite: {suite.n_strains} RANDOM-WEIGHT strains, never evolved for "
+        f"frozen opponent suite (regenerated from seed): {suite.n_strains} RANDOM-WEIGHT strains, never evolved for "
         f"anything -- not for foraging, not for combat. Diversity comes from spreading the "
         f"initialisation scale ({suite_meta.get('init_scales')})."
     )

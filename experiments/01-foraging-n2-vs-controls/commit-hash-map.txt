@@ -1,60 +1,66 @@
-# Commit hash map for the author-identity rewrite of experiment 01.
+# Commit hash map for experiment 01.
 #
 # WHY THIS FILE EXISTS
-#   Before publication the repository's git history was rewritten to replace the author and
-#   committer identity, which had been a personal email address, with a GitHub no-reply address,
-#   and to strip a session-URL trailer from every commit message. Rewriting the identity changes
-#   every commit hash.
+#   This repository's git history was rewritten twice before publication, and both rewrites change
+#   every commit hash. The run bundles under runs/*/bundle.json record the commit each experiment
+#   ran at; those recorded hashes are the ORIGINAL ones and no longer exist here. This file maps
+#   them to the commits that finally replaced them, so a bundle can still be traced to its code.
 #
-#   The run bundles under runs/*/bundle.json record the commit each experiment ran at. Those
-#   recorded hashes are the OLD ones and no longer exist in this repository. This file maps them
-#   to the commits that replaced them, so a bundle can still be traced to its code.
+#   The two rewrites were:
+#     1. Identity. The author and committer fields carried a personal email address, and every
+#        commit message carried a session-URL trailer. Both were replaced with a GitHub no-reply
+#        address and removed, respectively.
+#     2. Data hygiene. One committed file was found to contain a derived form of the connectome's
+#        anatomical weights, which this project does not redistribute. It was removed from every
+#        commit. It is regenerated deterministically from its seed instead, so nothing is lost.
+#
+#   Both rewrites happened while the repository was private and before any public push. No
+#   published history was rewritten and no clone was invalidated.
 #
 # WHAT WAS AND WAS NOT CHANGED
-#   Changed:   author name, author email, committer name, committer email; the session trailer.
-#   Unchanged: every file, every tree hash, every author date, every committer date, the order and
-#              parentage of commits, and the Co-Authored-By attribution to the model that wrote
-#              the code.
-#
-#   Verified after the rewrite: all 29 old/new pairs have identical tree hashes and identical
-#   author and committer dates; git log --all shows exactly one identity; the replaced strings
-#   occur zero times across all git objects, refs, the reflog, .git/config and every tracked file;
-#   and git fsck reports no dangling or unreachable objects after the reflog was expired and the
-#   repository garbage-collected.
-#
-#   Nothing had been pushed when this happened, so no published history was rewritten. The
-#   pre-rewrite history is preserved in an offline backup only.
+#   Changed:   author and committer identity; the session trailer; one removed path.
+#   Unchanged: every other file, every author date, every committer date, and the order and
+#              parentage of commits.
 #
 # FORMAT
-#   <old commit>  <new commit>  <subject>
+#   <source commit>  <final commit>  <origin>  <subject>
+#
+#   origin = "original"       the hash as it was before either rewrite; these are the hashes
+#                             recorded inside runs/*/bundle.json
+#   origin = "post-rewrite-1" a commit created between the two rewrites, so it never had an
+#                             earlier hash than the one shown
 #
 
-026b7b6b75efef9ba288658ffeb20730f2c6063e  77fedff7485afa86e61a13e3da5833846dce6a6b  M9 calibrated arm: null on final score, N2 slower to improve
-0ea5f72bd457bc15877b372ccb149a8d75a984ea  12abd5dd37299a2e0dfb6f030cb3962a6a0d87e6  Food geometry scales with headcount; genomes carry their gains
-1217ab1e29a0af37730a88abce9ecd36c03e1cf7  b2acc84263e3c0d948f7e428932fc808d693ad51  M7 + M8 results
-2f3c560c63e8213e765468e4a7dda097ff455edb  eed510bce14fb876c1edd6e434ab6023907c7b8d  Cover selection, islands and seed pools
-34d878cc867241b01237a5f719b32b34bda9abdf  15c7250e901c45a08fbd3b5eff583086082cfcdd  M3: foraging world, recorder, viewer, physics and ledger tests
-35028c072e59d54a12ebf544ccdf03b6c8a0fca5  87ab460556104783f0222fd07a2e1abb678bcf12  M2: brain module, semi-implicit integrator, config dataclasses
-3502fdd030890f602528cee28b26847229b6d90c  f1ca3d710b62e96a0d9a87beb363dd148a22528a  M7: per-swarm brains, paired evaluation, hall of fame, frozen suite
-35de9b7d0aa120ae12e080f157852a6f29c4f1f5  efe80b1c061829e9dfec8f3c08ff6db66a14f64a  Food scales with headcount; frozen suite scored inside the training sizes
-3d2454534848b6da85e1a6e10c56dd559668dc37  1a4020ed2ca94ec8af61dc41918925a80ffaf5cf  M6: stage 1+2 combat, bite credit, scripted flank geometry
-3dbe593ad70168481b910dfe16793963b578e65b  6c916fc6943216a775ec97ceeb01fc39da2c0fac  M9 complete: both arms, 90 runs, 1.79 GPU-hours
-45aa21d01980712e3138c77d0c649f436b5cf83c  7c13d74831bea59157cbcf67a2adacea293b22ff  Tactics: per-run reporting, matched comparison, energy sources measured
-6c4d67de19564ae23666273fee3f43f36372495b  f048f892e8efb9b790a328cc2b3b042bd3abb9e9  Correct the M7 section to the post-food-fix re-run numbers
-73a1c57495e1c489b16d78fef87a800ec3b97a19  e770646a3c213d7456f2882c6ac185ad53985802  Part 3: freeze experiment 01, retitle, restructure README
-793ee9aefaa89a5b6fdb6d62d90cd0bcbbf6aafb  81261ac4d432d6de57b64cf6dff40b3df8b68eb3  Part 4: licence, citation, scrub, gitignore, repo contents
-7f5727a400e7113a12a9ae8a10c4a3c9cb4896fa  5dd202cff47841c18d09f3ae6fdfdfef21a376c1  M12 deferred by request; milestones 0-11 complete
-844710e09122e7b1f49d4bf1ca1cbce82d2bdf98  d0351f9a6c3a781cd1e7e08af2419e7eed9912da  Part 4: licence, citation, scrub, gitignore
-8a046b426841790dffe6e2d77dfd2a599fbc5f0f  4eb66d4998cb3e407dc3f19cf93e23e25dbba7ca  Three Limitations edits from review
-8dd3bfa7c0c4db02d8c08afe4b882acc2e5a1721  28c816b433b88c73ec4967a0dee692dc93376910  M10 ablation/convergence results and the showcase finding
-a6d015d01632f11be9de42fbe7cbe9d65e53e8e7  0a6ea903dfedb7317a88f1f0e713237e2949d233  Part 2: Limitations section, and a correction it turned up
-b19d780550a17f1a68dd7e8d8c925e3893fa0cfa  39303063ddda8a73a94d22502769c6ffa1c026a3  RETRACT the "learned to flank" claim; replace it with metrics that can move
-b3bafe62eb439c87a8056a62ead86f14102f500d  f61d26963af96a57cc522777d0c2102d25b2bb2e  configs/default.yaml, tuple coercion, dead code removed
-c7493fc16cdfe68046161e8b43ffd359ce2ee24c  847f14e50d3bf47b97f5e9a821075d3c1fca0a4a  M10 tools: per-strain ablation, matched controls, convergence, tactics
-ca92cdbd478f7f45572e5de999078b9813f8d8c2  8d9e76a44a12612f81c51267b5e0f488484d16c3  M1: connectome loader, interface mapping, provenance
-cda10e4bb7959c9a6336541583d72eea5d20a8e6  881f355d119fa10ac5714a9aaaeede43b74b1b83  Genome loading validates against stored shapes; showcase renders a duel
-d4f4acf0c25171c3ad68f30803536026a5f552d6  cebbefa3f7d85e8b8d8eb88c9e686f0986bc2264  Per-graph motor gain calibration, plus M11 and showcase scripts
-d83d8b78e2dc76417fa66416e86d92a8452cfa81  697a4d70e9cdd688a4a92687858a39b9b59d8b8a  M4/M5 scaffolding: evolution, SH/RD graphs, hierarchical bootstrap
-dd811950bf492c152f62235209f49ca2f0f79831  33783f9a96b0d773e6f0ec2c6991683cfe2b3d72  README: findings, interpretation and the script index
-e58e599e67839c2dd4b061920683d609ab91a9d2  5ff6da7861cb86fe7ced1678938b52de42a9477d  Fix arena density in mixed-headcount batches; varying swarm sizes
-eb01c5f96e28e444a259e44429811dc7edd55438  e40e727fd0e69d29cbae584784bb7faa3e7494e5  M0: repo skeleton, plan, environment check
+eb01c5f96e28e444a259e44429811dc7edd55438  e40e727fd0e69d29cbae584784bb7faa3e7494e5  original        M0: repo skeleton, plan, environment check
+ca92cdbd478f7f45572e5de999078b9813f8d8c2  8d9e76a44a12612f81c51267b5e0f488484d16c3  original        M1: connectome loader, interface mapping, provenance
+35028c072e59d54a12ebf544ccdf03b6c8a0fca5  87ab460556104783f0222fd07a2e1abb678bcf12  original        M2: brain module, semi-implicit integrator, config dataclasses
+34d878cc867241b01237a5f719b32b34bda9abdf  15c7250e901c45a08fbd3b5eff583086082cfcdd  original        M3: foraging world, recorder, viewer, physics and ledger tests
+d83d8b78e2dc76417fa66416e86d92a8452cfa81  697a4d70e9cdd688a4a92687858a39b9b59d8b8a  original        M4/M5 scaffolding: evolution, SH/RD graphs, hierarchical bootstrap
+3d2454534848b6da85e1a6e10c56dd559668dc37  1a4020ed2ca94ec8af61dc41918925a80ffaf5cf  original        M6: stage 1+2 combat, bite credit, scripted flank geometry
+3502fdd030890f602528cee28b26847229b6d90c  f1ca3d710b62e96a0d9a87beb363dd148a22528a  original        M7: per-swarm brains, paired evaluation, hall of fame, frozen suite
+c7493fc16cdfe68046161e8b43ffd359ce2ee24c  847f14e50d3bf47b97f5e9a821075d3c1fca0a4a  original        M10 tools: per-strain ablation, matched controls, convergence, tactics
+d4f4acf0c25171c3ad68f30803536026a5f552d6  cebbefa3f7d85e8b8d8eb88c9e686f0986bc2264  original        Per-graph motor gain calibration, plus M11 and showcase scripts
+1217ab1e29a0af37730a88abce9ecd36c03e1cf7  b2acc84263e3c0d948f7e428932fc808d693ad51  original        M7 + M8 results
+b3bafe62eb439c87a8056a62ead86f14102f500d  f61d26963af96a57cc522777d0c2102d25b2bb2e  original        configs/default.yaml, tuple coercion, dead code removed
+cda10e4bb7959c9a6336541583d72eea5d20a8e6  881f355d119fa10ac5714a9aaaeede43b74b1b83  original        Genome loading validates against stored shapes; showcase renders a duel
+e58e599e67839c2dd4b061920683d609ab91a9d2  5ff6da7861cb86fe7ced1678938b52de42a9477d  original        Fix arena density in mixed-headcount batches; varying swarm sizes
+2f3c560c63e8213e765468e4a7dda097ff455edb  eed510bce14fb876c1edd6e434ab6023907c7b8d  original        Cover selection, islands and seed pools
+dd811950bf492c152f62235209f49ca2f0f79831  33783f9a96b0d773e6f0ec2c6991683cfe2b3d72  original        README: findings, interpretation and the script index
+026b7b6b75efef9ba288658ffeb20730f2c6063e  77fedff7485afa86e61a13e3da5833846dce6a6b  original        M9 calibrated arm: null on final score, N2 slower to improve
+3dbe593ad70168481b910dfe16793963b578e65b  6c916fc6943216a775ec97ceeb01fc39da2c0fac  original        M9 complete: both arms, 90 runs, 1.79 GPU-hours
+35de9b7d0aa120ae12e080f157852a6f29c4f1f5  efe80b1c061829e9dfec8f3c08ff6db66a14f64a  original        Food scales with headcount; frozen suite scored inside the training sizes
+0ea5f72bd457bc15877b372ccb149a8d75a984ea  12abd5dd37299a2e0dfb6f030cb3962a6a0d87e6  original        Food geometry scales with headcount; genomes carry their gains
+8dd3bfa7c0c4db02d8c08afe4b882acc2e5a1721  28c816b433b88c73ec4967a0dee692dc93376910  original        M10 ablation/convergence results and the showcase finding
+7f5727a400e7113a12a9ae8a10c4a3c9cb4896fa  5dd202cff47841c18d09f3ae6fdfdfef21a376c1  original        M12 deferred by request; milestones 0-11 complete
+6c4d67de19564ae23666273fee3f43f36372495b  f048f892e8efb9b790a328cc2b3b042bd3abb9e9  original        Correct the M7 section to the post-food-fix re-run numbers
+b19d780550a17f1a68dd7e8d8c925e3893fa0cfa  39303063ddda8a73a94d22502769c6ffa1c026a3  original        RETRACT the "learned to flank" claim; replace it with metrics that can move
+45aa21d01980712e3138c77d0c649f436b5cf83c  7c13d74831bea59157cbcf67a2adacea293b22ff  original        Tactics: per-run reporting, matched comparison, energy sources measured
+a6d015d01632f11be9de42fbe7cbe9d65e53e8e7  0a6ea903dfedb7317a88f1f0e713237e2949d233  original        Part 2: Limitations section, and a correction it turned up
+8a046b426841790dffe6e2d77dfd2a599fbc5f0f  4eb66d4998cb3e407dc3f19cf93e23e25dbba7ca  original        Three Limitations edits from review
+73a1c57495e1c489b16d78fef87a800ec3b97a19  e770646a3c213d7456f2882c6ac185ad53985802  original        Part 3: freeze experiment 01, retitle, restructure README
+844710e09122e7b1f49d4bf1ca1cbce82d2bdf98  d0351f9a6c3a781cd1e7e08af2419e7eed9912da  original        Part 4: licence, citation, scrub, gitignore
+793ee9aefaa89a5b6fdb6d62d90cd0bcbbf6aafb  8b5de35158cd1c92e5235b8e1dad52c093f04564  original        Part 4: licence, citation, scrub, gitignore, repo contents
+c5f9e6479890da76d295e98a0d21fdb5c122ed2d  fb6aee5f23499bf02b599d55e376b24a83f48310  post-rewrite-1  Record the author-identity rewrite: hash map, provenance note, D027
+0a23cfe1fbb05ab2d4960588cf3e095a8d6224d6  3008cdddc0529ea8d9ca1c839fb33cb39a18b22d  post-rewrite-1  Nine wording corrections from review; no new measurements
+6a8cbd8e8744b97836b862587e324d7f39db9bfc  61395927571afce5554f88e205b9a141415a4ced  post-rewrite-1  Add .gitattributes with "* text=auto" and normalise line endings
+c645c2442175ee19e2e9d7ad4cd3feea578e3c6f  a14883b7b30f17f79c137ae2c295a9f1f167f676  post-rewrite-1  Make LICENSE pure MIT so GitHub detects it; data terms move to NOTICE

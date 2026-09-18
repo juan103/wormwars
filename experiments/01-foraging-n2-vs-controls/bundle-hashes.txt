@@ -6,11 +6,11 @@
 # NOTE: the git_commit recorded inside each bundle refers to a commit hash from BEFORE the
 # author-identity rewrite. See commit-hash-map.txt in this folder and PROVENANCE.md.
 
-2e3415a0e0d43cb4ad1e4bf480a4650916f3c5f95c1859e2c6e6a15bc7af360b  DECISIONS.md
-2c5fa6ba25970e5e1f376c9101dd515f737faff266e857523e29039b59809e10  PROVENANCE.md
-9b87f238c0e9221f7a95fad386be15439bb089f490750b0dccdd3fd2b6c0ba8a  RESULTS.md
+f59c782072da9c602e6e79fec4911c9bd8e42495586d06e80ce2782a8e4df0c3  DECISIONS.md
+bb9048556fcac2d312cd5fb5e6050ab535f3a84db73b0bb291cce78604961e2f  PROVENANCE.md
+90264e3cef927085da1bdfeaec552301089ad1810d91c6fb952e648d285eeb9a  RESULTS.md
 310450627bc540ef4feb40da6d418fd09bdce676555ad798245dbd1f77733d71  SUMMARY.md
-249a0a08b7e601be92f6b28e843d8612070071253ad177408bb4d6f613bc96d6  commit-hash-map.txt
+16bf768eeaa1c6115c1cb5f8109728e8e9112ccf04f977a63666a29b34d98483  commit-hash-map.txt
 6a4825f65d0fc3155922e787bb6a3f758b040c87c4c7afd3888d61da4af0caa6  configs/m4-forage-vs-random.json
 7ce1d2b4dba19c9a931f1f046dfc50f5a3b449d05951ef91aa07ddb9ee405a72  configs/m5-pilot-n2-sh-rd.json
 0a11a167ec1b20193a1455ed769bd374b71656fb1290da7692227598837b2874  configs/m7-coevolution-varied-sizes.json

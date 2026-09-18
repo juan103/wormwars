@@ -178,7 +178,7 @@ def _gains_from_bundle(directory: _Path, graph: str):
 
 
 def _load_meta(path):
-    d = np.load(path, allow_pickle=True)
+    d = np.load(path, allow_pickle=False)
     return str(d["meta"])
 
 

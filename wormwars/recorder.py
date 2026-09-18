@@ -118,7 +118,7 @@ class Replay:
 
     @staticmethod
     def load(path: str | Path) -> "Replay":
-        d = np.load(path, allow_pickle=True)
+        d = np.load(path, allow_pickle=False)  # never enable pickle on downloaded files
         return Replay(
             pos=d["pos"],
             heading=d["heading"],

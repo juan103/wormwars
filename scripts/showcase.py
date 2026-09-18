@@ -45,7 +45,7 @@ def load_side(path, con, cfg, device, seed):
         return Genome.random(spec, cfg.brain, 1, generator=g, device=device), {
             "nickname": "random", "graph": "N2"
         }
-    meta = json.loads(str(np.load(path, allow_pickle=True)["meta"]))
+    meta = json.loads(str(np.load(path, allow_pickle=False)["meta"]))
     spec = BrainSpec.from_connectome(graph_for(con, meta["graph"]), device=device)
     genome, meta = load_genome(path, spec, cfg.brain, device=device, strain=0)
     return genome, meta

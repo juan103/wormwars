@@ -437,7 +437,10 @@ computed, because an interval over n = 2 says nothing.** The spread quoted acros
 
 **What the frozen suite is.** Six **random-weight** strains, never evolved for anything — not for
 foraging, not for combat. Their diversity comes from spreading the initialisation scale from 0.5x to
-2.0x, not from training (`make_frozen_suite`).
+2.0x, not from training (`make_frozen_suite`). It is **regenerated from its seed, not shipped**:
+because it is unevolved, its weights are proportional to the connectome's anatomical weights, which
+this project does not redistribute (`DECISIONS.md` D028). `make_frozen_suite` is deterministic, so
+regenerating it reproduces exactly the opponents the runs faced.
 
 **Why the suite deals heavy damage against coevolved swarms and almost none against random ones.**
 Contact is created by whichever side approaches, and biting is automatic once bodies are close. The

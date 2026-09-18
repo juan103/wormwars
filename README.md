@@ -81,7 +81,8 @@ condition comes close to. The cause is simply unidentified, and nothing here sho
 having found it.
 
 **The frozen opponent suite cannot measure combat skill.** It is six **random-weight** strains,
-never evolved for anything, and they do not approach opponents: the same six strains dealt 94 and 2
+never evolved for anything (regenerated from its seed rather than shipped — see `DECISIONS.md`
+D028), and they do not approach opponents: the same six strains dealt 94 and 2
 damage against random opponents but 38 063 and 13 244 against coevolved ones, because contact only
 happens when someone comes to it. Beating the suite therefore means out-foraging passive random
 strains — the coevolved populations ate **4.4× and 3.7×** more than the suite did, while biting

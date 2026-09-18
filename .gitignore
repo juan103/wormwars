@@ -46,3 +46,8 @@ Thumbs.db
 !runs/m9-uncalibrated/champion-*.npz
 !runs/m7/*.npz
 !runs/m7-varied/*.npz
+
+# The frozen opponent suite is NEVER committed. It is an unevolved population, so its weights are
+# proportional to the connectome's anatomical weights (measured: 100% of entries), and this project
+# does not redistribute that data. It regenerates deterministically from its seed.
+*frozen-suite*.npz

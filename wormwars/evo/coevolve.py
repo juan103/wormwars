@@ -416,6 +416,9 @@ def coevolve(
         out.mkdir(parents=True, exist_ok=True)
         save_population(out / f"{spec.label}-coevo-run{run:02d}.npz", pop, cfg=cfg, run=run,
                         run_seed=run_seed, kind="coevolution")
+        # Written for local inspection only, and gitignored: an unevolved genome's weights are
+        # proportional to the connectome's anatomical weights, which this project does not
+        # redistribute. It is regenerated from its seed wherever it is needed.
         save_suite(out / f"{spec.label}-frozen-suite-v{SUITE_VERSION}.npz", suite, suite_meta)
         (out / f"{spec.label}-coevo-run{run:02d}-log.json").write_text(
             json.dumps([vars(x) for x in log], indent=2), encoding="utf-8"

@@ -140,7 +140,10 @@ def load_genome(
     *stored array shapes*, not against metadata, so a file saved by an older writer still fails
     loudly if it does not fit the spec.
     """
-    d = np.load(Path(path), allow_pickle=True)
+    # allow_pickle=False: loading a .npz with pickle enabled can execute arbitrary code, and this
+    # project publishes .npz files that people will download. Nothing we store needs it -- the
+    # arrays are numeric and the metadata is a unicode string array.
+    d = np.load(Path(path), allow_pickle=False)
     meta = json.loads(str(d["meta"]))
     if meta["graph"] != spec.label:
         raise ValueError(

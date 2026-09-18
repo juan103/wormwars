@@ -107,7 +107,10 @@ def load_connectome(path: str | Path | None = None) -> Connectome:
             "This downloads the published Cook et al. 2019 spreadsheet and verifies its sha256. "
             "There is no fallback and no synthetic substitute."
         )
-    data = np.load(path, allow_pickle=True)
+    # allow_pickle=False: loading a .npz with pickle enabled can execute arbitrary code, and this
+    # project publishes .npz files that people will download. Nothing we store needs it -- the
+    # arrays are numeric and the metadata is a unicode string array.
+    data = np.load(path, allow_pickle=False)
     meta = json.loads(str(data["meta"]))
     con = Connectome(
         names=tuple(str(x) for x in data["names"]),
