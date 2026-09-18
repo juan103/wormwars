@@ -247,21 +247,41 @@ about biological wiring in general, and the project's README says so in the same
 
 ## M7 — coevolution
 
-2 runs, 20 generations, population 16, 40 v 40, stage 1, 0.069 GPU-hours.
+2 runs, 20 generations, population 16, stage 1. Absolute progress is the score against the versioned
+frozen opponent suite on held-out world ids; the within-generation score is relative and drifts on
+its own as the opponents improve, so it is not the measure of anything.
 
-| | run 0 + run 1 |
-|---|---|
-| score vs the frozen suite, first measured generation | **+0.059 ± 0.026** |
-| score vs the frozen suite, final generation | **+0.156 ± 0.005** |
-| improved | **2 / 2 runs** |
-| share of damage landed on mid/tail rather than head, final generation | **0.884** |
+**Fixed 40 v 40**, 0.071 GPU-hours:
 
-Coevolved swarms learned to flank: 88% of the damage they deal lands on an enemy's flank or tail
+| run | frozen suite, first → last | flank share |
+|---|---|---|
+| 0 | +0.071 → **+0.377** | 0.88 |
+| 1 | +0.185 → **+0.310** | 0.90 |
+| both | **+0.128 ± 0.057 → +0.343 ± 0.033**, improved **2 / 2** | **0.888** |
+
+**Headcounts varying 50–200 per generation, including lopsided pairs** (each played from both spawn
+sides *and* with the headcounts swapped), suite scored at the standard 100 v 100, 0.288 GPU-hours:
+
+| run | frozen suite, first → last | flank share |
+|---|---|---|
+| 0 | +0.168 → +0.165 | 0.88 |
+| 1 | +0.096 → **+0.211** | 0.87 |
+| both | +0.132 ± 0.036 → +0.188 ± 0.023, improved **1 / 2** | 0.876 |
+
+Varying the headcount makes the objective non-stationary and progress correspondingly slower, which
+is the expected ordering rather than a surprise.
+
+Coevolved swarms learned to flank: **~88% of the damage they deal lands on an enemy's flank or tail**
 rather than its head, which is exactly what the measured combat geometry rewards.
 
 Paired evaluation is exact: a match played as (A=swarm0, B=swarm1, sides unswapped) and as
 (B=swarm0, A=swarm1, sides swapped) gives **exactly negated scores**, asserted as a test. That holds
 because spawn jitter is drawn per *side* in a fixed order, so a side swap is a pure relabelling.
+
+*These numbers are from a re-run after the food economy was fixed to scale with headcount
+(`DECISIONS.md` D023); the original 40 v 40 run, on the unscaled economy, went +0.059 → +0.156.
+The single-swarm results (M4, M5, M8, M9) are at 20 weys, where the scaling factors are exactly 1,
+and are unaffected.*
 
 ---
 
