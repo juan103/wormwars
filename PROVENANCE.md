@@ -134,3 +134,19 @@ is a real anatomical constraint with a real consequence for the experiment: in `
 must pass through `RIP↔I1`, whereas `SH`/`RD` shuffles will generally connect the pharynx to the
 body much more broadly. If SH/RD beat N2 at pump-gated eating specifically, this is the first thing
 to look at. Recorded here so the result is not a surprise later.
+
+## A note on the commit hashes recorded in run bundles
+
+Every run bundle (`runs/*/bundle.json`) records the git commit its experiment ran at. Those
+recorded hashes predate a rewrite of this repository's git history, performed once before
+publication to replace the author and committer identity (which had been a personal email address)
+with a GitHub no-reply address, and to strip a session-URL trailer from the commit messages.
+
+Changing the identity changes every commit hash, so **the commit hashes inside the bundles no
+longer exist in this repository**. They are mapped to their replacements in
+`experiments/01-foraging-n2-vs-controls/commit-hash-map.txt`.
+
+Nothing else changed: every file, every tree hash, and every author and committer date is
+byte-identical across the rewrite, so the code a bundle refers to is exactly the code that ran.
+The bundles were deliberately left as written rather than edited, because a run record should say
+what it recorded at the time.

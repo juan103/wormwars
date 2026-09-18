@@ -390,3 +390,31 @@ and 3.7x more -- while biting supplied **0.1-0.3%** of their energy. Coevolution
 settings produced better foragers; combat barely contributes.
 
 See the Corrections section of `docs/RESULTS.md` for the full tables.
+
+## D027 — The git history was rewritten once, before publication (publication)
+
+The repository was developed with a personal email address as the git author and committer, and
+every commit message carried a session-URL trailer. Both would have become permanently public in
+the commit history on the first push.
+
+Rewritten once, before anything was pushed, with `git filter-repo`: author and committer name and
+email replaced with the author's name and a GitHub no-reply address across all refs, and the
+session trailer stripped from every message. The `Co-Authored-By` attribution to the model that
+wrote the code was kept deliberately -- that is a real attribution, not personal information.
+
+`git filter-repo` was chosen over `git filter-branch` because `filter-branch` leaves the original
+commits behind under `refs/original`, which would have defeated the purpose.
+
+Rewriting history is normally forbidden in this project. This is the single exception, authorised
+explicitly, and it is narrow in a way that matters: **nothing had been pushed**, so no published
+history was rewritten and nobody's clone was invalidated. The rule stands for anything published.
+
+Because commit hashes change, the hashes recorded inside the run bundles no longer resolve. They
+are mapped in `experiments/01-foraging-n2-vs-controls/commit-hash-map.txt` and the situation is
+described in `PROVENANCE.md`. Every tree hash and every author and committer date is unchanged, so
+the code each bundle refers to is exactly the code that ran.
+
+Verified afterwards: identical trees and dates for all 29 old/new pairs, exactly one identity in
+`git log --all`, zero occurrences of either replaced string across all git objects, refs, the
+reflog, `.git/config` and every tracked file, and no dangling or unreachable objects after
+expiring the reflog and garbage-collecting.
