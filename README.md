@@ -8,12 +8,14 @@ selection acts on team results.
 
 ## Summary of findings
 
-Across 15 independent evolutionary runs per condition, the real connectome **reaches the same final
-foraging performance** as degree-preserving shuffles of itself and as random sparse graphs of the
-same size — no contrast separates — but it **improves measurably more slowly** (N2 − SH = −0.100
-[−0.129, −0.070], N2 − RD = −0.112 [−0.150, −0.077], both P = 0.000). **Shuffled and random graphs
-are indistinguishable from each other** on everything measured, so preserving the real degree
-sequence bought nothing either. A confound was found along the way and removed: the raw magnitude of
+Across 15 independent evolutionary runs per condition, there is **no detectable difference in final
+score at generation 25** between the real connectome, degree-preserving shuffles of itself, and
+random sparse graphs of the same size — no contrast separates — while the real connectome
+**improves measurably more slowly** (N2 − SH = −0.100 [−0.129, −0.070], N2 − RD = −0.112
+[−0.150, −0.077], both P < 1/20 000). Shuffled and random graphs **showed no detectable benefit**
+over each other on anything measured, so preserving the real degree sequence did not help either.
+No equality is claimed: the N2 − SH interval still allows a deficit of about 10%, and by our own
+Limitations nothing had converged at generation 25. A confound was found along the way and removed: the raw magnitude of
 the motor read-out is a property of the graph, and the motor gain had been hand-tuned on N2, so
 under one fixed gain the controls simply moved more before evolution started; the experiment is
 reported **both with and without** per-graph gain calibration, and the final-score deficit turns out
@@ -52,8 +54,8 @@ generations 10–14 to generations 20–24:
 
 **RD was still improving too** (+0.054, nearly as much as N2's +0.070); only SH was flat. So this is
 not a case of N2 climbing while the controls sat still. What it does mean is that **none of the
-three had demonstrably converged**, so **"N2 is slower" is established while "N2 ends up equal" is
-provisional**: a longer run could separate them in either direction.
+three had demonstrably converged**, so **"N2 is slower" is established while "no detectable
+difference in final score" is provisional**: a longer run could separate them in either direction.
 
 **Five control graphs, and they disagree with each other.** SH graph means span 1.384–1.607 and RD
 1.406–1.530, against N2's single value of 1.412. N2 is one draw sitting inside that spread. There is
@@ -188,7 +190,10 @@ Full numbers in [`docs/RESULTS.md`](docs/RESULTS.md); every one of them was meas
 **0.432 ± 0.030** on held-out seeds across 3 independent runs, and every run beat the *best of 32*
 random strains. They keep 16-18 of 20 weys alive against 6-7, and eat 3.7x more food, so this is
 foraging and not an accounting exploit. It still works when eating requires pumping (**8.3x**), and
-two-swarm coevolution improves against a frozen opponent suite (**+0.128 → +0.343**, 2/2 runs).
+two-swarm coevolution improves against a frozen opponent suite at a fixed 40 v 40 (run 0
++0.071 → +0.377, run 1 +0.185 → +0.310; 2 of 2 runs improved). With headcounts varying between 50
+and 200 the same setup improves in only **1 of 2 runs** (run 0 +0.168 → +0.165, run 1
++0.096 → +0.211): a non-stationary objective is harder.
 
 **Coevolution did not produce any measurable combat tactic.** An earlier version of this README
 claimed it learned to flank; that was an artifact of the damage rule's armour weights and has been
@@ -204,21 +209,29 @@ five independent SH graphs and five RD graphs with three runs each, and fifteen 
 condition has **15 runs**. It was run twice, with and without per-graph motor gain calibration
 (see below). Held-out foraging score, hierarchical bootstrap over graphs and runs:
 
-| condition | final score (calibrated) | speed of improvement |
+**Speed of improvement** is the mean of the best-of-generation fitness over all 25 generations of
+a run — same units as the foraging score (surviving swarm energy divided by starting swarm energy,
+dimensionless). A run that climbs earlier has a higher mean, so **lower means slower**.
+
+| condition | final score at generation 25 (calibrated) | speed of improvement (higher = faster) |
 |---|---|---|
 | N2 | 1.412 [1.366, 1.453] | 1.359 [1.344, 1.373] |
 | SH | 1.458 [1.385, 1.552] | 1.459 [1.433, 1.484] |
 | RD | 1.452 [1.398, 1.510] | 1.471 [1.439, 1.506] |
 
-- **Final performance: a null.** No contrast separates (N2 - SH P = 0.167, N2 - RD P = 0.130).
-  N2's mean sits inside the spread of the individual control graphs, not at either end.
+- **Final score at generation 25: no detectable difference.** No contrast separates
+  (N2 - SH P = 0.167, N2 - RD P = 0.130). N2's mean sits inside the spread of the individual
+  control graphs, not at either end. This is a failure to detect a difference, not a demonstration
+  of equality: the N2 - SH interval [-0.148, +0.039] still allows a deficit of roughly 10%.
 - **Speed of improvement: N2 is slower**, and clearly so: N2 - SH = -0.100 [-0.129, -0.070] and
-  N2 - RD = -0.112 [-0.150, -0.077], both P = 0.000.
-- **SH and RD are indistinguishable from each other** on everything measured, so preserving the
-  real degree sequence bought nothing either.
+  N2 - RD = -0.112 [-0.150, -0.077], both **P < 1/20 000** (zero of 20 000 bootstrap resamples
+  favoured N2).
+- **SH and RD showed no detectable benefit over each other** on anything measured, so preserving
+  the real degree sequence did not help either.
 
-The real wiring, on this task with this interface, **reaches the same ceiling as its own shuffles
-and as random graphs of the same size, and takes longer to get there.**
+On this task with this interface, the real wiring **improves measurably more slowly, and by
+generation 25 no difference in final score is detectable.** Nothing had converged by then (see
+Limitations), so this says nothing about a ceiling.
 
 ### The confound, and why the experiment was run twice
 
@@ -237,9 +250,12 @@ Running it both ways separates the two:
 | N2 - SH, speed | **-0.118 [-0.160, -0.080]** | **-0.100 [-0.129, -0.070]** |
 
 The final-score deficit was mostly the confound. The speed deficit is not: it survives calibration
-almost intact, and is the more robust of the two findings. N2 scores identically in both arms
-(1.4115), because N2 is the calibration reference and only the controls moved -- which doubles as a
-check that the pipeline is deterministic.
+almost intact, and is the more robust of the two findings. N2 is the calibration reference, so only
+the controls moved; N2 was nevertheless **re-run from scratch in both arms** (15 runs each, about 18
+minutes per arm) and all 15 of its held-out scores and speed values came out identical. That is an
+observation from one pair of arms on this machine, not a guarantee:
+[`docs/REPRODUCIBILITY.md`](docs/REPRODUCIBILITY.md) explains that CUDA `index_add_` makes GPU runs
+**not** guaranteed bit-exact, and nothing here should be taken as promising they will be.
 
 Also measured, and predicted in `DECISIONS.md` D008 before the experiment was run: in N2 the pump
 neurons sit **three graph hops** from any sensor, because all somatic-pharyngeal traffic goes
@@ -261,7 +277,8 @@ This project was designed and built almost entirely by AI models, directed by a 
   experiment 02), direction, and final approval at each checkpoint. He publishes and answers for
   this repository, but has not independently verified the code line by line.
 - Claude Fable 5.1 (Anthropic), in conversation: turned those ideas into the experimental design and
-  specification, reviewed the results, and wrote the experiment 02 pre-registration.
+  specification, reviewed the results, and drafted the experiment 02 pre-registration (to be
+  committed next).
 - Astra 6 (a GPT model from OpenAI): adversarial review of the specification, which produced the
   statistical design, the resource accounting rules and the numerical stability requirements.
 - Claude Code running Claude Opus 5 (Anthropic): every line of code, every measurement, and all

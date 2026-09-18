@@ -23,18 +23,25 @@ analysis is the run.
 
 **On the question as asked: no, and slower.**
 
-| | final held-out score | speed of improvement |
+**Speed of improvement** is the mean of the best-of-generation fitness over all 25 generations of
+a run — same units as the foraging score (surviving swarm energy divided by starting swarm energy,
+dimensionless). A run that climbs earlier has a higher mean, so **lower means slower**.
+
+| | final held-out score at generation 25 | speed of improvement (higher = faster) |
 |---|---|---|
 | N2 | 1.412 [1.366, 1.453] | 1.359 [1.344, 1.373] |
 | SH | 1.458 [1.385, 1.552] | 1.459 [1.433, 1.484] |
 | RD | 1.452 [1.398, 1.510] | 1.471 [1.439, 1.506] |
 
-- **Final performance: a null.** No contrast separates (N2−SH P = 0.167, N2−RD P = 0.130). N2's mean
-  sits inside the spread of the individual control graphs, not at either end.
+- **Final score at generation 25: no detectable difference.** No contrast separates
+  (N2−SH P = 0.167, N2−RD P = 0.130). N2's mean sits inside the spread of the individual control
+  graphs, not at either end. This is a failure to detect a difference, not a demonstration of
+  equality — the N2−SH interval [−0.148, +0.039] still admits a deficit of about 10%, and nothing
+  had converged by generation 25.
 - **Speed of improvement: N2 is slower**, clearly: N2−SH = −0.100 [−0.129, −0.070] and
-  N2−RD = −0.112 [−0.150, −0.077], both P = 0.000.
-- **SH and RD are indistinguishable from each other** on everything measured, so preserving the real
-  degree sequence bought nothing either.
+  N2−RD = −0.112 [−0.150, −0.077], both **P < 1/20 000** (zero of 20 000 bootstrap resamples).
+- **SH and RD showed no detectable benefit over each other** on anything measured, so preserving the
+  real degree sequence did not help either.
 - **We do not know why N2 is slower.** Graph distance from sensors to the locomotor read-out does not
   explain it (N2 1.17, inside the shuffles' 1.00–1.17), and no condition approaches the parameter
   bounds.
@@ -43,13 +50,14 @@ analysis is the run.
 the motor read-out is a property of the graph, and N2 is the weakest of the seven graphs first
 tested. The motor gain had been hand-tuned on N2, so under one fixed gain the controls simply moved
 more before evolution started, and foraging rewards moving. With per-graph gain calibration the
-final-score deficit disappears; the speed deficit survives almost intact. Both arms are reported.
+final-score deficit becomes undetectable; the speed deficit survives almost intact. Both arms
+are reported.
 
 **The simulator itself works.** Evolved foragers score 1.398 ± 0.013 against random-weight weys'
 0.432 ± 0.030 on held-out seeds, beating not just the average random strain but the best of 32, in
 3 of 3 independent runs. It still works when eating requires pumping (8.3×).
 
-**Combat produced a second null.** An earlier version of this work claimed coevolved swarms "learned
+**Combat produced a second null.** An earlier draft of this work claimed coevolved swarms "learned
 to flank". That was an artifact of the damage rule's armour weights and is retracted
 (`DECISIONS.md` D026, `RESULTS.md` Corrections C1). Re-measured, three of four tactics metrics change
 sign between the two runs. Coevolved swarms win by **foraging**, not fighting: they eat 4.4× and
@@ -67,7 +75,8 @@ sign between the two runs. Coevolved swarms win by **foraging**, not fighting: t
   alone.
 - **Nothing about convergence.** Neither N2 nor RD had demonstrably stopped improving when the
   25-generation budget expired (+0.070 and +0.054 over the last ten generations; only SH was flat at
-  +0.002). "N2 is slower" is established; "N2 ends up equal" is provisional.
+  +0.002). "N2 is slower" is established; "no detectable difference in final score" is
+  provisional.
 - **Nothing about combat skill.** The frozen opponent suite is six random-weight strains that do not
   approach opponents. Beating it means out-foraging passive strains. There is **no test here of
   combat against a competent opponent**.

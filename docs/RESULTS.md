@@ -202,6 +202,10 @@ RD graph means 1.406-1.530) rather than at either end of it.
 
 ### Speed of improvement (area under the fitness curve) — **N2 is slower**
 
+**Speed of improvement** is the mean of the best-of-generation fitness over all 25 generations of a run — same units as the foraging score (surviving swarm energy divided by starting swarm energy, dimensionless). A run that climbs earlier has a higher mean, so **lower means slower**. All P values here are bootstrap tail
+probabilities over **20 000 resamples**, so the smallest value distinguishable from zero is
+1/20 000; "P < 1/20 000" means no resample favoured the first condition.
+
 | condition | AUC |
 |---|---|
 | N2 | 1.3586 [1.3441, 1.3732] |
@@ -210,8 +214,8 @@ RD graph means 1.406-1.530) rather than at either end of it.
 
 | contrast | difference | P(first > second) | verdict |
 |---|---|---|---|
-| N2 - SH | **-0.100 [-0.129, -0.070]** | 0.000 | **N2 < SH** |
-| N2 - RD | **-0.112 [-0.150, -0.077]** | 0.000 | **N2 < RD** |
+| N2 - SH | **-0.100 [-0.129, -0.070]** | **< 1/20 000** | **N2 < SH** |
+| N2 - RD | **-0.112 [-0.150, -0.077]** | **< 1/20 000** | **N2 < RD** |
 | SH - RD | -0.012 [-0.055, +0.029] | 0.288 | no separation |
 
 Per GPU-hour, neither contrast separates (P = 0.052 and 0.027 against SH and RD).
@@ -219,8 +223,12 @@ Per GPU-hour, neither contrast separates (P = 0.052 and 0.027 against SH and RD)
 ### The same experiment without calibration
 
 Identical seeds, one fixed motor gain for every graph. N2's configuration is unchanged by
-calibration, so N2 reproduces **exactly** (1.4115 in both arms) -- an internal check that the
-pipeline is deterministic and that only the controls moved.
+calibration, so only the controls moved. N2 was nevertheless **re-run from scratch in both arms**
+(15 runs each, 1 089 s and 1 070 s of wall clock) and all 15 of its held-out scores and AUC values
+came out identical, giving the same 1.4115 in both. That is what was observed on this machine for
+this pair of arms; it is **not** a guarantee. `docs/REPRODUCIBILITY.md` states that CUDA
+`index_add_` leaves GPU rollouts not bit-exact in general, and that exact reproduction is claimed
+only under `replay_mode()`.
 
 | condition | uncalibrated | calibrated |
 |---|---|---|
@@ -232,8 +240,8 @@ pipeline is deterministic and that only the controls moved.
 |---|---|---|
 | N2 - SH (final) | **-0.110 [-0.185, -0.026]**, P=0.005 | -0.047 [-0.148, +0.039], P=0.167 |
 | N2 - RD (final) | **-0.071 [-0.141, -0.007]**, P=0.014 | -0.041 [-0.113, +0.029], P=0.130 |
-| N2 - SH (AUC) | **-0.118 [-0.160, -0.080]**, P=0.000 | **-0.100 [-0.129, -0.070]**, P=0.000 |
-| N2 - RD (AUC) | **-0.144 [-0.178, -0.106]**, P=0.000 | **-0.112 [-0.150, -0.077]**, P=0.000 |
+| N2 - SH (AUC) | **-0.118 [-0.160, -0.080]**, P < 1/20 000 | **-0.100 [-0.129, -0.070]**, P < 1/20 000 |
+| N2 - RD (AUC) | **-0.144 [-0.178, -0.106]**, P < 1/20 000 | **-0.112 [-0.150, -0.077]**, P < 1/20 000 |
 
 So the apparent *final-score* deficit was mostly the motor-scale confound: matching the read-out
 magnitude removes it. The *speed* deficit survives calibration essentially intact, and is the more
@@ -243,12 +251,15 @@ robust of the two findings.
 
 With the nuisance variable removed, on this task, with this interface:
 
-- **the real wiring reaches the same final performance as its degree-preserving shuffles and as
-  random sparse graphs of the same size** -- a null result on "ends up better";
-- **it gets there more slowly**, consistently and with a tight interval -- a *negative* result on
+- **no difference in final score at generation 25 is detectable** between the real wiring, its
+  degree-preserving shuffles and random sparse graphs of the same size -- a null result on "ends up
+  better". This is a failure to detect a difference, not a demonstration of equality: the N2 - SH
+  interval [-0.148, +0.039] still admits a deficit of about 10%, and nothing had converged by
+  generation 25 (see the README's Limitations), so no claim about a ceiling is made;
+- **it improves more slowly**, consistently and with a tight interval -- a *negative* result on
   "evolves faster";
-- **shuffles and random graphs are indistinguishable from each other** on everything measured,
-  which is itself worth noting: preserving the real degree sequence bought nothing either.
+- **shuffles and random graphs showed no detectable benefit over each other** on anything measured,
+  so preserving the real degree sequence did not help either.
 
 This is one task, one interface, one search algorithm and one set of bounds. It is not a statement
 about biological wiring in general, and the project's README says so in the same words.
@@ -267,7 +278,9 @@ its own as the opponents improve, so it is not the measure of anything.
 |---|---|
 | 0 | +0.071 → **+0.377** |
 | 1 | +0.185 → **+0.310** |
-| both | **+0.128 ± 0.057 → +0.343 ± 0.033**, improved **2 / 2** |
+
+Improved in **2 of 2 runs**. With n = 2 no interval over runs is given, for the same reason as in
+the tactics section below.
 
 **Headcounts varying 50–200 per generation, including lopsided pairs** (each played from both spawn
 sides *and* with the headcounts swapped), suite scored at the standard 100 v 100, 0.288 GPU-hours:
@@ -276,7 +289,8 @@ sides *and* with the headcounts swapped), suite scored at the standard 100 v 100
 |---|---|
 | 0 | +0.168 → +0.165 |
 | 1 | +0.096 → **+0.211** |
-| both | +0.132 ± 0.036 → +0.188 ± 0.023, improved **1 / 2** |
+
+Improved in **1 of 2 runs**.
 
 Varying the headcount makes the objective non-stationary and progress correspondingly slower, which
 is the expected ordering rather than a surprise.
@@ -546,7 +560,7 @@ and the README.
 that reference line. The refutation was already in the recorded data: generation-0 populations
 scored 0.881 and 0.879 on the same metric, against final values of 0.884 and 0.897 — it never moved.
 
-**Caught by:** external review of the published results, as arithmetic on the damage rule.
+**Caught by:** external review before publication, as arithmetic on the damage rule.
 
 **And the reference line is not the null.** Unevolved weys in a dense heap measure 0.793 flank share
 and 0.489 placement share, both below the analytic lines, because they meet each other head-first.

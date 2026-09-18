@@ -332,7 +332,7 @@ Worse, the refutation was already sitting in my own output. `summary.json` recor
 against final values of 0.884 and 0.897. The metric never moved during coevolution. I quoted the
 final number as evidence of learning without ever comparing it to the starting number.
 
-**Who caught it.** External review of the published results, not me. It was raised as arithmetic
+**Who caught it.** External review before publication, not me. It was raised as arithmetic
 (`2 / (2 + head_armor)` equals the reported value), and re-measurement confirmed it.
 
 **What replaced it.** `wormwars/analysis/ablation.py` now exposes `chance_flank_share(ccfg)` and
