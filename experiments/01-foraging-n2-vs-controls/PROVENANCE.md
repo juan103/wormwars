@@ -32,7 +32,7 @@ it has changed upstream.
 article is not open access. Neither the source `.xlsx` nor the derived `.npz` cache is committed;
 both are in `.gitignore`. Fetch the data yourself with `python scripts/fetch_connectome.py`, which
 verifies the sha256 above. The MIT licence on this repository covers the code and documentation
-only.
+only; see `NOTICE` for the data terms.
 
 ## Which quantity the weights are
 

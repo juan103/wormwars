@@ -1,0 +1,31 @@
+WormWars — third-party data notice
+==================================
+
+The MIT licence in LICENSE covers the code and documentation in this
+repository. It does NOT cover the C. elegans connectome data that the code
+depends on.
+
+The connectome is published in:
+
+    Cook SJ, Jarrell TA, Brittin CA, Wang Y, Bloniarz AE, Yakovlev MA,
+    Nguyen KCQ, Tang LT-H, Bayer EA, Duerr JS, Bülow HE, Hobert O, Hall DH,
+    Emmons SW (2019). Whole-animal connectomes of both Caenorhabditis elegans
+    sexes. Nature 571:63-71. doi:10.1038/s41586-019-1352-7
+
+and is distributed as supplementary data by wormwiring.org, which carries the
+notice "Emmons Lab Copyright (c) 2020" and states no licence granting
+redistribution. The Nature article is not open access.
+
+For that reason NO connectome file is included in this repository: neither the
+source spreadsheet nor the derived cache. Both are listed in .gitignore.
+
+To obtain the data, run:
+
+    python scripts/fetch_connectome.py
+
+which downloads it from the original source and verifies its sha256 against the
+value recorded in PROVENANCE.md. If the data is missing, the loader fails with
+a clear message and offers no fallback and no synthetic substitute.
+
+See PROVENANCE.md for the full chain: source URLs, hashes, the exact quantity
+used, and every transformation applied.

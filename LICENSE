@@ -19,14 +19,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
----
-
-This licence covers the code and documentation in this repository only.
-
-It does NOT cover the C. elegans connectome data. That data is published by
-Cook et al. 2019 and distributed by wormwiring.org, which carries the notice
-"Emmons Lab Copyright (c) 2020" and states no licence granting redistribution.
-No connectome file is included in this repository for that reason. Run
-`python scripts/fetch_connectome.py` to download it from the original source;
-the script verifies its sha256 against the one recorded in PROVENANCE.md.

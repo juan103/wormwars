@@ -182,6 +182,7 @@ loader fails with a clear message, and no fallback or synthetic substitute, if i
 counts) and every transformation applied.
 
 If you use this repository, please cite both it (see `CITATION.cff`) and Cook et al. 2019.
+The data terms are also stated in `NOTICE`; `LICENSE` (MIT) covers the code and documentation only.
 
 ## What has been found so far
 
