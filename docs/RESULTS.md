@@ -280,3 +280,26 @@ must learn to open its mouth as well as find food. 3 runs, 30 generations, held-
 The *ratio* is much larger than at stage 0 (8.3x vs 3.2x) because random weys are far worse when
 eating is gated: 0.098 against 0.432. Absolute scores are lower in both arms, as they should be --
 pumping costs energy and pumping at nothing wastes it.
+
+---
+
+## M11 — scaling
+
+`scripts/bench_scaling.py`, RTX 5080. "Thousands of worlds" was a target to measure, not assume:
+
+| worlds | swarms | weys/swarm | total weys | arena | ms/tick | wey-ticks/s | peak VRAM |
+|---|---|---|---|---|---|---|---|
+| 8 | 1 | 20 | 160 | 24 | 4.77 | 33 511 | 40 MB |
+| 128 | 1 | 20 | 2 560 | 24 | 4.92 | 520 258 | 68 MB |
+| 512 | 1 | 20 | 10 240 | 24 | 6.29 | 1 627 663 | 158 MB |
+| **2048** | 1 | 20 | **40 960** | 24 | 19.53 | **2 097 281** | **520 MB** |
+| 64 | 2 | 100 | 12 800 | 72 | 9.38 | 1 365 192 | 146 MB |
+| 64 | 2 | 200 | 25 600 | 100 | 13.37 | 1 914 105 | 251 MB |
+| 1 (showcase) | 2 | 2000 | 4 000 | 312 | 7.68 | 520 659 | 67 MB |
+
+- **2 048 worlds fit in 520 MB** of a 16 GB card, so the limit here is not memory.
+- Below about 512 worlds the tick time is flat at 5-8 ms: the simulation is **kernel-launch bound**,
+  not compute bound. Small batches waste the GPU; a rollout should be as wide as it can be.
+- A **2 000 v 2 000 showcase** match runs in a 312x312 arena at 520 k wey-ticks/s in 67 MB.
+- Chunked rollout agreement on CUDA: max |score difference| **5.96e-08** on scores of order 1.4.
+  Bit-identical on the CPU. See `docs/REPRODUCIBILITY.md`.

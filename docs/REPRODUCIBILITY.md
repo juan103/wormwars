@@ -20,8 +20,12 @@ close the result comes depends on where you run it.
 - **Which training seeds a generation used.** Drawn from `default_rng([run_seed, generation,
   0xC0FFEE])`, so a run's schedule is reproducible without being stored.
 - **Held-out seeds.** A fixed range disjoint from the training range.
-- **Chunking.** Splitting a rollout to fit memory changes no score. Measured: max |score difference|
-  of exactly 0 between a rollout in one chunk and the same rollout in chunks eight times smaller.
+- **Chunking.** Splitting a rollout to fit memory does not change *which world a strain plays* or
+  *how it is generated*, so it is a memory strategy and not an approximation. On the CPU the scores
+  are bit-identical (measured: max |score difference| exactly 0). On CUDA the residual
+  `index_add_` nondeterminism applies as below, and the same comparison over 8 strains x 8 worlds
+  measured max |score difference| = **5.96e-08** on scores of order 1.4 -- rounding, not a
+  different simulation.
 - **Everything on the CPU.** CPU rollouts with the same seeds reproduce bit for bit.
 
 ## What is not exactly reproducible by default, and why

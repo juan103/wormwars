@@ -275,6 +275,10 @@ class World:
         hazard = np.zeros((self.n_worlds, H, W), dtype=np.float32)
         wall = np.zeros((self.n_worlds, H, W), dtype=np.float32)
         wall[:, 0, :] = wall[:, -1, :] = wall[:, :, 0] = wall[:, :, -1] = 1.0
+        total_weys = int(self.swarm_sizes.sum(dim=1).max())
+        food_scale = (
+            total_weys / mcfg.food_reference_weys if mcfg.food_scales_with_headcount else 1.0
+        )
         yy, xx = np.mgrid[0:H, 0:W].astype(np.float32)
         yy, xx = yy + 0.5, xx + 0.5
         cy = cx = (H - 1) / 2.0
@@ -330,7 +334,7 @@ class World:
             centres = []
             for _ in range(rng.integers(*mcfg.food_patches, endpoint=True)):
                 r = rng.uniform(*mcfg.food_patch_radius)
-                amount = rng.uniform(*mcfg.food_per_patch)
+                amount = rng.uniform(*mcfg.food_per_patch) * food_scale
                 # patches sit toward the middle: hiding in a corner means starving
                 px = cx + rng.uniform(-1, 1) * mcfg.food_centre_bias * (W / 2 - r - 2)
                 py = cy + rng.uniform(-1, 1) * mcfg.food_centre_bias * (H / 2 - r - 2)

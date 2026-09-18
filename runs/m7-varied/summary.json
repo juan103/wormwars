@@ -1,0 +1,86 @@
+[
+  {
+    "run": 0,
+    "run_seed": 31000,
+    "suite_first": 0.11215891689062119,
+    "suite_last": 0.06948091834783554,
+    "suite_curve": [
+      [
+        0,
+        0.11215891689062119
+      ],
+      [
+        5,
+        0.04313255473971367
+      ],
+      [
+        10,
+        0.06529981642961502
+      ],
+      [
+        14,
+        0.06948091834783554
+      ]
+    ],
+    "flank_share_first": 0.8786840027026989,
+    "flank_share_last": 0.8826477980170239,
+    "hall_of_fame": [
+      "keen-bream",
+      "rusty-linnet",
+      "crimson-badger",
+      "crimson-badger",
+      "crimson-badger",
+      "ancient-wigeon",
+      "noble-shrew",
+      "violet-pika",
+      "violet-pika",
+      "ancient-pika",
+      "amber-stoat",
+      "mellow-cicada"
+    ],
+    "suite_version": 1,
+    "seconds": 171.98233150001033
+  },
+  {
+    "run": 1,
+    "run_seed": 31001,
+    "suite_first": 0.1143404170870781,
+    "suite_last": 0.07374977320432663,
+    "suite_curve": [
+      [
+        0,
+        0.1143404170870781
+      ],
+      [
+        5,
+        0.10949551314115524
+      ],
+      [
+        10,
+        0.10949552059173584
+      ],
+      [
+        14,
+        0.07374977320432663
+      ]
+    ],
+    "flank_share_first": 0.907730672764742,
+    "flank_share_last": 0.8695498518349037,
+    "hall_of_fame": [
+      "jagged-ermine",
+      "jagged-ermine",
+      "mellow-shrew",
+      "ivory-quail",
+      "ivory-quail",
+      "ivory-quail",
+      "slender-pipit",
+      "ivory-quail",
+      "keen-linnet",
+      "coral-osprey",
+      "coral-osprey",
+      "salty-ferret"
+    ],
+    "suite_version": 1,
+    "seconds": 171.91060740000103
+  }
+]

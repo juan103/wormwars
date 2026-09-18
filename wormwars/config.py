@@ -115,6 +115,12 @@ class MapConfig:
     spawn_margin: float = 3.0  # weys start this far inside the wall
     spawn_spread: float = 0.28  # spawn box half-width, as a fraction of the arena
     food_regen: float = 0.0  # energy added per patch per tick (a ledger source when nonzero)
+    # Arena area scales with headcount to hold starting *density* constant; food must scale with it
+    # too, or a big match is a starvation regime rather than a scaled-up one. Patch amounts are
+    # multiplied by total_weys / food_reference_weys, so the development size (one swarm of 20) is
+    # unchanged and every headcount gets the same food per wey.
+    food_scales_with_headcount: bool = True
+    food_reference_weys: int = 20
 
 
 @dataclass
@@ -183,6 +189,10 @@ class EvoConfig:
     coevo_lopsided_fraction: float = 0.5
     hof_capacity: int = 12
     suite_every: int = 5  # generations between frozen-suite evaluations
+    # Headcount the frozen suite is played at. When sizes vary during training, the suite must be
+    # scored somewhere INSIDE the training distribution, or "progress" is really a measurement of
+    # generalisation to a size never trained on. 100v100 is the spec's standard fight.
+    suite_sizes: tuple[int, int] = (100, 100)
     suite_size: int = 6
     suite_worlds: int = 8
 

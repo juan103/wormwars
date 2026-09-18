@@ -341,9 +341,11 @@ def coevolve(
 
         sb = sm = None
         if g % e.suite_every == 0 or g == e.generations - 1:
+            # scored at a fixed headcount so the number means the same thing every generation
+            suite_size = tuple(e.suite_sizes) if e.coevo_vary_sizes else tuple(e.coevo_sizes)
             held = build_schedule(
                 1, suite.n_strains, pool.holdout[: e.suite_worlds], rng,
-                sizes=tuple(e.coevo_sizes), lopsided=False,
+                sizes=suite_size, lopsided=False,
             )
             sres = play(cfg, iface, pop.select([best_i]), suite, held, run_seed, device,
                         combat_stage, chunk_worlds=e.chunk_worlds)
