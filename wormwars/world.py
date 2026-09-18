@@ -279,6 +279,7 @@ class World:
         food_scale = (
             total_weys / mcfg.food_reference_weys if mcfg.food_scales_with_headcount else 1.0
         )
+        radius_scale = float(np.sqrt(food_scale))  # arena side grows as sqrt(headcount)
         yy, xx = np.mgrid[0:H, 0:W].astype(np.float32)
         yy, xx = yy + 0.5, xx + 0.5
         cy = cx = (H - 1) / 2.0
@@ -333,7 +334,7 @@ class World:
 
             centres = []
             for _ in range(rng.integers(*mcfg.food_patches, endpoint=True)):
-                r = rng.uniform(*mcfg.food_patch_radius)
+                r = rng.uniform(*mcfg.food_patch_radius) * radius_scale
                 amount = rng.uniform(*mcfg.food_per_patch) * food_scale
                 # patches sit toward the middle: hiding in a corner means starving
                 px = cx + rng.uniform(-1, 1) * mcfg.food_centre_bias * (W / 2 - r - 2)
@@ -344,12 +345,13 @@ class World:
             self.food_patch_centres.append(np.array(centres, dtype=np.float32))
 
             for _ in range(rng.integers(*mcfg.hazard_patches, endpoint=True)):
-                r = rng.uniform(*mcfg.hazard_radius)
+                r = rng.uniform(*mcfg.hazard_radius) * radius_scale
                 strength = rng.uniform(*mcfg.hazard_strength)
                 for _try in range(20):
                     px, py = rng.uniform(2, W - 2), rng.uniform(2, H - 2)
                     if all(
-                        np.hypot(px - bx, py - by) > mcfg.hazard_spawn_clearance
+                        np.hypot(px - bx, py - by)
+                        > mcfg.hazard_spawn_clearance * radius_scale
                         for bx, by in spawn_centres
                     ):
                         break

@@ -254,3 +254,61 @@ spawn sides, with the headcounts swapped as well. Size therefore varies the test
 gets the easy draw. Measured on a sample schedule: 4 candidates x 2 opponents x 2 worlds x 2 pairs
 x 2 side swaps x 2 headcount swaps = 128 matches, exactly 32 per candidate, exactly 32 of each of
 the four (size_a, size_b) combinations.
+
+## D023 — Food scales with headcount, in amount *and* in geometry (M11)
+
+Arena area already scaled with headcount to hold starting density constant, but food did not, so a
+2000v2000 match had the same absolute food as a 20-wey one. Worse, patch *radius* did not scale
+either, so at large sizes all the food sat in a few tiny blobs lost in a huge arena. A showcase
+match was therefore not a scaled-up small match but a different game -- a starvation scramble around
+a handful of cells, with 11% survival.
+
+Two factors, both referenced to the development size of one swarm of 20:
+
+    amount per patch  x  (total_weys / 20)          -> constant food per wey
+    patch radius      x  sqrt(total_weys / 20)      -> constant fraction of the arena covered
+
+Hazard radii and the hazard/spawn clearance scale the same way. Measured afterwards:
+
+| swarms x weys | arena | food per wey | weys per cell | arena covered by food |
+|---|---|---|---|---|
+| 1 x 20 | 24 | 28.9 | 0.0413 | 16.7% |
+| 2 x 40 | 46 | 28.4 | 0.0413 | 24.8% |
+| 2 x 100 | 72 | 21.7 | 0.0408 | 29.2% |
+| 2 x 200 | 100 | 28.0 | 0.0416 | 26.6% |
+| 2 x 2000 | 312 | 23.5 | 0.0416 | 16.3% |
+
+(The spread comes from the per-world random patch count, not from the scaling.)
+
+At 20 weys both factors are exactly 1, so **every number measured at the development size is
+unchanged** -- M4, M5, M8 and M9 all stand as reported. The coevolution numbers, which were measured
+at 40v40, were re-run.
+
+## D024 — A genome is meaningless without the gains it was evolved under (M10)
+
+Motor gains are calibrated per graph, so an SH1 champion evolved at `forward_gain = 2.093` behaves
+like a different animal at N2's 4.0. The first ablation report did exactly that and produced
+baselines of 0.40-0.68 for SH/RD champions whose real held-out scores were 1.4-1.6, which made every
+sensitivity computed from them meaningless.
+
+Fixes, in order of preference:
+
+1. `save_genome`/`save_population` now record the world settings a genome was evolved under
+   (`forward_gain`, `turn_gain`, `body_length`, `max_speed`, `max_turn`), and `apply_world_meta`
+   restores them on load.
+2. For genomes saved before that, the analysis scripts recover the calibration from the run
+   `bundle.json` beside them, and say so.
+3. Failing both, they run at the defaults and print a loud warning rather than silently producing
+   a number.
+
+`showcase.py` refuses outright to stage a match between two strains evolved at different gains: one
+world holds one config, so it could not give both their own.
+
+## D025 — The frozen suite is scored at a fixed headcount (M7)
+
+When training headcounts vary, the frozen suite must be scored *inside* the training distribution,
+or "progress" is really a measurement of generalisation to a size never trained on. The first
+varied-size run trained at 50-200 but scored the suite at 40v40 and appeared to get *worse*
+(+0.113 -> +0.072, 0/2 runs improving). Scored at 100v100 -- the spec's standard fight -- the same
+setup improves (+0.132 -> +0.188, 1/2 runs), and fixed-size coevolution improves more
+(+0.128 -> +0.343, 2/2 runs), which is the expected ordering: a non-stationary objective is harder.

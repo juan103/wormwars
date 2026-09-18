@@ -37,6 +37,7 @@ from wormwars.brain import BrainSpec
 from wormwars.config import Config
 from wormwars.connectome import load_connectome
 from wormwars.evo import SeedPool, load_genome
+from wormwars.evo.genomes import apply_world_meta
 from wormwars.interface import load_interface
 
 
@@ -78,10 +79,25 @@ def main():
         graph = json.loads(_load_meta(path))["graph"]
         spec = BrainSpec.from_connectome(_graph_for(con, graph), device=args.device)
         genome, meta = load_genome(path, spec, cfg.brain, device=args.device)
-        pool = SeedPool(cfg, meta.get("run_seed", 0))
+        # Motor gains are calibrated per graph. Replaying an SH or RD champion at N2's gain is not
+        # the strain that was evolved, and its scores are meaningless.
+        gcfg, had = apply_world_meta(cfg, meta)
+        if not had:
+            # Older genomes predate the world metadata, but the run bundle beside them recorded the
+            # calibration that was actually used. Prefer that over guessing.
+            gains = _gains_from_bundle(_Path(path).parent, graph)
+            if gains:
+                gcfg = cfg.copy()
+                gcfg.world.forward_gain, gcfg.world.turn_gain = gains
+                print(f"  (gains {gains[0]:.3f}/{gains[1]:.3f} recovered from the run bundle)")
+            else:
+                print(f"  !! {path} was saved without its world settings and no bundle records "
+                      f"them; running at the default gains, which may not be the ones it "
+                      f"evolved under")
+        pool = SeedPool(gcfg, meta.get("run_seed", 0))
         ids = pool.holdout[: args.worlds]
         scores = evaluate_ablations(
-            cfg, iface, con, genome, specs, ids, run_seed=meta.get("run_seed", 0),
+            gcfg, iface, con, genome, specs, ids, run_seed=meta.get("run_seed", 0),
             device=args.device,
         )
         baseline = float(scores[0])
@@ -142,6 +158,23 @@ def _section(title, group, specs, sens, controls=None, all_specs=None, sens_all=
 
 def _short(path: str) -> str:
     return _Path(path).stem
+
+
+def _gains_from_bundle(directory: _Path, graph: str):
+    bundle = directory / "bundle.json"
+    if not bundle.exists():
+        return None
+    try:
+        info = json.loads(bundle.read_text(encoding="utf-8"))
+        cal = (info.get("graphs") or {}).get(graph, {}).get("calibration")
+        if cal:
+            return float(cal["forward_gain"]), float(cal["turn_gain"])
+        world = (info.get("config") or {}).get("world") or {}
+        if "forward_gain" in world:
+            return float(world["forward_gain"]), float(world["turn_gain"])
+    except (ValueError, KeyError, TypeError):
+        return None
+    return None
 
 
 def _load_meta(path):

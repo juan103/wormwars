@@ -115,10 +115,12 @@ class MapConfig:
     spawn_margin: float = 3.0  # weys start this far inside the wall
     spawn_spread: float = 0.28  # spawn box half-width, as a fraction of the arena
     food_regen: float = 0.0  # energy added per patch per tick (a ledger source when nonzero)
-    # Arena area scales with headcount to hold starting *density* constant; food must scale with it
-    # too, or a big match is a starvation regime rather than a scaled-up one. Patch amounts are
-    # multiplied by total_weys / food_reference_weys, so the development size (one swarm of 20) is
-    # unchanged and every headcount gets the same food per wey.
+    # Arena area scales with headcount to hold starting *density* constant, so food has to scale
+    # with it in two ways or a big match is not a scaled-up small one:
+    #   amount per patch x (total_weys / reference)        -> same food per wey
+    #   patch radius     x sqrt(total_weys / reference)    -> same fraction of the arena covered
+    # Hazard radii scale the same way. At the development size (one swarm of 20) both factors are
+    # exactly 1, so nothing measured at 20 weys changes.
     food_scales_with_headcount: bool = True
     food_reference_weys: int = 20
 

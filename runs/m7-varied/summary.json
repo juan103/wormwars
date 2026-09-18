@@ -2,85 +2,93 @@
   {
     "run": 0,
     "run_seed": 31000,
-    "suite_first": 0.11215891689062119,
-    "suite_last": 0.06948091834783554,
+    "suite_first": 0.16754157841205597,
+    "suite_last": 0.1650305688381195,
     "suite_curve": [
       [
         0,
-        0.11215891689062119
+        0.16754157841205597
       ],
       [
         5,
-        0.04313255473971367
+        0.20329053699970245
       ],
       [
         10,
-        0.06529981642961502
+        0.19892139732837677
       ],
       [
-        14,
-        0.06948091834783554
+        15,
+        0.19356794655323029
+      ],
+      [
+        19,
+        0.1650305688381195
       ]
     ],
-    "flank_share_first": 0.8786840027026989,
-    "flank_share_last": 0.8826477980170239,
+    "flank_share_first": 0.8810809743527767,
+    "flank_share_last": 0.8840682666227246,
     "hall_of_fame": [
       "keen-bream",
-      "rusty-linnet",
-      "crimson-badger",
-      "crimson-badger",
-      "crimson-badger",
-      "ancient-wigeon",
-      "noble-shrew",
-      "violet-pika",
-      "violet-pika",
-      "ancient-pika",
-      "amber-stoat",
-      "mellow-cicada"
+      "bitter-merlin",
+      "salty-cicada",
+      "salty-cicada",
+      "salty-cicada",
+      "misty-elver",
+      "flint-elver",
+      "grave-hoopoe",
+      "clever-dunlin",
+      "clever-dunlin",
+      "clever-dunlin",
+      "jagged-badger"
     ],
     "suite_version": 1,
-    "seconds": 171.98233150001033
+    "seconds": 500.42824059998384
   },
   {
     "run": 1,
     "run_seed": 31001,
-    "suite_first": 0.1143404170870781,
-    "suite_last": 0.07374977320432663,
+    "suite_first": 0.09628048539161682,
+    "suite_last": 0.21116416156291962,
     "suite_curve": [
       [
         0,
-        0.1143404170870781
+        0.09628048539161682
       ],
       [
         5,
-        0.10949551314115524
+        0.16031458973884583
       ],
       [
         10,
-        0.10949552059173584
+        0.19594140350818634
       ],
       [
-        14,
-        0.07374977320432663
+        15,
+        0.21116416156291962
+      ],
+      [
+        19,
+        0.21116416156291962
       ]
     ],
-    "flank_share_first": 0.907730672764742,
-    "flank_share_last": 0.8695498518349037,
+    "flank_share_first": 0.0,
+    "flank_share_last": 0.868745325140133,
     "hall_of_fame": [
+      "brave-gannet",
       "jagged-ermine",
-      "jagged-ermine",
-      "mellow-shrew",
-      "ivory-quail",
-      "ivory-quail",
-      "ivory-quail",
-      "slender-pipit",
-      "ivory-quail",
-      "keen-linnet",
-      "coral-osprey",
-      "coral-osprey",
-      "salty-ferret"
+      "placid-siskin",
+      "placid-siskin",
+      "placid-siskin",
+      "violet-swift",
+      "stern-ibex",
+      "stern-ibex",
+      "noble-stoat",
+      "stern-ibex",
+      "stern-ibex",
+      "stern-ibex"
     ],
     "suite_version": 1,
-    "seconds": 171.91060740000103
+    "seconds": 535.610130599991
   }
 ]

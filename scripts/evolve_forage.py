@@ -105,7 +105,7 @@ def main():
         }
         rows.append(row)
         save_genome(
-            out / f"champion-run{run:02d}.npz", res.champion, 0,
+            out / f"champion-run{run:02d}.npz", res.champion, 0, cfg=cfg,
             strain_id=res.champion_id, run_seed=run_seed,
             holdout_score=row["champion_holdout"],
         )

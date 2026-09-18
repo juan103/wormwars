@@ -77,7 +77,9 @@
       "hazard_spawn_clearance": 6.0,
       "spawn_margin": 3.0,
       "spawn_spread": 0.28,
-      "food_regen": 0.0
+      "food_regen": 0.0,
+      "food_scales_with_headcount": true,
+      "food_reference_weys": 20
     },
     "combat": {
       "attack_strength": 1.0,
@@ -120,8 +122,19 @@
         40
       ],
       "coevo_lopsided": false,
+      "coevo_vary_sizes": false,
+      "coevo_size_range": [
+        50,
+        200
+      ],
+      "coevo_size_pairs": 2,
+      "coevo_lopsided_fraction": 0.5,
       "hof_capacity": 12,
       "suite_every": 5,
+      "suite_sizes": [
+        100,
+        100
+      ],
       "suite_size": 6,
       "suite_worlds": 8
     }
@@ -151,8 +164,8 @@
       "pandas": "3.0.2",
       "openpyxl": "3.1.5"
     },
-    "git_commit": "d4f4acf0c25171c3ad68f30803536026a5f552d6",
-    "git_dirty": true,
+    "git_commit": "35de9b7d0aa120ae12e080f157852a6f29c4f1f5",
+    "git_dirty": false,
     "gpu": "NVIDIA GeForce RTX 5080",
     "gpu_capability": [
       12,
@@ -178,6 +191,12 @@
       "worlds": 2,
       "stage": 1,
       "lopsided": false,
+      "vary_sizes": false,
+      "size_range": [
+        50,
+        200
+      ],
+      "size_pairs": 2,
       "graph": "N2",
       "out": "runs/m7",
       "device": "cuda",

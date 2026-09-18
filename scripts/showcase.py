@@ -24,6 +24,7 @@ from wormwars.config import Config
 from wormwars.connectome import load_connectome
 from wormwars.connectome.graphs import random_graph, shuffled
 from wormwars.evo import load_genome
+from wormwars.evo.genomes import apply_world_meta
 from wormwars.interface import load_interface
 from wormwars.recorder import Recorder, Replay
 from wormwars.viewer import contact_sheet, energy_plot, gif, panel
@@ -50,6 +51,14 @@ def load_side(path, con, cfg, device, seed):
     return genome, meta
 
 
+def gains_note(meta, label):
+    w = (meta or {}).get("world") or {}
+    return (
+        f"{label} evolved at forward_gain {w['forward_gain']:.3f}"
+        if w else f"{label} was saved without its world settings"
+    )
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--a", default=None, help="genome for swarm A (random if omitted)")
@@ -72,6 +81,19 @@ def main():
     iface = load_interface(con)
     ga, meta_a = load_side(args.a, con, cfg, args.device, args.seed)
     gb, meta_b = load_side(args.b, con, cfg, args.device, args.seed + 1)
+    # Two strains can only meet fairly if each keeps the motor gains it was evolved under; a shared
+    # World holds one config, so a showcase across differently-calibrated graphs is refused.
+    wa = (meta_a.get("world") or {}).get("forward_gain")
+    wb = (meta_b.get("world") or {}).get("forward_gain")
+    if wa is not None and wb is not None and abs(wa - wb) > 1e-9:
+        raise SystemExit(
+            f"the two strains were evolved at different motor gains ({wa:.3f} vs {wb:.3f}); "
+            "a single world cannot give both their own, so this matchup would be unfair"
+        )
+    if wa is not None:
+        cfg.world.forward_gain = wa
+        cfg.world.turn_gain = (meta_a.get("world") or {}).get("turn_gain", cfg.world.turn_gain)
+    print(gains_note(meta_a, "A") + "; " + gains_note(meta_b, "B"))
 
     world = World(
         cfg, iface, [Brain(ga), Brain(gb)], torch.zeros(1, 2, dtype=torch.long),

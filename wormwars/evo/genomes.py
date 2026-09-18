@@ -52,11 +52,30 @@ def strain_id(graph: str, run: int, generation: int, rank: int) -> str:
     return f"{graph}-run{run:02d}-g{generation:04d}-r{rank}"
 
 
-def save_genome(path, genome: Genome, index: int = 0, **meta) -> Path:
+def _world_meta(cfg) -> dict:
+    """The parts of the world config a genome cannot be interpreted without.
+
+    Motor gains are calibrated per graph, so a champion evolved on SH1 behaves like nonsense if it
+    is later replayed at N2's gain. They travel with the genome.
+    """
+    if cfg is None:
+        return {}
+    w = cfg.world if hasattr(cfg, "world") else cfg
+    return {
+        "forward_gain": w.forward_gain,
+        "turn_gain": w.turn_gain,
+        "body_length": w.body_length,
+        "max_speed": w.max_speed,
+        "max_turn": w.max_turn,
+    }
+
+
+def save_genome(path, genome: Genome, index: int = 0, cfg=None, **meta) -> Path:
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     spec = genome.spec
     meta = {
+        "world": _world_meta(cfg),
         "graph": spec.label,
         "weight_kind": spec.weight_kind,
         "n_chem": spec.n_chem,
@@ -83,12 +102,13 @@ def save_genome(path, genome: Genome, index: int = 0, **meta) -> Path:
     return path
 
 
-def save_population(path, genome: Genome, **meta) -> Path:
+def save_population(path, genome: Genome, cfg=None, **meta) -> Path:
     """All strains of a population in one file."""
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     spec = genome.spec
     meta = {
+        "world": _world_meta(cfg),
         "graph": spec.label,
         "weight_kind": spec.weight_kind,
         "n_chem": spec.n_chem,
@@ -148,6 +168,20 @@ def load_genome(
     if strain is not None:
         genome = genome.select([strain])
     return genome, meta
+
+
+def apply_world_meta(cfg, meta: dict):
+    """Return a copy of `cfg` carrying the world settings this genome was evolved under.
+
+    Refuses silently-wrong replay: a genome saved without them is reported, not guessed at.
+    """
+    w = meta.get("world") or {}
+    if not w:
+        return cfg, False
+    out = cfg.copy()
+    for k, v in w.items():
+        setattr(out.world, k, v)
+    return out, True
 
 
 def load_population(path, spec: BrainSpec, cfg: BrainConfig | None = None, device="cpu"):

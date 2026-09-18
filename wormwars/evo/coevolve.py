@@ -374,7 +374,7 @@ def coevolve(
     if out_dir is not None:
         out = Path(out_dir)
         out.mkdir(parents=True, exist_ok=True)
-        save_population(out / f"{spec.label}-coevo-run{run:02d}.npz", pop, run=run,
+        save_population(out / f"{spec.label}-coevo-run{run:02d}.npz", pop, cfg=cfg, run=run,
                         run_seed=run_seed, kind="coevolution")
         save_suite(out / f"{spec.label}-frozen-suite-v{SUITE_VERSION}.npz", suite, suite_meta)
         (out / f"{spec.label}-coevo-run{run:02d}-log.json").write_text(

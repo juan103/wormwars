@@ -154,7 +154,7 @@ def main():
                 }
                 records.append(rec)
                 save_genome(
-                    out / f"champion-{graph.label}-run{r:02d}.npz", res.champion, 0,
+                    out / f"champion-{graph.label}-run{r:02d}.npz", res.champion, 0, cfg=gcfg,
                     strain_id=res.champion_id, run_seed=seed_counter,
                     holdout_score=rec["holdout"],
                 )

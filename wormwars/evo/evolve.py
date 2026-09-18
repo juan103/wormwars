@@ -173,6 +173,7 @@ def evolve(
         save_population(
             out / f"{spec.label}-run{run:02d}-final.npz",
             genome,
+            cfg=cfg,
             run=run,
             run_seed=run_seed,
             generations=e.generations,

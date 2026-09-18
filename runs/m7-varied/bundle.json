@@ -77,7 +77,9 @@
       "hazard_spawn_clearance": 6.0,
       "spawn_margin": 3.0,
       "spawn_spread": 0.28,
-      "food_regen": 0.0
+      "food_regen": 0.0,
+      "food_scales_with_headcount": true,
+      "food_reference_weys": 20
     },
     "combat": {
       "attack_strength": 1.0,
@@ -98,8 +100,8 @@
       "p_mutate": 1.0
     },
     "evo": {
-      "population": 12,
-      "generations": 15,
+      "population": 16,
+      "generations": 20,
       "elites": 3,
       "truncation": 8,
       "worlds_per_strain": 6,
@@ -125,10 +127,14 @@
         50,
         200
       ],
-      "coevo_size_pairs": 1,
+      "coevo_size_pairs": 2,
       "coevo_lopsided_fraction": 0.5,
       "hof_capacity": 12,
       "suite_every": 5,
+      "suite_sizes": [
+        100,
+        100
+      ],
       "suite_size": 6,
       "suite_worlds": 8
     }
@@ -158,7 +164,7 @@
       "pandas": "3.0.2",
       "openpyxl": "3.1.5"
     },
-    "git_commit": "3dbe593ad70168481b910dfe16793963b578e65b",
+    "git_commit": "35de9b7d0aa120ae12e080f157852a6f29c4f1f5",
     "git_dirty": true,
     "gpu": "NVIDIA GeForce RTX 5080",
     "gpu_capability": [
@@ -178,8 +184,8 @@
     "script": "coevolve.py",
     "args": {
       "runs": 2,
-      "generations": 15,
-      "population": 12,
+      "generations": 20,
+      "population": 16,
       "size": 40,
       "ticks": 400,
       "worlds": 1,
@@ -190,7 +196,7 @@
         50,
         200
       ],
-      "size_pairs": 1,
+      "size_pairs": 2,
       "graph": "N2",
       "out": "runs/m7-varied",
       "device": "cuda",
