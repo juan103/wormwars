@@ -15,7 +15,9 @@ random sparse graphs of the same size — no contrast separates — while the re
 [−0.150, −0.077], both P < 1/20 000). Shuffled and random graphs **showed no detectable benefit**
 over each other on anything measured, so preserving the real degree sequence did not help either.
 No equality is claimed: the N2 − SH interval still allows a deficit of about 10%, and by our own
-Limitations nothing had converged at generation 25. A confound was found along the way and removed: the raw magnitude of
+Limitations nothing had converged at generation 25.
+
+A confound was found along the way and removed: the raw magnitude of
 the motor read-out is a property of the graph, and the motor gain had been hand-tuned on N2, so
 under one fixed gain the controls simply moved more before evolution started; the experiment is
 reported **both with and without** per-graph gain calibration, and the final-score deficit turns out

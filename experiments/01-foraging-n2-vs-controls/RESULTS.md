@@ -202,7 +202,10 @@ RD graph means 1.406-1.530) rather than at either end of it.
 
 ### Speed of improvement (area under the fitness curve) — **N2 is slower**
 
-**Speed of improvement** is the mean of the best-of-generation fitness over all 25 generations of a run — same units as the foraging score (surviving swarm energy divided by starting swarm energy, dimensionless). A run that climbs earlier has a higher mean, so **lower means slower**. All P values here are bootstrap tail
+**Speed of improvement** is the mean of the best-of-generation fitness over all 25 generations of
+a run — same units as the foraging score (surviving swarm energy divided by starting swarm energy,
+dimensionless). A run that climbs earlier has a higher mean, so **lower means slower**. All P
+values here are bootstrap tail
 probabilities over **20 000 resamples**, so the smallest value distinguishable from zero is
 1/20 000; "P < 1/20 000" means no resample favoured the first condition.
 

@@ -1,5 +1,9 @@
-* text=auto eol=lf
+* text=auto
+
+# Binary formats: never touch line endings in these.
 *.png binary
 *.npz binary
 *.xlsx binary
 *.gif binary
+*.mp4 binary
+*.pt binary
