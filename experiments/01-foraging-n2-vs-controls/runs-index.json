@@ -1,0 +1,58 @@
+{
+  "m4-forage-vs-random": {
+    "run_directory": "runs/m4",
+    "script": "evolve_forage.py",
+    "generations": 30,
+    "population": 32,
+    "git_commit": "3d2454534848b6da85e1a6e10c56dd559668dc37",
+    "git_dirty": true
+  },
+  "m5-pilot-n2-sh-rd": {
+    "run_directory": "runs/m5",
+    "script": "experiment.py",
+    "generations": 25,
+    "population": 32,
+    "git_commit": "3d2454534848b6da85e1a6e10c56dd559668dc37",
+    "git_dirty": true
+  },
+  "m7-coevolution": {
+    "run_directory": "runs/m7",
+    "script": "coevolve.py",
+    "generations": 20,
+    "population": 16,
+    "git_commit": "35de9b7d0aa120ae12e080f157852a6f29c4f1f5",
+    "git_dirty": false
+  },
+  "m7-coevolution-varied-sizes": {
+    "run_directory": "runs/m7-varied",
+    "script": "coevolve.py",
+    "generations": 20,
+    "population": 16,
+    "git_commit": "35de9b7d0aa120ae12e080f157852a6f29c4f1f5",
+    "git_dirty": true
+  },
+  "m8-pump-gated-foraging": {
+    "run_directory": "runs/m8",
+    "script": "evolve_forage.py",
+    "generations": 30,
+    "population": 32,
+    "git_commit": "d4f4acf0c25171c3ad68f30803536026a5f552d6",
+    "git_dirty": false
+  },
+  "m9-calibrated": {
+    "run_directory": "runs/m9-calibrated",
+    "script": "experiment.py",
+    "generations": 25,
+    "population": 32,
+    "git_commit": "d4f4acf0c25171c3ad68f30803536026a5f552d6",
+    "git_dirty": true
+  },
+  "m9-uncalibrated": {
+    "run_directory": "runs/m9-uncalibrated",
+    "script": "experiment.py",
+    "generations": 25,
+    "population": 32,
+    "git_commit": "dd811950bf492c152f62235209f49ca2f0f79831",
+    "git_dirty": true
+  }
+}

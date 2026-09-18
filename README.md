@@ -1,10 +1,124 @@
-# WormWars
+# WormWars 01: *C. elegans* wiring vs. shuffled and random graphs. A foraging null result.
 
 Many parallel 2D worlds on one GPU. In each world, swarms of small creatures called **weys** forage
 and fight. Every wey's brain is a small continuous-time recurrent network whose wiring is the real
 *C. elegans* connectome (302 neurons, chemical synapses and gap junctions) used as a fixed sparsity
 mask. Weights, time constants and biases are evolved. All weys in a swarm share one genome, and
 selection acts on team results.
+
+## Summary of findings
+
+Across 15 independent evolutionary runs per condition, the real connectome **reaches the same final
+foraging performance** as degree-preserving shuffles of itself and as random sparse graphs of the
+same size — no contrast separates — but it **improves measurably more slowly** (N2 − SH = −0.100
+[−0.129, −0.070], N2 − RD = −0.112 [−0.150, −0.077], both P = 0.000). **Shuffled and random graphs
+are indistinguishable from each other** on everything measured, so preserving the real degree
+sequence bought nothing either. A confound was found along the way and removed: the raw magnitude of
+the motor read-out is a property of the graph, and the motor gain had been hand-tuned on N2, so
+under one fixed gain the controls simply moved more before evolution started; the experiment is
+reported **both with and without** per-graph gain calibration, and the final-score deficit turns out
+to be mostly that confound while the speed deficit survives it. The **combat section found no
+evidence of learned tactics** — an earlier claim that coevolved swarms "learned to flank" was an
+artifact of the damage rule and has been retracted; coevolved swarms win by out-foraging their
+opponents, not by out-fighting them. We do not know why the real wiring improves more slowly.
+
+Frozen record: [`experiments/01-foraging-n2-vs-controls/`](experiments/01-foraging-n2-vs-controls/).
+Every number: [`docs/RESULTS.md`](docs/RESULTS.md). Every modelling choice: `DECISIONS.md`.
+
+## Limitations
+
+Stated here, by us, because they bound what the result means.
+
+**The three-way comparison only ever ran on foraging.** N2 against SH and RD was measured on
+single-swarm foraging with automatic eating, and on nothing else. It was never run on combat, and
+never on pump-gated eating — which is exactly where `DECISIONS.md` D008 predicts the real wiring is
+handicapped, because in N2 every route from a sensor to the pump neurons crosses the two-neuron
+`RIP↔I1` bridge: **3 graph hops in N2 against 1–2 in all ten control graphs**. Combat and pumping
+were only ever run on N2. The condition where the pharynx should matter has not been tested.
+
+**The evolutionary budget is small, and nothing had clearly converged when it ran out.** 25
+generations, population 32, 5 404 parameters per genome. Change in best-of-generation fitness from
+generations 10–14 to generations 20–24:
+
+| | gens 10–14 | gens 20–24 | change | runs where it rose |
+|---|---|---|---|---|
+| N2 | 1.369 | 1.439 | **+0.070** | **13 / 15** (P = 0.004 under a coin flip) |
+| SH | 1.497 | 1.500 | +0.002 | 7 / 15 (P = 0.70) |
+| RD | 1.496 | 1.550 | +0.054 | 9 / 15 (P = 0.30) |
+
+"Rose" means that run's mean best fitness over generations 20–24 exceeded its mean over generations
+10–14. A perfectly flat but noisy curve would be labelled rising in about half of runs, so 7/15 and
+9/15 are close to chance and carry little information; only N2's 13/15 stands out.
+
+**RD was still improving too** (+0.054, nearly as much as N2's +0.070); only SH was flat. So this is
+not a case of N2 climbing while the controls sat still. What it does mean is that **none of the
+three had demonstrably converged**, so **"N2 is slower" is established while "N2 ends up equal" is
+provisional**: a longer run could separate them in either direction.
+
+**Five control graphs, and they disagree with each other.** SH graph means span 1.384–1.607 and RD
+1.406–1.530, against N2's single value of 1.412. N2 is one draw sitting inside that spread. There is
+only one real connectome, so its interval carries run-to-run variation only while the controls also
+carry graph-to-graph variation; that asymmetry cannot be fixed by more compute.
+
+**The interface probably favours shallow graphs — though by less than we first reported.** Weys are
+given separate left and right food readings, so foraging can be solved by wiring a sensor difference
+almost straight to the turn read-out, and a task solvable in one hop rewards graphs that offer one
+hop. But measured across the ten control graphs actually used, N2 is **not** meaningfully deeper for
+locomotion: mean distance from the mapped sensors to the locomotor read-out is **1.17 in N2**,
+**1.00–1.17 across the five shuffles**, and **1.06–1.39 across the five random graphs** — N2 sits
+inside the shuffle range and below one of the random graphs. The clear depth penalty is to the pump
+(3 hops versus 1–2), and the foraging experiment never used the pump. Separately, a real worm cannot
+make that left/right comparison at all: *C. elegans* chemotaxis works by sampling concentration over
+time while moving, not by comparing two sides at once. The interface is our invention, not biology.
+
+**We do not know why N2 improves more slowly.** Graph distance from sensors to the locomotor
+read-out does not explain it, as the numbers above show. Nor do the parameter bounds, which no
+condition comes close to. The cause is simply unidentified, and nothing here should be read as
+having found it.
+
+**The frozen opponent suite cannot measure combat skill.** It is six **random-weight** strains,
+never evolved for anything, and they do not approach opponents: the same six strains dealt 94 and 2
+damage against random opponents but 38 063 and 13 244 against coevolved ones, because contact only
+happens when someone comes to it. Beating the suite therefore means out-foraging passive random
+strains — the coevolved populations ate **4.4× and 3.7×** more than the suite did, while biting
+supplied **0.1–0.3%** of their energy. **Experiment 01 contains no test of combat skill against a
+competent opponent.** The coevolution score going up says the swarms got better at the game; it does
+not say they got better at fighting.
+
+**Combat rests on two runs of one graph.** All coevolution was N2 only: 2 runs, population 16, 20
+generations. No shuffled or random graph was ever coevolved. And the showcase shows the design does
+not generalise across a 50× change in headcount — strains coevolved at 40 v 40 barely leave their
+spawn blocks at 2 000 v 2 000, because arena side grows as √headcount while wey speed does not.
+
+**A wey is not a worm.** No neuromodulation, no plasticity, no biophysics, no muscles, no body
+mechanics. The body is a rigid three-point segment and the motor output is a linear read of named
+motor neurons. The only things taken from biology are the wiring graph and a hand-chosen mapping of
+game quantities onto individual named neurons.
+
+## How to reproduce
+
+```
+pip install -r requirements.txt          # torch from the cu130 index
+python scripts/check_env.py              # runs a real CUDA kernel, not just is_available()
+python scripts/fetch_connectome.py       # downloads + hashes + caches the connectome
+python -m pytest
+```
+
+## Things to run
+
+```
+python scripts/watch.py --out runs/look              # one foraging world, rendered to PNG
+python scripts/evolve_forage.py --runs 3             # evolve foragers, compare to random weys
+python scripts/evolve_forage.py --runs 3 --stage 2   # ... with eating gated on pumping
+python scripts/coevolve.py --runs 2                  # two-swarm coevolution
+python scripts/experiment.py --k 5 --runs 3 --calibrate   # the N2/SH/RD experiment
+python scripts/ablate.py --champions 'runs/m4/champion-*.npz'
+python scripts/bench_scaling.py --showcase           # wey-ticks/s and peak VRAM
+python scripts/showcase.py --a A.npz --b B.npz --size 2000
+```
+
+Every script writes a run bundle (config, dataset hashes, package versions, git commit, seed
+scheme) next to its output.
 
 ## What a wey is, and is not
 
@@ -117,103 +231,15 @@ neurons sit **three graph hops** from any sensor, because all somatic-pharyngeal
 through the two-neuron `RIP<->I1` gap-junction bridge. In every shuffled or random control they are
 one or two hops away.
 
-## Limitations
-
-Stated here, by us, because they bound what the result means.
-
-**The three-way comparison only ever ran on foraging.** N2 against SH and RD was measured on
-single-swarm foraging with automatic eating, and on nothing else. It was never run on combat, and
-never on pump-gated eating — which is exactly where `DECISIONS.md` D008 predicts the real wiring is
-handicapped, because in N2 every route from a sensor to the pump neurons crosses the two-neuron
-`RIP↔I1` bridge: **3 graph hops in N2 against 1–2 in all ten control graphs**. Combat and pumping
-were only ever run on N2. The condition where the pharynx should matter has not been tested.
-
-**The evolutionary budget is small, and nothing had clearly converged when it ran out.** 25
-generations, population 32, 5 404 parameters per genome. Change in best-of-generation fitness from
-generations 10–14 to generations 20–24:
-
-| | gens 10–14 | gens 20–24 | change | runs where it rose |
-|---|---|---|---|---|
-| N2 | 1.369 | 1.439 | **+0.070** | **13 / 15** (P = 0.004 under a coin flip) |
-| SH | 1.497 | 1.500 | +0.002 | 7 / 15 (P = 0.70) |
-| RD | 1.496 | 1.550 | +0.054 | 9 / 15 (P = 0.30) |
-
-"Rose" means that run's mean best fitness over generations 20–24 exceeded its mean over generations
-10–14. A perfectly flat but noisy curve would be labelled rising in about half of runs, so 7/15 and
-9/15 are close to chance and carry little information; only N2's 13/15 stands out.
-
-**RD was still improving too** (+0.054, nearly as much as N2's +0.070); only SH was flat. So this is
-not a case of N2 climbing while the controls sat still. What it does mean is that **none of the
-three had demonstrably converged**, so **"N2 is slower" is established while "N2 ends up equal" is
-provisional**: a longer run could separate them in either direction.
-
-**Five control graphs, and they disagree with each other.** SH graph means span 1.384–1.607 and RD
-1.406–1.530, against N2's single value of 1.412. N2 is one draw sitting inside that spread. There is
-only one real connectome, so its interval carries run-to-run variation only while the controls also
-carry graph-to-graph variation; that asymmetry cannot be fixed by more compute.
-
-**The interface probably favours shallow graphs — though by less than we first reported.** Weys are
-given separate left and right food readings, so foraging can be solved by wiring a sensor difference
-almost straight to the turn read-out, and a task solvable in one hop rewards graphs that offer one
-hop. But measured across the ten control graphs actually used, N2 is **not** meaningfully deeper for
-locomotion: mean distance from the mapped sensors to the locomotor read-out is **1.17 in N2**,
-**1.00–1.17 across the five shuffles**, and **1.06–1.39 across the five random graphs** — N2 sits
-inside the shuffle range and below one of the random graphs. The clear depth penalty is to the pump
-(3 hops versus 1–2), and the foraging experiment never used the pump. Separately, a real worm cannot
-make that left/right comparison at all: *C. elegans* chemotaxis works by sampling concentration over
-time while moving, not by comparing two sides at once. The interface is our invention, not biology.
-
-**We do not know why N2 improves more slowly.** Graph distance from sensors to the locomotor
-read-out does not explain it, as the numbers above show. Nor do the parameter bounds, which no
-condition comes close to. The cause is simply unidentified, and nothing here should be read as
-having found it.
-
-**The frozen opponent suite cannot measure combat skill.** It is six **random-weight** strains,
-never evolved for anything, and they do not approach opponents: the same six strains dealt 94 and 2
-damage against random opponents but 38 063 and 13 244 against coevolved ones, because contact only
-happens when someone comes to it. Beating the suite therefore means out-foraging passive random
-strains — the coevolved populations ate **4.4× and 3.7×** more than the suite did, while biting
-supplied **0.1–0.3%** of their energy. **Experiment 01 contains no test of combat skill against a
-competent opponent.** The coevolution score going up says the swarms got better at the game; it does
-not say they got better at fighting.
-
-**Combat rests on two runs of one graph.** All coevolution was N2 only: 2 runs, population 16, 20
-generations. No shuffled or random graph was ever coevolved. And the showcase shows the design does
-not generalise across a 50× change in headcount — strains coevolved at 40 v 40 barely leave their
-spawn blocks at 2 000 v 2 000, because arena side grows as √headcount while wey speed does not.
-
-**A wey is not a worm.** No neuromodulation, no plasticity, no biophysics, no muscles, no body
-mechanics. The body is a rigid three-point segment and the motor output is a linear read of named
-motor neurons. The only things taken from biology are the wiring graph and a hand-chosen mapping of
-game quantities onto individual named neurons.
-
 ## Status
 
 See `PLAN.md` for milestones and what has actually been measured. `DECISIONS.md` records modelling
 choices the spec left open, and `docs/REPRODUCIBILITY.md` says exactly what is and is not
 reproducible.
 
-## Setup
+## How this was made
 
-```
-pip install -r requirements.txt          # torch from the cu130 index
-python scripts/check_env.py              # runs a real CUDA kernel, not just is_available()
-python scripts/fetch_connectome.py       # downloads + hashes + caches the connectome
-python -m pytest
-```
-
-## Things to run
-
-```
-python scripts/watch.py --out runs/look              # one foraging world, rendered to PNG
-python scripts/evolve_forage.py --runs 3             # evolve foragers, compare to random weys
-python scripts/evolve_forage.py --runs 3 --stage 2   # ... with eating gated on pumping
-python scripts/coevolve.py --runs 2                  # two-swarm coevolution
-python scripts/experiment.py --k 5 --runs 3 --calibrate   # the N2/SH/RD experiment
-python scripts/ablate.py --champions 'runs/m4/champion-*.npz'
-python scripts/bench_scaling.py --showcase           # wey-ticks/s and peak VRAM
-python scripts/showcase.py --a A.npz --b B.npz --size 2000
-```
-
-Every script writes a run bundle (config, dataset hashes, package versions, git commit, seed
-scheme) next to its output.
+The specification was developed in conversation with Claude (Anthropic), reviewed by a second AI
+model (Astra), and implemented by Claude Code. Juan H. González Estefan directed the work and made
+the decisions, including the calls recorded in `DECISIONS.md`. The retraction in D026 came from
+external review of the published results, not from the author of the code.
