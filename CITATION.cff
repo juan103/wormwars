@@ -1,0 +1,68 @@
+cff-version: 1.2.0
+message: "If you use this software or its results, please cite it as below, and cite Cook et al. 2019 for the connectome data it depends on."
+title: "WormWars 01: C. elegans wiring vs. shuffled and random graphs. A foraging null result."
+abstract: >-
+  Many parallel 2D worlds on one GPU, in which swarms of small creatures forage and fight. Each
+  creature's brain is a continuous-time recurrent network whose wiring is the real C. elegans
+  connectome used as a fixed sparsity mask; weights, time constants and biases are evolved.
+  Experiment 01 asks whether the real wiring, given one hand-built sensor and motor interface and
+  one foraging task, evolves faster or ends up better than degree-preserving shuffles of it or than
+  random sparse graphs of the same size. Across 15 independent runs per condition it reaches the
+  same final performance and improves measurably more slowly, and the shuffled and random controls
+  are indistinguishable from each other. This is a result about one wiring graph with one interface
+  on one task, not about biological wiring in general.
+type: software
+authors:
+  - family-names: "González Estefan"
+    given-names: "Juan H."
+license: MIT
+date-released: "2026-09-18"
+keywords:
+  - connectome
+  - "C. elegans"
+  - neuroevolution
+  - recurrent neural network
+  - multi-agent
+  - null result
+  - GPU simulation
+references:
+  - type: article
+    title: "Whole-animal connectomes of both Caenorhabditis elegans sexes"
+    authors:
+      - family-names: Cook
+        given-names: "Steven J."
+      - family-names: Jarrell
+        given-names: "Travis A."
+      - family-names: Brittin
+        given-names: "Christopher A."
+      - family-names: Wang
+        given-names: "Yi"
+      - family-names: Bloniarz
+        given-names: "Adam E."
+      - family-names: Yakovlev
+        given-names: "Maksim A."
+      - family-names: Nguyen
+        given-names: "Ken C. Q."
+      - family-names: Tang
+        given-names: "Leo T.-H."
+      - family-names: Bayer
+        given-names: "Emily A."
+      - family-names: Duerr
+        given-names: "Janet S."
+      - family-names: Bülow
+        given-names: "Hannes E."
+      - family-names: Hobert
+        given-names: "Oliver"
+      - family-names: Hall
+        given-names: "David H."
+      - family-names: Emmons
+        given-names: "Scott W."
+    journal: Nature
+    volume: 571
+    start: 63
+    end: 71
+    year: 2019
+    doi: 10.1038/s41586-019-1352-7
+    notes: >-
+      Source of the connectome used as the wiring mask. The data file is not redistributed in this
+      repository; see PROVENANCE.md and scripts/fetch_connectome.py.

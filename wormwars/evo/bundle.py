@@ -107,7 +107,8 @@ def write_bundle(
             "weight_kind": con.weight_kind,
             "n_neurons": con.n,
             "source_sha256": con.meta.get("sha256"),
-            "cache_path": str(DEFAULT_CACHE),
+            # relative, so a bundle carries no absolute path from the machine that wrote it
+            "cache_path": "data/cache/cook2019_herm.npz",
             "cache_sha256": file_sha256(DEFAULT_CACHE),
             "citation": con.meta.get("citation"),
         },

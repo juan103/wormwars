@@ -10,3 +10,29 @@ runs/**/*.pt
 .venv/
 runs/**/*.png
 runs/**/*.log
+
+# --- connectome data: NOT redistributable, fetch it with scripts/fetch_connectome.py ---
+data/raw/
+data/cache/
+
+# --- run outputs: trajectories, renders, logs, caches ---
+runs/**/replay.npz
+runs/**/*.npz
+runs/**/*.pt
+runs/**/*.png
+runs/**/*.log
+runs/**/*.gif
+runs/**/*.mp4
+runs/*.log
+runs/*.json
+runs/look*/
+runs/champ/
+runs/duel/
+runs/showcase/
+runs/m4-pilot/
+
+# --- editors and OS ---
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

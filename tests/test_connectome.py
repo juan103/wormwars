@@ -124,3 +124,35 @@ def test_somatic_pharyngeal_bridge_is_the_rip_i1_gap_junction(con):
 def test_index_raises_for_unknown_neuron(con):
     with pytest.raises(ConnectomeError, match="not in the N2 dataset"):
         con.index("AVAX")
+
+
+def test_fetch_script_hash_matches_provenance():
+    """One source of truth: the hash the download verifies must be the hash we published."""
+    import re
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parents[1]
+    script = (root / "scripts" / "fetch_connectome.py").read_text(encoding="utf-8")
+    prov = (root / "PROVENANCE.md").read_text(encoding="utf-8")
+    in_script = re.search(r'EXPECTED_SHA256\s*=\s*"([0-9a-f]{64})"', script)
+    assert in_script, "EXPECTED_SHA256 not found in scripts/fetch_connectome.py"
+    assert in_script.group(1) in prov, (
+        "the sha256 the fetch script verifies does not appear in PROVENANCE.md"
+    )
+
+
+def test_connectome_data_is_not_redistributed():
+    """wormwiring.org grants no redistribution licence, so no connectome file may be committed."""
+    import subprocess
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parents[1]
+    tracked = subprocess.check_output(
+        ["git", "ls-files"], cwd=root, text=True, stderr=subprocess.DEVNULL
+    ).splitlines()
+    bad = [
+        f
+        for f in tracked
+        if f.endswith(".xlsx") or "cook2019" in f.lower() or f.startswith("data/")
+    ]
+    assert not bad, f"connectome data must not be committed: {bad}"

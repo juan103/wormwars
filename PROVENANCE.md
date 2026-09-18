@@ -25,6 +25,15 @@ Citation:
 `scripts/fetch_connectome.py` re-downloads the file, checks that sha256, and refuses to continue if
 it has changed upstream.
 
+## Redistribution
+
+**This file is not redistributed in this repository.** wormwiring.org carries the notice
+"Emmons Lab Copyright (c) 2020" and states no licence granting redistribution, and the Nature
+article is not open access. Neither the source `.xlsx` nor the derived `.npz` cache is committed;
+both are in `.gitignore`. Fetch the data yourself with `python scripts/fetch_connectome.py`, which
+verifies the sha256 above. The MIT licence on this repository covers the code and documentation
+only.
+
 ## Which quantity the weights are
 
 Verbatim from the spreadsheet's own `TITLE AND LEGEND` sheet:

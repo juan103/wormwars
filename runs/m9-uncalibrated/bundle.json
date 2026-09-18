@@ -138,7 +138,7 @@
     "weight_kind": "em_sections",
     "n_neurons": 302,
     "source_sha256": "1f4fdbf84746b69b49a8da0816f52787860ce349b638dce37924ba80f90c70c9",
-    "cache_path": "D:\\Claude\\random\\wormWars\\data\\cache\\cook2019_herm.npz",
+    "cache_path": "data/cache/cook2019_herm.npz",
     "cache_sha256": "43b87aa172a0042b9dce734b15bdf1c87efe3a33ac1cc0d9cd03255a60c96d4a",
     "citation": "Cook SJ, Jarrell TA, Brittin CA, Wang Y, Bloniarz AE, Yakovlev MA, Nguyen KCQ, Tang LT-H, Bayer EA, Duerr JS, Bulow HE, Hobert O, Hall DH, Emmons SW (2019). Whole-animal connectomes of both Caenorhabditis elegans sexes. Nature 571:63-71."
   },

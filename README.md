@@ -158,11 +158,26 @@ this game; a negative result would say it does not. Neither generalises on its o
 - **Swarm** — all the weys of one strain in one world.
 - **Run** — one independent evolutionary run. **This is the unit of statistical analysis.**
 
-## Data
+## Data, and how to cite it
 
-The connectome is real published data, never synthesised: Cook et al. 2019, hermaphrodite,
-corrected July 2020, including the 20 pharyngeal neurons. See `PROVENANCE.md` for source URLs,
-citation, file hashes, the exact quantity used and every transformation applied.
+The connectome is real published data, never synthesised. **It is not redistributed here.**
+
+> Cook SJ, Jarrell TA, Brittin CA, Wang Y, Bloniarz AE, Yakovlev MA, Nguyen KCQ, Tang LT-H,
+> Bayer EA, Duerr JS, Bülow HE, Hobert O, Hall DH, Emmons SW (2019).
+> **Whole-animal connectomes of both Caenorhabditis elegans sexes.** *Nature* **571**, 63–71.
+> doi:[10.1038/s41586-019-1352-7](https://doi.org/10.1038/s41586-019-1352-7)
+
+This project uses the hermaphrodite adjacency matrices (SI 5, corrected July 2020), distributed by
+[wormwiring.org](https://wormwiring.org/pages/adjacency.html), which carries the notice
+"Emmons Lab Copyright (c) 2020" and **states no licence granting redistribution**. No connectome
+file is therefore committed to this repository. `python scripts/fetch_connectome.py` downloads it
+from the original source and verifies its sha256 against the value recorded in `PROVENANCE.md`; the
+loader fails with a clear message, and no fallback or synthetic substitute, if it is missing.
+
+`PROVENANCE.md` records source URLs, hashes, the exact quantity used (`em_sections`, not synapse
+counts) and every transformation applied.
+
+If you use this repository, please cite both it (see `CITATION.cff`) and Cook et al. 2019.
 
 ## What has been found so far
 
@@ -239,7 +254,27 @@ reproducible.
 
 ## How this was made
 
-The specification was developed in conversation with Claude (Anthropic), reviewed by a second AI
-model (Astra), and implemented by Claude Code. Juan H. González Estefan directed the work and made
-the decisions, including the calls recorded in `DECISIONS.md`. The retraction in D026 came from
-external review of the published results, not from the author of the code.
+This project was designed and built almost entirely by AI models, directed by a human.
+
+- Juan H. González Estefan: the original ideas (connectome-tuned agents, swarm battles, parallel
+  worlds, side bites, publishing the null result as a numbered series, and the hypotheses behind
+  experiment 02), direction, and final approval at each checkpoint. He publishes and answers for
+  this repository, but has not independently verified the code line by line.
+- Claude Fable 5.1 (Anthropic), in conversation: turned those ideas into the experimental design and
+  specification, reviewed the results, and wrote the experiment 02 pre-registration.
+- Astra 6 (a GPT model from OpenAI): adversarial review of the specification, which produced the
+  statistical design, the resource accounting rules and the numerical stability requirements.
+- Claude Code running Claude Opus 5 (Anthropic): every line of code, every measurement, and all
+  implementation decisions recorded in DECISIONS.md. It found the motor-gain confound on its own.
+
+Errors and who caught them: the "learned to flank" claim was made by Claude Code and caught by
+Claude Fable 5.1 in review (D026). The "N2 is deeper" explanation was made by Claude Fable 5.1,
+built on a path length mis-measured by Claude Code, and caught by Claude Code when it re-measured
+instead of writing the claim as dictated (C4). No single participant, human or AI, would have caught
+both.
+
+The design and implementation came from Anthropic models and the specification review from an OpenAI
+model. Reviewers from different model families are less likely to share the same blind spots.
+
+Because the work is AI-generated and has had limited human verification, treat every result as
+provisional until someone replicates it.
