@@ -23,6 +23,10 @@ brain:
   dale: false
   input_gain: 1.0
   input_max: 5.0
+  # Chemical synapses carry signal from the presynaptic to the postsynaptic neuron. Experiment 01
+  # ran reversed ("post_to_pre") by mistake; see DECISIONS.md D031. Always state this explicitly:
+  # a config without it is read as the legacy direction.
+  chem_direction: pre_to_post
 
 # The arena, the bodies and the energy economy.
 world:

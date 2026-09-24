@@ -24,7 +24,7 @@ from wormwars.config import Config
 from wormwars.connectome import load_connectome
 from wormwars.connectome.graphs import random_graph, shuffled
 from wormwars.evo import load_genome
-from wormwars.evo.genomes import apply_world_meta
+from wormwars.evo.genomes import apply_world_meta, brain_config_for
 from wormwars.interface import load_interface
 from wormwars.recorder import Recorder, Replay
 from wormwars.viewer import contact_sheet, energy_plot, gif, panel
@@ -47,7 +47,10 @@ def load_side(path, con, cfg, device, seed):
         }
     meta = json.loads(str(np.load(path, allow_pickle=False)["meta"]))
     spec = BrainSpec.from_connectome(graph_for(con, meta["graph"]), device=device)
-    genome, meta = load_genome(path, spec, cfg.brain, device=device, strain=0)
+    # each genome runs in the synapse direction it evolved with (DECISIONS.md D031)
+    genome, meta = load_genome(
+        path, spec, brain_config_for(path, cfg.brain), device=device, strain=0
+    )
     return genome, meta
 
 

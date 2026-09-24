@@ -37,7 +37,7 @@ from wormwars.brain import BrainSpec
 from wormwars.config import Config
 from wormwars.connectome import load_connectome
 from wormwars.evo import SeedPool, load_genome
-from wormwars.evo.genomes import apply_world_meta
+from wormwars.evo.genomes import apply_world_meta, brain_config_for
 from wormwars.interface import load_interface
 
 
@@ -78,7 +78,10 @@ def main():
     for path in paths:
         graph = json.loads(_load_meta(path))["graph"]
         spec = BrainSpec.from_connectome(_graph_for(con, graph), device=args.device)
-        genome, meta = load_genome(path, spec, cfg.brain, device=args.device)
+        # each genome runs in the synapse direction it evolved with (DECISIONS.md D031)
+        genome, meta = load_genome(
+            path, spec, brain_config_for(path, cfg.brain), device=args.device
+        )
         # Motor gains are calibrated per graph. Replaying an SH or RD champion at N2's gain is not
         # the strain that was evolved, and its scores are meaningless.
         gcfg, had = apply_world_meta(cfg, meta)

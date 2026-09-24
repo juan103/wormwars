@@ -1,14 +1,21 @@
 """The wey brain: a continuous leaky rate network on a fixed connectome mask.
 
-    tau_i dv_i/dt = -v_i + b_i + sum_j W_ij tanh(v_j) + sum_j G_ij (v_j - v_i) + I_i
+    tau_j dv_j/dt = -v_j + b_j + sum_i W[i, j] tanh(v_i) + sum_i G[i, j] (v_i - v_j) + I_j
 
+`W[i, j]` is the chemical synapse from presynaptic neuron i to postsynaptic neuron j, the same
+orientation as `Connectome.chem[i, j]`, so neuron j is driven by the neurons that synapse onto it.
 `W` is nonzero only on the chemical mask; `G` is nonnegative, symmetric and nonzero only on the gap
 mask. Integration is semi-implicit in the leak and in the diagonal part of the gap coupling, because
 the gap term acts on raw voltage differences and explicit Euler goes unstable as soon as evolution
 finds large `G` or small `tau`:
 
-    c_i = dt / tau_i,   g_i = sum_j G_ij
-    v_i <- ( v_i + c_i ( b_i + sum_j W_ij tanh(v_j) + sum_j G_ij v_j + I_i ) ) / ( 1 + c_i (1 + g_i) )
+    c_j = dt / tau_j,   g_j = sum_i G[i, j]
+    v_j <- ( v_j + c_j ( b_j + sum_i W[i, j] tanh(v_i) + sum_i G[i, j] v_i + I_j ) ) / ( 1 + c_j (1 + g_j) )
+
+Direction. Experiment 01 ran with the chemical term reversed -- `sum_i W[j, i] tanh(v_i)`, so a
+neuron was driven by the neurons it synapses onto -- because the update multiplied by `W^T` while
+`W` was stored pre-by-post (DECISIONS.md D031). That update survives as
+`BrainConfig.chem_direction = "post_to_pre"`, only so experiment 01 reproduces exactly.
 
 Batching. Genomes are per *strain*, and many worlds may run the same strain, so tensors are shaped
 `[strains, weys, neurons]` with dense per-strain weights `[strains, neurons, neurons]`. This is the
@@ -25,7 +32,7 @@ import numpy as np
 import torch
 from torch import Tensor
 
-from .config import BrainConfig, MutationConfig
+from .config import CHEM_DIRECTIONS, BrainConfig, MutationConfig
 from .connectome.loader import Connectome
 
 
@@ -238,8 +245,15 @@ class Brain:
         self.genome = genome
         self.cfg = genome.cfg
         self.n = genome.spec.n
+        if self.cfg.chem_direction not in CHEM_DIRECTIONS:
+            raise ValueError(
+                f"chem_direction must be one of {CHEM_DIRECTIONS}, got {self.cfg.chem_direction!r}"
+            )
         W, G = genome.dense()
         self.W = W
+        # `(tanh v) @ M` gives each neuron its chemical drive. W is stored pre-by-post, so M = W
+        # sends signal pre -> post. The legacy M = W^T sends it post -> pre (experiment 01, D031).
+        self.W_drive = W if self.cfg.chem_direction == "pre_to_post" else W.transpose(1, 2)
         self.G = G
         self.g_row = G.sum(dim=2)  # [S, N] = sum_j G_ij
         self.tau = genome.tau
@@ -305,10 +319,10 @@ class Brain:
         c = c.unsqueeze(1)  # [S, 1, N]
         den = den.unsqueeze(1)
         drive = self.bias.unsqueeze(1) + current  # [S, B, N]
-        Wt = self.W.transpose(1, 2)  # so that (tanh v) @ Wt gives sum_j W_ij tanh(v_j)
+        M = self.W_drive  # see __init__: the chemical term, oriented by cfg.chem_direction
         mask = self.silence_mask
         for _ in range(k):
-            chem = torch.bmm(torch.tanh(v), Wt)
+            chem = torch.bmm(torch.tanh(v), M)
             gap = torch.bmm(v, self.G)  # G symmetric, so no transpose needed
             v = (v + c * (drive + chem + gap)) / den
             if mask is not None:
@@ -325,6 +339,10 @@ class Brain:
         From v_i (1 + g_i) = b_i + sum_j W_ij tanh(v_j) + sum_j G_ij v_j + I_i and |tanh| <= 1:
         |v|_max <= b_max + w_max * max_in_degree + input_max.
         """
-        in_deg = torch.bincount(self.genome.spec.chem_j, minlength=self.n).max().item()
+        # The receiving end of each synapse is the postsynaptic neuron, except under the legacy
+        # reversed update, where drive arrives at the presynaptic one.
+        spec = self.genome.spec
+        receivers = spec.chem_j if self.cfg.chem_direction == "pre_to_post" else spec.chem_i
+        in_deg = torch.bincount(receivers, minlength=self.n).max().item()
         cfg = self.cfg
         return cfg.b_max + cfg.w_max * float(in_deg) + cfg.input_max

@@ -171,9 +171,46 @@ def test_timestep_refinement(spec, cfg, kind):
 
     coarse = _refine(brain, v0, cur, ticks=40, substeps=cfg.substeps)
     fine = _refine(brain, v0, cur, ticks=40, substeps=cfg.substeps * 4)
+    if kind == "extreme":
+        # Every weight at +w_max makes the network bistable, and a wey that starts near the
+        # boundary between the two attractors can be tipped either way by ANY finite dt: that is
+        # basin selection, not integration accuracy. Measured over 200 weys it happens to 1.5% of
+        # them, at the same rate in both synapse directions (DECISIONS.md D031). Compare only weys
+        # that reached the same attractor, and require that nearly all of them did.
+        same = ~((torch.sign(coarse) != torch.sign(fine)) & (fine.abs() > 5)).any(dim=2)
+        assert same.float().mean() >= 0.75, f"attractor flips in {int((~same).sum())} weys"
+        coarse, fine = coarse[same], fine[same]
     err = (coarse - fine).abs().max().item()
     scale = max(fine.abs().max().item(), 1.0)
     assert err / scale < 0.01, f"{kind}: dt vs dt/4 differ by {err:.4f} (rel {err / scale:.4f})"
+
+
+@pytest.mark.parametrize("rounds", [0, 25])
+def test_motor_readout_is_resolved_in_the_evolved_range(spec, cfg, rounds):
+    """What the body reads, for genomes like the ones experiment 01 actually evolved.
+
+    The single-seed refinement test above passed for years' worth of edits while telling us little
+    about evolved genomes. This one checks 8 x 16 weys at the configured dt against dt/4, on the
+    bounded output the motors read. It holds at initialisation and after 25 rounds of mutation
+    (experiment 01's champions measure a worst readout error of 0.023). It does NOT hold after
+    ~150 rounds: 8 substeps is under-resolved there, in both directions (DECISIONS.md D032).
+    """
+    from wormwars.config import MutationConfig as _MC
+
+    g = Genome.random(spec, cfg, 8, generator=torch.Generator().manual_seed(3))
+    mg = torch.Generator().manual_seed(4)
+    for _ in range(rounds):
+        g.mutate(_MC(), mg)
+    brain = Brain(g)
+    gen = torch.Generator().manual_seed(200)
+    v0 = torch.randn(8, 16, spec.n, generator=gen) * 0.5
+    cur = torch.randn(8, 16, spec.n, generator=gen) * 1.0
+    coarse = torch.tanh(_refine(brain, v0, cur, ticks=40, substeps=cfg.substeps))
+    fine = torch.tanh(_refine(brain, v0, cur, ticks=40, substeps=cfg.substeps * 4))
+    per_wey = (coarse - fine).abs().amax(dim=2).flatten()
+    assert (per_wey > 0.05).float().mean() <= 0.03, (
+        f"{int((per_wey > 0.05).sum())}/{per_wey.numel()} weys off by more than 0.05"
+    )
 
 
 def test_refinement_converges_at_first_order(spec, cfg):

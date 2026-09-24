@@ -16,7 +16,7 @@ import numpy as np
 import torch
 
 from ..brain import BrainSpec, Genome
-from ..config import BrainConfig
+from ..config import LEGACY_CHEM_DIRECTION, BrainConfig
 
 # Deterministic nicknames for hall-of-fame champions. Two short word lists: 64 x 64 = 4096 names,
 # which is plenty for one run's champions and short enough to say out loud.
@@ -131,6 +131,22 @@ def save_population(path, genome: Genome, cfg=None, **meta) -> Path:
     return path
 
 
+def genome_chem_direction(path) -> str:
+    """The synapse direction a saved genome evolved with (legacy if the file predates the field)."""
+    with np.load(Path(path), allow_pickle=False) as d:
+        meta = json.loads(str(d["meta"]))
+    return meta.get("brain_config", {}).get("chem_direction", LEGACY_CHEM_DIRECTION)
+
+
+def brain_config_for(path, cfg: BrainConfig) -> BrainConfig:
+    """`cfg` with the synapse direction set to the one this saved genome evolved with.
+
+    For scripts that replay saved genomes under the current defaults: everything else in `cfg`
+    is kept, but a genome must always run in its own direction (DECISIONS.md D031).
+    """
+    return dataclasses.replace(cfg, chem_direction=genome_chem_direction(path))
+
+
 def load_genome(
     path, spec: BrainSpec, cfg: BrainConfig | None = None, device="cpu", strain: int | None = None
 ) -> tuple[Genome, dict]:
@@ -157,7 +173,19 @@ def load_genome(
             f"genome does not fit the mask: stored {w.shape[1]} W / {g.shape[1]} G / "
             f"{tau.shape[1]} neurons, spec wants {spec.n_chem} / {spec.n_gap} / {spec.n}"
         )
-    cfg = cfg or BrainConfig(**meta["brain_config"])
+    # A genome is only meaningful under the synapse direction it evolved with. Files written before
+    # the direction fix carry no field and all ran reversed (DECISIONS.md D031).
+    stored = dict(meta["brain_config"])
+    stored.setdefault("chem_direction", LEGACY_CHEM_DIRECTION)
+    if cfg is None:
+        cfg = BrainConfig(**stored)
+    elif cfg.chem_direction != stored["chem_direction"]:
+        raise ValueError(
+            f"{Path(path).name} evolved with chem_direction={stored['chem_direction']!r} but is "
+            f"being loaded with chem_direction={cfg.chem_direction!r}. Replaying a genome under "
+            "the other synapse direction is meaningless. Use genome_chem_direction(path) to "
+            "configure the brain it needs."
+        )
     dale = d["dale"]
     genome = Genome(
         spec.to(device),

@@ -30,7 +30,7 @@ _sys.path.insert(0, str(_Path(__file__).resolve().parents[1]))
 from wormwars.analysis import area_under_curve, compare, hierarchical_bootstrap, per_graph_table
 from wormwars import calibration as calib
 from wormwars.brain import BrainSpec
-from wormwars.config import Config
+from wormwars.config import CHEM_DIRECTIONS, Config
 from wormwars.connectome import load_connectome
 from wormwars.connectome.graphs import degree_summary, make_graphs
 from wormwars.evo import SeedPool, evolve, rollout, save_genome
@@ -59,9 +59,15 @@ def main():
              "|forward| and |turn| as N2 at the hand-chosen gain. Removes a nuisance variable "
              "(raw read-out scale) that is not the claim under test. See wormwars/calibration.py.",
     )
+    ap.add_argument(
+        "--chem-direction", choices=CHEM_DIRECTIONS, default="pre_to_post",
+        help="direction chemical synapses carry signal. 'post_to_pre' is the reversed update "
+             "experiment 01 ran by mistake; use it only to reproduce experiment 01 (DECISIONS.md D031).",
+    )
     args = ap.parse_args()
 
     cfg = Config()
+    cfg.brain.chem_direction = args.chem_direction
     cfg.world.max_ticks = args.ticks
     cfg.evo.generations = args.generations
     cfg.evo.population = args.population

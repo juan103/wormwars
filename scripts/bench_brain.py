@@ -80,6 +80,7 @@ class SparseBrain:
         # v: [B, N]; sparse mm wants [N, B]
         drive = self.bias + cur
         for _ in range(self.k):
+            # W is pre-by-post, so post j receives sum_i W[i, j] tanh(v_i) = (W^T tanh v)_j
             chem = torch.sparse.mm(self.W.t(), torch.tanh(v).t()).t()
             gap = torch.sparse.mm(self.G, v.t()).t()
             v = (v + self.c * (drive + chem + gap)) / self.den

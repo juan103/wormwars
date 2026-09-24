@@ -16,6 +16,10 @@ import yaml
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_CONFIG = ROOT / "configs" / "default.yaml"
 
+CHEM_DIRECTIONS = ("pre_to_post", "post_to_pre")
+# What anything saved without an explicit direction actually ran with (DECISIONS.md D031).
+LEGACY_CHEM_DIRECTION = "post_to_pre"
+
 
 @dataclass
 class BrainConfig:
@@ -41,6 +45,10 @@ class BrainConfig:
     # input
     input_gain: float = 1.0
     input_max: float = 5.0  # |I| bound, so the analytic activity bound is finite
+    # "pre_to_post": signal flows from presynaptic to postsynaptic neuron, as in the animal.
+    # "post_to_pre": the reversed update experiment 01 actually ran (DECISIONS.md D031). It exists
+    # only so that experiment 01 reproduces exactly; never choose it for anything new.
+    chem_direction: str = "pre_to_post"
 
     @property
     def dt(self) -> float:
@@ -231,6 +239,11 @@ class Config:
             # YAML has no tuples, so a range written as [2.5, 5.0] arrives as a list. Coerce it,
             # or a config loaded from YAML would not be interchangeable with the defaults.
             sub = dict(sub)
+            if name == "brain" and "chem_direction" not in sub:
+                # Every config written before the direction fix lacks this field, and every one of
+                # them ran with chemical synapses reversed. Read them as what they were, so that
+                # experiment 01's bundles reproduce (DECISIONS.md D031). New configs state it.
+                sub["chem_direction"] = LEGACY_CHEM_DIRECTION
             for g in dataclasses.fields(section_cls):
                 if g.name in sub and str(g.type).startswith("tuple") and isinstance(sub[g.name], list):
                     sub[g.name] = tuple(sub[g.name])

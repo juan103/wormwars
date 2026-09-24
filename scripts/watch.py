@@ -18,7 +18,7 @@ _sys.path.insert(0, str(_Path(__file__).resolve().parents[1]))
 from wormwars.brain import Brain, BrainSpec, Genome
 from wormwars.config import Config
 from wormwars.connectome import load_connectome
-from wormwars.evo.genomes import load_genome
+from wormwars.evo.genomes import brain_config_for, load_genome
 from wormwars.interface import load_interface
 from wormwars.recorder import Recorder, Replay
 from wormwars.viewer import contact_sheet, energy_plot, gif, panel
@@ -48,7 +48,10 @@ def main():
     spec = BrainSpec.from_connectome(con, device=args.device)
 
     if args.genome:
-        genome, meta = load_genome(args.genome, spec, cfg.brain, device=args.device)
+        # the genome runs in the synapse direction it evolved with (DECISIONS.md D031)
+        genome, meta = load_genome(
+            args.genome, spec, brain_config_for(args.genome, cfg.brain), device=args.device
+        )
         print(f"loaded {meta.get('strain_id', args.genome)}")
     else:
         g = torch.Generator().manual_seed(args.seed)
