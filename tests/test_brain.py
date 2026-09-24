@@ -173,10 +173,13 @@ def test_timestep_refinement(spec, cfg, kind):
     fine = _refine(brain, v0, cur, ticks=40, substeps=cfg.substeps * 4)
     if kind == "extreme":
         # Every weight at +w_max makes the network bistable, and a wey that starts near the
-        # boundary between the two attractors can be tipped either way by ANY finite dt: that is
-        # basin selection, not integration accuracy. Measured over 200 weys it happens to 1.5% of
-        # them, at the same rate in both synapse directions (DECISIONS.md D031). Compare only weys
-        # that reached the same attractor, and require that nearly all of them did.
+        # boundary between the two attractors can be tipped either way by the choice of dt. That
+        # IS a numerical sensitivity, and this case does not guarantee against it: it checks only
+        # that weys agree when they reach the same attractor, and that nearly all of them do. It
+        # is weaker than the unconditional check it replaced. At this corner the explicit chemical
+        # term has a per-substep gain of about 49, so the case has only ever verified a shared
+        # fixed point, never accuracy along the way. A one-off sweep (method in DECISIONS.md D032,
+        # script not kept in the repository) found flips in 3 of 200 weys in either direction.
         same = ~((torch.sign(coarse) != torch.sign(fine)) & (fine.abs() > 5)).any(dim=2)
         assert same.float().mean() >= 0.75, f"attractor flips in {int((~same).sum())} weys"
         coarse, fine = coarse[same], fine[same]

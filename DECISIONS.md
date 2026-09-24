@@ -570,25 +570,36 @@ counted in the true direction, not the one the simulation ran.
 **The fix.** `BrainConfig.chem_direction`, `"pre_to_post"` by default. The old update survives as
 `"post_to_pre"`, only so experiment 01 reproduces:
 
-- A config without the field is read as `post_to_pre`, because every config written before the fix
-  lacks it and every one of them ran reversed. `configs/default.yaml` states `pre_to_post`
-  explicitly, and a test requires every config file to state it.
+- A **run bundle's** config without the field is read as `post_to_pre`, because every run
+  recorded before the fix lacks it and every one of them ran reversed. That rule lives only in
+  `Config.from_bundle`. Ordinary configs (`from_dict`, `from_yaml`) treat a missing field as the
+  correct default, so a partial config cannot bring the bug back. The first version of the fix got
+  this wrong (D033).
 - Saved genomes carry their direction in their metadata; files without it are read as reversed.
   `load_genome` refuses to load a genome under the other direction, and the replay scripts
   (`ablate`, `showcase`, `watch`) take the direction from the genome file.
 - `activity_bound` counts the receiving end of each synapse in either mode.
 
-**Verified to reproduce experiment 01 exactly.** Stepping the N2, SH1 and RD1 champions of
-`m9-calibrated` for 300 ticks on the GPU gives bit-identical states before and after the change.
-Re-running `m9-calibrated`'s N2 run 0 (seed 40001) and SH1 run 0 (seed 40016) end to end with
-`--chem-direction post_to_pre` reproduces the held-out score, survival, training score, AUC and
-SH1's calibrated motor gains to the last bit. So the current code in legacy mode *is* experiment 01,
-and a rerun in the correct direction differs from it in exactly one factor.
+**Verified to reproduce experiment 01, within a stated scope.** Three checks:
+(1) stepping the N2, SH1 and RD1 champions of `m9-calibrated` for 300 ticks on the GPU gave
+bit-identical states before and after the change (a one-off script; not kept);
+(2) re-running `m9-calibrated`'s N2 run 0 (seed 40001) and SH1 run 0 (seed 40016) end to end with
+`--chem-direction post_to_pre` reproduced the held-out score, survival, training score, AUC and SH1's
+calibrated motor gains to the last bit (one-off; not kept);
+(3) `test_legacy_mode_reproduces_a_published_experiment_01_score_exactly` replays 01's N2 run-0
+champion on its 32 held-out worlds in legacy mode and requires the published held-out score to the
+last bit. It runs on CUDA, and it is the check anyone can repeat.
+These cover the brain update and the foraging pipeline. They do not individually re-verify every
+workload in experiment 01 (coevolution, the pump, ablations). Within that scope, the current code in
+legacy mode reproduces experiment 01, and a rerun in the correct direction differs from it in the
+synapse direction and in what follows from it (the motor gains recalibrate; see D033).
 
 **One test changed, and why.** `test_timestep_refinement[extreme]` failed after the fix. At the
 extreme corner (every weight +w_max) the network is bistable, and a wey that starts near the basin
-boundary is tipped either way by any finite dt. Over 200 weys that happens to 1.5% of them, at the
-same rate in both directions; seed 13 simply lands on a boundary under the corrected wiring. The
+boundary is tipped either way by the choice of dt. A one-off sweep over 50 input seeds x 4 weys
+(script not kept) found such flips in 3 of 200 weys in either direction; seed 13 simply lands on a
+boundary under the corrected wiring. The flip is itself a numerical sensitivity, and the changed
+test does not guard against it (D033). The
 test now compares weys only within the same attractor and requires at least 3 of 4 to agree. See
 D032 for what the wider check found.
 
@@ -622,3 +633,61 @@ and 0 of 1440 weys above 0.05, alike for N2, SH and RD. A new test,
 **Decision:** experiment 01b keeps 8 substeps, so it changes one thing. Experiment 02 plans 150
 generations, where 8 substeps is not adequate: before tagging it, either raise the substep count
 or make the chemical term semi-implicit, and re-validate on evolved genomes, not on one seed.
+
+## D033 — Pre-publication review of 01b by Astra 6 and Fable 5.1, and what it changed
+
+Before publishing, the fix and 01b were sent to two models from different families, Astra 6
+(OpenAI) and Fable 5.1 (Anthropic), for an adversarial read-only review. The prompt and both answers
+are kept outside the repository. **Both said "do not publish as is".** Both found the code fix
+correct and found no remaining orientation error. What they found, checked here before acting:
+
+**Claims that went beyond the data (both reviewers).**
+- *"The real wiring improves faster."* The pre-registered "speed" measure averages best-of-
+  generation fitness over all 25 generations, generation 0 included, so it mixes starting level
+  with gain. Re-measured: N2's generation-0 best is 1.236 against SH 1.162 and RD 1.215, and its gain
+  to generations 20-24 is 0.446 against 0.437 and 0.405. Against SH the edge is, as a point estimate,
+  all head start; neither component separates under the bootstrap. The claim is withdrawn. 01b now
+  reports "higher mean best-of-generation fitness" and an exploratory decomposition.
+- *"Ends at least level with the shuffles."* That is a non-inferiority claim that was never
+  registered, and the interval (+0.069 [−0.015, +0.169]) does not support it. Now: "not
+  detectably different".
+- *"Every number below is from the pre-registered analysis."* False: the rank argument, the run
+  counts and the motor-drive comparison were exploratory. 01b's RESULTS.md now separates
+  pre-registered from exploratory sections.
+- *The rank "p ≈ 0.09".* The graphs are not exchangeable (N2 averages 15 runs and the controls 3;
+  two families; N2 is the calibration reference), so no rank p-value is offered.
+
+**Bugs in the fix.**
+- *The legacy default leaked (Astra: blocking; Fable: should fix).* `Config.from_dict({})` and any
+  partial YAML without a brain section came out `post_to_pre`, and the test skipped exactly that
+  case. The legacy default is now confined to `Config.from_bundle`, and a test covers empty,
+  partial and brain-less configs.
+- *The benchmark's sparse path ignored legacy mode (Astra).* It now uses the oriented matrix. Dense
+  and sparse agree to 4e-7 in both directions.
+- *Dale's law under legacy mode (Fable)* would fix one sign per receiving neuron. It is harmless for
+  01 (Dale was off) and is now commented.
+
+**Record-keeping.**
+- *The frozen experiment-01 record had been edited and re-hashed (Fable),* erasing the proof of what
+  was frozen. It is restored byte for byte to tag `exp01-v1.0`. Its correction now lives in an
+  unfrozen `CORRECTIONS.md` beside it, and `tests/test_frozen_records.py` guards the pinned hashes.
+  Doing this found a flaw from the original freeze: the hashes pin the Windows CRLF form of each
+  text file, so on Linux or macOS they do not verify as written. The test normalises line endings,
+  and `CORRECTIONS.md` explains how to verify by hand.
+- *The reproduction claim was not checkable from the repository (both).* There is now a CUDA test
+  that reproduces a published held-out score to the last bit, and D031 states its scope.
+
+**Measurements the write-up lacked.**
+- *Calibration (Astra).* At the fitted gains, a random population reaches 84-97% of the target
+  |forward| (N2 95%, SH 84-93%, RD 86-97%) and 92-100% of |turn|. The residual favours N2 over the
+  shuffles on average and could contribute to N2's higher starting point. This is now reported. The
+  calibration docstring's table, measured with reversed synapses, now carries a note.
+- *Integrator on 01b's own champions (both).* The pre-registration cited 01's champions. On 01b's:
+  0 of 1440 weys above 0.05 with input seed 300 (max 0.049). The reviewer found 8 of 1440 (max 0.26)
+  with other inputs. Both are reported.
+- *Multiple comparisons (both).* With Bonferroni-adjusted intervals over the six pre-registered
+  contrasts, all three that separate still do.
+- *Score per GPU-hour* in the generated report is an artefact of wall time rising from 74-77 s to
+  87-97 s per run partway through, with the machine shared. It is flagged as not a result.
+
+**Declined:** nothing. The pre-registration was not changed; all of this is reported alongside it.

@@ -24,6 +24,7 @@ from wormwars.connectome import load_connectome
 
 ROOT = Path(__file__).resolve().parents[1]
 EXP01_RUN = ROOT / "runs" / "m9-calibrated"
+EXP01B_RUN = ROOT / "runs" / "exp01b-direction-corrected"
 
 
 @pytest.fixture(scope="module")
@@ -114,27 +115,71 @@ def test_an_unknown_direction_is_an_error(spec):
         Brain(g)
 
 
-def test_every_config_file_states_the_direction_explicitly():
-    """A config without the field is read as the legacy direction, so a new one must never omit it."""
+def test_an_ordinary_config_without_the_field_is_the_correct_direction(tmp_path):
+    """A partial config must never silently bring the bug back (review finding, D033).
+
+    Only a config recorded by a past run may be read as reversed, and only through
+    `Config.from_bundle`. `from_dict` and `from_yaml` treat a missing field as the default.
+    """
+    assert Config.from_dict({}).brain.chem_direction == "pre_to_post"
+    assert Config.from_dict({"world": {"max_ticks": 10}}).brain.chem_direction == "pre_to_post"
+    assert Config.from_dict({"brain": {"substeps": 8}}).brain.chem_direction == "pre_to_post"
+    partial = tmp_path / "partial.yaml"
+    partial.write_text("evo:\n  generations: 3\n", encoding="utf-8")
+    assert Config.from_yaml(partial).brain.chem_direction == "pre_to_post"
+    assert Config.from_yaml().brain.chem_direction == "pre_to_post"
+    # and every shipped simulation config loads correct, brain section or not
+    import dataclasses
+
+    sections = {f.name for f in dataclasses.fields(Config)}
+    checked = 0
     for path in (ROOT / "configs").glob("*.yaml"):
         raw = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
-        if "brain" in raw:
-            assert raw["brain"].get("chem_direction") == "pre_to_post", (
-                f"{path.name} must set brain.chem_direction: pre_to_post explicitly"
-            )
-    assert Config.from_yaml().brain.chem_direction == "pre_to_post"
+        if not set(raw) <= sections:  # e.g. interface.yaml, which is not a simulation config
+            continue
+        assert Config.from_dict(raw).brain.chem_direction == "pre_to_post", path.name
+        checked += 1
+    assert checked >= 1
 
 
-def test_experiment_01_configs_and_genomes_are_read_as_reversed(spec):
-    """Everything saved before the fix has no direction field and ran reversed."""
-    bundle = json.loads((EXP01_RUN / "bundle.json").read_text(encoding="utf-8"))
-    assert "chem_direction" not in bundle["config"]["brain"]
-    assert Config.from_dict(bundle["config"]).brain.chem_direction == "post_to_pre"
+def test_run_bundles_are_read_as_what_they_ran(spec):
+    """01's bundle has no direction field and ran reversed; 01b's states the correct one."""
+    old = json.loads((EXP01_RUN / "bundle.json").read_text(encoding="utf-8"))
+    assert "chem_direction" not in old["config"]["brain"]
+    assert Config.from_bundle(old["config"]).brain.chem_direction == "post_to_pre"
+    new = json.loads((EXP01B_RUN / "bundle.json").read_text(encoding="utf-8"))
+    assert Config.from_bundle(new["config"]).brain.chem_direction == "pre_to_post"
 
     from wormwars.evo import load_genome
 
     genome, _ = load_genome(EXP01_RUN / "champion-N2-run00.npz", spec, None)
     assert genome.cfg.chem_direction == "post_to_pre"
+    genome, _ = load_genome(EXP01B_RUN / "champion-N2-run00.npz", spec, None)
+    assert genome.cfg.chem_direction == "pre_to_post"
+
+
+@pytest.mark.skipif(not torch.cuda.is_available(), reason="01 was scored on CUDA; bit-exactness needs it")
+def test_legacy_mode_reproduces_a_published_experiment_01_score_exactly(con):
+    """The reproduction claim in D031, made checkable (review finding, D033).
+
+    Replays 01's N2 run-0 champion, in legacy mode, on its own 32 held-out worlds, and requires the
+    held-out score stored in the champion file to the last bit.
+    """
+    from wormwars.evo import SeedPool, load_genome, rollout
+    from wormwars.interface import load_interface
+
+    bundle = json.loads((EXP01_RUN / "bundle.json").read_text(encoding="utf-8"))
+    cfg = Config.from_bundle(bundle["config"])
+    # 01's champion files predate per-genome gain metadata; the bundle recorded the gains
+    gains = bundle["graphs"]["N2"]["calibration"]
+    cfg.world.forward_gain, cfg.world.turn_gain = gains["forward_gain"], gains["turn_gain"]
+    path = EXP01_RUN / "champion-N2-run00.npz"
+    spec = BrainSpec.from_connectome(con, device="cuda")
+    genome, meta = load_genome(path, spec, None, device="cuda")
+    assert genome.cfg.chem_direction == "post_to_pre"
+    seed = int(meta["run_seed"])
+    held = rollout(cfg, load_interface(con), genome, SeedPool(cfg, seed).holdout, seed, "cuda")
+    assert float(held.per_strain()[0]) == meta["holdout_score"]
 
 
 def test_a_genome_is_never_replayed_under_the_other_direction(spec, tmp_path):

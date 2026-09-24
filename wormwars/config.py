@@ -223,6 +223,22 @@ class Config:
         return cls.from_dict(raw)
 
     @classmethod
+    def from_bundle(cls, raw: dict[str, Any]) -> "Config":
+        """The config recorded in a run bundle, read as what that run actually did.
+
+        Every bundle written before the direction fix lacks `brain.chem_direction`, and every one
+        of those runs had chemical synapses reversed, so a missing field here means the legacy
+        direction (DECISIONS.md D031). Use this ONLY for configs recorded by past runs. Ordinary
+        configs go through `from_dict` or `from_yaml`, where a missing field means the default,
+        correct direction: a partial config must never silently bring the bug back.
+        """
+        raw = dict(raw)
+        brain = dict(raw.get("brain") or {})
+        brain.setdefault("chem_direction", LEGACY_CHEM_DIRECTION)
+        raw["brain"] = brain
+        return cls.from_dict(raw)
+
+    @classmethod
     def from_dict(cls, raw: dict[str, Any]) -> "Config":
         kwargs: dict[str, Any] = {}
         sections = {f.name: f for f in dataclasses.fields(cls)}
@@ -239,11 +255,6 @@ class Config:
             # YAML has no tuples, so a range written as [2.5, 5.0] arrives as a list. Coerce it,
             # or a config loaded from YAML would not be interchangeable with the defaults.
             sub = dict(sub)
-            if name == "brain" and "chem_direction" not in sub:
-                # Every config written before the direction fix lacks this field, and every one of
-                # them ran with chemical synapses reversed. Read them as what they were, so that
-                # experiment 01's bundles reproduce (DECISIONS.md D031). New configs state it.
-                sub["chem_direction"] = LEGACY_CHEM_DIRECTION
             for g in dataclasses.fields(section_cls):
                 if g.name in sub and str(g.type).startswith("tuple") and isinstance(sub[g.name], list):
                     sub[g.name] = tuple(sub[g.name])

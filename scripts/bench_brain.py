@@ -69,7 +69,9 @@ class SparseBrain:
 
     def __init__(self, brain: Brain):
         s = 0
-        self.W = brain.W[s].to_sparse_csr()
+        # the oriented matrix the dense brain actually multiplies by, so both formulations
+        # compute the same thing in either synapse direction (D031)
+        self.W = brain.W_drive[s].t().contiguous().to_sparse_csr()
         self.G = brain.G[s].to_sparse_csr()
         self.c = brain.c[s]
         self.den = brain.den[s]
@@ -80,8 +82,8 @@ class SparseBrain:
         # v: [B, N]; sparse mm wants [N, B]
         drive = self.bias + cur
         for _ in range(self.k):
-            # W is pre-by-post, so post j receives sum_i W[i, j] tanh(v_i) = (W^T tanh v)_j
-            chem = torch.sparse.mm(self.W.t(), torch.tanh(v).t()).t()
+            # self.W holds W_drive^T, so this is (tanh v) @ W_drive, as in Brain.step
+            chem = torch.sparse.mm(self.W, torch.tanh(v).t()).t()
             gap = torch.sparse.mm(self.G, v.t()).t()
             v = (v + self.c * (drive + chem + gap)) / self.den
         return v

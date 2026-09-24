@@ -154,6 +154,8 @@ class Genome:
         dale_sign = None
         if cfg.dale:
             dale_sign = torch.where(rand(S, N) < 0.5, -1.0, 1.0)
+            # one sign per PRESYNAPTIC neuron. Under the legacy post_to_pre update (D031) the
+            # presynaptic index is the receiving end, so Dale's law must not be combined with it.
             w = w.abs() * dale_sign[:, spec.chem_i]
 
         g = cfg.init_g_scale * (spec.gap_anat / spec.gap_anat.mean()).unsqueeze(0).expand(S, -1)

@@ -8,7 +8,7 @@ from a random genome is a property of the wiring around those particular neurons
 Measured, 24 random genomes per graph, 80 ticks, identical seeds:
 
     graph   mean |forward| (raw)
-    N2      0.322      <- the weakest of the seven
+    N2      0.322      <- the weakest of the seven (see the note below)
     SH1     0.603
     SH2     0.397
     SH3     0.399
@@ -19,6 +19,13 @@ Measured, 24 random genomes per graph, 80 ticks, identical seeds:
 With one fixed gain, N2 weys simply *move less* than the controls before evolution starts, and
 foraging rewards moving. A comparison run that way is partly measuring which graph happens to drive
 the read-out harder, which is not the claim under test.
+
+**Note (DECISIONS.md D031):** this table was measured with chemical synapses running backwards.
+With them the right way round, N2 is among the strongest drivers, not the weakest (random-
+population |forward| at unit gain: N2 0.157, second of eleven graphs). And calibration equalises
+drive only approximately: measured again at the fitted gains, the eleven graphs of experiment
+01b reach 84-97% of the target |forward| (N2 95%), because clipping and sensory feedback make
+the response to gain non-linear (D033).
 
 Calibration removes that nuisance variable: each graph's gain is set so that a random population
 produces the same mean |forward| and |turn| as N2 does at the hand-chosen gain. Everything else --

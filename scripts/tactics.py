@@ -112,7 +112,7 @@ def main():
     run_dir = _Path(args.runs)
     bundle = json.loads((run_dir / "bundle.json").read_text(encoding="utf-8"))
     bargs = bundle["extra"]["args"]
-    cfg = Config.from_dict(bundle["config"])
+    cfg = Config.from_bundle(bundle["config"])  # as that run actually ran (D031)
 
     con = load_connectome()
     iface = load_interface(con)
