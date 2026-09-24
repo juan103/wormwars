@@ -1,4 +1,4 @@
-# WormWars 01: *C. elegans* wiring vs. shuffled and random graphs. A foraging null result.
+# WormWars: *C. elegans* wiring vs. shuffled and random graphs
 
 > **Correction (2026-09-24): experiment 01 ran with the chemical synapses reversed.** Every run
 > below used a brain in which chemical synapses carried signal from the postsynaptic neuron to the

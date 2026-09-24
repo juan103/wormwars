@@ -1,29 +1,33 @@
 cff-version: 1.2.0
 message: "If you use this software or its results, please cite it as below, and cite Cook et al. 2019 for the connectome data it depends on."
-title: "WormWars 01: C. elegans wiring vs. shuffled and random graphs. A foraging null result."
+title: "WormWars: C. elegans wiring vs. shuffled and random graphs"
+version: "exp01b-v1.0"
 abstract: >-
   Many parallel 2D worlds on one GPU, in which swarms of small creatures forage and fight. Each
   creature's brain is a continuous-time recurrent network whose wiring is the real C. elegans
   connectome used as a fixed sparsity mask; weights, time constants and biases are evolved.
-  Experiment 01 asks whether the real wiring, given one hand-built sensor and motor interface and
+  Experiment 01 asked whether the real wiring, given one hand-built sensor and motor interface and
   one foraging task, evolves faster or ends up better than degree-preserving shuffles of it or than
-  random sparse graphs of the same size. Across 15 independent runs per condition it reaches the
-  same final performance and improves measurably more slowly, and the shuffled and random controls
-  are indistinguishable from each other. This is a result about one wiring graph with one interface
-  on one task, not about biological wiring in general.
+  random sparse graphs of the same size; it was later found to have run with the chemical synapses
+  reversed. Experiment 01b is its pre-registered rerun with the synapses the right way round. Across
+  15 independent runs per condition, the real wiring reaches higher mean best-of-generation fitness
+  than both kinds of control and a higher final score than the random graphs, while its final score
+  is not detectably different from the shuffles'. Whether it improves faster, rather than starting
+  higher, is not resolved. This is a result about one wiring graph with one interface on one task,
+  not about biological wiring in general.
 type: software
 authors:
   - family-names: "González Estefan"
     given-names: "Juan H."
 license: MIT
-date-released: "2026-09-18"
+date-released: "2026-09-25"
 keywords:
   - connectome
   - "C. elegans"
   - neuroevolution
   - recurrent neural network
   - multi-agent
-  - null result
+  - pre-registration
   - GPU simulation
 references:
   - type: article
