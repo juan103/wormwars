@@ -5,6 +5,7 @@
     py -3.13 scripts/exp02.py diagnostics   # tune and score scripted controllers -> diagnostics.json
     py -3.13 scripts/exp02.py pilot         # timed end-to-end runs on SH101 (discarded) -> pilot.json
     py -3.13 scripts/exp02.py run           # the grid, in balanced resumable batches
+    py -3.13 scripts/exp02.py probes        # evaluation-only probes on every champion -> probes.json
 """
 
 from __future__ import annotations
@@ -26,11 +27,12 @@ from wormwars.brain import BrainSpec
 from wormwars.config import Config
 from wormwars.connectome import load_connectome
 from wormwars.connectome.graphs import shuffled
-from wormwars.evo import SeedPool, rollout, save_genome
+from wormwars.evo import SeedPool, load_genome, rollout, save_genome
 from wormwars.evo.bundle import write_bundle
 from wormwars.evo.evolve import evolve
 from wormwars.exp02 import grid, remaps, scripted
-from wormwars.exp02.manifest import run_manifest
+from wormwars.exp02 import probes as P
+from wormwars.exp02.manifest import check_manifest, run_manifest
 from wormwars.interface import load_interface
 
 OUT = Path("runs/exp02-screening")
@@ -165,21 +167,32 @@ def cmd_pilot(args, con, iface):
                                    device=args.device)
     gains = (cal.forward_gain, cal.turn_gain)
     out = OUT / "pilot"
-    times = {}
+    times, probe_times = {}, {}
     for task in ("T0", "T1"):
         spec = grid.RunSpec(grid.Cell(task, "M0"), f"SH{PILOT_GRAPH}", 0, 31_000, 40, (0, 39))
         rec = _execute(spec, con, remap_sets, args.device, out, graph=graph, gains=gains)
         times[task] = rec["wall_seconds"]
-        print(f"{task}: {rec['wall_seconds']:.0f}s end to end, "
+        cfg = grid.task_config(Config(), task)
+        cfg.world.forward_gain, cfg.world.turn_gain = gains
+        champ, _ = load_genome(out / f"{spec.key}-g39.npz", BrainSpec.from_connectome(graph, device=args.device),
+                               None, device=args.device)
+        tp = time.perf_counter()
+        _champion_probes(cfg, iface, champ, 31_000, args.device, False)
+        probe_times[task] = time.perf_counter() - tp
+        print(f"{task}: {rec['wall_seconds']:.0f}s end to end, probes {probe_times[task]:.0f}s, "
               f"held-out g39 {np.mean(rec['holdout_g39']):.3f}")
     per_run = float(np.mean(list(times.values())))
     runs = [r for b in grid.run_schedule() for r in b]
     run_equivalents = sum(r.generations / 40 for r in runs)
     projected = per_run * run_equivalents / 3600
+    probe_h = float(np.mean(list(probe_times.values()))) * len(runs) / 3600
     _json(grid.EXP02_DIR / "pilot.json", {"graph": f"SH{PILOT_GRAPH}", "seconds_per_run": times,
+                                          "probe_seconds_per_champion": probe_times,
                                           "run_equivalents": run_equivalents,
-                                          "projected_grid_hours": projected})
-    print(f"projected grid time: {projected:.2f} h for {run_equivalents:.0f} run-equivalents")
+                                          "projected_grid_hours": projected,
+                                          "projected_champion_probe_hours": probe_h})
+    print(f"projected grid time: {projected:.2f} h for {run_equivalents:.0f} run-equivalents; "
+          f"champion probes {probe_h:.2f} h")
 
 
 # ----------------------------------------------------------------------------- the grid
@@ -219,16 +232,66 @@ def cmd_run(args, con, iface):
         per_batch = max(per_batch, took)
 
 
+def _champion_probes(cfg, iface, champ, seed, device, with_pheromone) -> dict:
+    ids = grid.CHECKPOINT_IDS
+    return {
+        "channels": P.channel_dependence(cfg, iface, champ, ids, seed, device, with_pheromone),
+        "integrator": P.integrator_rescore(cfg, iface, champ, ids, seed, device),
+        "behaviour": P.behaviour(cfg, iface, champ, ids[:4], seed, device),
+    }
+
+
+def cmd_probes(args, con, iface):
+    remap_sets = _load(grid.EXP02_DIR / "remaps.json")["sets"]
+    recs = grid.read_records(OUT / "records.jsonl")
+    ids = grid.CHECKPOINT_IDS[:8]
+    t_start = time.perf_counter()
+    out = {"valence": [], "gen0_strength": [], "input_response": {}, "champions": {}}
+    cfg1 = grid.task_config(Config(), "T1")
+    graphs = ["N2"] + [f"SH{k}" for k in range(1, grid.SH_GRAPHS + 1)]
+    for name in ("N2", "SH1"):
+        cfg = cfg1.copy()
+        cfg.world.forward_gain, cfg.world.turn_gain = _gains(name)
+        spec = BrainSpec.from_connectome(grid.graph_for(con, name), device=args.device)
+        for gaps in (False, True):
+            out["valence"].append({"graph": name, **P.valence_check(
+                spec, cfg, con, iface, 128, ids, 7, args.device, gaps)})
+    for name in graphs:
+        spec = BrainSpec.from_connectome(grid.graph_for(con, name), device=args.device)
+        for mapping in ("M0", "R1", "R2", "MS"):
+            fam = grid.interface_for(con, mapping, remap_sets)
+            for mode in ("anatomical", "uniform", "permuted"):
+                cfg = cfg1.copy()
+                cfg.brain.init_chem_magnitude = cfg.brain.init_gap_magnitude = mode
+                cfg.world.forward_gain, cfg.world.turn_gain = _gains(name)
+                out["gen0_strength"].append({"graph": name, "mapping": mapping, "mode": mode,
+                                             "score": P.gen0_scores(spec, cfg, fam, 32, ids, 7, args.device)})
+            out["input_response"][f"{name}-{mapping}"] = P.input_response(spec, cfg1, fam, 64, args.device)
+    print(f"generation-0 probes: {time.perf_counter() - t_start:.0f}s")
+    for r in recs:
+        cfg = grid.brain_config_for_graph(grid.task_config(Config(), r["task"]), r["graph"])
+        cfg.world.forward_gain, cfg.world.turn_gain = _gains(r["graph"])
+        fam = grid.interface_for(con, r["mapping"], remap_sets)
+        spec = BrainSpec.from_connectome(grid.graph_for(con, r["graph"]), device=args.device)
+        champ, meta = load_genome(OUT / f"{r['key']}-g39.npz", spec, None, device=args.device)
+        check_manifest(meta, cfg, fam, spec)
+        out["champions"][r["key"]] = _champion_probes(cfg, fam, champ, r["run_seed"], args.device,
+                                                      r["task"] == "A")
+    out["seconds"] = time.perf_counter() - t_start
+    _json(OUT / "probes.json", out)
+    print(f"probes done in {out['seconds']:.0f}s")
+
+
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("command", choices=["remaps", "calibrate", "diagnostics", "pilot", "run"])
+    ap.add_argument("command", choices=["remaps", "calibrate", "diagnostics", "pilot", "run", "probes"])
     ap.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
     ap.add_argument("--max-hours", type=float, default=10.0)
     args = ap.parse_args()
     con = load_connectome()
     iface = load_interface(con)
     {"remaps": cmd_remaps, "calibrate": cmd_calibrate, "diagnostics": cmd_diagnostics,
-     "pilot": cmd_pilot, "run": cmd_run}[args.command](args, con, iface)
+     "pilot": cmd_pilot, "run": cmd_run, "probes": cmd_probes}[args.command](args, con, iface)
 
 
 if __name__ == "__main__":
