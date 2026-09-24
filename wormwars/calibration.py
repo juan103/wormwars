@@ -164,3 +164,91 @@ def apply(cfg: Config, cal: MotorCalibration) -> Config:
     out.world.forward_gain = cal.forward_gain
     out.world.turn_gain = cal.turn_gain
     return out
+
+
+@dataclass
+class DriveReport:
+    """What a random population actually does at the configured gains, in the real world."""
+
+    forward: float  # mean |forward command| over ticks and living weys
+    turn: float
+    clip_forward: float  # share of commands at the +-1 clip
+    clip_turn: float
+    displacement: float  # mean distance moved per tick
+    forward_signed: float  # mean signed forward command: moving forward vs reversing
+    reversing: float  # share of commands below zero
+
+    def as_dict(self) -> dict:
+        return dict(vars(self))
+
+
+def achieved_drive(graph, cfg, iface, n_strains=24, ticks=80, seed=0, device="cpu") -> DriveReport:
+    """Drive of a random population at `cfg`'s gains, measured inside the world it will run in.
+
+    With the same seed and n_strains = population, the genomes are exactly the generation-0
+    population `evolve` starts from for that run seed.
+    """
+    from .world import World
+
+    probe = cfg.copy()
+    probe.world.n_swarms = 1
+    spec = BrainSpec.from_connectome(graph, device=device)
+    gen = torch.Generator(device=device).manual_seed(seed)
+    genome = Genome.random(spec, probe.brain, n_strains, generator=gen, device=device)
+    world = World(probe, iface, Brain(genome), torch.arange(n_strains).reshape(n_strains, 1),
+                  run_seed=seed, device=device)
+    acc = np.zeros(7)
+    n = 0
+    for _ in range(ticks):
+        pos0 = world.pos.clone()
+        world.tick()
+        alive = world.alive
+        if not bool(alive.any()):
+            break
+        fs, ts = world.last_forward[alive], world.last_turn[alive]
+        f, t = fs.abs(), ts.abs()
+        acc += [float(f.mean()), float(t.mean()), float((f >= 1 - 1e-6).float().mean()),
+                float((t >= 1 - 1e-6).float().mean()),
+                float((world.pos - pos0).norm(dim=-1)[alive].mean()),
+                float(fs.mean()), float((fs < 0).float().mean())]
+        n += 1
+    acc /= max(n, 1)
+    return DriveReport(*[float(x) for x in acc])
+
+
+@dataclass
+class InWorldCalibration:
+    graph: str
+    forward_gain: float
+    turn_gain: float
+    target: tuple
+    achieved: DriveReport
+    iterations: int
+    history: list
+
+    def as_dict(self) -> dict:
+        d = dict(vars(self))
+        d["achieved"] = self.achieved.as_dict()
+        d["target"] = list(self.target)
+        return d
+
+
+def calibrate_in_world(graph, cfg, iface, target, *, n_strains=24, ticks=80, seed=0,
+                       device="cpu", tol=0.02, max_iter=8, max_gain=40.0) -> InWorldCalibration:
+    """Multiplicative fixed-point iteration on the gains until the achieved drive is within `tol`
+    of `target` on both axes. Clipping and sensory feedback make the response non-linear, which is
+    why one linear fit (the old `calibrate`) lands at 84-97% of target and this iterates."""
+    c = cfg.copy()
+    history = []
+    for it in range(1, max_iter + 1):
+        d = achieved_drive(graph, c, iface, n_strains, ticks, seed, device)
+        history.append({"forward_gain": c.world.forward_gain, "turn_gain": c.world.turn_gain,
+                        **d.as_dict()})
+        if abs(d.forward / target[0] - 1) <= tol and abs(d.turn / target[1] - 1) <= tol:
+            return InWorldCalibration(graph.label, float(c.world.forward_gain),
+                                      float(c.world.turn_gain), tuple(target), d, it, history)
+        c.world.forward_gain = min(c.world.forward_gain * target[0] / max(d.forward, 1e-9), max_gain)
+        c.world.turn_gain = min(c.world.turn_gain * target[1] / max(d.turn, 1e-9), max_gain)
+    raise RuntimeError(
+        f"calibration of {graph.label} did not converge within {max_iter} iterations: {history[-1]}"
+    )
