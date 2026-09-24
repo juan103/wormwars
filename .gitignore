@@ -37,7 +37,7 @@ runs/m4-pilot/
 .DS_Store
 Thumbs.db
 
-# Champion genomes and populations for the seven reported runs ARE committed: they are small
+# Champion genomes and populations for the reported runs (experiment 01's seven, and 01b) ARE committed: they are small
 # (about 2 MB in total) and they make the results checkable -- anyone can re-run the ablation or
 # the tactics measurement against the exact strains. Everything else under runs/ is regenerable.
 !runs/m4/champion-*.npz
@@ -46,6 +46,7 @@ Thumbs.db
 !runs/m9-uncalibrated/champion-*.npz
 !runs/m7/*.npz
 !runs/m7-varied/*.npz
+!runs/exp01b-direction-corrected/champion-*.npz
 
 # The frozen opponent suite is NEVER committed. It is an unevolved population, so its weights are
 # proportional to the connectome's anatomical weights (measured: 100% of entries), and this project

@@ -6,10 +6,10 @@
 # NOTE: the git_commit recorded inside each bundle refers to a commit hash from BEFORE the
 # author-identity rewrite. See commit-hash-map.txt in this folder and PROVENANCE.md.
 
-83ec4956a427752480096ef2e219930e0987439ae16d9a39e1505d15ced82629  DECISIONS.md
+e2fb868727904158362d34223c18868fe472a4e54be01745d166c8615ee773eb  DECISIONS.md
 bb9048556fcac2d312cd5fb5e6050ab535f3a84db73b0bb291cce78604961e2f  PROVENANCE.md
-90264e3cef927085da1bdfeaec552301089ad1810d91c6fb952e648d285eeb9a  RESULTS.md
-310450627bc540ef4feb40da6d418fd09bdce676555ad798245dbd1f77733d71  SUMMARY.md
+3d04d1cf950660e1e84647eb9b52d6d93339f6d4d6781da5b52a13fee6f1da5e  RESULTS.md
+f36e49993abec8fc585b90dbd46b79bd85908ab52a3b3f002d5d0333a761793d  SUMMARY.md
 16bf768eeaa1c6115c1cb5f8109728e8e9112ccf04f977a63666a29b34d98483  commit-hash-map.txt
 6a4825f65d0fc3155922e787bb6a3f758b040c87c4c7afd3888d61da4af0caa6  configs/m4-forage-vs-random.json
 7ce1d2b4dba19c9a931f1f046dfc50f5a3b449d05951ef91aa07ddb9ee405a72  configs/m5-pilot-n2-sh-rd.json

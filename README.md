@@ -1,5 +1,18 @@
 # WormWars 01: *C. elegans* wiring vs. shuffled and random graphs. A foraging null result.
 
+> **Correction (2026-09-24): experiment 01 ran with the chemical synapses reversed.** Every run
+> below used a brain in which chemical synapses carried signal from the postsynaptic neuron to the
+> presynaptic one, so experiment 01 compared the worm's wiring *reversed* against shuffles of that
+> reversed graph. The bug was found by Astra 6 (OpenAI) and confirmed and fixed (`DECISIONS.md`
+> D031). The headline comparison was rerun, pre-registered, with the synapses the right way round:
+> **[experiment 01b](experiments/01b-direction-corrected/RESULTS.md)**. It reverses the main finding:
+> the real wiring **improves faster** than both shuffled and random graphs (N2 − SH = +0.068
+> [+0.034, +0.102], N2 − RD = +0.067 [+0.021, +0.105]), and ends ahead of the random graphs on
+> final score (+0.094 [+0.029, +0.160]), though not detectably ahead of the shuffles. N2 is one
+> graph, and first of 11 has p ≈ 0.09 if the graphs are exchangeable. The text below is
+> experiment 01 as published; correction C5 in [`docs/RESULTS.md`](docs/RESULTS.md) says what it
+> actually tested.
+
 Many parallel 2D worlds on one GPU. In each world, swarms of small creatures called **weys** forage
 and fight. Every wey's brain is a small continuous-time recurrent network whose wiring is the real
 *C. elegans* connectome (302 neurons, chemical synapses and gap junctions) used as a fixed sparsity

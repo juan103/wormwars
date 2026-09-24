@@ -620,3 +620,39 @@ shuffle range, not outside it. The entire gap was the pump: **3 hops in N2, 1–
 
 Both are kept. The correction matters because the foraging experiment never used the pump, so the
 one place N2 is measurably deeper is the one place the experiment did not look.
+
+### C5 — every run in this document used chemical synapses running backwards
+
+**Everything above describes a brain whose chemical synapses carried signal from the postsynaptic
+neuron to the presynaptic one.** `Genome.dense` stored weights pre-by-post and `Brain.step`
+multiplied by their transpose. The bug was present from M2, before any run. Gap junctions are
+symmetric and were unaffected. It was found by Astra 6 (OpenAI) reviewing the roadmap, confirmed on
+the real brain, and fixed with the old update kept behind a switch so that every number above still
+reproduces. Two runs were re-run end to end in legacy mode and matched to the last bit
+(`DECISIONS.md` D031).
+
+**What the experiment actually tested** was the worm's chemical wiring *reversed* (with its real gap
+network), against degree-preserving shuffles and random graphs *of that reversed graph*. That
+comparison is internally valid. It is not a test of the real *C. elegans* wiring, and every sentence
+here that reads it as one is wrong. Path arguments are affected too: the hop counts in C4 and in
+`DECISIONS.md` D008 were counted in the true direction, not the one the simulation ran.
+
+**The headline was rerun with the synapses the right way round**, pre-registered before any run and
+otherwise identical: [`experiments/01b-direction-corrected/`](../experiments/01b-direction-corrected/RESULTS.md).
+It reverses the central finding:
+
+| | synapses reversed (above) | synapses correct (01b) |
+|---|---|---|
+| N2 − SH, speed | −0.100 [−0.129, −0.070] | **+0.068 [+0.034, +0.102]** |
+| N2 − RD, speed | −0.112 [−0.150, −0.077] | **+0.067 [+0.021, +0.105]** |
+| N2 − SH, final score | −0.047, no separation | +0.069, no separation |
+| N2 − RD, final score | −0.041, no separation | **+0.094 [+0.029, +0.160]** |
+| N2's rank of 11 graphs, speed | last | first |
+
+So "N2 improves more slowly, and we do not know why" is answered: the reversal. With the real
+direction N2 improves faster than both control families. N2 is still one graph, however: first of
+11 has p ≈ 0.09 if the graphs are exchangeable, so it is not yet shown to lie outside the control
+distribution. The uncalibrated arm, pump-gated foraging, coevolution and the combat tactics were
+**not** rerun and still describe the reversed graph.
+
+Both are kept. Nothing above has been edited; this entry is the correction.

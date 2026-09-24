@@ -133,7 +133,7 @@ def test_experiment_01_configs_and_genomes_are_read_as_reversed(spec):
 
     from wormwars.evo import load_genome
 
-    genome, _ = load_genome(EXP01_RUN / "N2-run00-final.npz", spec, None)
+    genome, _ = load_genome(EXP01_RUN / "champion-N2-run00.npz", spec, None)
     assert genome.cfg.chem_direction == "post_to_pre"
 
 

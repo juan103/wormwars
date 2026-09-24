@@ -1,5 +1,14 @@
 # WormWars 01: *C. elegans* wiring vs. shuffled and random graphs. A foraging null result.
 
+> **Correction (2026-09-24), added after freezing: every run in this experiment used chemical
+> synapses running backwards,** from the postsynaptic neuron to the presynaptic one. What follows
+> therefore compares the worm's wiring *reversed* against shuffles of that reversed graph: valid
+> internally, but not a test of the real *C. elegans* wiring. The headline was rerun with the
+> synapses the right way round, pre-registered, as
+> [experiment 01b](../01b-direction-corrected/RESULTS.md), and the main finding reverses: the real
+> wiring improves **faster** than both control families, not slower. See correction C5 in
+> `RESULTS.md` beside this file, and `DECISIONS.md` D031. Nothing below has been edited.
+
 Frozen record of experiment 01. The files beside this one are copies taken at the moment of
 freezing: `RESULTS.md`, `DECISIONS.md` and `PROVENANCE.md` as they stood, the exact configuration of
 every run in `configs/`, and sha256 hashes in `bundle-hashes.txt`. The repository root keeps living
