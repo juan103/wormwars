@@ -58,3 +58,6 @@ Thumbs.db
 # sessions. Findings that change the project are recorded in DECISIONS.md, not here.
 Astra6/
 .codex-remote-attachments/
+
+# --- agent working files (plan ledgers) ---
+.superpowers/
