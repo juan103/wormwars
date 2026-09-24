@@ -46,6 +46,7 @@ class RunResult:
     champion_id: str = ""
     gpu_seconds: float = 0.0
     evaluations: int = 0
+    snapshots: dict = field(default_factory=dict)  # generation -> best-of-generation strain
 
     def history(self) -> dict[str, np.ndarray]:
         return {
@@ -107,6 +108,8 @@ def evolve(
     holdout_every: int = 5,
     out_dir: str | Path | None = None,
     verbose: bool = True,
+    checkpoint_ids: np.ndarray | None = None,
+    snapshots: tuple = (),
 ) -> RunResult:
     """One independent evolutionary run. This is the unit of statistical analysis."""
     e = cfg.evo
@@ -124,12 +127,15 @@ def evolve(
         res = evaluate_on(cfg, iface, genome, ids, run_seed, device, combat_stage)
         fit = res.per_strain()
         result.evaluations += fit.size * len(ids)
+        if g in snapshots:
+            result.snapshots[g] = genome.select([int(np.argmax(fit))])
 
         hb = hm = None
-        if g % holdout_every == 0 or g == e.generations - 1:
+        if g % holdout_every == 0 or g == e.generations - 1 or g in snapshots:
             best_i = int(np.argmax(fit))
+            suite = pool.holdout if checkpoint_ids is None else np.asarray(checkpoint_ids)
             hres = evaluate_on(
-                cfg, iface, genome.select([best_i]), pool.holdout, run_seed, device, combat_stage
+                cfg, iface, genome.select([best_i]), suite, run_seed, device, combat_stage
             )
             hb = float(hres.per_strain()[0])
             hm = hb
