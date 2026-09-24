@@ -1,0 +1,176 @@
+{
+  "rule": "A remap moves the food signal from AWA/AWC/ASE to three other bilateral sensory pairs outside the interface. Routing is a hard, per-pair tolerance: a remap pair may be no closer to the motor read-out than the food neurons are, measured in the direction signal flows (chemical pre -> post, gap both ways): at least 1.5 hops on average to the forward read-out and to the turn read-out, and at most 2 units of anatomical weight on direct edges into the read-out (the food pairs have 0-1). Among the pairs that qualify, degree is matched pair by pair: a triple's distance is the smallest sum, over the six ways of assigning its pairs to AWA, AWC and ASE, of per-pair L1 distances on chemical out-degree, in-degree and gap degree, each scaled by its standard deviation over the candidate pool. The two best disjoint triples are R1 and R2, each ordered so that position k replaces food pair k. The shortcut remap MS is the three pairs with the most direct read-out weight. Only per-pair summaries leave this module, never edges.",
+  "routing_tolerance": {
+    "hops_forward": 1.5,
+    "hops_turn": 1.5,
+    "direct_weight": 2.0
+  },
+  "features": [
+    "chem_out",
+    "chem_in",
+    "gap",
+    "hops_forward",
+    "hops_turn",
+    "direct_weight"
+  ],
+  "sets": {
+    "M0": [
+      [
+        "AWAL",
+        "AWAR"
+      ],
+      [
+        "AWCL",
+        "AWCR"
+      ],
+      [
+        "ASEL",
+        "ASER"
+      ]
+    ],
+    "R1": [
+      [
+        "ASJL",
+        "ASJR"
+      ],
+      [
+        "ASIL",
+        "ASIR"
+      ],
+      [
+        "ASGL",
+        "ASGR"
+      ]
+    ],
+    "R2": [
+      [
+        "PLNL",
+        "PLNR"
+      ],
+      [
+        "IL2DL",
+        "IL2DR"
+      ],
+      [
+        "IL2VL",
+        "IL2VR"
+      ]
+    ],
+    "MS": [
+      [
+        "FLPL",
+        "FLPR"
+      ],
+      [
+        "PHBL",
+        "PHBR"
+      ],
+      [
+        "PVDL",
+        "PVDR"
+      ]
+    ]
+  },
+  "distance_to_M0": {
+    "R1": 8.480797230725793,
+    "R2": 10.987531621521347
+  },
+  "pair_features": {
+    "AWA": {
+      "chem_out": 10.5,
+      "chem_in": 7.5,
+      "gap": 4.0,
+      "hops_forward": 2.0,
+      "hops_turn": 2.0,
+      "direct_weight": 0.0
+    },
+    "AWC": {
+      "chem_out": 15.5,
+      "chem_in": 13.0,
+      "gap": 4.0,
+      "hops_forward": 1.5,
+      "hops_turn": 1.5,
+      "direct_weight": 1.0
+    },
+    "ASE": {
+      "chem_out": 17.0,
+      "chem_in": 17.0,
+      "gap": 4.5,
+      "hops_forward": 2.0,
+      "hops_turn": 2.0,
+      "direct_weight": 0.0
+    },
+    "ASJ": {
+      "chem_out": 5.0,
+      "chem_in": 5.0,
+      "gap": 4.5,
+      "hops_forward": 2.0,
+      "hops_turn": 1.5,
+      "direct_weight": 0.5
+    },
+    "ASI": {
+      "chem_out": 14.5,
+      "chem_in": 4.5,
+      "gap": 4.0,
+      "hops_forward": 2.0,
+      "hops_turn": 2.0,
+      "direct_weight": 0.0
+    },
+    "ASG": {
+      "chem_out": 4.0,
+      "chem_in": 9.0,
+      "gap": 7.0,
+      "hops_forward": 2.0,
+      "hops_turn": 1.5,
+      "direct_weight": 1.0
+    },
+    "PLN": {
+      "chem_out": 4.5,
+      "chem_in": 3.5,
+      "gap": 3.0,
+      "hops_forward": 2.0,
+      "hops_turn": 1.5,
+      "direct_weight": 1.5
+    },
+    "IL2D": {
+      "chem_out": 13.0,
+      "chem_in": 2.0,
+      "gap": 1.5,
+      "hops_forward": 1.5,
+      "hops_turn": 2.0,
+      "direct_weight": 1.0
+    },
+    "IL2V": {
+      "chem_out": 13.0,
+      "chem_in": 3.0,
+      "gap": 1.5,
+      "hops_forward": 1.5,
+      "hops_turn": 2.0,
+      "direct_weight": 0.5
+    },
+    "FLP": {
+      "chem_out": 16.5,
+      "chem_in": 6.0,
+      "gap": 7.5,
+      "hops_forward": 1.0,
+      "hops_turn": 2.0,
+      "direct_weight": 174.0
+    },
+    "PHB": {
+      "chem_out": 10.5,
+      "chem_in": 4.0,
+      "gap": 7.0,
+      "hops_forward": 1.0,
+      "hops_turn": 2.0,
+      "direct_weight": 154.0
+    },
+    "PVD": {
+      "chem_out": 12.0,
+      "chem_in": 6.0,
+      "gap": 9.5,
+      "hops_forward": 1.0,
+      "hops_turn": 2.0,
+      "direct_weight": 102.0
+    }
+  }
+}
