@@ -6,6 +6,7 @@
     py -3.13 scripts/exp02.py pilot         # timed end-to-end runs on SH101 (discarded) -> pilot.json
     py -3.13 scripts/exp02.py run           # the grid, in balanced resumable batches
     py -3.13 scripts/exp02.py probes        # evaluation-only probes on every champion -> probes.json
+    py -3.13 scripts/exp02.py report        # estimates and tripwires -> analysis.json
 """
 
 from __future__ import annotations
@@ -31,6 +32,7 @@ from wormwars.evo import SeedPool, load_genome, rollout, save_genome
 from wormwars.evo.bundle import write_bundle
 from wormwars.evo.evolve import evolve
 from wormwars.exp02 import grid, remaps, scripted
+from wormwars.exp02 import analysis as An
 from wormwars.exp02 import probes as P
 from wormwars.exp02.manifest import check_manifest, run_manifest
 from wormwars.interface import load_interface
@@ -282,16 +284,65 @@ def cmd_probes(args, con, iface):
     print(f"probes done in {out['seconds']:.0f}s")
 
 
+def cmd_report(args, con, iface):
+    recs = An.normalise(grid.read_records(OUT / "records.jsonl"), _load(grid.EXP02_DIR / "diagnostics.json"))
+    diag = _load(grid.EXP02_DIR / "diagnostics.json")
+    prb = _load(OUT / "probes.json")
+    cal = _load(grid.EXP02_DIR / "calibration.json")
+    main_recs = [r for r in recs if r["task"] in ("T0", "T1")]
+    out = {}
+    for tag in ("norm_g00", "norm_g39"):
+        n2, sh = An.units(main_recs, tag)
+        out[tag] = {
+            "I_T0": An.paired_bootstrap(n2, sh, lambda a, s: An.interaction(a, s, "T0")),
+            "I_T1": An.paired_bootstrap(n2, sh, lambda a, s: An.interaction(a, s, "T1")),
+            "I_T1_minus_I_T0": An.paired_bootstrap(n2, sh, An.task_contrast),
+            "advantage": {f"{t}-{m}": An.paired_bootstrap(n2, sh, lambda a, s, c=(t, m): An.advantage(a, s, c))
+                          for t, m in grid.MAIN},
+            "variance_T0": An.variance_components(sh, "T0"),
+            "variance_T1": An.variance_components(sh, "T1"),
+            "loo_T1": An.leave_one_graph_out(n2, sh, "T1"),
+        }
+    n2, sh = An.units(recs, "norm_g39")
+    matched_adv = lambda a, s: float(np.mean([An.advantage(a, s, ("T1", m)) for m in An.MATCHED]))  # noqa: E731
+    sh_matched = lambda s: float(np.mean([An._sh_mean(s, ("T1", m)) for m in An.MATCHED]))  # noqa: E731
+    summary = {
+        "temporal": An.temporal_check(prb["champions"]),
+        "memory_vs_memoryless": An.memory_vs_memoryless(diag),
+        "anchor": An.paired_bootstrap(n2, sh, lambda a, s: An.advantage(a, s, ("A", "M0"))),
+        "sign_01b": An.sign_of_01b(Path("runs/exp01b-direction-corrected/records.json")),
+        "drive": An.drive_check(recs, cal, grid.TARGET_DRIVE),
+        "integrator": An.integrator_interactions(recs, prb["champions"]),
+        "late_cells": An.late_cells(recs),
+        "ms_vs_matched": An.paired_bootstrap(n2, sh, lambda a, s: An.advantage(a, s, ("T1", "MS")) - matched_adv(a, s)),
+        "r1_minus_r2": An.paired_bootstrap(n2, sh, lambda a, s: An.advantage(a, s, ("T1", "R1")) - An.advantage(a, s, ("T1", "R2"))),
+        "sh_mapping": An.paired_bootstrap(n2, sh, lambda a, s: An._sh_mean(s, ("T1", "M0")) - sh_matched(s)),
+        "valence_no_gap_max": max(v["max_abs_score_diff"] for v in prb["valence"] if not v["gaps"]),
+        "strength": An.strength_contrast(recs, "norm_g39"),
+        "pellet_share_g39": float(np.mean([r["pellet_share_g39"] for r in recs])),
+        "max_ledger_error": max(r["ledger_error"] for r in recs),
+    }
+    out["summary"] = summary
+    out["tripwires"] = An.tripwires(summary)
+    _json(OUT / "analysis.json", out)
+    for tw in out["tripwires"]:
+        print(f"{'FIRED' if tw['fired'] else 'ok   '}  {tw['name']}")
+    for tag in ("norm_g00", "norm_g39"):
+        for k in ("I_T0", "I_T1", "I_T1_minus_I_T0"):
+            b = out[tag][k]
+            print(f"{tag} {k:16} {b['estimate']:+.4f} [{b['lo']:+.4f}, {b['hi']:+.4f}]")
+
+
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("command", choices=["remaps", "calibrate", "diagnostics", "pilot", "run", "probes"])
+    ap.add_argument("command", choices=["remaps", "calibrate", "diagnostics", "pilot", "run", "probes", "report"])
     ap.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
     ap.add_argument("--max-hours", type=float, default=10.0)
     args = ap.parse_args()
     con = load_connectome()
     iface = load_interface(con)
     {"remaps": cmd_remaps, "calibrate": cmd_calibrate, "diagnostics": cmd_diagnostics,
-     "pilot": cmd_pilot, "run": cmd_run, "probes": cmd_probes}[args.command](args, con, iface)
+     "pilot": cmd_pilot, "run": cmd_run, "probes": cmd_probes, "report": cmd_report}[args.command](args, con, iface)
 
 
 if __name__ == "__main__":
