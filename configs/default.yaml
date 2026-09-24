@@ -61,6 +61,9 @@ world:
   crowd_resist: 0.6
   crowd_push: 0.1
   crowd_blur: 1
+  # experiment 02 options (defaults reproduce every earlier experiment)
+  food_sensing: stereo
+  food_probe: real
 
 # Per-world randomisation. Every field is a range, sampled independently per world.
 map:

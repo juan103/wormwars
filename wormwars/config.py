@@ -107,6 +107,15 @@ class WorldConfig:
     crowd_push: float = 0.10  # cells per tick pushed down the density gradient
     crowd_blur: int = 1
 
+    # --- experiment 02 options; the defaults reproduce every earlier experiment ---
+    # "stereo": food sampled left and right of the head. "mono": one sample at the head's front
+    # centre, copied to both sides, so direction can only come from change over time.
+    food_sensing: str = "stereo"
+    # Evaluation probes only, never used for selection. "real": the food field. "constant": each
+    # world's mean food level at tick 0, identical everywhere. "mirrored": the food field sampled
+    # at the point reflection of the true sample point (same distribution, unrelated location).
+    food_probe: str = "real"
+
 
 @dataclass
 class MapConfig:

@@ -45,6 +45,8 @@ P_FRONT_L, P_FRONT_R, P_FRONT_C = 3, 4, 5
 P_REAR_L, P_REAR_R = 6, 7
 P_BODY_L, P_BODY_R = 8, 9
 N_POINTS = 10
+FOOD_SENSING = ("stereo", "mono")
+FOOD_PROBES = ("real", "constant", "mirrored")
 BODY_POINTS = (P_HEAD, P_MID, P_TAIL)
 
 
@@ -188,6 +190,12 @@ class World:
         self.dtype = dtype
         self.combat_stage = combat_stage
         wcfg = cfg.world
+        if wcfg.food_sensing not in FOOD_SENSING:
+            raise ValueError(
+                f"world.food_sensing must be one of {FOOD_SENSING}, got {wcfg.food_sensing!r}"
+            )
+        if wcfg.food_probe not in FOOD_PROBES:
+            raise ValueError(f"world.food_probe must be one of {FOOD_PROBES}, got {wcfg.food_probe!r}")
 
         strain_of = strain_of.to(self.device)
         self.n_worlds, self.n_swarms = int(strain_of.shape[0]), int(strain_of.shape[1])
@@ -266,6 +274,11 @@ class World:
         )
         self.energy_eaten = zs()
         self.energy_from_biting = zs()
+        # plant food versus corpse pellets, per world: pure measurement
+        self.pellet_eaten = torch.zeros(self.n_worlds, dtype=torch.float64, device=self.device)
+        self.last_forward: Tensor | None = None
+        self.last_turn: Tensor | None = None
+        self._food_sample: Tensor | None = None
         self.v = [
             self.brains[s].initial_state(self.assigns[s].n_slots * self.n_weys)
             for s in range(self.n_swarms)
@@ -283,6 +296,8 @@ class World:
         self._points = None  # recomputed whenever pos/heading change
 
         self._build_maps()
+        # the "constant" probe's value: each world's mean food level at tick 0
+        self._food_constant = self.fields[:, self.ch.FOOD].mean(dim=(1, 2))
         self._update_body_field()
         self.start_energy_total = self.total_energy().clone()
 
@@ -433,6 +448,14 @@ class World:
 
     # -------------------------------------------------------------- sensing
 
+    def _probe_food(self, pts: Tensor) -> Tensor:
+        """Food + pellet sampled at the point reflection of every sample point. Probe only."""
+        x, y = pts[..., 0], pts[..., 1]
+        mirrored = torch.stack((self.W - 1 - x, self.H - 1 - y), dim=-1)
+        ch = self.ch
+        s = sample_bilinear(self.fields[:, ch.FOOD : ch.PELLET + 1].contiguous(), mirrored)
+        return (s[:, 0] + s[:, 1]).reshape(self.n_worlds, self.n_swarms, self.n_weys, N_POINTS)
+
     def _sensor_signals(self, sampled: Tensor) -> dict[str, Tensor]:
         """`sampled` is [worlds, channels, swarms, weys, N_POINTS]; returns named signals
         shaped [worlds, swarms, weys], already scaled to injected-current units."""
@@ -443,7 +466,16 @@ class World:
         def at(channel, point):
             return sampled[:, channel, :, :, point]
 
-        food = sampled[:, ch.FOOD] + sampled[:, ch.PELLET]
+        if wcfg.food_probe == "mirrored":
+            food = self._food_sample
+        elif wcfg.food_probe == "constant":
+            food = self._food_constant.view(-1, 1, 1, 1).expand_as(sampled[:, ch.FOOD])
+        else:
+            food = sampled[:, ch.FOOD] + sampled[:, ch.PELLET]
+        if wcfg.food_sensing == "mono":
+            food_l = food_r = food[..., P_FRONT_C]
+        else:
+            food_l, food_r = food[..., P_FRONT_L], food[..., P_FRONT_R]
         own_ph = sampled[:, ch.PHEROMONE + swarm_ix, swarm_ix]  # [Wd, S, B, P]
         if n_sw > 1:
             all_ph = sampled[:, ch.PHEROMONE : ch.PHEROMONE + n_sw]  # [Wd, S_ch, S, B, P]
@@ -458,8 +490,8 @@ class World:
         sf, sp = wcfg.sense_scale_food, wcfg.sense_scale_pheromone
         sh, sd, sc = wcfg.sense_scale_hazard, wcfg.sense_scale_damage, wcfg.sense_scale_collision
         return {
-            "food_left": food[..., P_FRONT_L] * sf,
-            "food_right": food[..., P_FRONT_R] * sf,
+            "food_left": food_l * sf,
+            "food_right": food_r * sf,
             "ally_pheromone_left": own_ph[..., P_FRONT_L] * sp,
             "ally_pheromone_right": own_ph[..., P_FRONT_R] * sp,
             "enemy_pheromone_left": enemy_ph[..., P_FRONT_L] * sp,
@@ -512,6 +544,7 @@ class World:
         sampled = sample_bilinear(self.fields, pts).reshape(
             self.n_worlds, self.ch.n, self.n_swarms, self.n_weys, N_POINTS
         )
+        self._food_sample = self._probe_food(pts) if wcfg.food_probe == "mirrored" else None
         signals = self._sensor_signals(sampled)
         current = self._build_current(signals)
 
@@ -523,6 +556,7 @@ class World:
             cols.append(a.from_brain(self.v[s], self.n_worlds, self.n_weys))
         v_world = torch.stack(cols, dim=1)
         forward, turn, pump = self._read_motors(v_world)
+        self.last_forward, self.last_turn = forward, turn
         self.pump = pump * alive_f
 
         # tactics: did a wey that is being bitten turn toward the side the bite came from?
@@ -633,6 +667,7 @@ class World:
         share = torch.where(avail > 0, food / avail.clamp_min(1e-12), torch.zeros_like(avail))
         self.fields[:, ch.FOOD] = food - taken * share
         self.fields[:, ch.PELLET] = pellet - taken * (1.0 - share)
+        self.pellet_eaten += (taken * (1.0 - share)).sum(dim=(1, 2)).double()
 
     def bite_points(self) -> Tensor:
         """[worlds, swarms, weys, 2] -- the cell just ahead of each head, where the bite lands."""
