@@ -297,17 +297,24 @@ This project was designed and built almost entirely by AI models, directed by a 
   this repository, but has not independently verified the code line by line.
 - Claude Fable 5.1 (Anthropic), in conversation: turned those ideas into the experimental design and
   specification, reviewed the results, and drafted the experiment 02 pre-registration (to be
-  committed next).
+  committed next). Later, consulted read-only, it reviewed experiment 01b before publication (D033).
 - Astra 6 (a GPT model from OpenAI): adversarial review of the specification, which produced the
   statistical design, the resource accounting rules and the numerical stability requirements.
-- Claude Code running Claude Opus 5 (Anthropic): every line of code, every measurement, and all
-  implementation decisions recorded in DECISIONS.md. It found the motor-gain confound on its own.
+  Reviewing the roadmap, it found that the chemical synapses of experiment 01 ran backwards (D031),
+  and it reviewed experiment 01b before publication (D033).
+- Claude Code running Claude Opus 5 and, from 2026-09-24, Claude Opus 5.5 (Anthropic): every line
+  of code, every measurement, and all implementation decisions recorded in DECISIONS.md. Opus 5
+  built experiment 01 and found the motor-gain confound on its own. Opus 5.5 confirmed and fixed
+  the reversed synapses, ran experiment 01b, and acted on its review.
 
 Errors and who caught them: the "learned to flank" claim was made by Claude Code and caught by
 Claude Fable 5.1 in review (D026). The "N2 is deeper" explanation was made by Claude Fable 5.1,
 built on a path length mis-measured by Claude Code, and caught by Claude Code when it re-measured
 instead of writing the claim as dictated (C4). No single participant, human or AI, would have caught
-both.
+both. The largest error, chemical synapses running backwards in every run of experiment 01, was
+made by Claude Code and caught by Astra 6 (D031). Claude Code's first write-up of the corrected
+rerun then overclaimed, and Astra 6 and Fable 5.1 each caught that independently (D033). The full
+list, with commits: [`docs/REVIEW_TRAIL.md`](docs/REVIEW_TRAIL.md).
 
 The design and implementation came from Anthropic models and the specification review from an OpenAI
 model. Reviewers from different model families are less likely to share the same blind spots.
