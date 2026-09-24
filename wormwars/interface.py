@@ -6,6 +6,9 @@ and fails loudly when a named neuron is absent. It never substitutes a sibling n
 
 from __future__ import annotations
 
+import copy
+import hashlib
+import json
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -85,10 +88,18 @@ def _resolve(con: Connectome, names, where: str) -> np.ndarray:
     return np.array([con.index(n) for n in names], dtype=np.int64)
 
 
-def load_interface(con: Connectome, path: str | Path | None = None) -> Interface:
+def load_interface_spec(path: str | Path | None = None) -> dict:
+    """The raw interface specification, as written in the YAML file."""
     path = Path(path) if path is not None else DEFAULT_INTERFACE
-    spec = yaml.safe_load(path.read_text(encoding="utf-8"))
+    return yaml.safe_load(path.read_text(encoding="utf-8"))
 
+
+def load_interface(con: Connectome, path: str | Path | None = None) -> Interface:
+    return interface_from_spec(con, load_interface_spec(path))
+
+
+def interface_from_spec(con: Connectome, spec: dict) -> Interface:
+    """Resolve a raw specification (as loaded from YAML, or built by `remapped_spec`)."""
     signal_names: list[str] = []
     sensor_neuron: list[int] = []
     sensor_gain: list[float] = []
@@ -124,3 +135,63 @@ def load_interface(con: Connectome, path: str | Path | None = None) -> Interface
         lateral_offset=float(sampling["lateral_offset"]),
         raw=spec,
     )
+
+
+def _motor_names(spec: dict) -> set[str]:
+    m = spec["motors"]
+    return set(m["forward"]["plus"] + m["forward"]["minus"] + m["turn"]["plus"]
+               + m["turn"]["minus"] + m["pump"]["neurons"])
+
+
+def remapped_spec(spec: dict, prefix: str, pairs: list[tuple[str, str]]) -> dict:
+    """A copy of `spec` in which the k-th `<prefix>_left`/`_right` entries receive pairs[k].
+
+    Gains, order, every other channel and the motor read-out are untouched. A neuron already used
+    by another channel or by the read-out is refused, as is the wrong number of pairs.
+    """
+    out = copy.deepcopy(spec)
+    lefts = [s for s in out["sensors"] if s["signal"] == f"{prefix}_left"]
+    rights = [s for s in out["sensors"] if s["signal"] == f"{prefix}_right"]
+    if len(lefts) != len(pairs) or len(rights) != len(pairs):
+        raise ValueError(
+            f"{prefix!r} has {len(lefts)} left and {len(rights)} right entries; got {len(pairs)} pairs"
+        )
+    new = [n for p in pairs for n in p]
+    if len(set(new)) != len(new):
+        raise ValueError(f"remap pairs repeat a neuron: {new}")
+    elsewhere = {n for s in out["sensors"] if not s["signal"].startswith(prefix + "_")
+                 for n in s["neurons"]}
+    clash = set(new) & (elsewhere | _motor_names(out))
+    if clash:
+        raise ValueError(f"remap neurons {sorted(clash)} are already used by the interface")
+    for entry, (left, _) in zip(lefts, pairs):
+        entry["neurons"] = [left]
+    for entry, (_, right) in zip(rights, pairs):
+        entry["neurons"] = [right]
+    return out
+
+
+def negated_spec(spec: dict, prefix: str) -> dict:
+    """A copy of `spec` with every `<prefix>_*` channel's gain multiplied by -1."""
+    out = copy.deepcopy(spec)
+    for s in out["sensors"]:
+        if s["signal"].startswith(prefix + "_"):
+            s["gain"] = -float(s.get("gain", 1.0))
+    return out
+
+
+def interface_hash(iface: Interface) -> str:
+    """sha256 of everything that decides what reaches which neuron and what is read out."""
+    payload = {
+        "signals": list(iface.signal_names),
+        "sensor_neuron": [int(i) for i in iface.sensor_neuron],
+        "sensor_gain": [float(g) for g in iface.sensor_gain],
+        "forward_plus": [int(i) for i in iface.forward_plus],
+        "forward_minus": [int(i) for i in iface.forward_minus],
+        "turn_plus": [int(i) for i in iface.turn_plus],
+        "turn_minus": [int(i) for i in iface.turn_minus],
+        "pump_neurons": [int(i) for i in iface.pump_neurons],
+        "pump_gain": float(iface.pump_gain),
+        "offsets": [float(iface.forward_offset), float(iface.lateral_offset)],
+    }
+    return hashlib.sha256(json.dumps(payload, sort_keys=True).encode()).hexdigest()

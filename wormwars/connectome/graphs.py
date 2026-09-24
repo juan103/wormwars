@@ -6,8 +6,8 @@ wired to which.
 
 - **SH** preserves each neuron's in-degree and out-degree exactly (chemical), and each neuron's
   degree exactly (gap). Chemical and gap graphs are shuffled independently. The gap graph stays
-  symmetric. Anatomical weights are carried along with the edges, so the weight *distribution* is
-  identical to N2 and only the topology moves.
+  symmetric. The anatomical weights are permuted onto the shuffled edges: the overall weight
+  distribution is identical to N2's, but no edge or neuron keeps its own anatomical strength.
 - **RD** keeps only the neuron count and the edge count: edges are placed uniformly at random, and
   the anatomical weights of N2 are dealt out to them in random order, so again only the topology
   differs from N2 in distribution.

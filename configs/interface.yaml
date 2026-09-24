@@ -8,7 +8,8 @@
 # Only individual neuron names appear here. Class names are never used: if a neuron is missing from
 # the dataset the interface fails loudly rather than substituting a sibling.
 #
-# Read-out and injection both use the neuron's bounded output tanh(v), not the raw voltage.
+# Injection adds each signal, times its gain, as an external current (clipped to +-input_max).
+# The motor read-out uses the neuron's bounded output tanh(v), not the raw voltage.
 
 # Bilateral sampling geometry, in world units (see WorldConfig.cell_size for scale).
 sampling:
