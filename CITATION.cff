@@ -1,7 +1,7 @@
 cff-version: 1.2.0
 message: "If you use this software or its results, please cite it as below, and cite Cook et al. 2019 for the connectome data it depends on."
 title: "WormWars: C. elegans wiring vs. shuffled and random graphs"
-version: "exp01b-v1.0"
+version: "exp01b-v1.1"
 abstract: >-
   Many parallel 2D worlds on one GPU, in which swarms of small creatures forage and fight. Each
   creature's brain is a continuous-time recurrent network whose wiring is the real C. elegans
