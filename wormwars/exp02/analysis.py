@@ -268,8 +268,10 @@ def tripwires(summary: dict) -> list[dict]:
     t.append({"name": "anchor N2 - SH sign differs from 01b's",
               "fired": np.sign(anc["estimate"]) != np.sign(summary["sign_01b"]), "detail": anc})
     dr = summary["drive"]
-    t.append({"name": "achieved drive off target by more than 2% (validation or generation 0)",
-              "fired": dr["max_validation_error"] > 0.02 or dr["max_gen0_error"] > 0.02, "detail": dr})
+    # 2048-genome validation sample: ~1.4% SE, so 4% is ~2 SE of the difference between two such
+    # samples. Single runs' generation-0 drive (32 genomes, ~12% SE) is reported, not tripwired.
+    t.append({"name": "achieved drive off target by more than 4% on the independent validation sample",
+              "fired": dr["max_validation_error"] > 0.04, "detail": dr})
     ig = summary["integrator"]
     t.append({"name": "integrator moves the interaction more than the chaos floor (and by > 0.02)",
               "fired": ig["max_shift"] > ig["chaos_floor"] and ig["max_shift"] > 0.02, "detail": ig})

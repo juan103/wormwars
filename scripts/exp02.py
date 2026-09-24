@@ -70,10 +70,12 @@ def cmd_calibrate(args, con, iface):
         t0 = time.perf_counter()
         cfg = grid.brain_config_for_graph(base, name)
         graph = grid.graph_for(con, name)
-        cal = calib.calibrate_in_world(graph, cfg, iface, grid.TARGET_DRIVE, device=args.device)
+        cal = calib.calibrate_in_world(graph, cfg, iface, grid.TARGET_DRIVE,
+                                       n_strains=grid.CALIBRATION_STRAINS, device=args.device)
         check = cfg.copy()
         check.world.forward_gain, check.world.turn_gain = cal.forward_gain, cal.turn_gain
-        val = calib.achieved_drive(graph, check, iface, seed=1, device=args.device)
+        val = calib.achieved_drive(graph, check, iface, n_strains=grid.CALIBRATION_STRAINS, seed=1,
+                                   device=args.device)
         out[name] = {**cal.as_dict(), "validation_seed1": val.as_dict(),
                      "seconds": time.perf_counter() - t0}
         print(f"{name:8} gains {cal.forward_gain:.3f}/{cal.turn_gain:.3f} in {cal.iterations} it; "
@@ -166,7 +168,7 @@ def cmd_pilot(args, con, iface):
     remap_sets = _load(grid.EXP02_DIR / "remaps.json")["sets"]
     graph = shuffled(con, PILOT_GRAPH, f"SH{PILOT_GRAPH}")
     cal = calib.calibrate_in_world(graph, grid.task_config(Config(), "T0"), iface, grid.TARGET_DRIVE,
-                                   device=args.device)
+                                   n_strains=grid.CALIBRATION_STRAINS, device=args.device)
     gains = (cal.forward_gain, cal.turn_gain)
     out = OUT / "pilot"
     times, probe_times = {}, {}

@@ -118,3 +118,19 @@ def test_integrator_interactions_are_recomputed_per_setting():
     out = A.integrator_interactions(recs, probes)
     assert abs(out["I_T1"]["s128"] - out["I_T1"]["s32"]) < 1e-9
     assert out["max_shift"] <= out["chaos_floor"] + 1e-12
+
+
+def test_drive_tripwire_uses_the_large_validation_sample_not_single_runs():
+    """A 32-genome generation-0 population scatters about +-12% in drive by sampling alone, so it
+    cannot carry a 2% tripwire; the graph-level validation sample does (2048 genomes, 4%)."""
+    base = {"temporal": {"real_minus_constant": {"lo": 1, "hi": 2, "estimate": 1},
+                         "real_minus_mirrored": {"lo": 1, "hi": 2, "estimate": 1}},
+            "memory_vs_memoryless": {"lo": 1, "hi": 2, "estimate": 1},
+            "anchor": {"estimate": 1.0, "lo": 0.5, "hi": 1.5}, "sign_01b": 1.0,
+            "integrator": {"max_shift": 0.0, "chaos_floor": 0.0}, "late_cells": (0, 8),
+            "ms_vs_matched": {"lo": -1, "hi": 1}, "r1_minus_r2": {"lo": -1, "hi": 1},
+            "sh_mapping": {"lo": -1, "hi": 1}, "valence_no_gap_max": 0.0}
+    ok = dict(base, drive={"max_validation_error": 0.03, "max_gen0_error": 0.15})
+    bad = dict(base, drive={"max_validation_error": 0.05, "max_gen0_error": 0.01})
+    fired = lambda s: [t["fired"] for t in A.tripwires(s) if "drive" in t["name"]][0]  # noqa: E731
+    assert fired(ok) is False and fired(bad) is True

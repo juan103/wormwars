@@ -22,6 +22,10 @@ from ..interface import interface_from_spec, load_interface_spec, remapped_spec
 ROOT = Path(__file__).resolve().parents[2]
 EXP02_DIR = ROOT / "experiments" / "02-screening"
 TARGET_DRIVE = (0.5, 0.4)
+# One random genome's drive has sd ~0.25-0.31 on a mean ~0.4, so 24 genomes (the old protocol)
+# carry ~12% sampling error. 2048 genomes give ~1.4% SE for fitting and for validation.
+CALIBRATION_STRAINS = 2048
+VALIDATION_TOLERANCE = 0.04
 CHECKPOINT_IDS = np.arange(950_000_000, 950_000_016)
 TUNING_IDS = np.arange(960_000_000, 960_000_032)
 TUNING_SEED = 99_999
