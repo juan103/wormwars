@@ -41,6 +41,14 @@ def genome_hash(genome: Genome, index: int = 0) -> str:
     return hashlib.sha256(flat.tobytes()).hexdigest()
 
 
+def edge_hash(spec: BrainSpec) -> str:
+    """sha256 of the edge lists in mask order. Two graphs with one label but different edges differ."""
+    h = hashlib.sha256()
+    for t in (spec.chem_i, spec.chem_j, spec.gap_i, spec.gap_j):
+        h.update(t.detach().to("cpu", torch.int64).numpy().tobytes())
+    return h.hexdigest()
+
+
 def nickname(genome: Genome, index: int = 0) -> str:
     """Deterministic adjective-animal name derived from the genome itself."""
     h = int(genome_hash(genome, index)[:16], 16)
@@ -81,6 +89,7 @@ def save_genome(path, genome: Genome, index: int = 0, cfg=None, **meta) -> Path:
         "n_chem": spec.n_chem,
         "n_gap": spec.n_gap,
         "n_neurons": spec.n,
+        "edge_hash": edge_hash(spec),
         "brain_config": dataclasses.asdict(genome.cfg),
         "genome_sha256": genome_hash(genome, index),
         "nickname": nickname(genome, index),
@@ -114,6 +123,7 @@ def save_population(path, genome: Genome, cfg=None, **meta) -> Path:
         "n_chem": spec.n_chem,
         "n_gap": spec.n_gap,
         "n_neurons": spec.n,
+        "edge_hash": edge_hash(spec),
         "n_strains": genome.n_strains,
         "brain_config": dataclasses.asdict(genome.cfg),
         "nicknames": [nickname(genome, i) for i in range(genome.n_strains)],
@@ -165,6 +175,12 @@ def load_genome(
         raise ValueError(
             f"genome was evolved on graph {meta['graph']!r} but the spec is {spec.label!r}. "
             "Genomes are mask-specific and are not transferable between graphs."
+        )
+    stored_edges = meta.get("edge_hash")
+    if stored_edges is not None and stored_edges != edge_hash(spec):
+        raise ValueError(
+            f"{Path(path).name} was evolved on a different edge set than this {spec.label!r} spec: "
+            "same label, different graph. Genomes are mask-specific."
         )
     t = lambda k: torch.from_numpy(np.atleast_2d(d[k])).to(device)  # noqa: E731
     w, g, tau, bias = t("w"), t("g"), t("tau"), t("bias")
