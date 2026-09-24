@@ -52,3 +52,9 @@ Thumbs.db
 # proportional to the connectome's anatomical weights (measured: 100% of entries), and this project
 # does not redistribute that data. It regenerates deterministically from its seed.
 *frozen-suite*.npz
+
+# --- reviewer workspaces and tool attachments: local, not part of the published record ---
+# Astra 6's review workspace (its own AGENTS.md, reviews, proposals) and files attached to Codex
+# sessions. Findings that change the project are recorded in DECISIONS.md, not here.
+Astra6/
+.codex-remote-attachments/
