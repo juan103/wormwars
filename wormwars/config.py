@@ -41,6 +41,13 @@ class BrainConfig:
     init_g_scale: float = 0.05  # G = init_g_scale * anat / mean(anat), >= 0
     init_bias_std: float = 0.5
     init_tau_log_uniform: bool = True
+    # Initial |W| and G magnitudes: "anatomical" (default: proportional to the anatomical weight),
+    # "uniform" (every edge at the scale), or "permuted" (the anatomical magnitudes shuffled within
+    # the graph's own mask, seeded by init_permutation_seed). Experiment 02 uses the last two to
+    # ask whether N2's edge comes from its topology or from its synapse strengths.
+    init_chem_magnitude: str = "anatomical"
+    init_gap_magnitude: str = "anatomical"
+    init_permutation_seed: int = 0
     dale: bool = False  # one sign per presynaptic neuron
     # input
     input_gain: float = 1.0

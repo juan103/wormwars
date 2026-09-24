@@ -20,12 +20,15 @@ brain:
   init_g_scale: 0.05
   init_bias_std: 0.5
   init_tau_log_uniform: true
+  init_chem_magnitude: anatomical
+  init_gap_magnitude: anatomical
+  init_permutation_seed: 0
   dale: false
   input_gain: 1.0
   input_max: 5.0
   # Chemical synapses carry signal from the presynaptic to the postsynaptic neuron. Experiment 01
-  # ran reversed ("post_to_pre") by mistake; see DECISIONS.md D031. Always state this explicitly:
-  # a config without it is read as the legacy direction.
+  # ran reversed ("post_to_pre") by mistake; see DECISIONS.md D031. Only a run bundle recorded
+  # before the fix is read as reversed (Config.from_bundle); ordinary configs default to pre_to_post.
   chem_direction: pre_to_post
 
 # The arena, the bodies and the energy economy.

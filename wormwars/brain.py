@@ -35,6 +35,24 @@ from torch import Tensor
 from .config import CHEM_DIRECTIONS, BrainConfig, MutationConfig
 from .connectome.loader import Connectome
 
+MAGNITUDE_MODES = ("anatomical", "uniform", "permuted")
+
+
+def _apply_magnitude_mode(mag: Tensor, mode: str, scale: float, seed: int, salt: int) -> Tensor:
+    """Transform anatomical initial magnitudes. "anatomical" returns `mag` itself, untouched, so
+    the default path performs exactly the arithmetic it always did."""
+    if mode == "anatomical":
+        return mag
+    if mode == "uniform":
+        return torch.full_like(mag, scale)
+    if mode == "permuted":
+        # a private CPU generator: must not consume the genome's generator, so signs, biases and
+        # time constants stay paired with the anatomical draw
+        gen = torch.Generator().manual_seed(int(seed) * 2 + salt)
+        perm = torch.randperm(mag.numel(), generator=gen).to(mag.device)
+        return mag[perm]
+    raise ValueError(f"init magnitude mode must be one of {MAGNITUDE_MODES}, got {mode!r}")
+
 
 @dataclass(frozen=True)
 class BrainSpec:
@@ -148,6 +166,9 @@ class Genome:
 
         # |W| proportional to the anatomical weight (see Connectome.weight_kind), random sign.
         w_mag = cfg.init_w_scale * spec.chem_anat / spec.chem_anat.mean()
+        w_mag = _apply_magnitude_mode(
+            w_mag, cfg.init_chem_magnitude, cfg.init_w_scale, cfg.init_permutation_seed, 0
+        )
         sign = torch.where(rand(S, spec.n_chem) < 0.5, -1.0, 1.0)
         w = w_mag.unsqueeze(0) * sign
 
@@ -158,7 +179,11 @@ class Genome:
             # presynaptic index is the receiving end, so Dale's law must not be combined with it.
             w = w.abs() * dale_sign[:, spec.chem_i]
 
-        g = cfg.init_g_scale * (spec.gap_anat / spec.gap_anat.mean()).unsqueeze(0).expand(S, -1)
+        g_mag = cfg.init_g_scale * (spec.gap_anat / spec.gap_anat.mean())
+        g_mag = _apply_magnitude_mode(
+            g_mag, cfg.init_gap_magnitude, cfg.init_g_scale, cfg.init_permutation_seed, 1
+        )
+        g = g_mag.unsqueeze(0).expand(S, -1)
         g = g.contiguous()
 
         if cfg.init_tau_log_uniform:
