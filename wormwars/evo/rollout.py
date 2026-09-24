@@ -32,6 +32,7 @@ class RolloutResult:
     eaten: np.ndarray  # food removed from the map by this swarm
     ticks: int
     ledger_error: float
+    pellet_eaten: np.ndarray | None = None  # corpse pellets eaten, [strains, worlds]
 
     def per_strain(self) -> np.ndarray:
         return self.score.mean(axis=1)
@@ -45,6 +46,40 @@ def foraging_score(world: World, swarm: int = 0) -> torch.Tensor:
     """
     start = world.cfg.world.start_energy * world.n_weys
     return world.swarm_energy()[:, swarm] / start
+
+
+def _play(cfg, iface, brain, world_ids, run_seed, device, combat_stage=0, ticks=None, recorder=None):
+    """Every strain of `brain` on every world id. `brain` is a Brain or anything World accepts."""
+    n_sub, n_ids = brain.n_strains, len(world_ids)
+    strain_of = torch.arange(n_sub, device=device).repeat_interleave(n_ids).reshape(-1, 1)
+    ids = np.tile(world_ids, n_sub)
+    world = World(
+        cfg, iface, brain, strain_of, run_seed=run_seed, world_ids=ids,
+        device=device, combat_stage=combat_stage,
+    )
+    if recorder is not None:
+        recorder.attach(world)
+    food0 = world.fields[:, world.ch.FOOD].sum(dim=(1, 2)).clone()
+    world.run(ticks)
+    food1 = world.fields[:, world.ch.FOOD].sum(dim=(1, 2))
+    shape = (n_sub, n_ids)
+    return {
+        "score": foraging_score(world).reshape(shape).cpu().numpy(),
+        "energy": world.swarm_energy()[:, 0].reshape(shape).cpu().numpy(),
+        "alive": world.n_alive()[:, 0].reshape(shape).cpu().numpy(),
+        "eaten": (food0 - food1).reshape(shape).cpu().numpy(),
+        "pellet": world.pellet_eaten.reshape(shape).cpu().numpy(),
+        "err": world.energy_ledger_error().abs().max().item(),
+        "ticks": world.tick_count,
+    }
+
+
+def rollout_brain(cfg, iface, brain, world_ids, run_seed, device="cpu", ticks=None) -> RolloutResult:
+    """Like `rollout`, for an already-built brain (for example a scripted controller)."""
+    world_ids = np.asarray(world_ids, dtype=np.int64)
+    r = _play(cfg, iface, brain, world_ids, run_seed, device, ticks=ticks)
+    return RolloutResult(r["score"], r["energy"], r["alive"], r["eaten"], r["ticks"], r["err"],
+                         pellet_eaten=r["pellet"])
 
 
 def rollout(
@@ -70,7 +105,7 @@ def rollout(
     chunk_worlds = chunk_worlds or cfg.evo.chunk_worlds
     strains_per_chunk = max(1, chunk_worlds // max(n_ids, 1))
 
-    scores, energies, alives, eatens = [], [], [], []
+    scores, energies, alives, eatens, pellets = [], [], [], [], []
     worst_err = 0.0
     used_ticks = 0
 
@@ -81,25 +116,15 @@ def rollout(
         if brain_hook is not None:
             # lets callers modify the brain per chunk (e.g. apply a different ablation per strain)
             brain_hook(brain, lo, hi)
-        n_sub = hi - lo
-        strain_of = torch.arange(n_sub, device=device).repeat_interleave(n_ids).reshape(-1, 1)
-        ids = np.tile(world_ids, n_sub)
-        world = World(
-            cfg, iface, brain, strain_of, run_seed=run_seed, world_ids=ids,
-            device=device, combat_stage=combat_stage,
-        )
-        if recorder is not None and lo == 0:
-            recorder.attach(world)
-        food0 = world.fields[:, world.ch.FOOD].sum(dim=(1, 2)).clone()
-        world.run(ticks)
-        food1 = world.fields[:, world.ch.FOOD].sum(dim=(1, 2))
-
-        scores.append(foraging_score(world).reshape(n_sub, n_ids).cpu().numpy())
-        energies.append(world.swarm_energy()[:, 0].reshape(n_sub, n_ids).cpu().numpy())
-        alives.append(world.n_alive()[:, 0].reshape(n_sub, n_ids).cpu().numpy())
-        eatens.append((food0 - food1).reshape(n_sub, n_ids).cpu().numpy())
-        worst_err = max(worst_err, world.energy_ledger_error().abs().max().item())
-        used_ticks = world.tick_count
+        r = _play(cfg, iface, brain, world_ids, run_seed, device, combat_stage, ticks,
+                  recorder if lo == 0 else None)
+        scores.append(r["score"])
+        energies.append(r["energy"])
+        alives.append(r["alive"])
+        eatens.append(r["eaten"])
+        pellets.append(r["pellet"])
+        worst_err = max(worst_err, r["err"])
+        used_ticks = r["ticks"]
 
     return RolloutResult(
         score=np.concatenate(scores),
@@ -108,6 +133,7 @@ def rollout(
         eaten=np.concatenate(eatens),
         ticks=used_ticks,
         ledger_error=worst_err,
+        pellet_eaten=np.concatenate(pellets),
     )
 
 
