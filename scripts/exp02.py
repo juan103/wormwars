@@ -177,6 +177,10 @@ def _history_probe_validation(cfg, iface, fam, device):
     return out
 
 
+def _unit_seeds():
+    return sorted({r.run_seed for b in grid.run_schedule() for r in b})
+
+
 def cmd_diagnostics(args, con, iface):
     fg, tg = _gains("N2")
     seeds = _unit_seeds()
@@ -253,6 +257,34 @@ def _execute(spec: grid.RunSpec, con, remap_sets, device, out: Path, graph=None,
     return rec
 
 
+def _feasibility_gate(con, iface, graph, gains, out, device) -> dict:
+    """Can 40 generations find memory at all? The pilot's T1 champion (a discarded shuffle) must
+    beat the tuned memoryless controller on its held-out worlds AND lose score under the history
+    ablation validated in diagnostics. Otherwise the screening would compare kinesis with kinesis."""
+    diag = _load(grid.EXP02_DIR / "diagnostics.json")
+    valid = [p for p in diag["T1"]["history_probe"] if p["valid"]]
+    if not valid:
+        return {"passed": False, "reason": "no history ablation validated on scripted controllers"}
+    probe = min(valid, key=lambda p: p["value"])  # the mildest valid ablation
+    cfg = grid.task_config(Config(), "T1")
+    cfg.world.forward_gain, cfg.world.turn_gain = gains
+    seed = 31_000
+    ids = SeedPool(cfg, seed).holdout
+    champ, _ = load_genome(out / f"T1-M0-SH{PILOT_GRAPH}-run00-g39.npz",
+                           BrainSpec.from_connectome(graph, device=device), None, device=device)
+    real = rollout(cfg, iface, champ, ids, seed, device).score[0]
+    abl = cfg.copy()
+    abl.world.food_probe = probe["kind"]
+    setattr(abl.world, "food_probe_radius" if probe["kind"] == "jitter" else "food_probe_hold", probe["value"])
+    ablated = rollout(abl, iface, champ, ids, seed, device).score[0]
+    k_params = diag["T1"]["tuned"]["K"]["params"]
+    kin = scripted.score_policy(cfg, iface, scripted.LevelKinesis(**k_params), ids, seed, device)
+    beats_k, uses_history = _paired(real, kin), _paired(real, ablated)
+    return {"probe": {"kind": probe["kind"], "value": probe["value"]},
+            "champion_minus_memoryless": beats_k, "real_minus_history_ablated": uses_history,
+            "passed": bool(beats_k["lo"] > 0 and uses_history["lo"] > 0)}
+
+
 def cmd_pilot(args, con, iface):
     remap_sets = _load(grid.EXP02_DIR / "remaps.json")["sets"]
     graph = shuffled(con, PILOT_GRAPH, f"SH{PILOT_GRAPH}")
@@ -274,6 +306,7 @@ def cmd_pilot(args, con, iface):
         probe_times[task] = time.perf_counter() - tp
         print(f"{task}: {rec['wall_seconds']:.0f}s end to end, probes {probe_times[task]:.0f}s, "
               f"held-out g39 {np.mean(rec['holdout_g39']):.3f}")
+    feasibility = _feasibility_gate(con, iface, graph, gains, out, args.device)
     per_run = float(np.mean(list(times.values())))
     runs = [r for b in grid.run_schedule() for r in b]
     run_equivalents = sum(r.generations / 40 for r in runs)
@@ -283,7 +316,8 @@ def cmd_pilot(args, con, iface):
                                           "probe_seconds_per_champion": probe_times,
                                           "run_equivalents": run_equivalents,
                                           "projected_grid_hours": projected,
-                                          "projected_champion_probe_hours": probe_h})
+                                          "projected_champion_probe_hours": probe_h,
+                                          "feasibility": feasibility})
     print(f"projected grid time: {projected:.2f} h for {run_equivalents:.0f} run-equivalents; "
           f"champion probes {probe_h:.2f} h")
 
