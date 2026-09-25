@@ -22,6 +22,14 @@ def test_task_configs():
     for c in (t0, t1, a):
         assert c.brain.substeps == 32 and c.evo.generations == 40 and c.evo.holdout_worlds == 64
     assert base.brain.substeps == 8, "the base config must not be mutated"
+    # the task world chosen by the scripted gate (DECISIONS D034): odour, 200 ticks, food x2;
+    # the anchor keeps 01b's world exactly
+    lo, hi = base.map.food_per_patch
+    for c in (t0, t1):
+        assert c.world.food_odour_sigma == 1.0 and c.world.max_ticks == 200
+        assert c.map.food_per_patch == (2 * lo, 2 * hi)
+    assert a.world.food_odour_sigma == 0.0 and a.world.max_ticks == 400
+    assert a.map.food_per_patch == (lo, hi)
     with pytest.raises(ValueError):
         grid.task_config(base, "T9")
 

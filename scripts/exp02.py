@@ -83,24 +83,98 @@ def cmd_calibrate(args, con, iface):
     _json(grid.EXP02_DIR / "calibration.json", out)
 
 
-POLICIES = {
-    "stereo": {"stereo_proportional": (
-        lambda k, speed: scripted.StereoProportional(k, speed),
-        {"k": [0.5, 1, 2, 4, 8], "speed": [0.4, 0.6, 0.8, 1.0]})},
-    "mono": {
-        "level_kinesis": (
-            lambda slow, fast, threshold, turn: scripted.LevelKinesis(slow, fast, threshold, turn),
-            {"slow": [0.0, 0.2], "fast": [0.6, 1.0], "threshold": [0.02, 0.05, 0.1],
-             "turn": [0.0, 0.3, 0.6]}),
-        "one_step_memory": (
-            lambda speed, turn, threshold: scripted.OneStepMemory(speed, turn, threshold),
-            {"speed": [0.6, 0.8, 1.0], "turn": [0.5, 0.9], "threshold": [0.0, 0.005, 0.02]}),
-    },
-}
+K_GRID = {"slow": [0.0, 0.25, 0.5, 0.75, 1.0], "fast": [0.5, 0.75, 1.0],
+          "threshold": [0.0003, 0.001, 0.003, 0.01, 0.03, 0.1, 0.3, 1.0, 3.0], "turn": [0.0, 0.1, 0.2, 0.4, 0.7]}
+FALL_GRID = {"fall_turn": [0.4, 0.7, 1.0], "fall_threshold": [0.0, 0.001, 0.003]}
+K_STEREO = [8.0, 32.0, 128.0, 512.0, 2048.0, 8192.0]
+# values at a grid edge that are physical bounds, not choices: the edge rule ignores these
+PHYSICAL = {"fast": {1.0}, "slow": {0.0, 1.0}, "turn": {0.0}, "fall_turn": {1.0}, "fall_threshold": {0.0}}
+JITTER_RADII = [1.0, 2.0, 3.0]
+HOLD_TICKS = [4, 8, 16]
 
 
-def _unit_seeds():
-    return sorted({r.run_seed for b in grid.run_schedule() for r in b})
+def _near(v, vals):
+    i = vals.index(v)
+    return vals[max(0, i - 1): i + 2]
+
+
+def _edges(params, grid_):
+    out = []
+    for k, v in params.items():
+        vals = sorted(grid_[k])
+        if len(vals) > 1 and v in (vals[0], vals[-1]) and v not in PHYSICAL.get(k, set()):
+            out.append(f"{k}={v}")
+    return out
+
+
+def _tune_family(cfg, iface, task, device):
+    """Nested families: K (memoryless) always; M (K + memory) for mono, S (K + stereo) otherwise.
+    M and S are tuned around K's optimum and fall back to K exactly if they do not beat it, so
+    the family on top of K can never score below it on the tuning worlds."""
+    tn = lambda make, g: scripted.tune_batched(make, g, cfg, iface, grid.TUNING_IDS, grid.TUNING_SEED, device)  # noqa: E731
+    kp, ks = tn(lambda **p: scripted.LevelKinesis(**p), K_GRID)
+    local = {k: _near(kp[k], K_GRID[k]) for k in K_GRID}
+    out = {"K": {"params": kp, "tuning_score": ks, "edges": _edges(kp, K_GRID)}}
+    if task == "T1":
+        mp, ms = tn(lambda **p: scripted.MemoryKinesis(**p), dict(local, **FALL_GRID))
+        if ms < ks:
+            mp, ms = dict(kp, fall_turn=kp["turn"], fall_threshold=0.0), ks
+        out["M"] = {"params": mp, "tuning_score": ms,
+                    "edges": _edges({k: mp[k] for k in FALL_GRID}, FALL_GRID)}
+    else:
+        sp, ss = tn(lambda **p: scripted.StereoKinesis(**p), dict(local, k=K_STEREO))
+        if ss < ks:
+            sp, ss = dict(kp, k=0.0), ks
+        out["S"] = {"params": sp, "tuning_score": ss, "edges": _edges({"k": sp["k"]}, {"k": K_STEREO})}
+    return out
+
+
+def _policy(name, params):
+    return {"K": scripted.LevelKinesis, "M": scripted.MemoryKinesis, "S": scripted.StereoKinesis}[name](**params)
+
+
+def _val(cfg, iface, pol, ids, seed, device):
+    b = scripted.ScriptedBrain(iface, 302, pol, cfg.world.forward_gain, cfg.world.turn_gain, device=device)
+    r = scripted.rollout_brain(cfg, iface, b, ids, seed, device)
+    return r.score[0], r.eaten[0] / np.maximum(r.food_start[0], 1e-9)
+
+
+def _share(best, base, straight, n=20000):
+    rng = np.random.default_rng(0)
+    idx = rng.integers(0, len(best), (n, len(best)))
+    s = (best - base)[idx].mean(1) / (best - straight)[idx].mean(1)
+    return {"estimate": float((best - base).mean() / (best - straight).mean()),
+            "lo": float(np.quantile(s, 0.025)), "hi": float(np.quantile(s, 0.975))}
+
+
+def _paired(a, b, n=20000):
+    d = np.asarray(a) - np.asarray(b)
+    rng = np.random.default_rng(0)
+    m = d[rng.integers(0, len(d), (n, len(d)))].mean(1)
+    return {"estimate": float(d.mean()), "lo": float(np.quantile(m, 0.025)), "hi": float(np.quantile(m, 0.975))}
+
+
+def _history_probe_validation(cfg, iface, fam, device):
+    """Which history ablation is valid: the memoryless controller must be unchanged within its
+    interval, and the memory controller must fall toward it. Returns every candidate's numbers."""
+    K, M = _policy("K", fam["K"]["params"]), _policy("M", fam["M"]["params"])
+    base_k, _ = _val(cfg, iface, K, grid.GATE_IDS, grid.GATE_SEED, device)
+    base_m, _ = _val(cfg, iface, M, grid.GATE_IDS, grid.GATE_SEED, device)
+    out = []
+    for kind, values, field in (("jitter", JITTER_RADII, "food_probe_radius"), ("hold", HOLD_TICKS, "food_probe_hold")):
+        for v in values:
+            c = cfg.copy()
+            c.world.food_probe = kind
+            setattr(c.world, field, v)
+            k, _ = _val(c, iface, K, grid.GATE_IDS, grid.GATE_SEED, device)
+            m, _ = _val(c, iface, M, grid.GATE_IDS, grid.GATE_SEED, device)
+            k_change = _paired(k, base_k)
+            memory_left = _paired(m, k)       # what memory still adds under the ablation
+            memory_before = _paired(base_m, base_k)
+            valid = (k_change["lo"] <= 0 <= k_change["hi"]) and memory_left["hi"] < memory_before["lo"]
+            out.append({"kind": kind, "value": v, "K_change": k_change, "memory_gain_under_probe": memory_left,
+                        "memory_gain_without": memory_before, "valid": bool(valid)})
+    return out
 
 
 def cmd_diagnostics(args, con, iface):
@@ -111,19 +185,34 @@ def cmd_diagnostics(args, con, iface):
         t0 = time.perf_counter()
         cfg = grid.task_config(Config(), task)
         cfg.world.forward_gain, cfg.world.turn_gain = fg, tg
+        fam = _tune_family(cfg, iface, task, args.device)
         pols = {"stationary": scripted.Stationary(), "straight": scripted.Straight()}
-        tuned = {}
-        for name, (make, space) in POLICIES["mono" if task == "T1" else "stereo"].items():
-            best, s = scripted.tune(make, space, cfg, iface, grid.TUNING_IDS, grid.TUNING_SEED, args.device)
-            tuned[name] = {"params": best, "tuning_score": s}
-            pols[name] = make(**best)
+        pols.update({name: _policy(name, v["params"]) for name, v in fam.items()})
+        # the gate, on validation worlds disjoint from tuning and from every run's held-out worlds
+        val = {n: _val(cfg, iface, p, grid.GATE_IDS, grid.GATE_SEED, args.device) for n, p in pols.items()}
+        top = "M" if task == "T1" else "S"
+        gate = {
+            "share": _share(val[top][0], val["K"][0], val["straight"][0]),
+            "median_eaten_best": float(np.median(val[top][1])),
+            "means": {n: float(v[0].mean()) for n, v in val.items()},
+            "edges": sum((v["edges"] for v in fam.values()), []),
+        }
         per_seed = {}
         for seed in seeds:
             ids = SeedPool(cfg, seed).holdout
             per_seed[str(seed)] = {n: scripted.score_policy(cfg, iface, p, ids, seed, args.device).tolist()
                                    for n, p in pols.items()}
-        out[task] = {"tuned": tuned, "per_seed_holdout": per_seed, "seconds": time.perf_counter() - t0}
-        print(task, {n: v["params"] for n, v in tuned.items()}, f"{out[task]['seconds']:.0f}s")
+        out[task] = {"tuned": fam, "gate": gate, "per_seed_holdout": per_seed,
+                     "seconds": time.perf_counter() - t0}
+        if task == "T1":
+            out[task]["history_probe"] = _history_probe_validation(cfg, iface, fam, args.device)
+        print(task, "share", {k: round(v, 3) for k, v in gate["share"].items()},
+              "eaten", round(gate["median_eaten_best"], 2), "edges", gate["edges"] or "-",
+              f"{out[task]['seconds']:.0f}s", flush=True)
+    t0 = grid.task_config(Config(), "T0")
+    t0.world.forward_gain, t0.world.turn_gain = fg, tg
+    s_on_t0 = out["T0"]["gate"]["means"]["S"]
+    out["stereo_vs_memory"] = {"S_on_T0": s_on_t0, "M_on_T1": out["T1"]["gate"]["means"]["M"]}
     _json(grid.EXP02_DIR / "diagnostics.json", out)
 
 

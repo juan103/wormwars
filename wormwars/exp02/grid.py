@@ -27,7 +27,10 @@ TARGET_DRIVE = (0.5, 0.4)
 CALIBRATION_STRAINS = 2048
 VALIDATION_TOLERANCE = 0.04
 CHECKPOINT_IDS = np.arange(950_000_000, 950_000_016)
-TUNING_IDS = np.arange(960_000_000, 960_000_032)
+# 64 tuning worlds: a grid of hundreds of points on 32 worlds has a winner's curse of ~0.07
+TUNING_IDS = np.arange(960_000_000, 960_000_064)
+GATE_IDS = np.arange(970_000_000, 970_000_256)  # validation worlds for the task gate
+GATE_SEED = 77_777
 TUNING_SEED = 99_999
 N2_RUNS, SH_GRAPHS, SH_RUNS, PERMS, PERM_RUNS = 4, 6, 2, 3, 2
 MAIN = [("T0", m) for m in ("M0", "R1", "R2")] + [("T1", m) for m in ("M0", "R1", "R2", "MS")]
@@ -50,6 +53,15 @@ def task_config(base: Config, task: str) -> Config:
     c.evo.worlds_per_strain, c.evo.holdout_worlds = 8, 64
     c.world.food_sensing = "mono" if task == "T1" else "stereo"
     c.world.sense_scale_pheromone = 0.35 if task == "A" else 0.0
+    if task in ("T0", "T1"):
+        # Chosen by the scripted gate before any N2 run (DECISIONS D034): in the 01b world the
+        # food runs out (best controllers eat ~100%) and there is no signal beyond a patch edge,
+        # so neither memory nor stereo pays enough. Odour, a shorter episode and more food fix
+        # all three with the fewest changes. The anchor A keeps 01b's world exactly.
+        c.world.food_odour_sigma = 1.0
+        c.world.max_ticks = 200
+        lo, hi = c.map.food_per_patch
+        c.map.food_per_patch = (2 * lo, 2 * hi)
     return c
 
 
