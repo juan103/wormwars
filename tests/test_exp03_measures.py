@@ -65,3 +65,13 @@ def test_history_probe_is_zero_for_identical_histories_and_per_genome(parts):
     np.testing.assert_allclose(h["raw_turn"]["final"], 0.0, atol=1e-7)
     h2 = M.history(g, cfg, iface, bank, warm=20, span=5)
     assert np.all(np.isfinite(h2["raw_turn"]["final"])) and np.any(np.abs(h2["raw_turn"]["final"]) > 0)
+
+
+def test_every_graph_gets_its_own_genome_seed():
+    """Astra's review of the pilot: the old seed kept only the first four characters of the
+    name, so every pilot shuffle, and every graph of an ensemble, shared one set of genomes."""
+    names = [f"pilotSH{s}" for s in range(101, 117)] + [f"{k}-{b + i}" for k, b in
+             (("SH", 10_000), ("SH-route", 20_000), ("SH-recip", 50_000)) for i in range(64)] + ["N2", "N2-rev"]
+    seeds = [M.genome_seed(n) for n in names]
+    assert len(set(seeds)) == len(seeds) and all(0 <= s < 2 ** 31 for s in seeds)
+    assert M.genome_seed("N2") == M.genome_seed("N2")

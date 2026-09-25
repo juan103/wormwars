@@ -6,7 +6,7 @@
 - Effect size with its uncertainty: a 90% interval of N2 minus the ensemble mean from a joint
   bootstrap. World indices are resampled once and shared by every graph, genomes within each
   graph, and ensemble graphs with replacement.
-- Verdicts are mutually exclusive: distinctive, reversed, compatible, inconclusive.
+- Verdicts are mutually exclusive: distinctive, reversed, consistent, inconclusive.
 """
 
 from __future__ import annotations
@@ -39,18 +39,35 @@ def iut_holm(p: dict) -> dict:
     return out
 
 
-def classify(p_holm: float, interval: tuple, margins: dict, direction: str) -> str:
-    """`interval` is the 90% interval of N2 minus the ensemble mean."""
+def classify(p_holm: float, p_holm_opposite: float, interval: tuple, margins: dict, direction: str,
+             n2_interval: tuple, ensemble) -> str:
+    """Mutually exclusive verdicts for one signal against one ensemble (design v3.2, D053).
+    `interval`: the 90% interval of N2 minus the ensemble mean. `n2_interval`: N2's own 90%
+    measurement interval. `ensemble`: the ensemble's graph values.
+    - distinctive: significant in the expected direction and the interval beyond the margin;
+    - reversed: the same in the opposite direction, with its own rank test (v3's code declared
+      it from the interval alone);
+    - consistent: N2's interval lies inside the ensemble's central 90%. That is consistency with
+      the ensemble's distribution, not closeness to its mean (both reviewers);
+    - inconclusive: otherwise."""
     lo, hi = interval
-    s = 1.0 if direction == "above" else -1.0
-    lo_s, hi_s = sorted((s * lo, s * hi))
+    s_ = 1.0 if direction == "above" else -1.0
+    lo_s, hi_s = sorted((s_ * lo, s_ * hi))
     if p_holm <= ALPHA and lo_s > margins["effect"]:
         return "distinctive"
-    if hi_s < -margins["effect"]:
+    if p_holm_opposite <= ALPHA and hi_s < -margins["effect"]:
         return "reversed"
-    if -margins["equivalence"] < lo and hi < margins["equivalence"]:
-        return "compatible"
+    q05, q95 = np.quantile(np.asarray(ensemble, dtype=float), [0.05, 0.95])
+    if q05 <= n2_interval[0] and n2_interval[1] <= q95:
+        return "consistent"
     return "inconclusive"
+
+
+def _as2d(d):
+    """Per-genome signals have no world axis: treat them as [genomes, 1]."""
+    if isinstance(d, dict):
+        return {k: (v[:, None] if np.ndim(v) == 1 else v) for k, v in d.items()}
+    return d[:, None] if np.ndim(d) == 1 else d
 
 
 def _take(d, gi, wi):
@@ -68,6 +85,8 @@ def effect_interval(n2, ensemble: list, stat, n_boot: int = 2000, seed: int = 0,
     maps one graph's (resampled) data to a scalar. Returns the `level` interval of stat(N2)
     minus the mean of stat over the resampled ensemble."""
     rng = np.random.default_rng(seed)
+    n2 = _as2d(n2)
+    ensemble = [_as2d(e) for e in ensemble]
     g_n2, w_all = _shape(n2)
     diffs = np.empty(n_boot)
     for b in range(n_boot):

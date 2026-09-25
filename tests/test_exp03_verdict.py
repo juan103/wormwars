@@ -28,12 +28,25 @@ def test_intersection_then_holm_takes_the_worst_ensemble_first():
 
 
 def test_verdicts_are_mutually_exclusive():
-    m = {"effect": 0.1, "equivalence": 0.1}
-    assert V.classify(0.01, (0.15, 0.30), m, "above") == "distinctive"
-    assert V.classify(0.01, (-0.30, -0.15), m, "above") == "reversed"
-    assert V.classify(0.20, (-0.05, 0.05), m, "above") == "compatible"
-    assert V.classify(0.01, (0.05, 0.30), m, "above") == "inconclusive"
-    assert V.classify(0.20, (0.15, 0.30), m, "above") == "inconclusive"  # interval beyond, test not significant
+    """"Reversed" needs the rank test in the opposite direction too (both reviewers of the pilot
+    decision: v3's code declared it from the interval alone). "Compatible" is judged against the
+    ensemble's distribution: N2's interval inside the ensemble's central 90%."""
+    m = {"effect": 0.1}
+    ens = np.linspace(-1, 1, 128)
+    assert V.classify(0.01, 1.0, (0.15, 0.30), m, "above", (0.0, 0.1), ens) == "distinctive"
+    assert V.classify(1.0, 0.01, (-0.30, -0.15), m, "above", (0.0, 0.1), ens) == "reversed"
+    assert V.classify(1.0, 0.5, (-0.30, -0.15), m, "above", (-0.99, -0.92), ens) == "inconclusive"
+    assert V.classify(0.5, 0.5, (-0.05, 0.05), m, "above", (-0.1, 0.1), ens) == "consistent"
+    assert V.classify(0.5, 0.5, (-0.05, 0.05), m, "above", (0.85, 0.95), ens) == "inconclusive"
+    assert V.classify(0.20, 0.8, (0.15, 0.30), m, "above", (0.92, 0.99), ens) == "inconclusive"
+
+
+def test_effect_interval_accepts_signals_without_a_world_axis():
+    rng = np.random.default_rng(0)
+    n2 = 0.3 + rng.normal(0, 0.05, 256)
+    ens = [rng.normal(0, 0.05, 256) for _ in range(20)]
+    lo, hi = V.effect_interval(n2, ens, lambda x: x.mean(), n_boot=300, seed=1)
+    assert 0.25 < lo < 0.3 < hi < 0.35
 
 
 def test_joint_bootstrap_shares_world_indices_across_graphs():

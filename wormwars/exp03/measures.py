@@ -3,12 +3,21 @@ the genome axis, so every value is saved per genome."""
 
 from __future__ import annotations
 
+import hashlib
+
 import numpy as np
 import torch
 
 from ..brain import Brain, Genome
 from ..config import Config
 from ..world import World
+
+
+def genome_seed(name: str) -> int:
+    """An independent random-genome seed per graph, from a hash of its whole name. The first
+    version kept only the name's first four characters, so graphs shared genomes (Astra,
+    pilot review; D053)."""
+    return int.from_bytes(hashlib.sha256(name.encode()).digest()[:4], "little") % (2 ** 31)
 
 
 def task_c_config(base: Config) -> Config:

@@ -42,9 +42,13 @@ PILOT_SEEDS = range(101, 117)
 PLATEAU_SEEDS = range(90_000, 90_004)
 WORLDS = np.arange(993_000_000, 993_000_016)  # shared by every graph and task; disjoint from 02
 RUN_SEED = 3
-GENOMES = 64
-PROBE_GENOMES = 512
-FIT_CELLS = [("T0", m) for m in ("M0", "R1", "R2")] + [("T1", m) for m in ("M0", "R1", "R2")] + [("T1const", "M0")]
+# Allocation, design v3.2 (D053): precision where the primary signals need it.
+GENOMES = 64                  # the secondary fitness cells and coverage
+P3_GENOMES = 256              # T1-M0 and T1const-M0, the two cells of P3 (primary)
+PRIMARY_PROBE_GENOMES = 2048  # P1 (input response at M0) and P4 (history)
+SECONDARY_PROBE_GENOMES = 256 # every other input-response condition
+FIT_CELLS = [("T1", "M0"), ("T1const", "M0"), ("T1", "R1"), ("T1", "R2"), ("T0", "M0")]
+P3_CELLS = {("T1", "M0"), ("T1const", "M0")}
 
 
 def _json(path: Path, obj):
@@ -142,10 +146,6 @@ def _load_graph(con, name):
     return con.with_masks(z["chem"], z["gap"], name)
 
 
-def _genome_seed(name: str) -> int:
-    return int.from_bytes(name.encode(), "little") % (2 ** 31)
-
-
 def measure_graph(con, name, device, bank=None, only=None):
     """Every registered measure for one graph, per genome. `only` restricts to a subset
     (used by the pilot's first pass, which only needs the stimulus-bank replays)."""
@@ -169,11 +169,13 @@ def measure_graph(con, name, device, bank=None, only=None):
             c.world.food_probe = "constant"
         return c
 
-    gen = torch.Generator(device=device).manual_seed(_genome_seed(name))
-    genomes = Genome.random(spec, cfg_for("T1").brain, GENOMES, generator=gen, device=device)
+    gen = torch.Generator(device=device).manual_seed(M.genome_seed(name))
+    big = Genome.random(spec, cfg_for("T1").brain, P3_GENOMES, generator=gen, device=device)
+    genomes = big.select(list(range(GENOMES)))  # the first 64 are shared by every cell: paired
     if only is None or "fitness" in only:
         t0 = time.perf_counter()
-        out["fitness"] = {f"{task}-{m}": rollout(cfg_for(task), grid.interface_for(con, m, remap_sets), genomes,
+        out["fitness"] = {f"{task}-{m}": rollout(cfg_for(task), grid.interface_for(con, m, remap_sets),
+                                                 big if (task, m) in P3_CELLS else genomes,
                                                  WORLDS, RUN_SEED, device, chunk_worlds=4096).score.tolist()
                           for task, m in FIT_CELLS}
         t["fitness"] = time.perf_counter() - t0
@@ -187,22 +189,24 @@ def measure_graph(con, name, device, bank=None, only=None):
         t["coverage"] = time.perf_counter() - t0
     if only is None or "response" in only:
         t0 = time.perf_counter()
-        pg = torch.Generator(device=device).manual_seed(_genome_seed(name) + 1)
+        pg = torch.Generator(device=device).manual_seed(M.genome_seed(name) + 1)
         cfg1 = cfg_for("T1")
-        probe_g = Genome.random(spec, cfg1.brain, PROBE_GENOMES, generator=pg, device=device)
-        resp = {}
-        for m in ("M0", "R1", "R2", "MS"):
+        probe_g = Genome.random(spec, cfg1.brain, PRIMARY_PROBE_GENOMES, generator=pg, device=device)
+        small_g = probe_g.select(list(range(SECONDARY_PROBE_GENOMES)))
+        resp = {"M0": P.input_response(spec, cfg1, grid.interface_for(con, "M0", remap_sets), None, device,
+                                       genome=probe_g, per_genome=True)}
+        for m in ("R1", "R2", "MS"):
             resp[m] = P.input_response(spec, cfg1, grid.interface_for(con, m, remap_sets), None, device,
-                                       genome=probe_g, per_genome=True)
-        no_gap = Genome(probe_g.spec, probe_g.cfg, probe_g.w, torch.zeros_like(probe_g.g), probe_g.tau,
-                        probe_g.bias, probe_g.dale_sign)
+                                       genome=small_g, per_genome=True)
+        no_gap = Genome(small_g.spec, small_g.cfg, small_g.w, torch.zeros_like(small_g.g), small_g.tau,
+                        small_g.bias, small_g.dale_sign)
         resp["M0-gaps-off"] = P.input_response(spec, cfg1, grid.interface_for(con, "M0", remap_sets), None, device,
                                                genome=no_gap, per_genome=True)
         for mode in ("uniform", "permuted"):
             cm = cfg1.copy()
             cm.brain.init_chem_magnitude = cm.brain.init_gap_magnitude = mode
-            gm = Genome.random(spec, cm.brain, PROBE_GENOMES,
-                               generator=torch.Generator(device=device).manual_seed(_genome_seed(name) + 1), device=device)
+            gm = Genome.random(spec, cm.brain, SECONDARY_PROBE_GENOMES,
+                               generator=torch.Generator(device=device).manual_seed(M.genome_seed(name) + 1), device=device)
             resp[f"M0-{mode}"] = P.input_response(spec, cm, grid.interface_for(con, "M0", remap_sets), None, device,
                                                   genome=gm, per_genome=True)
         keep = ("directional_turn_signed_raw", "directional_turn_raw", "common_turn_raw", "common_forward_raw")
@@ -245,7 +249,8 @@ def signals(m) -> dict:
     r = m["response"]["M0"]
     out = {"P1": float(np.mean(r["directional_turn_signed_raw"]) / max(np.mean(r["common_turn_raw"]), 1e-12))
            if np.mean(r["common_turn_raw"]) >= 1e-4 else float("nan"),
-           "P2": float(f["T1-M0"].mean() - (f["T1-R1"].mean() + f["T1-R2"].mean()) / 2),
+           # P2 (secondary) on the 64 genomes every cell shares, so its three terms are paired
+           "P2": float(f["T1-M0"][:GENOMES].mean() - (f["T1-R1"].mean() + f["T1-R2"].mean()) / 2),
            "P3": float(f["T1-M0"].mean() - f["T1const-M0"].mean())}
     if "history" in m:
         num = np.abs(np.asarray(m["history"]["raw_turn"]["final"])).mean()
@@ -271,54 +276,127 @@ def cmd_pilot(args):
         m["signals"] = signals(m)
         full.append(m)
         print(n, {k: round(v, 5) for k, v in m["signals"].items()}, {k: round(v) for k, v in m["seconds"].items()}, flush=True)
-    sig = {k: [m["signals"][k] for m in full] for k in ("P1", "P2", "P3", "P4")}
+    sig = {k: [m["signals"][k] for m in full] for k in ("P1", "P2", "P3", "P4")}  # P2 secondary
     sd = {k: float(np.nanstd(v, ddof=1)) for k, v in sig.items()}
     margins = {k: {"effect": 0.5 * v, "equivalence": 0.5 * v, "between_graph_sd": v} for k, v in sd.items()}
     per_graph_seconds = float(np.mean([sum(m["seconds"].values()) for m in full]))
     _json(EXP / "pilot.json", {"bank": bank, "margins": margins, "signals": sig,
                                "per_graph_seconds": per_graph_seconds,
-                               "projected_run_hours": per_graph_seconds * (5 + 4 * N_PER_ENSEMBLE) / 3600,
+                               "projected_run_hours": per_graph_seconds * (5 + len(S.KINDS) * N_PER_ENSEMBLE) / 3600,
                                "seconds": time.perf_counter() - t0, "graphs": full})
     print("margins:", margins)
-    print(f"per graph {per_graph_seconds:.0f}s -> projected run {per_graph_seconds * (5 + 4 * N_PER_ENSEMBLE) / 3600:.1f} h")
+    print(f"per graph {per_graph_seconds:.0f}s -> projected run {per_graph_seconds * (5 + len(S.KINDS) * N_PER_ENSEMBLE) / 3600:.1f} h")
 
 
-def _signal_from_resample(m, gi, wi, pi):
-    """The four signals for one graph with genomes gi, worlds wi (fitness) and probe genomes pi."""
-    f = {k: np.asarray(v)[np.ix_(gi, wi)] for k, v in m["fitness"].items()}
-    r = {k: np.asarray(v)[pi] for k, v in m["response"]["M0"].items()}
-    out = {"P1": float(r["directional_turn_signed_raw"].mean() / r["common_turn_raw"].mean()),
-           "P2": float(f["T1-M0"].mean() - (f["T1-R1"].mean() + f["T1-R2"].mean()) / 2),
-           "P3": float(f["T1-M0"].mean() - f["T1const-M0"].mean())}
-    h = m["history"]["raw_turn"]
-    out["P4"] = float(np.abs(np.asarray(h["final"])[pi]).mean() / np.abs(np.asarray(h["steady_contrast"])[pi]).mean())
-    return out
+PRIMARY = ("P1", "P3", "P4")
 
 
-def cmd_precision(args):
-    """Design v3: a pilot shuffle stands in for N2. Its bootstrap SE per signal (genomes and
-    worlds resampled) must be under a quarter of the equivalence margin."""
+def _ratio_se(num, den, n_boot=2000, seed=0):
+    """Bootstrap SE over genomes of mean(num) / mean(den)."""
+    rng = np.random.default_rng(seed)
+    num, den = np.asarray(num, float), np.asarray(den, float)
+    idx = rng.integers(0, len(num), (n_boot, len(num)))
+    return float(np.std(num[idx].mean(1) / den[idx].mean(1), ddof=1))
+
+
+def _crossed_se(d, common_world=None):
+    """SE of the grand mean of a genome x world table under crossed random effects (two-way
+    ANOVA without replication), after removing a world profile common to every graph: shared
+    worlds cancel in rank comparisons. Returns (se, components)."""
+    d = np.asarray(d, float)
+    if common_world is not None:
+        d = d - common_world[None, :]
+    g, w = d.shape
+    grand = d.mean()
+    rm, cm = d.mean(1), d.mean(0)
+    ms_g = w * np.sum((rm - grand) ** 2) / (g - 1)
+    ms_w = g * np.sum((cm - grand) ** 2) / (w - 1)
+    resid = d - rm[:, None] - cm[None, :] + grand
+    ms_e = np.sum(resid ** 2) / ((g - 1) * (w - 1))
+    s_g, s_w, s_e = max((ms_g - ms_e) / w, 0.0), max((ms_w - ms_e) / g, 0.0), ms_e
+    return float(np.sqrt(s_g / g + s_w / w + s_e / (g * w))), {"genome": s_g, "world": s_w, "residual": s_e}
+
+
+def cmd_variance(args):
+    """Design v3.2 (D053): per-graph measurement SE for each primary signal on all 16 pilot
+    graphs; latent between-graph SD tau (observed variance minus mean SE^2); reliability."""
     pilot = json.loads((EXP / "pilot.json").read_text(encoding="utf-8"))
-    m = pilot["graphs"][0]
-    rng = np.random.default_rng(0)
-    g, w = np.asarray(m["fitness"]["T1-M0"]).shape
-    p = len(m["response"]["M0"]["common_turn_raw"])
-    boots = [_signal_from_resample(m, rng.integers(0, g, g), rng.integers(0, w, w), rng.integers(0, p, p))
-             for _ in range(1000)]
-    se = {k: float(np.std([b[k] for b in boots], ddof=1)) for k in ("P1", "P2", "P3", "P4")}
-    ok = {k: se[k] < 0.25 * pilot["margins"][k]["equivalence"] for k in se}
-    pilot["precision"] = {"stand_in": m["name"], "se": se, "passes": ok}
+    graphs = pilot["graphs"]
+    d3 = [np.asarray(m["fitness"]["T1-M0"]) - np.asarray(m["fitness"]["T1const-M0"]) for m in graphs]
+    common = np.mean([d.mean(0) for d in d3], axis=0)
+    se = {"P1": [], "P3": [], "P4": []}
+    comps = []
+    for m, d in zip(graphs, d3):
+        r = m["response"]["M0"]
+        se["P1"].append(_ratio_se(r["directional_turn_signed_raw"], r["common_turn_raw"]))
+        e3, c3 = _crossed_se(d, common)
+        se["P3"].append(e3)
+        comps.append(c3)
+        h = m["history"]["raw_turn"]
+        se["P4"].append(_ratio_se(np.abs(h["final"]), np.abs(h["steady_contrast"])))
+    out = {}
+    for k in PRIMARY:
+        vals = np.asarray(pilot["signals"][k], float)
+        obs_var = float(np.var(vals, ddof=1))
+        mse = float(np.mean(np.square(se[k])))
+        tau2 = max(obs_var - mse, 0.0)
+        out[k] = {"observed_sd": float(np.sqrt(obs_var)), "mean_se": float(np.sqrt(mse)), "latent_sd": float(np.sqrt(tau2)),
+                  "reliability": float(tau2 / (tau2 + mse)) if tau2 + mse > 0 else float("nan"),
+                  "se_range": [float(min(se[k])), float(max(se[k]))]}
+    out["P3_components_mean"] = {c: float(np.mean([x[c] for x in comps])) for c in ("genome", "world", "residual")}
+    pilot["variance"] = out
     _json(EXP / "pilot.json", pilot)
-    print({k: (round(se[k], 5), round(pilot["margins"][k]["equivalence"], 5), ok[k]) for k in se})
+    for k in PRIMARY:
+        v = out[k]
+        print(f"{k}: observed SD {v['observed_sd']:.4f}, mean SE {v['mean_se']:.4f}, latent SD {v['latent_sd']:.4f}, "
+              f"reliability {v['reliability']:.2f}")
+    print("P3 components (mean over pilots):", out["P3_components_mean"])
+
+
+def cmd_power(args):
+    """Simulated power of the registered decision rule (design v3.2): five ensembles of 128
+    graphs, one-sided exact rank tests, maximum over ensembles, Holm across the three primary
+    signals (the other two at the null), and the effect interval beyond 0.5 latent SD. N2 is
+    placed z latent SDs above each ensemble's mean."""
+    pilot = json.loads((EXP / "pilot.json").read_text(encoding="utf-8"))
+    rng = np.random.default_rng(0)
+    table = {}
+    for k in PRIMARY:
+        tau, se = pilot["variance"][k]["latent_sd"], pilot["variance"][k]["mean_se"]
+        rows = {}
+        for z in (1.5, 2.0, 2.5, 3.0, 4.0):
+            hits = 0
+            for _ in range(args.sims):
+                ps = []
+                for _e in range(len(S.KINDS)):
+                    ens = rng.normal(0, tau, N_PER_ENSEMBLE) + rng.normal(0, se, N_PER_ENSEMBLE)
+                    n2 = z * tau + rng.normal(0, se)
+                    ps.append(((ens >= n2).sum() + 1) / (N_PER_ENSEMBLE + 1))
+                p_max = max(ps)
+                others = [max(((rng.normal(0, tau, N_PER_ENSEMBLE) + rng.normal(0, se, N_PER_ENSEMBLE)) >=
+                               rng.normal(0, tau) + rng.normal(0, se)).sum() + 1 for _e in range(len(S.KINDS)))
+                          / (N_PER_ENSEMBLE + 1) for _o in range(len(PRIMARY) - 1)]
+                ordered = sorted([p_max] + others)
+                rank = ordered.index(p_max)
+                holm = max(min(1.0, (len(ordered) - i) * ordered[i]) for i in range(rank + 1))
+                half = 1.645 * np.sqrt(se ** 2 + (tau ** 2 + se ** 2) / N_PER_ENSEMBLE)
+                if holm <= 0.05 and (z * tau - half) > 0.5 * tau:
+                    hits += 1
+            rows[str(z)] = hits / args.sims
+        table[k] = rows
+        print(k, rows)
+    pilot["power"] = {"sims": args.sims, "table": table}
+    _json(EXP / "pilot.json", pilot)
 
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("command", choices=["build", "pilot", "precision"])
+    ap.add_argument("command", choices=["build", "pilot", "variance", "power"])
+    ap.add_argument("--sims", type=int, default=2000)
     ap.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
     ap.add_argument("--workers", type=int, default=8)
     args = ap.parse_args()
-    {"build": cmd_build, "pilot": cmd_pilot, "precision": cmd_precision}[args.command](args)
+    {"build": cmd_build, "pilot": cmd_pilot, "variance": cmd_variance, "power": cmd_power}[args.command](args)
 
 
 if __name__ == "__main__":
