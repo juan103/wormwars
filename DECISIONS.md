@@ -928,3 +928,25 @@ Each point was recomputed before it was adopted:
 - **Added:** the §4 companions, jitter 3, the common-mode response, generation-0 magnitudes,
   gap-on valence, behaviour, intake and per-run drive. Added post hoc: the T0 R1 − R2 contrast
   (+0.063 [+0.011, +0.116]), which the T1-only tripwire did not compute.
+
+## D043 — Last corrections to experiment 02's results; experiment 03 is open
+
+A consultation on whether the revised results are ready and what experiment 03 should be
+(`experiments/02-screening/reviews/20260925-153539-next-step/`). Every factual claim was checked
+against the saved data before anything changed:
+
+- **Astra was right** that N2's large directional response is general input sensitivity.
+  Relative to its common-mode response, it is ordinary: 0.49, against 0.45-0.54 for the shuffles.
+- **Fable's drive confound does not hold.** Motor gains were calibrated under M0 only, but the
+  recorded generation-0 drive is the same under every mapping. It cannot explain the
+  generation-0 interaction.
+- **Fable was right** that the anchor was compared across units. Raw, it is +0.031
+  [−0.049, +0.105] against 01b's +0.069 [−0.015, +0.169].
+- **Computed at Fable's suggestion:** stereo use does not correlate with score within any T0
+  cell (r ≈ 0), so there was no selection gradient for stereo. **Found by Astra:** all eight
+  continuation runs kept improving.
+
+Both consultants recommend that experiment 03 be a cheap generation-0 structural study (about
+2-5 GPU-hours, no evolution). It would add routing-matched and mirror-matched shuffle ensembles,
+gaps on and off, and per-brain values saved. Both rank a task that needs history or stereo second,
+and both say to defer plasticity. The choice is the owner's.

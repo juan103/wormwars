@@ -5,20 +5,23 @@ meaningfully uses the left-right food difference.** In stereo foraging with food
 biological neurons, removing the difference costs N2's champions +0.027 [+0.000, +0.060] and
 the shuffles' +0.023 [+0.003, +0.047]. The pre-registered threshold for meaningful use is 0.10.
 The contrast is +0.004 [−0.032, +0.044]. Under the registered reading, 40 generations of this
-search found stereo use in neither group. So the experiment could not test whether N2's wiring
-helps stereo foraging.
+search found stereo use in neither group. The registered prediction was tested and challenged
+under this search procedure. Whether N2's wiring could support stereo foraging under a different
+search remains open.
 
-Two things are still worth knowing:
-- **N2's wiring is structurally different where the prediction expected.** Random N2 brains'
-  turn read-out responds 3.5-11 times more strongly to a left-right food difference than random
-  shuffles do, under the biological mapping, and on average in the right direction. That
-  structure did not turn into stereo use by the champions. The generation-0 champions show no
-  stereo advantage either.
-- **Under the biological mapping, the gap between N2 and the shuffles closes with evolution.**
-  At generation 0 the mapping interaction favours N2 in both tasks. N2's own preference for the
-  biological mapping stays the same through generation 39. What changes is the shuffles: their
-  best random brains start worse under the biological mapping than under the wrong ones, and
-  evolution removes that deficit.
+Two exploratory observations (the second is post hoc):
+- **Random N2 brains respond more to food input, not more selectively.** Under the biological
+  mapping, their turn read-out responds 3.5-11 times more strongly than random shuffles' to a
+  left-right food difference. But it responds more strongly to total food too. Relative to that,
+  N2's response to the difference is ordinary: 0.49, against 0.45-0.54 for the shuffles. On
+  average N2's response points toward the stronger side (no uncertainty was saved). Neither the
+  evolved champions nor the generation-0 champions show a stereo advantage.
+- **Under the biological mapping, the gap between N2 and the shuffles closes with evolution,
+  because the shuffles catch up.** At generation 0 the mapping interaction favours N2 in both
+  tasks. The shuffles' best random brains start worse under the biological mapping than under the
+  wrong ones: T0 −0.042 [−0.069, −0.018]. Evolution removes that deficit (+0.019 [−0.001,
+  +0.037]). N2's own preference for the biological mapping has roughly the same point estimate
+  at both times (+0.026), with intervals that include zero.
 
 This is a screening experiment: a 12-GPU-hour fraction of a larger design, meant to find failure
 modes and size the full experiment ([`DESIGN.md`](DESIGN.md)). It was pre-registered in
@@ -78,7 +81,7 @@ Real minus probed score, generation 39, cell T0-M0:
 | jitter 1 (T0: spatial noise) | −0.001 [−0.010, +0.008] | +0.001 [−0.004, +0.006] |
 | jitter 3 (T0: spatial noise) | +0.050 [+0.006, +0.103] | +0.036 [+0.021, +0.054] |
 | food replaced by a constant | +1.458 [+1.314, +1.587] | +0.999 [+0.864, +1.150] |
-| collision sensing off | +0.40 | +0.52 |
+| collision sensing off | +0.404 [+0.088, +0.799] | +0.516 [+0.223, +0.878] |
 
 Jitter 3 costs the scripted stereo controller 0.535, but kinesis only 0.057
 (`probe_validation.json`). Champions losing about 0.04-0.05 therefore fits little stereo use.
@@ -124,10 +127,19 @@ scores normalised per world to the best scripted controller:
 On raw scores the pattern is the same (generation 0: I(T0) +0.223 [+0.066, +0.385], I(T1)
 +0.215 [+0.082, +0.343]; generation 39: both straddle zero).
 
-**What changes is the shuffles, not N2** (post hoc). N2's own preference for M0 over the remaps,
-normalised, is +0.026 at generation 0 and +0.026 at 39 on T0, and +0.028 at both on T1. The
-shuffles' best random brains start *worse* under M0 than under the remaps (−0.042 on T0, −0.041
-on T1). By generation 39 that deficit is gone (+0.019 and −0.002). One plausible reason, not
+**What changes is the shuffles, not N2** (post hoc). Normalised preference for M0 over the
+remaps, hierarchical bootstrap:
+
+| | generation 0 | generation 39 |
+|---|---|---|
+| N2, T0 | +0.026 [−0.016, +0.068] | +0.026 [−0.009, +0.055] |
+| N2, T1 | +0.028 [−0.011, +0.066] | +0.028 [−0.004, +0.076] |
+| SH, T0 | **−0.042 [−0.069, −0.018]** | +0.019 [−0.001, +0.037] |
+| SH, T1 | **−0.041 [−0.061, −0.022]** | −0.002 [−0.032, +0.024] |
+
+N2's point estimates barely move. The shuffles' best random brains start clearly worse under M0,
+and by generation 39 that deficit is gone. Motor drive does not explain it: generation-0 drive is
+the same under every mapping (N2 forward 0.49-0.50, turn 0.41; SH 0.51 and 0.38 under all four). One plausible reason, not
 tested: in the shuffles, AWA, AWC and ASE carry direct edges onto the motor read-out (below). That
 could make random brains' responses to food input erratic, and evolution would tune the deficit
 away.
@@ -154,9 +166,12 @@ across-brain uncertainty was saved.
 | MS | 0.0010 | 0.0013-0.0044 | +0.0000 | −0.0006 to +0.0004 |
 
 Under M0, N2's absolute response is 3.5-11 times the shuffles'. Under R2 it is marginally above
-their range, and under MS below it. Only under M0 is N2's mean signed response clearly toward the
-stronger side. The common-mode turn response under M0 is also higher for N2 (motor 0.029 against
-0.004-0.013). This is consistent with the one N2 measurement disclosed before the
+their range, and under MS below it. Its common-mode response is higher too (motor 0.029 against
+0.004-0.013). So relative to the common mode, N2's directional response is not unusual: the ratio
+of mean absolute raw responses is 0.49 for N2 and 0.45-0.54 for the shuffles (Astra, post hoc).
+N2 is more sensitive to food input overall, not more selective for the difference. Only under M0
+is N2's mean signed response toward the stronger side by more than the shuffles' range. No
+across-brain uncertainty was saved, since the probe averages brains before saving. This is consistent with the one N2 measurement disclosed before the
 pre-registration (§2), made with a different probe on a different scale. It describes random
 brains, not the evolved champions.
 
@@ -183,11 +198,11 @@ food level, so the replacement also changes the input distribution.
 
 | | chemical edges kept under the left-right relabelling | food pairs' direct read-out weight (AWA / AWC / ASE) |
 |---|---|---|
-| N2 | 0.64 | 0 / 1 / 0 |
+| N2 | 0.64 | 0 / 1 / 0 (nearly none) |
 | SH1-SH8 | 0.13-0.16 | 1.5 to 43 per pair |
 
 Shuffles destroy mirror symmetry. They also give the food neurons direct edges onto the motor
-read-out, which N2's food neurons do not have. D036 applied the no-shortcut rule to N2's remaps
+read-out, which N2's food neurons nearly lack. D036 applied the no-shortcut rule to N2's remaps
 only, not to the shuffles.
 
 ### Other registered estimates
@@ -205,7 +220,12 @@ only, not to the shuffles.
   at zero, so graph-to-graph variance is not shown to be negligible); within-graph 0.0019 (T0),
   0.0033 (T1). Leaving out any one SH graph moves I(T1) between +0.024 and +0.037.
 - **Convergence:** 0 of 17 fitted cells complete 90% of their fitted improvement after generation
-  40.
+  40. This does not mean improvement stopped: all eight continuation runs improved further from
+  generation 39 to 79 (held-out +0.05 to +0.27).
+- **No selection gradient for stereo** (post hoc). Within each T0 cell, a champion's
+  bilateral-mean loss does not correlate with its score (r = −0.02, +0.09, −0.01 for M0, R1, R2;
+  24 champions each). Stereo users did not score higher, so selection had no reason to build
+  stereo.
 - **Behaviour** (T0-M0, generation 39, N2 / SH):
   - speed 0.27 / 0.27, and |turn| 0.40 / 0.32;
   - the turn keeps its sign on 99.6% of ticks, so champions circle;
@@ -226,7 +246,7 @@ only, not to the shuffles.
 |---|---|
 | champions do not use food | not fired: +1.072 [+1.022, +1.123] |
 | memory is not worth anything on T1 | not fired: scripted M − K +0.942 [+0.928, +0.956] |
-| the anchor disagrees with 01b | not fired: same sign, N2 − SH +0.014 [−0.009, +0.037] (01b: +0.069) |
+| the anchor disagrees with 01b | not fired: same sign. Normalised N2 − SH +0.014 [−0.009, +0.037]; raw +0.031 [−0.049, +0.105], against 01b's raw final contrast +0.069 [−0.015, +0.169]. Neither separates. |
 | drive is off target | not fired: largest validation error 3.8% (SH7) |
 | the integrator matters | not fired: largest shift 0.0024, chaos floor 0.0018, both under 0.02 |
 | convergence is late | not fired: 0 of 17 cells |
@@ -260,8 +280,9 @@ of it exploratory:
      junctions, which have no random sign and are 62% mirrored in N2. Run the input-response
      probe with gaps off.
 2. **The search found champions that forage well without using stereo, and their strategy is
-   unknown.** They circle, beat the memoryless scripted controller, and lose more from losing
-   collision sensing than from losing the left-right difference. Before redesigning the task:
+   unknown.** They circle, beat the memoryless scripted controller on their own held-out worlds
+   (T0-M0 N2 2.84 against K 2.14 and S 3.23), and lose more from losing collision sensing than
+   from losing the left-right difference. Before redesigning the task:
    - test richer memoryless baselines with the same inputs;
    - replay matched current input after different histories;
    - measure evolved champions' steering responses directly.
@@ -283,8 +304,8 @@ of it exploratory:
 Failure modes the screening process found before any N2 result (D034-D041): scripted gates show
 that a capability pays, not that evolution finds it; a history jitter on a stereo task is also a
 stereo ablation; and shuffles break mirror symmetry and create food-to-motor shortcuts. The result
-adds one more: champions can beat the scripted memoryless baseline without the capabilities the
-task was built to reward.
+adds one more: champions can beat the scripted memoryless baseline without detected meaningful
+stereo dependence. Whether they use history remains unresolved.
 
 ---
 
@@ -303,7 +324,8 @@ readings stated too strongly and several registered outcomes missing. This versi
 changes (D042):
 
 - **"Evolution erodes N2's advantage" → the shuffles catch up.** The change is now tested with a
-  paired bootstrap, and N2's own mapping preference is shown to be constant (Astra).
+  paired bootstrap, and N2's own mapping preference has roughly the same point estimate at both
+  times (Astra).
 - **"Nobody used stereo" → scoped to the primary cell,** with the one shuffle champion that does
   (both).
 - **"Stereo steering is real but worth little" → removed.** Swap sensitivity is already present at
@@ -319,3 +341,15 @@ changes (D042):
 - **Corrected:** the input-response wording ("3.5-11 times" is the absolute response; R2 is
   marginally above the shuffle range), the sizing arithmetic, and the rounding of the symmetry
   range.
+
+A second consultation, on publishing and on experiment 03 (`reviews/20260925-153539-next-step/`),
+found a few more points. Each was checked against the saved data and applied (D043):
+- the headline now says the prediction was tested and challenged under this search;
+- N2's directional response is ordinary relative to its common-mode response (Astra);
+- the shuffles-catch-up table now has intervals, and generation-0 drive is checked by mapping
+  (Fable raised it as a confound; the data show drive is the same under every mapping);
+- the anchor is given in raw units next to 01b's raw contrast (Fable);
+- the continuations kept improving;
+- there is no selection gradient for stereo (Fable's suggestion, computed);
+- collision-off has intervals;
+- the closing no longer implies that memory is absent.
