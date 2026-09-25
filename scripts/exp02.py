@@ -31,7 +31,7 @@ from wormwars.connectome.graphs import shuffled
 from wormwars.evo import SeedPool, load_genome, rollout, save_genome
 from wormwars.evo.bundle import write_bundle
 from wormwars.evo.evolve import evolve
-from wormwars.exp02 import grid, remaps, report, scripted
+from wormwars.exp02 import grid, remaps, report, scripted, structure
 from wormwars.exp02 import analysis as An
 from wormwars.exp02 import probes as P
 from wormwars.exp02.manifest import check_manifest, run_manifest
@@ -255,6 +255,22 @@ def cmd_validate_probes(args, con, iface):
         print(f"{name:13} K change {entry['K_change']['estimate']:+.4f}, S-K {entry['stereo_gain_under_probe']['estimate']:+.3f}"
               f" (without {before['estimate']:+.3f}), valid {entry['valid']}", flush=True)
     out["stereo"] = stereo
+    # Fable's pre-registration review, point 2: on the stereo task jitter moves both noses
+    # independently, so it also scrambles the left-right difference. What does it do there?
+    jit = []
+    for r in JITTER_RADII:
+        c = c0.copy()
+        c.world.food_probe, c.world.food_probe_radius = "jitter", r
+        k_, _ = _val(c, iface, K, grid.GATE_IDS, grid.GATE_SEED, args.device)
+        s_, _ = _val(c, iface, S, grid.GATE_IDS, grid.GATE_SEED, args.device)
+        entry = {"kind": "jitter", "value": r, "K_change": _paired(k_, base_k), "S_change": _paired(s_, base_s),
+                 "stereo_gain_under_probe": _paired(s_, k_), "stereo_gain_without": before}
+        entry["K_within_equivalence"] = bool(-An.EQUIVALENCE < entry["K_change"]["lo"]
+                                             and entry["K_change"]["hi"] < An.EQUIVALENCE)
+        jit.append(entry)
+        print(f"T0 jitter {r}: K change {entry['K_change']['estimate']:+.4f}, S change "
+              f"{entry['S_change']['estimate']:+.4f}, S-K {entry['stereo_gain_under_probe']['estimate']:+.3f}", flush=True)
+    out["jitter_on_T0"] = jit
     for h in out["history"]:
         print(f"{h['kind']} {h['value']}: K change {h['K_change']['estimate']:+.4f} "
               f"[{h['K_change']['lo']:+.4f}, {h['K_change']['hi']:+.4f}], valid {h['valid']}", flush=True)
@@ -457,6 +473,12 @@ def _champion_probes(cfg, iface, champ, seed, device, with_pheromone, full=True)
 VALENCE_GRAPHS = ("N2", "SH1")
 
 
+def _snapshot_tags(r) -> tuple:
+    """g00 and g39 for every run; g79 as well for the 80-generation continuation runs
+    (exploratory; Fable's pre-registration review, point 8)."""
+    return ("g00", "g39", "g79") if r["generations"] > 40 else ("g00", "g39")
+
+
 def _gen0_graphs():
     return ["N2"] + [f"SH{k}" for k in range(1, grid.SH_GRAPHS + 1)]
 
@@ -493,7 +515,7 @@ def cmd_probes(args, con, iface):
         fam = grid.interface_for(con, r["mapping"], remap_sets)
         spec = BrainSpec.from_connectome(grid.graph_for(con, r["graph"]), device=args.device)
         champs = {}
-        for tag in ("g00", "g39"):
+        for tag in _snapshot_tags(r):
             champ, meta = load_genome(OUT / f"{r['key']}-{tag}.npz", spec, None, device=args.device)
             check_manifest(meta, cfg, fam, spec)
             champs[tag] = champ
@@ -502,7 +524,7 @@ def cmd_probes(args, con, iface):
     # 1. the capability suite: every champion, generation 0 and 39
     for r in recs:
         entry = out["champions"].setdefault(r["key"], {})
-        if all("channels" in entry.get(t, {}) for t in ("g00", "g39")):
+        if all("channels" in entry.get(t, {}) for t in _snapshot_tags(r)):
             continue
         cfg, fam, champs = parts(r)
         for tag, champ in champs.items():
@@ -517,6 +539,8 @@ def cmd_probes(args, con, iface):
         cfg1 = grid.task_config(Config(), "T1")
 
         def gen0():
+            out["structure"] = {name: structure.covariates(grid.graph_for(con, name), iface)
+                                for name in _gen0_graphs()}
             for name in VALENCE_GRAPHS:
                 cfg = cfg1.copy()
                 cfg.world.forward_gain, cfg.world.turn_gain = _gains(name)

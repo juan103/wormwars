@@ -28,8 +28,9 @@ motivated by preliminary evidence.
 3. **Exploration on pilot shuffles** (SH101-SH108, never used in the main runs) is archived in
    `exploration/` with its scripts. It includes 120-generation runs and search-size pilots.
 4. **Reviews.** Astra 6 reviewed the go/no-go decision (a conditional go, 11 points, all adopted;
-   D038), and then this file (no-go as written, 9 points, all adopted; §11, D040). Every review
-   is archived verbatim in `reviews/`.
+   D038), and then this file (no-go as written, 9 points, all adopted; §11, D040). Fable 5.1
+   reviewed it after the evolution had started and before any probe ran (10 points, all adopted;
+   §11, D041). Every review is archived verbatim in `reviews/`.
 
 ## 3. Design
 
@@ -64,7 +65,7 @@ validates within 4% on an independent 2048).
 | `remaps.json` | `7082f0ef76ab5b11` |
 | `calibration.json` | `1524f8488bfce0ae` |
 | `diagnostics.json` | `069873f3609258ad` |
-| `probe_validation.json` | `a0450e2cd31c2720` |
+| `probe_validation.json` | `d011714c6dca2aac` (was `a0450e2cd31c2720` before D041 added the T0 jitter check; every earlier value is unchanged) |
 | `pilot.json` | `d5c0c8b0168be4bc` |
 
 ## 4. The primary outcome
@@ -83,12 +84,18 @@ information than champions from the sampled shuffle distribution.*
 
 **Interval.** A hierarchical bootstrap with 20 000 resamples and seed 0. N2 runs are resampled
 with replacement; SH graphs are resampled with replacement, then runs within each drawn graph.
-Each unit's whole vector of cells travels together. 95% percentile intervals.
+Each unit's whole vector of cells travels together. 95% percentile intervals. With 8 units their
+coverage is nominal (a percentile bootstrap undercovers at this size). A Student t-interval for
+N2's use and a Welch interval for Delta (N2 runs against SH graph means) are reported beside them.
+The verdict uses the bootstrap intervals.
 
 **Verdict,** with USE = 0.10 score units (about a tenth of the scripted stereo gain of 1.11), a
 screening convention for a meaningful absolute use:
 - **supported:** Delta's interval lies above 0 and N2's use interval lies above USE;
-- **challenged:** N2's use interval lies below USE, or Delta's interval lies below 0;
+- **challenged,** with a sub-label, because the two cases mean opposite things: **"no meaningful
+  N2 use"** (N2's use interval lies below USE: the search found stereo for nobody, the likeliest
+  outcome given the pilot) and **"contrast reversed"** (Delta's interval lies below 0: N2 does
+  worse than the shuffles). Both at once get both labels;
 - **inconclusive:** anything else. A wide interval, or a Delta straddling 0, is inconclusive, not
   a failure. No margin is registered for Delta itself, so a small positive Delta with meaningful
   N2 use counts as support. Its size is reported next to the verdict.
@@ -107,9 +114,22 @@ Delta(M0) - mean(Delta(R1), Delta(R2)). The prediction's M0-specific reading is 
 shows a similar advantage under the remaps. Its acquisition reading is weakened if the difference
 is already present at generation 0.
 
+**Registered readings** (Fable's review):
+- **Mirror symmetry.** A degree-preserving shuffle destroys the left-right pairing of targets,
+  and the turn read-out is bilateral. So any mirror-symmetric graph gets a left-minus-right
+  comparison almost for free. The remaps cannot control for this, because R1 and R2 are
+  symmetric pairs inside N2 too. **If the verdict is supported and N2 shows a comparable
+  advantage under R1 and R2, the result is read as a symmetry effect, not as something specific
+  to the food neurons' wiring. The full design then needs a mirror-symmetric shuffle control.**
+  Each graph's mirror-symmetry index and the food pairs' routing features (D036's six) are
+  reported as covariates (`structure.covariates`).
+- **Mean and swap together.** A champion that reads one side only is changed by the mean probe
+  without comparing anything. Meaningful use under the mean probe with no loss under the swap is
+  read as sample-point sensitivity, not as a left-right comparison.
+
 **Not claimed under any result:** that shuffles *cannot* use stereo. The number of SH graphs with
-*detected* meaningful use is reported. Each graph's interval comes from a bootstrap over probe
-worlds of its run-averaged difference, so it is conditional on the runs made. A capable graph can
+*detected* meaningful use is reported. Each graph's interval comes from a bootstrap over the
+world index of its run-averaged difference, so it is conditional on the runs made. A capable graph can
 stay inconclusive. This is a detection count under this procedure, not a prevalence estimate, and
 no bound on prevalence is drawn from it.
 
@@ -117,12 +137,18 @@ no bound on prevalence is drawn from it.
 
 - **Capability use** (U_p, N2, SH and Delta per cell, generations 0 and 39):
   - swap (T0), single-nose substitution (T0);
-  - jitter 1 and jitter 3 (T0, T1): history *sensitivity*, not history use (D039);
-  - constant food (T0, T1).
+  - jitter 1 and jitter 3: on T1, history *sensitivity*, not history use (D039); on T0,
+    **spatial-noise sensitivity**, since jitter moves both noses independently. It costs the
+    memoryless scripted stereo controller 0.029 at radius 1 and 0.535 at radius 3
+    (`probe_validation.json`, D041);
+  - constant food (T0, T1);
+  - the generation-79 champions of the eight continuation runs, the full suite (exploratory:
+    whether longer evolution changes capability use).
 - **Each champion's own use,** with its class (meaningful / below threshold / inconclusive), per
   graph and run.
 - **The screening fitness estimates,** on scores normalised per world to the best scripted
-  controller on that world, at generations 0 and 39:
+  controller on that world, at generations 0 and 39. They are also given on raw scores, because a
+  mean of per-world ratios is dominated by food-poor worlds:
   - A(t, m) = N2 - SH;
   - I(t) = A(t, M0) - mean(A(t, R1), A(t, R2));
   - I(T1) - I(T0);
@@ -142,6 +168,9 @@ no bound on prevalence is drawn from it.
   checkpoint worlds, against the chaos floor.
 - **Convergence:** checkpoint curves, fitted per graph family; the generation at which 90% of
   the fitted improvement since generation 0 is complete; the continuation runs.
+- **Graph covariates:** mirror symmetry (the share of chemical and of gap edges kept under the
+  left-right relabelling, and the food pairs' mirrored out-neighbourhood overlap); the food
+  pairs' routing features.
 - **Behaviour,** on 4 checkpoint worlds: speed, turning, wall time, time on food; plant food
   against pellet intake (held-out worlds).
 
@@ -157,7 +186,7 @@ input was dropped under §8 is reported as **not assessed**, never as passed.
 |---|---|
 | champions do not use food | the pooled real minus constant-food interval (g39, all champions) is not entirely above 0.10 |
 | memory is not worth anything on T1 | the scripted M - K interval on the runs' held-out worlds is not above 0 |
-| the anchor disagrees with 01b | the sign of the anchor's N2 - SH estimate differs from 01b's |
+| the anchor disagrees with 01b | the sign of the anchor's N2 - SH estimate differs from 01b's. The anchor is 01b's world, not 01b's procedure (32 substeps, 40 generations, 64 worlds, D035 calibration), so a fired tripwire reads "01b's sign did not survive the procedure change", not "a bug" |
 | drive is off target | any graph's validation drive is off by more than 4% |
 | the integrator matters | the largest shift of I(T0), I(T1) or I(T1) - I(T0), on raw scores, between 32 and 128 substeps exceeds the chaos floor and 0.02 |
 | convergence is late | more than a third of fitted cells (graph family x task x mapping) complete 90% of their fitted improvement after generation 40 |
@@ -173,8 +202,11 @@ observation.
 
 The capability suite is validated on scripted controllers in `probe_validation.json`. A probe is
 valid when a controller that cannot use the capability moves by less than ±0.02, interval included,
-and the capable controller's gain falls. It runs per world on the 64 probe worlds with the run's
-seed, for the generation-0 and generation-39 champion of every run. The integrator rescoring uses
+and the capable controller's gain falls. It runs per world on the 64 probe world ids with the
+run's seed, for the generation-0 and generation-39 champion of every run (and generation 79 for
+continuation runs). Maps depend on the run seed, so the same ids give different worlds in
+different runs. The pairing is within each champion (real against probe on the same world), not
+between groups. The integrator rescoring uses
 the 16 checkpoint worlds and the behaviour measures 4 of them, both on the generation-39 champion
 only. Probe
 scores are saved per world with their world ids and seed.
@@ -259,6 +291,23 @@ A confirmation pass by Astra (`reviews/20260925-055819-preregistration-recheck/`
 All three were reproduced and fixed with tests that failed first, or, for the resume, a smoke
 run on the pilot champions.
 
-Fable 5.1 was unavailable until after this version was fixed (usage limit). Its review, if it
+Fable 5.1 reviewed this file at 08:00, after the evolution started at 06:25 from 225e8f8 and
+before any probe ran (`reviews/20260925-080106-preregistration-fable/`). Fable found nothing that
+required stopping the evolution. All ten points were checked and adopted before any probe (D041):
+
+1. Mirror symmetry as an unnamed alternative explanation of the primary. There is now a registered
+   reading and per-graph covariates (§4, §5).
+2. On T0, jitter scrambles the left-right difference. Confirmed on scripted controllers; the T0
+   jitters are relabelled spatial-noise sensitivity (§5).
+3. "Challenged" merged opposite findings. It is now split into sub-labels (§4).
+4. The bootstrap coverage with 8 units is nominal. t-intervals are reported beside it (§4).
+5. Probe worlds differ between runs. The wording is corrected (§4, §7).
+6. The mean probe alone cannot separate a comparator from a one-sided reader. The swap is now
+   read with it (§4).
+7. SH graphs may carry direct routes that N2's remaps are denied. The food pairs' routing is
+   reported per graph (§5).
+8. The generation-79 champions are now probed (§5).
+9. The anchor is 01b's world, not its procedure. The tripwire's reading is corrected (§6).
+10. Normalised scores are a mean of ratios. Raw-score estimates are reported alongside (§5). Its review, if it
 arrives while the evolution runs, is recorded here. Any change it causes is also recorded in
 DECISIONS and, if it touches evolution, triggers the §9 rerun rule.

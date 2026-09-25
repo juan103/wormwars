@@ -34,6 +34,27 @@ def _boot_mean(x: np.ndarray, n_boot: int = N_BOOT, seed: int = 0) -> dict:
             "hi": float(np.quantile(means, 0.975))}
 
 
+def t_interval(x) -> dict:
+    """Student t 95% interval for a mean, reported beside the percentile bootstrap, which
+    undercovers with 8 units (Fable's review, point 4)."""
+    from scipy import stats
+    x = np.asarray(x, dtype=float)
+    m, se = x.mean(), x.std(ddof=1) / np.sqrt(len(x))
+    q = stats.t.ppf(0.975, len(x) - 1)
+    return {"estimate": float(m), "lo": float(m - q * se), "hi": float(m + q * se)}
+
+
+def welch_t_interval(x, y) -> dict:
+    """Welch 95% interval for mean(x) - mean(y)."""
+    from scipy import stats
+    x, y = np.asarray(x, dtype=float), np.asarray(y, dtype=float)
+    vx, vy = x.var(ddof=1) / len(x), y.var(ddof=1) / len(y)
+    df = (vx + vy) ** 2 / (vx ** 2 / (len(x) - 1) + vy ** 2 / (len(y) - 1))
+    d, q = x.mean() - y.mean(), stats.t.ppf(0.975, df)
+    return {"estimate": float(d), "lo": float(d - q * np.sqrt(vx + vy)), "hi": float(d + q * np.sqrt(vx + vy)),
+            "df": float(df)}
+
+
 def normalise(records, diagnostics) -> list[dict]:
     """Per-world score over the best scripted controller's score on that world; worlds where the
     best scripted score is zero are dropped. Not clipped: evolved brains may beat the scripts."""
@@ -50,6 +71,7 @@ def normalise(records, diagnostics) -> list[dict]:
             key = f"holdout_{tag}"
             if key in r:
                 x = np.asarray(r[key])
+                r[f"raw_{tag}"] = float(np.mean(x))
                 r[f"norm_{tag}"] = float(np.mean(x[keep] / best[keep])) if keep.any() else float("nan")
         out.append(r)
     return out
@@ -251,8 +273,15 @@ def prediction_verdict(delta: dict, n2_use: dict, threshold: float = USE_THRESHO
     branch that challenged small contrasts the support rule never asked to be large)."""
     if delta["lo"] > 0 and n2_use["lo"] > threshold:
         return "supported"
-    if n2_use["hi"] < threshold or delta["hi"] < 0:
-        return "challenged"
+    # the two ways to be challenged mean opposite things (Fable's review, point 3): nobody's
+    # search found the capability, or N2's wiring does worse than a shuffle's
+    no_use, reversed_ = n2_use["hi"] < threshold, delta["hi"] < 0
+    if no_use and reversed_:
+        return "challenged: contrast reversed and no meaningful N2 use"
+    if reversed_:
+        return "challenged: contrast reversed"
+    if no_use:
+        return "challenged: no meaningful N2 use"
     return "inconclusive"
 
 

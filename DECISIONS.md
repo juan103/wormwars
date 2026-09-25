@@ -884,3 +884,27 @@ short probe vector crashed the report. A resumed probe run forgot measured costs
 steps, and printed "not assessed" as "ok". The pre-registration still named 16 behaviour worlds in
 one place. All three are now fixed. Every paired difference goes through one checked helper
 (`analysis.paired_diff`), and malformed entries are listed and left out.
+
+## D041 — Fable's review of the pre-registration: symmetry, jitter on T0, split verdicts
+
+Fable 5.1 reviewed the pre-registration at 08:00. The evolution had started at 06:25 from commit
+225e8f8; no probe had run and no N2 result had been read. Fable found nothing that required
+stopping the evolution. All ten of its points were checked and adopted, and they change only
+probes, analysis and wording (the review is in `experiments/02-screening/reviews/`):
+
+- **Mirror symmetry is an unnamed explanation of the primary.** A degree-preserving shuffle
+  destroys left-right pairing, which N2 has and a bilateral turn read-out rewards. The remaps
+  cannot control for it, because R1 and R2 are symmetric pairs too. This is confirmed
+  structurally: the pilot shuffle SH101 keeps 15% of chemical edges under the left-right
+  relabelling. The pre-registration now reads a supported primary with a comparable remap
+  advantage as a symmetry effect. It also reports mirror symmetry and the food pairs' routing
+  per graph (`wormwars/exp02/structure.py`).
+- **On T0, jitter is not a history ablation.** It moves both noses independently. On scripted
+  controllers it costs the memoryless stereo controller 0.029 at radius 1 (and 0.535 at 3), while
+  the memoryless kinesis controller stays within equivalence. The T0 jitters are relabelled
+  spatial-noise sensitivity. The rerun of `validate-probes` reproduced every earlier value exactly.
+- **"Challenged" is split** into "no meaningful N2 use" and "contrast reversed". The rule is
+  unchanged.
+- t-intervals are reported next to the 8-unit bootstrap, and raw-score fitness estimates next to
+  the normalised ones. The eight continuation runs' generation-79 champions are probed. The anchor
+  tripwire now reads as a procedure change, not a bug. The wording on probe worlds is corrected.

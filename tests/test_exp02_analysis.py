@@ -152,12 +152,35 @@ def test_capability_contrast_recovers_a_planted_n2_advantage():
 
 
 def test_prediction_verdict_separates_support_challenge_and_inconclusive():
+    """Fable's pre-registration review, point 3: the two ways to be challenged mean opposite
+    things (nobody found stereo, or N2 is worse), so they carry different labels."""
     ok = {"estimate": 0.3, "lo": 0.2, "hi": 0.4}
     assert A.prediction_verdict(ok, {"lo": 0.15, "hi": 0.4}) == "supported"
     assert A.prediction_verdict({"lo": -0.05, "hi": 0.05}, {"lo": 0.15, "hi": 0.4}) == "inconclusive"
-    assert A.prediction_verdict(ok, {"lo": 0.0, "hi": 0.08}) == "challenged"
-    assert A.prediction_verdict({"lo": -0.2, "hi": -0.15}, {"lo": 0.15, "hi": 0.4}) == "challenged"
+    assert A.prediction_verdict(ok, {"lo": 0.0, "hi": 0.08}) == "challenged: no meaningful N2 use"
+    assert A.prediction_verdict({"lo": -0.2, "hi": -0.15}, {"lo": 0.15, "hi": 0.4}) == "challenged: contrast reversed"
+    assert (A.prediction_verdict({"lo": -0.2, "hi": -0.15}, {"lo": 0.0, "hi": 0.08})
+            == "challenged: contrast reversed and no meaningful N2 use")
     assert A.prediction_verdict({"lo": -0.05, "hi": 0.3}, {"lo": 0.15, "hi": 0.4}) == "inconclusive"
+
+
+def test_welch_interval_matches_scipy():
+    from scipy import stats
+    x, y = np.array([0.3, 0.5, 0.2, 0.4]), np.array([0.1, 0.0, 0.2, 0.05, 0.15])
+    b = A.welch_t_interval(x, y)
+    r = stats.ttest_ind(x, y, equal_var=False).confidence_interval(0.95)
+    assert abs(b["lo"] - r.low) < 1e-9 and abs(b["hi"] - r.high) < 1e-9
+    one = A.t_interval(x)
+    r1 = stats.ttest_1samp(x, 0).confidence_interval(0.95)
+    assert abs(one["lo"] - r1.low) < 1e-9 and abs(one["hi"] - r1.high) < 1e-9
+
+
+def test_normalise_also_keeps_the_raw_mean():
+    """Fable's pre-registration review, point 10: normalised scores are a mean of per-world
+    ratios, which food-poor worlds dominate; the raw mean is reported alongside."""
+    diag = {"T0": {"per_seed_holdout": {"1": {"K": [1.0, 0.1], "S": [2.0, 0.2]}}}}
+    r = A.normalise([{"task": "T0", "run_seed": 1, "holdout_g39": [1.0, 0.1]}], diag)[0]
+    assert abs(r["raw_g39"] - 0.55) < 1e-12 and abs(r["norm_g39"] - 0.5) < 1e-12
 
 
 def test_late_cells_are_counted_per_graph_family():

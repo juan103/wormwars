@@ -15,3 +15,4 @@ followed each review. An empty answer means that consultant hit its usage limit 
 | `20260925-045005-go-no-go` | Go/no-go on running with capability use as an outcome (Astra: conditional go, 11 points) |
 | `20260925-053628-preregistration` | Adversarial review of the pre-registration (Astra: no-go as written, 9 points) |
 | `20260925-055819-preregistration-recheck` | Confirmation pass on the nine fixes (Astra: 6 fixed, 3 partly) |
+| `20260925-080106-preregistration-fable` | The pre-registration, after the evolution started (Fable: 10 points, no stop) |

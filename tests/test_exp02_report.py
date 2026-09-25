@@ -54,7 +54,10 @@ def synthetic(diag, n2_use=0.3, sh_use=0.02, seed=0):
                 champs[r.key][snap] = {"channels": {"world_ids": [int(i) for i in grid.PROBE_IDS], "probe_seed": r.run_seed,
                                                     "scores": scores}}
             champs[r.key]["g39"]["integrator"] = {k: list(real) for k in ("s32", "s128", "s32_bias_perturbed")}
-    probes = {"valence": [{"gaps": False, "max_abs_score_diff": 0.0}], "champions": champs}
+    for r in (x for b in grid.run_schedule() for x in b if x.generations == 80):
+        champs[r.key]["g79"] = {"channels": champs[r.key]["g39"]["channels"]}
+    probes = {"valence": [{"gaps": False, "max_abs_score_diff": 0.0}], "champions": champs,
+              "structure": {"N2": {"mirror": {"chem_edges_mirrored": 0.9}}}}
     return recs, probes
 
 
@@ -70,12 +73,18 @@ def test_report_runs_end_to_end_and_finds_a_planted_stereo_advantage(frozen):
     assert {t["name"] for t in out["tripwires"]}
     json.dumps(out)  # the CLI writes it with plain json (Astra's pre-registration review, point 1)
     assert p["complete"] is True
+    # Fable's pre-registration review: a t-interval beside the bootstrap, raw-score interactions,
+    # the graph covariates and the generation-79 champions of the continuation runs
+    assert p["delta_welch_t"]["lo"] > 0 and p["n2_use_t"]["lo"] > 0.1
+    assert "I_T1" in out["raw_g39"]
+    assert out["structure"] == probes["structure"]
+    assert "g79" in out["per_champion"]["T0-M0-N2-run00"]
 
 
 def test_report_challenges_when_n2_does_not_use_the_capability(frozen):
     diag, cal = frozen
     recs, probes = synthetic(diag, n2_use=0.02)
-    assert report.build(recs, diag, probes, cal, sign_01b=1.0, n_boot=200)["primary"]["verdict"] == "challenged"
+    assert report.build(recs, diag, probes, cal, sign_01b=1.0, n_boot=200)["primary"]["verdict"] ==         "challenged: no meaningful N2 use"
 
 
 def test_incomplete_primary_data_withholds_the_verdict(frozen):

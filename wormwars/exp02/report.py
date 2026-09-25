@@ -119,15 +119,25 @@ def primary(cap: dict, records, champions) -> dict:
     out.update(delta=c["delta"], n2_use=c["n2"], sh_use=c["sh"], n2_use_class=An.classify_use(c["n2"]),
                sh_use_class=An.classify_use(c["sh"]))
     out["verdict"] = An.prediction_verdict(c["delta"], c["n2"]) if not problems else "withheld"
+    # beside the bootstrap: Student and Welch t-intervals over the same units (N2 runs; SH graph
+    # means), since a percentile bootstrap over 8 units undercovers (Fable's review, point 4)
+    measure = f"use_{probe}_g39"
+    n2, sh = An.units(An.attach_use(records, champions, probe, "g39"), measure)
+    x = [u[cell] for u in n2.values() if cell in u]
+    y = [np.mean([u[cell] for u in runs.values() if cell in u]) for runs in sh.values()
+         if any(cell in u for u in runs.values())]
+    if len(x) > 1 and len(y) > 1:
+        out["n2_use_t"], out["delta_welch_t"] = An.t_interval(x), An.welch_t_interval(x, y)
     return out
 
 
 def per_champion(records, champions) -> dict:
     """Every champion's own paired use of each capability, with its class, so individual graphs
-    and runs are reported next to the group means."""
+    and runs are reported next to the group means; generation 79 too for the continuation runs
+    (exploratory, Fable's review, point 8)."""
     out = {}
     for r in records:
-        for snap in SNAPSHOTS:
+        for snap in SNAPSHOTS + ("g79",):
             ch = champions.get(r["key"], {}).get(snap, {}).get("channels")
             if not ch:
                 continue
@@ -138,8 +148,9 @@ def per_champion(records, champions) -> dict:
 
 def sh_graphs_with_use(records, champions, probe: str, cell: tuple, snap: str = "g39") -> dict:
     """How many SH graphs show *detected* meaningful use under this procedure: per graph, the
-    per-world difference averaged over its runs (the same probe worlds), with a bootstrap over
-    worlds. It is conditional on the runs made, and a capable graph can stay inconclusive, so the
+    per-world difference averaged over its runs, with a bootstrap over the world index. Maps
+    depend on the run seed, so world i of run 0 and of run 1 are different worlds, each an
+    independent draw (Fable's review, point 5). It is conditional on the runs made, and a capable graph can stay inconclusive, so the
     count is a detection count, not a prevalence estimate (Astra's pre-registration review, 5)."""
     per = {}
     for r in records:
@@ -159,7 +170,7 @@ def build(raw_records, diagnostics, probes, calibration, sign_01b, n_boot: int =
     recs = An.normalise(raw_records, diagnostics)
     main_recs = [r for r in recs if r["task"] in ("T0", "T1")]
     out = {}
-    for tag in ("norm_g00", "norm_g39"):
+    for tag in ("norm_g00", "norm_g39", "raw_g00", "raw_g39"):
         n2, sh = An.units(main_recs, tag)
         stats = {"I_T0": lambda a, s: An.interaction(a, s, "T0"),
                  "I_T1": lambda a, s: An.interaction(a, s, "T1"),
@@ -176,6 +187,8 @@ def build(raw_records, diagnostics, probes, calibration, sign_01b, n_boot: int =
         }
     champs = probes["champions"]
     out["malformed_probes"] = malformed_probes(champs)
+    # graph covariates (Fable's review, points 1 and 7): mirror symmetry and food-pair routing
+    out["structure"] = probes.get("structure", {})
     cap = capability(main_recs, champs, n_boot)
     out["capability"] = cap
     out["primary"] = primary(cap, main_recs, champs)
