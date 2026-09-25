@@ -1,0 +1,212 @@
+# Left-right homolog pairs of the hermaphrodite connectome (Cook et al. 2019 names).
+# Curated for experiment 03 (D050): built from the dataset's names, then checked by hand
+# against WormAtlas nomenclature, where a trailing L/R marks a bilateral homolog. Checked:
+# every pair has the same neuron type in the dataset. Single neurons whose names end in L or
+# R without a partner (AVL, AQR, PQR, PVR, RIR) are single cells, listed as unpaired. Unpaired
+# neurons map to themselves (midline and single cells, including the ventral cord motor
+# neurons, and dorsal/ventral singles such as RMED/RMEV). Names only; no connectivity.
+pairs:
+  - [I1L, I1R]
+  - [I2L, I2R]
+  - [M2L, M2R]
+  - [M3L, M3R]
+  - [MCL, MCR]
+  - [NSML, NSMR]
+  - [ASIL, ASIR]
+  - [ASJL, ASJR]
+  - [AWAL, AWAR]
+  - [ASGL, ASGR]
+  - [AWBL, AWBR]
+  - [ASEL, ASER]
+  - [ADFL, ADFR]
+  - [AFDL, AFDR]
+  - [AWCL, AWCR]
+  - [ASKL, ASKR]
+  - [ASHL, ASHR]
+  - [ADLL, ADLR]
+  - [BAGL, BAGR]
+  - [URXL, URXR]
+  - [ALNL, ALNR]
+  - [PLNL, PLNR]
+  - [SDQL, SDQR]
+  - [ALML, ALMR]
+  - [PLML, PLMR]
+  - [FLPL, FLPR]
+  - [PVDL, PVDR]
+  - [ADEL, ADER]
+  - [PDEL, PDER]
+  - [PHAL, PHAR]
+  - [PHBL, PHBR]
+  - [PHCL, PHCR]
+  - [IL2DL, IL2DR]
+  - [IL2L, IL2R]
+  - [IL2VL, IL2VR]
+  - [CEPDL, CEPDR]
+  - [CEPVL, CEPVR]
+  - [URYDL, URYDR]
+  - [URYVL, URYVR]
+  - [OLLL, OLLR]
+  - [OLQDL, OLQDR]
+  - [OLQVL, OLQVR]
+  - [IL1DL, IL1DR]
+  - [IL1L, IL1R]
+  - [IL1VL, IL1VR]
+  - [AINL, AINR]
+  - [AIML, AIMR]
+  - [URBL, URBR]
+  - [AIYL, AIYR]
+  - [AIAL, AIAR]
+  - [AUAL, AUAR]
+  - [AIZL, AIZR]
+  - [PVQL, PVQR]
+  - [ADAL, ADAR]
+  - [RIFL, RIFR]
+  - [BDUL, BDUR]
+  - [AVFL, AVFR]
+  - [AVHL, AVHR]
+  - [PVPL, PVPR]
+  - [LUAL, LUAR]
+  - [PVNL, PVNR]
+  - [RIBL, RIBR]
+  - [RIGL, RIGR]
+  - [RMGL, RMGR]
+  - [AIBL, AIBR]
+  - [RICL, RICR]
+  - [SAADL, SAADR]
+  - [SAAVL, SAAVR]
+  - [AVKL, AVKR]
+  - [AVJL, AVJR]
+  - [AVDL, AVDR]
+  - [PVWL, PVWR]
+  - [RIAL, RIAR]
+  - [RIML, RIMR]
+  - [AVEL, AVER]
+  - [RMFL, RMFR]
+  - [AVBL, AVBR]
+  - [AVAL, AVAR]
+  - [PVCL, PVCR]
+  - [RIPL, RIPR]
+  - [URADL, URADR]
+  - [URAVL, URAVR]
+  - [RMEL, RMER]
+  - [RMDDL, RMDDR]
+  - [RMDL, RMDR]
+  - [RMDVL, RMDVR]
+  - [RIVL, RIVR]
+  - [RMHL, RMHR]
+  - [SABVL, SABVR]
+  - [SMDDL, SMDDR]
+  - [SMDVL, SMDVR]
+  - [SMBDL, SMBDR]
+  - [SMBVL, SMBVR]
+  - [SIBDL, SIBDR]
+  - [SIBVL, SIBVR]
+  - [SIADL, SIADR]
+  - [SIAVL, SIAVR]
+  - [HSNL, HSNR]
+  - [CANL, CANR]
+unpaired:
+  - I3
+  - I4
+  - I5
+  - I6
+  - M1
+  - M4
+  - M5
+  - MI
+  - AQR
+  - PQR
+  - AVM
+  - PVM
+  - DVA
+  - RIH
+  - RIR
+  - RIS
+  - ALA
+  - PVR
+  - AVG
+  - DVB
+  - DVC
+  - PVT
+  - AVL
+  - RID
+  - RMED
+  - RMEV
+  - SABD
+  - DA01
+  - DA02
+  - DA03
+  - DA04
+  - DA05
+  - DA06
+  - DA07
+  - DA08
+  - DA09
+  - PDA
+  - DB01
+  - DB02
+  - DB03
+  - DB04
+  - DB05
+  - DB06
+  - DB07
+  - AS01
+  - AS02
+  - AS03
+  - AS04
+  - AS05
+  - AS06
+  - AS07
+  - AS08
+  - AS09
+  - AS10
+  - AS11
+  - PDB
+  - DD01
+  - DD02
+  - DD03
+  - DD04
+  - DD05
+  - DD06
+  - VA01
+  - VA02
+  - VA03
+  - VA04
+  - VA05
+  - VA06
+  - VA07
+  - VA08
+  - VA09
+  - VA10
+  - VA11
+  - VA12
+  - VB01
+  - VB02
+  - VB03
+  - VB04
+  - VB05
+  - VB06
+  - VB07
+  - VB08
+  - VB09
+  - VB10
+  - VB11
+  - VD01
+  - VD02
+  - VD03
+  - VD04
+  - VD05
+  - VD06
+  - VD07
+  - VD08
+  - VD09
+  - VD10
+  - VD11
+  - VD12
+  - VD13
+  - VC01
+  - VC02
+  - VC03
+  - VC04
+  - VC05
+  - VC06

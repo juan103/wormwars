@@ -1170,3 +1170,26 @@ Astra 6 (maximum effort) and Fable 5.1 reviewed 03's design v1
   - per-graph calibration;
   - the motor remap dropped;
   - R3 and R4 impossible under D036.
+
+## D051 — Experiment 03 design v3: reversible samplers, exact rank tests, the correct Holm order
+
+Astra 6's confirmation pass on design v2, at maximum effort, rated 4 of its 16 points addressed
+and the rest partly addressed, and found new flaws. All are adopted in v3:
+- **Routing:** v2's routing rule only removed direct edges, so its moves were irreversible, and
+  it capped weights one at a time, not their sum. v3 has a reversible count-level state space,
+  joint weight allocation under an aggregate cap, and a final weighted check.
+- **Mirror:** the mirror sampler preserves degrees within orbit categories and nearly freezes the
+  46 left-right homolog gap junctions. v3 states this stronger null and checks orbit membership
+  on the complete post-move graph.
+- **SH-mirror's predicted decrease is withdrawn:** symmetric wiring with random weights is not
+  equivariant.
+- **The Holm order was wrong** for a claim across all ensembles. The maximum p over ensembles
+  comes first, then Holm across signals.
+- **The parametric prediction test is replaced** by exact rank tests with 128 graphs per
+  ensemble.
+- **Other fixes:**
+  - equivalence at 0.5 SD, since 0.25 SD had about 26% power;
+  - the pilot's precision check no longer measures N2;
+  - structural acceptance rules are fixed before construction;
+  - P1 and P4 have numerical definitions.
+- **Budget:** about 12.8 GPU-hours, with a cap of 15.

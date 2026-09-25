@@ -1,8 +1,9 @@
 # WormWars 03: generation-0 structure and task specificity
 
-**Status: design v2** (2026-09-25). v1 was reviewed by Astra 6 (maximum effort) and Fable 5.1
-(`docs/reviews/20260925-210723-03-design/`). v2 answers every point; the changes are listed at the
-end (D050). No N2 data of any kind is produced before the pre-registration. Structure-only work
+**Status: design v3** (2026-09-25). v1 was reviewed by Astra 6 (maximum effort) and Fable 5.1
+(`docs/reviews/20260925-210723-03-design/`), and v2 answered them (D050). Astra's confirmation pass
+on v2 (`docs/reviews/20260925-212556-03-design-v2/`) found flaws in the samplers and the verdict,
+and v3 fixes them (D051). The changes are listed at the end. No N2 data of any kind is produced before the pre-registration. Structure-only work
 may happen before it: building and validating the ensembles, and a shuffle-only pilot that sets
 the margins. No N2 brain is run.
 
@@ -37,8 +38,8 @@ dorsal-ventral read-out.
 
 This reverses the rationale of D041 and of 02's registered reading. It also reverses the
 docstring of `structure.py` (Astra, point 5). SH-mirror stays as a control for a generic property
-N2 has. Its registered prediction is now that matching N2's symmetry *lowers* the directional
-response relative to ordinary shuffles.
+N2 has, **with no predicted direction**. Symmetric wiring does not make a brain with independently
+drawn random weights equivariant (Astra, v2 pass).
 
 ## Graphs
 
@@ -60,10 +61,18 @@ response relative to ordinary shuffles.
        graph keeps each neuron's direct weight onto the 18 motor read-out neurons, chemical plus
        gap, at or below its N2 value.
      - Its hop distances to the forward and turn read-outs are at or above N2's minus 0.5.
-     - Enforced during swaps, which forbid creating a new direct edge from a constrained neuron
-       to a read-out neuron, and again after weight permutation. Weights for the constrained
-       direct edges are drawn only from pool values at or below the cap.
-     - Checked on the final weighted graph, separately for chemical and gap (both reviewers).
+     - **Topology state space:** every degree-preserving graph in which each constrained neuron
+       has at most as many direct read-out edges, chemical and gap separately, as it has in N2.
+       Ordinary swaps are proposed and accepted if the result stays inside this space. Direct
+       edges can therefore be removed *and* recreated, so the moves are reversible (Astra, v2
+       pass: v2's rule only removed them).
+     - **Weights, jointly and after topology:** the anatomical weight multiset is permuted onto
+       the edges. The weights on each constrained neuron's direct read-out edges are then
+       redrawn together, without replacement, until their *sum* is at most N2's direct weight
+       for that neuron. v2 capped each weight separately, which does not cap the sum.
+     - **Final check on the weighted graph:** aggregate direct weight and hop distances, for every
+       constrained neuron, chemical and gap separately. A graph that fails is rebuilt with the
+       next seed, and the substitution is disclosed.
   3. **SH-mirror, routing- and mirror-matched:** N2's edges are partitioned into mirror orbits
      under the curated left-right map (Fable 1):
      - **Paired edges** (e and its image both present, e ≠ image) are swapped only in mirror
@@ -75,6 +84,14 @@ response relative to ordinary shuffles.
      - **Unpaired edges** get ordinary swaps, rejecting any new edge whose image is present.
      - The share of edges kept under the relabelling then equals N2's exactly, for chemical and
        gap separately, with no acceptance band.
+     - **A stronger null than symmetry alone, stated as such** (Astra, v2 pass). The moves also
+       keep each neuron's degree within each orbit category. The self-mirrored gap junctions (46
+       in N2, left-right homolog junctions such as AWAL-AWAR) can only be swapped among
+       themselves, and in practice stay nearly frozen.
+     - **Orbit membership is recomputed on the complete graph after every accepted move,**
+       including images that the move itself creates. A proposal is accepted only if every
+       edge's category is unchanged. Proposal probabilities are symmetric, so each move's
+       reverse is proposed with equal probability.
      - The routing constraint of SH-route also applies.
   4. **SH-class, class-preserving:** a swap (a→b, c→d) → (a→d, c→b) is allowed only when b and d
      share a class *and* a and c share a class. This preserves each neuron's in- and out-degree
@@ -92,9 +109,16 @@ response relative to ordinary shuffles.
   reach its accepted-swap target within its attempt cap, it is reported and rebuilt with the
   next seed. The substitution is disclosed, and an ensemble short of 64 is reported as short.
 - **The null is the chain run to its plateau,** not a uniform distribution over feasible graphs
-  (Astra 3). The plateau rule: at 1× and 2× the pass count, Jaccard to N2 and the constrained
-  statistics must agree within a registered tolerance, checked on 4 independent chains per
-  ensemble.
+  (Astra 3). A plateau does not prove mixing, so it is a necessary check, not a sufficient one.
+- **Structural acceptance rules, fixed now, before any ensemble is built** (Astra, v2 pass):
+  - 20 passes of accepted swaps per graph, as in 01b and 02;
+  - **plateau:** on 4 independent chains per ensemble, the mean Jaccard to N2 at 20 and at 40
+    passes differs by less than 0.01, for chemical and gap separately;
+  - **acceptance rate** at least 5%;
+  - **per graph,** Jaccard to N2 no more than the ensemble's own plateau mean plus 0.02;
+  - **constraints met exactly** on the final graph.
+  A graph that fails is rebuilt with the next seed and disclosed. Thresholds are relative to
+  each ensemble's own attainable plateau, not SH's.
 - **Validation, per ensemble,** with thresholds relative to SH's own plateau (Fable 6):
   - Jaccard to N2, chemical and gap;
   - median pairwise Jaccard within the ensemble;
@@ -133,15 +157,15 @@ reported as a covariate for every fitness signal (Fable 9, Astra 15).
 - **C, locomotion coverage, descriptive only:**
   - C is a locomotor baseline, not a matched sensory control (Astra 7);
   - food, pellets and metabolic drain are zeroed, with the food channel explicitly silenced;
-  - hazards are off;
+  - hazards are off, and the movement cost is kept. With no drain and no hazards, no wey dies;
   - the map is generated before food is removed, so later random draws are unchanged;
   - score: the union of grid cells the swarm visits, relative to a scripted straight-running
     reference;
   - the arena ceiling is reported.
 - **"Avoid food" is not used.** The v1 sign-flip argument was loose: the flip maps approach to
-  approach of negative food, not to avoidance. It is exact only without gaps (Fable 8, Astra 8).
-  The honest reason is simpler: with unselected genomes no graph has a mean valence, and
-  avoidance is solved by not moving.
+  approach of negative food, not to avoidance, and it is exact only without gaps (Fable 8, Astra
+  8). The reason kept is simpler: avoidance can be solved by not moving, so it does not test food
+  handling.
 - **A nonmonotone sensory task** (occupying an intermediate concentration band, Astra 7) is a
   good candidate for a matched sensory control. It needs scripted validation first, so it is a
   pilot for a later experiment, not part of 03.
@@ -157,6 +181,18 @@ reported as a covariate for every fitness signal (Fable 9, Astra 15).
   own uncertainty comes from a crossed bootstrap over its genomes and worlds.
 
 ## Signals
+
+**Numerical definitions (Astra, v2 pass):**
+- **P1:** the stimulus is 02's: b = 0.1, d = 0.05, 40 ticks from rest, raw read-out. The value is
+  the mean over genomes and ticks of the signed directional turn, divided by the same mean of
+  the absolute common-mode turn.
+- **P4:** the stimulus bank is fixed before any graph is measured. Every graph gets the same
+  final food level and background, 0.3 of the sensing scale, from the median of 02's
+  generation-0 replays on pilot shuffles only. The value is 02b's \|rising − falling\| over the
+  steady-state contrast, as a ratio of means over genomes. The decay after 5 ticks is reported.
+- **Denominators:** if a graph's denominator mean is below 10⁻⁴, the graph is excluded from that
+  signal and counted. Non-finite values are excluded and counted too. The completeness rule
+  requires at least 120 of 128 graphs per ensemble, and a valid N2.
 
 **Primary set,** with the direction 02 and 02b predict. A result in the other direction is
 reported as a reversal (Fable 15):
@@ -182,30 +218,44 @@ reported as a reversal (Fable 15):
 
 ## The verdict
 
-For each primary signal and each ensemble E:
-- **Test:** a one-sided prediction-interval test in the expected direction. It asks whether N2
-  is an outlier among E's graph values, using N2's value, E's mean and SD, the t-distribution with
-  n − 1 degrees of freedom, a √(1 + 1/n) factor, and N2's own bootstrap variance added.
-  The rank statistic p = (r + 1)/65 is reported beside it (Fable 18). The prediction-interval
-  test is used because with 64 graphs the rank test cannot go below 1/65.
-- **Stands out from E:** the test's p is at most its Holm-adjusted level across the four primary
-  signals, *and* N2 differs from E's mean by more than the effect margin.
-- **Compatible with E:** the 90% interval of N2 − E's mean lies inside the equivalence margin,
-  and N2 lies inside E's central 80%.
-- **Inconclusive:** otherwise. A reversal is reported as such.
-- **Distinctive relative to these nulls:** a signal stands out from all four ensembles. This is
-  an intersection-union test, so no further correction across ensembles is needed.
-- **N2perm:** if N2perm stands out too, the property belongs to the topology; if not, to weight
-  placement.
-- **N2-rev** is reported, not folded in.
+**Graphs per ensemble: 128, not 64** (Astra, v2 pass). An exact rank test then reaches the needed
+significance levels. A parametric prediction test would need a distributional model that ratio
+signals do not justify.
 
-**Margins** are set by a shuffle-only pilot of the unselected statistics, not by 02's best-of-32
-numbers (Astra 9, Fable 19). The pilot uses 16 pilot shuffles (SH101-SH116) through the full
-pipeline:
-- effect margin: 0.5 of SH's between-graph SD per signal;
-- equivalence margin: 0.25 of it.
-The pilot also checks that per-graph precision is adequate: N2's bootstrap SE must be under a
-quarter of the equivalence margin.
+For each primary signal j and each ensemble E:
+- **Rank test:** p_jE = (r + 1)/(n + 1), one-sided in the expected direction, where r is the
+  number of ensemble graphs at least as extreme as N2, and n = 128. It is exact under
+  exchangeability of N2 with the ensemble's graphs. That is the null being tested.
+- **Across ensembles, then signals** (intersection-union, then Holm; Astra, v2 pass):
+  1. p_j = max over E of p_jE.
+  2. Holm across the four primary signals.
+  v2 did these in the wrong order.
+- **Effect size with its uncertainty:** the 90% interval of N2 minus E's mean must lie beyond
+  the effect margin. The interval comes from a joint bootstrap. Its **world** indices are
+  resampled once and shared by N2 and every graph, because the worlds are shared. Genomes are
+  resampled within each graph, and ensemble graphs are resampled.
+
+**Verdicts per signal:**
+- **distinctive relative to these nulls:** the Holm-adjusted p_j is at most 0.05, and the
+  effect interval lies beyond the margin in every ensemble;
+- **compatible with E:** the 90% effect interval lies inside E's equivalence margin. This is
+  reported per ensemble;
+- **reversed:** the same as distinctive, in the other direction;
+- **inconclusive:** otherwise.
+
+**Margins,** set by the shuffle-only pilot:
+- effect margin: 0.5 of SH's between-graph SD;
+- equivalence margin: also 0.5 SD. v2's 0.25 SD gave only about 26% power to show compatibility
+  even at exact equality (Astra, v2 pass).
+
+The pilot's precision check uses a pilot shuffle standing in for N2, never N2 itself. v2 asked
+for N2's standard error in the pilot, which is an N2 measurement.
+
+**Not attributed:** "N2perm stands out, so it is topology" is not a registered inference. Three
+N2perm graphs are reported descriptively. Their failing to stand out cannot show that weight
+placement is the cause (Astra, v2 pass). T1-const holds the motor gains fixed, not the realised
+drive. It changes input statistics and dynamics as well as information, and drive under it is
+reported.
 
 ## Budget, from the measured throughput
 
@@ -216,17 +266,17 @@ help; sparse kernels or fewer integrator substeps might.
 
 | item | cost |
 |---|---|
-| fitness: 261 graphs × 7 task-mapping cells (T0 and T1 at M0/R1/R2, T1-const at M0) × 128 × 16 | about 6.2 GPU-hours |
-| C: 261 cells | about 0.9 |
-| input response, 512 brains: M0, R1, R2, MS, plus gaps-off and two magnitude modes at M0 | about 1.2 |
-| history dependence | about 0.3 |
-| calibration: 261 × about 15 s, plus validations | about 1.3 |
-| shuffle-only pilot (16 graphs, everything) | about 0.6 |
-| **total** | **about 10.5 GPU-hours,** under a cap of 12 |
+| fitness: 517 graphs (N2, N2-rev, 3 N2perm, 4 × 128) × 7 task-mapping cells × 64 genomes × 16 worlds | about 6.1 GPU-hours |
+| C: 517 cells, 64 × 16 | about 0.9 |
+| input response, 512 brains: M0, R1, R2, MS, plus gaps-off and two magnitude modes at M0 | about 2.4 |
+| history dependence | about 0.6 |
+| calibration: 517 × about 15 s, plus validations | about 2.4 |
+| shuffle-only pilot (16 graphs, everything) | about 0.4 |
+| **total** | **about 12.8 GPU-hours,** under a cap of 15; C, the revised probes and calibration of constrained graphs are estimated, not benchmarked, and the pilot measures them |
 
 **For 03a,** carried to its next review: with about 2 times 02's throughput, not 5, 03a v3.2's
-panel does not fit its one-week cap even after both reduction steps (about 227 GPU-hours, Astra
-15). It needs a cheaper evaluation (sparse kernels, fewer substeps or worlds, shorter searches)
+panel does not fit its one-week cap even after both reduction steps (about 204 GPU-hours at
+exactly 2 times; Astra). It needs a cheaper evaluation (sparse kernels, fewer substeps or worlds, shorter searches)
 or a smaller panel. Its feasibility pilot must decide.
 
 ## Order
@@ -282,3 +332,23 @@ or a smaller panel. Its feasibility pilot must decide.
 - calibration added;
 - the motor remap is dropped;
 - no further remaps are possible under D036.
+
+## Changes in v3 (Astra's confirmation pass on v2, D051)
+
+- **Routing:** the topology state space is reversible, so direct edges can be recreated. Weights
+  are allocated jointly under an aggregate cap, and the final weighted graph is checked.
+- **Mirror:** the stronger null is stated, including the nearly frozen self-mirrored gap
+  junctions. Orbit membership is checked on the complete post-move graph, and proposals are
+  symmetric.
+- **SH-mirror** has no predicted direction.
+- **Structural acceptance rules** are fixed before construction, relative to each ensemble's
+  own plateau.
+- **P1 and P4** are defined numerically, with a pilot-derived stimulus bank and denominator,
+  non-finite and completeness rules.
+- **Verdict:** 128 graphs per ensemble and exact rank tests, with no parametric tails. The
+  maximum p over ensembles comes first, then Holm across signals. The effect interval must lie
+  beyond the margin. Equivalence is 0.5 SD. A joint bootstrap resamples the shared worlds.
+- **The pilot's precision check** uses a stand-in shuffle, never N2.
+- **Attribution** from N2perm is dropped; T1-const is described accurately.
+- **Budget** rises to about 12.8 GPU-hours, with a cap of 15. 03a's arithmetic is corrected to
+  about 204 GPU-hours.
