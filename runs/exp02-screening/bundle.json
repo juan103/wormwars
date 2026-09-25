@@ -1,0 +1,1253 @@
+{
+  "config": {
+    "brain": {
+      "substeps": 32,
+      "tau_min": 0.5,
+      "tau_max": 20.0,
+      "w_max": 3.0,
+      "g_max": 2.0,
+      "b_max": 2.0,
+      "init_w_scale": 0.2,
+      "init_g_scale": 0.05,
+      "init_bias_std": 0.5,
+      "init_tau_log_uniform": true,
+      "init_chem_magnitude": "anatomical",
+      "init_gap_magnitude": "anatomical",
+      "init_permutation_seed": 0,
+      "dale": false,
+      "input_gain": 1.0,
+      "input_max": 5.0,
+      "chem_direction": "pre_to_post"
+    },
+    "world": {
+      "n_swarms": 1,
+      "weys_per_swarm": 20,
+      "max_ticks": 200,
+      "cells_per_wey": 24.0,
+      "min_side": 24,
+      "body_length": 2.4,
+      "max_speed": 0.35,
+      "reverse_fraction": 0.4,
+      "max_turn": 0.3,
+      "forward_gain": 4.0,
+      "turn_gain": 2.0,
+      "start_energy": 12.0,
+      "max_energy": 40.0,
+      "body_mass": 6.0,
+      "metabolic_drain": 0.035,
+      "move_cost": 0.02,
+      "hazard_damage": 0.25,
+      "eat_rate": 0.6,
+      "pheromone_deposit": 1.0,
+      "pheromone_decay": 0.93,
+      "pheromone_diffusion": 0.35,
+      "sense_scale_food": 0.175,
+      "sense_scale_pheromone": 0.0,
+      "sense_scale_hazard": 2.0,
+      "sense_scale_damage": 2.0,
+      "sense_scale_collision": 2.0,
+      "body_splat": 1.0,
+      "crowd_threshold": 0.8,
+      "crowd_resist": 0.6,
+      "crowd_push": 0.1,
+      "crowd_blur": 1,
+      "food_sensing": "stereo",
+      "food_probe": "real",
+      "food_odour_sigma": 1.0,
+      "food_probe_radius": 0.0,
+      "food_probe_hold": 1
+    },
+    "map": {
+      "food_patches": [
+        3,
+        6
+      ],
+      "food_patch_radius": [
+        2.5,
+        5.0
+      ],
+      "food_per_patch": [
+        140.0,
+        320.0
+      ],
+      "food_centre_bias": 0.62,
+      "hazard_patches": [
+        1,
+        4
+      ],
+      "hazard_radius": [
+        2.0,
+        4.0
+      ],
+      "hazard_strength": [
+        0.5,
+        1.0
+      ],
+      "hazard_spawn_clearance": 6.0,
+      "spawn_margin": 3.0,
+      "spawn_spread": 0.28,
+      "food_regen": 0.0,
+      "food_scales_with_headcount": true,
+      "food_reference_weys": 20
+    },
+    "combat": {
+      "attack_strength": 1.0,
+      "attack_offset": 0.9,
+      "attack_blur": 1,
+      "damage_k": 0.55,
+      "head_armor": 0.25,
+      "transfer_fraction": 0.5,
+      "max_flank_payback": 0.1,
+      "max_head_on_asymmetry": 1.5,
+      "pump_cost": 0.1
+    },
+    "mutation": {
+      "w_sigma": 0.08,
+      "g_sigma": 0.04,
+      "tau_sigma": 0.15,
+      "bias_sigma": 0.05,
+      "p_mutate": 1.0
+    },
+    "evo": {
+      "population": 32,
+      "generations": 40,
+      "elites": 3,
+      "truncation": 8,
+      "worlds_per_strain": 8,
+      "holdout_worlds": 64,
+      "islands": 1,
+      "migrate_every": 10,
+      "migrants": 1,
+      "chunk_worlds": 512,
+      "train_seed_base": 0,
+      "train_seed_span": 1000000,
+      "holdout_seed_base": 900000000,
+      "eval_ticks": 0,
+      "opponents_self": 3,
+      "opponents_hof": 2,
+      "coevo_worlds": 2,
+      "coevo_sizes": [
+        40,
+        40
+      ],
+      "coevo_lopsided": false,
+      "coevo_vary_sizes": false,
+      "coevo_size_range": [
+        50,
+        200
+      ],
+      "coevo_size_pairs": 2,
+      "coevo_lopsided_fraction": 0.5,
+      "hof_capacity": 12,
+      "suite_every": 5,
+      "suite_sizes": [
+        100,
+        100
+      ],
+      "suite_size": 6,
+      "suite_worlds": 8
+    }
+  },
+  "connectome": {
+    "label": "N2",
+    "weight_kind": "em_sections",
+    "n_neurons": 302,
+    "source_sha256": "1f4fdbf84746b69b49a8da0816f52787860ce349b638dce37924ba80f90c70c9",
+    "cache_path": "data/cache/cook2019_herm.npz",
+    "cache_sha256": "43b87aa172a0042b9dce734b15bdf1c87efe3a33ac1cc0d9cd03255a60c96d4a",
+    "citation": "Cook SJ, Jarrell TA, Brittin CA, Wang Y, Bloniarz AE, Yakovlev MA, Nguyen KCQ, Tang LT-H, Bayer EA, Duerr JS, Bulow HE, Hobert O, Hall DH, Emmons SW (2019). Whole-animal connectomes of both Caenorhabditis elegans sexes. Nature 571:63-71."
+  },
+  "graphs": {},
+  "seed_scheme": "A run has one integer run_seed. World w of that run uses world_seed(run_seed, world_id) = splitmix64(run_seed * 2**32 + world_id), which seeds a numpy default_rng used for that world's map, hazards and spawn. Training world ids for generation g are drawn from numpy.random.default_rng([run_seed, g, 0xC0FFEE]) within [train_seed_base, train_seed_base + train_seed_span); held-out ids are the fixed range [holdout_seed_base, holdout_seed_base + holdout_worlds) and are never used for selection. Torch RNG for genome initialisation and mutation is a single generator seeded with run_seed.",
+  "environment": {
+    "python": "3.13.3",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "torch": "2.12.0+cu130",
+    "torch_cuda": "13.0",
+    "packages": {
+      "torch": "2.12.0+cu130",
+      "numpy": "2.4.4",
+      "scipy": "1.17.1",
+      "matplotlib": "3.10.9",
+      "pyyaml": "6.0.3",
+      "pandas": "3.0.2",
+      "openpyxl": "3.1.5"
+    },
+    "git_commit": "225e8f877b71351d81e4a20a59d8b46835db50d6",
+    "git_dirty": false,
+    "gpu": "NVIDIA GeForce RTX 5080",
+    "gpu_capability": [
+      12,
+      0
+    ],
+    "gpu_arch_list": [
+      "sm_75",
+      "sm_80",
+      "sm_86",
+      "sm_90",
+      "sm_100",
+      "sm_120"
+    ]
+  },
+  "extra": {
+    "script": "exp02.py run",
+    "remaps": {
+      "M0": [
+        [
+          "AWAL",
+          "AWAR"
+        ],
+        [
+          "AWCL",
+          "AWCR"
+        ],
+        [
+          "ASEL",
+          "ASER"
+        ]
+      ],
+      "R1": [
+        [
+          "ASJL",
+          "ASJR"
+        ],
+        [
+          "ASIL",
+          "ASIR"
+        ],
+        [
+          "ASGL",
+          "ASGR"
+        ]
+      ],
+      "R2": [
+        [
+          "PLNL",
+          "PLNR"
+        ],
+        [
+          "IL2DL",
+          "IL2DR"
+        ],
+        [
+          "IL2VL",
+          "IL2VR"
+        ]
+      ],
+      "MS": [
+        [
+          "FLPL",
+          "FLPR"
+        ],
+        [
+          "PHBL",
+          "PHBR"
+        ],
+        [
+          "PVDL",
+          "PVDR"
+        ]
+      ]
+    },
+    "calibration": {
+      "N2": {
+        "graph": "N2",
+        "forward_gain": 4.29220518470395,
+        "turn_gain": 2.0266804676651327,
+        "target": [
+          0.5,
+          0.4
+        ],
+        "achieved": {
+          "forward": 0.4910143056884408,
+          "turn": 0.3993988323956728,
+          "clip_forward": 0.13358583719818853,
+          "clip_turn": 0.05458418834678014,
+          "displacement": 0.11206731870770455,
+          "forward_signed": 0.019215540325967596,
+          "reversing": 0.4881132248789072
+        },
+        "iterations": 2,
+        "history": [
+          {
+            "forward_gain": 4.0,
+            "turn_gain": 2.0,
+            "forward": 0.46596094872802496,
+            "turn": 0.39473415408283474,
+            "clip_forward": 0.1076322157838149,
+            "clip_turn": 0.05172840612794971,
+            "displacement": 0.10685514979995787,
+            "forward_signed": 0.019289675093023106,
+            "reversing": 0.4880660630762577
+          },
+          {
+            "forward_gain": 4.29220518470395,
+            "turn_gain": 2.0266804676651327,
+            "forward": 0.4910143056884408,
+            "turn": 0.3993988323956728,
+            "clip_forward": 0.13358583719818853,
+            "clip_turn": 0.05458418834678014,
+            "displacement": 0.11206731870770455,
+            "forward_signed": 0.019215540325967596,
+            "reversing": 0.4881132248789072
+          }
+        ],
+        "validation_seed1": {
+          "forward": 0.5024953914806247,
+          "turn": 0.4049906076863408,
+          "clip_forward": 0.15117247870894063,
+          "clip_turn": 0.059638566340436225,
+          "displacement": 0.11134322327561677,
+          "forward_signed": -0.00879024926398415,
+          "reversing": 0.5060018036514521
+        },
+        "seconds": 24.123416500049643
+      },
+      "N2perm1": {
+        "graph": "N2",
+        "forward_gain": 4.625944585242315,
+        "turn_gain": 2.392351821227338,
+        "target": [
+          0.5,
+          0.4
+        ],
+        "achieved": {
+          "forward": 0.495718758367002,
+          "turn": 0.399527220800519,
+          "clip_forward": 0.14853198354830965,
+          "clip_turn": 0.050411485417862424,
+          "displacement": 0.10463141035288573,
+          "forward_signed": -0.06460685699712485,
+          "reversing": 0.5466883189976215
+        },
+        "iterations": 3,
+        "history": [
+          {
+            "forward_gain": 4.0,
+            "turn_gain": 2.0,
+            "forward": 0.4449322743341327,
+            "turn": 0.3381367762573063,
+            "clip_forward": 0.09458629542787093,
+            "clip_turn": 0.017112926464324118,
+            "displacement": 0.09416852053254843,
+            "forward_signed": -0.05932076657190919,
+            "reversing": 0.5467022500932217
+          },
+          {
+            "forward_gain": 4.49506613785911,
+            "turn_gain": 2.3659065093565492,
+            "forward": 0.48585386779159306,
+            "turn": 0.3955783573910594,
+            "clip_forward": 0.13728845524601638,
+            "clip_turn": 0.0478143721978995,
+            "displacement": 0.1026613921392709,
+            "forward_signed": -0.0636839022859931,
+            "reversing": 0.5467606246471405
+          },
+          {
+            "forward_gain": 4.625944585242315,
+            "turn_gain": 2.392351821227338,
+            "forward": 0.495718758367002,
+            "turn": 0.399527220800519,
+            "clip_forward": 0.14853198354830965,
+            "clip_turn": 0.050411485417862424,
+            "displacement": 0.10463141035288573,
+            "forward_signed": -0.06460685699712485,
+            "reversing": 0.5466883189976215
+          }
+        ],
+        "validation_seed1": {
+          "forward": 0.498493792116642,
+          "turn": 0.39601690247654914,
+          "clip_forward": 0.14788315914265696,
+          "clip_turn": 0.05281551463012875,
+          "displacement": 0.1043803862761706,
+          "forward_signed": -0.07459909925237299,
+          "reversing": 0.5484356954693794
+        },
+        "seconds": 31.720691700000316
+      },
+      "N2perm2": {
+        "graph": "N2",
+        "forward_gain": 5.082974694058864,
+        "turn_gain": 2.983412657757016,
+        "target": [
+          0.5,
+          0.4
+        ],
+        "achieved": {
+          "forward": 0.49497594852000476,
+          "turn": 0.3989097844809294,
+          "clip_forward": 0.13436802801443265,
+          "clip_turn": 0.05283719187718816,
+          "displacement": 0.1082564958371222,
+          "forward_signed": -0.030622868693899363,
+          "reversing": 0.5126798138022423
+        },
+        "iterations": 3,
+        "history": [
+          {
+            "forward_gain": 4.0,
+            "turn_gain": 2.0,
+            "forward": 0.408877307921648,
+            "turn": 0.27421350963413715,
+            "clip_forward": 0.05838179994752864,
+            "clip_turn": 0.005673845977435121,
+            "displacement": 0.08965496309101581,
+            "forward_signed": -0.027053744957083837,
+            "reversing": 0.5123198308050633
+          },
+          {
+            "forward_gain": 4.891442888249632,
+            "turn_gain": 2.9174346700400755,
+            "forward": 0.48115947674959897,
+            "turn": 0.3911540245637298,
+            "clip_forward": 0.11915870177035685,
+            "clip_turn": 0.04752091327391099,
+            "displacement": 0.10537366340868175,
+            "forward_signed": -0.030125084234168754,
+            "reversing": 0.5126115903258324
+          },
+          {
+            "forward_gain": 5.082974694058864,
+            "turn_gain": 2.983412657757016,
+            "forward": 0.49497594852000476,
+            "turn": 0.3989097844809294,
+            "clip_forward": 0.13436802801443265,
+            "clip_turn": 0.05283719187718816,
+            "displacement": 0.1082564958371222,
+            "forward_signed": -0.030622868693899363,
+            "reversing": 0.5126798138022423
+          }
+        ],
+        "validation_seed1": {
+          "forward": 0.4983558919280767,
+          "turn": 0.40349342953413725,
+          "clip_forward": 0.1401059320101922,
+          "clip_turn": 0.055111745389876884,
+          "displacement": 0.10695128934457898,
+          "forward_signed": -0.04818199919100152,
+          "reversing": 0.537970956042409
+        },
+        "seconds": 31.708286099950783
+      },
+      "N2perm3": {
+        "graph": "N2",
+        "forward_gain": 4.687791997371512,
+        "turn_gain": 3.0634760631796953,
+        "target": [
+          0.5,
+          0.4
+        ],
+        "achieved": {
+          "forward": 0.4957266753539443,
+          "turn": 0.3992565831169486,
+          "clip_forward": 0.1468570218024979,
+          "clip_turn": 0.04946733264005161,
+          "displacement": 0.11092816055752337,
+          "forward_signed": -0.0009278446537791752,
+          "reversing": 0.5028083074837923
+        },
+        "iterations": 3,
+        "history": [
+          {
+            "forward_gain": 4.0,
+            "turn_gain": 2.0,
+            "forward": 0.43953868728131057,
+            "turn": 0.26550242910161614,
+            "clip_forward": 0.0865595847091754,
+            "clip_turn": 0.0027573134748308803,
+            "displacement": 0.0978572036139667,
+            "forward_signed": -0.00025193182495968357,
+            "reversing": 0.5027277387678624
+          },
+          {
+            "forward_gain": 4.550225174422414,
+            "turn_gain": 3.01315510636558,
+            "forward": 0.4853271195665002,
+            "turn": 0.3934295609593391,
+            "clip_forward": 0.13470789054526905,
+            "clip_turn": 0.04500867734604981,
+            "displacement": 0.10872450261376798,
+            "forward_signed": -0.000868214603724482,
+            "reversing": 0.502779620885849
+          },
+          {
+            "forward_gain": 4.687791997371512,
+            "turn_gain": 3.0634760631796953,
+            "forward": 0.4957266753539443,
+            "turn": 0.3992565831169486,
+            "clip_forward": 0.1468570218024979,
+            "clip_turn": 0.04946733264005161,
+            "displacement": 0.11092816055752337,
+            "forward_signed": -0.0009278446537791752,
+            "reversing": 0.5028083074837923
+          }
+        ],
+        "validation_seed1": {
+          "forward": 0.48602314181625844,
+          "turn": 0.3912061400711536,
+          "clip_forward": 0.13619171030586585,
+          "clip_turn": 0.050811658531893046,
+          "displacement": 0.10903240037150681,
+          "forward_signed": -0.0006190314067868741,
+          "reversing": 0.5004281900823117
+        },
+        "seconds": 31.716691600042395
+      },
+      "SH1": {
+        "graph": "SH1",
+        "forward_gain": 4.506130490087703,
+        "turn_gain": 3.2272300351699497,
+        "target": [
+          0.5,
+          0.4
+        ],
+        "achieved": {
+          "forward": 0.49662667475640776,
+          "turn": 0.39874839372932913,
+          "clip_forward": 0.14590352447048643,
+          "clip_turn": 0.057041621062671764,
+          "displacement": 0.11330978432670236,
+          "forward_signed": 0.019147016882197932,
+          "reversing": 0.48739294037222863
+        },
+        "iterations": 3,
+        "history": [
+          {
+            "forward_gain": 4.0,
+            "turn_gain": 2.0,
+            "forward": 0.4543988822028041,
+            "turn": 0.25368139762431385,
+            "clip_forward": 0.09872174345364329,
+            "clip_turn": 0.001677903254312696,
+            "displacement": 0.10256290873512626,
+            "forward_signed": 0.018316484044771642,
+            "reversing": 0.48706908747553823
+          },
+          {
+            "forward_gain": 4.401419277936019,
+            "turn_gain": 3.153561938289025,
+            "forward": 0.48838124945759775,
+            "turn": 0.3908691855147481,
+            "clip_forward": 0.13640830837889553,
+            "clip_turn": 0.051796718829427844,
+            "displacement": 0.11149932607077062,
+            "forward_signed": 0.019003341672942042,
+            "reversing": 0.4873753983527422
+          },
+          {
+            "forward_gain": 4.506130490087703,
+            "turn_gain": 3.2272300351699497,
+            "forward": 0.49662667475640776,
+            "turn": 0.39874839372932913,
+            "clip_forward": 0.14590352447048643,
+            "clip_turn": 0.057041621062671764,
+            "displacement": 0.11330978432670236,
+            "forward_signed": 0.019147016882197932,
+            "reversing": 0.48739294037222863
+          }
+        ],
+        "validation_seed1": {
+          "forward": 0.497136558406055,
+          "turn": 0.4027789309620857,
+          "clip_forward": 0.14215989584918134,
+          "clip_turn": 0.057028320034442005,
+          "displacement": 0.11333902971819043,
+          "forward_signed": 0.018076720414683223,
+          "reversing": 0.4809310410171747
+        },
+        "seconds": 32.166650800034404
+      },
+      "SH2": {
+        "graph": "SH2",
+        "forward_gain": 4.528358161162159,
+        "turn_gain": 2.730503831753443,
+        "target": [
+          0.5,
+          0.4
+        ],
+        "achieved": {
+          "forward": 0.4962199255824089,
+          "turn": 0.3991713983938098,
+          "clip_forward": 0.15090630335616878,
+          "clip_turn": 0.05099994983465876,
+          "displacement": 0.10977311283349991,
+          "forward_signed": -0.016584689973387867,
+          "reversing": 0.518333200365305
+        },
+        "iterations": 3,
+        "history": [
+          {
+            "forward_gain": 4.0,
+            "turn_gain": 2.0,
+            "forward": 0.4530665770173073,
+            "turn": 0.29802317610010504,
+            "clip_forward": 0.1062175444472814,
+            "clip_turn": 0.005415689907204068,
+            "displacement": 0.10005240011960267,
+            "forward_signed": -0.015520067076431587,
+            "reversing": 0.5184899725019931
+          },
+          {
+            "forward_gain": 4.414362262532554,
+            "turn_gain": 2.6843549903356596,
+            "forward": 0.487413109280169,
+            "turn": 0.3932395126670599,
+            "clip_forward": 0.14111877003160772,
+            "clip_turn": 0.04677511871122988,
+            "displacement": 0.10792592423968017,
+            "forward_signed": -0.016354562155902384,
+            "reversing": 0.5183438912034035
+          },
+          {
+            "forward_gain": 4.528358161162159,
+            "turn_gain": 2.730503831753443,
+            "forward": 0.4962199255824089,
+            "turn": 0.3991713983938098,
+            "clip_forward": 0.15090630335616878,
+            "clip_turn": 0.05099994983465876,
+            "displacement": 0.10977311283349991,
+            "forward_signed": -0.016584689973387867,
+            "reversing": 0.518333200365305
+          }
+        ],
+        "validation_seed1": {
+          "forward": 0.5028512489050627,
+          "turn": 0.39784962218254805,
+          "clip_forward": 0.15383428641071079,
+          "clip_turn": 0.05621362974197837,
+          "displacement": 0.1102060379460454,
+          "forward_signed": -0.02543771122873295,
+          "reversing": 0.5178517293184995
+        },
+        "seconds": 32.16442960000131
+      },
+      "SH3": {
+        "graph": "SH3",
+        "forward_gain": 4.619744953142669,
+        "turn_gain": 3.119944156728328,
+        "target": [
+          0.5,
+          0.4
+        ],
+        "achieved": {
+          "forward": 0.496046631410718,
+          "turn": 0.39896503277122974,
+          "clip_forward": 0.1420924619305879,
+          "clip_turn": 0.05237084713619424,
+          "displacement": 0.11024968703277409,
+          "forward_signed": -0.009087127132806927,
+          "reversing": 0.49893034622073174
+        },
+        "iterations": 3,
+        "history": [
+          {
+            "forward_gain": 4.0,
+            "turn_gain": 2.0,
+            "forward": 0.44516873378306626,
+            "turn": 0.26192689072340725,
+            "clip_forward": 0.09013526911148802,
+            "clip_turn": 0.0023632938264199765,
+            "displacement": 0.09820523201487959,
+            "forward_signed": -0.009234903071774169,
+            "reversing": 0.49898742474615576
+          },
+          {
+            "forward_gain": 4.492678501933187,
+            "turn_gain": 3.0542873921440687,
+            "forward": 0.48624746035784483,
+            "turn": 0.391582315415144,
+            "clip_forward": 0.1322087363456376,
+            "clip_turn": 0.04794426318985643,
+            "displacement": 0.10813944335095585,
+            "forward_signed": -0.009164398920256644,
+            "reversing": 0.4988784655928612
+          },
+          {
+            "forward_gain": 4.619744953142669,
+            "turn_gain": 3.119944156728328,
+            "forward": 0.496046631410718,
+            "turn": 0.39896503277122974,
+            "clip_forward": 0.1420924619305879,
+            "clip_turn": 0.05237084713619424,
+            "displacement": 0.11024968703277409,
+            "forward_signed": -0.009087127132806927,
+            "reversing": 0.49893034622073174
+          }
+        ],
+        "validation_seed1": {
+          "forward": 0.49882969465106725,
+          "turn": 0.39570497795939447,
+          "clip_forward": 0.14353308422141708,
+          "clip_turn": 0.05693317260065669,
+          "displacement": 0.1102868580725044,
+          "forward_signed": -0.016479462564529968,
+          "reversing": 0.5146455928683281
+        },
+        "seconds": 32.15253159997519
+      },
+      "SH4": {
+        "graph": "SH4",
+        "forward_gain": 4.44342574919526,
+        "turn_gain": 3.3373899675827,
+        "target": [
+          0.5,
+          0.4
+        ],
+        "achieved": {
+          "forward": 0.4972077863290906,
+          "turn": 0.39853926226496694,
+          "clip_forward": 0.13846062995144165,
+          "clip_turn": 0.06367867916269461,
+          "displacement": 0.11093673640862108,
+          "forward_signed": -0.003853156537661562,
+          "reversing": 0.4953008282929659
+        },
+        "iterations": 3,
+        "history": [
+          {
+            "forward_gain": 4.0,
+            "turn_gain": 2.0,
+            "forward": 0.45934173483401536,
+            "turn": 0.24564240453764796,
+            "clip_forward": 0.10030362600518856,
+            "clip_turn": 0.001573197644324864,
+            "displacement": 0.10114258248358965,
+            "forward_signed": -0.003243893044964352,
+            "reversing": 0.4952884655445814
+          },
+          {
+            "forward_gain": 4.3540567911224235,
+            "turn_gain": 3.2567666869479344,
+            "forward": 0.4899436872452497,
+            "turn": 0.3903369661420584,
+            "clip_forward": 0.13090139769483358,
+            "clip_turn": 0.05698979441949632,
+            "displacement": 0.10935430293902755,
+            "forward_signed": -0.0037783253621455513,
+            "reversing": 0.4953299693763256
+          },
+          {
+            "forward_gain": 4.44342574919526,
+            "turn_gain": 3.3373899675827,
+            "forward": 0.4972077863290906,
+            "turn": 0.39853926226496694,
+            "clip_forward": 0.13846062995144165,
+            "clip_turn": 0.06367867916269461,
+            "displacement": 0.11093673640862108,
+            "forward_signed": -0.003853156537661562,
+            "reversing": 0.4953008282929659
+          }
+        ],
+        "validation_seed1": {
+          "forward": 0.48790165428072213,
+          "turn": 0.41355405244976284,
+          "clip_forward": 0.13026851649046875,
+          "clip_turn": 0.0627146751347027,
+          "displacement": 0.11051780735142529,
+          "forward_signed": 0.008829879685072229,
+          "reversing": 0.4967472653836012
+        },
+        "seconds": 32.11498179996852
+      },
+      "SH5": {
+        "graph": "SH5",
+        "forward_gain": 5.006584430533546,
+        "turn_gain": 3.2544854466510387,
+        "target": [
+          0.5,
+          0.4
+        ],
+        "achieved": {
+          "forward": 0.4949834356084466,
+          "turn": 0.39865135326981543,
+          "clip_forward": 0.13527344123722287,
+          "clip_turn": 0.05715480943326838,
+          "displacement": 0.11371094756759703,
+          "forward_signed": 0.03230456265155226,
+          "reversing": 0.4754929251968861
+        },
+        "iterations": 3,
+        "history": [
+          {
+            "forward_gain": 4.0,
+            "turn_gain": 2.0,
+            "forward": 0.4150416532531381,
+            "turn": 0.25202239155769346,
+            "clip_forward": 0.0662521015285165,
+            "clip_turn": 0.0020431921735507784,
+            "displacement": 0.09524766239337623,
+            "forward_signed": 0.027624074940104038,
+            "reversing": 0.4751835078001022
+          },
+          {
+            "forward_gain": 4.818793449582228,
+            "turn_gain": 3.174321119069543,
+            "forward": 0.48124559931457045,
+            "turn": 0.3901472194120288,
+            "clip_forward": 0.12055832633632235,
+            "clip_turn": 0.051382954872678965,
+            "displacement": 0.11075935061089695,
+            "forward_signed": 0.031622900196816774,
+            "reversing": 0.47534218095242975
+          },
+          {
+            "forward_gain": 5.006584430533546,
+            "turn_gain": 3.2544854466510387,
+            "forward": 0.4949834356084466,
+            "turn": 0.39865135326981543,
+            "clip_forward": 0.13527344123722287,
+            "clip_turn": 0.05715480943326838,
+            "displacement": 0.11371094756759703,
+            "forward_signed": 0.03230456265155226,
+            "reversing": 0.4754929251968861
+          }
+        ],
+        "validation_seed1": {
+          "forward": 0.49688652753829954,
+          "turn": 0.3911384968087077,
+          "clip_forward": 0.15087141865633386,
+          "clip_turn": 0.056607092036574616,
+          "displacement": 0.11354875168763101,
+          "forward_signed": 0.024965097568929194,
+          "reversing": 0.48186801336705687
+        },
+        "seconds": 32.09244839998428
+      },
+      "SH6": {
+        "graph": "SH6",
+        "forward_gain": 4.665134975405569,
+        "turn_gain": 3.3419499330590328,
+        "target": [
+          0.5,
+          0.4
+        ],
+        "achieved": {
+          "forward": 0.49613006953150035,
+          "turn": 0.39876014422625305,
+          "clip_forward": 0.14229002918291372,
+          "clip_turn": 0.05477249111863784,
+          "displacement": 0.10806396869011223,
+          "forward_signed": -0.0371837806480471,
+          "reversing": 0.5266754187643528
+        },
+        "iterations": 3,
+        "history": [
+          {
+            "forward_gain": 4.0,
+            "turn_gain": 2.0,
+            "forward": 0.4406946409493685,
+            "turn": 0.24525929735973478,
+            "clip_forward": 0.08508217965982112,
+            "clip_turn": 0.0008160675488397828,
+            "displacement": 0.09499247726052999,
+            "forward_signed": -0.033221110177692026,
+            "reversing": 0.5268535040318966
+          },
+          {
+            "forward_gain": 4.538289813761953,
+            "turn_gain": 3.2618539179234363,
+            "forward": 0.48640498481690886,
+            "turn": 0.39041325971484186,
+            "clip_forward": 0.13151019031502073,
+            "clip_turn": 0.04952816549121053,
+            "displacement": 0.10602059522643685,
+            "forward_signed": -0.03659527390846051,
+            "reversing": 0.5266277961432934
+          },
+          {
+            "forward_gain": 4.665134975405569,
+            "turn_gain": 3.3419499330590328,
+            "forward": 0.49613006953150035,
+            "turn": 0.39876014422625305,
+            "clip_forward": 0.14229002918291372,
+            "clip_turn": 0.05477249111863784,
+            "displacement": 0.10806396869011223,
+            "forward_signed": -0.0371837806480471,
+            "reversing": 0.5266754187643528
+          }
+        ],
+        "validation_seed1": {
+          "forward": 0.4915908120572567,
+          "turn": 0.3981412913650274,
+          "clip_forward": 0.13754300292116567,
+          "clip_turn": 0.05770291930093663,
+          "displacement": 0.11013176464475691,
+          "forward_signed": -0.0004142994985329551,
+          "reversing": 0.5038615770637989
+        },
+        "seconds": 32.11665490001906
+      },
+      "SH7": {
+        "graph": "SH7",
+        "forward_gain": 4.208728032699156,
+        "turn_gain": 2.7784219357115645,
+        "target": [
+          0.5,
+          0.4
+        ],
+        "achieved": {
+          "forward": 0.4938947631046176,
+          "turn": 0.39204286187887194,
+          "clip_forward": 0.13233644642750733,
+          "clip_turn": 0.051021000818582254,
+          "displacement": 0.11106956894509494,
+          "forward_signed": 0.00589696035713132,
+          "reversing": 0.49763760529458523
+        },
+        "iterations": 2,
+        "history": [
+          {
+            "forward_gain": 4.0,
+            "turn_gain": 2.0,
+            "forward": 0.47520295549184083,
+            "turn": 0.2879332291893661,
+            "clip_forward": 0.1131592323887162,
+            "clip_turn": 0.005191992346090047,
+            "displacement": 0.10595885347574949,
+            "forward_signed": 0.005971307867184805,
+            "reversing": 0.49766874574124814
+          },
+          {
+            "forward_gain": 4.208728032699156,
+            "turn_gain": 2.7784219357115645,
+            "forward": 0.4938947631046176,
+            "turn": 0.39204286187887194,
+            "clip_forward": 0.13233644642750733,
+            "clip_turn": 0.051021000818582254,
+            "displacement": 0.11106956894509494,
+            "forward_signed": 0.00589696035713132,
+            "reversing": 0.49763760529458523
+          }
+        ],
+        "validation_seed1": {
+          "forward": 0.48118782304227353,
+          "turn": 0.39113730657845736,
+          "clip_forward": 0.12441533442997751,
+          "clip_turn": 0.04656988688439014,
+          "displacement": 0.1073455885052681,
+          "forward_signed": -0.007086845776211703,
+          "reversing": 0.49367589578032495
+        },
+        "seconds": 24.636864200001583
+      },
+      "SH8": {
+        "graph": "SH8",
+        "forward_gain": 4.4335826694849,
+        "turn_gain": 3.0869890309308134,
+        "target": [
+          0.5,
+          0.4
+        ],
+        "achieved": {
+          "forward": 0.49672701451927426,
+          "turn": 0.39901950266212227,
+          "clip_forward": 0.1533339691639412,
+          "clip_turn": 0.051616423908126305,
+          "displacement": 0.11057959678582847,
+          "forward_signed": -0.002934356578771258,
+          "reversing": 0.5094527311623096
+        },
+        "iterations": 3,
+        "history": [
+          {
+            "forward_gain": 4.0,
+            "turn_gain": 2.0,
+            "forward": 0.46094041876494884,
+            "turn": 0.26430459413677454,
+            "clip_forward": 0.11552708098024596,
+            "clip_turn": 0.0018984992502737441,
+            "displacement": 0.10171715943142771,
+            "forward_signed": -0.0014814888311093454,
+            "reversing": 0.5092317316681146
+          },
+          {
+            "forward_gain": 4.338955575557535,
+            "turn_gain": 3.0268107999137137,
+            "forward": 0.4893283715471625,
+            "turn": 0.3922023395076394,
+            "clip_forward": 0.14568858718848787,
+            "clip_turn": 0.04725082731238217,
+            "displacement": 0.1090235745999962,
+            "forward_signed": -0.0026775270020152676,
+            "reversing": 0.5094449501484632
+          },
+          {
+            "forward_gain": 4.4335826694849,
+            "turn_gain": 3.0869890309308134,
+            "forward": 0.49672701451927426,
+            "turn": 0.39901950266212227,
+            "clip_forward": 0.1533339691639412,
+            "clip_turn": 0.051616423908126305,
+            "displacement": 0.11057959678582847,
+            "forward_signed": -0.002934356578771258,
+            "reversing": 0.5094527311623096
+          }
+        ],
+        "validation_seed1": {
+          "forward": 0.5164109790697694,
+          "turn": 0.40079068709164856,
+          "clip_forward": 0.15705259726491932,
+          "clip_turn": 0.05842254609160591,
+          "displacement": 0.11456059417687356,
+          "forward_signed": -0.0021983074315357954,
+          "reversing": 0.508106729015708
+        },
+        "seconds": 32.210842499975115
+      }
+    },
+    "schedule": [
+      [
+        "T0-M0-N2-run00",
+        "T0-R1-N2-run00",
+        "T0-R2-N2-run00",
+        "T1-M0-N2-run00",
+        "T1-R1-N2-run00",
+        "T1-R2-N2-run00",
+        "T1-MS-N2-run00",
+        "A-M0-N2-run00"
+      ],
+      [
+        "T0-M0-SH1-run00",
+        "T0-R1-SH1-run00",
+        "T0-R2-SH1-run00",
+        "T1-M0-SH1-run00",
+        "T1-R1-SH1-run00",
+        "T1-R2-SH1-run00",
+        "T1-MS-SH1-run00",
+        "A-M0-SH1-run00"
+      ],
+      [
+        "T0-M0-N2-run01",
+        "T0-R1-N2-run01",
+        "T0-R2-N2-run01",
+        "T1-M0-N2-run01",
+        "T1-R1-N2-run01",
+        "T1-R2-N2-run01",
+        "T1-MS-N2-run01",
+        "A-M0-N2-run01"
+      ],
+      [
+        "T0-M0-SH2-run00",
+        "T0-R1-SH2-run00",
+        "T0-R2-SH2-run00",
+        "T1-M0-SH2-run00",
+        "T1-R1-SH2-run00",
+        "T1-R2-SH2-run00",
+        "T1-MS-SH2-run00",
+        "A-M0-SH2-run00"
+      ],
+      [
+        "T0-M0-N2-run02",
+        "T0-R1-N2-run02",
+        "T0-R2-N2-run02",
+        "T1-M0-N2-run02",
+        "T1-R1-N2-run02",
+        "T1-R2-N2-run02",
+        "T1-MS-N2-run02",
+        "A-M0-N2-run02"
+      ],
+      [
+        "T0-M0-SH3-run00",
+        "T0-R1-SH3-run00",
+        "T0-R2-SH3-run00",
+        "T1-M0-SH3-run00",
+        "T1-R1-SH3-run00",
+        "T1-R2-SH3-run00",
+        "T1-MS-SH3-run00",
+        "A-M0-SH3-run00"
+      ],
+      [
+        "T0-M0-N2-run03",
+        "T0-R1-N2-run03",
+        "T0-R2-N2-run03",
+        "T1-M0-N2-run03",
+        "T1-R1-N2-run03",
+        "T1-R2-N2-run03",
+        "T1-MS-N2-run03",
+        "A-M0-N2-run03"
+      ],
+      [
+        "T0-M0-SH4-run00",
+        "T0-R1-SH4-run00",
+        "T0-R2-SH4-run00",
+        "T1-M0-SH4-run00",
+        "T1-R1-SH4-run00",
+        "T1-R2-SH4-run00",
+        "T1-MS-SH4-run00",
+        "A-M0-SH4-run00"
+      ],
+      [
+        "T0-M0-N2-run04",
+        "T0-R1-N2-run04",
+        "T0-R2-N2-run04",
+        "T1-M0-N2-run04",
+        "T1-R1-N2-run04",
+        "T1-R2-N2-run04",
+        "T1-MS-N2-run04",
+        "A-M0-N2-run04"
+      ],
+      [
+        "T0-M0-SH5-run00",
+        "T0-R1-SH5-run00",
+        "T0-R2-SH5-run00",
+        "T1-M0-SH5-run00",
+        "T1-R1-SH5-run00",
+        "T1-R2-SH5-run00",
+        "T1-MS-SH5-run00",
+        "A-M0-SH5-run00"
+      ],
+      [
+        "T0-M0-N2-run05",
+        "T0-R1-N2-run05",
+        "T0-R2-N2-run05",
+        "T1-M0-N2-run05",
+        "T1-R1-N2-run05",
+        "T1-R2-N2-run05",
+        "T1-MS-N2-run05",
+        "A-M0-N2-run05"
+      ],
+      [
+        "T0-M0-SH6-run00",
+        "T0-R1-SH6-run00",
+        "T0-R2-SH6-run00",
+        "T1-M0-SH6-run00",
+        "T1-R1-SH6-run00",
+        "T1-R2-SH6-run00",
+        "T1-MS-SH6-run00",
+        "A-M0-SH6-run00"
+      ],
+      [
+        "T0-M0-N2-run06",
+        "T0-R1-N2-run06",
+        "T0-R2-N2-run06",
+        "T1-M0-N2-run06",
+        "T1-R1-N2-run06",
+        "T1-R2-N2-run06",
+        "T1-MS-N2-run06",
+        "A-M0-N2-run06"
+      ],
+      [
+        "T0-M0-SH7-run00",
+        "T0-R1-SH7-run00",
+        "T0-R2-SH7-run00",
+        "T1-M0-SH7-run00",
+        "T1-R1-SH7-run00",
+        "T1-R2-SH7-run00",
+        "T1-MS-SH7-run00",
+        "A-M0-SH7-run00"
+      ],
+      [
+        "T0-M0-N2-run07",
+        "T0-R1-N2-run07",
+        "T0-R2-N2-run07",
+        "T1-M0-N2-run07",
+        "T1-R1-N2-run07",
+        "T1-R2-N2-run07",
+        "T1-MS-N2-run07",
+        "A-M0-N2-run07"
+      ],
+      [
+        "T0-M0-SH8-run00",
+        "T0-R1-SH8-run00",
+        "T0-R2-SH8-run00",
+        "T1-M0-SH8-run00",
+        "T1-R1-SH8-run00",
+        "T1-R2-SH8-run00",
+        "T1-MS-SH8-run00",
+        "A-M0-SH8-run00"
+      ],
+      [
+        "T0-M0-SH1-run01",
+        "T0-R1-SH1-run01",
+        "T0-R2-SH1-run01",
+        "T1-M0-SH1-run01",
+        "T1-R1-SH1-run01",
+        "T1-R2-SH1-run01",
+        "T1-MS-SH1-run01"
+      ],
+      [
+        "T0-M0-SH2-run01",
+        "T0-R1-SH2-run01",
+        "T0-R2-SH2-run01",
+        "T1-M0-SH2-run01",
+        "T1-R1-SH2-run01",
+        "T1-R2-SH2-run01",
+        "T1-MS-SH2-run01"
+      ],
+      [
+        "T0-M0-SH3-run01",
+        "T0-R1-SH3-run01",
+        "T0-R2-SH3-run01",
+        "T1-M0-SH3-run01",
+        "T1-R1-SH3-run01",
+        "T1-R2-SH3-run01",
+        "T1-MS-SH3-run01"
+      ],
+      [
+        "T0-M0-SH4-run01",
+        "T0-R1-SH4-run01",
+        "T0-R2-SH4-run01",
+        "T1-M0-SH4-run01",
+        "T1-R1-SH4-run01",
+        "T1-R2-SH4-run01",
+        "T1-MS-SH4-run01"
+      ],
+      [
+        "T0-M0-SH5-run01",
+        "T0-R1-SH5-run01",
+        "T0-R2-SH5-run01",
+        "T1-M0-SH5-run01",
+        "T1-R1-SH5-run01",
+        "T1-R2-SH5-run01",
+        "T1-MS-SH5-run01"
+      ],
+      [
+        "T0-M0-SH6-run01",
+        "T0-R1-SH6-run01",
+        "T0-R2-SH6-run01",
+        "T1-M0-SH6-run01",
+        "T1-R1-SH6-run01",
+        "T1-R2-SH6-run01",
+        "T1-MS-SH6-run01"
+      ],
+      [
+        "T0-M0-SH7-run01",
+        "T0-R1-SH7-run01",
+        "T0-R2-SH7-run01",
+        "T1-M0-SH7-run01",
+        "T1-R1-SH7-run01",
+        "T1-R2-SH7-run01",
+        "T1-MS-SH7-run01"
+      ],
+      [
+        "T0-M0-SH8-run01",
+        "T0-R1-SH8-run01",
+        "T0-R2-SH8-run01",
+        "T1-M0-SH8-run01",
+        "T1-R1-SH8-run01",
+        "T1-R2-SH8-run01",
+        "T1-MS-SH8-run01"
+      ],
+      [
+        "T1-M0-N2perm1-run00"
+      ],
+      [
+        "T1-M0-N2perm2-run00"
+      ],
+      [
+        "T1-M0-N2perm3-run00"
+      ],
+      [
+        "T1-M0-N2perm1-run01"
+      ],
+      [
+        "T1-M0-N2perm2-run01"
+      ],
+      [
+        "T1-M0-N2perm3-run01"
+      ]
+    ]
+  }
+}
