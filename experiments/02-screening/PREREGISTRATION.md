@@ -1,8 +1,9 @@
 # WormWars 02: pre-registration of the screening
 
 **Fixed on 2026-09-25, before any N2 run.** No N2 brain has been evolved or scored in the experiment-02
-task world. The one N2 measurement seen, a generation-0 structural probe, is disclosed in §2. The code is the commit that adds this file; its parent is `af58faf`. The design argument is in
-`DESIGN.md` (v3) and `DECISIONS.md` D034-D039. Where they differ, this file is binding.
+task world. The one N2 measurement seen, a generation-0 structural probe, is disclosed in §2. The binding version of this file and of the code is the commit the run's `bundle.json` records
+(the last commit before the first N2 run). The design argument is in `DESIGN.md` (v3) and
+`DECISIONS.md` D034-D040. Where they differ, this file is binding.
 
 ## 1. What this experiment is
 
