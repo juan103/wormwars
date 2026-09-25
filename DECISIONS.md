@@ -691,3 +691,80 @@ correct and found no remaining orientation error. What they found, checked here 
   87-97 s per run partway through, with the machine shared. It is flagged as not a result.
 
 **Declined:** nothing. The pre-registration was not changed; all of this is reported alongside it.
+
+## D034 — Experiment 02's task world was chosen by a scripted gate, after three failure modes
+
+Everything in this entry used scripted controllers or discarded pilot shuffles only. No N2 run
+existed while any of it was decided.
+
+**A gate that passed, then failed, then passed for the right reason.** T1 ("single nose": one
+food sample at the head, copied to both sides) was meant to require memory. Its gate, set before
+any N2 run, was that a scripted controller with one tick of memory must beat the best memoryless
+one. On the first, narrow tuning grid it did (0.923 against 0.597 on 1408 held-out worlds). The
+memoryless controller's tuned values sat on grid edges, and on a widened grid it scored 1.457
+against the memory controller's 0.943. That comparison was itself flawed: it pitted pure memory
+against pure kinesis ("slow down on food"), two different strategies. With nested families,
+where memory and stereo are added on top of kinesis and fall back to it exactly, memory pays.
+The gate now asks how much a capability adds, not which of two strategies wins. (Fable 5.1 reached
+the same conclusion independently.)
+
+**The food ran out.** Sensing read the food field directly, so there was no signal beyond a
+patch's edge. And in 400 ticks the best controllers ate essentially all the food (a median of
+98-100% of each world's food) in every arena size and odour width tried. At that ceiling, better
+controllers cannot score higher, and differences between brains are compressed. This probably
+also compressed 01b's comparison: its champions scored close to the scripted ceilings.
+
+**The fix, chosen by a rule set before seeing results.** The rule was "the passing setting with
+the fewest changes from 01b's world". T0 and T1 run with an opt-in food odour (the sensed food is
+a Gaussian blur of the food field, sigma 1 cell), 200-tick episodes, and twice the food per
+patch. The anchor cell keeps 01b's world exactly.
+
+**Doubling the food saturated the input.** At the old sensing scale, 17% (T1) and 28% (T0) of
+the best controllers' non-zero food readings sat at the input clamp, so the signal went flat near
+every patch centre. The task world halves the food sensing scale: 1.1-1.2% at the clamp.
+
+**The gate as passed** (scripted, tuned on 64 worlds, scored on 256 separate validation worlds):
+memory adds 0.399 [0.383, 0.415] of the best T1 controller's advantage over straight-running;
+stereo adds 0.435 [0.418, 0.452] on T0; stereo beats single-nose-with-memory; the best controllers
+eat 70-74% of the food. No tuned value sits on a non-physical grid edge. Two edges checked to be
+physical limits are declared as such: a threshold at the input clamp means "never slow down", and
+stereo gains beyond 8192 change scores by less than 0.2%.
+
+## D035 — Calibration uses 2048 random genomes; 24 carried about 12% sampling error
+
+One random genome's motor drive has a standard deviation of 0.25-0.31 on a mean near 0.4. So a
+calibration fitted on 24 genomes, as in 01b and the first attempt here, carries about 12% sampling
+error per graph. The first in-world calibration converged to 2% on its own 24 genomes, but on an
+independent 24 it validated at 0.35-0.64 forward and 0.26-0.51 turn (targets 0.5 and 0.4).
+Fitting and validation now use 2048 genomes each, and every graph variant validates within 3.5%
+on the independent sample (tolerance 4%, about two standard errors of the difference).
+
+A single run's own generation-0 population is only 32 genomes, so its drive scatters about 12% by
+sampling alone. It is reported, never tripwired.
+
+**For 01b:** its per-graph gains carried about 12% sampling error, which is consistent with the
+84-97% residual measured in its review (D033).
+
+## D036 — Wrong food mappings: routing is a hard per-pair tolerance
+
+The planned rule matched the average of each remap triple to the food neurons on six scaled
+features. It admitted shortcut pairs twice. A triple-average rule let URX in (13 units of direct
+read-out weight, one hop) behind a weakly connected partner. A scaled pairwise rule let BAG, OLQD
+and OLQV in (12-20), because the extreme shortcuts (FLP, at 174) inflate the scale of the
+direct-weight feature. So routing is now a hard per-pair tolerance: at least 1.5 hops to the
+forward and to the turn read-out, and at most 2 units of direct read-out weight (the food pairs
+have 0-1). Degree is matched pair by pair among the six pairs that qualify. The result:
+R1 = ASJ, ASI, ASG (all amphid chemosensory); R2 = PLN, IL2D, IL2V; MS = FLP, PHB, PVD. With exactly
+six eligible pairs, R1 and R2 are a forced partition that falls along sensory modality. The
+screening's "R1 and R2 disagree" tripwire therefore also tests whether modality matters.
+
+## D037 — The history-only ablation is jitter of 1 cell, chosen on scripted controllers
+
+Replacing food with a constant, or with the mirrored signal, tests whether a champion uses food at
+all, not whether it uses food history (Fable 5.1). Six candidate ablations were tried on the
+scripted controllers of the final task world. To count as valid, an ablation had to leave the
+memoryless controller unchanged within its interval and remove the memory controller's advantage.
+Only "jitter" with radius 1 qualifies: food is read at a random point within 1 cell of the true
+sample point, fresh every tick. It changes the memoryless controller by -0.002 [-0.008, +0.005]
+and takes memory's advantage from +0.96 to -0.21. Larger jitter also degrades the memoryless
+controller, and every "hold" setting changes it (+0.04 to +0.06).
