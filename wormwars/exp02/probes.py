@@ -79,7 +79,7 @@ def gen0_scores(spec, cfg, iface, n_strains, ids, seed, device) -> float:
 
 
 def input_response(spec, cfg, iface, n_strains, device, ticks=40, base=0.1, diff=0.05,
-                   genome=None) -> dict:
+                   genome=None, per_genome=False) -> dict:
     """Motor response of random brains to food input, outside the world, per tick.
 
     Levels are sensed-signal units (after sense_scale_food), injected through the interface's
@@ -120,14 +120,17 @@ def input_response(spec, cfg, iface, n_strains, device, ticks=40, base=0.1, diff
     zero, both = trace(0.0, 0.0), trace(base, base)
     toward_l, toward_r = trace(base + diff, base - diff), trace(base - diff, base + diff)
     out = {}
+    # per_genome keeps the genome axis ([ticks, genomes]) instead of averaging over it
+    # (experiment 03 saves per-genome values; Astra's review of its design, point 10)
+    agg = (lambda x: x) if per_genome else (lambda x: x.mean(1))
     for kind in ("raw", "motor"):
-        common = (both[kind] - zero[kind]).abs().mean(1)
+        common = (both[kind] - zero[kind]).abs()
         direc = (toward_l[kind] - toward_r[kind]) / 2
-        out[f"common_forward_{kind}"] = common[:, 0].tolist()
-        out[f"common_turn_{kind}"] = common[:, 1].tolist()
-        out[f"directional_forward_{kind}"] = direc[..., 0].abs().mean(1).tolist()
-        out[f"directional_turn_{kind}"] = direc[..., 1].abs().mean(1).tolist()
-        out[f"directional_turn_signed_{kind}"] = direc[..., 1].mean(1).tolist()
+        out[f"common_forward_{kind}"] = agg(common[..., 0]).tolist()
+        out[f"common_turn_{kind}"] = agg(common[..., 1]).tolist()
+        out[f"directional_forward_{kind}"] = agg(direc[..., 0].abs()).tolist()
+        out[f"directional_turn_{kind}"] = agg(direc[..., 1].abs()).tolist()
+        out[f"directional_turn_signed_{kind}"] = agg(direc[..., 1]).tolist()
     return out
 
 
