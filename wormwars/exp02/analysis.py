@@ -18,6 +18,12 @@ import numpy as np
 
 MATCHED = ("R1", "R2")
 N_BOOT = 20_000
+# D038, frozen before any N2 fitness data: a champion "meaningfully" depends on a capability when
+# the interval of real minus ablated score lies above USE_THRESHOLD (score units, about a tenth
+# of the scripted stereo or memory gain); a probe is valid when a controller that cannot use the
+# capability moves by less than EQUIVALENCE, interval included.
+USE_THRESHOLD = 0.10
+EQUIVALENCE = 0.02
 
 
 def _boot_mean(x: np.ndarray, n_boot: int = N_BOOT, seed: int = 0) -> dict:
@@ -86,19 +92,26 @@ def task_contrast(n2, sh) -> float:
 
 
 def paired_bootstrap(n2, sh, stat, n_boot: int = N_BOOT, seed: int = 0) -> dict:
+    return paired_bootstrap_many(n2, sh, {"_": stat}, n_boot, seed)["_"]
+
+
+def paired_bootstrap_many(n2, sh, stats: dict, n_boot: int = N_BOOT, seed: int = 0) -> dict:
+    """Every statistic on the same resamples: N2 runs with replacement; SH graphs with
+    replacement, then runs within each drawn graph. Whole unit vectors travel together."""
     rng = np.random.default_rng(seed)
     n2_keys, graphs = list(n2), list(sh)
-    samples = np.empty(n_boot)
+    samples = {k: np.empty(n_boot) for k in stats}
     for b in range(n_boot):
         rn2 = {i: n2[k] for i, k in enumerate(rng.choice(n2_keys, len(n2_keys)))}
         rsh = {}
         for j, gk in enumerate(rng.choice(graphs, len(graphs))):
             runs = list(sh[gk])
             rsh[f"g{j}"] = {i: sh[gk][r] for i, r in enumerate(rng.choice(runs, len(runs)))}
-        samples[b] = stat(rn2, rsh)
-    return {"estimate": float(stat(n2, sh)), "lo": float(np.nanquantile(samples, 0.025)),
-            "hi": float(np.nanquantile(samples, 0.975)),
-            "nan_share": float(np.isnan(samples).mean())}
+        for k, stat in stats.items():
+            samples[k][b] = stat(rn2, rsh)
+    return {k: {"estimate": float(stat(n2, sh)), "lo": float(np.nanquantile(samples[k], 0.025)),
+                "hi": float(np.nanquantile(samples[k], 0.975)),
+                "nan_share": float(np.isnan(samples[k]).mean())} for k, stat in stats.items()}
 
 
 def _unit_contrast(u, task):
@@ -119,15 +132,20 @@ def leave_one_graph_out(n2, sh, task: str) -> dict:
     return {g: interaction(n2, {k: v for k, v in sh.items() if k != g}, task) for g in sh}
 
 
+def _family(graph: str) -> str:
+    return "N2perm" if graph.startswith("N2perm") else "SH" if graph.startswith("SH") else graph
+
+
 def late_cells(records, threshold_gen: int = 40) -> tuple[int, int]:
     """(cells whose mean checkpoint curve reaches 90% of its fitted asymptote after
-    `threshold_gen`, cells with a usable curve). Fit: y = a - b * exp(-g / c)."""
+    `threshold_gen`, cells with a usable curve). A cell is a graph family (N2, SH, N2perm) in a
+    task and mapping, so different learning curves are not pooled. Fit: y = a - b * exp(-g / c)."""
     from scipy.optimize import OptimizeWarning, curve_fit
 
     curves = defaultdict(list)
     for r in records:
         if r.get("checkpoints"):
-            curves[(r["task"], r["mapping"])].append({int(g): v for g, v in r["checkpoints"]
+            curves[(_family(r.get("graph", "")), r["task"], r["mapping"])].append({int(g): v for g, v in r["checkpoints"]
                                                       if g < 40 and v is not None})
     late = n = 0
     for cs in curves.values():
@@ -151,20 +169,73 @@ def late_cells(records, threshold_gen: int = 40) -> tuple[int, int]:
 
 
 def memory_vs_memoryless(diagnostics) -> dict:
-    """Paired per-world difference, one-step memory minus the tuned memoryless controller, on T1."""
+    """Paired per-world difference, the nested memory controller M minus the tuned memoryless
+    controller K, on T1 (keys as diagnostics.json writes them)."""
     diffs = []
     for per in diagnostics["T1"]["per_seed_holdout"].values():
-        diffs.extend(np.asarray(per["one_step_memory"]) - np.asarray(per["level_kinesis"]))
+        diffs.extend(np.asarray(per["M"]) - np.asarray(per["K"]))
     return _boot_mean(np.array(diffs))
 
 
-def temporal_check(champions: dict) -> dict:
-    """T1 is temporal only if champions lose to BOTH the constant and the mirrored food signal."""
-    t1 = [v["channels"] for k, v in champions.items() if k.startswith("T1-")]
-    return {
-        "real_minus_constant": _boot_mean([c["real"] - c["food_constant"] for c in t1]),
-        "real_minus_mirrored": _boot_mean([c["real"] - c["food_mirrored"] for c in t1]),
-    }
+def probe_valid(control_change: dict, gain_under: dict, gain_without: dict,
+                margin: float = EQUIVALENCE) -> bool:
+    """A probe is valid when the controller that cannot use the capability is unchanged within
+    the equivalence margin (its whole interval), and the capable controller's gain over it falls:
+    the gain's interval under the probe lies below its interval without."""
+    return (-margin < control_change["lo"] and control_change["hi"] < margin
+            and gain_under["hi"] < gain_without["lo"])
+
+
+def classify_use(b: dict, threshold: float = USE_THRESHOLD) -> str:
+    if b["lo"] > threshold:
+        return "meaningful"
+    if b["hi"] < threshold:
+        return "below_threshold"
+    return "inconclusive"
+
+
+def champion_use(channels: dict, probe: str) -> dict:
+    """One champion's paired per-world use of a capability: real minus ablated, with interval
+    and class. Positive: the ablation hurts; negative: it helps."""
+    sc = channels["scores"]
+    b = _boot_mean(np.asarray(sc["real"]) - np.asarray(sc[probe]))
+    return dict(b, cls=classify_use(b))
+
+
+def attach_use(records, probes: dict, probe: str, snapshot: str) -> list[dict]:
+    """Each record gains use_<probe>_<snapshot>: its champion's mean real minus ablated score
+    over the probe worlds. Records without that probe (a mono task has no stereo ablation) are
+    left without it, and units() skips them."""
+    out = []
+    for r in records:
+        r = dict(r)
+        ch = probes.get(r["key"], {}).get(snapshot, {}).get("channels")
+        if ch and probe in ch["scores"]:
+            r[f"use_{probe}_{snapshot}"] = float(np.mean(np.asarray(ch["scores"]["real"])
+                                                         - np.asarray(ch["scores"][probe])))
+        out.append(r)
+    return out
+
+
+def prediction_verdict(delta: dict, n2_use: dict, threshold: float = USE_THRESHOLD) -> str:
+    """D038's registered prediction: N2 champions show greater, meaningful dependence on the
+    capability than the sampled shuffles. Supported: the N2 - SH interval is above zero and N2's
+    own use is meaningful. Challenged: N2's use is tightly below threshold, the contrast is
+    reversed, or it straddles zero inside +-threshold. Anything else is inconclusive."""
+    if delta["lo"] > 0 and n2_use["lo"] > threshold:
+        return "supported"
+    if n2_use["hi"] < threshold or delta["hi"] < 0 or (-threshold < delta["lo"] <= 0 and delta["hi"] < threshold):
+        return "challenged"
+    return "inconclusive"
+
+
+def food_dependence(champions: dict, snapshot: str = "g39") -> dict:
+    """Pooled over champions: real minus the constant food signal. A sanity check that evolved
+    brains use the food signal at all; it says nothing about temporal or stereo use (D037)."""
+    per = [float(np.mean(np.asarray(v[snapshot]["channels"]["scores"]["real"])
+                         - np.asarray(v[snapshot]["channels"]["scores"]["food_constant"])))
+           for v in champions.values() if snapshot in v]
+    return _boot_mean(np.array(per))
 
 
 def integrator_interactions(records, probes: dict) -> dict:
@@ -176,8 +247,8 @@ def integrator_interactions(records, probes: dict) -> dict:
     main = [r for r in records if r["task"] in ("T0", "T1") and r["mapping"] != "MS"
             and (r["graph"] == "N2" or r["graph"].startswith("SH"))]
     for s in settings:
-        tagged = [dict(r, _v=float(np.mean(probes[r["key"]]["integrator"][s])))
-                  for r in main if r["key"] in probes]
+        tagged = [dict(r, _v=float(np.mean(probes[r["key"]]["g39"]["integrator"][s])))
+                  for r in main if "g39" in probes.get(r["key"], {})]
         n2, sh = units(tagged, "_v")
         out["I_T0"][s] = interaction(n2, sh, "T0")
         out["I_T1"][s] = interaction(n2, sh, "T1")
@@ -257,10 +328,9 @@ def _excludes_zero(b: dict) -> bool:
 def tripwires(summary: dict) -> list[dict]:
     """Each entry: name, fired, detail. Thresholds as pre-registered."""
     t = []
-    tc = summary["temporal"]
-    t.append({"name": "T1 is not temporal (champions do not lose to constant AND mirrored food)",
-              "fired": not (tc["real_minus_constant"]["lo"] > 0 and tc["real_minus_mirrored"]["lo"] > 0),
-              "detail": tc})
+    fd = summary["food_dependence"]
+    t.append({"name": "champions do not meaningfully depend on the food signal (real - constant)",
+              "fired": not fd["lo"] > USE_THRESHOLD, "detail": fd})
     mem = summary["memory_vs_memoryless"]
     t.append({"name": "memory controller does not beat the tuned memoryless one on T1",
               "fired": not mem["lo"] > 0, "detail": mem})

@@ -31,8 +31,11 @@ CHECKPOINT_IDS = np.arange(950_000_000, 950_000_016)
 TUNING_IDS = np.arange(960_000_000, 960_000_064)
 GATE_IDS = np.arange(970_000_000, 970_000_256)  # validation worlds for the task gate
 GATE_SEED = 77_777
+# D038: the frozen capability-probe worlds, separate from convergence monitoring
+PROBE_IDS = np.arange(980_000_000, 980_000_064)
 TUNING_SEED = 99_999
-N2_RUNS, SH_GRAPHS, SH_RUNS, PERMS, PERM_RUNS = 4, 6, 2, 3, 2
+# D038: replication raised from N2 4 runs and SH 6 graphs; earlier units keep their seeds
+N2_RUNS, SH_GRAPHS, SH_RUNS, PERMS, PERM_RUNS = 8, 8, 2, 3, 2
 MAIN = [("T0", m) for m in ("M0", "R1", "R2")] + [("T1", m) for m in ("M0", "R1", "R2", "MS")]
 GRAPH_VARIANTS = (["N2"] + [f"N2perm{k}" for k in range(1, PERMS + 1)]
                   + [f"SH{k}" for k in range(1, SH_GRAPHS + 1)])
@@ -108,7 +111,7 @@ def _unit_order() -> list[tuple[str, int]]:
     units, sh = [], iter(first)
     for r in range(N2_RUNS):
         units.append(("N2", r))
-        for _ in range(-(-SH_GRAPHS // N2_RUNS)):  # ceil(6 / 4) = 2 shuffles per N2 replicate
+        for _ in range(-(-SH_GRAPHS // N2_RUNS)):  # ceil(SH_GRAPHS / N2_RUNS) shuffles per N2 replicate
             nxt = next(sh, None)
             if nxt is not None:
                 units.append((nxt, 0))

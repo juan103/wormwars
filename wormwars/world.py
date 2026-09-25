@@ -49,7 +49,7 @@ P_REAR_L, P_REAR_R = 6, 7
 P_BODY_L, P_BODY_R = 8, 9
 N_POINTS = 10
 FOOD_SENSING = ("stereo", "mono")
-FOOD_PROBES = ("real", "constant", "mirrored", "jitter", "hold")
+FOOD_PROBES = ("real", "constant", "mirrored", "jitter", "hold", "mean", "swapped")
 
 
 def gaussian_blur(field: Tensor, sigma: float) -> Tensor:
@@ -509,6 +509,12 @@ class World:
             food_l = food_r = food[..., P_FRONT_C]
         else:
             food_l, food_r = food[..., P_FRONT_L], food[..., P_FRONT_R]
+        # stereo ablations, on the raw readings before scaling and the input clamp: the bilateral
+        # mean removes only the left-right difference; the swap reverses it
+        if wcfg.food_probe == "mean":
+            food_l = food_r = (food_l + food_r) / 2
+        elif wcfg.food_probe == "swapped":
+            food_l, food_r = food_r, food_l
         own_ph = sampled[:, ch.PHEROMONE + swarm_ix, swarm_ix]  # [Wd, S, B, P]
         if n_sw > 1:
             all_ph = sampled[:, ch.PHEROMONE : ch.PHEROMONE + n_sw]  # [Wd, S_ch, S, B, P]

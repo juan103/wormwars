@@ -121,6 +121,8 @@ class WorldConfig:
     # Evaluation probes only, never used for selection. "real": the food field. "constant": each
     # world's mean food level at tick 0, identical everywhere. "mirrored": the food field sampled
     # at the point reflection of the true sample point (same distribution, unrelated location).
+    # Stereo ablations: "mean" feeds the left-right mean to both sides (removes only the
+    # difference); "swapped" exchanges the sides (reverses it).
     food_probe: str = "real"
     # Food odour: if > 0, the sensed food signal is a Gaussian blur (this sigma, in cells) of the
     # food + pellet field, recomputed every tick, so a gradient reaches beyond a patch's edge.

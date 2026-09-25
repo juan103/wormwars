@@ -1,8 +1,9 @@
 # WormWars 02: a 12-hour screening experiment
 
-**Status: design v2, revised after review by Astra 6 and Fable 5.1** (both 2026-09-25; what changed
-and why is at the end). No code for it exists yet, and there is no experiment-02 data. A
-pre-registration will fix the design, predictions and tripwires before any run that involves N2.
+**Status: design v3** (2026-09-25). v2 was revised after review by Astra 6 and Fable 5.1 (what changed
+is at the end). v3 follows the pilot's failed feasibility gate and Astra's decision review
+(`DECISIONS.md` D038-D039; section "v3" below). The code and frozen inputs exist, and there is no
+N2 fitness data. `PREREGISTRATION.md` is binding where the two differ.
 
 ## Why a screening experiment first
 
@@ -199,3 +200,22 @@ Astra 6 and Fable 5.1 reviewed v1 independently. Checked against the code and da
 - **Where they differed,** on graph sampling (Fable: 8 graphs x 1 run; Astra: 6 x 2 with fewer N2
   runs), I chose 6 x 2. The variance that matters is that of within-graph mapping contrasts (Astra),
   and single runs per graph would confound it with run noise.
+
+## v3: after the pilot (D038, D039)
+
+The pilot's evolved champions use food heavily but not the capabilities the tasks were designed
+to reward. So v3 measures capability use in every champion instead of assuming it:
+
+- **Brains:** N2 8 runs per cell (was 4); SH 8 graphs x 2 runs (was 6 x 2); 190 runs.
+- **Probe 2 is replaced by the capability suite,** on 64 dedicated probe worlds, per world, for the
+  generation-0 and generation-39 champion of every run: constant food, mirrored food, collision
+  off, pheromone off (anchor), jitter 1 and 3 (history sensitivity), and for stereo tasks the
+  bilateral mean (primary), the swap and the single nose.
+- **The primary mechanistic outcome** is the N2 - SH contrast in bilateral-mean dependence on
+  T0-M0 at generation 39, with the thresholds and verdict rule of D038. The fitness interactions
+  above remain screening estimates.
+- **Probe 5** holds the common mode fixed (D039).
+- **The first tripwire** is now "champions do not meaningfully depend on the food signal"; the
+  claim that T1 is temporal is no longer made (D037, D039).
+- **Budget:** about 7 hours of evolution and 3 hours of probes (`exploration/structure_and_timing.json`,
+  `pilot.json`), within the 12-hour cap. The v2 budget section above is superseded.

@@ -39,15 +39,23 @@ def test_task_configs():
 
 
 def test_schedule_counts_match_the_design():
+    """D038: N2 8 runs, SH 8 graphs x 2 runs (was 4 and 6 x 2), the anchor on N2 and SH run 0."""
     runs = [r for b in grid.run_schedule() for r in b]
     by = Counter((r.cell.task, r.cell.mapping, r.graph[:2]) for r in runs)
     for task, mapping in grid.MAIN:
-        assert by[(task, mapping, "N2")] == 4 + (6 if (task, mapping) == ("T1", "M0") else 0)
-        assert by[(task, mapping, "SH")] == 12
-    assert by[("A", "M0", "N2")] == 4 and by[("A", "M0", "SH")] == 6
+        assert by[(task, mapping, "N2")] == 8 + (6 if (task, mapping) == ("T1", "M0") else 0)
+        assert by[(task, mapping, "SH")] == 16
+    assert by[("A", "M0", "N2")] == 8 and by[("A", "M0", "SH")] == 8
     assert sum(r.generations == 80 for r in runs) == 8
-    assert len(runs) == 128
+    assert len(runs) == 190
     assert len({r.key for r in runs}) == len(runs)
+
+
+def test_extending_replication_keeps_every_earlier_seed():
+    """The seed of a (graph, run) unit depends only on the graph and the run index."""
+    seeds = {(r.graph, r.run): r.run_seed for b in grid.run_schedule() for r in b}
+    assert seeds[("N2", 0)] == 20_000 and seeds[("N2", 7)] == 20_007
+    assert seeds[("SH1", 0)] == 21_010 and seeds[("SH8", 1)] == 21_081
 
 
 def test_every_run_records_generation_0_and_39():

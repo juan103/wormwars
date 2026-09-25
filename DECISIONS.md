@@ -768,3 +768,86 @@ Only "jitter" with radius 1 qualifies: food is read at a random point within 1 c
 sample point, fresh every tick. It changes the memoryless controller by -0.002 [-0.008, +0.005]
 and takes memory's advantage from +0.96 to -0.21. Larger jitter also degrades the memoryless
 controller, and every "hold" setting changes it (+0.04 to +0.06).
+
+## D038 — The feasibility gate failed; the screening measures capability use instead of assuming it
+
+The pilot's feasibility gate (D034) failed as pre-set: the 40-generation T1 champion on a pilot
+shuffle beats the tuned memoryless controller by +0.59 but is not hurt by the validated history
+ablation (+0.004 [-0.012, +0.019]). Exploration on pilot shuffles only
+(`experiments/02-screening/exploration/`) showed that more generations (to 120), four times the
+training worlds, or four times the population do not produce clear history or stereo use. So
+the scripted gate shows the capabilities pay; it does not show that 40 generations of evolution
+find them.
+
+Options considered: redesign the evolutionary setup or the tasks (no candidate with evidence
+that it would work), stop, or run the screening and make each champion's capability use a
+measured outcome. Astra 6 reviewed the last as a conditional go (its decision review, 11 points,
+all checked against the files) and the design adopts it with every fix it named:
+
+- **Estimands.** For each frozen champion and probe p, U_p = mean over probe worlds of the real
+  score minus the score under p (signed). N2's mean over runs, SH's mean over equally weighted
+  graph means, and their contrast Delta_p; per task, the mapping interaction
+  Delta_p(M0) - mean(Delta_p(R1), Delta_p(R2)). Every champion is probed at generation 0 and 39,
+  so a starting advantage is separated from acquisition.
+- **Primary mechanistic outcome:** Delta for the bilateral-mean probe on T0-M0 at generation 39.
+  The prediction, motivated by preliminary N2 evidence (disclosed below) and so labelled: *under
+  the registered 40-generation procedure, N2 champions show greater, meaningful dependence on
+  bilateral food information than champions from the sampled shuffle distribution.*
+- **Thresholds, frozen now:** meaningful use means the interval lies above 0.10 score units (about
+  a tenth of the scripted stereo or memory gain); a probe is valid when a controller that cannot
+  use the capability moves less than +-0.02, interval included. Supported: Delta above zero and
+  N2's use meaningful. Challenged: N2's use tightly below 0.10, Delta reversed, or Delta
+  straddling zero inside +-0.10. Otherwise inconclusive. Everything else (history jitters, swap,
+  single nose, constant food, the fitness interactions) is secondary and exploratory, with no
+  multiplicity-adjusted claims drawn from it.
+- **Not claimed:** that shuffles *cannot* acquire a capability. With eight graphs, zero of eight
+  showing use bounds the rate below about 31%; it never shows absence.
+- **Replication raised** with the freed budget: N2 from 4 to 8 runs, SH from 6 to 8 graphs x 2
+  runs (190 runs). Earlier units keep their seeds. SH7 and SH8 are calibrated and the new seeds'
+  scripted reference scores computed with the frozen controllers (`scripts/exp02.py extend`),
+  adding only missing values.
+- **Implementation blockers fixed:** the report read diagnostic keys that were never written
+  (`one_step_memory` / `level_kinesis` instead of `M` / `K`); a smoke test now runs the whole
+  report on synthetic records with the committed diagnostics, calibration and schedule. Probes
+  save per-world scores, world ids and the probe seed, on 64 dedicated probe worlds separate from
+  convergence monitoring. Convergence is fitted per graph family.
+
+**Disclosure.** Before this decision I saw one N2 number: the generation-0 turn response to a
+left-right food difference under M0 (0.12, against 0.009-0.030 for eight pilot shuffles). It was
+measured with a probe that confounded the difference with the total food level (Astra, point 3),
+so it does not establish a routing difference. N2 under the remaps was not looked at. No N2
+fitness, evolved or scripted, was seen.
+
+## D039 — Stereo and history probes, validated on scripted controllers with an equivalence rule
+
+The D037 validity rule accepted an interval that merely contained zero as "unchanged". It now
+requires the whole interval inside +-0.02 (`probe_validation.json`). Jitter 1 still qualifies
+(memoryless change -0.002 [-0.008, +0.005]); jitter 2 and 3, and every hold, do not.
+
+Jitter probes are **history-sensitivity outcomes**, not a test of history use. Jitter 1 was
+validated on one scripted memory strategy only; a controller integrating over several ticks can
+average it out, and a memoryless nonlinear one can be hurt by it. Jitter 3 costs the memoryless
+controller 0.057 by itself, so the 120-generation pilot's +0.039 under jitter 3 is not evidence of
+history use. A stronger test (matched-current replay of different food histories) is deferred,
+and so is any claim that a champion uses history.
+
+Single-nose substitution ("mono") also moves the sample point and changes the common mode.
+The primary stereo ablation is therefore the **bilateral mean**: (L+R)/2 fed to both sides, on raw
+readings before scaling and the input clamp. It removes only the left-right difference. The
+**swap** (L and R exchanged) reverses it and is supporting evidence of directional steering. On
+the gate worlds (T0):
+
+| probe | memoryless K changes by | stereo gain S - K (without: +1.113 [1.069, 1.156]) |
+|---|---|---|
+| bilateral mean | 0 exactly | -0.080 [-0.098, -0.063] |
+| swap | 0 exactly | -1.846 [-1.896, -1.796] |
+| single nose | -0.002 [-0.005, +0.001] | -0.079 [-0.097, -0.061] |
+
+K reads only the bilateral mean, so its invariance under the mean probe holds by construction and
+checks the implementation, not the probe's specificity.
+
+The generation-0 input-response probe is corrected too: the left-right difference at a fixed
+common mode, (b+d, b-d) against (b-d, b+d), signed and absolute, raw read-out and motor command,
+through the interface's sensor gains and clamp. On the eight pilot shuffles its directional turn
+response is 0.0015-0.0045 raw (b = 0.1, d = 0.05; `exploration/structure_and_timing.json`).
+N2's value is a registered outcome, not yet measured.

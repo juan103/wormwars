@@ -31,7 +31,7 @@ from wormwars.connectome.graphs import shuffled
 from wormwars.evo import SeedPool, load_genome, rollout, save_genome
 from wormwars.evo.bundle import write_bundle
 from wormwars.evo.evolve import evolve
-from wormwars.exp02 import grid, remaps, scripted
+from wormwars.exp02 import grid, remaps, report, scripted
 from wormwars.exp02 import analysis as An
 from wormwars.exp02 import probes as P
 from wormwars.exp02.manifest import check_manifest, run_manifest
@@ -174,10 +174,91 @@ def _history_probe_validation(cfg, iface, fam, device):
             k_change = _paired(k, base_k)
             memory_left = _paired(m, k)       # what memory still adds under the ablation
             memory_before = _paired(base_m, base_k)
-            valid = (k_change["lo"] <= 0 <= k_change["hi"]) and memory_left["hi"] < memory_before["lo"]
+            valid = An.probe_valid(k_change, memory_left, memory_before)
             out.append({"kind": kind, "value": v, "K_change": k_change, "memory_gain_under_probe": memory_left,
                         "memory_gain_without": memory_before, "valid": bool(valid)})
     return out
+
+
+def cmd_extend(args, con, iface):
+    """D038: the frozen inputs for the raised replication, adding only what is missing and never
+    changing a value already there: calibration of new graph variants, and the scripted reference
+    scores on new run seeds' held-out worlds with the frozen tuned controllers."""
+    cal_path, diag_path = grid.EXP02_DIR / "calibration.json", grid.EXP02_DIR / "diagnostics.json"
+    cal = _load(cal_path)
+    base = grid.task_config(Config(), "T0")
+    for name in grid.GRAPH_VARIANTS:
+        if name in cal:
+            continue
+        t0 = time.perf_counter()
+        cfg = grid.brain_config_for_graph(base, name)
+        graph = grid.graph_for(con, name)
+        c = calib.calibrate_in_world(graph, cfg, iface, grid.TARGET_DRIVE,
+                                     n_strains=grid.CALIBRATION_STRAINS, device=args.device)
+        check = cfg.copy()
+        check.world.forward_gain, check.world.turn_gain = c.forward_gain, c.turn_gain
+        val = calib.achieved_drive(graph, check, iface, n_strains=grid.CALIBRATION_STRAINS, seed=1,
+                                   device=args.device)
+        cal[name] = {**c.as_dict(), "validation_seed1": val.as_dict(), "seconds": time.perf_counter() - t0}
+        print(f"{name:8} gains {c.forward_gain:.3f}/{c.turn_gain:.3f}; validation |fwd| {val.forward:.3f} "
+              f"|turn| {val.turn:.3f}", flush=True)
+        _json(cal_path, cal)
+    diag = _load(diag_path)
+    fg, tg = cal["N2"]["forward_gain"], cal["N2"]["turn_gain"]
+    for task in ("T0", "T1", "A"):
+        cfg = grid.task_config(Config(), task)
+        cfg.world.forward_gain, cfg.world.turn_gain = fg, tg
+        pols = {"stationary": scripted.Stationary(), "straight": scripted.Straight()}
+        pols.update({n: _policy(n, v["params"]) for n, v in diag[task]["tuned"].items()})
+        per_seed = diag[task]["per_seed_holdout"]
+        for seed in _unit_seeds():
+            if str(seed) in per_seed:
+                continue
+            ids = SeedPool(cfg, seed).holdout
+            per_seed[str(seed)] = {n: scripted.score_policy(cfg, iface, p_, ids, seed, args.device).tolist()
+                                   for n, p_ in pols.items()}
+            print(f"{task} reference scores for seed {seed}", flush=True)
+    _json(diag_path, diag)
+
+
+def cmd_validate_probes(args, con, iface):
+    """D038: the capability probes on scripted controllers, with the equivalence rule. History
+    (T1): K must move less than the margin; M's gain over K must fall. Stereo (T0): K reads only
+    the bilateral mean, so it must be unchanged by the mean probe; S's gain over K must fall under
+    it; under the swap S must do worse than K. Every candidate's numbers are kept."""
+    diag = _load(grid.EXP02_DIR / "diagnostics.json")
+    cal = _load(grid.EXP02_DIR / "calibration.json")["N2"]
+    out = {"equivalence": An.EQUIVALENCE, "use_threshold": An.USE_THRESHOLD}
+    c1 = grid.task_config(Config(), "T1")
+    c1.world.forward_gain, c1.world.turn_gain = cal["forward_gain"], cal["turn_gain"]
+    out["history"] = _history_probe_validation(c1, iface, diag["T1"]["tuned"], args.device)
+    c0 = grid.task_config(Config(), "T0")
+    c0.world.forward_gain, c0.world.turn_gain = cal["forward_gain"], cal["turn_gain"]
+    K, S = _policy("K", diag["T0"]["tuned"]["K"]["params"]), _policy("S", diag["T0"]["tuned"]["S"]["params"])
+    base_k, _ = _val(c0, iface, K, grid.GATE_IDS, grid.GATE_SEED, args.device)
+    base_s, _ = _val(c0, iface, S, grid.GATE_IDS, grid.GATE_SEED, args.device)
+    before = _paired(base_s, base_k)
+    stereo = []
+    for name, kw in (("food_mean", {"food_probe": "mean"}), ("food_swapped", {"food_probe": "swapped"}),
+                     ("mono", {"food_sensing": "mono"})):
+        c = c0.copy()
+        for k, v in kw.items():
+            setattr(c.world, k, v)
+        k_, _ = _val(c, iface, K, grid.GATE_IDS, grid.GATE_SEED, args.device)
+        s_, _ = _val(c, iface, S, grid.GATE_IDS, grid.GATE_SEED, args.device)
+        entry = {"probe": name, "K_change": _paired(k_, base_k), "stereo_gain_under_probe": _paired(s_, k_),
+                 "stereo_gain_without": before, "S_change": _paired(s_, base_s)}
+        entry["valid"] = bool(An.probe_valid(entry["K_change"], entry["stereo_gain_under_probe"], before))
+        if name == "food_swapped":
+            entry["S_below_K_under_swap"] = bool(entry["stereo_gain_under_probe"]["hi"] < 0)
+        stereo.append(entry)
+        print(f"{name:13} K change {entry['K_change']['estimate']:+.4f}, S-K {entry['stereo_gain_under_probe']['estimate']:+.3f}"
+              f" (without {before['estimate']:+.3f}), valid {entry['valid']}", flush=True)
+    out["stereo"] = stereo
+    for h in out["history"]:
+        print(f"{h['kind']} {h['value']}: K change {h['K_change']['estimate']:+.4f} "
+              f"[{h['K_change']['lo']:+.4f}, {h['K_change']['hi']:+.4f}], valid {h['valid']}", flush=True)
+    _json(grid.EXP02_DIR / "probe_validation.json", out)
 
 
 def _unit_seeds():
@@ -362,13 +443,21 @@ def cmd_run(args, con, iface):
         per_batch = max(per_batch, took)
 
 
-def _champion_probes(cfg, iface, champ, seed, device, with_pheromone) -> dict:
-    ids = grid.CHECKPOINT_IDS
-    return {
-        "channels": P.channel_dependence(cfg, iface, champ, ids, seed, device, with_pheromone),
-        "integrator": P.integrator_rescore(cfg, iface, champ, ids, seed, device),
-        "behaviour": P.behaviour(cfg, iface, champ, ids[:4], seed, device),
-    }
+def _champion_probes(cfg, iface, champ, seed, device, with_pheromone, full=True) -> dict:
+    """The frozen capability suite on the probe worlds (per world); the integrator rescoring and
+    behaviour only on the final champion (`full`)."""
+    out = {"channels": P.channel_dependence(cfg, iface, champ, grid.PROBE_IDS, seed, device, with_pheromone)}
+    if full:
+        out["integrator"] = P.integrator_rescore(cfg, iface, champ, grid.CHECKPOINT_IDS, seed, device)
+        out["behaviour"] = P.behaviour(cfg, iface, champ, grid.CHECKPOINT_IDS[:4], seed, device)
+    return out
+
+
+VALENCE_GRAPHS = ("N2", "SH1")
+
+
+def _gen0_graphs():
+    return ["N2"] + [f"SH{k}" for k in range(1, grid.SH_GRAPHS + 1)]
 
 
 def cmd_probes(args, con, iface):
@@ -378,8 +467,8 @@ def cmd_probes(args, con, iface):
     t_start = time.perf_counter()
     out = {"valence": [], "gen0_strength": [], "input_response": {}, "champions": {}}
     cfg1 = grid.task_config(Config(), "T1")
-    graphs = ["N2"] + [f"SH{k}" for k in range(1, grid.SH_GRAPHS + 1)]
-    for name in ("N2", "SH1"):
+    graphs = _gen0_graphs()
+    for name in VALENCE_GRAPHS:
         cfg = cfg1.copy()
         cfg.world.forward_gain, cfg.world.turn_gain = _gains(name)
         spec = BrainSpec.from_connectome(grid.graph_for(con, name), device=args.device)
@@ -396,65 +485,38 @@ def cmd_probes(args, con, iface):
                 cfg.world.forward_gain, cfg.world.turn_gain = _gains(name)
                 out["gen0_strength"].append({"graph": name, "mapping": mapping, "mode": mode,
                                              "score": P.gen0_scores(spec, cfg, fam, 32, ids, 7, args.device)})
-            out["input_response"][f"{name}-{mapping}"] = P.input_response(spec, cfg1, fam, 64, args.device)
+            # the graph's own calibrated gains, so the motor-command response is the real one
+            cfg_ir = cfg1.copy()
+            cfg_ir.world.forward_gain, cfg_ir.world.turn_gain = _gains(name)
+            out["input_response"][f"{name}-{mapping}"] = P.input_response(spec, cfg_ir, fam, 256, args.device)
     print(f"generation-0 probes: {time.perf_counter() - t_start:.0f}s")
     for r in recs:
         cfg = grid.brain_config_for_graph(grid.task_config(Config(), r["task"]), r["graph"])
         cfg.world.forward_gain, cfg.world.turn_gain = _gains(r["graph"])
         fam = grid.interface_for(con, r["mapping"], remap_sets)
         spec = BrainSpec.from_connectome(grid.graph_for(con, r["graph"]), device=args.device)
-        champ, meta = load_genome(OUT / f"{r['key']}-g39.npz", spec, None, device=args.device)
-        check_manifest(meta, cfg, fam, spec)
-        out["champions"][r["key"]] = _champion_probes(cfg, fam, champ, r["run_seed"], args.device,
-                                                      r["task"] == "A")
+        out["champions"][r["key"]] = {}
+        for tag in ("g00", "g39"):
+            champ, meta = load_genome(OUT / f"{r['key']}-{tag}.npz", spec, None, device=args.device)
+            check_manifest(meta, cfg, fam, spec)
+            out["champions"][r["key"]][tag] = _champion_probes(cfg, fam, champ, r["run_seed"], args.device,
+                                                               r["task"] == "A", full=tag == "g39")
     out["seconds"] = time.perf_counter() - t_start
     _json(OUT / "probes.json", out)
     print(f"probes done in {out['seconds']:.0f}s")
 
 
 def cmd_report(args, con, iface):
-    recs = An.normalise(grid.read_records(OUT / "records.jsonl"), _load(grid.EXP02_DIR / "diagnostics.json"))
-    diag = _load(grid.EXP02_DIR / "diagnostics.json")
-    prb = _load(OUT / "probes.json")
-    cal = _load(grid.EXP02_DIR / "calibration.json")
-    main_recs = [r for r in recs if r["task"] in ("T0", "T1")]
-    out = {}
-    for tag in ("norm_g00", "norm_g39"):
-        n2, sh = An.units(main_recs, tag)
-        out[tag] = {
-            "I_T0": An.paired_bootstrap(n2, sh, lambda a, s: An.interaction(a, s, "T0")),
-            "I_T1": An.paired_bootstrap(n2, sh, lambda a, s: An.interaction(a, s, "T1")),
-            "I_T1_minus_I_T0": An.paired_bootstrap(n2, sh, An.task_contrast),
-            "advantage": {f"{t}-{m}": An.paired_bootstrap(n2, sh, lambda a, s, c=(t, m): An.advantage(a, s, c))
-                          for t, m in grid.MAIN},
-            "variance_T0": An.variance_components(sh, "T0"),
-            "variance_T1": An.variance_components(sh, "T1"),
-            "loo_T1": An.leave_one_graph_out(n2, sh, "T1"),
-        }
-    n2, sh = An.units(recs, "norm_g39")
-    matched_adv = lambda a, s: float(np.mean([An.advantage(a, s, ("T1", m)) for m in An.MATCHED]))  # noqa: E731
-    sh_matched = lambda s: float(np.mean([An._sh_mean(s, ("T1", m)) for m in An.MATCHED]))  # noqa: E731
-    summary = {
-        "temporal": An.temporal_check(prb["champions"]),
-        "memory_vs_memoryless": An.memory_vs_memoryless(diag),
-        "anchor": An.paired_bootstrap(n2, sh, lambda a, s: An.advantage(a, s, ("A", "M0"))),
-        "sign_01b": An.sign_of_01b(Path("runs/exp01b-direction-corrected/records.json")),
-        "drive": An.drive_check(recs, cal, grid.TARGET_DRIVE),
-        "integrator": An.integrator_interactions(recs, prb["champions"]),
-        "late_cells": An.late_cells(recs),
-        "ms_vs_matched": An.paired_bootstrap(n2, sh, lambda a, s: An.advantage(a, s, ("T1", "MS")) - matched_adv(a, s)),
-        "r1_minus_r2": An.paired_bootstrap(n2, sh, lambda a, s: An.advantage(a, s, ("T1", "R1")) - An.advantage(a, s, ("T1", "R2"))),
-        "sh_mapping": An.paired_bootstrap(n2, sh, lambda a, s: An._sh_mean(s, ("T1", "M0")) - sh_matched(s)),
-        "valence_no_gap_max": max(v["max_abs_score_diff"] for v in prb["valence"] if not v["gaps"]),
-        "strength": An.strength_contrast(recs, "norm_g39"),
-        "pellet_share_g39": float(np.mean([r["pellet_share_g39"] for r in recs])),
-        "max_ledger_error": max(r["ledger_error"] for r in recs),
-    }
-    out["summary"] = summary
-    out["tripwires"] = An.tripwires(summary)
+    out = report.build(grid.read_records(OUT / "records.jsonl"), _load(grid.EXP02_DIR / "diagnostics.json"),
+                       _load(OUT / "probes.json"), _load(grid.EXP02_DIR / "calibration.json"),
+                       An.sign_of_01b(Path("runs/exp01b-direction-corrected/records.json")))
     _json(OUT / "analysis.json", out)
     for tw in out["tripwires"]:
         print(f"{'FIRED' if tw['fired'] else 'ok   '}  {tw['name']}")
+    p = out["primary"]
+    d = p["delta"]
+    print(f"PRIMARY {p['probe']} {p['cell']}: N2 - SH {d['estimate']:+.4f} [{d['lo']:+.4f}, {d['hi']:+.4f}], "
+          f"N2 use {p['n2_use_class']}, SH use {p['sh_use_class']} -> {p['verdict']}")
     for tag in ("norm_g00", "norm_g39"):
         for k in ("I_T0", "I_T1", "I_T1_minus_I_T0"):
             b = out[tag][k]
@@ -463,13 +525,14 @@ def cmd_report(args, con, iface):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("command", choices=["remaps", "calibrate", "diagnostics", "pilot", "run", "probes", "report"])
+    ap.add_argument("command", choices=["remaps", "calibrate", "diagnostics", "extend", "validate-probes", "pilot", "run",
+                                        "probes", "report"])
     ap.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
     ap.add_argument("--max-hours", type=float, default=10.0)
     args = ap.parse_args()
     con = load_connectome()
     iface = load_interface(con)
-    {"remaps": cmd_remaps, "calibrate": cmd_calibrate, "diagnostics": cmd_diagnostics,
+    {"remaps": cmd_remaps, "calibrate": cmd_calibrate, "diagnostics": cmd_diagnostics, "validate-probes": cmd_validate_probes, "extend": cmd_extend,
      "pilot": cmd_pilot, "run": cmd_run, "probes": cmd_probes, "report": cmd_report}[args.command](args, con, iface)
 
 

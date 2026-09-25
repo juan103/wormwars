@@ -45,8 +45,12 @@ def _variant(cfg, **world):
 
 
 def channel_dependence(cfg, iface, champion, ids, seed, device, with_pheromone: bool) -> dict:
-    """Mean score with the real food signal, with it replaced by a constant, with it replaced by
-    the distribution-matched mirrored signal, and with collision (and pheromone) sensing off."""
+    """Per-world scores of one champion with the real food signal and under each intervention:
+    food replaced by each world's tick-0 mean level ("constant"), by the mirrored signal,
+    collision (and pheromone) sensing off, and the history-sensitivity jitters. Stereo tasks
+    add the stereo ablations: the bilateral mean (the primary one, removing only the left-right
+    difference), the left-right swap, and single-nose substitution ("mono", which also moves the
+    sample point). Jitter draws come from a generator seeded by `seed`, recorded as probe_seed."""
     variants = {
         "real": cfg,
         "food_constant": _variant(cfg, food_probe="constant"),
@@ -55,14 +59,17 @@ def channel_dependence(cfg, iface, champion, ids, seed, device, with_pheromone: 
     }
     if with_pheromone:
         variants["pheromone_off"] = _variant(cfg, sense_scale_pheromone=0.0)
-    # capability use: history (jitter, D037: 1 cell is the scripted-validated ablation; 3 cells
-    # reaches brains that integrate over many ticks) and, for stereo tasks, the second nose
+    # history sensitivity (D037, D038): 1 cell is the scripted-validated ablation; 3 cells also
+    # costs a memoryless controller, so it is a sensitivity outcome only
     variants["jitter1"] = _variant(cfg, food_probe="jitter", food_probe_radius=1.0)
     variants["jitter3"] = _variant(cfg, food_probe="jitter", food_probe_radius=3.0)
     if cfg.world.food_sensing == "stereo":
         variants["mono"] = _variant(cfg, food_sensing="mono")
-    return {k: float(rollout(c, iface, champion, ids, seed, device).score.mean())
-            for k, c in variants.items()}
+        variants["food_mean"] = _variant(cfg, food_probe="mean")
+        variants["food_swapped"] = _variant(cfg, food_probe="swapped")
+    return {"world_ids": [int(i) for i in ids], "probe_seed": int(seed),
+            "scores": {k: rollout(c, iface, champion, ids, seed, device).score[0].tolist()
+                       for k, c in variants.items()}}
 
 
 def gen0_scores(spec, cfg, iface, n_strains, ids, seed, device) -> float:
@@ -71,36 +78,55 @@ def gen0_scores(spec, cfg, iface, n_strains, ids, seed, device) -> float:
     return float(rollout(cfg, iface, g, ids, seed, device).score.mean())
 
 
-def input_response(spec, cfg, iface, n_strains, device, ticks=40) -> dict:
-    """Motor read-out response of random brains to food input, outside the world: common-mode
-    (both sides) and differential (left only), as mean |change from no input| per tick."""
+def input_response(spec, cfg, iface, n_strains, device, ticks=40, base=0.1, diff=0.05) -> dict:
+    """Motor response of random brains to food input, outside the world, per tick.
+
+    Levels are sensed-signal units (after sense_scale_food), injected through the interface's
+    sensor gains, input_gain and input clamp as in the world. Common mode: (b, b) against (0, 0).
+    Directional (Astra's decision review, point 3): (b+d, b-d) against (b-d, b+d), half the
+    difference, so the total food level is identical in both. Positive signed turn means turning
+    toward the stronger side, the scripted stereo controller's convention. Each is reported for
+    the raw read-out and for the motor command after the world's gains and clip."""
     gen = torch.Generator(device=device).manual_seed(0)
     g = Genome.random(spec, cfg.brain, n_strains, generator=gen, device=device)
     brain = Brain(g)
     names = list(iface.signal_names)
-    left = [int(i) for s, i in zip(names, iface.sensor_neuron) if s == "food_left"]
-    right = [int(i) for s, i in zip(names, iface.sensor_neuron) if s == "food_right"]
+    gains = np.asarray(iface.sensor_gain) * cfg.brain.input_gain
+    left = [(int(i), float(k)) for s, i, k in zip(names, iface.sensor_neuron, gains) if s == "food_left"]
+    right = [(int(i), float(k)) for s, i, k in zip(names, iface.sensor_neuron, gains) if s == "food_right"]
     fp, fm = list(iface.forward_plus), list(iface.forward_minus)
     tp, tm = list(iface.turn_plus), list(iface.turn_minus)
+    motor_scale = torch.tensor([cfg.world.forward_gain, cfg.world.turn_gain], device=device) * 0.5
 
     def trace(lvl_l, lvl_r):
         v = brain.initial_state(1)
         cur = torch.zeros_like(v)
-        cur[..., left] = lvl_l
-        cur[..., right] = lvl_r
+        for j, k in left:
+            cur[..., j] += lvl_l * k
+        for j, k in right:
+            cur[..., j] += lvl_r * k
+        cur = cur.clamp(-cfg.brain.input_max, cfg.brain.input_max)
         out = []
         for _ in range(ticks):
             v = brain.step(v, cur)
             a = torch.tanh(v)
             out.append(torch.stack([a[..., fp].mean(-1) - a[..., fm].mean(-1),
                                     a[..., tp].mean(-1) - a[..., tm].mean(-1)], -1))
-        return torch.stack(out)  # [ticks, S, 1, 2]
+        raw = torch.stack(out).reshape(ticks, -1, 2)  # [ticks, strains, (forward, turn)]
+        return {"raw": raw, "motor": (raw * motor_scale).clamp(-1, 1)}
 
-    base = trace(0.0, 0.0)
-    cm = (trace(0.5, 0.5) - base).abs().mean(dim=(1, 2))
-    df = (trace(0.5, 0.0) - base).abs().mean(dim=(1, 2))
-    return {"common_forward": cm[:, 0].tolist(), "common_turn": cm[:, 1].tolist(),
-            "diff_forward": df[:, 0].tolist(), "diff_turn": df[:, 1].tolist()}
+    zero, both = trace(0.0, 0.0), trace(base, base)
+    toward_l, toward_r = trace(base + diff, base - diff), trace(base - diff, base + diff)
+    out = {}
+    for kind in ("raw", "motor"):
+        common = (both[kind] - zero[kind]).abs().mean(1)
+        direc = (toward_l[kind] - toward_r[kind]) / 2
+        out[f"common_forward_{kind}"] = common[:, 0].tolist()
+        out[f"common_turn_{kind}"] = common[:, 1].tolist()
+        out[f"directional_forward_{kind}"] = direc[..., 0].abs().mean(1).tolist()
+        out[f"directional_turn_{kind}"] = direc[..., 1].abs().mean(1).tolist()
+        out[f"directional_turn_signed_{kind}"] = direc[..., 1].mean(1).tolist()
+    return out
 
 
 def integrator_rescore(cfg, iface, champion, ids, seed, device) -> dict:
