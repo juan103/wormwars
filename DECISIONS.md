@@ -1084,6 +1084,8 @@ second, and whole-brain evolutions add about 37.
 
 ## D048 — 02b: a true deletion operator; criticality follows N2's hubs, not the food route
 
+*Its readings are corrected by D049: several were stated too strongly.*
+
 Roadmap item 1 ran, exploratory, in about 40 GPU-minutes (`experiments/02b-champion-analysis/`).
 
 **Added to the code:**
@@ -1105,3 +1107,35 @@ Roadmap item 1 ran, exploratory, in about 40 GPU-minutes (`experiments/02b-champ
 
 **Consequences:** 03a's high-criticality N2 panel will be hub-dominated, and 03's registered
 signals should include N2's generation-0 history dependence.
+
+## D049 — 02b after review: level memory, a mapping-independent core, no N2-specific steering
+
+Astra 6 and Fable 5.1 reviewed 02b v1, both at maximum effort
+(`docs/reviews/20260925-184331-02b/`). Both confirmed its numbers and the deletion operator. Each
+point was checked before it was adopted, and 02b v2 was recomputed from the saved genomes.
+
+**Bugs:**
+- Turn persistence compared neighbouring weys, not the same wey over time. It is 0.997-0.999 in
+  every group, so "N2 circles less" is withdrawn.
+- The history table's forward values were censored by the motor clip.
+- The rank correlations mishandled ties.
+- `delete_neurons` accepted index −1 (it now raises, with tests).
+
+**Controls added:**
+- A mutation-only drift control, and one stimulus bank per run shared by every genome of that
+  run.
+- An R2 criticality control (non-amphid food).
+- A kept-edge check for 03a.
+- A null strain in every deletion batch.
+
+**Readings changed:**
+- History: selection, not drift, raised the turn read-out's history dependence in every group.
+  But it is a persistent memory of the recent food level (about 0.9 of the steady-state contrast,
+  about 0.85 left after 5 ticks), not a computation on change.
+- Criticality: AIZ and RIA are critical under all three mappings. The rest shifts with the
+  mapping, and "hubs" applies to RIA only.
+- Steering: both groups steer by side equally within wey. "N2 steers toward food" rested on two
+  champions and is withdrawn.
+
+**For 03a:** about a third of a high-criticality N2 target's deletion cost is carried by edges to
+interface neurons, which 03a keeps fixed. Its next review should weigh this.

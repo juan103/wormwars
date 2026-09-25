@@ -95,3 +95,50 @@ def test_without_neuron_keeps_indexing_and_drops_every_edge_touching_it(con):
     mask = np.ones(con.n, bool)
     mask[k] = False
     np.testing.assert_array_equal(c.chem[np.ix_(mask, mask)], con.chem[np.ix_(mask, mask)])
+
+
+def test_deletion_rejects_indices_outside_the_network(con):
+    """Astra's review of 02b: [-1] silently zeroed the last neuron's bias and left its edges."""
+    spec = BrainSpec.from_connectome(con)
+    genome = _genome(spec)
+    for bad in ([-1], [con.n]):
+        with pytest.raises(ValueError):
+            delete_neurons(genome, [bad])
+
+
+@pytest.mark.parametrize("pick", ["gap", "sensor", "autapse"])
+def test_deletion_matches_the_reduced_network_for_several_kinds_of_neuron(con, pick):
+    """Fable's review of 02b: more than one deterministic neuron, including a sensor neuron and
+    one with a chemical self-connection."""
+    from wormwars.interface import load_interface
+    if pick == "gap":
+        k = _gap_neuron(con)
+    elif pick == "sensor":
+        k = int(load_interface(con).sensor_neuron[0])
+    else:
+        diag = np.nonzero(np.diag(con.chem) > 0)[0]
+        if not len(diag):
+            pytest.skip("no chemical self-connection in this dataset")
+        k = int(diag[0])
+    spec = BrainSpec.from_connectome(con)
+    genome = _genome(spec, seed=3)
+    small_con, keep = reindexed_without(con, k)
+    small = _small_genome(genome, BrainSpec.from_connectome(small_con), keep)
+    a, b = Brain(delete_neurons(genome, [[k]])), Brain(small)
+    cur = torch.randn(1, 2, con.n, generator=torch.Generator().manual_seed(2)) * 0.3
+    va, vb = a.initial_state(2), b.initial_state(2)
+    for _ in range(30):
+        va, vb = a.step(va, cur), b.step(vb, cur[..., keep])
+    torch.testing.assert_close(va[..., keep], vb, rtol=1e-5, atol=1e-6)
+
+
+def test_several_deletions_in_one_strain_and_different_ones_across_strains(con):
+    spec = BrainSpec.from_connectome(con)
+    genome = _genome(spec, s=3)
+    k1, k2 = _gap_neuron(con), 0
+    d = delete_neurons(genome, [[k1, k2], [k2], []])
+    for s, ks in enumerate([[k1, k2], [k2], []]):
+        touch = torch.zeros(spec.n_chem, dtype=torch.bool)
+        for k in ks:
+            touch |= (spec.chem_i == k) | (spec.chem_j == k)
+        assert torch.all(d.w[s, touch] == 0) and torch.all(d.w[s, ~touch] == genome.w[s, ~touch])

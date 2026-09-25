@@ -1,15 +1,24 @@
 """Experiment 02b: what experiment 02's champions compute (roadmap item 1). Exploratory and
 descriptive; no evolution. Uses the saved genomes in runs/exp02-screening/ (not in git).
 
-Stages (python analyse.py <stage> ...; each writes <stage>.json next to this file):
-  magnitudes  Spearman correlation of |w| with the anatomical magnitude, per champion.
-  response    the input-response probe on evolved champions (generation 0 and 39), next to each
-              champion's stereo use from 02's probes.
-  behaviour   per-tick replays: how turning and speed depend on the food level, its change, the
-              left-right difference and collision (standardised regression per champion).
-  history     matched current input after different food histories (rising, falling, constant):
-              does the motor output depend on the history?
-  criticality deletion of every eligible neuron of each T1-M0 champion, one at a time.
+v2 of this script follows the review of v1 by Astra 6 and Fable 5.1 (D049). Stages (python
+analyse.py <stage>; each writes <stage>.json next to this file; `summarise` computes every
+number RESULTS.md reports and writes summary.json):
+
+  magnitudes      Spearman (average ranks) of |w| with the anatomical magnitude, per champion.
+  response        the input-response probe on evolved champions, per champion, next to 02's
+                  stereo-use scores.
+  behaviour       per-tick replays with wey identity kept: turn persistence per wey across
+                  ticks, and standardised regressions pooled and within wey.
+  history         matched current input after different food histories, on one stimulus bank
+                  per run shared by generation 0, generation 39 and a mutation-only drift
+                  control; raw read-out and motor command; steady-state contrast and decay.
+  criticality     deletion of every eligible neuron of each T1-M0 champion (one null strain per
+                  batch, whose drop must be ~0).
+  criticality_R1  the same for N2's T1-R1 champions; criticality_R2 for T1-R2 (non-amphid food).
+  kept_edges      for each N2 T1-M0 champion's 12 most critical neurons: deleting only the edges
+                  to mapped (interface) neurons, against full deletion (03a keeps those edges).
+  summarise       every reported number, from the JSON files above plus the connectome.
 """
 
 from __future__ import annotations
@@ -17,10 +26,12 @@ from __future__ import annotations
 import json
 import sys
 import time
+from collections import Counter
 from pathlib import Path
 
 import numpy as np
 import torch
+from scipy import stats
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
@@ -31,7 +42,6 @@ from wormwars.deletion import delete_neurons  # noqa: E402
 from wormwars.evo import load_genome, rollout  # noqa: E402
 from wormwars.exp02 import grid  # noqa: E402
 from wormwars.exp02 import probes as P  # noqa: E402
-from wormwars.interface import load_interface  # noqa: E402
 from wormwars.world import World  # noqa: E402
 
 HERE = Path(__file__).resolve().parent
@@ -70,12 +80,15 @@ def save(stage, obj):
     (HERE / f"{stage}.json").write_text(json.dumps(obj, indent=1), encoding="utf-8")
 
 
-def spearman(a, b):
-    ra, rb = np.argsort(np.argsort(a)), np.argsort(np.argsort(b))
-    return float(np.corrcoef(ra, rb)[0, 1])
+def read(stage):
+    return json.loads((HERE / f"{stage}.json").read_text(encoding="utf-8"))
 
 
-# ------------------------------------------------------------------------------ stages
+def spearman(a, b) -> float:
+    return float(stats.spearmanr(a, b).statistic)  # average ranks for ties
+
+
+# ------------------------------------------------------------------------------ magnitudes
 
 def stage_magnitudes():
     out = {}
@@ -86,10 +99,9 @@ def stage_magnitudes():
             out[r["key"]] = {tag: spearman(np.abs(load(r, tag, spec).w[0].cpu().numpy()), anat)
                              for tag in ("g00", "g39")}
     save("magnitudes", out)
-    for fam in ("N2", "SH"):
-        v = [x for k, x in out.items() if family(BY_KEY[k]["graph"]) == fam]
-        print(fam, "g00", round(np.mean([x["g00"] for x in v]), 3), "g39", round(np.mean([x["g39"] for x in v]), 3))
 
+
+# ------------------------------------------------------------------------------ response
 
 def stage_response():
     use = json.loads((RUNS / "probes.json").read_text(encoding="utf-8"))["champions"]
@@ -105,47 +117,42 @@ def stage_response():
                         "use_swap": float(np.mean(np.array(sc["real"]) - np.array(sc["food_swapped"])))}
         out[r["key"]] = row
     save("response", out)
-    for tag in ("g00", "g39"):
-        x = [v[tag]["directional_turn_signed_motor"] for v in out.values()]
-        y = [v[tag]["use_swap"] for v in out.values()]
-        print(tag, "corr(signed directional turn, swap use) over T0-M0 champions:", round(spearman(x, y), 3))
 
+
+# ------------------------------------------------------------------------------ behaviour
 
 BEHAVIOUR_WORLDS = grid.PROBE_IDS[:8]
+PREDICTORS = ("food_level", "food_change", "food_left_minus_right", "collision_left_minus_right", "collision_total")
 
 
 def replay(cfg, iface, champ, seed):
-    """Per-tick logs of alive weys: food level, its change, the left-right difference, the
-    collision left-right difference and total, and the motor commands."""
+    """Per tick, with wey identity: an array [ticks, weys, 7] of the five predictors, forward and
+    turn, and an alive mask [ticks, weys]. Weys are flattened over worlds."""
     n = len(BEHAVIOUR_WORLDS)
     world = World(cfg, iface, Brain(champ), torch.zeros(n, 1, dtype=torch.long, device=DEV),
                   run_seed=seed, world_ids=np.asarray(BEHAVIOUR_WORLDS), device=DEV)
-    rows, prev = [], None
+    frames, masks, prev = [], [], None
     while not world.done():
-        alive = world.alive.clone()
+        alive_before = world.alive.clone()
         world.tick()
         s = world.last_signals
         level = (s["food_left"] + s["food_right"]) / 2
-        coll_l = s["collision_front_left"]
-        coll_r = s["collision_front_right"]
         if prev is not None:
-            m = alive & world.alive
-            rows.append(torch.stack([level[m], level[m] - prev[m], (s["food_left"] - s["food_right"])[m],
-                                     (coll_l - coll_r)[m], (coll_l + coll_r + s["collision_front"])[m],
-                                     world.last_forward[m], world.last_turn[m]], -1).cpu())
+            frames.append(torch.stack([level, level - prev, s["food_left"] - s["food_right"],
+                                       s["collision_front_left"] - s["collision_front_right"],
+                                       s["collision_front_left"] + s["collision_front_right"] + s["collision_front"],
+                                       world.last_forward, world.last_turn], -1).reshape(-1, 7).cpu())
+            masks.append((alive_before & world.alive).reshape(-1).cpu())
         prev = level.clone()
-    return torch.cat(rows).numpy()
-
-
-PREDICTORS = ("food_level", "food_change", "food_left_minus_right", "collision_left_minus_right", "collision_total")
+    return torch.stack(frames).numpy(), torch.stack(masks).numpy()
 
 
 def std_regression(x, y):
     xs = (x - x.mean(0)) / np.where(x.std(0) > 0, x.std(0), 1)
     ys = (y - y.mean()) / (y.std() if y.std() > 0 else 1)
-    beta, *_ = np.linalg.lstsq(np.c_[np.ones(len(xs)), xs], ys, rcond=None)
-    r2 = 1 - np.mean((ys - np.c_[np.ones(len(xs)), xs] @ beta) ** 2)
-    return {"beta": dict(zip(PREDICTORS, map(float, beta[1:]))), "r2": float(r2)}
+    a = np.c_[np.ones(len(xs)), xs]
+    beta, *_ = np.linalg.lstsq(a, ys, rcond=None)
+    return {"beta": dict(zip(PREDICTORS, map(float, beta[1:]))), "r2": float(1 - np.mean((ys - a @ beta) ** 2))}
 
 
 def stage_behaviour():
@@ -153,91 +160,115 @@ def stage_behaviour():
     for task in ("T0", "T1"):
         for r in champions(task):
             cfg, iface, graph, spec = setup(r)
-            d = replay(cfg, iface, load(r, "g39", spec), r["run_seed"])
-            x = d[:, :5]
-            out[r["key"]] = {"n": int(len(d)), "forward": std_regression(x, d[:, 5]),
-                             "turn": std_regression(x, d[:, 6]),
-                             "turn_sign_persistence": float(np.mean(np.sign(d[1:, 6]) == np.sign(d[:-1, 6])))}
+            d, m = replay(cfg, iface, load(r, "g39", spec), r["run_seed"])
+            # persistence per wey across consecutive ticks, where alive on both
+            both = m[1:] & m[:-1]
+            same = np.sign(d[1:, :, 6]) == np.sign(d[:-1, :, 6])
+            pooled = d[m]
+            # within wey: subtract each wey's own mean over its alive ticks, which removes
+            # circling and other stable per-wey differences
+            dm = d.copy()
+            for w in range(d.shape[1]):
+                if m[:, w].any():
+                    dm[m[:, w], w] -= d[m[:, w], w].mean(0)
+            within = dm[m]
+            out[r["key"]] = {"n": int(m.sum()),
+                             "turn_sign_persistence": float(same[both].mean()),
+                             "pooled": {"forward": std_regression(pooled[:, :5], pooled[:, 5]),
+                                        "turn": std_regression(pooled[:, :5], pooled[:, 6])},
+                             "within_wey": {"forward": std_regression(within[:, :5], within[:, 5]),
+                                            "turn": std_regression(within[:, :5], within[:, 6])}}
     save("behaviour", out)
-    for task in ("T0", "T1"):
-        for fam in ("N2", "SH"):
-            v = [x for k, x in out.items() if k.startswith(task) and family(BY_KEY[k]["graph"]) == fam]
-            f = {p: round(np.mean([x["forward"]["beta"][p] for x in v]), 3) for p in PREDICTORS}
-            t = {p: round(np.mean([x["turn"]["beta"][p] for x in v]), 3) for p in PREDICTORS}
-            print(task, fam, "forward", f, "R2", round(np.mean([x["forward"]["r2"] for x in v]), 3))
-            print(task, fam, "turn   ", t, "R2", round(np.mean([x["turn"]["r2"] for x in v]), 3))
 
+
+# ------------------------------------------------------------------------------ history
 
 def build_current(iface, cfg, values: dict, n):
-    """The injected current for given signal values, as World._build_current does."""
     cur = torch.zeros(1, 1, n, device=DEV)
     for name, j, gain in zip(iface.signal_names, iface.sensor_neuron, iface.sensor_gain):
         cur[..., int(j)] += float(values.get(name, 0.0)) * float(gain) * cfg.brain.input_gain
     return cur.clamp(-cfg.brain.input_max, cfg.brain.input_max)
 
 
-def motors(iface, cfg, v):
+def readout(iface, cfg, v):
+    """(raw forward, raw turn, motor forward, motor turn): raw is before gain and clip."""
     a = torch.tanh(v)
-    fwd = a[..., list(iface.forward_plus)].mean(-1) - a[..., list(iface.forward_minus)].mean(-1)
-    turn = a[..., list(iface.turn_plus)].mean(-1) - a[..., list(iface.turn_minus)].mean(-1)
-    return (float((fwd * 0.5 * cfg.world.forward_gain).clamp(-1, 1)), float((turn * 0.5 * cfg.world.turn_gain).clamp(-1, 1)))
+    fwd = float(a[..., list(iface.forward_plus)].mean(-1) - a[..., list(iface.forward_minus)].mean(-1))
+    turn = float(a[..., list(iface.turn_plus)].mean(-1) - a[..., list(iface.turn_minus)].mean(-1))
+    clip = lambda x: max(-1.0, min(1.0, x))  # noqa: E731
+    return fwd, turn, clip(fwd * 0.5 * cfg.world.forward_gain), clip(turn * 0.5 * cfg.world.turn_gain)
 
 
-def history_one(r, tag, warm=30, span=10):
-    """Same final input, three food histories over the last `span` ticks. The other signals stay
-    at their typical level (the mean over a short replay of this champion). Returns the motor
-    commands on the final tick and on the next 5 ticks of identical input."""
-    cfg, iface, graph, spec = setup(r)
-    champ = load(r, tag, spec)
-    brain = Brain(champ)
+def typical_input(r, cfg, iface, spec):
+    """One stimulus bank per run: the mean sensed signals over ticks 20-60 of the generation-39
+    champion's replay (mid-episode, not spawn). Shared by every genome tested for this run."""
+    champ = load(r, "g39", spec)
     n = len(BEHAVIOUR_WORLDS)
     world = World(cfg, iface, Brain(champ), torch.zeros(n, 1, dtype=torch.long, device=DEV),
                   run_seed=r["run_seed"], world_ids=np.asarray(BEHAVIOUR_WORLDS), device=DEV)
     sums, count = {}, 0
-    for _ in range(40):
+    for t in range(60):
         world.tick()
-        if bool(world.alive.any()):
+        if t >= 20 and bool(world.alive.any()):
             for k, v in world.last_signals.items():
                 sums[k] = sums.get(k, 0.0) + float(v[world.alive].mean())
             count += 1
-    typical = {k: v / max(count, 1) for k, v in sums.items()}
+    return {k: v / max(count, 1) for k, v in sums.items()}
+
+
+def history_one(genome, cfg, iface, spec, typical, warm=100, span=10, after=5):
+    """Two food histories reaching the same final input, rising from a quarter of it and falling
+    from 1.75 times it. Returns, for each read-out (raw forward and turn, motor forward and
+    turn): the rising-minus-falling difference on the final tick; the same after `after` more
+    ticks of identical input (decay); and the steady-state contrast between holding the two
+    start levels, which normalises for gain."""
+    brain = Brain(genome)
     food = (typical["food_left"] + typical["food_right"]) / 2
-    res = {}
-    for name, start in (("rising", 0.25 * food), ("constant", food), ("falling", 1.75 * food)):
+    at = lambda lvl: build_current(iface, cfg, dict(typical, food_left=lvl, food_right=lvl), spec.n)  # noqa: E731
+    final, later, steady = {}, {}, {}
+    for name, start in (("rising", 0.25 * food), ("falling", 1.75 * food)):
         v = brain.initial_state(1)
         for _ in range(warm):
-            v = brain.step(v, build_current(iface, cfg, dict(typical, food_left=start, food_right=start), spec.n))
+            v = brain.step(v, at(start))
+        steady[name] = readout(iface, cfg, v)
         for t in range(span):
-            lvl = start + (food - start) * (t + 1) / span
-            v = brain.step(v, build_current(iface, cfg, dict(typical, food_left=lvl, food_right=lvl), spec.n))
-        trace = [motors(iface, cfg, v)]
-        for _ in range(5):
-            v = brain.step(v, build_current(iface, cfg, dict(typical, food_left=food, food_right=food), spec.n))
-            trace.append(motors(iface, cfg, v))
-        res[name] = trace
-    f = {k: tr[0][0] for k, tr in res.items()}
-    t = {k: tr[0][1] for k, tr in res.items()}
-    return {"typical_food": food, "traces": res,
-            "forward_rising_minus_falling": float(f["rising"] - f["falling"]),
-            "turn_rising_minus_falling": float(t["rising"] - t["falling"])}
+            v = brain.step(v, at(start + (food - start) * (t + 1) / span))
+        final[name] = readout(iface, cfg, v)
+        for _ in range(after):
+            v = brain.step(v, at(food))
+        later[name] = readout(iface, cfg, v)
+    keys = ("raw_forward", "raw_turn", "motor_forward", "motor_turn")
+    return {k: {"final": final["rising"][i] - final["falling"][i],
+                "after": later["rising"][i] - later["falling"][i],
+                "steady_contrast": steady["falling"][i] - steady["rising"][i]} for i, k in enumerate(keys)}
 
 
-def stage_history():
-    """Generation-39 champions against generation-0 champions (the best of 32 random genomes):
-    any recurrent network carries some history, so the random baseline is the comparison."""
+def drifted(g00: Genome, cfg, generations=39, seed=0) -> Genome:
+    """The generation-0 champion mutated `generations` times with the run's mutation settings
+    and no selection: what parameter drift alone does to the measure."""
+    gen = torch.Generator(device=DEV).manual_seed(seed)
+    g = g00.clone()
+    for _ in range(generations):
+        g.mutate(cfg.mutation, generator=gen)
+    return g
+
+
+def stage_history(drift_reps=4):
     out = {}
     for task in ("T0", "T1"):
         for r in champions(task):
-            out[r["key"]] = {tag: history_one(r, tag) for tag in ("g00", "g39")}
+            cfg, iface, graph, spec = setup(r)
+            typ = typical_input(r, cfg, iface, spec)
+            g00 = load(r, "g00", spec)
+            out[r["key"]] = {"typical_food": (typ["food_left"] + typ["food_right"]) / 2,
+                             "g00": history_one(g00, cfg, iface, spec, typ),
+                             "g39": history_one(load(r, "g39", spec), cfg, iface, spec, typ),
+                             "drift": [history_one(drifted(g00, cfg, seed=k), cfg, iface, spec, typ)
+                                       for k in range(drift_reps)]}
     save("history", out)
-    for task in ("T0", "T1"):
-        for fam in ("N2", "SH"):
-            v = [x for k, x in out.items() if k.startswith(task) and family(BY_KEY[k]["graph"]) == fam]
-            for tag in ("g00", "g39"):
-                print(task, fam, tag,
-                      "forward rising-falling", round(np.mean([x[tag]["forward_rising_minus_falling"] for x in v]), 4),
-                      "turn |rising-falling|", round(np.mean([abs(x[tag]["turn_rising_minus_falling"]) for x in v]), 4))
 
+
+# ------------------------------------------------------------------------------ criticality
 
 CRIT_WORLDS = grid.PROBE_IDS[:32]
 
@@ -247,37 +278,185 @@ def eligible(iface, graph):
     return [i for i in range(graph.n) if i not in mapped and graph.classes[i] != "pharyngeal"]
 
 
-def stage_criticality(limit=None, chunk=48, mapping="M0", families=("N2", "SH")):
-    """Deletion criticality of every eligible neuron. The R1 run (N2 only) is the control for
-    reading M0's critical neurons: are they the food route, or hubs whatever the mapping?"""
+def repeat(champ: Genome, k: int) -> Genome:
+    return Genome(champ.spec, champ.cfg, champ.w.repeat(k, 1), champ.g.repeat(k, 1), champ.tau.repeat(k, 1),
+                  champ.bias.repeat(k, 1), None if champ.dale_sign is None else champ.dale_sign.repeat(k, 1))
+
+
+def stage_criticality(mapping="M0", families=("N2", "SH"), chunk=48):
+    """Deletion of every eligible neuron, one at a time. Each batch carries one null strain (no
+    deletion) whose drop must be ~0: chunking must be invisible."""
     name = "criticality" if mapping == "M0" else f"criticality_{mapping}"
     out = {}
-    recs = champions("T1", mapping, families)
-    recs = recs[:limit] if limit else recs
-    for r in recs:
+    for r in champions("T1", mapping, families):
         t0 = time.perf_counter()
         cfg, iface, graph, spec = setup(r)
         champ = load(r, "g39", spec)
         base = rollout(cfg, iface, champ, CRIT_WORLDS, r["run_seed"], DEV).score[0]
-        drops = {}
+        drops, nulls = {}, []
         cand = eligible(iface, graph)
         for i in range(0, len(cand), chunk):
             ks = cand[i:i + chunk]
-            many = Genome(spec, champ.cfg, champ.w.repeat(len(ks), 1), champ.g.repeat(len(ks), 1),
-                          champ.tau.repeat(len(ks), 1), champ.bias.repeat(len(ks), 1),
-                          None if champ.dale_sign is None else champ.dale_sign.repeat(len(ks), 1))
-            sc = rollout(cfg, iface, delete_neurons(many, [[k] for k in ks]), CRIT_WORLDS, r["run_seed"], DEV).score
+            sc = rollout(cfg, iface, delete_neurons(repeat(champ, len(ks) + 1), [[]] + [[k] for k in ks]),
+                         CRIT_WORLDS, r["run_seed"], DEV).score
+            nulls.append(float(np.mean(base - sc[0])))
             for j, k in enumerate(ks):
-                drops[graph.names[k]] = float(np.mean(base - sc[j]))
-        out[r["key"]] = {"intact": float(base.mean()), "drops": drops, "seconds": time.perf_counter() - t0}
-        print(r["key"], f"{out[r['key']]['seconds']:.0f}s", "top:",
-              sorted(drops.items(), key=lambda kv: -kv[1])[:5], flush=True)
+                drops[graph.names[k]] = float(np.mean(base - sc[j + 1]))
+        out[r["key"]] = {"intact": float(base.mean()), "drops": drops, "null_drops": nulls,
+                         "seconds": time.perf_counter() - t0}
+        print(r["key"], f"{out[r['key']]['seconds']:.0f}s, max |null drop| {max(map(abs, nulls)):.2e}", flush=True)
         save(name, out)
+
+
+def interface_edges_only(genome: Genome, per_strain):
+    """Delete only the edges between each listed neuron and the mapped (interface) neurons."""
+    spec = genome.spec
+    w, g = genome.w.clone(), genome.g.clone()
+    for s, (k, mapped) in enumerate(per_strain):
+        mp = torch.as_tensor(sorted(mapped), device=genome.device)
+        w[s, ((spec.chem_i == k) & torch.isin(spec.chem_j, mp)) | ((spec.chem_j == k) & torch.isin(spec.chem_i, mp))] = 0.0
+        g[s, ((spec.gap_i == k) & torch.isin(spec.gap_j, mp)) | ((spec.gap_j == k) & torch.isin(spec.gap_i, mp))] = 0.0
+    return Genome(spec, genome.cfg, w, g, genome.tau.clone(), genome.bias.clone(),
+                  None if genome.dale_sign is None else genome.dale_sign.clone())
+
+
+def stage_kept_edges(top=12):
+    """03a keeps a target's edges to interface neurons fixed. If a critical neuron's criticality
+    is carried by those edges, reinsertion recovers the score whatever the hidden partners."""
+    crit = read("criticality")
+    out = {}
+    for r in champions("T1", "M0", ("N2",)):
+        cfg, iface, graph, spec = setup(r)
+        champ = load(r, "g39", spec)
+        mapped = set(int(i) for i in iface.mapped_neurons)
+        names = sorted(crit[r["key"]]["drops"], key=lambda n: -crit[r["key"]]["drops"][n])[:top]
+        ks = [graph.index(n) for n in names]
+        base = rollout(cfg, iface, champ, CRIT_WORLDS, r["run_seed"], DEV).score[0]
+        sc = rollout(cfg, iface, interface_edges_only(repeat(champ, len(ks)), [(k, mapped) for k in ks]),
+                     CRIT_WORLDS, r["run_seed"], DEV).score
+        out[r["key"]] = {n: {"full_deletion_drop": crit[r["key"]]["drops"][n],
+                             "interface_edges_only_drop": float(np.mean(base - sc[j])),
+                             "interface_edges": int(sum(1 for m in mapped if CON.chem[k, m] > 0 or CON.chem[m, k] > 0
+                                                        or CON.gap[k, m] > 0))}
+                         for j, (n, k) in enumerate(zip(names, ks))}
+    save("kept_edges", out)
+
+
+# ------------------------------------------------------------------------------ summarise
+
+def _t(x):
+    x = np.asarray(x, dtype=float)
+    se = x.std(ddof=1) / np.sqrt(len(x))
+    q = stats.t.ppf(0.975, len(x) - 1)
+    return [float(x.mean()), float(x.mean() - q * se), float(x.mean() + q * se)]
+
+
+def _n2(key):
+    return BY_KEY[key]["graph"] == "N2"
+
+
+def stage_summarise():
+    s = {}
+    mag = read("magnitudes")
+    s["magnitudes"] = {fam: {tag: float(np.mean([v[tag] for k, v in mag.items() if _n2(k) == (fam == "N2")]))
+                             for tag in ("g00", "g39")} for fam in ("N2", "SH")}
+    crit = read("criticality")
+    s["criticality"] = {}
+    for fam in ("N2", "SH"):
+        ks = [k for k in crit if _n2(k) == (fam == "N2")]
+        n_crit = [int(sum(v > 0.05 * crit[k]["intact"] for v in crit[k]["drops"].values())) for k in ks]
+        s["criticality"][fam] = {"champions": len(ks), "eligible": len(crit[ks[0]]["drops"]),
+                                 "critical_count_mean": float(np.mean(n_crit)),
+                                 "critical_count_range": [min(n_crit), max(n_crit)],
+                                 "critical_count_t": _t(n_crit),
+                                 "max_drop": float(max(max(crit[k]["drops"].values()) for k in ks)),
+                                 "mean_of_max_drops": float(np.mean([max(crit[k]["drops"].values()) for k in ks])),
+                                 "max_abs_null_drop": float(max(max(map(abs, crit[k]["null_drops"])) for k in ks))}
+
+    def counts(c):
+        cnt, mean = Counter(), Counter()
+        ks = [k for k in c if _n2(k)]
+        for k in ks:
+            cnt.update([n for n, v in c[k]["drops"].items() if v > 0.05 * c[k]["intact"]])
+            mean.update({n: v / len(ks) for n, v in c[k]["drops"].items()})
+        return cnt, mean, set(c[ks[0]]["drops"])
+
+    m0c, m0m, m0e = counts(crit)
+    s["n2_core_M0"] = [(n, m) for n, m in m0c.most_common() if m >= 6]
+    for other in ("R1", "R2"):
+        if not (HERE / f"criticality_{other}.json").exists():
+            continue
+        oc, om, oe = counts(read(f"criticality_{other}"))
+        common = sorted(m0e & oe)
+        top = lambda mm: {n for n, _ in sorted(((n, mm[n]) for n in common), key=lambda kv: -kv[1])[:20]}  # noqa: E731
+        s[f"n2_vs_{other}"] = {"common_eligible": len(common),
+                               "spearman_mean_drop": spearman([m0m[n] for n in common], [om[n] for n in common]),
+                               "top20_overlap": len(top(m0m) & top(om)),
+                               "core_counts_M0_then_other": {n: [m0c[n], oc[n]] for n in
+                                                             ("AIYL", "AIYR", "AIZL", "AIZR", "RIAL", "RIAR", "RIBL", "RIBR", "RIS")},
+                               "critical_ge6": [(n, m) for n, m in oc.most_common() if m >= 6]}
+    iface = grid.interface_for(CON, "M0", REMAPS)
+    read_idx = sorted({int(i) for i in np.concatenate([iface.forward_plus, iface.forward_minus,
+                                                       iface.turn_plus, iface.turn_minus])})
+    names = sorted(m0e)
+    idx = [CON.index(n) for n in names]
+    degree = [int((CON.chem[i] > 0).sum() + (CON.chem[:, i] > 0).sum() + (CON.gap[i] > 0).sum()) for i in idx]
+    readw = [float(CON.chem[i, read_idx].sum() + CON.gap[i, read_idx].sum()) for i in idx]
+    drop = [m0m[n] for n in names]
+    s["n2_M0_structure"] = {"spearman_drop_degree": spearman(drop, degree),
+                            "spearman_drop_readout_weight": spearman(drop, readw),
+                            "degree_percentile": {n: float(stats.percentileofscore(degree, degree[names.index(n)]))
+                                                  for n in ("AIYL", "AIYR", "AIZL", "AIZR", "RIAL", "RIAR")}}
+    if (HERE / "kept_edges.json").exists():
+        ke = read("kept_edges")
+        rows = [v for champ in ke.values() for v in champ.values()]
+        s["kept_edges"] = {"targets": len(rows),
+                           "median_share_of_drop_from_interface_edges": float(np.median(
+                               [v["interface_edges_only_drop"] / v["full_deletion_drop"] for v in rows if v["full_deletion_drop"] > 0])),
+                           "with_any_interface_edge": int(sum(v["interface_edges"] > 0 for v in rows))}
+    hist = read("history")
+    s["history"] = {}
+    for task in ("T0", "T1"):
+        for fam in ("N2", "SH"):
+            ks = [k for k in hist if k.startswith(task) and _n2(k) == (fam == "N2")]
+            row = {"runs": len(ks)}
+            for measure in ("raw_turn", "raw_forward"):
+                for tag in ("g00", "g39", "drift"):
+                    vals = ([np.mean([abs(d[measure]["final"]) for d in hist[k]["drift"]]) for k in ks] if tag == "drift"
+                            else [abs(hist[k][tag][measure]["final"]) for k in ks])
+                    row[f"{measure}_abs_{tag}_t"] = _t(vals)
+                row[f"{measure}_g39_fraction_surviving_5_ticks"] = float(np.median(
+                    [abs(hist[k]["g39"][measure]["after"]) / max(abs(hist[k]["g39"][measure]["final"]), 1e-9) for k in ks]))
+                row[f"{measure}_g39_relative_to_steady_contrast"] = float(np.median(
+                    [abs(hist[k]["g39"][measure]["final"]) / max(abs(hist[k]["g39"][measure]["steady_contrast"]), 1e-9) for k in ks]))
+            row["raw_forward_g39_positive"] = int(sum(hist[k]["g39"]["raw_forward"]["final"] > 0 for k in ks))
+            s["history"][f"{task}-{fam}"] = row
+    beh = read("behaviour")
+    s["behaviour"] = {}
+    for task in ("T0", "T1"):
+        for fam in ("N2", "SH"):
+            v = [x for k, x in beh.items() if k.startswith(task) and _n2(k) == (fam == "N2")]
+            s["behaviour"][f"{task}-{fam}"] = {
+                "persistence": float(np.mean([x["turn_sign_persistence"] for x in v])),
+                **{f"{kind}_{target}": {p: float(np.mean([x[kind][target]["beta"][p] for x in v])) for p in PREDICTORS}
+                   for kind in ("pooled", "within_wey") for target in ("forward", "turn")}}
+    resp = read("response")
+    s["response"] = {}
+    for fam in ("N2", "SH"):
+        ks = [k for k in resp if _n2(k) == (fam == "N2")]
+        for tag in ("g00", "g39"):
+            vals = [resp[k][tag]["directional_turn_signed_motor"] for k in ks]
+            s["response"][f"{fam}-{tag}"] = {"signed_motor_t": _t(vals), "positive": int(sum(x > 0 for x in vals)),
+                                             "n": len(vals), "per_champion": dict(zip(ks, vals))}
+    s["response"]["spearman_signed_vs_swap_g39"] = spearman(
+        [resp[k]["g39"]["directional_turn_signed_motor"] for k in resp], [resp[k]["g39"]["use_swap"] for k in resp])
+    save("summary", s)
 
 
 if __name__ == "__main__":
     stage = sys.argv[1]
-    arg = int(sys.argv[2]) if len(sys.argv) > 2 else None
     {"magnitudes": stage_magnitudes, "response": stage_response, "behaviour": stage_behaviour,
-     "history": stage_history, "criticality": lambda: stage_criticality(arg),
-     "criticality_R1": lambda: stage_criticality(arg, mapping="R1", families=("N2",))}[stage]()
+     "history": stage_history, "criticality": stage_criticality,
+     "criticality_R1": lambda: stage_criticality("R1", ("N2",)),
+     "criticality_R2": lambda: stage_criticality("R2", ("N2",)),
+     "kept_edges": stage_kept_edges, "summarise": stage_summarise}[stage]()

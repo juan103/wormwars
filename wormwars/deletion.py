@@ -27,6 +27,9 @@ def delete_neurons(genome: Genome, per_strain: list[list[int]]) -> Genome:
     for s, ks in enumerate(per_strain):
         if not ks:
             continue
+        bad = [k for k in ks if not 0 <= int(k) < spec.n]
+        if bad:  # a negative index would silently hit the last neuron's bias and nothing else
+            raise ValueError(f"neuron indices outside [0, {spec.n}): {bad}")
         k = torch.as_tensor(list(ks), device=genome.device)
         w[s, torch.isin(spec.chem_i, k) | torch.isin(spec.chem_j, k)] = 0.0
         g[s, torch.isin(spec.gap_i, k) | torch.isin(spec.gap_j, k)] = 0.0

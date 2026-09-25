@@ -1,0 +1,498 @@
+{
+ "T1-M0-N2-run00": {
+  "URYVL": {
+   "full_deletion_drop": 1.7480008602142334,
+   "interface_edges_only_drop": 1.669118046760559,
+   "interface_edges": 7
+  },
+  "IL1VR": {
+   "full_deletion_drop": 1.7354881763458252,
+   "interface_edges_only_drop": 1.7502312660217285,
+   "interface_edges": 2
+  },
+  "RIAL": {
+   "full_deletion_drop": 1.6985065937042236,
+   "interface_edges_only_drop": 1.7007642984390259,
+   "interface_edges": 13
+  },
+  "RIML": {
+   "full_deletion_drop": 1.640689492225647,
+   "interface_edges_only_drop": 0.5053064823150635,
+   "interface_edges": 11
+  },
+  "RIAR": {
+   "full_deletion_drop": 1.5909409523010254,
+   "interface_edges_only_drop": 1.718890905380249,
+   "interface_edges": 11
+  },
+  "OLQVR": {
+   "full_deletion_drop": 1.550557017326355,
+   "interface_edges_only_drop": 1.6847237348556519,
+   "interface_edges": 3
+  },
+  "DVA": {
+   "full_deletion_drop": 1.3597023487091064,
+   "interface_edges_only_drop": 0.31361496448516846,
+   "interface_edges": 12
+  },
+  "ADAL": {
+   "full_deletion_drop": 1.3529350757598877,
+   "interface_edges_only_drop": 0.2804698348045349,
+   "interface_edges": 11
+  },
+  "URYDL": {
+   "full_deletion_drop": 1.257153868675232,
+   "interface_edges_only_drop": 1.2968038320541382,
+   "interface_edges": 7
+  },
+  "RMDR": {
+   "full_deletion_drop": 1.210347056388855,
+   "interface_edges_only_drop": 0.1703072190284729,
+   "interface_edges": 7
+  },
+  "IL1DR": {
+   "full_deletion_drop": 1.0192885398864746,
+   "interface_edges_only_drop": 0.2801518440246582,
+   "interface_edges": 2
+  },
+  "SAADR": {
+   "full_deletion_drop": 0.9558638334274292,
+   "interface_edges_only_drop": 0.2815587520599365,
+   "interface_edges": 4
+  }
+ },
+ "T1-M0-N2-run01": {
+  "RIAR": {
+   "full_deletion_drop": 2.047325849533081,
+   "interface_edges_only_drop": 2.0172834396362305,
+   "interface_edges": 11
+  },
+  "IL1VL": {
+   "full_deletion_drop": 2.022847890853882,
+   "interface_edges_only_drop": 2.039119243621826,
+   "interface_edges": 2
+  },
+  "RIBR": {
+   "full_deletion_drop": 1.7953195571899414,
+   "interface_edges_only_drop": 0.9344353675842285,
+   "interface_edges": 10
+  },
+  "ADFL": {
+   "full_deletion_drop": 1.7790727615356445,
+   "interface_edges_only_drop": 0.5365035533905029,
+   "interface_edges": 6
+  },
+  "RICR": {
+   "full_deletion_drop": 1.6357707977294922,
+   "interface_edges_only_drop": 1.3835176229476929,
+   "interface_edges": 9
+  },
+  "RIR": {
+   "full_deletion_drop": 1.5917638540267944,
+   "interface_edges_only_drop": 0.045501455664634705,
+   "interface_edges": 7
+  },
+  "SMBDR": {
+   "full_deletion_drop": 1.5120331048965454,
+   "interface_edges_only_drop": 1.1702046394348145,
+   "interface_edges": 4
+  },
+  "OLQVL": {
+   "full_deletion_drop": 1.4700884819030762,
+   "interface_edges_only_drop": 0.8407886028289795,
+   "interface_edges": 5
+  },
+  "AIYR": {
+   "full_deletion_drop": 1.3854262828826904,
+   "interface_edges_only_drop": 1.067582130432129,
+   "interface_edges": 5
+  },
+  "URBL": {
+   "full_deletion_drop": 1.3039249181747437,
+   "interface_edges_only_drop": 0.04994702339172363,
+   "interface_edges": 3
+  },
+  "IL2R": {
+   "full_deletion_drop": 1.2842061519622803,
+   "interface_edges_only_drop": 0.49625536799430847,
+   "interface_edges": 2
+  },
+  "IL2DL": {
+   "full_deletion_drop": 1.254265308380127,
+   "interface_edges_only_drop": 0.009497404098510742,
+   "interface_edges": 1
+  }
+ },
+ "T1-M0-N2-run02": {
+  "RIBL": {
+   "full_deletion_drop": 1.7819628715515137,
+   "interface_edges_only_drop": 0.8477159738540649,
+   "interface_edges": 9
+  },
+  "CEPVR": {
+   "full_deletion_drop": 1.7806665897369385,
+   "interface_edges_only_drop": 0.43877893686294556,
+   "interface_edges": 7
+  },
+  "URXL": {
+   "full_deletion_drop": 1.7546566724777222,
+   "interface_edges_only_drop": 0.07835735380649567,
+   "interface_edges": 5
+  },
+  "AIZR": {
+   "full_deletion_drop": 1.7357759475708008,
+   "interface_edges_only_drop": 1.3653767108917236,
+   "interface_edges": 7
+  },
+  "RMDR": {
+   "full_deletion_drop": 1.723348617553711,
+   "interface_edges_only_drop": 1.7080079317092896,
+   "interface_edges": 7
+  },
+  "IL1VL": {
+   "full_deletion_drop": 1.7172417640686035,
+   "interface_edges_only_drop": 0.3964095711708069,
+   "interface_edges": 2
+  },
+  "IL2L": {
+   "full_deletion_drop": 1.6853333711624146,
+   "interface_edges_only_drop": 0.00013502687215805054,
+   "interface_edges": 3
+  },
+  "IL1DR": {
+   "full_deletion_drop": 1.509708046913147,
+   "interface_edges_only_drop": 1.3434932231903076,
+   "interface_edges": 2
+  },
+  "AIAR": {
+   "full_deletion_drop": 1.4175828695297241,
+   "interface_edges_only_drop": 0.6416677832603455,
+   "interface_edges": 7
+  },
+  "URYVL": {
+   "full_deletion_drop": 1.2411948442459106,
+   "interface_edges_only_drop": 0.025434043258428574,
+   "interface_edges": 7
+  },
+  "ALNR": {
+   "full_deletion_drop": 1.2379450798034668,
+   "interface_edges_only_drop": 1.1296522617340088,
+   "interface_edges": 4
+  },
+  "ADFL": {
+   "full_deletion_drop": 1.1672372817993164,
+   "interface_edges_only_drop": -0.041964538395404816,
+   "interface_edges": 6
+  }
+ },
+ "T1-M0-N2-run03": {
+  "RIML": {
+   "full_deletion_drop": 1.8056933879852295,
+   "interface_edges_only_drop": 0.9152981042861938,
+   "interface_edges": 11
+  },
+  "ADFR": {
+   "full_deletion_drop": 1.7821204662322998,
+   "interface_edges_only_drop": 1.2201957702636719,
+   "interface_edges": 6
+  },
+  "ADER": {
+   "full_deletion_drop": 1.7641972303390503,
+   "interface_edges_only_drop": 1.7657227516174316,
+   "interface_edges": 6
+  },
+  "RIBR": {
+   "full_deletion_drop": 1.6915291547775269,
+   "interface_edges_only_drop": 0.9251762628555298,
+   "interface_edges": 10
+  },
+  "PVPR": {
+   "full_deletion_drop": 1.6062228679656982,
+   "interface_edges_only_drop": 0.47562170028686523,
+   "interface_edges": 8
+  },
+  "OLLL": {
+   "full_deletion_drop": 1.5966122150421143,
+   "interface_edges_only_drop": 0.2553240656852722,
+   "interface_edges": 6
+  },
+  "AIYR": {
+   "full_deletion_drop": 1.5646178722381592,
+   "interface_edges_only_drop": 1.073193073272705,
+   "interface_edges": 5
+  },
+  "RMFR": {
+   "full_deletion_drop": 1.5389423370361328,
+   "interface_edges_only_drop": 1.1064112186431885e-05,
+   "interface_edges": 0
+  },
+  "AIAL": {
+   "full_deletion_drop": 1.5328234434127808,
+   "interface_edges_only_drop": 0.26353392004966736,
+   "interface_edges": 9
+  },
+  "ASJL": {
+   "full_deletion_drop": 1.4075722694396973,
+   "interface_edges_only_drop": 1.3919458389282227,
+   "interface_edges": 4
+  },
+  "URXR": {
+   "full_deletion_drop": 1.4046635627746582,
+   "interface_edges_only_drop": 0.6589856147766113,
+   "interface_edges": 7
+  },
+  "RIAR": {
+   "full_deletion_drop": 1.4028470516204834,
+   "interface_edges_only_drop": 1.3741881847381592,
+   "interface_edges": 11
+  }
+ },
+ "T1-M0-N2-run04": {
+  "AUAR": {
+   "full_deletion_drop": 1.6929502487182617,
+   "interface_edges_only_drop": -0.03002270683646202,
+   "interface_edges": 3
+  },
+  "CEPDL": {
+   "full_deletion_drop": 1.5790917873382568,
+   "interface_edges_only_drop": 0.13736608624458313,
+   "interface_edges": 5
+  },
+  "OLQVR": {
+   "full_deletion_drop": 1.4609413146972656,
+   "interface_edges_only_drop": 0.28447628021240234,
+   "interface_edges": 3
+  },
+  "IL2VR": {
+   "full_deletion_drop": 1.4267692565917969,
+   "interface_edges_only_drop": -0.0074826814234256744,
+   "interface_edges": 3
+  },
+  "OLQDR": {
+   "full_deletion_drop": 1.3897134065628052,
+   "interface_edges_only_drop": -0.01494196429848671,
+   "interface_edges": 2
+  },
+  "RIPL": {
+   "full_deletion_drop": 1.3061283826828003,
+   "interface_edges_only_drop": -0.030346408486366272,
+   "interface_edges": 2
+  },
+  "IL2DL": {
+   "full_deletion_drop": 1.269837737083435,
+   "interface_edges_only_drop": -0.004101693630218506,
+   "interface_edges": 1
+  },
+  "URBR": {
+   "full_deletion_drop": 1.2647826671600342,
+   "interface_edges_only_drop": 0.11660002171993256,
+   "interface_edges": 5
+  },
+  "RIAR": {
+   "full_deletion_drop": 1.1333070993423462,
+   "interface_edges_only_drop": 1.754351258277893,
+   "interface_edges": 11
+  },
+  "AIZL": {
+   "full_deletion_drop": 1.0511020421981812,
+   "interface_edges_only_drop": 0.6453924179077148,
+   "interface_edges": 10
+  },
+  "AIYR": {
+   "full_deletion_drop": 1.036355972290039,
+   "interface_edges_only_drop": 0.43127572536468506,
+   "interface_edges": 5
+  },
+  "AINR": {
+   "full_deletion_drop": 0.9722874760627747,
+   "interface_edges_only_drop": 0.010622881352901459,
+   "interface_edges": 5
+  }
+ },
+ "T1-M0-N2-run05": {
+  "AIZL": {
+   "full_deletion_drop": 2.0360944271087646,
+   "interface_edges_only_drop": 0.8475883603096008,
+   "interface_edges": 10
+  },
+  "RIBL": {
+   "full_deletion_drop": 1.9252469539642334,
+   "interface_edges_only_drop": 0.6608948707580566,
+   "interface_edges": 9
+  },
+  "RIGL": {
+   "full_deletion_drop": 1.7742505073547363,
+   "interface_edges_only_drop": 0.039878007024526596,
+   "interface_edges": 4
+  },
+  "AIYL": {
+   "full_deletion_drop": 1.6823557615280151,
+   "interface_edges_only_drop": 0.2204723060131073,
+   "interface_edges": 6
+  },
+  "RMGR": {
+   "full_deletion_drop": 1.6026341915130615,
+   "interface_edges_only_drop": 0.043948110193014145,
+   "interface_edges": 10
+  },
+  "ADFL": {
+   "full_deletion_drop": 1.426688551902771,
+   "interface_edges_only_drop": 0.2844570577144623,
+   "interface_edges": 6
+  },
+  "RIR": {
+   "full_deletion_drop": 1.35077702999115,
+   "interface_edges_only_drop": 0.08122235536575317,
+   "interface_edges": 7
+  },
+  "RMDL": {
+   "full_deletion_drop": 1.2302515506744385,
+   "interface_edges_only_drop": 0.584235429763794,
+   "interface_edges": 6
+  },
+  "URYDL": {
+   "full_deletion_drop": 1.193117618560791,
+   "interface_edges_only_drop": 1.312774658203125,
+   "interface_edges": 7
+  },
+  "RIBR": {
+   "full_deletion_drop": 1.0821380615234375,
+   "interface_edges_only_drop": 0.30815738439559937,
+   "interface_edges": 10
+  },
+  "AUAL": {
+   "full_deletion_drop": 0.9426255226135254,
+   "interface_edges_only_drop": 0.030507653951644897,
+   "interface_edges": 5
+  },
+  "RIAL": {
+   "full_deletion_drop": 0.9317660331726074,
+   "interface_edges_only_drop": 0.9487782716751099,
+   "interface_edges": 13
+  }
+ },
+ "T1-M0-N2-run06": {
+  "AIYL": {
+   "full_deletion_drop": 1.6063371896743774,
+   "interface_edges_only_drop": 1.4131168127059937,
+   "interface_edges": 6
+  },
+  "RIAR": {
+   "full_deletion_drop": 1.5186102390289307,
+   "interface_edges_only_drop": 1.0706746578216553,
+   "interface_edges": 11
+  },
+  "RIMR": {
+   "full_deletion_drop": 1.4445174932479858,
+   "interface_edges_only_drop": 0.29833441972732544,
+   "interface_edges": 10
+  },
+  "AIBL": {
+   "full_deletion_drop": 1.3617050647735596,
+   "interface_edges_only_drop": 0.1700291931629181,
+   "interface_edges": 14
+  },
+  "RIAL": {
+   "full_deletion_drop": 1.2807801961898804,
+   "interface_edges_only_drop": 1.3657902479171753,
+   "interface_edges": 13
+  },
+  "SDQL": {
+   "full_deletion_drop": 1.0886766910552979,
+   "interface_edges_only_drop": 0.05171789601445198,
+   "interface_edges": 8
+  },
+  "SAAVL": {
+   "full_deletion_drop": 0.7733319997787476,
+   "interface_edges_only_drop": 1.2449384927749634,
+   "interface_edges": 4
+  },
+  "SIADL": {
+   "full_deletion_drop": 0.6962827444076538,
+   "interface_edges_only_drop": 0.3075023293495178,
+   "interface_edges": 4
+  },
+  "RIS": {
+   "full_deletion_drop": 0.557153582572937,
+   "interface_edges_only_drop": 1.5370807647705078,
+   "interface_edges": 9
+  },
+  "AIZL": {
+   "full_deletion_drop": 0.5005278587341309,
+   "interface_edges_only_drop": 0.17808130383491516,
+   "interface_edges": 10
+  },
+  "ADFL": {
+   "full_deletion_drop": 0.4948979914188385,
+   "interface_edges_only_drop": 0.18566778302192688,
+   "interface_edges": 6
+  },
+  "AIAR": {
+   "full_deletion_drop": 0.4926779270172119,
+   "interface_edges_only_drop": 0.35832518339157104,
+   "interface_edges": 7
+  }
+ },
+ "T1-M0-N2-run07": {
+  "RIH": {
+   "full_deletion_drop": 2.1101760864257812,
+   "interface_edges_only_drop": -0.00034800171852111816,
+   "interface_edges": 0
+  },
+  "URYDR": {
+   "full_deletion_drop": 2.013014316558838,
+   "interface_edges_only_drop": 1.7779004573822021,
+   "interface_edges": 9
+  },
+  "CEPDR": {
+   "full_deletion_drop": 2.0008292198181152,
+   "interface_edges_only_drop": 0.004292961210012436,
+   "interface_edges": 3
+  },
+  "RIAL": {
+   "full_deletion_drop": 1.9495950937271118,
+   "interface_edges_only_drop": 1.6244288682937622,
+   "interface_edges": 13
+  },
+  "OLLR": {
+   "full_deletion_drop": 1.8216685056686401,
+   "interface_edges_only_drop": 1.7236559391021729,
+   "interface_edges": 9
+  },
+  "URBR": {
+   "full_deletion_drop": 1.77415132522583,
+   "interface_edges_only_drop": 0.05755778029561043,
+   "interface_edges": 5
+  },
+  "IL1R": {
+   "full_deletion_drop": 1.6703983545303345,
+   "interface_edges_only_drop": -0.031217992305755615,
+   "interface_edges": 6
+  },
+  "URAVR": {
+   "full_deletion_drop": 1.6056076288223267,
+   "interface_edges_only_drop": 0.01372862234711647,
+   "interface_edges": 2
+  },
+  "AIAR": {
+   "full_deletion_drop": 1.5129631757736206,
+   "interface_edges_only_drop": 1.0729749202728271,
+   "interface_edges": 7
+  },
+  "URXR": {
+   "full_deletion_drop": 1.3615810871124268,
+   "interface_edges_only_drop": -0.010481700301170349,
+   "interface_edges": 7
+  },
+  "IL2DL": {
+   "full_deletion_drop": 1.226731538772583,
+   "interface_edges_only_drop": 0.010962072759866714,
+   "interface_edges": 1
+  },
+  "RIPR": {
+   "full_deletion_drop": 1.2010250091552734,
+   "interface_edges_only_drop": 0.008395254611968994,
+   "interface_edges": 2
+  }
+ }
+}
