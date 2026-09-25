@@ -1,119 +1,109 @@
 # WormWars: *C. elegans* wiring vs. shuffled and random graphs
 
-> **Correction (2026-09-24): experiment 01 ran with the chemical synapses reversed.** Every run
-> below used a brain in which chemical synapses carried signal from the postsynaptic neuron to the
-> presynaptic one, so experiment 01 compared the worm's wiring *reversed* against shuffles of that
-> reversed graph. The bug was found by Astra 6 (OpenAI), then confirmed and fixed (`DECISIONS.md`
-> D031). The headline comparison was rerun, pre-registered, with the synapses the right way round:
-> **[experiment 01b](experiments/01b-direction-corrected/RESULTS.md)**. The real wiring now reaches
-> **higher mean best-of-generation fitness** than both shuffled and random graphs (N2 − SH = +0.068
-> [+0.034, +0.102], N2 − RD = +0.067 [+0.021, +0.105]; in experiment 01 both were negative), and a
-> higher final score than the random graphs (+0.094 [+0.029, +0.160]); against the shuffles its
-> final score is not detectably different. This does **not** show that the real wiring *improves*
-> faster: against the shuffles its edge looks like a higher starting point, and the data cannot
-> separate starting point from gain. N2 is a single graph, and calibration matches motor drive only
-> approximately. The text below is experiment 01 as published; its correction is C5 in
-> [`docs/RESULTS.md`](docs/RESULTS.md).
-
 Many parallel 2D worlds on one GPU. In each world, swarms of small creatures called **weys** forage
 and fight. Every wey's brain is a small continuous-time recurrent network whose wiring is the real
 *C. elegans* connectome (302 neurons, chemical synapses and gap junctions) used as a fixed sparsity
 mask. Weights, time constants and biases are evolved. All weys in a swarm share one genome, and
 selection acts on team results.
 
-## Summary of findings
+## Current findings: experiment 01b
 
-Across 15 independent evolutionary runs per condition, there is **no detectable difference in final
-score at generation 25** between the real connectome, degree-preserving shuffles of itself, and
-random sparse graphs of the same size — no contrast separates — while the real connectome
-**improves measurably more slowly** (N2 − SH = −0.100 [−0.129, −0.070], N2 − RD = −0.112
-[−0.150, −0.077], both P < 1/20 000). Shuffled and random graphs **showed no detectable benefit**
-over each other on anything measured, so preserving the real degree sequence did not help either.
-No equality is claimed: the N2 − SH interval still allows a deficit of about 10%, and by our own
-Limitations nothing had converged at generation 25.
+**On foraging, the real wiring (N2) does better than random graphs, and better than or level with
+shuffles of itself.** This is the pre-registered comparison with chemical synapses running the
+right way round. Each condition has 15 independent evolutionary runs, and the controls are five
+degree-preserving shuffles (SH) and five random sparse graphs (RD), three runs each. Intervals come
+from a hierarchical bootstrap over graphs and runs.
 
-A confound was found along the way and removed: the raw magnitude of
-the motor read-out is a property of the graph, and the motor gain had been hand-tuned on N2, so
-under one fixed gain the controls simply moved more before evolution started; the experiment is
-reported **both with and without** per-graph gain calibration, and the final-score deficit turns out
-to be mostly that confound while the speed deficit survives it. The **combat section found no
-evidence of learned tactics** — an earlier claim that coevolved swarms "learned to flank" was an
-artifact of the damage rule and has been retracted; coevolved swarms win by out-foraging their
-opponents, not by out-fighting them. We do not know why the real wiring improves more slowly.
+| contrast | final held-out score (generation 25) | mean best-of-generation fitness (generations 0-24) |
+|---|---|---|
+| N2 − SH | +0.069 [−0.015, +0.169], no separation | **+0.068 [+0.034, +0.102]** |
+| N2 − RD | **+0.094 [+0.029, +0.160]** | **+0.067 [+0.021, +0.105]** |
+| SH − RD | +0.025 [−0.079, +0.116], no separation | −0.000 [−0.052, +0.045], no separation |
 
-Frozen record: [`experiments/01-foraging-n2-vs-controls/`](experiments/01-foraging-n2-vs-controls/).
-Every number: [`docs/RESULTS.md`](docs/RESULTS.md). Every modelling choice: `DECISIONS.md`.
+Six contrasts were tested. With Bonferroni-adjusted intervals, all three that separate still do.
+
+- **N2 reaches higher mean best-of-generation fitness than both kinds of control,** and a higher
+  final score than the random graphs. Against the shuffles, its final score is not detectably
+  different.
+- **This does not show that N2 improves faster.** The pre-registered "speed" measure averages every
+  generation, generation 0 included, so it mixes where a run starts with how much it gains. Split
+  apart (exploratory), N2's edge over the shuffles is, as a point estimate, all head start. Neither
+  component separates on its own.
+- **Preserving the real degree sequence did not help by itself:** SH and RD do not separate on
+  either measure.
+- N2 is one graph. By mean best-of-generation fitness it ranks first of the 11 graph means, and
+  second on final score, but no rank test is offered: the graphs are not exchangeable.
+- The comparison covers the whole pipeline, including recalibration. Motor calibration equalises
+  drive only approximately: random populations reach 84-97% of the target drive depending on the
+  graph, with the residual slightly favouring N2 over the shuffles.
+
+Everything, including the exploratory analyses and a side-by-side with experiment 01:
+[`experiments/01b-direction-corrected/RESULTS.md`](experiments/01b-direction-corrected/RESULTS.md).
+It was pre-registered in
+[`experiments/01b-direction-corrected/PREREGISTRATION.md`](experiments/01b-direction-corrected/PREREGISTRATION.md)
+and reviewed before publication by Astra 6 and Fable 5.1 (`DECISIONS.md` D033).
 
 ## Limitations
 
 Stated here, by us, because they bound what the result means.
 
-**The three-way comparison only ever ran on foraging.** N2 against SH and RD was measured on
-single-swarm foraging with automatic eating, and on nothing else. It was never run on combat, and
-never on pump-gated eating — which is exactly where `DECISIONS.md` D008 predicts the real wiring is
-handicapped, because in N2 every route from a sensor to the pump neurons crosses the two-neuron
-`RIP↔I1` bridge: **3 graph hops in N2 against 1–2 in all ten control graphs**. Combat and pumping
-were only ever run on N2. The condition where the pharynx should matter has not been tested.
+**One task, one interface.** N2 against SH and RD has been measured only on single-swarm foraging
+with automatic eating. Combat, coevolution and pump-gated eating were run only in experiment 01,
+with the synapses reversed, and only on N2. The condition where the pharynx should matter is
+untested. In N2, every route from a sensor to the pump neurons crosses the two-neuron `RIP↔I1`
+gap-junction bridge (`DECISIONS.md` D008).
 
-**The evolutionary budget is small, and nothing had clearly converged when it ran out.** 25
-generations, population 32, 5 404 parameters per genome. Change in best-of-generation fitness from
-generations 10–14 to generations 20–24:
+**A small evolutionary budget.** 25 generations, population 32, 5 404 parameters per genome. In
+experiment 01, with the same budget, nothing had demonstrably converged by generation 25. So a
+longer run could move the final-score contrasts in either direction.
 
-| | gens 10–14 | gens 20–24 | change | runs where it rose |
-|---|---|---|---|---|
-| N2 | 1.369 | 1.439 | **+0.070** | **13 / 15** (P = 0.004 under a coin flip) |
-| SH | 1.497 | 1.500 | +0.002 | 7 / 15 (P = 0.70) |
-| RD | 1.496 | 1.550 | +0.054 | 9 / 15 (P = 0.30) |
+**Few control graphs, and one real one.** Five shuffles and five random graphs. N2's interval carries
+only run-to-run variation, while the controls' also carries graph-to-graph variation. More compute
+cannot fix that asymmetry, because there is only one real connectome.
 
-"Rose" means that run's mean best fitness over generations 20–24 exceeded its mean over generations
-10–14. A perfectly flat but noisy curve would be labelled rising in about half of runs, so 7/15 and
-9/15 are close to chance and carry little information; only N2's 13/15 stands out.
+**The interface is our invention, not biology.** Weys get separate left and right food readings, so
+foraging can be solved by comparing the two sides. A real worm cannot do that: *C. elegans*
+chemotaxis samples concentration over time while moving. The sensor and motor mapping onto named
+neurons is chosen by hand.
 
-**RD was still improving too** (+0.054, nearly as much as N2's +0.070); only SH was flat. So this is
-not a case of N2 climbing while the controls sat still. What it does mean is that **none of the
-three had demonstrably converged**, so **"N2 is slower" is established while "no detectable
-difference in final score" is provisional**: a longer run could separate them in either direction.
-
-**Five control graphs, and they disagree with each other.** SH graph means span 1.384–1.607 and RD
-1.406–1.530, against N2's single value of 1.412. N2 is one draw sitting inside that spread. There is
-only one real connectome, so its interval carries run-to-run variation only while the controls also
-carry graph-to-graph variation; that asymmetry cannot be fixed by more compute.
-
-**The interface probably favours shallow graphs — though by less than we first reported.** Weys are
-given separate left and right food readings, so foraging can be solved by wiring a sensor difference
-almost straight to the turn read-out, and a task solvable in one hop rewards graphs that offer one
-hop. But measured across the ten control graphs actually used, N2 is **not** meaningfully deeper for
-locomotion: mean distance from the mapped sensors to the locomotor read-out is **1.17 in N2**,
-**1.00–1.17 across the five shuffles**, and **1.06–1.39 across the five random graphs** — N2 sits
-inside the shuffle range and below one of the random graphs. The clear depth penalty is to the pump
-(3 hops versus 1–2), and the foraging experiment never used the pump. Separately, a real worm cannot
-make that left/right comparison at all: *C. elegans* chemotaxis works by sampling concentration over
-time while moving, not by comparing two sides at once. The interface is our invention, not biology.
-
-**We do not know why N2 improves more slowly.** Graph distance from sensors to the locomotor
-read-out does not explain it, as the numbers above show. Nor do the parameter bounds, which no
-condition comes close to. The cause is simply unidentified, and nothing here should be read as
-having found it.
-
-**The frozen opponent suite cannot measure combat skill.** It is six **random-weight** strains,
-never evolved for anything (regenerated from its seed rather than shipped — see `DECISIONS.md`
-D028), and they do not approach opponents: the same six strains dealt 94 and 2
-damage against random opponents but 38 063 and 13 244 against coevolved ones, because contact only
-happens when someone comes to it. Beating the suite therefore means out-foraging passive random
-strains — the coevolved populations ate **4.4× and 3.7×** more than the suite did, while biting
-supplied **0.1–0.3%** of their energy. **Experiment 01 contains no test of combat skill against a
-competent opponent.** The coevolution score going up says the swarms got better at the game; it does
-not say they got better at fighting.
-
-**Combat rests on two runs of one graph.** All coevolution was N2 only: 2 runs, population 16, 20
-generations. No shuffled or random graph was ever coevolved. And the showcase shows the design does
-not generalise across a 50× change in headcount — strains coevolved at 40 v 40 barely leave their
-spawn blocks at 2 000 v 2 000, because arena side grows as √headcount while wey speed does not.
+**Numerics.** 01b ran with 8 integrator substeps. Motor read-out errors above 0.05, against 32
+substeps, are rare (0 to 8 of 1440 weys, depending on the inputs used), and their effect on fitness
+was not measured.
 
 **A wey is not a worm.** No neuromodulation, no plasticity, no biophysics, no muscles, no body
 mechanics. The body is a rigid three-point segment and the motor output is a linear read of named
 motor neurons. The only things taken from biology are the wiring graph and a hand-chosen mapping of
 game quantities onto individual named neurons.
+
+## Superseded: experiment 01, with the synapses reversed
+
+Experiment 01 ran every brain with **chemical synapses carrying signal backwards**, from the
+postsynaptic neuron to the presynaptic one. So it compared the worm's wiring *reversed* against
+shuffles of that reversed graph. It reported that N2 **improves measurably more slowly** than both
+kinds of control and that final scores do not separate. That conclusion does not hold for the real
+wiring:
+
+| contrast | 01, synapses reversed | 01b, synapses correct |
+|---|---|---|
+| N2 − SH, mean best-of-generation fitness | −0.100 [−0.129, −0.070] | +0.068 [+0.034, +0.102] |
+| N2 − RD, mean best-of-generation fitness | −0.112 [−0.150, −0.077] | +0.067 [+0.021, +0.105] |
+| N2 − SH, final score | −0.047 [−0.148, +0.039] | +0.069 [−0.015, +0.169] |
+| N2 − RD, final score | −0.041 [−0.113, +0.029] | +0.094 [+0.029, +0.160] |
+
+The bug was introduced by Claude Code and found a week later by Astra 6 (OpenAI) reading the
+source. It was then confirmed, fixed and rerun as 01b (`DECISIONS.md` D031). Experiment 01 also
+found N2 driving the motors more weakly than every control, and removed that confound by
+calibrating each graph's motor gain. With the synapses the right way round, N2 is among the
+strongest drivers, so that confound was largely a product of the reversal. Calibration is kept.
+
+Experiment 01's other results also describe the reversed graph:
+- foraging with pump-gated eating;
+- two-swarm coevolution, where swarms win by out-foraging rather than out-fighting their
+  opponents;
+- the retracted claim that swarms "learned to flank", an artifact of the damage rule (C1).
+
+Frozen record: [`experiments/01-foraging-n2-vs-controls/`](experiments/01-foraging-n2-vs-controls/).
+Every number, and the correction, is C5 in [`docs/RESULTS.md`](docs/RESULTS.md).
 
 ## How to reproduce
 
@@ -199,87 +189,6 @@ counts) and every transformation applied.
 
 If you use this repository, please cite both it (see `CITATION.cff`) and Cook et al. 2019.
 The data terms are also stated in `NOTICE`; `LICENSE` (MIT) covers the code and documentation only.
-
-## What has been found so far
-
-Full numbers in [`docs/RESULTS.md`](docs/RESULTS.md); every one of them was measured by a script in
-`scripts/`.
-
-**The simulator works.** Evolved foragers score **1.398 ± 0.013** against random-weight weys'
-**0.432 ± 0.030** on held-out seeds across 3 independent runs, and every run beat the *best of 32*
-random strains. They keep 16-18 of 20 weys alive against 6-7, and eat 3.7x more food, so this is
-foraging and not an accounting exploit. It still works when eating requires pumping (**8.3x**), and
-two-swarm coevolution improves against a frozen opponent suite at a fixed 40 v 40 (run 0
-+0.071 → +0.377, run 1 +0.185 → +0.310; 2 of 2 runs improved). With headcounts varying between 50
-and 200 the same setup improves in only **1 of 2 runs** (run 0 +0.168 → +0.165, run 1
-+0.096 → +0.211): a non-stationary objective is harder.
-
-**Coevolution did not produce any measurable combat tactic.** An earlier version of this README
-claimed it learned to flank; that was an artifact of the damage rule's armour weights and has been
-retracted — see *Corrections* in [`docs/RESULTS.md`](docs/RESULTS.md) and `DECISIONS.md` D026.
-Re-measured per run against the frozen suite inside the same matches, three of four tactics metrics
-change sign between the two runs, which is what no effect looks like. **Coevolved swarms appear to
-win by foraging, not by fighting:** they take in 4.4x and 3.7x more energy by eating than the
-opponents they beat, while biting supplies 0.1–0.3% of their energy. With only two coevolution runs,
-all of this is reported per run and no interval over runs is claimed.
-
-**On the claim under test, the answer is: no, and slower.** The full experiment is K=5, R=3 --
-five independent SH graphs and five RD graphs with three runs each, and fifteen runs of N2, so every
-condition has **15 runs**. It was run twice, with and without per-graph motor gain calibration
-(see below). Held-out foraging score, hierarchical bootstrap over graphs and runs:
-
-**Speed of improvement** is the mean of the best-of-generation fitness over all 25 generations of
-a run — same units as the foraging score (surviving swarm energy divided by starting swarm energy,
-dimensionless). A run that climbs earlier has a higher mean, so **lower means slower**.
-
-| condition | final score at generation 25 (calibrated) | speed of improvement (higher = faster) |
-|---|---|---|
-| N2 | 1.412 [1.366, 1.453] | 1.359 [1.344, 1.373] |
-| SH | 1.458 [1.385, 1.552] | 1.459 [1.433, 1.484] |
-| RD | 1.452 [1.398, 1.510] | 1.471 [1.439, 1.506] |
-
-- **Final score at generation 25: no detectable difference.** No contrast separates
-  (N2 - SH P = 0.167, N2 - RD P = 0.130). N2's mean sits inside the spread of the individual
-  control graphs, not at either end. This is a failure to detect a difference, not a demonstration
-  of equality: the N2 - SH interval [-0.148, +0.039] still allows a deficit of roughly 10%.
-- **Speed of improvement: N2 is slower**, and clearly so: N2 - SH = -0.100 [-0.129, -0.070] and
-  N2 - RD = -0.112 [-0.150, -0.077], both **P < 1/20 000** (zero of 20 000 bootstrap resamples
-  favoured N2).
-- **SH and RD showed no detectable benefit over each other** on anything measured, so preserving
-  the real degree sequence did not help either.
-
-On this task with this interface, the real wiring **improves measurably more slowly, and by
-generation 25 no difference in final score is detectable.** Nothing had converged by then (see
-Limitations), so this says nothing about a ceiling.
-
-### The confound, and why the experiment was run twice
-
-A first pass (K=3, R=2) found N2 significantly *worse* on final score too. Two checks followed. It
-is **not** an artifact of the parameter bounds: champions of all three conditions sit nowhere near
-them and use the parameter space identically. But there **is** a confound: the raw magnitude of the
-motor read-out is a property of the graph, and N2 is the weakest of the seven graphs tested. The
-motor gain was hand-tuned on N2, so under one fixed gain the controls simply move more before
-evolution starts, and foraging rewards moving.
-
-Running it both ways separates the two:
-
-| contrast | one fixed gain | gains calibrated |
-|---|---|---|
-| N2 - SH, final score | **-0.110 [-0.185, -0.026]** | -0.047 [-0.148, +0.039] |
-| N2 - SH, speed | **-0.118 [-0.160, -0.080]** | **-0.100 [-0.129, -0.070]** |
-
-The final-score deficit was mostly the confound. The speed deficit is not: it survives calibration
-almost intact, and is the more robust of the two findings. N2 is the calibration reference, so only
-the controls moved; N2 was nevertheless **re-run from scratch in both arms** (15 runs each, about 18
-minutes per arm) and all 15 of its held-out scores and speed values came out identical. That is an
-observation from one pair of arms on this machine, not a guarantee:
-[`docs/REPRODUCIBILITY.md`](docs/REPRODUCIBILITY.md) explains that CUDA `index_add_` makes GPU runs
-**not** guaranteed bit-exact, and nothing here should be taken as promising they will be.
-
-Also measured, and predicted in `DECISIONS.md` D008 before the experiment was run: in N2 the pump
-neurons sit **three graph hops** from any sensor, because all somatic-pharyngeal traffic goes
-through the two-neuron `RIP<->I1` gap-junction bridge. In every shuffled or random control they are
-one or two hops away.
 
 ## Status
 
