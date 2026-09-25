@@ -108,13 +108,16 @@ def build(measures: dict, n2: str, ensembles: dict, n_boot: int = EFFECT_BOOT,
     `ensembles`, and the descriptive N2 variants are read. `n_boot` and `min_graphs` exist for
     tests on small synthetic or pilot sets; the registered values are EFFECT_BOOT and MIN_GRAPHS."""
     registered = {n for names in ensembles.values() for n in names}
-    use = [n for n in [n2, *DESCRIPTIVE, *sorted(registered)] if n in measures]
+    # a graph whose calibration failed is excluded from every signal and counted (registered)
+    use = [n for n in [n2, *DESCRIPTIVE, *sorted(registered)]
+           if n in measures and "calibration_failed" not in measures[n]]
     data = {n: per_genome(measures[n]) for n in use}
     ok = {n: {s: valid(s, data[n][s]) for s in PRIMARY} for n in use}
     ens_p3 = [n for n in registered if n in data and ok[n]["P3"]]
-    common = np.mean([np.asarray(data[n]["P3"]).mean(0) for n in ens_p3], axis=0)
+    # with no valid P3 reference graph there is no world profile; P3 is then withheld below
+    common = np.mean([np.asarray(data[n]["P3"]).mean(0) for n in ens_p3], axis=0) if ens_p3 else None
     se = {n: {"P1": ratio_se(data[n]["P1"]["num"], data[n]["P1"]["den"]) if ok[n]["P1"] else float("nan"),
-              "P3": crossed_se(data[n]["P3"], common) if ok[n]["P3"] else float("nan"),
+              "P3": crossed_se(data[n]["P3"], common) if ok[n]["P3"] and common is not None else float("nan"),
               "P4": ratio_se(data[n]["P4"]["num"], data[n]["P4"]["den"]) if ok[n]["P4"] else float("nan")}
           for n in use}
     vals = {n: {s: value(s, data[n][s]) if ok[n][s] else float("nan") for s in PRIMARY} for n in use}
@@ -183,5 +186,9 @@ def build(measures: dict, n2: str, ensembles: dict, n_boot: int = EFFECT_BOOT,
                                          for k in ("P2", "T0_mean", "T0_top_decile", "coverage", "abs_directional_M0",
                                                    "common_M0", "P4_decay")}
                                      for e, names in ensembles.items()}
+    for e, names in ensembles.items():
+        out["secondary"]["ensembles"][e]["P1_by_condition"] = {
+            c: [float(np.nanquantile([sec[n]["P1_by_condition"].get(c, np.nan) for n in names if n in sec], q))
+                for q in (0.05, 0.5, 0.95)] for c in RESPONSE_CONDITIONS}
     out["per_graph"] = {n: {"values": vals[n], "se": se[n], "valid": ok[n]} for n in use}
     return out

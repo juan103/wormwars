@@ -77,3 +77,22 @@ def test_secondary_signals_are_reported():
     assert {"P2", "T0_mean", "T0_top_decile", "coverage", "P1_by_condition", "P4_decay"} <= set(sec["N2"])
     assert set(sec["ensemble_mean_P2"]) == set(ens)
     assert set(out["ranks_descriptive"]) == set()  # no N2 variants in this synthetic set
+
+
+def test_a_calibration_failure_is_excluded_and_counted_and_withholds_if_it_is_n2():
+    measures, ens = make()
+    measures["A-5"] = {"name": "A-5", "calibration_failed": "did not converge"}
+    out = R.build(measures, "N2", ens, n_boot=20)
+    assert "A-5" in out["exclusions"]["P1"]["A"] and out["counts"]["P1"]["A"] == 127
+    measures["N2"] = {"name": "N2", "calibration_failed": "did not converge"}
+    out = R.build(measures, "N2", ens, n_boot=20)
+    assert all(out["signals"][s + "_summary"]["overall"] == "withheld" for s in R.PRIMARY)
+
+
+def test_no_valid_p3_reference_withholds_instead_of_crashing():
+    measures, ens = make()
+    for names in ens.values():
+        for n in names:
+            measures[n]["fitness"]["T1-M0"] = (np.asarray(measures[n]["fitness"]["T1-M0"]) * np.nan).tolist()
+    out = R.build(measures, "N2", ens, n_boot=20)
+    assert out["signals"]["P3_summary"]["overall"] == "withheld"

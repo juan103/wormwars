@@ -62,8 +62,10 @@ INPUT_FILES = {"ensembles.json": EXP / "ensembles.json", "graphs_manifest.json":
 
 
 def _sha(path: Path) -> str:
+    """SHA-256 with line endings normalised to LF, so a checkout's CRLF files hash like the
+    committed blobs registered in the pre-registration (Fable, D055)."""
     import hashlib
-    return hashlib.sha256(path.read_bytes()).hexdigest()
+    return hashlib.sha256(path.read_bytes().replace(b"\r\n", b"\n")).hexdigest()
 
 
 def provenance(device) -> dict:
@@ -72,7 +74,8 @@ def provenance(device) -> dict:
     import subprocess
     try:
         commit = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=EXP.parents[1], text=True).strip()
-        dirty = bool(subprocess.check_output(["git", "status", "--porcelain", "--", "wormwars", "scripts", "configs"],
+        dirty = bool(subprocess.check_output(["git", "status", "--porcelain", "--", "wormwars", "scripts", "configs",
+                                              "experiments/03-generation0", "experiments/02-screening/remaps.json"],
                                              cwd=EXP.parents[1], text=True).strip())
     except Exception:  # noqa: BLE001
         commit, dirty = "unknown", True
@@ -81,10 +84,19 @@ def provenance(device) -> dict:
 
 
 def check_provenance(measurements) -> None:
-    keys = {json.dumps({k: v for k, v in m["provenance"].items() if k != "device"}, sort_keys=True)
-            for m in measurements}
+    """Every measurement must share one commit, one set of input hashes and one device."""
+    keys = {json.dumps(m["provenance"], sort_keys=True) for m in measurements}
     if len(keys) != 1:
-        raise ProvenanceError(f"measurements come from {len(keys)} different code or input versions")
+        raise ProvenanceError(f"measurements come from {len(keys)} different code, input or device versions")
+
+
+def check_resumable(existing, current: dict) -> None:
+    """A resumed run may only add to measurements taken with the same code, inputs and device;
+    any mid-run code change means re-measuring every graph (registered, D055)."""
+    for m in existing:
+        if m.get("provenance") != current:
+            raise ProvenanceError(f"{m.get('name', '?')}: saved with other code, inputs or device; "
+                                  "re-measure every graph or restore the binding commit")
 
 
 def _json(path: Path, obj):
@@ -203,8 +215,11 @@ def measure_graph(con, name, device, bank=None, only=None):
     base0 = grid.brain_config_for_graph(grid.task_config(Config(), "T0"), name)
     out, t = {"name": name}, {}
     t0 = time.perf_counter()
-    cal = calib.calibrate_in_world(graph, base0, grid.interface_for(con, "M0", remap_sets), grid.TARGET_DRIVE,
-                                   n_strains=1024, device=device)
+    try:
+        cal = calib.calibrate_in_world(graph, base0, grid.interface_for(con, "M0", remap_sets), grid.TARGET_DRIVE,
+                                       n_strains=1024, device=device)
+    except RuntimeError as e:  # registered: excluded from every signal and counted (D055)
+        return {"name": name, "calibration_failed": str(e), "seconds": {"calibration": time.perf_counter() - t0}}
     gains = (cal.forward_gain, cal.turn_gain)
     out["gains"] = list(gains)
     out["calibration"] = cal.as_dict()
@@ -425,7 +440,8 @@ def cmd_power(args):
     def one(signal, z):
         tau, se = par[signal]
         ens = rng.normal(0, tau, (k_ens, n)) + rng.normal(0, se, (k_ens, n))
-        n2 = z * tau + rng.normal(0, se)
+        # a true member (z = 0) is a random draw from the ensemble, not its mean (both, D055)
+        n2 = (z * tau if z > 0 else rng.normal(0, tau)) + rng.normal(0, se)
         p = ((ens >= n2).sum(1) + 1) / (n + 1)
         mean, var = ens.mean(1), ens.var(1, ddof=1)
         margin = 0.5 * np.sqrt(np.maximum(var - se ** 2, 0.0))
@@ -492,7 +508,8 @@ def cmd_run(args):
     MEASURES.mkdir(parents=True, exist_ok=True)
     prov = provenance(args.device)
     if prov["code_dirty"]:
-        raise ProvenanceError("uncommitted changes in wormwars/, scripts/ or configs/: commit before running")
+        raise ProvenanceError("uncommitted changes in code, configs or registered inputs: commit before running")
+    check_resumable([json.loads(p.read_text(encoding="utf-8")) for p in MEASURES.glob("*.json")], prov)
     for name in run_order():
         path = MEASURES / f"{name}.json"
         if path.exists():
@@ -518,7 +535,7 @@ def cmd_report(args):
     out["provenance"] = next(iter(measures.values()))["provenance"]
     out["descriptive"] = {n: out["per_graph"][n] for n in REAL if n in out["per_graph"]}
     _json(EXP / "report.json", out)
-    print("completeness", complete)
+    print("valid graphs per signal and ensemble", out["counts"])
     for s in R.PRIMARY:
         summ = out["signals"][s + "_summary"]
         print(s, summ["overall"], "p_holm", round(summ["p_holm"], 4), summ["verdicts"])

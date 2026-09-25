@@ -52,3 +52,24 @@ def test_provenance_is_recorded_and_checked(exp):
     q = dict(p, git_commit="different")
     with pytest.raises(exp.ProvenanceError):
         exp.check_provenance([{"provenance": p}, {"provenance": q}])
+
+
+def test_hashes_ignore_line_endings_so_they_match_the_committed_blobs(exp, tmp_path):
+    a, b = tmp_path / "a.json", tmp_path / "b.json"
+    a.write_bytes(b'{"x": 1}\n')
+    b.write_bytes(b'{"x": 1}\r\n')
+    assert exp._sha(a) == exp._sha(b)
+
+
+def test_resuming_refuses_measurements_from_other_code_or_inputs(exp):
+    p = exp.provenance("cpu")
+    exp.check_resumable([{"provenance": p}], p)
+    for q in (dict(p, git_commit="other"), dict(p, device="cuda:9")):
+        with pytest.raises(exp.ProvenanceError):
+            exp.check_resumable([{"provenance": q}], p)
+
+
+def test_report_script_writes_and_prints_without_error(exp):
+    import inspect
+    src = inspect.getsource(exp.cmd_report)
+    assert "complete)" not in src.replace(" ", "")

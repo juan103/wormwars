@@ -88,7 +88,9 @@ ensembles' graphs.
 ## 4. Procedure for every graph (`scripts/exp03.py`, `measure_graph`)
 
 Every graph, N2 included, goes through the same procedure: same sample sizes, same seed scheme,
-same worlds. That is what makes N2 exchangeable with an ensemble's graphs under the null.
+same worlds. Symmetric measurement is necessary for the tests of §6. It does not by itself make
+N2 exchangeable with an ensemble's graphs; that remains the assumption stated in §2 (Astra,
+D055).
 
 - **Calibration:** motor gains calibrated in-world on T0 with 1 024 random genomes (D035's
   method); the achieved drive is saved.
@@ -130,7 +132,10 @@ same worlds. That is what makes N2 exchangeable with an ensemble's graphs under 
 | P3 | food-information dependence | mean over genomes × worlds of the T1 score at M0 minus the T1-const score at M0 | N2 above |
 | P4 | history dependence | mean over genomes of \|rising − falling\| (raw turn, final tick), divided by the mean of \|steady-state contrast\| | N2 above |
 
-**Secondary** (reported with values, SEs and ranks, no verdicts):
+**Secondary** (no verdicts). What the report computes: each secondary value for N2 and its
+variants, and each ensemble's 5th, 50th and 95th percentiles of it; for P2, each ensemble's mean
+against zero with a t-interval; for the variants, their primary-signal ranks. Secondary SEs and
+ranks for N2 are not computed and are not claimed (Astra, D055). The secondary values are:
 - P2, the own mapping preference: T1 at M0 on the shared 64 genomes, minus the mean of T1 at R1
   and at R2;
 - each ensemble's mean P2 against zero (02's "shuffles start worse under M0");
@@ -209,11 +214,15 @@ ensemble. Otherwise it is withheld, and the report enforces this before computin
 SDs above the ensembles; and the probability of "consistent" with every ensemble when N2 is a
 true member (z = 0).
 
-| z | 0 | 2 | 2.5 | 3 | 4 | 5 | 6 | consistent if a member |
+| z | member | 2 | 2.5 | 3 | 4 | 5 | 6 | consistent if a member |
 |---|---|---|---|---|---|---|---|---|
-| P1 | 0.00 | 0.04 | 0.26 | 0.64 | 0.99 | 1.00 | 1.00 | 0.93 |
-| P3 | 0.00 | 0.06 | 0.11 | 0.20 | 0.47 | 0.78 | 0.93 | 0.15 |
-| P4 | 0.00 | 0.00 | 0.35 | 0.93 | 1.00 | 1.00 | 1.00 | 1.00 |
+| P1 | 0.005 | 0.04 | 0.27 | 0.64 | 0.99 | 1.00 | 1.00 | 0.52 |
+| P3 | 0.005 | 0.05 | 0.12 | 0.18 | 0.45 | 0.75 | 0.94 | 0.11 |
+| P4 | 0.005 | 0.00 | 0.33 | 0.92 | 1.00 | 1.00 | 1.00 | 0.77 |
+
+A "member" is an N2 drawn at random from the ensembles' own distribution, not placed at their
+mean. The first version placed it at the mean, which overstated "consistent" for P1 (0.93) and
+P4 (1.00) (both reviewers, D055).
 
 **P1:**
 - Experiment 02's generation-0 ratio for N2 under M0 was about 0.10, with a different
@@ -221,9 +230,9 @@ true member (z = 0).
   z = 3, so the P1 verdict is roughly a two-to-one chance even if 02's number carries over.
 
 **P3:**
-- Its minimum detectable effect at 80% power is about 5 latent SDs: 0.036 score units, on a
-  generation-0 T1 score of about 0.89 (4%). Random shuffled brains barely differ on it.
-- It will usually be "inconclusive" even if N2 is an ordinary member (consistent only 15% of
+- Its minimum detectable effect at 80% power is about 5.3 latent SDs: about 0.037 score units,
+  on a generation-0 T1 score of about 0.89 (4%). Random shuffled brains barely differ on it.
+- It will usually be "inconclusive" even if N2 is an ordinary member (consistent only 11% of
   the time).
 - If the criterion is not met, the result is reported as exactly that: **the registered
   distinctiveness criterion was not met.** It is not a bound on N2's food-information
@@ -257,9 +266,11 @@ true member (z = 0).
 
 ## 9. Deviations
 
-Any deviation is recorded in DECISIONS.md and in the results. A crash or bug found mid-run is
-fixed and recorded. The affected graphs are re-measured, since measurements are deterministic
-given the seeds. Completed graphs are kept only if the bug provably did not touch them.
+Any deviation is recorded in DECISIONS.md and in the results. The provenance rule of §8 makes any
+mid-run code change mean re-measuring **every** graph: the run refuses to resume over
+measurements from other code, inputs or a different device, and the report refuses a mixture
+(D055). A calibration that does not converge is not a crash. That graph is saved as excluded
+and counted (§4).
 
 ## 10. What the results decide
 
@@ -307,3 +318,15 @@ failures on synthetic data. Every point was checked and fixed, with tests where 
 10. **The error rate across both directions** is stated (both).
 11. **The bootstrap sizes and seeds** are fixed (Fable).
 12. **The secondary signals** are implemented in the report before any N2 run (both).
+
+A confirmation pass (`docs/reviews/20260925-234635-03-prereg-recheck/`) found the verdict path fixed, and
+asked for one more commit before launch (D055):
+- the report command's crash on an undefined name is fixed;
+- a calibration failure is saved as an excluded, counted graph, and withholds every verdict if it
+  is N2's;
+- an empty P3 reference set withholds instead of crashing;
+- a resumed run refuses measurements from other code, inputs or devices;
+- hashes normalise line endings, so they match the committed blobs;
+- the dirty-check covers the registered inputs;
+- the power simulation draws a true member at random, and §7's table is updated;
+- one sentence claiming exchangeability, the §9 rule and the secondary outputs are corrected.

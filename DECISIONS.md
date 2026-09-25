@@ -1279,3 +1279,24 @@ points were checked and fixed before any N2 measurement:
   - the error rate across both directions is 10%.
 - **Within-ensemble pairwise Jaccard** equals each ensemble's Jaccard to N2, which is evidence of
   mixing.
+
+## D055 — 03's confirmation pass: the last fixes before launch
+
+Fable 5.1 and Astra 6 checked the D054 revision. Both found the verdict path fixed. Both asked
+for one more commit before launch, and every item was checked and done with tests:
+
+- **Crashes fixed:**
+  - `cmd_report` crashed on an undefined name after writing its JSON;
+  - an empty P3 reference set crashed instead of withholding.
+- **Calibration failures** are now saved as excluded, counted graphs (withholding every verdict
+  if N2's fails), instead of halting the run.
+- **Resuming** refuses measurements from other code, inputs or devices, and the provenance check
+  includes the device. So any mid-run code change means re-measuring every graph, and §9 says so.
+- **Hashes** normalise line endings. The recorded input hashes now equal the committed-blob
+  hashes of §3, which was checked. The dirty-check covers the registered inputs.
+- **The power simulation** draws a "true member" from the ensemble instead of placing it at the
+  mean. "Consistent if a member" is 0.52 (P1), 0.11 (P3) and 0.77 (P4), not 0.93, 0.15 and 1.00.
+- **Wording:**
+  - one leftover sentence claiming exchangeability is corrected;
+  - the secondary outputs are stated exactly: values and ensemble quantiles, with no SEs or
+    ranks for N2's secondaries.
