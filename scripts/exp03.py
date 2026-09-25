@@ -68,6 +68,12 @@ def _sha(path: Path) -> str:
     return hashlib.sha256(path.read_bytes().replace(b"\r\n", b"\n")).hexdigest()
 
 
+def _sha_raw(path: Path) -> str:
+    """SHA-256 of the raw bytes, for binary files such as the graph .npz (D056)."""
+    import hashlib
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
 def provenance(device) -> dict:
     """The code commit, the registered inputs' hashes and the device, stored in every
     measurement file; the report refuses a mixture (D054)."""
@@ -200,7 +206,7 @@ def _load_graph(con, name):
         return S.build(con, "SH", seed=int(name[7:]), passes=20)[0]
     path = GRAPHS / f"{name}.npz"
     manifest = json.loads((EXP / "graphs_manifest.json").read_text(encoding="utf-8"))
-    if manifest.get(name) != _sha(path):  # the committed manifest pins every graph (D054)
+    if manifest.get(name) != _sha_raw(path):  # the committed manifest pins every graph (D054); raw bytes (D056)
         raise ProvenanceError(f"{name}: graph file does not match graphs_manifest.json")
     z = np.load(path, allow_pickle=False)
     return con.with_masks(z["chem"], z["gap"], name)

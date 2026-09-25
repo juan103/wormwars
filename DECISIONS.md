@@ -1300,3 +1300,19 @@ for one more commit before launch, and every item was checked and done with test
   - one leftover sentence claiming exchangeability is corrected;
   - the secondary outputs are stated exactly: values and ensemble quantiles, with no SEs or
     ranks for N2's secondaries.
+
+## D056 — Deviation: 03's first run stopped at graph 53 on a faulty hash check; restarted from zero
+
+The run from commit 0ef9a3d stopped after 52 ensemble graphs. The graph-file check refused
+SH-class-30010. The cause was D055's line-ending normalisation. It was meant for the text inputs,
+but the same hash function also checked the binary graph files. A compressed `.npz` that happens
+to contain CR-LF byte pairs hashed differently from the manifest, which records raw bytes. 69 of
+the 640 graphs would have been refused. Every graph matches its manifest hash on raw bytes, and
+none was altered.
+
+- **Fix:** graph files are hashed raw; only text inputs are normalised. There is a test.
+- **Registered rule (§9):** any mid-run code change means re-measuring every graph. The 52
+  measurements are set aside, not deleted: `runs/exp03/measures-aborted-0ef9a3d/`, with its log.
+  The run restarts from zero at the new commit.
+- **No N2 data existed:** N2 and its variants run last.
+- **Cost:** about 1.6 GPU-hours.

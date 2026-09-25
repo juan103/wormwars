@@ -281,6 +281,13 @@ and counted (§4).
 - **Every ensemble** (SH, SH-route, SH-class, SH-mirror and SH-recip) becomes a control available
   to 03a and 04, whatever the result.
 
+## 10b. Deviations during the run
+
+- **D056.** The first run (commit 0ef9a3d) stopped after 52 ensemble graphs, on a faulty graph-hash
+  check: text normalisation applied to binary files. The check was fixed, the 52 measurements
+  were set aside, and every graph was re-measured from zero, as §9 requires. No N2 data existed
+  when it stopped.
+
 ## 11. Not registered
 
 The following are exploratory and chosen as needed:

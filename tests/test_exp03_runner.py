@@ -73,3 +73,13 @@ def test_report_script_writes_and_prints_without_error(exp):
     import inspect
     src = inspect.getsource(exp.cmd_report)
     assert "complete)" not in src.replace(" ", "")
+
+
+def test_binary_graph_files_are_hashed_raw_while_text_inputs_ignore_line_endings(exp, tmp_path):
+    """The first run stopped at SH-class-30010: normalising CR-LF inside a compressed .npz
+    changed its hash (D056). Only text inputs are normalised."""
+    import hashlib
+    b = tmp_path / "g.npz"
+    b.write_bytes(b"PK\x03\x04\r\n\x00binary")
+    assert exp._sha_raw(b) == hashlib.sha256(b.read_bytes()).hexdigest()
+    assert exp._sha(b) != exp._sha_raw(b)  # the text hash would have changed it: never use it on graphs
