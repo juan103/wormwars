@@ -1,0 +1,78 @@
+{
+ "fitness": [
+  {
+   "task": "T1",
+   "strains": 64,
+   "worlds": 4,
+   "seconds": 2.4429218999575824,
+   "genome_worlds_per_s": 104.79254371760516
+  },
+  {
+   "task": "T1",
+   "strains": 256,
+   "worlds": 4,
+   "seconds": 6.6917223000200465,
+   "genome_worlds_per_s": 153.02487970801366
+  },
+  {
+   "task": "T1",
+   "strains": 512,
+   "worlds": 4,
+   "seconds": 13.418825299944729,
+   "genome_worlds_per_s": 152.62140718147927
+  },
+  {
+   "task": "T1",
+   "strains": 1024,
+   "worlds": 4,
+   "seconds": 26.78614009998273,
+   "genome_worlds_per_s": 152.91490243503358
+  },
+  {
+   "task": "T1",
+   "strains": 256,
+   "worlds": 8,
+   "seconds": 12.507434700033627,
+   "genome_worlds_per_s": 163.7426098250582
+  },
+  {
+   "task": "T0",
+   "strains": 64,
+   "worlds": 4,
+   "seconds": 2.12907190003898,
+   "genome_worlds_per_s": 120.24018540440699
+  },
+  {
+   "task": "T0",
+   "strains": 256,
+   "worlds": 4,
+   "seconds": 6.715010499930941,
+   "genome_worlds_per_s": 152.49417703971292
+  },
+  {
+   "task": "T0",
+   "strains": 512,
+   "worlds": 4,
+   "seconds": 13.396837699925527,
+   "genome_worlds_per_s": 152.87189752335246
+  },
+  {
+   "task": "T0",
+   "strains": 1024,
+   "worlds": 4,
+   "seconds": 27.07687500002794,
+   "genome_worlds_per_s": 151.27299586808942
+  },
+  {
+   "task": "T0",
+   "strains": 256,
+   "worlds": 8,
+   "seconds": 12.715164600056596,
+   "genome_worlds_per_s": 161.0675177567803
+  }
+ ],
+ "input_response": {
+  "256": 1.3170706999953836,
+  "2048": 8.855749999987893
+ }
+}
