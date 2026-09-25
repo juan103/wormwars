@@ -55,6 +55,12 @@ def channel_dependence(cfg, iface, champion, ids, seed, device, with_pheromone: 
     }
     if with_pheromone:
         variants["pheromone_off"] = _variant(cfg, sense_scale_pheromone=0.0)
+    # capability use: history (jitter, D037: 1 cell is the scripted-validated ablation; 3 cells
+    # reaches brains that integrate over many ticks) and, for stereo tasks, the second nose
+    variants["jitter1"] = _variant(cfg, food_probe="jitter", food_probe_radius=1.0)
+    variants["jitter3"] = _variant(cfg, food_probe="jitter", food_probe_radius=3.0)
+    if cfg.world.food_sensing == "stereo":
+        variants["mono"] = _variant(cfg, food_sensing="mono")
     return {k: float(rollout(c, iface, champion, ids, seed, device).score.mean())
             for k, c in variants.items()}
 

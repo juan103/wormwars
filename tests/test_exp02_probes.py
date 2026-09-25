@@ -45,8 +45,20 @@ def test_channel_dependence_returns_every_variant(parts):
     con, iface, spec = parts
     d = probes.channel_dependence(small_cfg(), iface, champ(spec, Config()), np.arange(2), 3, "cpu",
                                   with_pheromone=True)
-    assert set(d) == {"real", "food_constant", "food_mirrored", "collision_off", "pheromone_off"}
+    assert set(d) == {"real", "food_constant", "food_mirrored", "collision_off", "pheromone_off",
+                      "jitter1", "jitter3", "mono"}
     assert all(np.isfinite(v) for v in d.values())
+
+
+def test_capability_probes_follow_the_task(parts):
+    """History use (jitter) is probed on every champion; stereo use (one nose) only where the
+    task is stereo, since a mono champion has nothing to lose."""
+    con, iface, spec = parts
+    mono_cfg = small_cfg()
+    mono_cfg.world.food_sensing = "mono"
+    d = probes.channel_dependence(mono_cfg, iface, champ(spec, Config()), np.arange(2), 3, "cpu",
+                                  with_pheromone=False)
+    assert "mono" not in d and {"jitter1", "jitter3"} <= set(d)
 
 
 def test_integrator_rescore_returns_paired_per_world_scores(parts):
