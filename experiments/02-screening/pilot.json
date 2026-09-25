@@ -1,0 +1,31 @@
+{
+  "graph": "SH101",
+  "seconds_per_run": {
+    "T0": 119.70718920009676,
+    "T1": 116.68229139992036
+  },
+  "probe_seconds_per_champion": {
+    "T0": 25.08917430008296,
+    "T1": 24.04993509990163
+  },
+  "run_equivalents": 136.0,
+  "projected_grid_hours": 4.465134633555879,
+  "projected_champion_probe_hours": 0.8735841671108372,
+  "feasibility": {
+    "probe": {
+      "kind": "jitter",
+      "value": 1.0
+    },
+    "champion_minus_memoryless": {
+      "estimate": 0.5938705205917358,
+      "lo": 0.5334759950637817,
+      "hi": 0.6554063558578491
+    },
+    "real_minus_history_ablated": {
+      "estimate": 0.00386747345328331,
+      "lo": -0.011959176510572433,
+      "hi": 0.019351018592715263
+    },
+    "passed": false
+  }
+}
