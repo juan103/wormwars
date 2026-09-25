@@ -294,8 +294,11 @@ class Brain:
     def silence(self, per_strain: list[list[int]] | None) -> "Brain":
         """Clamp the named neurons to zero after every substep, one neuron list per strain.
 
-        A silenced neuron emits tanh(0) = 0 and contributes nothing to the gap coupling, which is
-        the cleanest definition of "this cell is not participating" in a rate model.
+        A silenced neuron emits tanh(0) = 0 through its chemical synapses. It is not removed from
+        the gap coupling: each partner keeps its full gap conductance in the implicit term, so a
+        silenced neuron held at 0 pulls its gap-junction partners toward 0 like a grounded cell.
+        Silencing is therefore not deletion when gap junctions are present (an earlier version of
+        this docstring said it contributed nothing; the 03a draft and Fable 5.1 caught it, D044).
         """
         if per_strain is None:
             self.silence_mask = None

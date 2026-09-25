@@ -1,6 +1,7 @@
 # WormWars roadmap (draft, 2026-09-25)
 
-**Status: a proposal for review, not a plan anyone has agreed to.** Each item has a question, a
+**Status: a proposal, reviewed by Astra 6 and Fable 5.1 (`docs/reviews/20260925-163118-roadmap/`,
+DECISIONS D044); a revision waits for the owner's decisions on the open points.** Each item has a question, a
 cost, and a gate that decides what follows. Costs are GPU-hours on the one RTX 5080. Nothing
 below is pre-registered.
 

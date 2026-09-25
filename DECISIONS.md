@@ -950,3 +950,42 @@ Both consultants recommend that experiment 03 be a cheap generation-0 structural
 2-5 GPU-hours, no evolution). It would add routing-matched and mirror-matched shuffle ensembles,
 gaps on and off, and per-brain values saved. Both rank a task that needs history or stereo second,
 and both say to defer plasticity. The choice is the owner's.
+
+## D044 — The roadmap review, and silencing is not deletion
+
+Astra 6 and Fable 5.1 reviewed `ROADMAP.md` and the owner's 03a draft v2
+(`docs/reviews/20260925-163118-roadmap/`).
+
+**Where they agree:**
+- Fund 03, the generation-0 structural study, first.
+- Register effect and equivalence margins for its "N2 still stands out" gate, so that a noisy null
+  cannot trigger "generic explanation, stop".
+- Drop the rule that 04 runs only if 03 favours N2. 04 needs 03's controls and its own
+  capability-feasibility pilot, not a positive 03.
+- Run only a pilot of 03a before any full panel, and do not tag 03a v2 as written.
+- Test task specificity: N2's edge on a matched non-wormy task.
+- Reject the ROADMAP's "stop, don't pivot".
+
+**Where they differ:** plasticity. Fable says defer it. Astra says to design one adaptation task
+and one plasticity rule now, because the owner's question includes plasticity.
+
+**03a, the biggest risks they name:**
+- The free search will wire shortcuts through interface neurons (Fable).
+- Non-identifiability under arbitrary fitted weights and a permissive task (Astra).
+
+**03a, also needed before a tag:**
+- a feasibility pilot with a registered pass criterion;
+- a no-headroom class and a reference-failure class;
+- several original-partner refits;
+- a search-level margin;
+- a curated left-right annotation;
+- an initialisation independent of the hidden partners;
+- a budget recount. Astra's recount of the written allocation is about 14 million genome
+  evaluations, or 353 GPU-hours unbatched, not 280. This was checked.
+
+**Checked in the code, and fixed:** only silencing exists (`Brain.silence`), and its docstring
+claimed a silenced neuron "contributes nothing to the gap coupling". It does contribute: partners
+keep their gap conductance in the implicit term, so a clamped neuron pulls them toward 0. The
+draft's distinction between silencing and deletion is correct. The docstring is fixed, and a test
+pins the behaviour. Experiment 01's ablation section used silencing and named it as such. Its
+readings describe the reversed graph and are already superseded.

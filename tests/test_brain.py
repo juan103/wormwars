@@ -251,3 +251,24 @@ def test_zero_input_zero_bias_stays_at_rest(spec, cfg):
     for _ in range(50):
         v = brain.step(v, torch.zeros_like(v))
     assert v.abs().max() == 0.0, "v = 0 must be a fixed point when bias and input are zero"
+
+
+def test_silencing_is_not_deletion_when_gap_junctions_are_present(spec, cfg):
+    """A silenced neuron is held at 0 but its partners keep their gap conductance to it, so it
+    pulls them toward 0. Removing its gap junctions as well (deletion, as 03a defines it) gives
+    different dynamics. D044: an earlier docstring said silencing contributed nothing to the gap
+    coupling."""
+    genome = _gen(spec, cfg, 1)
+    k = int(spec.gap_i[0])
+    touching = (spec.gap_i == k) | (spec.gap_j == k)
+    g_cut = genome.g.clone()
+    g_cut[:, touching] = 0.0
+    cut = Genome(spec, genome.cfg, genome.w, g_cut, genome.tau, genome.bias, genome.dale_sign)
+    cur = torch.full((1, 1, spec.n), 0.3)
+    a, b = Brain(genome).silence([[k]]), Brain(cut).silence([[k]])
+    va, vb = a.initial_state(1), b.initial_state(1)
+    for _ in range(20):
+        va, vb = a.step(va, cur), b.step(vb, cur)
+    partners = torch.cat([spec.gap_j[spec.gap_i == k], spec.gap_i[spec.gap_j == k]])
+    assert float(va[0, 0, k]) == 0.0 == float(vb[0, 0, k])
+    assert (va[0, 0, partners] - vb[0, 0, partners]).abs().max() > 1e-4
