@@ -80,9 +80,9 @@ ensembles' graphs.
 | file | sha256 |
 |---|---|
 | `configs/mirror_pairs.yaml` | `72721ff0cf832e06` |
-| `experiments/03-generation0/ensembles.json` | `83b43aefc1d13315` |
+| `experiments/03-generation0/ensembles.json` | `68cfb8a8eb6d95c6` |
 | `experiments/03-generation0/graphs_manifest.json` | `6f75d27e56650fdc` |
-| `experiments/03-generation0/pilot.json` | `5f82f7c2eb1c8f6c` |
+| `experiments/03-generation0/pilot.json` | `503c480df0b25cf4` |
 | `experiments/02-screening/remaps.json` | `7082f0ef76ab5b11` |
 
 ## 4. Procedure for every graph (`scripts/exp03.py`, `measure_graph`)
