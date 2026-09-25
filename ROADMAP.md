@@ -1,7 +1,7 @@
 # WormWars roadmap (v2, 2026-09-25)
 
-**Status: v2, revised after review by Astra 6 and Fable 5.1** (`docs/reviews/20260925-163118-roadmap/`;
-D044, D045). The owner delegated the open decisions. Each is recorded in D045 with its reason.
+**Status: v2.1, revised after review by Astra 6 and Fable 5.1** (`docs/reviews/20260925-163118-roadmap/`,
+`docs/reviews/20260925-172550-v3/`; D044-D046). The owner delegated the open decisions. Each is recorded in D045 with its reason.
 Costs are GPU-hours on the one RTX 5080. Nothing below is pre-registered yet: each experiment gets
 its own pre-registration and review before its confirmatory runs.
 
@@ -42,7 +42,7 @@ No evolution; experiment 02's saved genomes.
   panel and headroom depend on it.
 - **Gate:** none. It is descriptive, and it informs 03a and 04.
 
-### 2. 03: generation-0 structure and task specificity (about 5-8 GPU-hours, no evolution)
+### 2. 03: generation-0 structure and task specificity (no evolution; cost set by its pre-registration, see below)
 
 **Question:** is anything about N2 at generation 0 specific to N2 beyond generic graph structure,
 and specific to worm-like tasks?
@@ -73,7 +73,8 @@ task on the same interface and world, such as a reward for staying away from foo
 run:
 - (a) N2's signed directional response under M0, relative to its common-mode response;
 - (b) the generation-0 mapping interaction, and its shuffle-deficit component;
-- (c) N2's generation-0 head start on stereo foraging (01b);
+- (c) N2's generation-0 head start on stereo foraging (01b). This overlaps with (b) on T0. The
+  pre-registration merges them or says why both are kept (Fable);
 - (d) the task-specificity contrast: N2's edge on T0 and T1 minus its edge on the control task.
 
 For each signal, N2 is placed within each ensemble as a percentile, and compared with the
@@ -87,7 +88,33 @@ ensemble mean. These are two different claims, and both are reported.
 
 **Also builds the control ensembles** every later experiment uses, whatever 03 finds.
 
-### 3. Three pilots, in any order (about 6-10 GPU-hours in total)
+**Cost: v2 got this wrong by two orders of magnitude** (Fable's review of v2, checked). The
+input-response probe runs outside the world and is cheap for every graph and condition.
+Generation-0 fitness is not: 258 graphs × 3 tasks × 2048 genomes is about 1.6 million genome
+evaluations *per condition*, about 41 GPU-hours at 02's throughput. So the pre-registration must
+choose one of two plans:
+- **a base condition for fitness** (M0, gaps on, anatomical magnitudes), with the other
+  conditions measured by input response only or on a subset of graphs;
+- **fewer genomes or worlds per graph,** for example 256 genomes × 4 worlds, which is about 3
+  GPU-hours per condition.
+
+Either way, it is fixed after a measured timing at the planned batch width.
+
+**What the 03 pre-registration must fix that this roadmap leaves open** (Fable):
+- **The control task,** and what "matched" means: same world, interface and reward scale. Also
+  how edges on different tasks are made commensurable for (d), for example N2's z-score within
+  each ensemble per task.
+- **The sampler for the matched shuffles:**
+  - how partial symmetry and the routing cap are enforced under degree preservation;
+  - whether gap junctions are mirrored;
+  - numeric thresholds for the mixing, diversity and interface-local similarity checks.
+- **Numeric margins per signal,** sourced from 02's observed effects.
+- **Which claim drives the gate,** percentile or mean difference, with the threshold stated.
+  With 64 graphs the resolution is 1/65. Since the ensembles are nested, the gate names the
+  narrowest ensemble that explains a signal.
+- **The input-response probe itself,** defined in 03, not borrowed from 02b.
+
+### 3. Three pilots, in any order (cost measured, not assumed: pilot 3a alone is about 11 GPU-hours per arm at 02's batch-32 throughput, less if wider batching works)
 
 **3a. Reconstruction feasibility** (for 03a; pilot shuffles only, never N2).
 - A refit screen: original-partner refits against random-partner and structural-baseline
@@ -137,9 +164,10 @@ self-consistent-field loop, all from the 03a draft.
 | item | cost |
 |---|---|
 | 02b | about 1 GPU-hour |
-| 03 | about 5-8 GPU-hours |
-| pilots 3a and 3b | about 6-10 GPU-hours |
-| subtotal, up to the choice of the substantial experiment | under a day of GPU |
+| 03 | fixed by its pre-registration: about 3 GPU-hours per fitness condition at 256 genomes × 4 worlds; input-response conditions are cheap |
+| pilot 3a | about 11 GPU-hours per arm at batch-32 throughput, plus 18 whole-brain evolutions; less with wider batching |
+| pilot 3b | set by its task design |
+| subtotal, up to the choice of the substantial experiment | roughly one to three GPU-days, depending on batching and 03's plan |
 | 03a panel | set by its batched pilot; v3 as written is about 31 million genome evaluations, 785 GPU-hours unbatched, so its one-week cap binds unless batching gives more than 5 times the speed |
 
 ## Decisions taken for this version (D045)

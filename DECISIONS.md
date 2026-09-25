@@ -1021,3 +1021,26 @@ are recorded here with their reasons.
 
 The owner's hypothesis and the authorship credits are unchanged. v3 goes to the reviewers before
 any code.
+
+## D046 — Fable's review of roadmap v2 and 03a v3: a cost error, and a leaky classification
+
+Fable 5.1 reviewed roadmap v2 and 03a v3 (`docs/reviews/20260925-172550-v3/`). It found none of
+its earlier points missed or misread. Astra 6's review failed on a usage limit and is pending.
+Adopted, after checking:
+
+- **Roadmap item 03 was costed two orders of magnitude too low.** "About 5-8 GPU-hours" came from
+  extrapolating 02's small generation-0 stage. The written plan is about 1.6 million genome
+  evaluations per condition, about 41 GPU-hours at 02's throughput. The cost is now set by 03's
+  pre-registration, choosing a base fitness condition or fewer genomes per graph, after a
+  measured timing. The pilot costs are restated in the same way.
+- **03a's classification leaked** (v3.1 fixes it):
+  - every comparison is now three-state, and each step is two-sided;
+  - per-target overlap is judged against each target's permutation null, because a fixed AUC
+    band is unreachable per target;
+  - δ_search comes from original-partner refits;
+  - the analysis set is fixed;
+  - equivalence bands are fixed for every hypothesis;
+  - the refit screen in the pilot runs in the NIP arm, as an interval statement;
+  - the budget adds the whole-brain evolutions.
+- **03a v3.1 is ready for code and the disclosed pilot**, in Fable's judgement, with the
+  before-tag items now written in. Astra's review is still pending.
