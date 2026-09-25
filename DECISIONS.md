@@ -989,3 +989,35 @@ keep their gap conductance in the implicit term, so a clamped neuron pulls them 
 draft's distinction between silencing and deletion is correct. The docstring is fixed, and a test
 pins the behaviour. Experiment 01's ablation section used silencing and named it as such. Its
 readings describe the reversed graph and are already superseded.
+
+## D045 — The owner's delegated decisions: roadmap v2 and 03a v3
+
+The owner published experiment 02 (`main` at `5706c7e`) and delegated three open decisions. They
+are recorded here with their reasons.
+
+1. **Plasticity: design now, run later.** Astra's view is adopted, because the owner's question
+   names plasticity, and a pipeline without it could exhaust itself before testing that qualifier.
+   Fable's condition is kept: the run waits until a task and search are validated (pilot 3b). The
+   design is roadmap item 3c.
+2. **Roadmap v2** (`ROADMAP.md`). The order is 02b, then 03, then three pilots, then the
+   substantial experiment chosen by the pilots.
+   - 03 grows to 64 graphs per ensemble, with registered margins, a task-specificity contrast
+     against a matched non-worm-like task, motor-side remaps, class-preserving shuffles and
+     N2 with the chemical direction reversed.
+   - 04 no longer waits for 03 to favour N2.
+   - A generic explanation narrows the claim; it does not stop the series.
+3. **03a draft v3** (`experiments/03a-self-consistency/DRAFT.md`). It folds in both reviewers'
+   points; the list is at its end. The largest changes:
+   - candidate partners exclude interface neurons;
+   - a six-way classification with a no-headroom class and a reference-failure class;
+   - replicated refits;
+   - pilot-derived margins;
+   - the main control is routing- and mirror-matched shuffles;
+   - a feasibility pilot with a pass criterion, which gates the panel.
+
+   The budget recount for v3 as written is about 31 million genome evaluations, about 785
+   GPU-hours unbatched. The one-week cap therefore binds unless batching gives more than 5 times
+   the speed.
+
+The owner's hypothesis and the authorship credits are unchanged. v3 goes to the reviewers before
+any code.
