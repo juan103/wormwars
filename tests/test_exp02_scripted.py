@@ -123,3 +123,33 @@ def test_batched_tuning_matches_one_at_a_time(parts):
     bat = scripted.tune_batched(make, grid_, cfg, iface, np.arange(3), 1, "cpu")
     assert seq[0] == bat[0]
     assert abs(seq[1] - bat[1]) < 1e-5
+
+
+def test_memory_kinesis_contains_level_kinesis_as_a_special_case():
+    """With no reaction to falling concentration, the memory controller IS the memoryless one,
+    so a fair gate compares 'everything memoryless can do' with 'that plus memory'."""
+    lk = scripted.LevelKinesis(slow=0.3, fast=0.9, threshold=0.05, turn=0.1)
+    mk = scripted.MemoryKinesis(slow=0.3, fast=0.9, threshold=0.05, turn=0.1, fall_turn=0.1, fall_threshold=0.0)
+    s1, s2 = lk.init(1, 3), mk.init(1, 3)
+    for lvl in ([0.01, 0.2, 0.06], [0.5, 0.1, 0.07], [0.2, 0.3, 0.01]):
+        x = torch.tensor([lvl])
+        f1, t1, s1 = lk(x, x, s1)
+        f2, t2, s2 = mk(x, x, s2)
+        assert torch.equal(f1, f2) and torch.allclose(t1, t2)
+
+
+def test_memory_kinesis_turns_harder_when_concentration_falls():
+    mk = scripted.MemoryKinesis(slow=0.3, fast=0.9, threshold=0.05, turn=0.1, fall_turn=0.8, fall_threshold=0.0)
+    s = mk.init(1, 1)
+    _, _, s = mk(torch.tensor([[0.5]]), torch.tensor([[0.5]]), s)
+    _, t, s = mk(torch.tensor([[0.4]]), torch.tensor([[0.4]]), s)
+    assert t.item() == pytest.approx(0.8)
+
+
+def test_stereo_kinesis_contains_level_kinesis_when_k_is_zero():
+    lk = scripted.LevelKinesis(slow=0.3, fast=0.9, threshold=0.05, turn=0.1)
+    sk = scripted.StereoKinesis(k=0.0, slow=0.3, fast=0.9, threshold=0.05, turn=0.1)
+    l, r = torch.tensor([[0.2, 0.01]]), torch.tensor([[0.1, 0.02]])
+    f1, t1, _ = lk(l, r, None)
+    f2, t2, _ = sk(l, r, None)
+    assert torch.equal(f1, f2) and torch.allclose(t1, t2)

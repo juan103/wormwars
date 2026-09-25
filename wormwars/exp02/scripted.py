@@ -114,6 +114,48 @@ class OneStepMemory:
         return self.speed * one, turn, level.clone()
 
 
+class MemoryKinesis:
+    """Everything LevelKinesis does, plus one tick of memory: turn by `fall_turn` instead of
+    `turn` when concentration has fallen since the last tick. With fall_turn == turn it IS
+    LevelKinesis, so a gate comparing the two measures what memory adds, not a different policy."""
+
+    def __init__(self, slow, fast, threshold, turn, fall_turn, fall_threshold):
+        self.slow, self.fast, self.threshold, self.turn = slow, fast, threshold, turn
+        self.fall_turn, self.fall_threshold = fall_turn, fall_threshold
+
+    def init(self, s, b):
+        return None
+
+    def __call__(self, left, right, state):
+        level = (left + right) / 2
+        one = torch.ones_like(level)
+        fwd = torch.where(level > self.threshold, self.slow * one, self.fast * one)
+        if state is None:
+            falling = torch.zeros_like(level, dtype=torch.bool)
+        else:
+            falling = level < state - self.fall_threshold
+        turn = torch.where(falling, self.fall_turn * one, self.turn * one)
+        return fwd, turn, level.clone()
+
+
+class StereoKinesis:
+    """Everything LevelKinesis does, plus stereo steering toward the stronger side. With k == 0
+    it IS LevelKinesis."""
+
+    def __init__(self, k, slow, fast, threshold, turn):
+        self.k, self.slow, self.fast, self.threshold, self.turn = k, slow, fast, threshold, turn
+
+    def init(self, s, b):
+        return None
+
+    def __call__(self, left, right, state):
+        level = (left + right) / 2
+        one = torch.ones_like(level)
+        fwd = torch.where(level > self.threshold, self.slow * one, self.fast * one)
+        turn = (self.turn * one + self.k * (left - right)).clamp(-1, 1)
+        return fwd, turn, state
+
+
 def score_policy(cfg, iface, policy, world_ids, run_seed, device) -> np.ndarray:
     """Per-world foraging score of one scripted policy, shape [worlds]."""
     brain = ScriptedBrain(iface, 302, policy, cfg.world.forward_gain, cfg.world.turn_gain,
