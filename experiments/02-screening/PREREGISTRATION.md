@@ -65,7 +65,7 @@ validates within 4% on an independent 2048).
 | `remaps.json` | `7082f0ef76ab5b11` |
 | `calibration.json` | `1524f8488bfce0ae` |
 | `diagnostics.json` | `069873f3609258ad` |
-| `probe_validation.json` | `d011714c6dca2aac` (was `a0450e2cd31c2720` before D041 added the T0 jitter check; every earlier value is unchanged) |
+| `probe_validation.json` | `2ee200f12df4fc2f` (was `a0450e2cd31c2720` before D041 added the T0 jitter check; every earlier value is unchanged) |
 | `pilot.json` | `d5c0c8b0168be4bc` |
 
 ## 4. The primary outcome
