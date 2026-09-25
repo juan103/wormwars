@@ -16,3 +16,4 @@ followed each review. An empty answer means that consultant hit its usage limit 
 | `20260925-053628-preregistration` | Adversarial review of the pre-registration (Astra: no-go as written, 9 points) |
 | `20260925-055819-preregistration-recheck` | Confirmation pass on the nine fixes (Astra: 6 fixed, 3 partly) |
 | `20260925-080106-preregistration-fable` | The pre-registration, after the evolution started (Fable: 10 points, no stop) |
+| `20260925-135918-results` | The first version of RESULTS.md (both: numbers correct, readings too strong, registered outcomes missing) |

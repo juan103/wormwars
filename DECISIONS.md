@@ -908,3 +908,23 @@ probes, analysis and wording (the review is in `experiments/02-screening/reviews
 - t-intervals are reported next to the 8-unit bootstrap, and raw-score fitness estimates next to
   the normalised ones. The eight continuation runs' generation-79 champions are probed. The anchor
   tripwire now reads as a procedure change, not a bug. The wording on probe worlds is corrected.
+
+## D042 — The results after review: the shuffles catch up; several readings withdrawn
+
+Astra 6 and Fable 5.1 reviewed the first version of `experiments/02-screening/RESULTS.md`
+(`6dc7d71`). Both confirmed every number they could trace. Both found the readings stated more
+strongly than the registered rules or the data allow, and several registered outcomes missing.
+Each point was recomputed before it was adopted:
+
+- **"Evolution erodes N2's generation-0 advantage" was wrong in kind.** The paired change in the
+  T0 interaction is −0.061 [−0.108, −0.014]. But N2's own normalised preference for M0 over the
+  remaps is unchanged (+0.026 at generation 0 and 39 on T0). The shuffles' best random brains
+  start worse under M0 (−0.042) and catch up (+0.019). Astra found this.
+- **Withdrawn:** "not on its history" (jitter cannot show absence), "stereo steering is real but
+  worth little" (swap sensitivity already exists in 8 of 72 generation-0 champions), "N2 reads
+  food more strongly" (N2 scores 1.38 under constant food against SH's 1.74, so it is an
+  intervention effect), and "topology, not strengths" (no equivalence margin; mutation erodes
+  the initial magnitudes).
+- **Added:** the §4 companions, jitter 3, the common-mode response, generation-0 magnitudes,
+  gap-on valence, behaviour, intake and per-run drive. Added post hoc: the T0 R1 − R2 contrast
+  (+0.063 [+0.011, +0.116]), which the T1-only tripwire did not compute.
