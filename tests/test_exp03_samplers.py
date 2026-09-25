@@ -94,3 +94,20 @@ def test_ordinary_ensemble_is_identical_to_the_published_shuffles(con):
         old = shuffled(con, seed, f"SH{seed}")
         np.testing.assert_array_equal(g.chem, old.chem)
         np.testing.assert_array_equal(g.gap, old.gap)
+
+
+def test_mirror_sampler_can_create_autapses_so_it_is_reversible(con):
+    """The first build's SH-mirror graphs had 0 autapses against N2's 38: the chain destroyed
+    them but never created them, a one-way drift (D052)."""
+    g, _ = S.build(con, "SH-mirror", seed=4, passes=20)
+    assert int(np.diag(g.chem > 0).sum()) > 0
+
+
+def test_reciprocity_ensemble_keeps_n2s_reciprocal_pairs_exactly(con):
+    """N2 has 669 reciprocal chemical pairs; ordinary shuffles about 126 (D052)."""
+    g, _ = S.build(con, "SH-recip", seed=6, passes=4)
+    recip = lambda c: int(((c.chem > 0) & (c.chem > 0).T & ~np.eye(c.n, dtype=bool)).sum() // 2)  # noqa: E731
+    assert recip(g) == recip(con)
+    for a, b in zip(degrees(con), degrees(g)):
+        np.testing.assert_array_equal(a, b)
+    assert S.jaccard(g.chem > 0, con.chem > 0) < 0.5

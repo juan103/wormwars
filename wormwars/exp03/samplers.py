@@ -10,6 +10,9 @@ accepted and attempted counts, and raises `SamplerFailure` instead of returning 
   capped at N2's, by swapping weights with unconstrained edges.
 - "SH-class": a swap needs both targets in one neuron class and both sources in one class, so
   each neuron keeps its in- and out-degree per partner class.
+- "SH-recip": ordinary swaps accepted only if the number of reciprocal chemical pairs (a->b and
+  b->a, a != b) is unchanged, so it stays at N2's 669 (ordinary shuffles have about 126). Added after the
+  structural validation showed no other ensemble keeps it (D052).
 - "SH-mirror": moves stay within mirror-orbit categories (paired, self-mirrored, unpaired) under
   the curated left-right map, so the symmetric share equals N2's exactly. Routing-matched as
   SH-route. Self-mirrored gap junctions between left-right homologs cannot move.
@@ -25,7 +28,7 @@ import numpy as np
 from ..interface import load_interface
 
 ROOT = Path(__file__).resolve().parents[2]
-KINDS = ("SH", "SH-route", "SH-class", "SH-mirror")
+KINDS = ("SH", "SH-route", "SH-class", "SH-mirror", "SH-recip")
 
 
 class SamplerFailure(RuntimeError):
@@ -176,15 +179,17 @@ def _mirror_chain(edges, rng, target, cap, m, directed, route_ok):
         if not directed and rng.random() < 0.5:
             c, d = d, c
         new = [key(a, d), key(c, b)]
-        if any((not directed and len(e) < 2) or (directed and e[0] == e[1]) for e in new):
-            continue  # degenerate before its image is taken
+        # autapses are allowed for chemical edges, as in the ordinary sampler, so they can be
+        # created as well as destroyed (D052: forbidding creation drifted them to zero)
+        if any(not directed and len(e) < 2 for e in new):
+            continue  # a degenerate gap junction, rejected before its image is taken
         old = [e1, e2]
         if c1 == "paired":
             old += [image(e1), image(e2)]
             new += [image(new[0]), image(new[1])]
         if len(set(old)) != len(old) or len(set(new)) != len(new):
             continue
-        if any((not directed and len(e) < 2) or (directed and e[0] == e[1]) for e in new):
+        if any(not directed and len(e) < 2 for e in new):
             continue
         after = (present - set(old)) | set(new)
         if len(after) != len(present) or any(e in present and e not in old for e in new):
@@ -292,6 +297,14 @@ def build(con, kind: str, seed: int, passes: int = 20, attempt_factor: float = 4
         route_chem, route_gap = _route_checker(con, True), _route_checker(con, False)
     if kind == "SH-route":
         ok_chem, ok_gap = route_chem[0], route_gap[0]
+    elif kind == "SH-recip":
+        def ok_chem(o1, o2, n1, n2, present):
+            pairs = {frozenset(e) for e in (o1, o2, n1, n2) if e[0] != e[1]}
+            after = (present - {o1, o2}) | {n1, n2}
+
+            def recip(edges):
+                return sum(1 for pr in pairs for x, y in [tuple(pr)] if (x, y) in edges and (y, x) in edges)
+            return recip(after) == recip(present)
     elif kind == "SH-class":
         def ok_chem(o1, o2, n1, n2, present):
             (a, b), (c, d) = o1, o2

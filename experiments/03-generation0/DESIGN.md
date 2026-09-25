@@ -1,6 +1,6 @@
 # WormWars 03: generation-0 structure and task specificity
 
-**Status: design v3** (2026-09-25). v1 was reviewed by Astra 6 (maximum effort) and Fable 5.1
+**Status: design v3.1** (2026-09-25). v1 was reviewed by Astra 6 (maximum effort) and Fable 5.1
 (`docs/reviews/20260925-210723-03-design/`), and v2 answered them (D050). Astra's confirmation pass
 on v2 (`docs/reviews/20260925-212556-03-design-v2/`) found flaws in the samplers and the verdict,
 and v3 fixes them (D051). The changes are listed at the end. No N2 data of any kind is produced before the pre-registration. Structure-only work
@@ -353,3 +353,23 @@ or a smaller panel. Its feasibility pilot must decide.
 - **Attribution** from N2perm is dropped; T1-const is described accurately.
 - **Budget** rises to about 12.8 GPU-hours, with a cap of 15. 03a's arithmetic is corrected to
   about 204 GPU-hours.
+
+## Changes in v3.1 (found by the structural validation, D052)
+
+Structure only; no N2 brain has been run.
+
+- **The mirror sampler drifted self-connections to zero.** The first build's SH-mirror graphs
+  had 0 autapses, against N2's 38 and about 15 for ordinary shuffles. The chain destroyed
+  autapses but never created them, the same one-way drift Astra found in v2's routing rule. The
+  chain now allows creating them. Every SH-mirror graph was rebuilt, and the symmetric share is
+  still exact.
+- **A fifth ensemble, SH-recip, reciprocity-preserving.** N2 has 669 reciprocal chemical pairs
+  (a→b and b→a); every other ensemble has about 126. Reciprocal loops could plausibly carry
+  history dependence (P4), so this is a generic property the ensembles must control for. Swaps
+  are accepted only if the number of reciprocal pairs is unchanged. It has 128 graphs, adds about
+  2.7 GPU-hours, and takes part in the verdict exactly like the other four. The
+  intersection-union over ensembles now takes the maximum over five.
+- **A statistic corrected:** the validation had counted reciprocal pairs including
+  self-connections. "688" for N2 was wrong; it is 669.
+- **Budget:** about 15.5 GPU-hours (cap 18). The pilot measures about 76 seconds per graph, so
+  the run is 645 graphs × 76 s, about 13.6 GPU-hours, plus the pilot.

@@ -37,7 +37,7 @@ EXP = Path(__file__).resolve().parents[1] / "experiments" / "03-generation0"
 OUT = Path("runs/exp03")
 GRAPHS = OUT / "graphs"
 N_PER_ENSEMBLE = 128
-SEED_BASE = {"SH": 10_000, "SH-route": 20_000, "SH-class": 30_000, "SH-mirror": 40_000}
+SEED_BASE = {"SH": 10_000, "SH-route": 20_000, "SH-class": 30_000, "SH-mirror": 40_000, "SH-recip": 50_000}
 PILOT_SEEDS = range(101, 117)
 PLATEAU_SEEDS = range(90_000, 90_004)
 WORLDS = np.arange(993_000_000, 993_000_016)  # shared by every graph and task; disjoint from 02
@@ -67,7 +67,8 @@ def _graph_stats(con, g, info):
             "acceptance_chem": info["chem"]["accepted"] / info["chem"]["attempted"],
             "acceptance_gap": info["gap"]["accepted"] / info["gap"]["attempted"],
             "mirror_chem": S.mirror_share(ch, m), "mirror_gap": S.mirror_share(g.gap > 0, m),
-            "autapses": int(np.diag(ch).sum()), "reciprocal_chem": int((ch & ch.T).sum() // 2)}
+            "autapses": int(np.diag(ch).sum()),
+            "reciprocal_chem": int((ch & ch.T & ~np.eye(ch.shape[0], dtype=bool)).sum() // 2)}
 
 
 def _build_one(args):
@@ -282,13 +283,42 @@ def cmd_pilot(args):
     print(f"per graph {per_graph_seconds:.0f}s -> projected run {per_graph_seconds * (5 + 4 * N_PER_ENSEMBLE) / 3600:.1f} h")
 
 
+def _signal_from_resample(m, gi, wi, pi):
+    """The four signals for one graph with genomes gi, worlds wi (fitness) and probe genomes pi."""
+    f = {k: np.asarray(v)[np.ix_(gi, wi)] for k, v in m["fitness"].items()}
+    r = {k: np.asarray(v)[pi] for k, v in m["response"]["M0"].items()}
+    out = {"P1": float(r["directional_turn_signed_raw"].mean() / r["common_turn_raw"].mean()),
+           "P2": float(f["T1-M0"].mean() - (f["T1-R1"].mean() + f["T1-R2"].mean()) / 2),
+           "P3": float(f["T1-M0"].mean() - f["T1const-M0"].mean())}
+    h = m["history"]["raw_turn"]
+    out["P4"] = float(np.abs(np.asarray(h["final"])[pi]).mean() / np.abs(np.asarray(h["steady_contrast"])[pi]).mean())
+    return out
+
+
+def cmd_precision(args):
+    """Design v3: a pilot shuffle stands in for N2. Its bootstrap SE per signal (genomes and
+    worlds resampled) must be under a quarter of the equivalence margin."""
+    pilot = json.loads((EXP / "pilot.json").read_text(encoding="utf-8"))
+    m = pilot["graphs"][0]
+    rng = np.random.default_rng(0)
+    g, w = np.asarray(m["fitness"]["T1-M0"]).shape
+    p = len(m["response"]["M0"]["common_turn_raw"])
+    boots = [_signal_from_resample(m, rng.integers(0, g, g), rng.integers(0, w, w), rng.integers(0, p, p))
+             for _ in range(1000)]
+    se = {k: float(np.std([b[k] for b in boots], ddof=1)) for k in ("P1", "P2", "P3", "P4")}
+    ok = {k: se[k] < 0.25 * pilot["margins"][k]["equivalence"] for k in se}
+    pilot["precision"] = {"stand_in": m["name"], "se": se, "passes": ok}
+    _json(EXP / "pilot.json", pilot)
+    print({k: (round(se[k], 5), round(pilot["margins"][k]["equivalence"], 5), ok[k]) for k in se})
+
+
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("command", choices=["build", "pilot"])
+    ap.add_argument("command", choices=["build", "pilot", "precision"])
     ap.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
     ap.add_argument("--workers", type=int, default=8)
     args = ap.parse_args()
-    {"build": cmd_build, "pilot": cmd_pilot}[args.command](args)
+    {"build": cmd_build, "pilot": cmd_pilot, "precision": cmd_precision}[args.command](args)
 
 
 if __name__ == "__main__":

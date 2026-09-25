@@ -1193,3 +1193,22 @@ and the rest partly addressed, and found new flaws. All are adopted in v3:
   - structural acceptance rules are fixed before construction;
   - P1 and P4 have numerical definitions.
 - **Budget:** about 12.8 GPU-hours, with a cap of 15.
+
+## D052 — Structural validation of 03's ensembles: a mirror-sampler drift fixed; a reciprocity ensemble added
+
+The ensemble build (structure only) passed every pre-set check: plateau, acceptance, overlap
+ceiling, and no substitutions. Its statistics showed two problems, both fixed before any N2
+measurement:
+
+1. **The mirror sampler drifted self-connections to zero.** SH-mirror graphs had 0 autapses,
+   against N2's 38 and about 15 for ordinary shuffles. The chain could destroy autapses but not
+   create them, which is irreversible. The chain now allows creating them (a test pins it), and
+   SH-mirror was rebuilt.
+2. **Reciprocity was uncontrolled.** N2 has 669 reciprocal chemical pairs; every ensemble had
+   about 126. Reciprocal loops are a plausible generic source of history dependence. A fifth
+   ensemble, SH-recip, keeps the number of reciprocal pairs exactly (its test pins it).
+
+**A statistic of mine was wrong:** reciprocity counted autapses as half-pairs, giving N2 688.
+The correct figure is 669, and the sampler was always exact.
+
+**Budget:** about 15.5 GPU-hours.
