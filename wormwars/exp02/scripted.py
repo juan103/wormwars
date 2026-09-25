@@ -75,7 +75,7 @@ class StereoProportional:
 
     def __call__(self, left, right, state):
         turn = (self.k * (left - right)).clamp(-1, 1)
-        return torch.full_like(left, self.speed), turn, state
+        return self.speed * torch.ones_like(left), turn, state
 
 
 class LevelKinesis:
@@ -89,9 +89,9 @@ class LevelKinesis:
 
     def __call__(self, left, right, state):
         level = (left + right) / 2
-        fwd = torch.where(level > self.threshold, torch.full_like(level, self.slow),
-                          torch.full_like(level, self.fast))
-        return fwd, torch.full_like(level, self.turn), state
+        one = torch.ones_like(level)
+        fwd = torch.where(level > self.threshold, self.slow * one, self.fast * one)
+        return fwd, self.turn * one, state
 
 
 class OneStepMemory:
@@ -109,8 +109,9 @@ class OneStepMemory:
             falling = torch.zeros_like(level, dtype=torch.bool)
         else:
             falling = level < state - self.threshold
-        turn = torch.where(falling, torch.full_like(level, self.turn), torch.zeros_like(level))
-        return torch.full_like(level, self.speed), turn, level.clone()
+        one = torch.ones_like(level)
+        turn = torch.where(falling, self.turn * one, torch.zeros_like(level))
+        return self.speed * one, turn, level.clone()
 
 
 def score_policy(cfg, iface, policy, world_ids, run_seed, device) -> np.ndarray:
@@ -130,3 +131,19 @@ def tune(make_policy, grid: dict, cfg, iface, world_ids, run_seed, device) -> tu
         if s > best_score:
             best, best_score = params, s
     return best, best_score
+
+
+def tune_batched(make_policy, grid: dict, cfg, iface, world_ids, run_seed, device) -> tuple[dict, float]:
+    """`tune`, with every grid point run as one strain of a single batched world: the same maps,
+    the same winner and score, in one rollout instead of one per point. Policies take their
+    parameters as [strains, 1] tensors and broadcast them."""
+    keys = sorted(grid)
+    combos = list(itertools.product(*(grid[k] for k in keys)))
+    n = len(combos)
+    params = {k: torch.tensor([c[i] for c in combos], dtype=torch.float32, device=device).view(n, 1)
+              for i, k in enumerate(keys)}
+    brain = ScriptedBrain(iface, 302, make_policy(**params), cfg.world.forward_gain,
+                          cfg.world.turn_gain, n_strains=n, device=device)
+    scores = rollout_brain(cfg, iface, brain, world_ids, run_seed, device).score.mean(axis=1)
+    i = int(np.argmax(scores))  # first maximum: the same tie-break as the sequential search
+    return dict(zip(keys, combos[i])), float(scores[i])

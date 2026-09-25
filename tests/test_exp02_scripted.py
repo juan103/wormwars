@@ -109,3 +109,17 @@ def test_tune_returns_the_best_grid_point(parts):
         {"speed": [0.0, 0.8]}, cfg, iface, np.arange(2), 1, "cpu",
     )
     assert best == {"speed": 0.8} and np.isfinite(score)
+
+
+def test_batched_tuning_matches_one_at_a_time(parts):
+    """Every grid point becomes one strain in a single world batch; the winner and its score
+    must be exactly what evaluating the points one by one gives."""
+    _, iface = parts
+    cfg = Config()
+    cfg.world.max_ticks = 60
+    grid_ = {"slow": [0.0, 0.3], "fast": [0.6, 1.0], "threshold": [0.02], "turn": [0.0, 0.2]}
+    make = lambda slow, fast, threshold, turn: scripted.LevelKinesis(slow, fast, threshold, turn)  # noqa: E731
+    seq = scripted.tune(make, grid_, cfg, iface, np.arange(3), 1, "cpu")
+    bat = scripted.tune_batched(make, grid_, cfg, iface, np.arange(3), 1, "cpu")
+    assert seq[0] == bat[0]
+    assert abs(seq[1] - bat[1]) < 1e-5
