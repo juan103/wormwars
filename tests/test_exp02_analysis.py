@@ -154,7 +154,7 @@ def test_capability_contrast_recovers_a_planted_n2_advantage():
 def test_prediction_verdict_separates_support_challenge_and_inconclusive():
     ok = {"estimate": 0.3, "lo": 0.2, "hi": 0.4}
     assert A.prediction_verdict(ok, {"lo": 0.15, "hi": 0.4}) == "supported"
-    assert A.prediction_verdict({"lo": -0.05, "hi": 0.05}, {"lo": 0.15, "hi": 0.4}) == "challenged"
+    assert A.prediction_verdict({"lo": -0.05, "hi": 0.05}, {"lo": 0.15, "hi": 0.4}) == "inconclusive"
     assert A.prediction_verdict(ok, {"lo": 0.0, "hi": 0.08}) == "challenged"
     assert A.prediction_verdict({"lo": -0.2, "hi": -0.15}, {"lo": 0.15, "hi": 0.4}) == "challenged"
     assert A.prediction_verdict({"lo": -0.05, "hi": 0.3}, {"lo": 0.15, "hi": 0.4}) == "inconclusive"
@@ -218,3 +218,56 @@ def test_many_statistics_share_one_resample_and_match_the_single_bootstrap():
     one = A.paired_bootstrap(n2, sh, stats["I_T1"], n_boot=300)
     for k in ("estimate", "lo", "hi"):
         assert abs(many["I_T1"][k] - one[k]) < 1e-12
+
+
+def test_verdict_does_not_challenge_a_small_positive_contrast():
+    """Astra's pre-registration review, point 2: the equivalence branch tested a hypothesis the
+    support rule never required; a contrast straddling zero is inconclusive, not challenged."""
+    n2_use = {"lo": 0.20, "hi": 0.30}
+    assert A.prediction_verdict({"lo": 0.001, "hi": 0.009}, n2_use) == "supported"
+    assert A.prediction_verdict({"lo": -0.001, "hi": 0.009}, n2_use) == "inconclusive"
+
+
+def test_variance_components_handle_unequal_runs_per_graph():
+    """Astra's pre-registration review, point 7: a budget cut can leave some graphs with one run."""
+    _, sh = synth(effect_t1=0.0, noise=0.1)
+    del sh["SH5"][1], sh["SH6"][1]
+    v = A.variance_components(sh, "T1")
+    assert np.isfinite(v["between_graph"]) and np.isfinite(v["within_graph"])
+
+
+def test_integrator_not_assessed_when_rescoring_was_dropped():
+    """Astra's pre-registration review, point 4: a registered budget omission must read as
+    'not assessed', never crash and never pass silently."""
+    recs = [{"key": "k", "task": "T1", "mapping": "M0", "graph": "N2", "run": 0}]
+    out = A.integrator_interactions(recs, {"k": {"g39": {"channels": {}}}})
+    assert out["assessed"] is False
+    base = {"food_dependence": {"lo": 1, "hi": 2, "estimate": 1},
+            "memory_vs_memoryless": {"lo": 1, "hi": 2, "estimate": 1},
+            "anchor": {"estimate": 1.0, "lo": 0.5, "hi": 1.5}, "sign_01b": 1.0,
+            "drive": {"max_validation_error": 0.03}, "integrator": out, "late_cells": (0, 8),
+            "ms_vs_matched": {"lo": -1, "hi": 1}, "r1_minus_r2": {"lo": -1, "hi": 1},
+            "sh_mapping": {"lo": -1, "hi": 1}, "valence_no_gap_max": 0.0}
+    tw = [t for t in A.tripwires(base) if "integrator" in t["name"]][0]
+    assert tw["fired"] is None
+
+
+def test_tripwires_serialise_with_plain_json():
+    """Astra's pre-registration review, point 1: NumPy booleans broke the CLI's json.dumps."""
+    base = {"food_dependence": {"lo": np.float64(1), "hi": 2, "estimate": 1},
+            "memory_vs_memoryless": {"lo": 1, "hi": 2, "estimate": 1},
+            "anchor": {"estimate": np.float64(1.0), "lo": 0.5, "hi": 1.5}, "sign_01b": np.float64(1.0),
+            "drive": {"max_validation_error": 0.03},
+            "integrator": {"assessed": True, "max_shift": np.float64(0.0), "chaos_floor": 0.0}, "late_cells": (0, 8),
+            "ms_vs_matched": {"lo": -1, "hi": 1}, "r1_minus_r2": {"lo": -1, "hi": 1},
+            "sh_mapping": {"lo": -1, "hi": 1}, "valence_no_gap_max": 0.0}
+    json.dumps([{k: v for k, v in t.items() if k != "detail"} for t in A.tripwires(base)])
+
+
+def test_late_cells_measure_the_share_of_improvement_not_of_the_score():
+    """Astra's pre-registration review, point 6: the criterion is 90% of the fitted improvement
+    from generation 0; a curve that starts near its asymptote but improves slowly is still late."""
+    slow_small = {"task": "T0", "mapping": "M0", "graph": "N2",
+                  "checkpoints": [(g, 3 - 0.1 * np.exp(-g / 100)) for g in (0, 10, 20, 30, 39)]}
+    assert A.late_cells([slow_small]) == (1, 1)
+    assert "improvement" in A.late_cells.__doc__

@@ -445,7 +445,8 @@ def cmd_run(args, con, iface):
 
 def _champion_probes(cfg, iface, champ, seed, device, with_pheromone, full=True) -> dict:
     """The frozen capability suite on the probe worlds (per world); the integrator rescoring and
-    behaviour only on the final champion (`full`)."""
+    behaviour only on the final champion (`full`). Used by the pilot; the grid's probes command
+    runs the same pieces in budgeted stages."""
     out = {"channels": P.channel_dependence(cfg, iface, champ, grid.PROBE_IDS, seed, device, with_pheromone)}
     if full:
         out["integrator"] = P.integrator_rescore(cfg, iface, champ, grid.CHECKPOINT_IDS, seed, device)
@@ -461,49 +462,106 @@ def _gen0_graphs():
 
 
 def cmd_probes(args, con, iface):
+    """Stages, in the pre-registered order: (1) the capability suite on every champion, never
+    dropped; (2) generation-0 structure; (3) integrator rescoring; (4) behaviour. Stages 3 and 4
+    run champion by champion only while evolution time plus probe time so far plus the slowest
+    step seen stays inside --max-hours; what does not fit is recorded as dropped (behaviour is
+    reached last, so it is dropped first). probes.json is saved after every step and a rerun
+    resumes where it stopped."""
     remap_sets = _load(grid.EXP02_DIR / "remaps.json")["sets"]
     recs = grid.read_records(OUT / "records.jsonl")
-    ids = grid.CHECKPOINT_IDS[:8]
-    t_start = time.perf_counter()
-    out = {"valence": [], "gen0_strength": [], "input_response": {}, "champions": {}}
-    cfg1 = grid.task_config(Config(), "T1")
-    graphs = _gen0_graphs()
-    for name in VALENCE_GRAPHS:
-        cfg = cfg1.copy()
-        cfg.world.forward_gain, cfg.world.turn_gain = _gains(name)
-        spec = BrainSpec.from_connectome(grid.graph_for(con, name), device=args.device)
-        for gaps in (False, True):
-            out["valence"].append({"graph": name, **P.valence_check(
-                spec, cfg, con, iface, 128, ids, 7, args.device, gaps)})
-    for name in graphs:
-        spec = BrainSpec.from_connectome(grid.graph_for(con, name), device=args.device)
-        for mapping in ("M0", "R1", "R2", "MS"):
-            fam = grid.interface_for(con, mapping, remap_sets)
-            for mode in ("anatomical", "uniform", "permuted"):
-                cfg = cfg1.copy()
-                cfg.brain.init_chem_magnitude = cfg.brain.init_gap_magnitude = mode
-                cfg.world.forward_gain, cfg.world.turn_gain = _gains(name)
-                out["gen0_strength"].append({"graph": name, "mapping": mapping, "mode": mode,
-                                             "score": P.gen0_scores(spec, cfg, fam, 32, ids, 7, args.device)})
-            # the graph's own calibrated gains, so the motor-command response is the real one
-            cfg_ir = cfg1.copy()
-            cfg_ir.world.forward_gain, cfg_ir.world.turn_gain = _gains(name)
-            out["input_response"][f"{name}-{mapping}"] = P.input_response(spec, cfg_ir, fam, 256, args.device)
-    print(f"generation-0 probes: {time.perf_counter() - t_start:.0f}s")
-    for r in recs:
+    path = OUT / "probes.json"
+    out = _load(path) if path.exists() else {"valence": [], "gen0_strength": [], "input_response": {},
+                                             "champions": {}, "seconds": {}, "dropped": []}
+    evolution_s = sum(r["wall_seconds"] for r in recs)
+    budget = args.max_hours * 3600
+    spent = lambda: evolution_s + sum(out["seconds"].values())  # noqa: E731
+    slowest = defaultdict(float)
+
+    def timed(stage, fn):
+        t = time.perf_counter()
+        v = fn()
+        took = time.perf_counter() - t
+        out["seconds"][stage] = out["seconds"].get(stage, 0.0) + took
+        slowest[stage] = max(slowest[stage], took)
+        return v
+
+    def parts(r):
         cfg = grid.brain_config_for_graph(grid.task_config(Config(), r["task"]), r["graph"])
         cfg.world.forward_gain, cfg.world.turn_gain = _gains(r["graph"])
         fam = grid.interface_for(con, r["mapping"], remap_sets)
         spec = BrainSpec.from_connectome(grid.graph_for(con, r["graph"]), device=args.device)
-        out["champions"][r["key"]] = {}
+        champs = {}
         for tag in ("g00", "g39"):
             champ, meta = load_genome(OUT / f"{r['key']}-{tag}.npz", spec, None, device=args.device)
             check_manifest(meta, cfg, fam, spec)
-            out["champions"][r["key"]][tag] = _champion_probes(cfg, fam, champ, r["run_seed"], args.device,
-                                                               r["task"] == "A", full=tag == "g39")
-    out["seconds"] = time.perf_counter() - t_start
-    _json(OUT / "probes.json", out)
-    print(f"probes done in {out['seconds']:.0f}s")
+            champs[tag] = champ
+        return cfg, fam, champs
+
+    # 1. the capability suite: every champion, generation 0 and 39
+    for r in recs:
+        entry = out["champions"].setdefault(r["key"], {})
+        if all("channels" in entry.get(t, {}) for t in ("g00", "g39")):
+            continue
+        cfg, fam, champs = parts(r)
+        for tag, champ in champs.items():
+            entry.setdefault(tag, {})["channels"] = timed("capability", lambda: P.channel_dependence(
+                cfg, fam, champ, grid.PROBE_IDS, r["run_seed"], args.device, r["task"] == "A"))
+        _json(path, out)
+    print(f"capability suite done, {spent() / 3600:.2f} h of {args.max_hours} h used", flush=True)
+
+    # 2. generation-0 structure
+    if not out["valence"]:
+        ids = grid.CHECKPOINT_IDS[:8]
+        cfg1 = grid.task_config(Config(), "T1")
+
+        def gen0():
+            for name in VALENCE_GRAPHS:
+                cfg = cfg1.copy()
+                cfg.world.forward_gain, cfg.world.turn_gain = _gains(name)
+                spec = BrainSpec.from_connectome(grid.graph_for(con, name), device=args.device)
+                for gaps in (False, True):
+                    out["valence"].append({"graph": name, **P.valence_check(
+                        spec, cfg, con, iface, 128, ids, 7, args.device, gaps)})
+            for name in _gen0_graphs():
+                spec = BrainSpec.from_connectome(grid.graph_for(con, name), device=args.device)
+                for mapping in ("M0", "R1", "R2", "MS"):
+                    fam = grid.interface_for(con, mapping, remap_sets)
+                    for mode in ("anatomical", "uniform", "permuted"):
+                        cfg = cfg1.copy()
+                        cfg.brain.init_chem_magnitude = cfg.brain.init_gap_magnitude = mode
+                        cfg.world.forward_gain, cfg.world.turn_gain = _gains(name)
+                        out["gen0_strength"].append({"graph": name, "mapping": mapping, "mode": mode,
+                                                     "score": P.gen0_scores(spec, cfg, fam, 32, ids, 7, args.device)})
+                    # the graph's own calibrated gains, so the motor-command response is the real one
+                    cfg_ir = cfg1.copy()
+                    cfg_ir.world.forward_gain, cfg_ir.world.turn_gain = _gains(name)
+                    out["input_response"][f"{name}-{mapping}"] = P.input_response(spec, cfg_ir, fam, 256, args.device)
+
+        timed("gen0", gen0)
+        _json(path, out)
+    print(f"generation-0 probes done, {spent() / 3600:.2f} h used", flush=True)
+
+    # 3, 4. integrator rescoring, then behaviour, on generation-39 champions, while the budget lasts
+    for stage in ("integrator", "behaviour"):
+        for r in recs:
+            g39 = out["champions"][r["key"]]["g39"]
+            if stage in g39:
+                continue
+            if spent() + slowest[stage] > budget:
+                if {"stage": stage, "key": r["key"]} not in out["dropped"]:
+                    out["dropped"].append({"stage": stage, "key": r["key"]})
+                continue
+            cfg, fam, champs = parts(r)
+            if stage == "integrator":
+                g39[stage] = timed(stage, lambda: P.integrator_rescore(
+                    cfg, fam, champs["g39"], grid.CHECKPOINT_IDS, r["run_seed"], args.device))
+            else:
+                g39[stage] = timed(stage, lambda: P.behaviour(
+                    cfg, fam, champs["g39"], grid.CHECKPOINT_IDS[:4], r["run_seed"], args.device))
+            _json(path, out)
+    _json(path, out)
+    print(f"probes done: {spent() / 3600:.2f} h used in total; dropped {len(out['dropped'])} steps", flush=True)
 
 
 def cmd_report(args, con, iface):
@@ -528,8 +586,11 @@ def main():
     ap.add_argument("command", choices=["remaps", "calibrate", "diagnostics", "extend", "validate-probes", "pilot", "run",
                                         "probes", "report"])
     ap.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
-    ap.add_argument("--max-hours", type=float, default=10.0)
+    # run: the evolution budget; probes: the total budget, evolution included
+    ap.add_argument("--max-hours", type=float, default=None)
     args = ap.parse_args()
+    if args.max_hours is None:  # the pre-registered budgets (PREREGISTRATION.md section 8)
+        args.max_hours = {"run": 8.0, "probes": 12.0}.get(args.command, 12.0)
     con = load_connectome()
     iface = load_interface(con)
     {"remaps": cmd_remaps, "calibrate": cmd_calibrate, "diagnostics": cmd_diagnostics, "validate-probes": cmd_validate_probes, "extend": cmd_extend,

@@ -6,7 +6,7 @@ from __future__ import annotations
 import numpy as np
 
 from . import analysis as An
-from .grid import MAIN, TARGET_DRIVE
+from .grid import MAIN, N2_RUNS, PROBE_IDS, SH_GRAPHS, TARGET_DRIVE
 
 # D038: stereo ablations exist only on the stereo task; the history jitters and the constant
 # food signal apply to both. food_mean on T0-M0 is the one primary mechanistic outcome.
@@ -57,13 +57,46 @@ def capability(records, champions, n_boot: int = An.N_BOOT) -> dict:
     return out
 
 
-def primary(cap: dict) -> dict:
+def primary_completeness(records, champions) -> list[str]:
+    """Problems that withhold the primary verdict (Astra's pre-registration review, point 3):
+    every N2 run and every SH graph must be present in the primary cell, and every present
+    champion's primary probe must hold finite scores on exactly the registered probe worlds with
+    its run's seed. Empty means complete."""
     probe, cell = PRIMARY
-    c = cap[probe]["g39"]["cells"][f"{cell[0]}-{cell[1]}"]
-    return {"probe": probe, "cell": f"{cell[0]}-{cell[1]}", "delta": c["delta"], "n2_use": c["n2"],
-            "sh_use": c["sh"], "n2_use_class": An.classify_use(c["n2"]),
-            "sh_use_class": An.classify_use(c["sh"]),
-            "verdict": An.prediction_verdict(c["delta"], c["n2"])}
+    here = [r for r in records if (r["task"], r["mapping"]) == cell]
+    problems = []
+    n2_runs = {r["run"] for r in here if r["graph"] == "N2"}
+    sh_graphs = {r["graph"] for r in here if r["graph"].startswith("SH")}
+    if n2_runs != set(range(N2_RUNS)):
+        problems.append(f"N2 runs present {sorted(n2_runs)}, registered {N2_RUNS}")
+    if sh_graphs != {f"SH{k}" for k in range(1, SH_GRAPHS + 1)}:
+        problems.append(f"SH graphs present {sorted(sh_graphs)}, registered {SH_GRAPHS}")
+    for r in here:
+        if not (r["graph"] == "N2" or r["graph"].startswith("SH")):
+            continue
+        ch = champions.get(r["key"], {}).get("g39", {}).get("channels")
+        if ch is None:
+            problems.append(f"{r['key']}: no generation-39 probes")
+            continue
+        ok = (ch.get("world_ids") == [int(i) for i in PROBE_IDS] and ch.get("probe_seed") == r.get("run_seed")
+              and all(len(ch["scores"].get(k, [])) == len(PROBE_IDS)
+                      and np.isfinite(ch["scores"][k]).all() for k in ("real", probe)))
+        if not ok:
+            problems.append(f"{r['key']}: primary probe scores incomplete, non-finite or on the wrong worlds/seed")
+    return problems
+
+
+def primary(cap: dict, records, champions) -> dict:
+    probe, cell = PRIMARY
+    problems = primary_completeness(records, champions)
+    c = cap.get(probe, {}).get("g39", {}).get("cells", {}).get(f"{cell[0]}-{cell[1]}")
+    out = {"probe": probe, "cell": f"{cell[0]}-{cell[1]}", "complete": not problems, "problems": problems}
+    if c is None:
+        return dict(out, verdict="withheld")
+    out.update(delta=c["delta"], n2_use=c["n2"], sh_use=c["sh"], n2_use_class=An.classify_use(c["n2"]),
+               sh_use_class=An.classify_use(c["sh"]))
+    out["verdict"] = An.prediction_verdict(c["delta"], c["n2"]) if not problems else "withheld"
+    return out
 
 
 def per_champion(records, champions) -> dict:
@@ -81,17 +114,22 @@ def per_champion(records, champions) -> dict:
 
 
 def sh_graphs_with_use(records, champions, probe: str, cell: tuple, snap: str = "g39") -> dict:
-    """SH graphs whose champions (runs averaged) meaningfully use the capability. With eight
-    graphs, zero of eight bounds the rate below ~31% at most; it never shows absence."""
+    """How many SH graphs show *detected* meaningful use under this procedure: per graph, the
+    per-world difference averaged over its runs (the same probe worlds), with a bootstrap over
+    worlds. It is conditional on the runs made, and a capable graph can stay inconclusive, so the
+    count is a detection count, not a prevalence estimate (Astra's pre-registration review, 5)."""
     per = {}
     for r in records:
         if r["graph"].startswith("SH") and (r["task"], r["mapping"]) == cell:
             ch = champions.get(r["key"], {}).get(snap, {}).get("channels")
             if ch and probe in ch["scores"]:
-                per.setdefault(r["graph"], []).append(An.champion_use(ch, probe))
-    cls = {g: An.classify_use({"lo": float(np.mean([u["lo"] for u in us])),
-                               "hi": float(np.mean([u["hi"] for u in us]))}) for g, us in per.items()}
-    return {"per_graph": cls, "meaningful": sum(v == "meaningful" for v in cls.values()), "graphs": len(cls)}
+                per.setdefault(r["graph"], []).append(np.asarray(ch["scores"]["real"]) - np.asarray(ch["scores"][probe]))
+    out = {}
+    for g, diffs in sorted(per.items()):
+        b = An._boot_mean(np.mean(diffs, axis=0))
+        out[g] = dict(b, cls=An.classify_use(b), runs=len(diffs))
+    return {"per_graph": out, "detected_meaningful": sum(v["cls"] == "meaningful" for v in out.values()),
+            "graphs": len(out)}
 
 
 def build(raw_records, diagnostics, probes, calibration, sign_01b, n_boot: int = An.N_BOOT) -> dict:
@@ -116,7 +154,7 @@ def build(raw_records, diagnostics, probes, calibration, sign_01b, n_boot: int =
     champs = probes["champions"]
     cap = capability(main_recs, champs, n_boot)
     out["capability"] = cap
-    out["primary"] = primary(cap)
+    out["primary"] = primary(cap, main_recs, champs)
     out["per_champion"] = per_champion(main_recs, champs)
     out["sh_graphs_with_stereo_use"] = sh_graphs_with_use(main_recs, champs, "food_mean", ("T0", "M0"))
     n2, sh = An.units(recs, "norm_g39")

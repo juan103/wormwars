@@ -141,3 +141,10 @@ def test_a_saved_champion_replays_exactly_under_its_manifest(tmp_path):
         ids = np.arange(2)
         np.testing.assert_array_equal(rollout(cfg, iface, g, ids, 5).score,
                                       rollout(cfg, iface, back, ids, 5).score)
+
+
+def test_the_primary_cells_units_come_first():
+    """PREREGISTRATION section 4: the verdict needs every N2 run and every SH graph's run 0 in
+    T0-M0; they must be the first 16 batches, so any budget cut leaves them in."""
+    first = {(b[0].graph, b[0].run) for b in grid.run_schedule()[:16]}
+    assert first == {("N2", r) for r in range(8)} | {(f"SH{k}", 0) for k in range(1, 9)}

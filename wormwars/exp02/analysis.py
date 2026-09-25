@@ -119,13 +119,20 @@ def _unit_contrast(u, task):
 
 
 def variance_components(sh, task: str) -> dict:
-    """One-way random-effects ANOVA on SH's per-unit mapping contrast: graphs x runs."""
-    groups = [[_unit_contrast(u, task) for u in runs.values()] for runs in sh.values()]
-    k, n = len(groups), len(groups[0])
-    means = [np.mean(g) for g in groups]
-    msb = n * np.var(means, ddof=1) if k > 1 else 0.0
-    msw = np.mean([np.var(g, ddof=1) for g in groups]) if n > 1 else 0.0
-    return {"between_graph": float(max((msb - msw) / n, 0.0)), "within_graph": float(max(msw, 0.0))}
+    """One-way random-effects ANOVA on SH's per-unit mapping contrast: graphs x runs. Unbalanced
+    replication (a budget cut can leave some graphs with one run) uses the standard n0; the
+    within-graph term comes from graphs with two or more runs."""
+    groups = [np.array([_unit_contrast(u, task) for u in runs.values()]) for runs in sh.values()]
+    sizes = np.array([len(g) for g in groups], dtype=float)
+    k, total = len(groups), sizes.sum()
+    if k < 2 or not (sizes > 1).any():
+        return {"between_graph": float("nan"), "within_graph": float("nan")}
+    grand = np.concatenate(groups).mean()
+    msb = float(sum(n * (g.mean() - grand) ** 2 for n, g in zip(sizes, groups)) / (k - 1))
+    ssw = sum(((g - g.mean()) ** 2).sum() for g in groups)
+    msw = float(ssw / (total - k))
+    n0 = (total - (sizes ** 2).sum() / total) / (k - 1)
+    return {"between_graph": float(max((msb - msw) / n0, 0.0)), "within_graph": float(max(msw, 0.0))}
 
 
 def leave_one_graph_out(n2, sh, task: str) -> dict:
@@ -137,9 +144,11 @@ def _family(graph: str) -> str:
 
 
 def late_cells(records, threshold_gen: int = 40) -> tuple[int, int]:
-    """(cells whose mean checkpoint curve reaches 90% of its fitted asymptote after
-    `threshold_gen`, cells with a usable curve). A cell is a graph family (N2, SH, N2perm) in a
-    task and mapping, so different learning curves are not pooled. Fit: y = a - b * exp(-g / c)."""
+    """(cells whose mean checkpoint curve completes 90% of its fitted improvement after
+    `threshold_gen`, cells with a usable curve). Fit: y = a - b * exp(-g / c); 90% of the
+    improvement b is complete at g = c ln 10. That is not 90% of the asymptotic score, which a
+    curve can pass at generation 0. A cell is a graph family (N2, SH, N2perm) in a task and
+    mapping, so different learning curves are not pooled."""
     from scipy.optimize import OptimizeWarning, curve_fit
 
     curves = defaultdict(list)
@@ -220,11 +229,12 @@ def attach_use(records, probes: dict, probe: str, snapshot: str) -> list[dict]:
 def prediction_verdict(delta: dict, n2_use: dict, threshold: float = USE_THRESHOLD) -> str:
     """D038's registered prediction: N2 champions show greater, meaningful dependence on the
     capability than the sampled shuffles. Supported: the N2 - SH interval is above zero and N2's
-    own use is meaningful. Challenged: N2's use is tightly below threshold, the contrast is
-    reversed, or it straddles zero inside +-threshold. Anything else is inconclusive."""
+    own use is meaningful. Challenged: N2's use is tightly below threshold, or the contrast is
+    reversed. Anything else is inconclusive (Astra's pre-registration review, point 2, removed a
+    branch that challenged small contrasts the support rule never asked to be large)."""
     if delta["lo"] > 0 and n2_use["lo"] > threshold:
         return "supported"
-    if n2_use["hi"] < threshold or delta["hi"] < 0 or (-threshold < delta["lo"] <= 0 and delta["hi"] < threshold):
+    if n2_use["hi"] < threshold or delta["hi"] < 0:
         return "challenged"
     return "inconclusive"
 
@@ -242,13 +252,16 @@ def integrator_interactions(records, probes: dict) -> dict:
     """The interactions and task contrast recomputed from each integrator setting's rescoring.
     The shift between 32 and 128 substeps is compared with the shift a 1e-6 bias perturbation
     causes at 32 substeps (the chaos floor)."""
-    out = {"I_T0": {}, "I_T1": {}, "task_contrast": {}}
+    out = {"assessed": True, "I_T0": {}, "I_T1": {}, "task_contrast": {}}
     settings = ("s32", "s128", "s32_bias_perturbed")
     main = [r for r in records if r["task"] in ("T0", "T1") and r["mapping"] != "MS"
             and (r["graph"] == "N2" or r["graph"].startswith("SH"))]
+    if not all("integrator" in probes.get(r["key"], {}).get("g39", {}) for r in main):
+        # dropped under the registered budget rule, or missing: the tripwire is not assessed
+        return {"assessed": False}
     for s in settings:
         tagged = [dict(r, _v=float(np.mean(probes[r["key"]]["g39"]["integrator"][s])))
-                  for r in main if "g39" in probes.get(r["key"], {})]
+                  for r in main]
         n2, sh = units(tagged, "_v")
         out["I_T0"][s] = interaction(n2, sh, "T0")
         out["I_T1"][s] = interaction(n2, sh, "T1")
@@ -330,28 +343,30 @@ def tripwires(summary: dict) -> list[dict]:
     t = []
     fd = summary["food_dependence"]
     t.append({"name": "champions do not meaningfully depend on the food signal (real - constant)",
-              "fired": not fd["lo"] > USE_THRESHOLD, "detail": fd})
+              "fired": bool(not fd["lo"] > USE_THRESHOLD), "detail": fd})
     mem = summary["memory_vs_memoryless"]
     t.append({"name": "memory controller does not beat the tuned memoryless one on T1",
-              "fired": not mem["lo"] > 0, "detail": mem})
+              "fired": bool(not mem["lo"] > 0), "detail": mem})
     anc = summary["anchor"]
     t.append({"name": "anchor N2 - SH sign differs from 01b's",
-              "fired": np.sign(anc["estimate"]) != np.sign(summary["sign_01b"]), "detail": anc})
+              "fired": bool(np.sign(anc["estimate"]) != np.sign(summary["sign_01b"])), "detail": anc})
     dr = summary["drive"]
     # 2048-genome validation sample: ~1.4% SE, so 4% is ~2 SE of the difference between two such
     # samples. Single runs' generation-0 drive (32 genomes, ~12% SE) is reported, not tripwired.
     t.append({"name": "achieved drive off target by more than 4% on the independent validation sample",
-              "fired": dr["max_validation_error"] > 0.04, "detail": dr})
+              "fired": bool(dr["max_validation_error"] > 0.04), "detail": dr})
     ig = summary["integrator"]
-    t.append({"name": "integrator moves the interaction more than the chaos floor (and by > 0.02)",
-              "fired": ig["max_shift"] > ig["chaos_floor"] and ig["max_shift"] > 0.02, "detail": ig})
+    # raw scores, not normalised ones; None when the rescoring was dropped (not assessed)
+    t.append({"name": "integrator moves the raw-score interaction more than the chaos floor (and by > 0.02)",
+              "fired": (bool(ig["max_shift"] > ig["chaos_floor"] and ig["max_shift"] > 0.02)
+                        if ig.get("assessed", True) else None), "detail": ig})
     late, n = summary["late_cells"]
-    t.append({"name": "more than a third of cells reach 90% of asymptote after generation 40",
-              "fired": n > 0 and late / n > 1 / 3, "detail": {"late": late, "cells": n}})
+    t.append({"name": "more than a third of cells complete 90% of their fitted improvement after generation 40",
+              "fired": bool(n > 0 and late / n > 1 / 3), "detail": {"late": int(late), "cells": int(n)}})
     for name, key in (("shortcut remap moves N2's advantage differently from matched remaps", "ms_vs_matched"),
                       ("R1 and R2 interactions differ", "r1_minus_r2"),
                       ("SH is not indifferent to the mapping", "sh_mapping")):
-        t.append({"name": name, "fired": _excludes_zero(summary[key]), "detail": summary[key]})
+        t.append({"name": name, "fired": bool(_excludes_zero(summary[key])), "detail": summary[key]})
     t.append({"name": "valence symmetry not exact without gap junctions",
-              "fired": summary["valence_no_gap_max"] > 1e-5, "detail": summary["valence_no_gap_max"]})
+              "fired": bool(summary["valence_no_gap_max"] > 1e-5), "detail": float(summary["valence_no_gap_max"])})
     return t

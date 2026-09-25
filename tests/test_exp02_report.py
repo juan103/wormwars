@@ -51,7 +51,7 @@ def synthetic(diag, n2_use=0.3, sh_use=0.02, seed=0):
                 if r.cell.task != "T1":
                     for p in ("mono", "food_mean", "food_swapped"):
                         scores[p] = list(real - u - rng.normal(0, 0.05, 64))
-                champs[r.key][snap] = {"channels": {"world_ids": list(range(64)), "probe_seed": r.run_seed,
+                champs[r.key][snap] = {"channels": {"world_ids": [int(i) for i in grid.PROBE_IDS], "probe_seed": r.run_seed,
                                                     "scores": scores}}
             champs[r.key]["g39"]["integrator"] = {k: list(real) for k in ("s32", "s128", "s32_bias_perturbed")}
     probes = {"valence": [{"gaps": False, "max_abs_score_diff": 0.0}], "champions": champs}
@@ -66,12 +66,45 @@ def test_report_runs_end_to_end_and_finds_a_planted_stereo_advantage(frozen):
     assert p["verdict"] == "supported" and p["n2_use_class"] == "meaningful"
     assert abs(p["delta"]["estimate"] - 0.28) < 0.03
     assert out["capability"]["food_mean"]["acquisition"]["T0-M0"]["lo"] > 0
-    assert out["sh_graphs_with_stereo_use"]["meaningful"] == 0
+    assert out["sh_graphs_with_stereo_use"]["detected_meaningful"] == 0
     assert {t["name"] for t in out["tripwires"]}
-    json.dumps(out, default=float)  # the report must serialise
+    json.dumps(out)  # the CLI writes it with plain json (Astra's pre-registration review, point 1)
+    assert p["complete"] is True
 
 
 def test_report_challenges_when_n2_does_not_use_the_capability(frozen):
     diag, cal = frozen
     recs, probes = synthetic(diag, n2_use=0.02)
     assert report.build(recs, diag, probes, cal, sign_01b=1.0, n_boot=200)["primary"]["verdict"] == "challenged"
+
+
+def test_incomplete_primary_data_withholds_the_verdict(frozen):
+    """Astra's pre-registration review, point 3: one N2 run and one SH graph once gave
+    'supported' with zero-width intervals. Every N2 run and every SH graph must be present in
+    T0-M0 with complete probes, or there is no verdict."""
+    diag, cal = frozen
+    recs, probes = synthetic(diag)
+    drop = [r["key"] for r in recs if r["graph"] in ("N2", "SH8") and r["run"] >= 1 and r["graph"] == "N2"
+            or r["graph"] == "SH8"]
+    recs = [r for r in recs if r["key"] not in drop]
+    out = report.build(recs, diag, probes, cal, sign_01b=1.0, n_boot=200)
+    assert out["primary"]["verdict"] == "withheld" and out["primary"]["complete"] is False
+
+
+def test_a_champion_with_malformed_probe_scores_withholds_the_verdict(frozen):
+    diag, cal = frozen
+    recs, probes = synthetic(diag)
+    probes["champions"]["T0-M0-N2-run03"]["g39"]["channels"]["scores"]["food_mean"][5] = float("nan")
+    out = report.build(recs, diag, probes, cal, sign_01b=1.0, n_boot=200)
+    assert out["primary"]["verdict"] == "withheld"
+    assert any("T0-M0-N2-run03" in m for m in out["primary"]["problems"])
+
+
+def test_sh_detection_is_a_count_with_a_proper_per_graph_interval(frozen):
+    """Astra's pre-registration review, point 5: no prevalence claim, and each graph's interval
+    comes from resampling worlds of its run-averaged difference, not from averaged endpoints."""
+    diag, cal = frozen
+    recs, probes = synthetic(diag)
+    out = report.build(recs, diag, probes, cal, sign_01b=1.0, n_boot=200)["sh_graphs_with_stereo_use"]
+    assert out["graphs"] == 8 and out["detected_meaningful"] == 0
+    assert all({"estimate", "lo", "hi", "cls"} <= set(v) for v in out["per_graph"].values())

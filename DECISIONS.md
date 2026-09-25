@@ -771,6 +771,8 @@ controller, and every "hold" setting changes it (+0.04 to +0.06).
 
 ## D038 — The feasibility gate failed; the screening measures capability use instead of assuming it
 
+*Parts superseded by D040 (the verdict rule, the SH prevalence bound, the disclosure's count).*
+
 The pilot's feasibility gate (D034) failed as pre-set: the 40-generation T1 champion on a pilot
 shuffle beats the tuned memoryless controller by +0.59 but is not hurt by the validated history
 ablation (+0.004 [-0.012, +0.019]). Exploration on pilot shuffles only
@@ -851,3 +853,27 @@ common mode, (b+d, b-d) against (b-d, b+d), signed and absolute, raw read-out an
 through the interface's sensor gains and clamp. On the eight pilot shuffles its directional turn
 response is 0.0015-0.0045 raw (b = 0.1, d = 0.05; `exploration/structure_and_timing.json`).
 N2's value is a registered outcome, not yet measured.
+
+## D040 — The pre-registration after Astra's review: nine fixes
+
+Astra 6 reviewed the first version of `PREREGISTRATION.md`. Its verdict was no-go as written.
+Each of its nine points was reproduced or checked, then fixed with a test that failed first. The
+list is in the pre-registration's §11; the review is in `experiments/02-screening/reviews/`. Three
+of the fixes change what D038 said:
+
+- **Verdict rule.** "Challenged" no longer includes a Delta that straddles zero inside +-0.10.
+  Support never required Delta to be large, so that branch tested a different hypothesis.
+- **Incomplete data withholds the verdict.** With one N2 run and one SH graph, the old code
+  returned "supported" with zero-width intervals. Now all 8 N2 runs and 8 SH graphs are needed in
+  T0-M0, each with 64 finite probe scores on the registered worlds and seed. These units are the
+  first 16 batches of the schedule.
+- **No prevalence bound for SH.** "Zero of eight bounds the rate below 31%" assumed error-free
+  binary outcomes. A graph's classification comes from an interval, and a capable graph can stay
+  inconclusive. The count is reported as a detection count only.
+
+The other fixes: the report crashed on a NumPy boolean, and the smoke test hid it. The probe
+budget fallback was promised but not implemented; it is now staged and resumable, and a dropped
+input reads "not assessed". The convergence criterion is named for what it measures (90% of the
+fitted improvement). Variance components handle unequal replication. The stated scopes match the
+code. D038's disclosure said "one N2 number", but the measurement gave two: difference 0.12 and
+common mode 0.16.
