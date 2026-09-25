@@ -186,10 +186,11 @@ reported as a covariate for every fitness signal (Fable 9, Astra 15).
 - **P1:** the stimulus is 02's: b = 0.1, d = 0.05, 40 ticks from rest, raw read-out. The value is
   the mean over genomes and ticks of the signed directional turn, divided by the same mean of
   the absolute common-mode turn.
-- **P4:** the stimulus bank is fixed before any graph is measured. Every graph gets the same
-  final food level and background, 0.3 of the sensing scale, from the median of 02's
-  generation-0 replays on pilot shuffles only. The value is 02b's \|rising − falling\| over the
-  steady-state contrast, as a ratio of means over genomes. The decay after 5 ticks is reported.
+- **P4:** the stimulus bank is fixed before any graph is measured, and every graph gets the same
+  final food level and background. Those are set by the shuffle-only pilot: the median sensed
+  food level and background signals over ticks 20-60 of generation-0 replays on the pilot
+  shuffles. The value is 02b's \|rising − falling\| over the steady-state contrast, as a ratio of
+  means over genomes. The decay after 5 ticks is reported.
 - **Denominators:** if a graph's denominator mean is below 10⁻⁴, the graph is excluded from that
   signal and counted. Non-finite values are excluded and counted too. The completeness rule
   requires at least 120 of 128 graphs per ensemble, and a valid N2.
