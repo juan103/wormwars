@@ -1212,3 +1212,37 @@ measurement:
 The correct figure is 669, and the sampler was always exact.
 
 **Budget:** about 15.5 GPU-hours.
+
+## D053 — 03's pilot failed its precision check; a seed bug; allocation and criteria revised
+
+The registered precision check failed for all four primary signals: the stand-in shuffle's SE
+was about as large as the equivalence margin. Astra 6 and Fable 5.1 were consulted, both at
+maximum effort (`docs/reviews/20260925-222802-03-precision/`). Their main points were checked and adopted:
+
+- **A seed bug (Astra).** The per-graph genome seed kept only the first four characters of the
+  graph's name. So all 16 pilot shuffles shared one set of random genomes, every graph of an
+  ensemble shared another, and N2 would have had its own. That breaks the exchangeability the
+  rank tests need. Seeds now hash the whole name, with a test. The pilot is rerun, and the
+  first pilot's file is kept locally for the record.
+- **The precision SE was overstated for the fitness signals (Fable).** The single-graph crossed
+  bootstrap double-counts the residual, and shared worlds cancel in the registered comparison.
+  SE is now computed on all 16 pilots, from crossed variance components with the world profile
+  common to all graphs removed.
+- **P3 stays primary (Astra).** It is the signal closest to the owner's question. P2 becomes
+  secondary. With three primaries, Holm's thresholds allow rank r ≤ 1, 2 and 5 of 128, not r = 0.
+- **Allocation:**
+  - P3's two cells get 256 genomes (genome sampling is about 95% of their variance);
+  - P1 and P4 get 2048 random brains (P1's reliability at 2048 is about 0.9);
+  - the T0 remap cells are dropped;
+  - the secondary response conditions get 256.
+- **Criteria:**
+  - the "precision" rule becomes a reliability target;
+  - "compatible with the ensemble mean" becomes "consistent": N2's interval lies inside the
+    ensemble's central 90%, which is membership, not closeness to the mean (both reviewers);
+  - margins are computed at run time from each ensemble's own 128 graphs, de-attenuated. The
+    rule is registered, not a number from 16 pilots (Fable).
+- **Code fixes (both):** "reversed" now needs its own rank test, and the joint bootstrap accepts
+  per-genome signals.
+- **A power simulation** of the full decision rule goes in the pre-registration (both).
+- **Budget:** about 20 GPU-hours, over the design's cap of 18. It is restated once the rerun
+  pilot measures the new cost.
