@@ -877,3 +877,10 @@ input reads "not assessed". The convergence criterion is named for what it measu
 fitted improvement). Variance components handle unequal replication. The stated scopes match the
 code. D038's disclosure said "one N2 number", but the measurement gave two: difference 0.12 and
 common mode 0.16.
+
+A confirmation pass by Astra found three of the nine only partly fixed. Completeness checked graph
+names, not the registered runs and seeds; removing every SH run 0 still gave "supported", and a
+short probe vector crashed the report. A resumed probe run forgot measured costs, retried dropped
+steps, and printed "not assessed" as "ok". The pre-registration still named 16 behaviour worlds in
+one place. All three are now fixed. Every paired difference goes through one checked helper
+(`analysis.paired_diff`), and malformed entries are listed and left out.

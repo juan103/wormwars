@@ -39,7 +39,10 @@ def normalise(records, diagnostics) -> list[dict]:
     best scripted score is zero are dropped. Not clipped: evolved brains may beat the scripts."""
     out = []
     for r in records:
-        per = diagnostics[r["task"]]["per_seed_holdout"][str(r["run_seed"])]
+        per = diagnostics[r["task"]]["per_seed_holdout"].get(str(r["run_seed"]))
+        if per is None:  # not a registered seed: no reference, so no normalised score
+            out.append(dict(r, norm_missing_reference=True))
+            continue
         best = np.max(np.array(list(per.values())), axis=0)
         keep = best > 0
         r = dict(r)
@@ -203,11 +206,26 @@ def classify_use(b: dict, threshold: float = USE_THRESHOLD) -> str:
     return "inconclusive"
 
 
-def champion_use(channels: dict, probe: str) -> dict:
+def paired_diff(channels: dict, probe: str):
+    """Per-world real minus ablated score, or None when the two cannot be paired (a probe
+    missing, different lengths, or a non-finite value). Every consumer goes through this, so a
+    malformed entry is skipped (and listed by the report), never averaged or crashed on."""
+    sc = (channels or {}).get("scores", {})
+    if "real" not in sc or probe not in sc:
+        return None
+    real, x = np.asarray(sc["real"], dtype=float), np.asarray(sc[probe], dtype=float)
+    if len(real) != len(x) or not (np.isfinite(real).all() and np.isfinite(x).all()):
+        return None
+    return real - x
+
+
+def champion_use(channels: dict, probe: str):
     """One champion's paired per-world use of a capability: real minus ablated, with interval
-    and class. Positive: the ablation hurts; negative: it helps."""
-    sc = channels["scores"]
-    b = _boot_mean(np.asarray(sc["real"]) - np.asarray(sc[probe]))
+    and class, or None if malformed. Positive: the ablation hurts; negative: it helps."""
+    d = paired_diff(channels, probe)
+    if d is None:
+        return None
+    b = _boot_mean(d)
     return dict(b, cls=classify_use(b))
 
 
@@ -218,10 +236,9 @@ def attach_use(records, probes: dict, probe: str, snapshot: str) -> list[dict]:
     out = []
     for r in records:
         r = dict(r)
-        ch = probes.get(r["key"], {}).get(snapshot, {}).get("channels")
-        if ch and probe in ch["scores"]:
-            r[f"use_{probe}_{snapshot}"] = float(np.mean(np.asarray(ch["scores"]["real"])
-                                                         - np.asarray(ch["scores"][probe])))
+        d = paired_diff(probes.get(r["key"], {}).get(snapshot, {}).get("channels"), probe)
+        if d is not None:
+            r[f"use_{probe}_{snapshot}"] = float(np.mean(d))
         out.append(r)
     return out
 
@@ -242,10 +259,9 @@ def prediction_verdict(delta: dict, n2_use: dict, threshold: float = USE_THRESHO
 def food_dependence(champions: dict, snapshot: str = "g39") -> dict:
     """Pooled over champions: real minus the constant food signal. A sanity check that evolved
     brains use the food signal at all; it says nothing about temporal or stereo use (D037)."""
-    per = [float(np.mean(np.asarray(v[snapshot]["channels"]["scores"]["real"])
-                         - np.asarray(v[snapshot]["channels"]["scores"]["food_constant"])))
-           for v in champions.values() if snapshot in v]
-    return _boot_mean(np.array(per))
+    diffs = [paired_diff(v[snapshot].get("channels"), "food_constant")
+             for v in champions.values() if snapshot in v]
+    return _boot_mean(np.array([float(np.mean(d)) for d in diffs if d is not None]))
 
 
 def integrator_interactions(records, probes: dict) -> dict:

@@ -476,14 +476,15 @@ def cmd_probes(args, con, iface):
     evolution_s = sum(r["wall_seconds"] for r in recs)
     budget = args.max_hours * 3600
     spent = lambda: evolution_s + sum(out["seconds"].values())  # noqa: E731
-    slowest = defaultdict(float)
+    # the slowest step of each stage, kept in probes.json so a resumed run budgets the same way
+    slowest = out.setdefault("slowest", {})
 
     def timed(stage, fn):
         t = time.perf_counter()
         v = fn()
         took = time.perf_counter() - t
         out["seconds"][stage] = out["seconds"].get(stage, 0.0) + took
-        slowest[stage] = max(slowest[stage], took)
+        slowest[stage] = max(slowest.get(stage, 0.0), took)
         return v
 
     def parts(r):
@@ -546,11 +547,12 @@ def cmd_probes(args, con, iface):
     for stage in ("integrator", "behaviour"):
         for r in recs:
             g39 = out["champions"][r["key"]]["g39"]
-            if stage in g39:
+            step = {"stage": stage, "key": r["key"]}
+            if stage in g39 or step in out["dropped"]:  # a dropped step stays dropped on resume
                 continue
-            if spent() + slowest[stage] > budget:
-                if {"stage": stage, "key": r["key"]} not in out["dropped"]:
-                    out["dropped"].append({"stage": stage, "key": r["key"]})
+            if spent() + slowest.get(stage, 0.0) > budget:
+                out["dropped"].append(step)
+                _json(path, out)
                 continue
             cfg, fam, champs = parts(r)
             if stage == "integrator":
@@ -570,7 +572,8 @@ def cmd_report(args, con, iface):
                        An.sign_of_01b(Path("runs/exp01b-direction-corrected/records.json")))
     _json(OUT / "analysis.json", out)
     for tw in out["tripwires"]:
-        print(f"{'FIRED' if tw['fired'] else 'ok   '}  {tw['name']}")
+        state = "not assessed" if tw["fired"] is None else "FIRED" if tw["fired"] else "ok"
+        print(f"{state:12}  {tw['name']}")
     p = out["primary"]
     d = p["delta"]
     print(f"PRIMARY {p['probe']} {p['cell']}: N2 - SH {d['estimate']:+.4f} [{d['lo']:+.4f}, {d['hi']:+.4f}], "

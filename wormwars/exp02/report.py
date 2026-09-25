@@ -6,7 +6,7 @@ from __future__ import annotations
 import numpy as np
 
 from . import analysis as An
-from .grid import MAIN, N2_RUNS, PROBE_IDS, SH_GRAPHS, TARGET_DRIVE
+from .grid import MAIN, PROBE_IDS, TARGET_DRIVE, run_schedule
 
 # D038: stereo ablations exist only on the stereo task; the history jitters and the constant
 # food signal apply to both. food_mean on T0-M0 is the one primary mechanistic outcome.
@@ -57,32 +57,55 @@ def capability(records, champions, n_boot: int = An.N_BOOT) -> dict:
     return out
 
 
-def primary_completeness(records, champions) -> list[str]:
-    """Problems that withhold the primary verdict (Astra's pre-registration review, point 3):
-    every N2 run and every SH graph must be present in the primary cell, and every present
-    champion's primary probe must hold finite scores on exactly the registered probe worlds with
-    its run's seed. Empty means complete."""
+def malformed_probes(champions) -> list[str]:
+    """Probe entries whose scores cannot be paired with the real ones: wrong length or non-finite.
+    attach_use skips them, and they are listed in the report."""
+    bad = []
+    for key, snaps in champions.items():
+        for snap, v in snaps.items():
+            sc = v.get("channels", {}).get("scores", {})
+            real = np.asarray(sc.get("real", []), dtype=float)
+            for probe, x in sc.items():
+                x = np.asarray(x, dtype=float)
+                if len(x) != len(PROBE_IDS) or len(real) != len(PROBE_IDS) or not np.isfinite(x).all():
+                    bad.append(f"{key} {snap} {probe}")
+    return bad
+
+
+def primary_registered_units() -> dict:
+    """The primary cell's registered records: every N2 run and every SH graph's run 0, with the
+    seed each must carry. They are the schedule's first 16 batches (PREREGISTRATION section 4)."""
     probe, cell = PRIMARY
-    here = [r for r in records if (r["task"], r["mapping"]) == cell]
+    return {r.key: r.run_seed for b in run_schedule() for r in b
+            if (r.cell.task, r.cell.mapping) == cell and (r.graph == "N2" or (r.graph.startswith("SH") and r.run == 0))}
+
+
+def primary_completeness(records, champions) -> list[str]:
+    """Problems that withhold the primary verdict (Astra's pre-registration review and its
+    confirmation pass, point 3): every registered unit present with its registered seed, and
+    every present N2 or SH champion in the cell with finite primary scores on exactly the
+    registered probe worlds and its run's seed. Empty means complete."""
+    probe, cell = PRIMARY
+    here = {r["key"]: r for r in records if (r["task"], r["mapping"]) == cell}
     problems = []
-    n2_runs = {r["run"] for r in here if r["graph"] == "N2"}
-    sh_graphs = {r["graph"] for r in here if r["graph"].startswith("SH")}
-    if n2_runs != set(range(N2_RUNS)):
-        problems.append(f"N2 runs present {sorted(n2_runs)}, registered {N2_RUNS}")
-    if sh_graphs != {f"SH{k}" for k in range(1, SH_GRAPHS + 1)}:
-        problems.append(f"SH graphs present {sorted(sh_graphs)}, registered {SH_GRAPHS}")
-    for r in here:
+    for key, seed in primary_registered_units().items():
+        if key not in here:
+            problems.append(f"{key}: registered run missing")
+        elif here[key].get("run_seed") != seed:
+            problems.append(f"{key}: run seed {here[key].get('run_seed')} is not the registered {seed}")
+    for key, r in here.items():
         if not (r["graph"] == "N2" or r["graph"].startswith("SH")):
             continue
-        ch = champions.get(r["key"], {}).get("g39", {}).get("channels")
+        ch = champions.get(key, {}).get("g39", {}).get("channels")
         if ch is None:
-            problems.append(f"{r['key']}: no generation-39 probes")
+            problems.append(f"{key}: no generation-39 probes")
             continue
+        sc = ch.get("scores", {})
         ok = (ch.get("world_ids") == [int(i) for i in PROBE_IDS] and ch.get("probe_seed") == r.get("run_seed")
-              and all(len(ch["scores"].get(k, [])) == len(PROBE_IDS)
-                      and np.isfinite(ch["scores"][k]).all() for k in ("real", probe)))
+              and all(len(sc.get(k, [])) == len(PROBE_IDS) and np.isfinite(np.asarray(sc[k], dtype=float)).all()
+                      for k in ("real", probe)))
         if not ok:
-            problems.append(f"{r['key']}: primary probe scores incomplete, non-finite or on the wrong worlds/seed")
+            problems.append(f"{key}: primary probe scores incomplete, non-finite or on the wrong worlds/seed")
     return problems
 
 
@@ -108,8 +131,8 @@ def per_champion(records, champions) -> dict:
             ch = champions.get(r["key"], {}).get(snap, {}).get("channels")
             if not ch:
                 continue
-            out.setdefault(r["key"], {})[snap] = {
-                p: An.champion_use(ch, p) for p in CAPABILITY_PROBES if p in ch["scores"]}
+            uses = {p: An.champion_use(ch, p) for p in CAPABILITY_PROBES if p in ch["scores"]}
+            out.setdefault(r["key"], {})[snap] = {p: u for p, u in uses.items() if u is not None}
     return out
 
 
@@ -121,9 +144,9 @@ def sh_graphs_with_use(records, champions, probe: str, cell: tuple, snap: str = 
     per = {}
     for r in records:
         if r["graph"].startswith("SH") and (r["task"], r["mapping"]) == cell:
-            ch = champions.get(r["key"], {}).get(snap, {}).get("channels")
-            if ch and probe in ch["scores"]:
-                per.setdefault(r["graph"], []).append(np.asarray(ch["scores"]["real"]) - np.asarray(ch["scores"][probe]))
+            d = An.paired_diff(champions.get(r["key"], {}).get(snap, {}).get("channels"), probe)
+            if d is not None:
+                per.setdefault(r["graph"], []).append(d)
     out = {}
     for g, diffs in sorted(per.items()):
         b = An._boot_mean(np.mean(diffs, axis=0))
@@ -152,6 +175,7 @@ def build(raw_records, diagnostics, probes, calibration, sign_01b, n_boot: int =
             "loo_T1": An.leave_one_graph_out(n2, sh, "T1"),
         }
     champs = probes["champions"]
+    out["malformed_probes"] = malformed_probes(champs)
     cap = capability(main_recs, champs, n_boot)
     out["capability"] = cap
     out["primary"] = primary(cap, main_recs, champs)

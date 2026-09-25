@@ -91,10 +91,12 @@ screening convention for a meaningful absolute use:
 - **inconclusive:** anything else. A wide interval, or a Delta straddling 0, is inconclusive, not
   a failure. No margin is registered for Delta itself, so a small positive Delta with meaningful
   N2 use counts as support. Its size is reported next to the verdict.
-- **withheld:** the primary data are incomplete. The verdict needs all 8 N2 runs and all 8 SH
-  graphs (run 0 at least) in T0-M0. Each such champion's real and bilateral-mean scores must be
-  64 finite values on exactly `grid.PROBE_IDS`, with the run's seed as the probe seed
-  (`report.primary_completeness`). These units are in the first 16 batches of the schedule, so
+- **withheld:** the primary data are incomplete. The verdict needs, in T0-M0, all 8 N2 runs and
+  run 0 of all 8 SH graphs, each with its registered seed (`report.primary_registered_units`).
+  Every N2 and SH champion present in the cell also needs real and bilateral-mean scores of 64
+  finite values on exactly `grid.PROBE_IDS`, with the run's seed as the probe seed
+  (`report.primary_completeness`). A malformed probe entry anywhere is listed in the report and
+  left out of every estimate. It is never averaged. These units are in the first 16 batches of the schedule, so
   any budget cut that §8 allows leaves them in. SH second runs in T0-M0 enter the estimate when
   present.
 
@@ -171,8 +173,9 @@ observation.
 The capability suite is validated on scripted controllers in `probe_validation.json`. A probe is
 valid when a controller that cannot use the capability moves by less than ±0.02, interval included,
 and the capable controller's gain falls. It runs per world on the 64 probe worlds with the run's
-seed, for the generation-0 and generation-39 champion of every run. The integrator rescoring and
-the behaviour measures use the 16 checkpoint worlds and the generation-39 champion only. Probe
+seed, for the generation-0 and generation-39 champion of every run. The integrator rescoring uses
+the 16 checkpoint worlds and the behaviour measures 4 of them, both on the generation-39 champion
+only. Probe
 scores are saved per world with their world ids and seed.
 
 ## 8. Budget, stop rule and cut order
@@ -197,8 +200,11 @@ counted against the cap.
   4. behaviour, champion by champion.
 
   Before each step of stages 3 and 4, the step runs only if time used plus the slowest such step
-  so far stays inside 12 h. Otherwise it is recorded in `probes.json` as dropped, so behaviour is
-  dropped first. If any integrator step is dropped, the integrator tripwire is not assessed.
+  so far stays inside 12 h. The first step of a stage has no measured cost yet, so it can overrun
+  by that one step. Otherwise the step is recorded in `probes.json` as dropped, so behaviour is
+  dropped first. Measured costs and dropped steps persist, so a resumed run never retries a
+  dropped step. If any integrator step is dropped, the integrator tripwire is reported as not
+  assessed.
 
 ## 9. Deviations
 
@@ -239,6 +245,18 @@ that failed first (D040):
    integrator. They are corrected (§5, §6).
 9. The review record was not in the repository, and "one N2 number" was really two. All reviews
    are archived in `reviews/`, and §2 now gives both numbers.
+
+A confirmation pass by Astra (`reviews/20260925-055819-preregistration-recheck/`) found points 3,
+4 and 8 only partly fixed:
+
+- completeness checked graph names, not the registered runs and seeds, and a short probe
+  vector crashed the report;
+- a resumed probes run forgot measured costs and retried dropped steps, and the CLI printed
+  "not assessed" as "ok";
+- one sentence still said 16 behaviour worlds.
+
+All three were reproduced and fixed with tests that failed first, or, for the resume, a smoke
+run on the pilot champions.
 
 Fable 5.1 was unavailable until after this version was fixed (usage limit). Its review, if it
 arrives while the evolution runs, is recorded here. Any change it causes is also recorded in

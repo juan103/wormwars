@@ -108,3 +108,31 @@ def test_sh_detection_is_a_count_with_a_proper_per_graph_interval(frozen):
     out = report.build(recs, diag, probes, cal, sign_01b=1.0, n_boot=200)["sh_graphs_with_stereo_use"]
     assert out["graphs"] == 8 and out["detected_meaningful"] == 0
     assert all({"estimate", "lo", "hi", "cls"} <= set(v) for v in out["per_graph"].values())
+
+
+def test_missing_sh_first_runs_withhold_the_verdict_even_with_second_runs_present(frozen):
+    """Astra's confirmation pass, point 3: completeness is about the registered runs and seeds,
+    not graph names."""
+    diag, cal = frozen
+    recs, probes = synthetic(diag)
+    recs = [r for r in recs if not (r["graph"].startswith("SH") and r["run"] == 0)]
+    out = report.build(recs, diag, probes, cal, sign_01b=1.0, n_boot=200)
+    assert out["primary"]["verdict"] == "withheld"
+
+
+def test_a_wrong_seed_withholds_the_verdict(frozen):
+    diag, cal = frozen
+    recs, probes = synthetic(diag)
+    for r in recs:
+        if r["key"] == "T0-M0-N2-run02":
+            r["run_seed"] = 12345
+    assert report.build(recs, diag, probes, cal, sign_01b=1.0, n_boot=200)["primary"]["verdict"] == "withheld"
+
+
+def test_a_short_probe_vector_withholds_instead_of_crashing(frozen):
+    diag, cal = frozen
+    recs, probes = synthetic(diag)
+    probes["champions"]["T0-M0-SH3-run00"]["g39"]["channels"]["scores"]["food_mean"].pop()
+    out = report.build(recs, diag, probes, cal, sign_01b=1.0, n_boot=200)
+    assert out["primary"]["verdict"] == "withheld"
+    assert any("T0-M0-SH3-run00" in m for m in out["malformed_probes"])
