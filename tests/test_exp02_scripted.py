@@ -153,3 +153,13 @@ def test_stereo_kinesis_contains_level_kinesis_when_k_is_zero():
     f1, t1, _ = lk(l, r, None)
     f2, t2, _ = sk(l, r, None)
     assert torch.equal(f1, f2) and torch.allclose(t1, t2)
+
+
+def test_rollout_reports_starting_food_so_eaten_fractions_can_be_computed(parts):
+    con, iface = parts
+    cfg = Config()
+    cfg.world.max_ticks = 60
+    r = scripted.rollout_brain(cfg, iface, scripted.ScriptedBrain(iface, 302, scripted.Straight(), 4.0, 2.0),
+                               np.arange(3), 1, "cpu")
+    assert r.food_start.shape == r.eaten.shape
+    assert (r.food_start > 0).all() and (r.eaten <= r.food_start + 1e-4).all()

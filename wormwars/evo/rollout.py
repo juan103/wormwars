@@ -33,6 +33,7 @@ class RolloutResult:
     ticks: int
     ledger_error: float
     pellet_eaten: np.ndarray | None = None  # corpse pellets eaten, [strains, worlds]
+    food_start: np.ndarray | None = None  # plant food on the map at tick 0, [strains, worlds]
 
     def per_strain(self) -> np.ndarray:
         return self.score.mean(axis=1)
@@ -69,6 +70,7 @@ def _play(cfg, iface, brain, world_ids, run_seed, device, combat_stage=0, ticks=
         "alive": world.n_alive()[:, 0].reshape(shape).cpu().numpy(),
         "eaten": (food0 - food1).reshape(shape).cpu().numpy(),
         "pellet": world.pellet_eaten.reshape(shape).cpu().numpy(),
+        "food0": food0.reshape(shape).cpu().numpy(),
         "err": world.energy_ledger_error().abs().max().item(),
         "ticks": world.tick_count,
     }
@@ -79,7 +81,7 @@ def rollout_brain(cfg, iface, brain, world_ids, run_seed, device="cpu", ticks=No
     world_ids = np.asarray(world_ids, dtype=np.int64)
     r = _play(cfg, iface, brain, world_ids, run_seed, device, ticks=ticks)
     return RolloutResult(r["score"], r["energy"], r["alive"], r["eaten"], r["ticks"], r["err"],
-                         pellet_eaten=r["pellet"])
+                         pellet_eaten=r["pellet"], food_start=r["food0"])
 
 
 def rollout(
