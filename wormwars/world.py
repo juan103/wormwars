@@ -49,7 +49,7 @@ P_REAR_L, P_REAR_R = 6, 7
 P_BODY_L, P_BODY_R = 8, 9
 N_POINTS = 10
 FOOD_SENSING = ("stereo", "mono")
-FOOD_PROBES = ("real", "constant", "mirrored")
+FOOD_PROBES = ("real", "constant", "mirrored", "jitter", "hold")
 
 
 def gaussian_blur(field: Tensor, sigma: float) -> Tensor:
@@ -295,6 +295,12 @@ class World:
         self.last_forward: Tensor | None = None
         self.last_turn: Tensor | None = None
         self._food_sample: Tensor | None = None
+        self._held_food: Tensor | None = None
+        # the jitter probe's own generator, so a probe never touches any other randomness
+        self._probe_gen = (
+            torch.Generator(device=self.device).manual_seed(int(run_seed) * 7919 + 17)
+            if wcfg.food_probe == "jitter" else None
+        )
         self.v = [
             self.brains[s].initial_state(self.assigns[s].n_slots * self.n_weys)
             for s in range(self.n_swarms)
@@ -474,6 +480,12 @@ class World:
         if wcfg.food_probe == "mirrored":
             x, y = pts[..., 0], pts[..., 1]
             pts = torch.stack((self.W - 1 - x, self.H - 1 - y), dim=-1)
+        elif wcfg.food_probe == "jitter":
+            shape = pts.shape[:-1]
+            r = wcfg.food_probe_radius * torch.sqrt(
+                torch.rand(shape, generator=self._probe_gen, device=self.device, dtype=pts.dtype))
+            a = 2 * math.pi * torch.rand(shape, generator=self._probe_gen, device=self.device, dtype=pts.dtype)
+            pts = pts + torch.stack((r * torch.cos(a), r * torch.sin(a)), dim=-1)
         s = sample_bilinear(field.unsqueeze(1).contiguous(), pts)
         return s[:, 0].reshape(self.n_worlds, self.n_swarms, self.n_weys, N_POINTS)
 
@@ -565,9 +577,14 @@ class World:
         sampled = sample_bilinear(self.fields, pts).reshape(
             self.n_worlds, self.ch.n, self.n_swarms, self.n_weys, N_POINTS
         )
-        needs_field = wcfg.food_probe == "mirrored" or (
-            wcfg.food_odour_sigma > 0 and wcfg.food_probe != "constant")
-        self._food_sample = self._sensed_food(pts) if needs_field else None
+        if wcfg.food_probe == "hold":
+            if self._held_food is None or self.tick_count % max(1, wcfg.food_probe_hold) == 0:
+                self._held_food = self._sensed_food(pts)
+            self._food_sample = self._held_food
+        else:
+            needs_field = wcfg.food_probe in ("mirrored", "jitter") or (
+                wcfg.food_odour_sigma > 0 and wcfg.food_probe != "constant")
+            self._food_sample = self._sensed_food(pts) if needs_field else None
         signals = self._sensor_signals(sampled)
         current = self._build_current(signals)
 

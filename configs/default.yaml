@@ -68,6 +68,8 @@ world:
   food_sensing: stereo
   food_probe: real
   food_odour_sigma: 0.0
+  food_probe_radius: 0.0
+  food_probe_hold: 1
 
 # Per-world randomisation. Every field is a range, sampled independently per world.
 map:

@@ -126,6 +126,11 @@ class WorldConfig:
     # food + pellet field, recomputed every tick, so a gradient reaches beyond a patch's edge.
     # 0 senses the field directly, as every earlier experiment did (no signal beyond a patch).
     food_odour_sigma: float = 0.0
+    # History-only ablations (probes): "jitter" reads food at a random point within
+    # food_probe_radius cells of each sample point, fresh every tick, so the level survives but
+    # tick-to-tick change is mostly noise; "hold" refreshes the reading every food_probe_hold ticks.
+    food_probe_radius: float = 0.0
+    food_probe_hold: int = 1
 
 
 @dataclass
