@@ -364,7 +364,7 @@ def cmd_power(args):
     for k in PRIMARY:
         tau, se = pilot["variance"][k]["latent_sd"], pilot["variance"][k]["mean_se"]
         rows = {}
-        for z in (1.5, 2.0, 2.5, 3.0, 4.0):
+        for z in (1.5, 2.0, 2.5, 3.0, 4.0, 5.0, 6.0, 8.0):
             hits = 0
             for _ in range(args.sims):
                 ps = []
@@ -389,14 +389,66 @@ def cmd_power(args):
     _json(EXP / "pilot.json", pilot)
 
 
+MEASURES = OUT / "measures"
+REAL = ["N2", "N2-rev", "N2perm1", "N2perm2", "N2perm3"]
+
+
+def run_order() -> list[str]:
+    """N2 and its variants first, then the ensembles interleaved graph by graph, so a budget
+    stop removes graphs evenly from every ensemble (completeness needs 120 of 128 each)."""
+    e = json.loads((EXP / "ensembles.json").read_text(encoding="utf-8"))
+    by = {k: [g["name"] for g in e["graphs"] if g["kind"] == k] for k in S.KINDS}
+    return REAL + [by[k][i] for i in range(N_PER_ENSEMBLE) for k in S.KINDS]
+
+
+def cmd_run(args):
+    """Every graph, N2 included. Only after the pre-registration is committed."""
+    con = load_connectome()
+    bank = json.loads((EXP / "pilot.json").read_text(encoding="utf-8"))["bank"]
+    MEASURES.mkdir(parents=True, exist_ok=True)
+    t0, done = time.perf_counter(), 0
+    for name in run_order():
+        path = MEASURES / f"{name}.json"
+        if path.exists():
+            continue
+        if (time.perf_counter() - t0) / 3600 > args.max_hours:
+            print(f"stopping at the time cap after {done} graphs")
+            break
+        m = measure_graph(con, name, args.device, bank=bank)
+        _json(path, m)
+        done += 1
+        if done % 20 == 0:
+            print(f"{done} graphs, {(time.perf_counter() - t0) / 3600:.2f} h", flush=True)
+    print(f"run finished: {len(list(MEASURES.glob('*.json')))} graphs measured")
+
+
+def cmd_report(args):
+    from wormwars.exp03 import report as R
+    e = json.loads((EXP / "ensembles.json").read_text(encoding="utf-8"))
+    measures = {p.stem: json.loads(p.read_text(encoding="utf-8")) for p in MEASURES.glob("*.json")}
+    ensembles = {k: [g["name"] for g in e["graphs"] if g["kind"] == k and g["name"] in measures] for k in S.KINDS}
+    complete = {k: len(v) >= 120 for k, v in ensembles.items()} | {"N2": "N2" in measures}
+    out = R.build(measures, "N2", ensembles, n_boot=args.boot)
+    out["completeness"] = complete
+    out["descriptive"] = {n: out["per_graph"][n] for n in REAL if n in out["per_graph"]}
+    _json(EXP / "report.json", out)
+    print("completeness", complete)
+    for s in R.PRIMARY:
+        summ = out["signals"][s + "_summary"]
+        print(s, summ["overall"], "p_holm", round(summ["p_holm"], 4), summ["verdicts"])
+
+
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("command", choices=["build", "pilot", "variance", "power"])
+    ap.add_argument("command", choices=["build", "pilot", "variance", "power", "run", "report"])
     ap.add_argument("--sims", type=int, default=2000)
+    ap.add_argument("--max-hours", type=float, default=24.0)
+    ap.add_argument("--boot", type=int, default=1000)
     ap.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
     ap.add_argument("--workers", type=int, default=8)
     args = ap.parse_args()
-    {"build": cmd_build, "pilot": cmd_pilot, "variance": cmd_variance, "power": cmd_power}[args.command](args)
+    {"build": cmd_build, "pilot": cmd_pilot, "variance": cmd_variance, "power": cmd_power,
+     "run": cmd_run, "report": cmd_report}[args.command](args)
 
 
 if __name__ == "__main__":
