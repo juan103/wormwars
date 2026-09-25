@@ -114,6 +114,24 @@ class OneStepMemory:
         return self.speed * one, turn, level.clone()
 
 
+class GradedKinesis:
+    """Memoryless, mono, graded: speed falls linearly from `fast` at zero food to `slow` at
+    level >= `scale`, with a constant turn. Orthokinesis with a smooth response aggregates on food
+    without any memory, so it is the strongest simple memoryless rival to a memory controller."""
+
+    def __init__(self, slow, fast, scale, turn):
+        self.slow, self.fast, self.scale, self.turn = slow, fast, scale, turn
+
+    def init(self, s, b):
+        return None
+
+    def __call__(self, left, right, state):
+        level = (left + right) / 2
+        frac = (level / self.scale).clamp(0, 1)
+        fwd = self.fast - (self.fast - self.slow) * frac
+        return fwd, self.turn * torch.ones_like(level), state
+
+
 class MemoryKinesis:
     """Everything LevelKinesis does, plus one tick of memory: turn by `fall_turn` instead of
     `turn` when concentration has fallen since the last tick. With fall_turn == turn it IS

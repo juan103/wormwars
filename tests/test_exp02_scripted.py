@@ -163,3 +163,11 @@ def test_rollout_reports_starting_food_so_eaten_fractions_can_be_computed(parts)
                                np.arange(3), 1, "cpu")
     assert r.food_start.shape == r.eaten.shape
     assert (r.food_start > 0).all() and (r.eaten <= r.food_start + 1e-4).all()
+
+
+def test_graded_kinesis_slows_smoothly_with_level():
+    gk = scripted.GradedKinesis(slow=0.2, fast=1.0, scale=2.0, turn=0.1)
+    x = torch.tensor([[0.0, 1.0, 2.0, 4.0]])
+    f, t, _ = gk(x, x, None)
+    assert torch.allclose(f, torch.tensor([[1.0, 0.6, 0.2, 0.2]]))
+    assert torch.allclose(t, torch.full_like(t, 0.1))
