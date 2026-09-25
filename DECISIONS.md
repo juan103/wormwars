@@ -1044,3 +1044,40 @@ Adopted, after checking:
   - the budget adds the whole-brain evolutions.
 - **03a v3.1 is ready for code and the disclosed pilot**, in Fable's judgement, with the
   before-tag items now written in. Astra's review is still pending.
+
+## D047 — Astra's review of v3.1, at maximum effort; where it and Fable disagreed
+
+The owner upgraded their ChatGPT plan, so Astra 6 now reviews at maximum reasoning effort.
+It reviewed roadmap v2.1 and 03a v3.1 (`docs/reviews/20260925-174815-v31/`). Its verdict: code can
+start, but the go/no-go rule of the pilot needed revision. 03a v3.2 and roadmap v2.2 adopt all 13
+points.
+
+**A correction to D046.** D046 said 03a v3.1 was ready "in Fable's judgement". Fable had assessed
+v3, not v3.1, and called it "nearly" ready if two changes were made. D046 overstated Fable's
+endorsement. Astra caught this.
+
+**Where Astra and Fable disagreed:**
+1. **One-sided steps (Fable's point 5) against preserving uncertainty (Astra's point 1).** Astra's
+   view is adopted. Fable was right that v3 missed the two-sided cases, but its fix counted
+   "undetermined" as "no headroom" and "not identifiable", turning uncertainty into negative
+   evidence. In v3.2, undetermined stays undetermined, and random partners beating the original
+   are reported as a difference.
+2. **Per-target overlap (Fable's point 6) against its reading (Astra's point 4).** Both are
+   partly adopted. Fable's permutation null stays, since a fixed band is unreachable per target.
+   Astra's reading replaces the labels: inside the null is "no enrichment detected", not
+   substitution. Functional substitution is claimed only at cell level, with an equivalence band.
+3. **"The ensembles are nested" (Fable) against "class-preserving is a separate branch"
+   (Astra).** Astra is right, and the roadmap now reports compatibility with each ensemble.
+
+**Also adopted:**
+- attributes reported instead of an exclusive classification order;
+- a scientific performance margin (5% of the intact score), separate from the noise estimates;
+- a pilot that requires NIP headroom, not only an advantage over random partners;
+- the N2 task controls moved after the freeze;
+- mutually exclusive verdicts;
+- a crossed-and-nested bootstrap, with common analysis sets for paired contrasts;
+- 03's fitness plan keeps the remaps, which signal (b) needs;
+- pilot evolutions 10, not 18.
+
+The arithmetic was re-checked: 31 104 000 search evaluations, about 785 GPU-hours at 11 per
+second, and whole-brain evolutions add about 37.

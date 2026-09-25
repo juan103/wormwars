@@ -1,10 +1,11 @@
 # WormWars 03a: the self-consistency hypothesis. A 24-neuron panel study
 
-**Status: DRAFT v3.1** (2026-09-25). v2 was reviewed by Astra 6 and Fable 5.1 as part of the
+**Status: DRAFT v3.2** (2026-09-25). v2 was reviewed by Astra 6 and Fable 5.1 as part of the
 roadmap review (`docs/reviews/20260925-163118-roadmap/`). v3 folded in their points and
 experiment 02's lessons (`NOTES_FROM_02.md`). v3.1 folds in Fable's review of v3
-(`docs/reviews/20260925-172550-v3/`). Astra's review of v3 failed on a usage limit and is pending.
-The changes are listed at the end.
+(`docs/reviews/20260925-172550-v3/`). v3.2 folds in Astra 6's review of v3.1, run at maximum
+effort (`docs/reviews/20260925-174815-v31/`). Where the two disagreed, the choice is recorded in
+D047. The changes are listed at the end.
 
 Next steps: review v3 again. Then write the code and run the feasibility pilot, both disclosed
 and on pilot shuffles only, never N2. Freeze code, analysis and the pilot-derived margins, and
@@ -106,8 +107,10 @@ For every target in every brain:
 2. **Random-partner refits, 5 independent partner sets.** Partners are drawn at random with the
    same numbers of incoming, outgoing and gap connections. Only weights, time constant and bias
    are optimised.
-3. **Structural-baseline refits, 1 each.** The partner sets are the top-k of the mirror ranking
-   and of the class-model ranking. Only weights, time constant and bias are optimised.
+3. **Structural-baseline refits, 2 per target.** Paired targets: the top-k of the mirror
+   ranking and of the class-model ranking. Unpaired targets, which have no mirror: the top-k of
+   the class-model ranking and of the degree ranking. Ties at the k-th place are broken by a
+   fixed seeded order. Only weights, time constant and bias are optimised.
 4. **Free searches, 5 independent.** Partners, weights, time constant and bias are all optimised.
 
 **Known attainable reference (MIP only):** reinserting X's saved original parameters exactly
@@ -121,55 +124,79 @@ must reproduce the intact score within numerical tolerance. This is an implement
 - Time constant and bias come from the pinned initial distributions.
 - All refits start from the same rule.
 
-## Margins (measured in the feasibility pilot, frozen at the tag)
+## Margins
 
-- **δ_eval:** evaluation noise, the standard deviation of an intact brain's mean score across
-  independent sets of 64 evaluation worlds.
-- **δ_search:** optimiser noise, the standard deviation of final scores across repeated
-  *original-partner* refits of the same target, with partners fixed (Fable). The spread of the
-  free searches is reported, and step 4 tests it. It is not part of the margin: a multimodal free
-  search must not inflate the margin that classifies it.
-- **Equivalence margin m = max(δ_eval, δ_search).**
-- **Three-state comparison.** Each comparison below is a paired difference on the final evaluation
-  worlds, with its 95% interval. The difference is:
-  - **equivalent** if the interval lies inside ±m;
-  - **above** if the interval lies entirely above +m;
-  - **below** if it lies entirely below −m;
-  - **undetermined** otherwise.
-- **AUC chance band for cell-level aggregates:** [0.45, 0.55], fixed now. Per target, chance is
-  that target's own label-permutation null (see "Outcome classification").
+Two kinds of number, kept apart (Astra):
 
-## Outcome classification
+- **Performance margin p, a scientific tolerance fixed now:** 5% of the intact brain's mean score
+  in that graph and task. "Equivalent", "above" and "below" are judged against p.
+- **Noise estimates, measured in the feasibility pilot:**
+  - δ_eval: the standard deviation of an intact brain's mean score across independent sets of 64
+    evaluation worlds;
+  - δ_search: the standard deviation of final scores across repeated original-partner refits of
+    the same target.
+  Each is pooled across pilot targets and arms as a root mean square. They are used only for
+  reliability checks. If either exceeds p/2, the pilot fails: the method could not resolve the
+  registered tolerance.
+- **Three-state comparison.** Each comparison below is a paired difference on the final
+  evaluation worlds, with its 95% interval. The difference is:
+  - **equivalent** if the interval lies inside ±p;
+  - **above** if it lies entirely above +p;
+  - **below** if it lies entirely below −p;
+  - **undetermined** otherwise. An undetermined comparison is never counted as either.
 
-Applied per target and brain, in this order:
+## Per-target attributes, and the outcome summary
 
-1. **Reference failure:** the standard deviation of the 3 original-partner refits' scores exceeds
-   m, or the MIP exact-restoration check fails. The target is excluded from recovery statistics
-   and counted.
-2. **No headroom:** reference minus deleted-brain score is not **above**. This also catches a
-   reference below the deleted score. X does not matter here. Criticality measured in intact
-   brains does not guarantee headroom in NIP brains, which compensated during evolution.
-3. **Not identifiable:** reference minus the mean of the 5 random-partner refits is not
-   **above**. This also catches random partners that beat the reference. The task cannot tell the
-   sampled wirings apart for this neuron. It is a statement about the sampled alternatives, not
-   about all wirings.
-4. **The search.** Take the mean of the 5 free searches minus the reference.
-   - **below:** search failure;
-   - **undetermined:** inconclusive search;
-   - **equivalent or above:** go on to step 5. "Above" is recorded as exceeding the reference.
-5. **Overlap,** judged against the target's own label-permutation null of the aggregated-ranking
-   AUC. That null comes from permuting which candidates are true partners, with the same
-   aggregation.
-   - **anatomical recovery:** the AUC is above the null's 95th percentile;
-   - **functional substitution:** the AUC lies in the null's central 90% (Fable: a fixed band is
-     unreachable per target, since the null standard deviation is about 0.10-0.15 with about 240
-     candidates);
-   - **inconclusive overlap:** the AUC is below the null's 5th percentile.
+Each target in each brain gets five attributes, reported separately and cross-tabulated (Astra:
+an exclusive classification order would hide targets with little headroom but recoverable
+anatomy).
 
-A better-than-original wiring with chance-level overlap is functional substitution.
+1. **Reference reliability:**
+   - *reliable:* the SD of the 3 original-partner refits is at most 2 δ_search, and, in MIP, the
+     reference is equivalent to or above the exact restoration of the saved neuron;
+   - *underperforming:* in MIP, the reference is below the saved-neuron restoration (consistently
+     poor refits);
+   - *unstable:* otherwise.
+2. **Headroom** (reference minus deleted-brain score):
+   - *present:* above;
+   - *absent:* equivalent;
+   - *reinsertion harmful:* below;
+   - *undetermined.*
+3. **Original-partner advantage** (reference minus mean random-partner refit):
+   - *present:* above;
+   - *absent:* equivalent. The task does not tell those sampled wirings apart; this is a
+     statement about the sampled alternatives only;
+   - *random partners better:* below. This is a difference, not non-identifiability;
+   - *undetermined.*
+4. **Functional success** (mean free search minus reference):
+   - *reached:* equivalent;
+   - *exceeded:* above;
+   - *failed:* below;
+   - *undetermined.*
+5. **Overlap**, the aggregated-ranking AUC against the target's own label-permutation null:
+   - *anatomical enrichment:* above the null's 95th percentile. This is enrichment for true
+     partners, not a claim of full reconstruction;
+   - *not detected:* inside the central 90%. This means only that no enrichment was detected;
+     anatomy is undetermined;
+   - *depleted:* below the 5th percentile.
 
-The distribution of these outcomes, per panel cell and graph condition, is the **central
-descriptive result** of 03a.
+**Outcome summary** (derived from the attributes, for the central table):
+- **Excluded:** reference not reliable.
+- **Anatomical recovery:** functional success reached or exceeded, and anatomical enrichment.
+- **Functional success, anatomy undetermined:** functional success reached or exceeded, and
+  overlap not detected.
+- **Search failure:** functional success failed.
+- **Inconclusive:** anything else.
+
+Headroom and original-partner advantage are shown beside each summary, never folded into it. The
+full attribute cross-table is reported for every cell and condition.
+
+**Functional substitution** needs positive evidence of chance-level overlap, which a single
+target cannot give. It is therefore claimed only at cell level: the targets in the cell reach
+functional success, and the cell's mean AUC interval lies inside 0.5 ± 0.03.
+
+The distribution of outcome summaries, with the attribute cross-table, per panel cell and graph
+condition, is the **central descriptive result** of 03a.
 
 ## Graph conditions
 
@@ -188,8 +215,10 @@ Every target is scored against the true partners in its own graph.
 
 ## The panel
 
-Each graph gets its own panel of 24 targets, chosen by the same rule, so conditions are compared
-at matched criticality. Choosing targets only for being critical in N2 would favour N2.
+Each graph gets its own panel of 24 targets, chosen by the same rule. That keeps the procedure
+matched, not the resulting criticality (Astra), so each cell's criticality and degree
+distributions are reported per condition. Choosing targets only for being critical in N2 would
+favour N2.
 
 **Eligible neurons:**
 - not among the roughly 40 mapped sensor and motor neurons;
@@ -201,9 +230,13 @@ scoring.
 **Candidate partners for the searches:** all eligible neurons plus the non-interface,
 non-pharyngeal neurons, but **never the mapped sensor and motor neurons**. Otherwise the
 score-maximising wiring is a direct sensor-to-motor shortcut, which experiment 02 showed scores
-well and which would make functional substitution trivial. X's true partners among interface
-neurons are kept fixed in every search and excluded from scoring. The count of such kept
-connections is reported per target.
+well and which would make functional substitution trivial.
+
+**Kept connections.** X's true connections to interface neurons, and its chemical
+self-connection if it has one, are kept as fixed *partners* in every search, refit and arm.
+Their *weights* are initialised by the partner-independent rule and optimised together with the
+rest of X's weights. They are excluded from scoring. The count of kept connections is reported
+per target.
 
 **Paired or unpaired:** from a curated left/right annotation file, fixed before the tag and
 built from the dataset's or WormAtlas's annotation, never from name patterns. The helper
@@ -218,10 +251,10 @@ brains, measured on the target-selection worlds, which are never used for final 
 
 | | high criticality | low criticality |
 |---|---|---|
-| **paired** | the 6 paired neurons with the largest drops above m | 6 drawn at random, with a fixed seed, from paired neurons whose drop is within m |
-| **unpaired** | the 6 unpaired neurons with the largest drops above m | 6 drawn at random, with a fixed seed, from unpaired neurons whose drop is within m |
+| **paired** | the 6 paired neurons with the largest drops above p | 6 drawn at random, with a fixed seed, from paired neurons whose drop is within p |
+| **unpaired** | the 6 unpaired neurons with the largest drops above p | 6 drawn at random, with a fixed seed, from unpaired neurons whose drop is within p |
 
-- If a high cell has fewer than 6 neurons with a drop above m, take all that qualify and record
+- If a high cell has fewer than 6 neurons with a drop above p, take all that qualify and record
   the shortfall. The criterion is never relaxed.
 - An empty cell is reported as empty, never back-filled.
 - Each cell's distributions of criticality and degree are reported per condition. Conditions
@@ -295,32 +328,39 @@ this summary comes from the same permutation. Per-type results are also reported
 
 ## Hypotheses and decision rules
 
-**Intervals** are 95% hierarchical bootstrap intervals, B = 20 000. The resampling preserves the
-design's dependence:
-- graph instances within a condition;
-- then brains, where a MIP intact brain is resampled together with all targets that share it;
-- then targets;
-- then searches.
+**Intervals** are 95% hierarchical bootstrap intervals, B = 20 000. They follow the design,
+which is crossed in one arm and nested in the other (Astra):
+- graph instances are resampled within a condition;
+- **targets** are resampled once per graph. That same resample is used across MIP brains, across
+  arms and across baselines, so every paired contrast stays paired;
+- **MIP brains** are crossed with targets, since each intact brain carries all 24 targets. They
+  are resampled independently of targets;
+- **NIP brains** are nested within their target, and are resampled within it;
+- searches are resampled within each target-brain.
 Student t-intervals over graph instances are reported beside them, because 3-6 graph instances
 undercover. A P-value of zero is reported as P < 1/B.
 
-**Analysis set.** Primary: all targets except reference failures. Secondary: only targets that
-reach step 5. SC1-SC4 are also reported stratified by whether X has kept interface connections
-(0, or more than 0) (Fable).
+**Analysis set.**
+- **Primary:** targets whose reference is reliable.
+- **Contrasts across arms or baselines** (SC3, SC4) use the *common* set: targets reliable in
+  every arm involved. The two sides always compare the same targets.
+- **Secondary:** only targets with functional success reached or exceeded.
+- **Stratification:** SC1-SC4 are also reported by whether X has kept interface connections (0,
+  or more than 0).
 
-**Verdicts:**
-- **supported:** the interval lies entirely on the predicted side;
-- **contradicted,** labelled by cause: *reversed* (the interval lies entirely on the other side),
-  or *tightly null* (the interval lies inside the equivalence band registered for that
-  hypothesis);
+**Verdicts,** mutually exclusive (Astra). Each hypothesis has a null value and an equivalence band
+around it:
+- **supported:** the interval lies entirely on the predicted side of the null value, and not
+  entirely inside the band;
+- **negligible:** the interval lies entirely inside the band, whichever side it is on;
+- **reversed:** the interval lies entirely on the other side, and not entirely inside the band;
 - **null:** anything else;
 - **withheld:** data are incomplete under the completeness rule, fixed at the tag.
 
 **Confirmatory family,** high-criticality cells unless stated. It has five members: SC1, SC2,
 SC3-unpaired, SC3-paired and SC4. They are Holm-corrected, and each member's interval is reported
-at its Holm-adjusted level. **Equivalence bands** for "tightly null", in AUC units, fixed now:
-±0.02 around 0.5 for SC1 and SC3-paired, and ±0.03 around 0 for the differences in SC2,
-SC3-unpaired and SC4.
+at its Holm-adjusted level. **Bands,** in AUC units, fixed now: 0.5 ± 0.02 for SC1 and
+SC3-paired, and 0 ± 0.03 for the differences in SC2, SC3-unpaired and SC4.
 - **SC1, self-consistency exists.** N2, NIP arm: mean AUC is above 0.5.
 - **SC2, it belongs to the real wiring.** NIP arm: N2's AUC minus SH-matched's AUC is above 0.
   N2 minus ordinary SH is reported beside it, as a secondary.
@@ -342,7 +382,7 @@ evidence and should be read as such.
 
 ## Controls and tests
 
-**Before the pilot:**
+**Implementation tests, before the pilot** (synthetic data or pilot shuffles only):
 - **Deletion test:** a brain with X deleted produces the same dynamics, within numerical
   tolerance, as a separately built network in which X never existed (301 neurons, re-indexed).
 - **Direction test:** an asymmetric test neuron with known incoming and outgoing partners is
@@ -352,30 +392,39 @@ evidence and should be read as such.
 - **Common random numbers test:** re-scoring the same state on the same seeds gives the same
   score.
 - **Planted-optimum test, synthetic:** on a small synthetic problem with a known best wiring, the
-  search finds it. Synthetic data only.
+  search finds it.
+- **Development versions of the two task controls** below, run on the pilot shuffles, to debug
+  them and calibrate the permutation null.
+
+**Task controls on N2, after the confirmatory freeze** (Astra: they touch N2, so they cannot run
+before the tag):
 - **No-task control:** rebinding with a reward that is identically zero, for the 12 N2
   high-criticality targets in one intact brain. It is calibrated against the permutation null of
-  the whole pipeline, not against an interval that merely contains 0.5. This tests
-  implementation bias.
-- **Mismatched-task control:** rebinding under a different task's reward, the roadmap's
-  non-worm-like control task, for the same 12 targets. This tests whether the chosen task
-  contributes specific information.
+  the whole pipeline. It tests implementation bias.
+- **Mismatched-task control:** rebinding under the roadmap's non-worm-like control task, for the
+  same 12 targets. It tests whether the chosen task carries specific information.
 
-**Feasibility pilot** (on pilot shuffles SH101 and SH102, never N2 or panel graphs). Per pilot
-graph: one intact brain, one NIP brain per target, and 4 high-criticality targets chosen by the
-panel rule, so 8 targets in all. It passes only if all three hold:
-1. **Refit screen, NIP arm** (Fable: headroom and identifiability are NIP problems): for at least
-   4 of the 8 targets, reference minus the random-partner mean is **above**, as defined in
-   "Margins".
-2. **Real-model planted test, MIP arm:** on the targets passing (1), the free searches reach
-   step 5 and show anatomical recovery on at least half of them.
-3. **Timing:** at the planned batch width, the measured throughput projects the full panel under
-   the budget rule. The 11 evaluations per second quoted below is 02's batch-32 throughput, so the
-   required gain must come from wider batches.
+**Feasibility pilot** (pilot shuffles SH101 and SH102, never N2 or panel graphs). Per pilot graph:
+one intact brain, one NIP brain per target, and 4 high-criticality targets chosen by the panel
+rule, 2 paired and 2 unpaired. That is 8 targets in all. It passes only if all four hold:
+1. **Resolution:** δ_eval and δ_search are both at most p/2.
+2. **NIP headroom and identifiability** (Astra: the reference must beat *both* the deleted brain
+   and random partners): in the NIP arm, at least 4 of the 8 targets have a reliable reference,
+   headroom present, and original-partner advantage present.
+3. **MIP recovery:** on the targets that passed (2), the MIP free searches reach functional
+   success with anatomical enrichment on at least half. This checks the method where the answer
+   is attainable by construction. It does not show NIP headroom, which (2) does.
+4. **Timing:** at the planned batch width, the measured throughput projects the full panel under
+   the budget rule. The projection includes every workload:
+   - searches and whole-brain evolutions;
+   - both task controls;
+   - criticality selection, calibration and final scoring.
+   If the budget cut applies, feasibility (2) and (3) must be re-checked at the reduced search
+   counts.
 
-**Pilot cost:** about 432 000 genome evaluations per arm, about 11 GPU-hours per arm at 11 per
-second, plus 18 whole-brain evolutions. It drops sharply if wider batching works, and the pilot
-measures exactly that.
+**Pilot cost:** about 432 000 genome evaluations per arm, about 11 GPU-hours per arm at 02's
+batch-32 throughput. It also needs 10 whole-brain evolutions: 2 intact and 8 NIP. It drops
+sharply if wider batching works, and the pilot measures exactly that.
 
 If the pilot fails, the panel is not run and the pilot is reported. The pilot also supplies
 δ_eval, δ_search, the temperature ladder and the throughput.
@@ -390,7 +439,8 @@ If the pilot fails, the panel is not run and the pilot is reported. The pilot al
   genomes = 4 800 evaluations. That is about 37 GPU-hours at 02's rate, and about 25 after
   reduction step 1.
 - **At 02's batch-32 throughput** (about 11 genome evaluations per second), the searches alone
-  come to about 785 GPU-hours. So the one-week cap binds unless batching gives more than about 5 times the speed.
+  come to about 785 GPU-hours. Staying under the one-week cap needs about 4.9 times 02's speed if
+  both workloads speed up, or about 6 times if only the searches do.
   Experiment 02's batched scripted tuning was about 85 times faster than serial evaluation. The
   pilot measures it.
 
@@ -488,6 +538,41 @@ replication. Record the final numbers in DECISIONS.md before the confirmatory ru
   and notes that 11 per second is a batch-32 rate.
 - **Fixed rules:** the numbers of worlds; how SH-matched graphs are picked; pair-member choice
   before ranking; SC3-paired targets without a scoreable partner; which targets survive a cut.
+
+## Changes in v3.2 (Astra's review of v3.1, maximum effort)
+
+- **Uncertainty is never negative evidence.** Every comparison keeps an undetermined state, and
+  random partners beating the original are reported as a difference, not as non-identifiability.
+  This disagrees with Fable on its point 5; D047 records why.
+- **Attributes instead of an exclusive order.** Headroom, original-partner advantage, functional
+  success and overlap are reported separately and cross-tabulated. The outcome summary is derived
+  from them, so a low-headroom target with recoverable anatomy stays visible.
+- **Margins separated:**
+  - a scientific performance margin p (5% of the intact score), fixed now;
+  - noise estimates used only for reliability, pooled as a root mean square across pilot
+    targets and arms;
+  - the pilot fails if noise exceeds p/2;
+  - references that consistently underperform the saved-neuron restoration in MIP are flagged.
+- **Overlap labels corrected:**
+  - above the permutation null is "anatomical enrichment";
+  - inside it is "no enrichment detected, anatomy undetermined", not substitution;
+  - functional substitution is claimed only at cell level, with an equivalence band.
+  This partly reverses v3.1's adoption of Fable's point 6. The permutation null stays; the
+  reading changes.
+- **Pilot:** criterion (2) requires NIP targets with a reliable reference and headroom present,
+  not just an advantage over random partners. The targets split 2 paired and 2 unpaired per
+  graph. The pilot needs 10 whole-brain evolutions, not 18. Timing covers every workload, and
+  feasibility is re-checked if the budget cut applies.
+- **N2 task controls move after the freeze.** Their development versions run on pilot shuffles.
+- **Verdicts are mutually exclusive:** supported, negligible, reversed, null or withheld. The
+  unused fixed chance band is removed.
+- **Bootstrap:** targets are crossed with MIP brains and nested for NIP brains, and one target
+  resample is shared across arms and baselines. SC3 and SC4 use the common analysis set.
+- **Specified:**
+  - tie-breaking for the structural top-k;
+  - the unpaired structural refits (class model and degree);
+  - that kept connections have fixed partners and optimised weights;
+  - panel matching is of the procedure, not of criticality.
 
 ## What comes after: 03b and beyond
 

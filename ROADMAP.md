@@ -1,7 +1,7 @@
 # WormWars roadmap (v2, 2026-09-25)
 
-**Status: v2.1, revised after review by Astra 6 and Fable 5.1** (`docs/reviews/20260925-163118-roadmap/`,
-`docs/reviews/20260925-172550-v3/`; D044-D046). The owner delegated the open decisions. Each is recorded in D045 with its reason.
+**Status: v2.2, revised after review by Astra 6 and Fable 5.1** (`docs/reviews/20260925-163118-roadmap/`,
+`docs/reviews/20260925-172550-v3/`, `docs/reviews/20260925-174815-v31/`; D044-D047). The owner delegated the open decisions. Each is recorded in D045 with its reason.
 Costs are GPU-hours on the one RTX 5080. Nothing below is pre-registered yet: each experiment gets
 its own pre-registration and review before its confirmatory runs.
 
@@ -93,10 +93,11 @@ input-response probe runs outside the world and is cheap for every graph and con
 Generation-0 fitness is not: 258 graphs × 3 tasks × 2048 genomes is about 1.6 million genome
 evaluations *per condition*, about 41 GPU-hours at 02's throughput. So the pre-registration must
 choose one of two plans:
-- **a base condition for fitness** (M0, gaps on, anatomical magnitudes), with the other
-  conditions measured by input response only or on a subset of graphs;
-- **fewer genomes or worlds per graph,** for example 256 genomes × 4 worlds, which is about 3
-  GPU-hours per condition.
+- **a base condition for fitness** (gaps on, anatomical magnitudes) under M0, R1 and R2, since
+  signal (b) is a fitness mapping interaction and needs the remaps (Astra). The other conditions
+  are measured by input response only, or on a predefined subset of graphs;
+- **fewer genomes or worlds per graph,** for example 256 genomes × 4 worlds. That is about 3
+  GPU-hours per condition by extrapolation, not measurement.
 
 Either way, it is fixed after a measured timing at the planned batch width.
 
@@ -110,8 +111,11 @@ Either way, it is fixed after a measured timing at the planned batch width.
   - numeric thresholds for the mixing, diversity and interface-local similarity checks.
 - **Numeric margins per signal,** sourced from 02's observed effects.
 - **Which claim drives the gate,** percentile or mean difference, with the threshold stated.
-  With 64 graphs the resolution is 1/65. Since the ensembles are nested, the gate names the
-  narrowest ensemble that explains a signal.
+  With 64 graphs the resolution is 1/65.
+- **How ensembles are compared.** Ordinary, routing-matched and routing-plus-mirror-matched form a
+  nested sequence of constraints, but class-preserving shuffles are a separate branch (Astra,
+  correcting a claim of Fable's). So the gate reports N2's compatibility with *each* ensemble. It
+  does not promise a unique narrowest explanation.
 - **The input-response probe itself,** defined in 03, not borrowed from 02b.
 
 ### 3. Three pilots, in any order (cost measured, not assumed: pilot 3a alone is about 11 GPU-hours per arm at 02's batch-32 throughput, less if wider batching works)
@@ -164,8 +168,8 @@ self-consistent-field loop, all from the 03a draft.
 | item | cost |
 |---|---|
 | 02b | about 1 GPU-hour |
-| 03 | fixed by its pre-registration: about 3 GPU-hours per fitness condition at 256 genomes × 4 worlds; input-response conditions are cheap |
-| pilot 3a | about 11 GPU-hours per arm at batch-32 throughput, plus 18 whole-brain evolutions; less with wider batching |
+| 03 | fixed by its pre-registration after a timing run; about 3 GPU-hours per fitness condition at 256 genomes × 4 worlds by extrapolation; input-response conditions are cheap |
+| pilot 3a | about 11 GPU-hours per arm at batch-32 throughput, plus 10 whole-brain evolutions; less with wider batching |
 | pilot 3b | set by its task design |
 | subtotal, up to the choice of the substantial experiment | roughly one to three GPU-days, depending on batching and 03's plan |
 | 03a panel | set by its batched pilot; v3 as written is about 31 million genome evaluations, 785 GPU-hours unbatched, so its one-week cap binds unless batching gives more than 5 times the speed |
