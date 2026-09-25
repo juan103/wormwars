@@ -114,3 +114,14 @@ def test_behaviour_is_finite_even_if_all_die(parts):
     cfg.world.metabolic_drain = 5.0  # everyone dies on the first tick
     b = probes.behaviour(cfg, iface, champ(spec, cfg), np.arange(2), 3, "cpu")
     assert all(np.isfinite(v) for v in b.values())
+
+
+def test_input_response_accepts_a_given_genome(parts):
+    """Roadmap 02b: the probe on evolved champions, not only random brains. Passing the same
+    genome the probe would draw must reproduce it exactly."""
+    con, iface, spec = parts
+    g = Genome.random(spec, Config().brain, 4, generator=torch.Generator().manual_seed(0))
+    a = probes.input_response(spec, Config(), iface, 4, "cpu", ticks=10)
+    b = probes.input_response(spec, Config(), iface, None, "cpu", ticks=10, genome=g)
+    for k in a:
+        np.testing.assert_allclose(a[k], b[k], rtol=1e-6, atol=1e-9)

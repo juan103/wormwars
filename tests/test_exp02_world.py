@@ -118,3 +118,13 @@ def test_motor_commands_are_recorded_each_tick(parts):
     assert w.last_forward.shape == (w.n_worlds, w.n_swarms, w.n_weys)
     assert w.last_turn.shape == w.last_forward.shape
     assert w.last_forward.abs().max() <= 1.0
+
+
+def test_sensed_signals_are_kept_each_tick(parts):
+    """Roadmap 02b: behaviour replays need what each wey sensed on the tick it acted."""
+    w = build(parts)
+    assert w.last_signals is None
+    for _ in range(3):
+        w.tick()
+    assert set(w.last_signals) >= {"food_left", "food_right", "collision_front_left"}
+    assert w.last_signals["food_left"].shape == w.last_turn.shape

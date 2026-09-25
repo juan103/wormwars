@@ -1,0 +1,722 @@
+{
+ "T0-M0-N2-run00": {
+  "g00": {
+   "common_forward_raw": 0.03354769637808204,
+   "common_turn_raw": 0.04754036776721478,
+   "directional_forward_raw": 0.0051432470325380565,
+   "directional_turn_raw": 0.011204216815531253,
+   "directional_turn_signed_raw": 0.011204216815531253,
+   "common_forward_motor": 0.0719967983663082,
+   "common_turn_motor": 0.04817456733435392,
+   "directional_forward_motor": 0.011037936736829578,
+   "directional_turn_motor": 0.011353683099150658,
+   "directional_turn_signed_motor": 0.011353683099150658,
+   "use_mean": 0.0029632486402988434,
+   "use_swap": -0.0034067686647176743
+  },
+  "g39": {
+   "common_forward_raw": 0.0011783541180193425,
+   "common_turn_raw": 0.02425618339329958,
+   "directional_forward_raw": 0.005998815875500441,
+   "directional_turn_raw": 0.03701378339901566,
+   "directional_turn_signed_raw": 0.03701378339901566,
+   "common_forward_motor": 0.002528871037065983,
+   "common_turn_motor": 0.02457976806908846,
+   "directional_forward_motor": 0.012874076515436173,
+   "directional_turn_motor": 0.037507555168122056,
+   "directional_turn_signed_motor": 0.037507555168122056,
+   "use_mean": 0.12349873967468739,
+   "use_swap": 0.37361765280365944
+  }
+ },
+ "T0-M0-SH1-run00": {
+  "g00": {
+   "common_forward_raw": 0.002780373953282833,
+   "common_turn_raw": 0.000869700126349926,
+   "directional_forward_raw": 0.0024039684794843197,
+   "directional_turn_raw": 0.0031455409713089465,
+   "directional_turn_signed_raw": -0.0031455409713089465,
+   "common_forward_motor": 0.006264360994100571,
+   "common_turn_motor": 0.0014033590443432332,
+   "directional_forward_motor": 0.00541630033403635,
+   "directional_turn_motor": 0.005075691267848015,
+   "directional_turn_signed_motor": -0.005075691267848015,
+   "use_mean": 0.016957945190370083,
+   "use_swap": 0.02838895656168461
+  },
+  "g39": {
+   "common_forward_raw": 0.0038727646693587302,
+   "common_turn_raw": 0.009401780925691128,
+   "directional_forward_raw": 0.0018841916229575873,
+   "directional_turn_raw": 0.0019995767157524823,
+   "directional_turn_signed_raw": 0.0009839869569987058,
+   "common_forward_motor": 0.008725592866539955,
+   "common_turn_motor": 0.0151708560064435,
+   "directional_forward_motor": 0.0042452063411474224,
+   "directional_turn_motor": 0.00322654633782804,
+   "directional_turn_signed_motor": 0.0015877759549766779,
+   "use_mean": -0.00924399308860302,
+   "use_swap": -0.018369847908616066
+  }
+ },
+ "T0-M0-N2-run01": {
+  "g00": {
+   "common_forward_raw": 0.004470281861722469,
+   "common_turn_raw": 0.0017219418194144964,
+   "directional_forward_raw": 0.0008728144690394402,
+   "directional_turn_raw": 0.0017157109687104821,
+   "directional_turn_signed_raw": -0.0013908034889027476,
+   "common_forward_motor": 0.009593681246042252,
+   "common_turn_motor": 0.0017449154605856166,
+   "directional_forward_motor": 0.00187314972281456,
+   "directional_turn_motor": 0.001738598027441185,
+   "directional_turn_signed_motor": -0.0014093562800553626,
+   "use_mean": 0.019879285246133804,
+   "use_swap": 0.04120344948023558
+  },
+  "g39": {
+   "common_forward_raw": 0.005267356708645821,
+   "common_turn_raw": 0.036741136386990544,
+   "directional_forward_raw": 0.0026879973709583284,
+   "directional_turn_raw": 0.008352923020720483,
+   "directional_turn_signed_raw": -0.008073758706450463,
+   "common_forward_motor": 0.00026561617851257325,
+   "common_turn_motor": 0.03723127096891403,
+   "directional_forward_motor": 0.0001978568732738495,
+   "directional_turn_motor": 0.00846435222774744,
+   "directional_turn_signed_motor": -0.008181462623178959,
+   "use_mean": 0.03214391879737377,
+   "use_swap": 0.06434043496847153
+  }
+ },
+ "T0-M0-SH2-run00": {
+  "g00": {
+   "common_forward_raw": 0.004357330990023911,
+   "common_turn_raw": 0.00032140593975782394,
+   "directional_forward_raw": 0.0001840839278884232,
+   "directional_turn_raw": 0.0024378074333071707,
+   "directional_turn_signed_raw": -0.002437505125999451,
+   "common_forward_motor": 0.008126815315335989,
+   "common_turn_motor": 0.0004388004541397095,
+   "directional_forward_motor": 0.00036712571745738386,
+   "directional_turn_motor": 0.003328220918774605,
+   "directional_turn_signed_motor": -0.003327808156609535,
+   "use_mean": -0.010898305103182793,
+   "use_swap": -0.028535213321447372
+  },
+  "g39": {
+   "common_forward_raw": 0.005319290608167648,
+   "common_turn_raw": 0.008845455199480056,
+   "directional_forward_raw": 0.005617973441258073,
+   "directional_turn_raw": 0.0021084634587168693,
+   "directional_turn_signed_raw": -0.002104143798351288,
+   "common_forward_motor": 0.005290016904473305,
+   "common_turn_motor": 0.012076274049468339,
+   "directional_forward_motor": 0.005832862481474877,
+   "directional_turn_motor": 0.002878584200516343,
+   "directional_turn_signed_motor": -0.002872686879709363,
+   "use_mean": 0.013011058792471886,
+   "use_swap": 0.03027426265180111
+  }
+ },
+ "T0-M0-N2-run02": {
+  "g00": {
+   "common_forward_raw": 0.0037469618022441865,
+   "common_turn_raw": 0.014937174879014492,
+   "directional_forward_raw": 0.0008070578565821052,
+   "directional_turn_raw": 0.002705936599522829,
+   "directional_turn_signed_raw": -0.0026663736440241336,
+   "common_forward_motor": 0.008041360508650541,
+   "common_turn_motor": 0.015136440424248577,
+   "directional_forward_motor": 0.0017320275772362947,
+   "directional_turn_motor": 0.0027420347440056505,
+   "directional_turn_signed_motor": -0.002701943914871663,
+   "use_mean": -0.00572159793227911,
+   "use_swap": -0.005998185835778713
+  },
+  "g39": {
+   "common_forward_raw": 0.009010391775518656,
+   "common_turn_raw": 0.0566880326718092,
+   "directional_forward_raw": 0.003502899641171098,
+   "directional_turn_raw": 0.04337377073243261,
+   "directional_turn_signed_raw": 0.04337377073243261,
+   "common_forward_motor": 0.007958347350358963,
+   "common_turn_motor": 0.05744426436722279,
+   "directional_forward_motor": 0.0037295631133019923,
+   "directional_turn_motor": 0.043952387291938066,
+   "directional_turn_signed_motor": 0.043952387291938066,
+   "use_mean": 0.06925567053258419,
+   "use_swap": 0.20095529407262802
+  }
+ },
+ "T0-M0-SH3-run00": {
+  "g00": {
+   "common_forward_raw": 0.021552878757938744,
+   "common_turn_raw": 0.0075625723227858545,
+   "directional_forward_raw": 0.002457520575262606,
+   "directional_turn_raw": 0.0016995096346363425,
+   "directional_turn_signed_raw": 0.0016965832794085145,
+   "common_forward_motor": 0.049784397799521686,
+   "common_turn_motor": 0.011797400889918208,
+   "directional_forward_motor": 0.005676559824496508,
+   "directional_turn_motor": 0.0026511876727454363,
+   "directional_turn_signed_motor": 0.002646622562315315,
+   "use_mean": -0.02174280397593975,
+   "use_swap": -0.04816171620041132
+  },
+  "g39": {
+   "common_forward_raw": 0.027848035236820577,
+   "common_turn_raw": 0.002772057428956032,
+   "directional_forward_raw": 0.010128196375444532,
+   "directional_turn_raw": 0.007156514935195446,
+   "directional_turn_signed_raw": 0.007156514935195446,
+   "common_forward_motor": 0.06432541208341717,
+   "common_turn_motor": 0.004324331635143608,
+   "directional_forward_motor": 0.023394842585548758,
+   "directional_turn_motor": 0.01116396345605608,
+   "directional_turn_signed_motor": 0.01116396345605608,
+   "use_mean": 0.06807215325534344,
+   "use_swap": 0.3143431097269058
+  }
+ },
+ "T0-M0-N2-run03": {
+  "g00": {
+   "common_forward_raw": 0.0056706760078668594,
+   "common_turn_raw": 0.08257305920124054,
+   "directional_forward_raw": 0.0016705363988876343,
+   "directional_turn_raw": 0.02095364611595869,
+   "directional_turn_signed_raw": 0.02095364611595869,
+   "common_forward_motor": 0.0001407146453857422,
+   "common_turn_motor": 0.08367460351437331,
+   "directional_forward_motor": 8.871629834175109e-05,
+   "directional_turn_motor": 0.021233172714710237,
+   "directional_turn_signed_motor": 0.021233172714710237,
+   "use_mean": -0.11761364713311195,
+   "use_swap": -0.24825269635766745
+  },
+  "g39": {
+   "common_forward_raw": 0.007123865187168121,
+   "common_turn_raw": 0.0031239476054906847,
+   "directional_forward_raw": 0.003120999410748482,
+   "directional_turn_raw": 0.0035539514385163782,
+   "directional_turn_signed_raw": 0.0035539514385163782,
+   "common_forward_motor": 0.00021732896566390992,
+   "common_turn_motor": 0.0031656207516789435,
+   "directional_forward_motor": 7.684268057346344e-05,
+   "directional_turn_motor": 0.003601361811161041,
+   "directional_turn_signed_motor": 0.003601361811161041,
+   "use_mean": 0.005873516201972961,
+   "use_swap": 0.009450457990169525
+  }
+ },
+ "T0-M0-SH4-run00": {
+  "g00": {
+   "common_forward_raw": 0.0006745417602360248,
+   "common_turn_raw": 0.006624744087457657,
+   "directional_forward_raw": 0.0008697865530848503,
+   "directional_turn_raw": 0.002371502947062254,
+   "directional_turn_signed_raw": -0.0023359774611890318,
+   "common_forward_motor": 0.0001551227644085884,
+   "common_turn_motor": 0.011054676782805473,
+   "directional_forward_motor": 0.0003076121211051941,
+   "directional_turn_motor": 0.003957315441220998,
+   "directional_turn_signed_motor": -0.003898034244775772,
+   "use_mean": 0.02227968070656061,
+   "use_swap": 0.05501061584800482
+  },
+  "g39": {
+   "common_forward_raw": 0.00043648486025631427,
+   "common_turn_raw": 0.013632230833172799,
+   "directional_forward_raw": 0.001483129640109837,
+   "directional_turn_raw": 0.0005762975662946701,
+   "directional_turn_signed_raw": 0.0005480416119098663,
+   "common_forward_motor": 0.0008201729040592908,
+   "common_turn_motor": 0.022748034063261,
+   "directional_forward_motor": 0.001949040626641363,
+   "directional_turn_motor": 0.0009616652852855623,
+   "directional_turn_signed_motor": 0.0009145154035650194,
+   "use_mean": 0.0024690181016921997,
+   "use_swap": 0.012327080592513084
+  }
+ },
+ "T0-M0-N2-run04": {
+  "g00": {
+   "common_forward_raw": 0.003775199013762176,
+   "common_turn_raw": 0.002294677123427391,
+   "directional_forward_raw": 0.0018105283379554749,
+   "directional_turn_raw": 0.0033104138448834418,
+   "directional_turn_signed_raw": -0.0027389002963900564,
+   "common_forward_motor": 0.008101966558024287,
+   "common_turn_motor": 0.0023252896964550017,
+   "directional_forward_motor": 0.0038855782244354487,
+   "directional_turn_motor": 0.0033545749261975288,
+   "directional_turn_signed_motor": -0.002775437943637371,
+   "use_mean": -0.001574389636516571,
+   "use_swap": -0.025116594973951578
+  },
+  "g39": {
+   "common_forward_raw": 0.005660657770931721,
+   "common_turn_raw": 0.010998846404254437,
+   "directional_forward_raw": 0.002459042053669691,
+   "directional_turn_raw": 0.0019390014931559563,
+   "directional_turn_signed_raw": 0.0016750534996390343,
+   "common_forward_motor": 0.004230213118717074,
+   "common_turn_motor": 0.011145576275885105,
+   "directional_forward_motor": 0.0010226483253063634,
+   "directional_turn_motor": 0.0019648696295917036,
+   "directional_turn_signed_motor": 0.0016973999328911305,
+   "use_mean": -0.018184619024395943,
+   "use_swap": -0.043926917016506195
+  }
+ },
+ "T0-M0-SH5-run00": {
+  "g00": {
+   "common_forward_raw": 0.0059646839741617445,
+   "common_turn_raw": 0.002979728439822793,
+   "directional_forward_raw": 0.002916285826358944,
+   "directional_turn_raw": 0.0013635841431096196,
+   "directional_turn_signed_raw": -0.0013635841431096196,
+   "common_forward_motor": 0.014931347721721977,
+   "common_turn_motor": 0.004848741547903046,
+   "directional_forward_motor": 0.007300315611064434,
+   "directional_turn_motor": 0.002218882492161356,
+   "directional_turn_signed_motor": -0.002218882492161356,
+   "use_mean": -0.01568281464278698,
+   "use_swap": -0.025458974298089743
+  },
+  "g39": {
+   "common_forward_raw": 0.005679086223244667,
+   "common_turn_raw": 0.0071275364607572556,
+   "directional_forward_raw": 0.001967052463442087,
+   "directional_turn_raw": 0.0017763720825314522,
+   "directional_turn_signed_raw": -0.0017641665413975715,
+   "common_forward_motor": 0.0029234059154987337,
+   "common_turn_motor": 0.011598233133554459,
+   "directional_forward_motor": 0.0011406203731894494,
+   "directional_turn_motor": 0.0028905875980854033,
+   "directional_turn_signed_motor": -0.0028707273304462433,
+   "use_mean": 0.007043199613690376,
+   "use_swap": 0.03167104721069336
+  }
+ },
+ "T0-M0-N2-run05": {
+  "g00": {
+   "common_forward_raw": 0.0010710732312873006,
+   "common_turn_raw": 0.005846876837313175,
+   "directional_forward_raw": 0.004789403220638633,
+   "directional_turn_raw": 0.03817231329157948,
+   "directional_turn_signed_raw": -0.03817231329157948,
+   "common_forward_motor": 0.0022986333060543984,
+   "common_turn_motor": 0.005924876965582371,
+   "directional_forward_motor": 0.010278551478404552,
+   "directional_turn_motor": 0.03868154082447291,
+   "directional_turn_signed_motor": -0.03868154082447291,
+   "use_mean": 0.1418151706457138,
+   "use_swap": -0.162869680672884
+  },
+  "g39": {
+   "common_forward_raw": 0.013758429139852524,
+   "common_turn_raw": 0.048535073082894085,
+   "directional_forward_raw": 0.0003958636894822121,
+   "directional_turn_raw": 0.0032763267867267133,
+   "directional_turn_signed_raw": -0.0032763267867267133,
+   "common_forward_motor": 0.0010705016553401946,
+   "common_turn_motor": 0.049182540737092495,
+   "directional_forward_motor": 0.00011720508337020874,
+   "directional_turn_motor": 0.003320032265037298,
+   "directional_turn_signed_motor": -0.003320032265037298,
+   "use_mean": -0.01098608411848545,
+   "use_swap": -0.014592522755265236
+  }
+ },
+ "T0-M0-SH6-run00": {
+  "g00": {
+   "common_forward_raw": 0.003315425105392933,
+   "common_turn_raw": 0.005233410559594631,
+   "directional_forward_raw": 0.0018143505789339543,
+   "directional_turn_raw": 0.0011006665881723166,
+   "directional_turn_signed_raw": -0.0011006665881723166,
+   "common_forward_motor": 0.007733450457453728,
+   "common_turn_motor": 0.008744897600263358,
+   "directional_forward_motor": 0.004232092387974262,
+   "directional_turn_motor": 0.0018391865422017872,
+   "directional_turn_signed_motor": -0.0018391865422017872,
+   "use_mean": 0.016568518243730068,
+   "use_swap": 0.03807601612061262
+  },
+  "g39": {
+   "common_forward_raw": 0.006226652860641479,
+   "common_turn_raw": 0.012528917379677295,
+   "directional_forward_raw": 0.00662338063120842,
+   "directional_turn_raw": 0.0029033563565462827,
+   "directional_turn_signed_raw": 0.002876220503821969,
+   "common_forward_motor": 0.002752957493066788,
+   "common_turn_motor": 0.020935507584363224,
+   "directional_forward_motor": 0.0021804079413414003,
+   "directional_turn_motor": 0.004851435543969274,
+   "directional_turn_signed_motor": 0.004806092334911227,
+   "use_mean": -0.011826857924461365,
+   "use_swap": -0.00020631030201911926
+  }
+ },
+ "T0-M0-N2-run06": {
+  "g00": {
+   "common_forward_raw": 0.013567132316529751,
+   "common_turn_raw": 0.008922226913273334,
+   "directional_forward_raw": 0.0027476703748106957,
+   "directional_turn_raw": 0.004710425250232219,
+   "directional_turn_signed_raw": 0.004710425250232219,
+   "common_forward_motor": 0.029116457980126142,
+   "common_turn_motor": 0.009041253849864006,
+   "directional_forward_motor": 0.005896782502532005,
+   "directional_turn_motor": 0.004773263074457646,
+   "directional_turn_signed_motor": 0.004773263074457646,
+   "use_mean": 0.018797144293785095,
+   "use_swap": 0.024749912321567535
+  },
+  "g39": {
+   "common_forward_raw": 0.0076940136030316355,
+   "common_turn_raw": 0.014952339278534055,
+   "directional_forward_raw": 0.002415771409869194,
+   "directional_turn_raw": 0.0014236520975828171,
+   "directional_turn_signed_raw": 0.0012756209820508958,
+   "common_forward_motor": 0.004424493387341499,
+   "common_turn_motor": 0.015151807037182153,
+   "directional_forward_motor": 0.001527094841003418,
+   "directional_turn_motor": 0.0014426439767703414,
+   "directional_turn_signed_motor": 0.0012926380848512053,
+   "use_mean": 0.012162189930677414,
+   "use_swap": 0.048870520666241646
+  }
+ },
+ "T0-M0-SH7-run00": {
+  "g00": {
+   "common_forward_raw": 0.01154833510518074,
+   "common_turn_raw": 0.0034570393152534963,
+   "directional_forward_raw": 0.004577654413878918,
+   "directional_turn_raw": 0.002529106708243489,
+   "directional_turn_signed_raw": 0.002225844142958522,
+   "common_forward_motor": 0.001699446514248848,
+   "common_turn_motor": 0.004802555730566383,
+   "directional_forward_motor": 0.0012054957449436187,
+   "directional_turn_motor": 0.00351346090901643,
+   "directional_turn_signed_motor": 0.0030921661062166097,
+   "use_mean": -0.03968975506722927,
+   "use_swap": -0.0535746980458498
+  },
+  "g39": {
+   "common_forward_raw": 0.01609324850142002,
+   "common_turn_raw": 0.005485714366659522,
+   "directional_forward_raw": 0.003957287594676018,
+   "directional_turn_raw": 0.0025315672624856233,
+   "directional_turn_signed_raw": 0.0025315672624856233,
+   "common_forward_motor": 0.03386604711413384,
+   "common_turn_motor": 0.007620814233087003,
+   "directional_forward_motor": 0.008327571302652359,
+   "directional_turn_motor": 0.0035168808535672724,
+   "directional_turn_signed_motor": 0.0035168808535672724,
+   "use_mean": 0.11956219188869,
+   "use_swap": 0.38119118846952915
+  }
+ },
+ "T0-M0-N2-run07": {
+  "g00": {
+   "common_forward_raw": 0.002335250889882445,
+   "common_turn_raw": 0.009287838591262698,
+   "directional_forward_raw": 0.0022972865728661416,
+   "directional_turn_raw": 0.01234149276278913,
+   "directional_turn_signed_raw": -0.012276252498850226,
+   "common_forward_motor": 0.0011712579987943172,
+   "common_turn_motor": 0.009411741269286723,
+   "directional_forward_motor": 0.0022108130622655155,
+   "directional_turn_motor": 0.012506131066766102,
+   "directional_turn_signed_motor": -0.012440020575013477,
+   "use_mean": -0.1350273909047246,
+   "use_swap": -0.2300541214644909
+  },
+  "g39": {
+   "common_forward_raw": 0.005911350809037685,
+   "common_turn_raw": 0.03488344084471464,
+   "directional_forward_raw": 0.005555476155132055,
+   "directional_turn_raw": 0.0019489597529172898,
+   "directional_turn_signed_raw": -0.0018976617604494095,
+   "common_forward_motor": 0.0017823923379182815,
+   "common_turn_motor": 0.03534879572689533,
+   "directional_forward_motor": 0.00192716121673584,
+   "directional_turn_motor": 0.001974960044026375,
+   "directional_turn_signed_motor": -0.0019229769706726075,
+   "use_mean": 0.0043502263724803925,
+   "use_swap": -0.005493957549333572
+  }
+ },
+ "T0-M0-SH8-run00": {
+  "g00": {
+   "common_forward_raw": 0.0007014870643615723,
+   "common_turn_raw": 0.001404090505093336,
+   "directional_forward_raw": 0.007638697326183319,
+   "directional_turn_raw": 0.005279187555424869,
+   "directional_turn_signed_raw": 0.005265229498036206,
+   "common_forward_motor": 0.0007985755801200867,
+   "common_turn_motor": 0.002167191915214062,
+   "directional_forward_motor": 0.015674927830696107,
+   "directional_turn_motor": 0.00814839694648981,
+   "directional_turn_signed_motor": 0.008126852475106717,
+   "use_mean": 0.04544207453727722,
+   "use_swap": 0.055409817956388
+  },
+  "g39": {
+   "common_forward_raw": 0.0025927336886525155,
+   "common_turn_raw": 0.013702493533492089,
+   "directional_forward_raw": 0.003685966320335865,
+   "directional_turn_raw": 0.004946192167699337,
+   "directional_turn_signed_raw": -0.004946192167699337,
+   "common_forward_motor": 0.002866441011428833,
+   "common_turn_motor": 0.021149722475092857,
+   "directional_forward_motor": 0.0008924704045057297,
+   "directional_turn_motor": 0.00763442015304463,
+   "directional_turn_signed_motor": -0.00763442015304463,
+   "use_mean": 0.0029850006103515625,
+   "use_swap": 0.02603057213127613
+  }
+ },
+ "T0-M0-SH1-run01": {
+  "g00": {
+   "common_forward_raw": 0.0022502195090055464,
+   "common_turn_raw": 0.002825528010725975,
+   "directional_forward_raw": 0.007909796759486198,
+   "directional_turn_raw": 0.001443304307758808,
+   "directional_turn_signed_raw": 0.001443304307758808,
+   "common_forward_motor": 0.0006290152668952942,
+   "common_turn_motor": 0.004559314553625881,
+   "directional_forward_motor": 0.0009467888623476029,
+   "directional_turn_motor": 0.002328938595019281,
+   "directional_turn_signed_motor": 0.002328938595019281,
+   "use_mean": -0.014774694107472897,
+   "use_swap": -0.03898346144706011
+  },
+  "g39": {
+   "common_forward_raw": 0.0014156852848827839,
+   "common_turn_raw": 0.0013747872319072485,
+   "directional_forward_raw": 0.002536645717918873,
+   "directional_turn_raw": 0.0012076056096702813,
+   "directional_turn_signed_raw": 0.001193890580907464,
+   "common_forward_motor": 0.0006732191890478134,
+   "common_turn_motor": 0.002218375913798809,
+   "directional_forward_motor": 0.000474997702986002,
+   "directional_turn_motor": 0.001948610576801002,
+   "directional_turn_signed_motor": 0.001926479791291058,
+   "use_mean": 0.09619975462555885,
+   "use_swap": 0.26837290450930595
+  }
+ },
+ "T0-M0-SH2-run01": {
+  "g00": {
+   "common_forward_raw": 0.0014706538990139962,
+   "common_turn_raw": 0.004319083318114281,
+   "directional_forward_raw": 0.0060426384210586544,
+   "directional_turn_raw": 0.0031672460958361627,
+   "directional_turn_signed_raw": 0.0031672460958361627,
+   "common_forward_motor": 0.00214933305978775,
+   "common_turn_motor": 0.0058966375887393955,
+   "directional_forward_motor": 0.002700095996260643,
+   "directional_turn_motor": 0.0043240880593657495,
+   "directional_turn_signed_motor": 0.0043240880593657495,
+   "use_mean": 0.013587158173322678,
+   "use_swap": 0.042655304074287415
+  },
+  "g39": {
+   "common_forward_raw": 0.02249659486114979,
+   "common_turn_raw": 0.006049973145127297,
+   "directional_forward_raw": 0.004756136052310467,
+   "directional_turn_raw": 0.001452761422842741,
+   "directional_turn_signed_raw": -0.001452761422842741,
+   "common_forward_motor": 0.009105627238750458,
+   "common_turn_motor": 0.008259737491607666,
+   "directional_forward_motor": 0.003035438805818558,
+   "directional_turn_motor": 0.0019833851605653764,
+   "directional_turn_signed_motor": -0.0019833851605653764,
+   "use_mean": -0.007999889552593231,
+   "use_swap": 0.0030890461057424545
+  }
+ },
+ "T0-M0-SH3-run01": {
+  "g00": {
+   "common_forward_raw": 0.0012925777584314347,
+   "common_turn_raw": 0.009537541586905719,
+   "directional_forward_raw": 0.003515718039125204,
+   "directional_turn_raw": 0.008582608075812459,
+   "directional_turn_signed_raw": -0.008582608075812459,
+   "common_forward_motor": 0.0027964696288108825,
+   "common_turn_motor": 0.014878298225812613,
+   "directional_forward_motor": 0.007080809026956558,
+   "directional_turn_motor": 0.013388628733810037,
+   "directional_turn_signed_motor": -0.013388628733810037,
+   "use_mean": -0.156672777608037,
+   "use_swap": -0.28540225699543953
+  },
+  "g39": {
+   "common_forward_raw": 0.004747328767552972,
+   "common_turn_raw": 0.01365528181195259,
+   "directional_forward_raw": 0.00490377665264532,
+   "directional_turn_raw": 0.001169417891651392,
+   "directional_turn_signed_raw": -0.0011011372320353986,
+   "common_forward_motor": 0.010965716978535055,
+   "common_turn_motor": 0.021301857382059097,
+   "directional_forward_motor": 0.011327098123729229,
+   "directional_turn_motor": 0.0018242591060698033,
+   "directional_turn_signed_motor": -0.0017177431844174861,
+   "use_mean": 0.008503383025527,
+   "use_swap": 0.019652610644698143
+  }
+ },
+ "T0-M0-SH4-run01": {
+  "g00": {
+   "common_forward_raw": 0.004398681409657002,
+   "common_turn_raw": 0.003279276750981808,
+   "directional_forward_raw": 0.00508890338242054,
+   "directional_turn_raw": 0.00042838472872972486,
+   "directional_turn_signed_raw": -4.955586045980453e-05,
+   "common_forward_motor": 0.0036984924226999283,
+   "common_turn_motor": 0.00547211617231369,
+   "directional_forward_motor": 0.007571650296449661,
+   "directional_turn_motor": 0.0007148416712880135,
+   "directional_turn_signed_motor": -8.269269019365311e-05,
+   "use_mean": 0.011510343290865421,
+   "use_swap": 0.027626398019492626
+  },
+  "g39": {
+   "common_forward_raw": 0.02629094971343875,
+   "common_turn_raw": 0.00542349498718977,
+   "directional_forward_raw": 0.005535639496520162,
+   "directional_turn_raw": 0.0014792818110436201,
+   "directional_turn_signed_raw": 0.0014627799857407809,
+   "common_forward_motor": 0.015120843797922135,
+   "common_turn_motor": 0.009050157619640231,
+   "directional_forward_motor": 0.004988507414236665,
+   "directional_turn_motor": 0.0024684696923941373,
+   "directional_turn_signed_motor": 0.002440933184698224,
+   "use_mean": -0.002929855138063431,
+   "use_swap": 0.0089899692684412
+  }
+ },
+ "T0-M0-SH5-run01": {
+  "g00": {
+   "common_forward_raw": 0.008521277457475662,
+   "common_turn_raw": 0.0020198648795485496,
+   "directional_forward_raw": 0.005647395923733711,
+   "directional_turn_raw": 0.0006733435206115246,
+   "directional_turn_signed_raw": -0.0006643698550760746,
+   "common_forward_motor": 0.001287437230348587,
+   "common_turn_motor": 0.003286808170378208,
+   "directional_forward_motor": 0.0005992319434881211,
+   "directional_turn_motor": 0.0010956944897770882,
+   "directional_turn_signed_motor": -0.0010810917243361472,
+   "use_mean": 0.07202643156051636,
+   "use_swap": 0.14941325690597296
+  },
+  "g39": {
+   "common_forward_raw": 0.008571746572852135,
+   "common_turn_raw": 0.01421143375337124,
+   "directional_forward_raw": 0.0056934267282485965,
+   "directional_turn_raw": 0.005464936885982752,
+   "directional_turn_signed_raw": -0.00544628007337451,
+   "common_forward_motor": 0.008014217019081116,
+   "common_turn_motor": 0.02312545254826546,
+   "directional_forward_motor": 0.00632338747382164,
+   "directional_turn_motor": 0.008892778493463992,
+   "directional_turn_signed_motor": -0.008862419240176677,
+   "use_mean": 0.0477252472192049,
+   "use_swap": 0.10753265395760536
+  }
+ },
+ "T0-M0-SH6-run01": {
+  "g00": {
+   "common_forward_raw": 0.01061136107891798,
+   "common_turn_raw": 0.005298391566611826,
+   "directional_forward_raw": 0.006833321647718549,
+   "directional_turn_raw": 0.006165928635164164,
+   "directional_turn_signed_raw": -0.006165928635164164,
+   "common_forward_motor": 0.024751723371446134,
+   "common_turn_motor": 0.00885348063602578,
+   "directional_forward_motor": 0.015939184091985227,
+   "directional_turn_motor": 0.010303112311521544,
+   "directional_turn_signed_motor": -0.010303112311521544,
+   "use_mean": -0.08184470515698195,
+   "use_swap": -0.19540996011346579
+  },
+  "g39": {
+   "common_forward_raw": 0.008798835845664144,
+   "common_turn_raw": 0.003562345006503165,
+   "directional_forward_raw": 0.0019276923267170787,
+   "directional_turn_raw": 0.003993179160170257,
+   "directional_turn_signed_raw": 0.003993179160170257,
+   "common_forward_motor": 0.005966474488377571,
+   "common_turn_motor": 0.005952590634115041,
+   "directional_forward_motor": 0.002057242253795266,
+   "directional_turn_motor": 0.006672502477886155,
+   "directional_turn_signed_motor": 0.006672502477886155,
+   "use_mean": 0.010779546573758125,
+   "use_swap": 0.043699195608496666
+  }
+ },
+ "T0-M0-SH7-run01": {
+  "g00": {
+   "common_forward_raw": 0.008783797547221184,
+   "common_turn_raw": 0.007733482494950294,
+   "directional_forward_raw": 0.0024248124100267887,
+   "directional_turn_raw": 0.005542672611773014,
+   "directional_turn_signed_raw": 0.005542672611773014,
+   "common_forward_motor": 0.0039760153740644455,
+   "common_turn_motor": 0.010743437800556421,
+   "directional_forward_motor": 0.0007017368450760841,
+   "directional_turn_motor": 0.007699941215105355,
+   "directional_turn_signed_motor": 0.007699941215105355,
+   "use_mean": 0.0951361246407032,
+   "use_swap": 0.1751478100195527
+  },
+  "g39": {
+   "common_forward_raw": 0.008398983627557755,
+   "common_turn_raw": 0.011330207716673613,
+   "directional_forward_raw": 0.008135849423706532,
+   "directional_turn_raw": 0.0033997205551713704,
+   "directional_turn_signed_raw": 0.0033997205551713704,
+   "common_forward_motor": 0.002194051444530487,
+   "common_turn_motor": 0.01574004874564707,
+   "directional_forward_motor": 0.0006692059338092804,
+   "directional_turn_motor": 0.004722929303534329,
+   "directional_turn_signed_motor": 0.004722929303534329,
+   "use_mean": 0.024400044232606888,
+   "use_swap": 0.07130838744342327
+  }
+ },
+ "T0-M0-SH8-run01": {
+  "g00": {
+   "common_forward_raw": 0.005414323136210442,
+   "common_turn_raw": 0.0031620107591152193,
+   "directional_forward_raw": 0.0017108142375946045,
+   "directional_turn_raw": 0.0005867257248610258,
+   "directional_turn_signed_raw": -0.0005867257248610258,
+   "common_forward_motor": 0.00013321787118911744,
+   "common_turn_motor": 0.004880546033382416,
+   "directional_forward_motor": 5.3415074944496155e-05,
+   "directional_turn_motor": 0.0009056071983650326,
+   "directional_turn_signed_motor": -0.0009056071983650326,
+   "use_mean": 0.0018982011824846268,
+   "use_swap": -0.00021348148584365845
+  },
+  "g39": {
+   "common_forward_raw": 0.011798440106213092,
+   "common_turn_raw": 0.017313579469919203,
+   "directional_forward_raw": 0.005286922864615917,
+   "directional_turn_raw": 0.004440760612487793,
+   "directional_turn_signed_raw": -0.004440760612487793,
+   "common_forward_motor": 0.01266092024743557,
+   "common_turn_motor": 0.026723415404558182,
+   "directional_forward_motor": 0.005414482206106186,
+   "directional_turn_motor": 0.006854289397597313,
+   "directional_turn_signed_motor": -0.006854289397597313,
+   "use_mean": -0.004018671810626984,
+   "use_swap": 0.005383633077144623
+  }
+ }
+}

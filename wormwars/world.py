@@ -294,6 +294,8 @@ class World:
         self.pellet_eaten = torch.zeros(self.n_worlds, dtype=torch.float64, device=self.device)
         self.last_forward: Tensor | None = None
         self.last_turn: Tensor | None = None
+        # what each wey sensed on the tick it acted, as scaled signals (pure measurement)
+        self.last_signals: dict[str, Tensor] | None = None
         self._food_sample: Tensor | None = None
         self._held_food: Tensor | None = None
         # the jitter probe's own generator, so a probe never touches any other randomness
@@ -592,6 +594,7 @@ class World:
                 wcfg.food_odour_sigma > 0 and wcfg.food_probe != "constant")
             self._food_sample = self._sensed_food(pts) if needs_field else None
         signals = self._sensor_signals(sampled)
+        self.last_signals = signals
         current = self._build_current(signals)
 
         # 2. think -- one brain per swarm, so two graphs can meet in the same world

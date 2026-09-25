@@ -78,7 +78,8 @@ def gen0_scores(spec, cfg, iface, n_strains, ids, seed, device) -> float:
     return float(rollout(cfg, iface, g, ids, seed, device).score.mean())
 
 
-def input_response(spec, cfg, iface, n_strains, device, ticks=40, base=0.1, diff=0.05) -> dict:
+def input_response(spec, cfg, iface, n_strains, device, ticks=40, base=0.1, diff=0.05,
+                   genome=None) -> dict:
     """Motor response of random brains to food input, outside the world, per tick.
 
     Levels are sensed-signal units (after sense_scale_food), injected through the interface's
@@ -87,9 +88,10 @@ def input_response(spec, cfg, iface, n_strains, device, ticks=40, base=0.1, diff
     difference, so the total food level is identical in both. Positive signed turn means turning
     toward the stronger side, the scripted stereo controller's convention. Each is reported for
     the raw read-out and for the motor command after the world's gains and clip."""
-    gen = torch.Generator(device=device).manual_seed(0)
-    g = Genome.random(spec, cfg.brain, n_strains, generator=gen, device=device)
-    brain = Brain(g)
+    if genome is None:  # random brains; or pass evolved champions as `genome` (roadmap 02b)
+        gen = torch.Generator(device=device).manual_seed(0)
+        genome = Genome.random(spec, cfg.brain, n_strains, generator=gen, device=device)
+    brain = Brain(genome)
     names = list(iface.signal_names)
     gains = np.asarray(iface.sensor_gain) * cfg.brain.input_gain
     left = [(int(i), float(k)) for s, i, k in zip(names, iface.sensor_neuron, gains) if s == "food_left"]

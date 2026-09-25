@@ -1081,3 +1081,27 @@ endorsement. Astra caught this.
 
 The arithmetic was re-checked: 31 104 000 search evaluations, about 785 GPU-hours at 11 per
 second, and whole-brain evolutions add about 37.
+
+## D048 — 02b: a true deletion operator; criticality follows N2's hubs, not the food route
+
+Roadmap item 1 ran, exploratory, in about 40 GPU-minutes (`experiments/02b-champion-analysis/`).
+
+**Added to the code:**
+- `wormwars/deletion.py`, which removes every edge touching a neuron, and its bias. It is tested
+  to match a 301-neuron network built without the neuron, and to differ from silencing.
+- `World.last_signals`, what each wey sensed on the tick it acted.
+- A `genome` option on the input-response probe, so it can run on evolved champions.
+
+**Findings:**
+- **Deletion criticality in N2's T1 champions** picks out AIZ, RIA, AIY and RIB in nearly every
+  run. A control with food entering through the wrong neurons (R1) keeps the same core: rank
+  correlation 0.84, and even the unused AWC and ASE are critical. These are structural hubs, not
+  the food route. N2 champions depend on fewer neurons than SH champions (54 against 88 of 245).
+- **History dependence** after matched current input grows 2-6 times with evolution, most for N2,
+  but its direction is inconsistent across runs.
+- **Evolved N2 champions steer toward food; shuffles do not.** The swap cost is the same for both.
+- **Anatomical magnitudes are eroded:** the rank correlation of |w| with anatomy is 0.35 at
+  generation 39.
+
+**Consequences:** 03a's high-criticality N2 panel will be hub-dominated, and 03's registered
+signals should include N2's generation-0 history dependence.

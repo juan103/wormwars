@@ -1,0 +1,1154 @@
+{
+ "T0-M0-N2-run00": {
+  "n": 31840,
+  "forward": {
+   "beta": {
+    "food_level": -0.30360093970124,
+    "food_change": 0.18605200662325083,
+    "food_left_minus_right": 0.2460241670915291,
+    "collision_left_minus_right": -0.1679170622429744,
+    "collision_total": -0.1353593346337509
+   },
+   "r2": 0.21049194665797344
+  },
+  "turn": {
+   "beta": {
+    "food_level": -0.5405393978514867,
+    "food_change": 0.3097722403180698,
+    "food_left_minus_right": 0.26913738481620497,
+    "collision_left_minus_right": -0.09859373865120605,
+    "collision_total": 0.11839469595607925
+   },
+   "r2": 0.4033709647421142
+  },
+  "turn_sign_persistence": 0.6749269763497597
+ },
+ "T0-M0-SH1-run00": {
+  "n": 31840,
+  "forward": {
+   "beta": {
+    "food_level": -0.6587135082272517,
+    "food_change": 0.2863297087694288,
+    "food_left_minus_right": -0.13318928546439832,
+    "collision_left_minus_right": -0.1313985351905586,
+    "collision_total": -0.08451445727395816
+   },
+   "r2": 0.590224315442461
+  },
+  "turn": {
+   "beta": {
+    "food_level": 0.6977618807666511,
+    "food_change": -0.3791689636317031,
+    "food_left_minus_right": 0.22109404858729959,
+    "collision_left_minus_right": 0.08918015515344392,
+    "collision_total": 0.07087402705811177
+   },
+   "r2": 0.6756258213965658
+  },
+  "turn_sign_persistence": 0.9952573887370835
+ },
+ "T0-M0-N2-run01": {
+  "n": 31840,
+  "forward": {
+   "beta": {
+    "food_level": -0.42296223189786153,
+    "food_change": 0.19410263380876258,
+    "food_left_minus_right": 0.21076604904357932,
+    "collision_left_minus_right": -0.02494289669186077,
+    "collision_total": -0.20690199293724865
+   },
+   "r2": 0.2748466584345354
+  },
+  "turn": {
+   "beta": {
+    "food_level": -0.6910778378221881,
+    "food_change": 0.33922660964642215,
+    "food_left_minus_right": 0.2737876346521983,
+    "collision_left_minus_right": 0.07181997771095018,
+    "collision_total": -0.08800875429130033
+   },
+   "r2": 0.5878730418150014
+  },
+  "turn_sign_persistence": 1.0
+ },
+ "T0-M0-SH2-run00": {
+  "n": 31840,
+  "forward": {
+   "beta": {
+    "food_level": -0.40592228448441026,
+    "food_change": 0.29951808667499036,
+    "food_left_minus_right": -0.20534929880969968,
+    "collision_left_minus_right": -0.05943214898041458,
+    "collision_total": -0.25962623115286726
+   },
+   "r2": 0.3921814419207652
+  },
+  "turn": {
+   "beta": {
+    "food_level": 0.5939704075936479,
+    "food_change": -0.29947566989772717,
+    "food_left_minus_right": 0.2528812491312445,
+    "collision_left_minus_right": 0.015912295676996178,
+    "collision_total": 0.0020192326144439967
+   },
+   "r2": 0.47327098568180026
+  },
+  "turn_sign_persistence": 0.9942209240239958
+ },
+ "T0-M0-N2-run02": {
+  "n": 31840,
+  "forward": {
+   "beta": {
+    "food_level": 0.08407883640078816,
+    "food_change": 0.0035528482490660954,
+    "food_left_minus_right": 0.025419632237168838,
+    "collision_left_minus_right": 0.0701895199925888,
+    "collision_total": -0.14873923255552132
+   },
+   "r2": 0.03058668283197019
+  },
+  "turn": {
+   "beta": {
+    "food_level": 0.5734357672643938,
+    "food_change": -0.23088963595907872,
+    "food_left_minus_right": 0.2432166064901216,
+    "collision_left_minus_right": 0.009362027725248027,
+    "collision_total": 0.06691622150420064
+   },
+   "r2": 0.4423288444957735
+  },
+  "turn_sign_persistence": 0.6509626558623073
+ },
+ "T0-M0-SH3-run00": {
+  "n": 31840,
+  "forward": {
+   "beta": {
+    "food_level": -0.8475088291760612,
+    "food_change": 0.1350045521446921,
+    "food_left_minus_right": 0.07423899751780283,
+    "collision_left_minus_right": 0.09856430396499183,
+    "collision_total": 0.010035026995943564
+   },
+   "r2": 0.7875990360963692
+  },
+  "turn": {
+   "beta": {
+    "food_level": 0.748953553978078,
+    "food_change": -0.14099289214476834,
+    "food_left_minus_right": 0.015295334413672751,
+    "collision_left_minus_right": -0.048265344549237976,
+    "collision_total": 0.15787214447756845
+   },
+   "r2": 0.6642670705299076
+  },
+  "turn_sign_persistence": 0.7970727723860674
+ },
+ "T0-M0-N2-run03": {
+  "n": 31840,
+  "forward": {
+   "beta": {
+    "food_level": -0.3536204448480016,
+    "food_change": 0.3275317813946638,
+    "food_left_minus_right": -0.32356362111821213,
+    "collision_left_minus_right": -0.17386290453906322,
+    "collision_total": -0.2718904834332878
+   },
+   "r2": 0.31886558150486055
+  },
+  "turn": {
+   "beta": {
+    "food_level": 0.5899632698719973,
+    "food_change": -0.229292158984163,
+    "food_left_minus_right": 0.24962479011526456,
+    "collision_left_minus_right": 0.2196667435560934,
+    "collision_total": 0.16394360207526992
+   },
+   "r2": 0.47633785445310317
+  },
+  "turn_sign_persistence": 1.0
+ },
+ "T0-M0-SH4-run00": {
+  "n": 31838,
+  "forward": {
+   "beta": {
+    "food_level": 0.15692392591111096,
+    "food_change": -0.02648510765470391,
+    "food_left_minus_right": 0.04812273170619705,
+    "collision_left_minus_right": -0.055697062565808635,
+    "collision_total": -0.28128326415059596
+   },
+   "r2": 0.09941438572427841
+  },
+  "turn": {
+   "beta": {
+    "food_level": 0.5893894426107077,
+    "food_change": -0.2692524033052002,
+    "food_left_minus_right": 0.2354278211640527,
+    "collision_left_minus_right": 0.15599835604093182,
+    "collision_total": 0.2198595117731783
+   },
+   "r2": 0.6055519240483134
+  },
+  "turn_sign_persistence": 0.9998115400320382
+ },
+ "T0-M0-N2-run04": {
+  "n": 31840,
+  "forward": {
+   "beta": {
+    "food_level": -0.4477613423517648,
+    "food_change": 0.31673674318120754,
+    "food_left_minus_right": -0.025149449203428615,
+    "collision_left_minus_right": -0.033651424456448274,
+    "collision_total": -0.13433777097294192
+   },
+   "r2": 0.31765784443958145
+  },
+  "turn": {
+   "beta": {
+    "food_level": 0.49625913857547976,
+    "food_change": -0.2967977558522902,
+    "food_left_minus_right": 0.3505481493168263,
+    "collision_left_minus_right": 0.1052498703574416,
+    "collision_total": 0.030696394067660532
+   },
+   "r2": 0.431815271821533
+  },
+  "turn_sign_persistence": 1.0
+ },
+ "T0-M0-SH5-run00": {
+  "n": 31839,
+  "forward": {
+   "beta": {
+    "food_level": 0.13904878051573544,
+    "food_change": -0.03537775085919737,
+    "food_left_minus_right": -0.1002428028374735,
+    "collision_left_minus_right": -0.04596479958042588,
+    "collision_total": -0.25371720168264705
+   },
+   "r2": 0.0894335189539971
+  },
+  "turn": {
+   "beta": {
+    "food_level": -0.3904385550197482,
+    "food_change": 0.36080731946588845,
+    "food_left_minus_right": 0.27927496780219246,
+    "collision_left_minus_right": 0.16766429470350688,
+    "collision_total": -0.1839635064073311
+   },
+   "r2": 0.4617687955365889
+  },
+  "turn_sign_persistence": 1.0
+ },
+ "T0-M0-N2-run05": {
+  "n": 31840,
+  "forward": {
+   "beta": {
+    "food_level": -0.28028572370305904,
+    "food_change": 0.427705917450618,
+    "food_left_minus_right": 0.0419608100434562,
+    "collision_left_minus_right": 0.07974421413439851,
+    "collision_total": -0.1959590105810226
+   },
+   "r2": 0.304496238622858
+  },
+  "turn": {
+   "beta": {
+    "food_level": 0.5400328687044762,
+    "food_change": -0.18624256262097252,
+    "food_left_minus_right": -0.03283340944809485,
+    "collision_left_minus_right": 0.0981785344609906,
+    "collision_total": 0.12479329690163254
+   },
+   "r2": 0.35141038865692675
+  },
+  "turn_sign_persistence": 0.9616508056157542
+ },
+ "T0-M0-SH6-run00": {
+  "n": 31840,
+  "forward": {
+   "beta": {
+    "food_level": -0.31843724432158976,
+    "food_change": 0.1178927720567651,
+    "food_left_minus_right": -0.04186786860668674,
+    "collision_left_minus_right": 0.020881682165114775,
+    "collision_total": -0.1300677012201957
+   },
+   "r2": 0.14103143279565244
+  },
+  "turn": {
+   "beta": {
+    "food_level": 0.6209871174968357,
+    "food_change": -0.3526330555433994,
+    "food_left_minus_right": 0.24500105280910928,
+    "collision_left_minus_right": 0.07807817479765353,
+    "collision_total": 0.13748747539886594
+   },
+   "r2": 0.611595882662811
+  },
+  "turn_sign_persistence": 1.0
+ },
+ "T0-M0-N2-run06": {
+  "n": 31840,
+  "forward": {
+   "beta": {
+    "food_level": -0.2669741605987616,
+    "food_change": 0.2489758783272483,
+    "food_left_minus_right": -0.08352974184090764,
+    "collision_left_minus_right": -0.14166856444730158,
+    "collision_total": -0.47870813174327315
+   },
+   "r2": 0.46179594445437866
+  },
+  "turn": {
+   "beta": {
+    "food_level": 0.2895517398927522,
+    "food_change": -0.19098227183462305,
+    "food_left_minus_right": 0.21286965522707407,
+    "collision_left_minus_right": 0.1710857978774119,
+    "collision_total": 0.2297069702129842
+   },
+   "r2": 0.29417015397912116
+  },
+  "turn_sign_persistence": 0.9961054053205188
+ },
+ "T0-M0-SH7-run00": {
+  "n": 31840,
+  "forward": {
+   "beta": {
+    "food_level": -0.8413463279878555,
+    "food_change": 0.23280091984634932,
+    "food_left_minus_right": 0.14160869758451491,
+    "collision_left_minus_right": 0.08941429461839956,
+    "collision_total": 0.12732667807283524
+   },
+   "r2": 0.8390107940831358
+  },
+  "turn": {
+   "beta": {
+    "food_level": 0.6337957536285252,
+    "food_change": -0.21395923327551453,
+    "food_left_minus_right": 0.11981732434160167,
+    "collision_left_minus_right": -0.1323036366510721,
+    "collision_total": -0.4692804438331011
+   },
+   "r2": 0.7050869048434649
+  },
+  "turn_sign_persistence": 0.914758629353937
+ },
+ "T0-M0-N2-run07": {
+  "n": 31840,
+  "forward": {
+   "beta": {
+    "food_level": -0.5472757805806875,
+    "food_change": 0.3247513207931636,
+    "food_left_minus_right": 0.20724947660384788,
+    "collision_left_minus_right": 0.15542294015582733,
+    "collision_total": -0.33365826773802276
+   },
+   "r2": 0.527622206532522
+  },
+  "turn": {
+   "beta": {
+    "food_level": -0.5125676026528535,
+    "food_change": 0.2965359885650042,
+    "food_left_minus_right": 0.23420428636131577,
+    "collision_left_minus_right": 0.2421281391141623,
+    "collision_total": -0.2721245895638212
+   },
+   "r2": 0.47409731231526475
+  },
+  "turn_sign_persistence": 1.0
+ },
+ "T0-M0-SH8-run00": {
+  "n": 31825,
+  "forward": {
+   "beta": {
+    "food_level": -0.10641181597694535,
+    "food_change": 0.1421845699072381,
+    "food_left_minus_right": -0.1314929744806535,
+    "collision_left_minus_right": -0.2469826365250356,
+    "collision_total": -0.10344503092156823
+   },
+   "r2": 0.12537047547520108
+  },
+  "turn": {
+   "beta": {
+    "food_level": 0.4748072043667237,
+    "food_change": -0.22095248417474206,
+    "food_left_minus_right": 0.2212570370143311,
+    "collision_left_minus_right": 0.17409950741409772,
+    "collision_total": 0.10982469565583786
+   },
+   "r2": 0.4042355505101878
+  },
+  "turn_sign_persistence": 0.9930555555555556
+ },
+ "T0-M0-SH1-run01": {
+  "n": 31840,
+  "forward": {
+   "beta": {
+    "food_level": -0.5660498193067757,
+    "food_change": 0.2491227110958511,
+    "food_left_minus_right": -0.19265188357576424,
+    "collision_left_minus_right": -0.14308457410974865,
+    "collision_total": -0.16280921426051617
+   },
+   "r2": 0.5315683555532273
+  },
+  "turn": {
+   "beta": {
+    "food_level": 0.2543284717242372,
+    "food_change": -0.24671923364959467,
+    "food_left_minus_right": 0.20960304910616612,
+    "collision_left_minus_right": 0.18896584408583986,
+    "collision_total": 0.12885516207101536
+   },
+   "r2": 0.24448369630941746
+  },
+  "turn_sign_persistence": 0.9984295989195641
+ },
+ "T0-M0-SH2-run01": {
+  "n": 31794,
+  "forward": {
+   "beta": {
+    "food_level": -0.8143434793277874,
+    "food_change": 0.3048640486770969,
+    "food_left_minus_right": 0.0878469594518689,
+    "collision_left_minus_right": 0.010413078300231702,
+    "collision_total": 0.08633888781245865
+   },
+   "r2": 0.7363371255959277
+  },
+  "turn": {
+   "beta": {
+    "food_level": -0.16404569359257398,
+    "food_change": 0.13695192332993397,
+    "food_left_minus_right": 0.16076341858257343,
+    "collision_left_minus_right": 0.20875164109417943,
+    "collision_total": 0.2559147388996843
+   },
+   "r2": 0.1985507953937592
+  },
+  "turn_sign_persistence": 0.998238605982449
+ },
+ "T0-M0-SH3-run01": {
+  "n": 31840,
+  "forward": {
+   "beta": {
+    "food_level": -0.0191045191485352,
+    "food_change": 0.16336407883585258,
+    "food_left_minus_right": -0.03155489169611583,
+    "collision_left_minus_right": -0.14717977777419294,
+    "collision_total": -0.45768431531338766
+   },
+   "r2": 0.26027155839757843
+  },
+  "turn": {
+   "beta": {
+    "food_level": 0.6229411702815526,
+    "food_change": -0.29693122442032566,
+    "food_left_minus_right": 0.2726536894963156,
+    "collision_left_minus_right": 0.15261528365894717,
+    "collision_total": 0.15537160744847842
+   },
+   "r2": 0.5965726024831215
+  },
+  "turn_sign_persistence": 1.0
+ },
+ "T0-M0-SH4-run01": {
+  "n": 31840,
+  "forward": {
+   "beta": {
+    "food_level": -0.6436139506507599,
+    "food_change": 0.3328945598395235,
+    "food_left_minus_right": 0.1280972079349519,
+    "collision_left_minus_right": 0.07972498746474872,
+    "collision_total": -0.18899362099495493
+   },
+   "r2": 0.635002427165195
+  },
+  "turn": {
+   "beta": {
+    "food_level": -0.21057366047690684,
+    "food_change": 0.05572370577369867,
+    "food_left_minus_right": -0.03138908832606478,
+    "collision_left_minus_right": 0.16984912353330117,
+    "collision_total": -0.1008051798762202
+   },
+   "r2": 0.10586576294560601
+  },
+  "turn_sign_persistence": 1.0
+ },
+ "T0-M0-SH5-run01": {
+  "n": 31840,
+  "forward": {
+   "beta": {
+    "food_level": -0.7712371246257474,
+    "food_change": 0.41841973650705266,
+    "food_left_minus_right": 0.21699971940191287,
+    "collision_left_minus_right": 0.06098481455826807,
+    "collision_total": -0.19498044306524892
+   },
+   "r2": 0.7771624021261263
+  },
+  "turn": {
+   "beta": {
+    "food_level": -0.6856810918359717,
+    "food_change": 0.4077740520591458,
+    "food_left_minus_right": 0.32896195184471044,
+    "collision_left_minus_right": 0.10159298505971198,
+    "collision_total": -0.2027018814009728
+   },
+   "r2": 0.6556204006813803
+  },
+  "turn_sign_persistence": 1.0
+ },
+ "T0-M0-SH6-run01": {
+  "n": 31840,
+  "forward": {
+   "beta": {
+    "food_level": -0.706924210354506,
+    "food_change": 0.1671079567148639,
+    "food_left_minus_right": -0.025021175699799603,
+    "collision_left_minus_right": 0.07866157339355531,
+    "collision_total": -0.27161643190055584
+   },
+   "r2": 0.7047944807938515
+  },
+  "turn": {
+   "beta": {
+    "food_level": -0.03841430978994538,
+    "food_change": 0.3325625282339072,
+    "food_left_minus_right": 0.34750173132737294,
+    "collision_left_minus_right": 0.05568083785954916,
+    "collision_total": 0.05255181599256415
+   },
+   "r2": 0.20138196771856098
+  },
+  "turn_sign_persistence": 0.9943151480888219
+ },
+ "T0-M0-SH7-run01": {
+  "n": 31840,
+  "forward": {
+   "beta": {
+    "food_level": -0.03873138495323908,
+    "food_change": -0.11428775218072611,
+    "food_left_minus_right": 0.12104068934063777,
+    "collision_left_minus_right": 0.03172770039412268,
+    "collision_total": -0.08713047698710957
+   },
+   "r2": 0.032264120005821795
+  },
+  "turn": {
+   "beta": {
+    "food_level": -0.06936325929558873,
+    "food_change": -0.13352654412797443,
+    "food_left_minus_right": 0.2901771016806919,
+    "collision_left_minus_right": 0.37402009511791523,
+    "collision_total": 0.09000919127249782
+   },
+   "r2": 0.24794905115918942
+  },
+  "turn_sign_persistence": 0.9978328465089984
+ },
+ "T0-M0-SH8-run01": {
+  "n": 31840,
+  "forward": {
+   "beta": {
+    "food_level": 0.15893401704349225,
+    "food_change": -0.033419913297175544,
+    "food_left_minus_right": -0.055922234766264824,
+    "collision_left_minus_right": -0.0004573261198659718,
+    "collision_total": -0.11580256119101266
+   },
+   "r2": 0.03535271964633291
+  },
+  "turn": {
+   "beta": {
+    "food_level": -0.5315056511527995,
+    "food_change": 0.38130643800169756,
+    "food_left_minus_right": 0.3084170722212421,
+    "collision_left_minus_right": 0.15561396986718112,
+    "collision_total": -0.09786590285891364
+   },
+   "r2": 0.507017618391636
+  },
+  "turn_sign_persistence": 1.0
+ },
+ "T1-M0-N2-run00": {
+  "n": 31840,
+  "forward": {
+   "beta": {
+    "food_level": -0.3930048357612549,
+    "food_change": 0.06177197961594109,
+    "food_left_minus_right": -1.4016565685892601e-15,
+    "collision_left_minus_right": -0.1102179856704,
+    "collision_total": -0.44367742274667266
+   },
+   "r2": 0.3978908112091133
+  },
+  "turn": {
+   "beta": {
+    "food_level": -0.5265061966566382,
+    "food_change": 0.13863220054158124,
+    "food_left_minus_right": -6.661338147750939e-16,
+    "collision_left_minus_right": 0.19061254628086222,
+    "collision_total": -0.15746795787559098
+   },
+   "r2": 0.3995471650944822
+  },
+  "turn_sign_persistence": 1.0
+ },
+ "T1-M0-SH1-run00": {
+  "n": 31840,
+  "forward": {
+   "beta": {
+    "food_level": -0.026481280272476232,
+    "food_change": 0.09105459982891163,
+    "food_left_minus_right": 2.1510571102112408e-16,
+    "collision_left_minus_right": 0.002673203365851226,
+    "collision_total": -0.1528386963337207
+   },
+   "r2": 0.03557372899168321
+  },
+  "turn": {
+   "beta": {
+    "food_level": -0.5714084597308515,
+    "food_change": 0.23099725504908447,
+    "food_left_minus_right": 5.412337245047638e-16,
+    "collision_left_minus_right": 0.16130335558065198,
+    "collision_total": -0.24656321344221677
+   },
+   "r2": 0.5803388588332443
+  },
+  "turn_sign_persistence": 1.0
+ },
+ "T1-M0-N2-run01": {
+  "n": 31840,
+  "forward": {
+   "beta": {
+    "food_level": -0.5145057225780816,
+    "food_change": 0.2816936078821452,
+    "food_left_minus_right": 2.220446049250313e-16,
+    "collision_left_minus_right": 0.08458078458166973,
+    "collision_total": -0.17970595163953149
+   },
+   "r2": 0.41943651939106796
+  },
+  "turn": {
+   "beta": {
+    "food_level": -0.7319562774637569,
+    "food_change": 0.27054131854264285,
+    "food_left_minus_right": 4.996003610813204e-16,
+    "collision_left_minus_right": 0.13189493483714906,
+    "collision_total": 0.05288049646114497
+   },
+   "r2": 0.6221754944485816
+  },
+  "turn_sign_persistence": 1.0
+ },
+ "T1-M0-SH2-run00": {
+  "n": 31840,
+  "forward": {
+   "beta": {
+    "food_level": -0.5895993933126427,
+    "food_change": 0.23602330711588104,
+    "food_left_minus_right": 0.0,
+    "collision_left_minus_right": 0.12524037880515737,
+    "collision_total": -0.18369833981653483
+   },
+   "r2": 0.5080886424380215
+  },
+  "turn": {
+   "beta": {
+    "food_level": -0.6861376827216036,
+    "food_change": 0.23889759068925404,
+    "food_left_minus_right": 1.1102230246251565e-16,
+    "collision_left_minus_right": 0.17321769250378544,
+    "collision_total": -0.11730049464124051
+   },
+   "r2": 0.6395291782909054
+  },
+  "turn_sign_persistence": 1.0
+ },
+ "T1-M0-N2-run02": {
+  "n": 31840,
+  "forward": {
+   "beta": {
+    "food_level": 0.07173615148514846,
+    "food_change": 0.014705563058550863,
+    "food_left_minus_right": -3.122502256758253e-17,
+    "collision_left_minus_right": -0.01807089359267715,
+    "collision_total": -0.07756421004169327
+   },
+   "r2": 0.010951536042645649
+  },
+  "turn": {
+   "beta": {
+    "food_level": 0.5212478547207688,
+    "food_change": -0.16646341767355974,
+    "food_left_minus_right": 4.440892098500626e-16,
+    "collision_left_minus_right": 0.22411075524662732,
+    "collision_total": 0.07459843759199572
+   },
+   "r2": 0.4024943216905521
+  },
+  "turn_sign_persistence": 1.0
+ },
+ "T1-M0-SH3-run00": {
+  "n": 31840,
+  "forward": {
+   "beta": {
+    "food_level": 0.1267586519300526,
+    "food_change": -0.002078482947860505,
+    "food_left_minus_right": -4.683753385137379e-17,
+    "collision_left_minus_right": 0.012287236627652381,
+    "collision_total": -0.16941025735107704
+   },
+   "r2": 0.03334793980653761
+  },
+  "turn": {
+   "beta": {
+    "food_level": 0.48447571544053236,
+    "food_change": -0.23003662471102476,
+    "food_left_minus_right": 1.582067810090848e-15,
+    "collision_left_minus_right": 0.21997747396286976,
+    "collision_total": 0.24488125998223625
+   },
+   "r2": 0.4887616690424543
+  },
+  "turn_sign_persistence": 0.9986808630924338
+ },
+ "T1-M0-N2-run03": {
+  "n": 31818,
+  "forward": {
+   "beta": {
+    "food_level": -0.44233361094716606,
+    "food_change": 0.2033704274834952,
+    "food_left_minus_right": 5.828670879282072e-16,
+    "collision_left_minus_right": 0.1065063099180101,
+    "collision_total": -0.2179125065323035
+   },
+   "r2": 0.3417156136482081
+  },
+  "turn": {
+   "beta": {
+    "food_level": -0.5267791668347744,
+    "food_change": 0.1905348646997083,
+    "food_left_minus_right": 6.661338147750939e-16,
+    "collision_left_minus_right": 0.21262113278192424,
+    "collision_total": -0.1959957661797266
+   },
+   "r2": 0.4650096547646315
+  },
+  "turn_sign_persistence": 0.9999685702611811
+ },
+ "T1-M0-SH4-run00": {
+  "n": 31840,
+  "forward": {
+   "beta": {
+    "food_level": -0.18480909416975186,
+    "food_change": 0.09230072320090375,
+    "food_left_minus_right": -1.6653345369377348e-16,
+    "collision_left_minus_right": -0.17099733490752236,
+    "collision_total": -0.3550402405571234
+   },
+   "r2": 0.20102152136079177
+  },
+  "turn": {
+   "beta": {
+    "food_level": 0.6591898448888208,
+    "food_change": -0.22625812041474205,
+    "food_left_minus_right": 3.3306690738754696e-16,
+    "collision_left_minus_right": 0.24263461647345935,
+    "collision_total": 0.06479425871320808
+   },
+   "r2": 0.5844062448409462
+  },
+  "turn_sign_persistence": 1.0
+ },
+ "T1-M0-N2-run04": {
+  "n": 31840,
+  "forward": {
+   "beta": {
+    "food_level": 0.11485366772221794,
+    "food_change": -0.003289376629825337,
+    "food_left_minus_right": 0.0,
+    "collision_left_minus_right": 0.01916087174001147,
+    "collision_total": -0.17855519164608497
+   },
+   "r2": 0.04200096579016688
+  },
+  "turn": {
+   "beta": {
+    "food_level": -0.6290144156825372,
+    "food_change": 0.26388915780784156,
+    "food_left_minus_right": 1.1102230246251565e-16,
+    "collision_left_minus_right": 0.15364456596980977,
+    "collision_total": -0.058164011106182
+   },
+   "r2": 0.5171428959381099
+  },
+  "turn_sign_persistence": 1.0
+ },
+ "T1-M0-SH5-run00": {
+  "n": 31808,
+  "forward": {
+   "beta": {
+    "food_level": -0.4881979720015442,
+    "food_change": 0.2609402295268604,
+    "food_left_minus_right": -1.609823385706477e-15,
+    "collision_left_minus_right": 0.04136620608050825,
+    "collision_total": -0.2869772279444969
+   },
+   "r2": 0.44599101728530366
+  },
+  "turn": {
+   "beta": {
+    "food_level": -0.5471307574492597,
+    "food_change": 0.18480845987513544,
+    "food_left_minus_right": -1.3877787807814457e-15,
+    "collision_left_minus_right": 0.16220917713033595,
+    "collision_total": -0.24040212912333195
+   },
+   "r2": 0.4873142896296164
+  },
+  "turn_sign_persistence": 1.0
+ },
+ "T1-M0-N2-run05": {
+  "n": 31840,
+  "forward": {
+   "beta": {
+    "food_level": -0.3042916198821671,
+    "food_change": 0.13426798601051884,
+    "food_left_minus_right": -2.220446049250313e-16,
+    "collision_left_minus_right": 0.032899534605969886,
+    "collision_total": -0.686463512548517
+   },
+   "r2": 0.6144246229918671
+  },
+  "turn": {
+   "beta": {
+    "food_level": 0.027957545440341937,
+    "food_change": 0.1615554551082382,
+    "food_left_minus_right": 3.469446951953614e-18,
+    "collision_left_minus_right": 0.23463736522841094,
+    "collision_total": 0.015167031323993324
+   },
+   "r2": 0.08283462404318076
+  },
+  "turn_sign_persistence": 0.9930902352460819
+ },
+ "T1-M0-SH6-run00": {
+  "n": 31840,
+  "forward": {
+   "beta": {
+    "food_level": -0.005823839773614649,
+    "food_change": 0.007367500902765579,
+    "food_left_minus_right": 0.0,
+    "collision_left_minus_right": 0.004429158849457055,
+    "collision_total": -0.08378753340267085
+   },
+   "r2": 0.007196141983388249
+  },
+  "turn": {
+   "beta": {
+    "food_level": 0.7328488903419614,
+    "food_change": -0.2654255071456638,
+    "food_left_minus_right": -5.551115123125783e-17,
+    "collision_left_minus_right": 0.10238122609143453,
+    "collision_total": -0.07566441409958098
+   },
+   "r2": 0.6326725699107709
+  },
+  "turn_sign_persistence": 0.9950375325858224
+ },
+ "T1-M0-N2-run06": {
+  "n": 31840,
+  "forward": {
+   "beta": {
+    "food_level": -0.6816414117949958,
+    "food_change": 0.25622806205157084,
+    "food_left_minus_right": 0.0,
+    "collision_left_minus_right": -0.08475875195609321,
+    "collision_total": -0.09216358885144191
+   },
+   "r2": 0.5738900875614172
+  },
+  "turn": {
+   "beta": {
+    "food_level": 0.5285650364188161,
+    "food_change": -0.1944987115964375,
+    "food_left_minus_right": 2.7755575615628914e-16,
+    "collision_left_minus_right": 0.1942135116965226,
+    "collision_total": 0.21841550296665305
+   },
+   "r2": 0.4766218022557276
+  },
+  "turn_sign_persistence": 0.9985866390276077
+ },
+ "T1-M0-SH7-run00": {
+  "n": 31840,
+  "forward": {
+   "beta": {
+    "food_level": -0.659778805757831,
+    "food_change": 0.22050292767989382,
+    "food_left_minus_right": -8.326672684688674e-17,
+    "collision_left_minus_right": 0.040781007776361886,
+    "collision_total": -0.38211593506275654
+   },
+   "r2": 0.7506426475857135
+  },
+  "turn": {
+   "beta": {
+    "food_level": 0.19977417444462747,
+    "food_change": 0.21418712490545572,
+    "food_left_minus_right": 5.551115123125783e-16,
+    "collision_left_minus_right": 0.2420699562991144,
+    "collision_total": 0.007926096651587234
+   },
+   "r2": 0.1310018719385656
+  },
+  "turn_sign_persistence": 0.961902069788624
+ },
+ "T1-M0-N2-run07": {
+  "n": 31840,
+  "forward": {
+   "beta": {
+    "food_level": -0.6243409057439652,
+    "food_change": 0.29400475767715245,
+    "food_left_minus_right": 1.1102230246251565e-16,
+    "collision_left_minus_right": 0.15575141549149749,
+    "collision_total": -0.18263798639440246
+   },
+   "r2": 0.5650962316493657
+  },
+  "turn": {
+   "beta": {
+    "food_level": -0.18389577053709816,
+    "food_change": 0.1157935067621971,
+    "food_left_minus_right": 2.0122792321330962e-16,
+    "collision_left_minus_right": 0.2091796856695095,
+    "collision_total": 0.13434250556106178
+   },
+   "r2": 0.108703122907571
+  },
+  "turn_sign_persistence": 1.0
+ },
+ "T1-M0-SH8-run00": {
+  "n": 31840,
+  "forward": {
+   "beta": {
+    "food_level": 0.03226819961658367,
+    "food_change": 0.012222934008724182,
+    "food_left_minus_right": 7.632783294297951e-17,
+    "collision_left_minus_right": -0.00381817453951928,
+    "collision_total": -0.09379684164240999
+   },
+   "r2": 0.009222552914374571
+  },
+  "turn": {
+   "beta": {
+    "food_level": 0.0638500441792639,
+    "food_change": 0.08574525656258578,
+    "food_left_minus_right": -1.1102230246251565e-16,
+    "collision_left_minus_right": 0.2377144142828628,
+    "collision_total": -0.06901279926516604
+   },
+   "r2": 0.06955158637599668
+  },
+  "turn_sign_persistence": 0.9991205753949559
+ },
+ "T1-M0-SH1-run01": {
+  "n": 31836,
+  "forward": {
+   "beta": {
+    "food_level": -0.4395864184254896,
+    "food_change": 0.15414916172551865,
+    "food_left_minus_right": 5.551115123125783e-17,
+    "collision_left_minus_right": -0.020061712103148267,
+    "collision_total": -0.21186736061492276
+   },
+   "r2": 0.2999221040468464
+  },
+  "turn": {
+   "beta": {
+    "food_level": 0.5362194341579873,
+    "food_change": -0.18072109195291727,
+    "food_left_minus_right": -1.6653345369377348e-16,
+    "collision_left_minus_right": 0.14491531429482804,
+    "collision_total": 0.21021259141113638
+   },
+   "r2": 0.4486616532691261
+  },
+  "turn_sign_persistence": 1.0
+ },
+ "T1-M0-SH2-run01": {
+  "n": 31840,
+  "forward": {
+   "beta": {
+    "food_level": 0.10404001458777434,
+    "food_change": -0.0082762693968893,
+    "food_left_minus_right": 2.7755575615628914e-17,
+    "collision_left_minus_right": -0.061873099639037275,
+    "collision_total": -0.10382094390768912
+   },
+   "r2": 0.01825122942312829
+  },
+  "turn": {
+   "beta": {
+    "food_level": 0.6835654511143595,
+    "food_change": -0.22850461885554313,
+    "food_left_minus_right": 2.220446049250313e-16,
+    "collision_left_minus_right": 0.17582095623489952,
+    "collision_total": 0.0574230405985792
+   },
+   "r2": 0.5924325624987765
+  },
+  "turn_sign_persistence": 1.0
+ },
+ "T1-M0-SH3-run01": {
+  "n": 31840,
+  "forward": {
+   "beta": {
+    "food_level": -0.37864486159286675,
+    "food_change": 0.21863898969873494,
+    "food_left_minus_right": -3.469446951953614e-16,
+    "collision_left_minus_right": -0.06341776591970615,
+    "collision_total": -0.2502116476150554
+   },
+   "r2": 0.30909104344396143
+  },
+  "turn": {
+   "beta": {
+    "food_level": 0.5182058364608195,
+    "food_change": -0.20518142046212748,
+    "food_left_minus_right": 3.0531133177191805e-16,
+    "collision_left_minus_right": 0.24438126288589124,
+    "collision_total": 0.3175557101612909
+   },
+   "r2": 0.5943921730261885
+  },
+  "turn_sign_persistence": 1.0
+ },
+ "T1-M0-SH4-run01": {
+  "n": 31840,
+  "forward": {
+   "beta": {
+    "food_level": -0.5385619855266439,
+    "food_change": 0.2184980750752771,
+    "food_left_minus_right": 2.7755575615628914e-16,
+    "collision_left_minus_right": -0.011571933407020578,
+    "collision_total": -0.24583974568890554
+   },
+   "r2": 0.4555336857817781
+  },
+  "turn": {
+   "beta": {
+    "food_level": -0.25649429515503736,
+    "food_change": 0.21092654159852106,
+    "food_left_minus_right": 4.3021142204224816e-16,
+    "collision_left_minus_right": 0.2710528892110731,
+    "collision_total": -0.18990964857303858
+   },
+   "r2": 0.27613805890647525
+  },
+  "turn_sign_persistence": 1.0
+ },
+ "T1-M0-SH5-run01": {
+  "n": 31840,
+  "forward": {
+   "beta": {
+    "food_level": -0.767957787415446,
+    "food_change": 0.2663871562595937,
+    "food_left_minus_right": -2.6645352591003757e-15,
+    "collision_left_minus_right": 0.010864653929157411,
+    "collision_total": -0.1028458222769768
+   },
+   "r2": 0.6817829016902814
+  },
+  "turn": {
+   "beta": {
+    "food_level": -0.6144382014726448,
+    "food_change": 0.22832790842627507,
+    "food_left_minus_right": -2.7200464103316335e-15,
+    "collision_left_minus_right": 0.18308153475786776,
+    "collision_total": -0.17687778396148682
+   },
+   "r2": 0.5583757918233531
+  },
+  "turn_sign_persistence": 1.0
+ },
+ "T1-M0-SH6-run01": {
+  "n": 31840,
+  "forward": {
+   "beta": {
+    "food_level": 0.2534522241307288,
+    "food_change": -0.010213148822820862,
+    "food_left_minus_right": -1.734723475976807e-18,
+    "collision_left_minus_right": -0.013301941530956566,
+    "collision_total": -0.11886629206535668
+   },
+   "r2": 0.05970517706285816
+  },
+  "turn": {
+   "beta": {
+    "food_level": -0.5021049371543025,
+    "food_change": 0.2385294033624072,
+    "food_left_minus_right": -5.689893001203927e-16,
+    "collision_left_minus_right": 0.19341917217529891,
+    "collision_total": -0.16191143292092394
+   },
+   "r2": 0.4402624074405137
+  },
+  "turn_sign_persistence": 0.9999685919783913
+ },
+ "T1-M0-SH7-run01": {
+  "n": 31840,
+  "forward": {
+   "beta": {
+    "food_level": -0.6283319486560626,
+    "food_change": 0.23217077128253552,
+    "food_left_minus_right": 0.0,
+    "collision_left_minus_right": -0.14184227031048385,
+    "collision_total": -0.21142673769044484
+   },
+   "r2": 0.611121765768101
+  },
+  "turn": {
+   "beta": {
+    "food_level": 0.43726944049355077,
+    "food_change": -0.25553248592608413,
+    "food_left_minus_right": 0.0,
+    "collision_left_minus_right": 0.13127155008548905,
+    "collision_total": 0.23071375525270166
+   },
+   "r2": 0.4004825238636319
+  },
+  "turn_sign_persistence": 0.9990891673733472
+ },
+ "T1-M0-SH8-run01": {
+  "n": 31840,
+  "forward": {
+   "beta": {
+    "food_level": 0.1389286110743197,
+    "food_change": -0.036157242079497776,
+    "food_left_minus_right": -9.71445146547012e-17,
+    "collision_left_minus_right": 0.08674725119929572,
+    "collision_total": -0.10165679418756184
+   },
+   "r2": 0.029813117632988884
+  },
+  "turn": {
+   "beta": {
+    "food_level": -0.3976865852304603,
+    "food_change": 0.1956062956254161,
+    "food_left_minus_right": -1.1102230246251565e-15,
+    "collision_left_minus_right": 0.2771401837439666,
+    "collision_total": -0.2760981527199805
+   },
+   "r2": 0.4013375850124804
+  },
+  "turn_sign_persistence": 1.0
+ }
+}
