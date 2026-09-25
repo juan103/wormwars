@@ -6,7 +6,33 @@ and fight. Every wey's brain is a small continuous-time recurrent network whose 
 mask. Weights, time constants and biases are evolved. All weys in a swarm share one genome, and
 selection acts on team results.
 
-## Current findings: experiment 01b
+## Newest: experiment 02, a screening
+
+**Evolution did not find stereo foraging for the real wiring or for its shuffles, so the
+pre-registered prediction that N2 would use it more is challenged.** Experiment 02 is a
+12-GPU-hour screening, a fraction of a larger design. It crossed two foraging tasks (stereo, and
+a more worm-like single-nose one) with the food signal entering through the biological sensory
+neurons (AWA, AWC, ASE) or through matched wrong ones. It used 8 N2 runs and 8 shuffled graphs x 2
+runs. It was pre-registered, and reviewed by Astra 6 and Fable 5.1 at every stage.
+
+- **Primary:** removing the left-right food difference costs N2's evolved champions +0.027 and
+  the shuffles' +0.023, against a threshold of 0.10 for meaningful use. The contrast is +0.004
+  [−0.032, +0.044]. The verdict is "challenged: no meaningful N2 use".
+- **Exploratory:** under the biological mapping, N2 starts ahead at generation 0 and the
+  shuffles catch up. Their best random brains start worse under that mapping, and evolution
+  removes the deficit, while N2's own preference barely moves. Random N2 brains are more
+  sensitive to food input overall, not more selective for the left-right difference. Nothing
+  suggests the advantage is concentrated in the more worm-like task.
+- **What it found about the method:**
+  - evolved champions forage well without detected stereo use, and there was no selection
+    gradient for it;
+  - degree-preserving shuffles break mirror symmetry (13-16% of chemical edges, against N2's 64%);
+  - shuffles give the food neurons direct routes to the motor neurons, which N2's nearly lack.
+
+Everything is in [`experiments/02-screening/RESULTS.md`](experiments/02-screening/RESULTS.md),
+with the pre-registration, every review verbatim, and the decisions D034-D043.
+
+## Experiment 01b: the main confirmatory result
 
 **On foraging, the real wiring (N2) does better than random graphs, and better than or level with
 shuffles of itself.** This is the pre-registered comparison with chemical synapses running the
@@ -205,16 +231,19 @@ This project was designed and built almost entirely by AI models, directed by a 
   experiment 02), direction, and final approval at each checkpoint. He publishes and answers for
   this repository, but has not independently verified the code line by line.
 - Claude Fable 5.1 (Anthropic), in conversation: turned those ideas into the experimental design and
-  specification, reviewed the results, and drafted the experiment 02 pre-registration (to be
-  committed next). Later, consulted read-only, it reviewed experiment 01b before publication (D033).
+  specification, and reviewed the results. Later, consulted read-only, it reviewed experiment 01b
+  before publication (D033). It also reviewed experiment 02's design, plan, pre-registration and
+  results.
 - Astra 6 (a GPT model from OpenAI): adversarial review of the specification, which produced the
   statistical design, the resource accounting rules and the numerical stability requirements.
   Reviewing the roadmap, it found that the chemical synapses of experiment 01 ran backwards (D031),
-  and it reviewed experiment 01b before publication (D033).
+  and it reviewed experiment 01b before publication (D033), and experiment 02 at every stage.
 - Claude Code running Claude Opus 5 and, from 2026-09-24, Claude Opus 5.5 (Anthropic): every line
   of code, every measurement, and all implementation decisions recorded in DECISIONS.md. Opus 5
   built experiment 01 and found the motor-gain confound on its own. Opus 5.5 confirmed and fixed
-  the reversed synapses, ran experiment 01b, and acted on its review.
+  the reversed synapses, ran experiment 01b, and acted on its review. It also designed,
+  pre-registered, ran and wrote up experiment 02, which the owner delegated to it end to end,
+  with the two reviewers standing in for approval at each stage.
 
 Errors and who caught them: the "learned to flank" claim was made by Claude Code and caught by
 Claude Fable 5.1 in review (D026). The "N2 is deeper" explanation was made by Claude Fable 5.1,
