@@ -62,6 +62,9 @@ def task_config(base: Config, task: str) -> Config:
         c.world.max_ticks = 200
         lo, hi = c.map.food_per_patch
         c.map.food_per_patch = (2 * lo, 2 * hi)
+        # ...and half the sensing scale, so twice the food does not drive the signal into the
+        # input clamp (at the full scale 17-28% of non-zero readings sat at the clamp)
+        c.world.sense_scale_food = c.world.sense_scale_food / 2
     return c
 
 

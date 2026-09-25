@@ -84,11 +84,14 @@ def cmd_calibrate(args, con, iface):
 
 
 K_GRID = {"slow": [0.0, 0.25, 0.5, 0.75, 1.0], "fast": [0.5, 0.75, 1.0],
-          "threshold": [0.0003, 0.001, 0.003, 0.01, 0.03, 0.1, 0.3, 1.0, 3.0], "turn": [0.0, 0.1, 0.2, 0.4, 0.7]}
+          "threshold": [0.001, 0.003, 0.01, 0.03, 0.1, 0.3, 0.6, 1.0, 1.5, 2.0, 3.0, 5.0],
+          "turn": [0.0, 0.1, 0.2, 0.4, 0.7]}
 FALL_GRID = {"fall_turn": [0.4, 0.7, 1.0], "fall_threshold": [0.0, 0.001, 0.003]}
 K_STEREO = [8.0, 32.0, 128.0, 512.0, 2048.0, 8192.0]
 # values at a grid edge that are physical bounds, not choices: the edge rule ignores these
-PHYSICAL = {"fast": {1.0}, "slow": {0.0, 1.0}, "turn": {0.0}, "fall_turn": {1.0}, "fall_threshold": {0.0}}
+# threshold 5.0 is the input clamp ("never slow down"); a stereo gain this large is bang-bang steering
+PHYSICAL = {"fast": {1.0}, "slow": {0.0, 1.0}, "turn": {0.0}, "fall_turn": {1.0}, "fall_threshold": {0.0},
+            "threshold": {5.0}, "k": {8192.0}}
 JITTER_RADII = [1.0, 2.0, 3.0]
 HOLD_TICKS = [4, 8, 16]
 

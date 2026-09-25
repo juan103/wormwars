@@ -29,6 +29,10 @@ def test_task_configs():
         assert c.world.food_odour_sigma == 1.0 and c.world.max_ticks == 200
         assert c.map.food_per_patch == (2 * lo, 2 * hi)
     assert a.world.food_odour_sigma == 0.0 and a.world.max_ticks == 400
+    # doubling the food must not double the sensed signal into the input clamp (17-28% of
+    # readings saturated at 0.35): halve the sensing scale in the task world; the anchor keeps 01b's
+    assert t0.world.sense_scale_food == t1.world.sense_scale_food == base.world.sense_scale_food / 2
+    assert a.world.sense_scale_food == base.world.sense_scale_food
     assert a.map.food_per_patch == (lo, hi)
     with pytest.raises(ValueError):
         grid.task_config(base, "T9")
