@@ -23,7 +23,7 @@ def test_report_runs_on_pilot_data_with_a_stand_in(pilot):
     measures = {m["name"]: m for m in pilot["graphs"]}
     names = sorted(measures)
     n2, rest = names[0], names[1:]
-    out = R.build(measures, n2, {"A": rest[:8], "B": rest[8:]}, n_boot=100)
+    out = R.build(measures, n2, {"A": rest[:8], "B": rest[8:]}, n_boot=100, min_graphs=1)
     json.dumps(out)
     for s in R.PRIMARY:
         summ = out["signals"][s + "_summary"]
@@ -40,5 +40,5 @@ def test_a_stand_in_from_the_same_ensemble_is_never_distinctive_with_eight_graph
     distinctive, which is the right answer for an exchangeable stand-in."""
     measures = {m["name"]: m for m in pilot["graphs"]}
     names = sorted(measures)
-    out = R.build(measures, names[0], {"A": names[1:9]}, n_boot=50)
+    out = R.build(measures, names[0], {"A": names[1:9]}, n_boot=50, min_graphs=1)
     assert all(out["signals"][s + "_summary"]["overall"] == "not distinctive" for s in R.PRIMARY)

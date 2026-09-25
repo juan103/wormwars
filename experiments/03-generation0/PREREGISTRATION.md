@@ -36,6 +36,16 @@ A verdict of "distinctive" means distinctive relative to these five nulls, not N
 unrestricted sense. "Consistent" means inside an ensemble's distribution. It does not mean that
 ensemble's constraint is the cause.
 
+**The null is topology plus weight placement.** N2 keeps its anatomical weights on its own
+edges, while every ensemble permutes them; N2perm is descriptive only.
+
+**The tests are approximate reference-ensemble tests** (Astra, D054), not exact permutation tests:
+- each control graph is a finite swap chain started from N2 and stopped after a fixed number of
+  accepted swaps, at a verified plateau;
+- the routing cap is enforced by greedy weight swaps, not a joint redraw.
+The rank p-values are exact only under the assumption that N2 is exchangeable with these
+ensembles' graphs.
+
 ## 3. Graphs
 
 - **N2**, the real wiring.
@@ -49,12 +59,19 @@ ensemble's constraint is the cause.
     types).
   - **SH-mirror:** N2's exact mirror-symmetric share, plus the routing cap.
   - **SH-recip:** N2's 669 reciprocal pairs.
-- **Validation:** every ensemble passed every rule fixed in design v3 (`ensembles.json`):
+- **Validation:** every ensemble passed the rules the build checked (`ensembles.json`):
   - plateau at 20 and 40 passes, within 0.01;
   - acceptance at least 5% (the lowest is 9%, SH-class);
   - no graph over its Jaccard ceiling;
   - no substitutions.
-  Median Jaccard to N2 (chemical): 0.050, 0.051, 0.096, 0.063 and 0.050.
+
+  Median Jaccard to N2 (chemical): 0.050, 0.051, 0.096, 0.063 and 0.050. The median pairwise
+  Jaccard *within* each ensemble is the same: 0.048, 0.049, 0.095, 0.063 and 0.049 (40 graphs
+  each). So the graphs are as different from one another as from N2.
+- **Retired rule:** design v3's hop-distance rule for SH-route was never enforced by the build,
+  and is retired here (Astra, D054). SH-route and SH-mirror control direct read-out edges and
+  their weight, not path length. For example, SH-route-20000 shortens AWAL's gap-only distance to
+  the turn read-out from 3 hops to 2.
 - **Identity:** each graph is fixed by its seed (`ensembles.json`) and its file hash
   (`graphs_manifest.json`). The graph files are not committed, because they carry permuted
   anatomical weights.
@@ -74,8 +91,11 @@ Every graph, N2 included, goes through the same procedure: same sample sizes, sa
 same worlds. That is what makes N2 exchangeable with an ensemble's graphs under the null.
 
 - **Calibration:** motor gains calibrated in-world on T0 with 1 024 random genomes (D035's
-  method). N2's calibration is also validated on 2 048 independent genomes. The validation is
-  reported, but it never replaces the 1 024-genome gains.
+  method); the achieved drive is saved.
+  - **Validation:** N2 and the first 8 graphs of every ensemble are also checked on 2 048
+    independent genomes (seed 1). The check is saved, but it never replaces the gains.
+  - **Failure:** a graph whose calibration fails to converge is excluded from every signal and
+    counted. If N2's fails, every verdict is withheld.
 - **Genomes:** random, unselected. The seed is a SHA-256 hash of the graph's name. 256 fitness
   genomes; the first 64 are shared by every fitness cell and by coverage. 2 048 probe genomes;
   the first 256 are used for the secondary response conditions.
@@ -90,8 +110,9 @@ same worlds. That is what makes N2 exchangeable with an ensemble's graphs under 
 - **Input response:** 02's corrected probe (b = 0.1, d = 0.05, 40 ticks from rest, raw
   read-out), saved per genome:
   - M0 with 2 048 genomes;
-  - R1, R2, MS, M0 without gap junctions, and M0 with uniform and with permuted magnitudes, 256
-    each.
+  - R1, R2, MS and M0 without gap junctions, on the first 256 of those genomes;
+  - M0 with uniform and with permuted magnitudes on 256 fresh genomes (the same seed, a separate
+    draw). These are unpaired with the rest (Fable, Astra, D054).
 - **History:** 02b's matched-input test on the 2 048 probe genomes at M0, with the pilot's
   stimulus bank:
   - food 0.2234 per side, and every other signal at its pilot median (`pilot.json`);
@@ -121,18 +142,22 @@ same worlds. That is what makes N2 exchangeable with an ensemble's graphs under 
 - every primary signal for N2-rev and N2perm.
 
 **Exclusions:** a graph whose P1 or P4 denominator mean is below 10⁻⁴, or whose value is not
-finite, is excluded from that signal and counted.
+finite, is excluded from that signal and counted. The same validity mask is applied in every
+computation: the rank test, the SEs, the margin, the bootstrap and the quantiles.
 
 ## 6. Verdict (`wormwars/exp03/report.py`, `verdict.py`)
 
 For each primary signal *s* and each ensemble *E*:
 
 1. **Measurement SE of each graph's value:**
-   - P1 and P4: a bootstrap over genomes of the ratio of means;
+   - P1 and P4: a bootstrap over genomes of the ratio of means, 1 000 draws, seed 0;
    - P3: crossed genome × world variance components, after removing the world profile shared by
-     all graphs, since shared worlds cancel in rank comparisons.
-2. **The ensemble's latent SD:** τ_E = √(var of its 128 values − mean SE²). Its margin is
-   0.5 τ_E, computed at run time from that ensemble's graphs. It uses no N2 data.
+     the registered ensemble graphs. Shared worlds cancel in rank comparisons. The profile never
+     includes N2, its variants, or unregistered files.
+2. **The ensemble's latent SD:** τ_E = √(max(var of its valid values − mean SE², 0)). The
+   truncation at zero is registered: a margin of 0 leaves the rank test and the interval to
+   decide. The margin is 0.5 τ_E, computed at run time from that ensemble's registered graphs,
+   with no N2 data.
 3. **Rank tests:** one-sided exact p = (r + 1)/(n + 1), in the expected and in the opposite
    direction, where r counts ensemble values at least as extreme as N2's.
 4. **Effect interval:** the 90% joint-bootstrap interval of N2 minus E's mean. World indices are
@@ -141,8 +166,11 @@ For each primary signal *s* and each ensemble *E*:
 5. **N2's own 90% interval:** its value ± 1.645 SE.
 
 **Across ensembles and signals:** p_s is the maximum of p_sE over the five ensembles
-(intersection-union), then Holm across the three primary signals. The opposite direction is
-handled the same way, separately.
+(intersection-union), then Holm across the three primary signals.
+- A withheld signal enters Holm with p = 1, so the divisor stays at three.
+- The opposite direction is handled the same way, as a separate family. Each direction is held
+  at 5%, so the combined error rate across both directions is up to 10% (Astra, D054).
+- The effect interval uses 1 000 draws, seed 1.
 
 **Verdict per signal and ensemble,** mutually exclusive:
 - **distinctive:** Holm-adjusted p_s ≤ 0.05, and the effect interval lies entirely beyond +0.5 τ_E
@@ -156,8 +184,8 @@ handled the same way, separately.
 five; *reversed against every ensemble* only if reversed against all five; otherwise *not
 distinctive*. Per-ensemble verdicts are always reported.
 
-**Completeness:** a verdict needs N2 and at least 120 valid graphs per ensemble. Otherwise the
-signal's verdict is withheld.
+**Completeness:** a signal's verdict needs a valid N2 and at least 120 valid graphs in every
+ensemble. Otherwise it is withheld, and the report enforces this before computing any verdict.
 
 ## 7. Power and precision (from the rerun pilot, `pilot.json`)
 
@@ -167,31 +195,64 @@ signal's verdict is withheld.
 | P3 | 0.0071 | 0.0085 | 0.41 |
 | P4 | 0.074 | 0.0063 | 0.99 |
 
-**Simulated probability of "distinctive relative to every ensemble"** (1 000 simulations per
-cell). N2 is placed z latent SDs above every ensemble's mean; the other two signals are at the
-null; the full rule of §6 is applied:
+**Simulated operating characteristics** (1 000 simulations per cell, D054).
 
-| z | 2.5 | 3 | 4 | 5 | 6 | 8 |
-|---|---|---|---|---|---|---|
-| P1 | 0.07 | 0.44 | 0.99 | 1.00 | 1.00 | 1.00 |
-| P3 | 0.00 | 0.01 | 0.12 | 0.51 | 0.86 | 1.00 |
-| P4 | 0.30 | 0.90 | 1.00 | 1.00 | 1.00 | 1.00 |
+*Assumptions:*
+- N2 is measured once and compared with all five ensembles;
+- every ensemble has SH's pilot parameters;
+- values are Gaussian;
+- the margin and effect interval come from the observed ensemble values, with a normal
+  approximation to the bootstrap;
+- the other two primary signals are at the null.
 
-- **P3 has little power per latent SD.** Random shuffled brains barely differ in food-information
-  dependence, and genome sampling dominates each graph's measurement.
-- **In absolute units,** P3 detects an N2 effect of about 0.043 score units (6 latent SDs) with
-  86% power. It detects effects below about 0.03 rarely.
-- **A null P3 result means "smaller than about 0.04",** not "no food-information dependence".
-- A reliability of 0.41 means P3's between-graph spread is mostly measurement noise. The rank
-  test stays valid, since every graph is measured the same way, but it loses power.
-- Reaching reliability 0.9 for P3 would take about 75 GPU-hours, and is not bought here.
+*Columns:* the probability of "distinctive relative to every ensemble" when N2 sits z latent
+SDs above the ensembles; and the probability of "consistent" with every ensemble when N2 is a
+true member (z = 0).
+
+| z | 0 | 2 | 2.5 | 3 | 4 | 5 | 6 | consistent if a member |
+|---|---|---|---|---|---|---|---|---|
+| P1 | 0.00 | 0.04 | 0.26 | 0.64 | 0.99 | 1.00 | 1.00 | 0.93 |
+| P3 | 0.00 | 0.06 | 0.11 | 0.20 | 0.47 | 0.78 | 0.93 | 0.15 |
+| P4 | 0.00 | 0.00 | 0.35 | 0.93 | 1.00 | 1.00 | 1.00 | 1.00 |
+
+**P1:**
+- Experiment 02's generation-0 ratio for N2 under M0 was about 0.10, with a different
+  aggregation. Against the pilot's mean of about −0.004 and latent SD of 0.032, that is about
+  z = 3, so the P1 verdict is roughly a two-to-one chance even if 02's number carries over.
+
+**P3:**
+- Its minimum detectable effect at 80% power is about 5 latent SDs: 0.036 score units, on a
+  generation-0 T1 score of about 0.89 (4%). Random shuffled brains barely differ on it.
+- It will usually be "inconclusive" even if N2 is an ordinary member (consistent only 15% of
+  the time).
+- If the criterion is not met, the result is reported as exactly that: **the registered
+  distinctiveness criterion was not met.** It is not a bound on N2's food-information
+  dependence. The v1 wording, "smaller than about 0.04", confused power with an upper bound
+  (Astra, D054).
+- Reliability 0.9 for P3 would need about 4 460 genomes per cell, roughly 150 GPU-hours. This
+  is not bought. v1's "75 GPU-hours" was an arithmetic error (both reviewers).
+
+**P4:**
+- P4 is a bounded ratio. The pilot shuffles reach at most 0.86, and z = 3 corresponds to about
+  1.0 (z = 4, about 1.07), so the table's upper rows are near the signal's ceiling.
+- 02b's history numbers used a different stimulus, so no expected z for N2 is available.
+- Real ensembles differ, so N2's effective z is its smallest across the five.
 
 ## 8. Budget and run
 
 - **Cost:** about 111 seconds per graph in the pilot; 645 graphs is about 19.9 GPU-hours.
 - **Cap:** 24 GPU-hours (`exp03.py run --max-hours 24`), stopping between graphs.
-- **Order:** N2, N2-rev and N2perm1-3 first, then the five ensembles interleaved graph by graph.
-  A stop removes graphs evenly across ensembles.
+- **Order:** the five ensembles interleaved graph by graph, so a stop removes graphs evenly.
+  Then N2, N2-rev and N2perm1-3 **last**, exempt from the cap. No mid-run decision is taken with
+  N2's numbers on disk (Fable, D054).
+- **The cap is cumulative:** the saved measurements' wall time is summed, so a restart does not
+  reset it.
+- **Stopping or resuming may not depend on any measured value.**
+- **Provenance:** every measurement records the code commit, the hashes of the registered inputs
+  and the device. The run refuses to start with uncommitted code. The report refuses a mixture
+  of commits or inputs, and reads only registered graph names.
+- **Graph files:** each is checked against `graphs_manifest.json` when loaded, and a mismatch
+  stops the run.
 - **Resumable:** one file per graph under `runs/exp03/measures/`.
 
 ## 9. Deviations
@@ -218,4 +279,31 @@ The following are exploratory and chosen as needed:
 
 ## 12. Changes from the team's review of this file
 
-(Filled in before the run.)
+Astra 6 and Fable 5.1, both at maximum effort, reviewed the first version
+(`docs/reviews/20260925-232702-03-prereg/`). Both said not to start. Astra reproduced verdict-changing
+failures on synthetic data. Every point was checked and fixed, with tests where it is code
+(D054):
+
+1. **Exclusions and completeness** are enforced in every path. An invalid N2 or an incomplete
+   ensemble withholds the verdict, and a withheld signal enters Holm with p = 1 (both).
+2. **The P3 world profile and the margins** use registered ensemble graphs only (Astra).
+3. **"Exact exchangeability" is reworded** as approximate reference-ensemble tests, and the
+   greedy weight repair is disclosed (Astra).
+4. **The power table** now uses one N2 draw, observed margins and observed intervals, and adds
+   the probability of "consistent" (both). P4 is given in ratio units (Fable).
+5. **"Smaller than about 0.04" is removed** (Astra), and the reliability cost is corrected to
+   about 150 GPU-hours (both).
+6. **The run:**
+   - N2 last and exempt from the cap (Fable);
+   - a cumulative cap;
+   - provenance checks;
+   - graph hashes verified at load;
+   - only registered names read;
+   - stopping may not depend on results (Astra).
+7. **Calibration:** validation is implemented, with a rule for a graph whose calibration fails
+   (both).
+8. **Magnitude variants** are unpaired draws; the text is corrected (both).
+9. **The hop-distance rule** is retired and disclosed (Astra).
+10. **The error rate across both directions** is stated (both).
+11. **The bootstrap sizes and seeds** are fixed (Fable).
+12. **The secondary signals** are implemented in the report before any N2 run (both).

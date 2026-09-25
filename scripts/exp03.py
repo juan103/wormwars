@@ -51,6 +51,42 @@ FIT_CELLS = [("T1", "M0"), ("T1const", "M0"), ("T1", "R1"), ("T1", "R2"), ("T0",
 P3_CELLS = {("T1", "M0"), ("T1const", "M0")}
 
 
+class ProvenanceError(RuntimeError):
+    """A graph file, an input or a measurement does not match what the pre-registration fixed."""
+
+
+INPUT_FILES = {"ensembles.json": EXP / "ensembles.json", "graphs_manifest.json": EXP / "graphs_manifest.json",
+               "pilot.json": EXP / "pilot.json",
+               "mirror_pairs.yaml": EXP.parents[1] / "configs" / "mirror_pairs.yaml",
+               "remaps.json": EXP.parent / "02-screening" / "remaps.json"}
+
+
+def _sha(path: Path) -> str:
+    import hashlib
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def provenance(device) -> dict:
+    """The code commit, the registered inputs' hashes and the device, stored in every
+    measurement file; the report refuses a mixture (D054)."""
+    import subprocess
+    try:
+        commit = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=EXP.parents[1], text=True).strip()
+        dirty = bool(subprocess.check_output(["git", "status", "--porcelain", "--", "wormwars", "scripts", "configs"],
+                                             cwd=EXP.parents[1], text=True).strip())
+    except Exception:  # noqa: BLE001
+        commit, dirty = "unknown", True
+    return {"git_commit": commit, "code_dirty": dirty, "device": str(device),
+            "inputs": {k: _sha(v) for k, v in INPUT_FILES.items()}}
+
+
+def check_provenance(measurements) -> None:
+    keys = {json.dumps({k: v for k, v in m["provenance"].items() if k != "device"}, sort_keys=True)
+            for m in measurements}
+    if len(keys) != 1:
+        raise ProvenanceError(f"measurements come from {len(keys)} different code or input versions")
+
+
 def _json(path: Path, obj):
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(obj, indent=1), encoding="utf-8")
@@ -135,6 +171,14 @@ def cmd_build(args):
 
 # ----------------------------------------------------------------------------- measures
 
+def _validated(name: str) -> bool:
+    """The first 8 graphs of each ensemble get the same calibration check as N2."""
+    for k, base in SEED_BASE.items():
+        if name.startswith(k + "-") and name[len(k) + 1:].isdigit():
+            return int(name[len(k) + 1:]) - base < 8
+    return False
+
+
 def _load_graph(con, name):
     if name in ("N2",) or name.startswith("N2perm"):
         return con
@@ -142,7 +186,11 @@ def _load_graph(con, name):
         return con.with_masks(con.chem.T.copy(), con.gap.copy(), "N2-rev")
     if name.startswith("pilotSH"):
         return S.build(con, "SH", seed=int(name[7:]), passes=20)[0]
-    z = np.load(GRAPHS / f"{name}.npz", allow_pickle=False)
+    path = GRAPHS / f"{name}.npz"
+    manifest = json.loads((EXP / "graphs_manifest.json").read_text(encoding="utf-8"))
+    if manifest.get(name) != _sha(path):  # the committed manifest pins every graph (D054)
+        raise ProvenanceError(f"{name}: graph file does not match graphs_manifest.json")
+    z = np.load(path, allow_pickle=False)
     return con.with_masks(z["chem"], z["gap"], name)
 
 
@@ -159,6 +207,13 @@ def measure_graph(con, name, device, bank=None, only=None):
                                    n_strains=1024, device=device)
     gains = (cal.forward_gain, cal.turn_gain)
     out["gains"] = list(gains)
+    out["calibration"] = cal.as_dict()
+    if name in ("N2",) or _validated(name):
+        # independent 2048-genome check; it never replaces the 1024-genome gains (registered)
+        check = base0.copy()
+        check.world.forward_gain, check.world.turn_gain = gains
+        out["calibration_validation"] = calib.achieved_drive(graph, check, grid.interface_for(con, "M0", remap_sets),
+                                                             n_strains=2048, seed=1, device=device).as_dict()
     t["calibration"] = time.perf_counter() - t0
 
     def cfg_for(task):
@@ -354,38 +409,56 @@ def cmd_variance(args):
 
 
 def cmd_power(args):
-    """Simulated power of the registered decision rule (design v3.2): five ensembles of 128
-    graphs, one-sided exact rank tests, maximum over ensembles, Holm across the three primary
-    signals (the other two at the null), and the effect interval beyond 0.5 latent SD. N2 is
-    placed z latent SDs above each ensemble's mean."""
+    """Simulated operating characteristics of the registered rule (§6), D054 version.
+    Assumptions, stated: every ensemble has the pilot's SH latent SD and per-graph SE for the
+    signal; values are Gaussian. N2 is measured *once*: one observation compared with all five
+    ensembles. The margin and the effect interval are computed from the *observed* ensemble
+    values, as the report does, with a normal approximation to the joint bootstrap. The other
+    two primary signals sit at the null. Also the probability that N2, a true member (z = 0), is
+    'consistent' with every ensemble."""
     pilot = json.loads((EXP / "pilot.json").read_text(encoding="utf-8"))
     rng = np.random.default_rng(0)
-    table = {}
-    for k in PRIMARY:
-        tau, se = pilot["variance"][k]["latent_sd"], pilot["variance"][k]["mean_se"]
+    n, k_ens, sims = N_PER_ENSEMBLE, len(S.KINDS), args.sims
+    zs = (0.0, 2.0, 2.5, 3.0, 4.0, 5.0, 6.0, 8.0)
+    par = {k: (pilot["variance"][k]["latent_sd"], pilot["variance"][k]["mean_se"]) for k in PRIMARY}
+
+    def one(signal, z):
+        tau, se = par[signal]
+        ens = rng.normal(0, tau, (k_ens, n)) + rng.normal(0, se, (k_ens, n))
+        n2 = z * tau + rng.normal(0, se)
+        p = ((ens >= n2).sum(1) + 1) / (n + 1)
+        mean, var = ens.mean(1), ens.var(1, ddof=1)
+        margin = 0.5 * np.sqrt(np.maximum(var - se ** 2, 0.0))
+        lo = (n2 - mean) - 1.645 * np.sqrt(se ** 2 + var / n)
+        q05, q95 = np.quantile(ens, 0.05, axis=1), np.quantile(ens, 0.95, axis=1)
+        consistent = np.all((q05 <= n2 - 1.645 * se) & (n2 + 1.645 * se <= q95))
+        return p.max(), bool(np.all(lo > margin)), bool(consistent)
+
+    table, consistent_null = {}, {}
+    for s in PRIMARY:
+        others = [o for o in PRIMARY if o != s]
         rows = {}
-        for z in (1.5, 2.0, 2.5, 3.0, 4.0, 5.0, 6.0, 8.0):
-            hits = 0
-            for _ in range(args.sims):
-                ps = []
-                for _e in range(len(S.KINDS)):
-                    ens = rng.normal(0, tau, N_PER_ENSEMBLE) + rng.normal(0, se, N_PER_ENSEMBLE)
-                    n2 = z * tau + rng.normal(0, se)
-                    ps.append(((ens >= n2).sum() + 1) / (N_PER_ENSEMBLE + 1))
-                p_max = max(ps)
-                others = [max(((rng.normal(0, tau, N_PER_ENSEMBLE) + rng.normal(0, se, N_PER_ENSEMBLE)) >=
-                               rng.normal(0, tau) + rng.normal(0, se)).sum() + 1 for _e in range(len(S.KINDS)))
-                          / (N_PER_ENSEMBLE + 1) for _o in range(len(PRIMARY) - 1)]
-                ordered = sorted([p_max] + others)
-                rank = ordered.index(p_max)
-                holm = max(min(1.0, (len(ordered) - i) * ordered[i]) for i in range(rank + 1))
-                half = 1.645 * np.sqrt(se ** 2 + (tau ** 2 + se ** 2) / N_PER_ENSEMBLE)
-                if holm <= 0.05 and (z * tau - half) > 0.5 * tau:
-                    hits += 1
-            rows[str(z)] = hits / args.sims
-        table[k] = rows
-        print(k, rows)
-    pilot["power"] = {"sims": args.sims, "table": table}
+        for z in zs:
+            hits = cons = 0
+            for _ in range(sims):
+                pmax, beyond, c = one(s, z)
+                ps = sorted([pmax] + [one(o, 0.0)[0] for o in others])
+                rank = ps.index(pmax)
+                holm = max(min(1.0, (len(ps) - i) * ps[i]) for i in range(rank + 1))
+                hits += holm <= 0.05 and beyond
+                cons += c
+            rows[str(z)] = hits / sims
+            if z == 0.0:
+                consistent_null[s] = cons / sims
+        table[s] = rows
+        print(s, rows, "P(consistent | member)", consistent_null[s], flush=True)
+    p4 = pilot["variance"]["P4"]
+    p4_mean = float(np.mean(pilot["signals"]["P4"]))
+    pilot["power"] = {"sims": sims, "table": table, "consistent_if_member": consistent_null,
+                      "P4_ratio_at_z": {str(z): p4_mean + z * p4["latent_sd"] for z in zs},
+                      "assumptions": "one N2 draw per simulation compared with all five ensembles; SH pilot "
+                                     "parameters for every ensemble; Gaussian values; normal approximation to "
+                                     "the joint-bootstrap interval; other primary signals at the null"}
     _json(EXP / "pilot.json", pilot)
 
 
@@ -394,42 +467,55 @@ REAL = ["N2", "N2-rev", "N2perm1", "N2perm2", "N2perm3"]
 
 
 def run_order() -> list[str]:
-    """N2 and its variants first, then the ensembles interleaved graph by graph, so a budget
-    stop removes graphs evenly from every ensemble (completeness needs 120 of 128 each)."""
+    """The ensembles interleaved graph by graph, so a budget stop removes graphs evenly, then N2
+    and its variants *last*, so no mid-run decision is taken with N2's numbers on disk (Fable,
+    D054). N2 and its variants are exempt from the cap."""
     e = json.loads((EXP / "ensembles.json").read_text(encoding="utf-8"))
     by = {k: [g["name"] for g in e["graphs"] if g["kind"] == k] for k in S.KINDS}
-    return REAL + [by[k][i] for i in range(N_PER_ENSEMBLE) for k in S.KINDS]
+    return [by[k][i] for i in range(N_PER_ENSEMBLE) for k in S.KINDS] + REAL
+
+
+def spent_hours() -> float:
+    """GPU time already spent, summed over every saved measurement, so the cap is cumulative
+    across restarts (Astra, D054)."""
+    total = 0.0
+    for path in MEASURES.glob("*.json"):
+        total += sum(json.loads(path.read_text(encoding="utf-8")).get("seconds", {}).values())
+    return total / 3600
 
 
 def cmd_run(args):
-    """Every graph, N2 included. Only after the pre-registration is committed."""
+    """Every graph, N2 last. Only after the pre-registration is committed. Stopping or resuming
+    may not depend on any measured value (registered)."""
     con = load_connectome()
     bank = json.loads((EXP / "pilot.json").read_text(encoding="utf-8"))["bank"]
     MEASURES.mkdir(parents=True, exist_ok=True)
-    t0, done = time.perf_counter(), 0
+    prov = provenance(args.device)
+    if prov["code_dirty"]:
+        raise ProvenanceError("uncommitted changes in wormwars/, scripts/ or configs/: commit before running")
     for name in run_order():
         path = MEASURES / f"{name}.json"
         if path.exists():
             continue
-        if (time.perf_counter() - t0) / 3600 > args.max_hours:
-            print(f"stopping at the time cap after {done} graphs")
-            break
+        if name not in REAL and spent_hours() > args.max_hours:
+            print(f"cap reached ({spent_hours():.2f} h): skipping ensemble graph {name}")
+            continue
         m = measure_graph(con, name, args.device, bank=bank)
+        m["provenance"] = prov
         _json(path, m)
-        done += 1
-        if done % 20 == 0:
-            print(f"{done} graphs, {(time.perf_counter() - t0) / 3600:.2f} h", flush=True)
-    print(f"run finished: {len(list(MEASURES.glob('*.json')))} graphs measured")
+    print(f"run finished: {len(list(MEASURES.glob('*.json')))} graphs measured, {spent_hours():.2f} h")
 
 
 def cmd_report(args):
     from wormwars.exp03 import report as R
     e = json.loads((EXP / "ensembles.json").read_text(encoding="utf-8"))
-    measures = {p.stem: json.loads(p.read_text(encoding="utf-8")) for p in MEASURES.glob("*.json")}
+    registered = {g["name"] for g in e["graphs"]} | set(REAL)
+    measures = {p.stem: json.loads(p.read_text(encoding="utf-8")) for p in MEASURES.glob("*.json")
+                if p.stem in registered}  # unregistered files are never read
+    check_provenance(measures.values())
     ensembles = {k: [g["name"] for g in e["graphs"] if g["kind"] == k and g["name"] in measures] for k in S.KINDS}
-    complete = {k: len(v) >= 120 for k, v in ensembles.items()} | {"N2": "N2" in measures}
-    out = R.build(measures, "N2", ensembles, n_boot=args.boot)
-    out["completeness"] = complete
+    out = R.build(measures, "N2", ensembles)
+    out["provenance"] = next(iter(measures.values()))["provenance"]
     out["descriptive"] = {n: out["per_graph"][n] for n in REAL if n in out["per_graph"]}
     _json(EXP / "report.json", out)
     print("completeness", complete)
@@ -443,7 +529,6 @@ def main():
     ap.add_argument("command", choices=["build", "pilot", "variance", "power", "run", "report"])
     ap.add_argument("--sims", type=int, default=2000)
     ap.add_argument("--max-hours", type=float, default=24.0)
-    ap.add_argument("--boot", type=int, default=1000)
     ap.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
     ap.add_argument("--workers", type=int, default=8)
     args = ap.parse_args()

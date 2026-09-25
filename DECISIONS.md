@@ -1246,3 +1246,36 @@ maximum effort (`docs/reviews/20260925-222802-03-precision/`). Their main points
 - **A power simulation** of the full decision rule goes in the pre-registration (both).
 - **Budget:** about 20 GPU-hours, over the design's cap of 18. It is restated once the rerun
   pilot measures the new cost.
+
+## D054 — 03's pre-registration after review: enforced rules, N2 last, honest power
+
+Astra 6 and Fable 5.1, both at maximum effort, reviewed the first version of 03's
+pre-registration. Both said not to start. Astra reproduced verdict-changing failures on synthetic
+data: "distinctive" with 60 graphs per ensemble, and with an N2 whose denominator was 1e-6. All
+points were checked and fixed before any N2 measurement:
+
+- **The report now enforces the registered rules** (`wormwars/exp03/report.py`, with tests):
+  - one validity mask per signal, used in every path;
+  - completeness withholds the verdict, and a withheld signal counts as p = 1 in Holm;
+  - the P3 world profile uses registered ensemble graphs only;
+  - the bootstrap sizes and seeds are fixed;
+  - the secondary signals are implemented.
+- **The runner** (`scripts/exp03.py`, with tests):
+  - N2 and its variants run last and are exempt from the cap;
+  - the cap is cumulative across restarts;
+  - every measurement records its provenance (commit, input hashes, device); the report refuses
+    a mixture, and the run refuses uncommitted code;
+  - graph files are verified against the manifest at load;
+  - calibration is validated for N2 and 8 graphs per ensemble.
+- **The power simulation** now uses one N2 draw compared with all ensembles, and margins and
+  intervals from the observed values. It adds the probability of "consistent" when N2 is a
+  member: P3 is only 0.15, so P3 will usually be inconclusive.
+- **Honest wording:**
+  - the tests are approximate reference-ensemble tests;
+  - the greedy weight repair is disclosed;
+  - the hop rule was never enforced and is retired;
+  - a null P3 is "criterion not met", not an upper bound;
+  - reliability 0.9 for P3 would cost about 150 GPU-hours, not 75;
+  - the error rate across both directions is 10%.
+- **Within-ensemble pairwise Jaccard** equals each ensemble's Jaccard to N2, which is evidence of
+  mixing.
