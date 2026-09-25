@@ -137,7 +137,7 @@ def _load_graph(con, name):
         return con.with_masks(con.chem.T.copy(), con.gap.copy(), "N2-rev")
     if name.startswith("pilotSH"):
         return S.build(con, "SH", seed=int(name[7:]), passes=20)[0]
-    z = np.load(GRAPHS / f"{name}.npz")
+    z = np.load(GRAPHS / f"{name}.npz", allow_pickle=False)
     return con.with_masks(z["chem"], z["gap"], name)
 
 
