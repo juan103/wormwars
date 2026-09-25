@@ -1139,3 +1139,34 @@ point was checked before it was adopted, and 02b v2 was recomputed from the save
 
 **For 03a:** about a third of a high-criticality N2 target's deletion cost is carried by edges to
 interface neurons, which 03a keeps fixed. Its next review should weigh this.
+
+## D050 — Experiment 03 design v2: mirror symmetry reversed, the throughput plateau is real
+
+Astra 6 (maximum effort) and Fable 5.1 reviewed 03's design v1
+(`docs/reviews/20260925-210723-03-design/`). Checked before adopting:
+
+- **Mirror symmetry forbids a left-right comparison at this read-out (Astra).** The turn
+  read-out is dorsal minus ventral, and each group contains left and right neurons. So a
+  mirror-equivariant network turns identically for food on either side. D041's rationale ("a
+  symmetric graph gets the comparison almost for free") and the registered reading in 02's
+  pre-registration are therefore wrong. That reading was never triggered, because the primary
+  was challenged. `structure.py`'s docstring is corrected. SH-mirror stays as a control, now
+  predicted to *lower* directional response.
+- **Throughput (both reviewers):** v1's benchmark ran at 512 worlds per chunk. Rerun at up to
+  16 384 per chunk, it stays at about 168 genome-world evaluations per second, compute-bound. The
+  "about 2 times 02, not 5" consequence for 03a stands.
+- **The shuffle sampler's silent attempt cap (both reviewers)** did not fire for any shuffle used
+  in 01b or 02: each reached its full swap target. New samplers must fail loudly.
+- **Adopted in design v2:**
+  - routing constrained on weighted graphs for every fitness mapping;
+  - an orbit-based mirror sampler with exact symmetry;
+  - a defined class-preserving null;
+  - N2perm as a control for weight placement;
+  - T1 with constant food as the primary control task, and coverage as descriptive only;
+  - a primary set of four signals with expected signs and Holm correction;
+  - prediction-interval tests, with rank statistics reported beside them;
+  - margins from a shuffle-only pilot;
+  - 16 shared worlds with genomes paired across tasks;
+  - per-graph calibration;
+  - the motor remap dropped;
+  - R3 and R4 impossible under D036.
