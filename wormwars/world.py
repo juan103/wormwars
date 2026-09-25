@@ -19,10 +19,13 @@ dying, biting -- only moves energy between those four pots. `energy_ledger_error
 
 from __future__ import annotations
 
+import math
+
 from dataclasses import dataclass
 
 import numpy as np
 import torch
+import torch.nn.functional as F
 from torch import Tensor
 
 from .brain import Brain
@@ -47,6 +50,19 @@ P_BODY_L, P_BODY_R = 8, 9
 N_POINTS = 10
 FOOD_SENSING = ("stereo", "mono")
 FOOD_PROBES = ("real", "constant", "mirrored")
+
+
+def gaussian_blur(field: Tensor, sigma: float) -> Tensor:
+    """[Wd, H, W] -> [Wd, H, W]: separable Gaussian blur. Zero outside the grid, so odour escapes
+    at the walls rather than piling up against them."""
+    r = max(1, int(math.ceil(3 * sigma)))
+    x = torch.arange(-r, r + 1, device=field.device, dtype=field.dtype)
+    k = torch.exp(-0.5 * (x / sigma) ** 2)
+    k = k / k.sum()
+    f = field.unsqueeze(1)
+    f = F.conv2d(f, k.view(1, 1, 1, -1), padding=(0, r))
+    f = F.conv2d(f, k.view(1, 1, -1, 1), padding=(r, 0))
+    return f[:, 0]
 BODY_POINTS = (P_HEAD, P_MID, P_TAIL)
 
 
@@ -448,13 +464,18 @@ class World:
 
     # -------------------------------------------------------------- sensing
 
-    def _probe_food(self, pts: Tensor) -> Tensor:
-        """Food + pellet sampled at the point reflection of every sample point. Probe only."""
-        x, y = pts[..., 0], pts[..., 1]
-        mirrored = torch.stack((self.W - 1 - x, self.H - 1 - y), dim=-1)
-        ch = self.ch
-        s = sample_bilinear(self.fields[:, ch.FOOD : ch.PELLET + 1].contiguous(), mirrored)
-        return (s[:, 0] + s[:, 1]).reshape(self.n_worlds, self.n_swarms, self.n_weys, N_POINTS)
+    def _sensed_food(self, pts: Tensor) -> Tensor:
+        """Food + pellet as sensed: blurred into odour if food_odour_sigma > 0, and read at the
+        point reflection of every sample point under the "mirrored" probe."""
+        wcfg, ch = self.cfg.world, self.ch
+        field = self.fields[:, ch.FOOD] + self.fields[:, ch.PELLET]
+        if wcfg.food_odour_sigma > 0:
+            field = gaussian_blur(field, wcfg.food_odour_sigma)
+        if wcfg.food_probe == "mirrored":
+            x, y = pts[..., 0], pts[..., 1]
+            pts = torch.stack((self.W - 1 - x, self.H - 1 - y), dim=-1)
+        s = sample_bilinear(field.unsqueeze(1).contiguous(), pts)
+        return s[:, 0].reshape(self.n_worlds, self.n_swarms, self.n_weys, N_POINTS)
 
     def _sensor_signals(self, sampled: Tensor) -> dict[str, Tensor]:
         """`sampled` is [worlds, channels, swarms, weys, N_POINTS]; returns named signals
@@ -466,10 +487,10 @@ class World:
         def at(channel, point):
             return sampled[:, channel, :, :, point]
 
-        if wcfg.food_probe == "mirrored":
-            food = self._food_sample
-        elif wcfg.food_probe == "constant":
+        if wcfg.food_probe == "constant":
             food = self._food_constant.view(-1, 1, 1, 1).expand_as(sampled[:, ch.FOOD])
+        elif self._food_sample is not None:  # odour, or the mirrored probe
+            food = self._food_sample
         else:
             food = sampled[:, ch.FOOD] + sampled[:, ch.PELLET]
         if wcfg.food_sensing == "mono":
@@ -544,7 +565,9 @@ class World:
         sampled = sample_bilinear(self.fields, pts).reshape(
             self.n_worlds, self.ch.n, self.n_swarms, self.n_weys, N_POINTS
         )
-        self._food_sample = self._probe_food(pts) if wcfg.food_probe == "mirrored" else None
+        needs_field = wcfg.food_probe == "mirrored" or (
+            wcfg.food_odour_sigma > 0 and wcfg.food_probe != "constant")
+        self._food_sample = self._sensed_food(pts) if needs_field else None
         signals = self._sensor_signals(sampled)
         current = self._build_current(signals)
 

@@ -83,7 +83,7 @@ def test_mirrored_probe_reads_the_point_reflection(parts):
     for _ in range(5):
         w.tick()
     pts = w.sample_points()
-    w._food_sample = w._probe_food(pts)
+    w._food_sample = w._sensed_food(pts)
     sampled, sig = signals_now(w)
     x, y = pts[..., 0], pts[..., 1]
     mirrored = torch.stack((w.W - 1 - x, w.H - 1 - y), dim=-1)

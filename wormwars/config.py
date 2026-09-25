@@ -122,6 +122,10 @@ class WorldConfig:
     # world's mean food level at tick 0, identical everywhere. "mirrored": the food field sampled
     # at the point reflection of the true sample point (same distribution, unrelated location).
     food_probe: str = "real"
+    # Food odour: if > 0, the sensed food signal is a Gaussian blur (this sigma, in cells) of the
+    # food + pellet field, recomputed every tick, so a gradient reaches beyond a patch's edge.
+    # 0 senses the field directly, as every earlier experiment did (no signal beyond a patch).
+    food_odour_sigma: float = 0.0
 
 
 @dataclass
