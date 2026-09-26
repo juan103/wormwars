@@ -6,7 +6,9 @@ measurements (`runs/exp03/measures/`, git-ignored), so the tables can be checked
 - the mean common-mode turn response at M0;
 - the calibrated gains, the calibration target, and the independent calibration validation.
 
-Usage: py -3.13 experiments/03-generation0/supplement.py  → writes supplement.json next to it.
+Usage: py -3.13 experiments/03-generation0/supplement.py [--instance 03r]
+→ writes supplement.json in that instance's experiment directory (03r registers it as a
+secondary, descriptive output).
 """
 
 from __future__ import annotations
@@ -16,9 +18,14 @@ from pathlib import Path
 
 import numpy as np
 
-EXP = Path(__file__).parent
-MEASURES = EXP.parents[1] / "runs" / "exp03" / "measures"
-N2_AND_VARIANTS = ("N2", "N2-rev", "N2perm1", "N2perm2", "N2perm3")
+import argparse
+
+ROOT = Path(__file__).parents[2]
+INSTANCES = {"03": (ROOT / "experiments" / "03-generation0", ROOT / "runs" / "exp03" / "measures",
+                    ("N2", "N2-rev", "N2perm1", "N2perm2", "N2perm3")),
+             "03r": (ROOT / "experiments" / "03r-replication", ROOT / "runs" / "exp03r" / "measures",
+                     ("N2", "N2-rev", "N2perm4", "N2perm5", "N2perm6"))}
+EXP, MEASURES, N2_AND_VARIANTS = INSTANCES["03"]
 
 
 def per_graph(m: dict) -> dict:
@@ -54,6 +61,10 @@ def summarise(rows: dict, names: list) -> dict:
 
 
 def main() -> None:
+    global EXP, MEASURES, N2_AND_VARIANTS
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--instance", choices=sorted(INSTANCES), default="03")
+    EXP, MEASURES, N2_AND_VARIANTS = INSTANCES[ap.parse_args().instance]
     ens = json.loads((EXP / "ensembles.json").read_text(encoding="utf-8"))
     by_kind: dict[str, list] = {}
     for g in ens["graphs"]:
