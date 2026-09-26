@@ -1512,3 +1512,6 @@ before it was adopted:
   ensembles with 0-1 valid graphs were still dropped, and that a valid N2 could then be reported
   as invalid (both reproduced). Those rows are now kept, with undefined statistics marked
   unavailable. Tested; 03's report is unchanged.
+- **Astra's second final check** (`docs/reviews/20260926-234038-03r-prereg-final2/`): both issues
+  resolved, 34 tests passed, no new issues, "ready to bind". Fable had already judged it ready.
+  The owner gave the go for the GPU, and the run starts from the next commit, which is binding.
