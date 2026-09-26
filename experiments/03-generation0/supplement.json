@@ -1,36 +1,65 @@
 {
- "note": "Exploratory (\u00a711). Per-graph quantities behind RESULTS.md's exploratory tables.",
+ "note": "Exploratory (03 \u00a711). Per-graph quantities behind RESULTS.md's exploratory tables.",
+ "floor": 0.0001,
+ "missing": [],
+ "calibration_failed": [],
  "summary": {
   "SH": {
    "P4_turn_numerator": {
+    "n": 128,
     "q05": 0.01123735970368216,
     "median": 0.018985075547789165,
     "q95": 0.03391872620231878,
     "max": 0.04150077833401156
    },
    "P4_turn_denominator": {
+    "n": 128,
     "q05": 0.01373107138474552,
     "median": 0.024696999473690084,
     "q95": 0.04984592638893445,
     "max": 0.07055348905487335
    },
-   "common_turn_M0": {
-    "q05": 0.003129795731225045,
-    "median": 0.005893162059332724,
-    "q95": 0.01297731304544612,
-    "max": 0.019355820294072144
+   "P4_turn": {
+    "n": 128,
+    "q05": 0.6040828249241694,
+    "median": 0.7594647771613204,
+    "q95": 0.8527871494448317,
+    "max": 0.8886091313095535
    },
    "P4_forward": {
+    "n": 128,
     "q05": 0.6173733032278147,
     "median": 0.7142625497794164,
     "q95": 0.813964897672941,
     "max": 0.8346385059323957
    },
+   "common_turn_M0": {
+    "n": 128,
+    "q05": 0.003129795731225045,
+    "median": 0.005893162059332724,
+    "q95": 0.01297731304544612,
+    "max": 0.019355820294072144
+   },
+   "forward_gain": {
+    "n": 128,
+    "q05": 4.180079218134348,
+    "median": 4.703396297830744,
+    "q95": 5.1188407095787865,
+    "max": 5.537239267238973
+   },
    "turn_gain": {
+    "n": 128,
     "q05": 2.7405163371283794,
     "median": 3.035381076311338,
     "q95": 3.3081655232330305,
     "max": 3.5683903753735984
+   },
+   "validation_max_rel_deviation": {
+    "n": 8,
+    "q05": 0.011395573611371161,
+    "median": 0.04197299163788559,
+    "q95": 0.06712422651704392,
+    "max": 0.07387150963768352
    },
    "graphs_at_or_above_on_P4_forward": {
     "N2": 0,
@@ -42,34 +71,60 @@
   },
   "SH-route": {
    "P4_turn_numerator": {
+    "n": 128,
     "q05": 0.009569085862358407,
     "median": 0.015389918910159395,
     "q95": 0.02762982500266844,
     "max": 0.036631853523431346
    },
    "P4_turn_denominator": {
+    "n": 128,
     "q05": 0.01139043079201656,
     "median": 0.018142653343602433,
     "q95": 0.03391711700969608,
     "max": 0.047799926706829865
    },
-   "common_turn_M0": {
-    "q05": 0.0024598286771885113,
-    "median": 0.004008362964640355,
-    "q95": 0.007537183614719821,
-    "max": 0.011438098654832628
+   "P4_turn": {
+    "n": 128,
+    "q05": 0.7861652464200748,
+    "median": 0.8476548107174507,
+    "q95": 0.9038427818219121,
+    "max": 0.9336971671486191
    },
    "P4_forward": {
+    "n": 128,
     "q05": 0.767146886475942,
     "median": 0.8257689103621881,
     "q95": 0.8721843050667861,
     "max": 0.9043215277013499
    },
+   "common_turn_M0": {
+    "n": 128,
+    "q05": 0.0024598286771885113,
+    "median": 0.004008362964640355,
+    "q95": 0.007537183614719821,
+    "max": 0.011438098654832628
+   },
+   "forward_gain": {
+    "n": 128,
+    "q05": 4.1807348421970865,
+    "median": 4.612838275511293,
+    "q95": 5.102512269649453,
+    "max": 5.282571580239314
+   },
    "turn_gain": {
+    "n": 128,
     "q05": 2.77275022997995,
     "median": 2.9872975611132517,
     "q95": 3.404153650611517,
     "max": 3.7616126651652078
+   },
+   "validation_max_rel_deviation": {
+    "n": 8,
+    "q05": 0.00871976676862683,
+    "median": 0.019262705603614386,
+    "q95": 0.042957268264144734,
+    "max": 0.04423555955290803
    },
    "graphs_at_or_above_on_P4_forward": {
     "N2": 1,
@@ -81,34 +136,60 @@
   },
   "SH-class": {
    "P4_turn_numerator": {
+    "n": 128,
     "q05": 0.012012275537176719,
     "median": 0.018847946485038847,
     "q95": 0.03357070507161096,
     "max": 0.0633117526353999
    },
    "P4_turn_denominator": {
+    "n": 128,
     "q05": 0.014485364397205557,
     "median": 0.022099732969309116,
     "q95": 0.04384258891666377,
     "max": 0.07317342492115131
    },
-   "common_turn_M0": {
-    "q05": 0.0031812443296416856,
-    "median": 0.005065441410948779,
-    "q95": 0.010180961215934585,
-    "max": 0.01834683930493384
+   "P4_turn": {
+    "n": 128,
+    "q05": 0.7351040443330144,
+    "median": 0.8270914083908721,
+    "q95": 0.8863247049099702,
+    "max": 0.9067794809558922
    },
    "P4_forward": {
+    "n": 128,
     "q05": 0.6270457193864596,
     "median": 0.7373314719380992,
     "q95": 0.8179824821976406,
     "max": 0.8656339852992407
    },
+   "common_turn_M0": {
+    "n": 128,
+    "q05": 0.0031812443296416856,
+    "median": 0.005065441410948779,
+    "q95": 0.010180961215934585,
+    "max": 0.01834683930493384
+   },
+   "forward_gain": {
+    "n": 128,
+    "q05": 4.2117909946789025,
+    "median": 4.6461760367433556,
+    "q95": 5.0888103359456,
+    "max": 5.462637214013783
+   },
    "turn_gain": {
+    "n": 128,
     "q05": 2.7423124310335907,
     "median": 3.014004303869859,
     "q95": 3.295211066938443,
     "max": 3.7751646219976034
+   },
+   "validation_max_rel_deviation": {
+    "n": 8,
+    "q05": 0.0041074191592632954,
+    "median": 0.025176066905260086,
+    "q95": 0.05960253375582394,
+    "max": 0.062161992304027025
    },
    "graphs_at_or_above_on_P4_forward": {
     "N2": 0,
@@ -120,34 +201,60 @@
   },
   "SH-mirror": {
    "P4_turn_numerator": {
+    "n": 128,
     "q05": 0.011726956797633647,
     "median": 0.018151821453557204,
     "q95": 0.029268608526626844,
     "max": 0.04474540748742584
    },
    "P4_turn_denominator": {
+    "n": 128,
     "q05": 0.013502771557000415,
     "median": 0.02204280485284471,
     "q95": 0.036754075833277965,
     "max": 0.053610932278388645
    },
-   "common_turn_M0": {
-    "q05": 0.0028969080060022635,
-    "median": 0.004988432246058494,
-    "q95": 0.008960092402350026,
-    "max": 0.013992316549638418
+   "P4_turn": {
+    "n": 128,
+    "q05": 0.7818928533100259,
+    "median": 0.8422883815076774,
+    "q95": 0.8973076367032377,
+    "max": 0.9153496666351763
    },
    "P4_forward": {
+    "n": 128,
     "q05": 0.7703607999992999,
     "median": 0.8318324099816637,
     "q95": 0.8799608984493212,
     "max": 0.903062331498067
    },
+   "common_turn_M0": {
+    "n": 128,
+    "q05": 0.0028969080060022635,
+    "median": 0.004988432246058494,
+    "q95": 0.008960092402350026,
+    "max": 0.013992316549638418
+   },
+   "forward_gain": {
+    "n": 128,
+    "q05": 4.145174317795084,
+    "median": 4.609269564464796,
+    "q95": 5.15203755007675,
+    "max": 5.660117960144127
+   },
    "turn_gain": {
+    "n": 128,
     "q05": 2.6649577111670566,
     "median": 2.957134553152634,
     "q95": 3.3236216210688867,
     "max": 3.608761204889414
+   },
+   "validation_max_rel_deviation": {
+    "n": 8,
+    "q05": 0.011207763012498602,
+    "median": 0.025277670100331273,
+    "q95": 0.04185970125254246,
+    "max": 0.04864378832280636
    },
    "graphs_at_or_above_on_P4_forward": {
     "N2": 2,
@@ -159,34 +266,60 @@
   },
   "SH-recip": {
    "P4_turn_numerator": {
+    "n": 128,
     "q05": 0.011425310468212047,
     "median": 0.019160555954840675,
     "q95": 0.035049154252828875,
     "max": 0.05172770228546142
    },
    "P4_turn_denominator": {
+    "n": 128,
     "q05": 0.014336381641351181,
     "median": 0.02567335416779315,
     "q95": 0.05153757614989443,
     "max": 0.07213159018647275
    },
-   "common_turn_M0": {
-    "q05": 0.003326248153069429,
-    "median": 0.006171934853971095,
-    "q95": 0.013812267823920752,
-    "max": 0.019706020287515003
+   "P4_turn": {
+    "n": 128,
+    "q05": 0.6417887645023576,
+    "median": 0.7604092818302042,
+    "q95": 0.8666360949349196,
+    "max": 0.8999918568898626
    },
    "P4_forward": {
+    "n": 128,
     "q05": 0.6109576113393911,
     "median": 0.7208609451375954,
     "q95": 0.8182024975886993,
     "max": 0.8567050899562138
    },
+   "common_turn_M0": {
+    "n": 128,
+    "q05": 0.003326248153069429,
+    "median": 0.006171934853971095,
+    "q95": 0.013812267823920752,
+    "max": 0.019706020287515003
+   },
+   "forward_gain": {
+    "n": 128,
+    "q05": 4.217340095179157,
+    "median": 4.663219625427149,
+    "q95": 5.125737898891786,
+    "max": 5.7173089939463155
+   },
    "turn_gain": {
+    "n": 128,
     "q05": 2.7221725044424634,
     "median": 3.0177819212540893,
     "q95": 3.401465960936817,
     "max": 3.7570147799078475
+   },
+   "validation_max_rel_deviation": {
+    "n": 8,
+    "q05": 0.020541909453459156,
+    "median": 0.030088412482291424,
+    "q95": 0.04867702343035482,
+    "max": 0.05060464562848199
    },
    "graphs_at_or_above_on_P4_forward": {
     "N2": 0,
@@ -196,52 +329,6 @@
     "N2perm3": 0
    }
   }
- },
- "calibration_validation": {
-  "graphs_validated": [
-   "N2",
-   "SH-10000",
-   "SH-10001",
-   "SH-10002",
-   "SH-10003",
-   "SH-10004",
-   "SH-10005",
-   "SH-10006",
-   "SH-10007",
-   "SH-class-30000",
-   "SH-class-30001",
-   "SH-class-30002",
-   "SH-class-30003",
-   "SH-class-30004",
-   "SH-class-30005",
-   "SH-class-30006",
-   "SH-class-30007",
-   "SH-mirror-40000",
-   "SH-mirror-40001",
-   "SH-mirror-40002",
-   "SH-mirror-40003",
-   "SH-mirror-40004",
-   "SH-mirror-40005",
-   "SH-mirror-40006",
-   "SH-mirror-40007",
-   "SH-recip-50000",
-   "SH-recip-50001",
-   "SH-recip-50002",
-   "SH-recip-50003",
-   "SH-recip-50004",
-   "SH-recip-50005",
-   "SH-recip-50006",
-   "SH-recip-50007",
-   "SH-route-20000",
-   "SH-route-20001",
-   "SH-route-20002",
-   "SH-route-20003",
-   "SH-route-20004",
-   "SH-route-20005",
-   "SH-route-20006",
-   "SH-route-20007"
-  ],
-  "max_relative_deviation_from_target": 0.07387150963768352
  },
  "per_graph": {
   "N2": {
@@ -265,7 +352,8 @@
    "calibration_validation": [
     0.5007536800578236,
     0.41080672312527894
-   ]
+   ],
+   "validation_max_rel_deviation": 0.02701680781319729
   },
   "N2-rev": {
    "P4_turn_numerator": 0.0003563660893632914,
@@ -285,7 +373,8 @@
     0.4930747378617525,
     0.3983949048444629
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "N2perm1": {
    "P4_turn_numerator": 0.07634882222191663,
@@ -305,7 +394,8 @@
     0.4963252630084753,
     0.39921558909118177
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "N2perm2": {
    "P4_turn_numerator": 0.029158979657040618,
@@ -325,7 +415,8 @@
     0.4941668840125203,
     0.39857161045074463
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "N2perm3": {
    "P4_turn_numerator": 0.015425343256538326,
@@ -345,7 +436,8 @@
     0.4970095857977867,
     0.3990460382774472
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10000": {
    "P4_turn_numerator": 0.020011386678561394,
@@ -368,7 +460,8 @@
    "calibration_validation": [
     0.4761449549347162,
     0.4023265505209565
-   ]
+   ],
+   "validation_max_rel_deviation": 0.047710090130567595
   },
   "SH-10001": {
    "P4_turn_numerator": 0.007632687709701713,
@@ -391,7 +484,8 @@
    "calibration_validation": [
     0.4859459441155195,
     0.38046775609254835
-   ]
+   ],
+   "validation_max_rel_deviation": 0.048830609768629185
   },
   "SH-10002": {
    "P4_turn_numerator": 0.014589297607017215,
@@ -414,7 +508,8 @@
    "calibration_validation": [
     0.49876680597662926,
     0.42954860385507343
-   ]
+   ],
+   "validation_max_rel_deviation": 0.07387150963768352
   },
   "SH-10003": {
    "P4_turn_numerator": 0.020019837362269755,
@@ -437,7 +532,8 @@
    "calibration_validation": [
     0.47270322106778623,
     0.40834936294704677
-   ]
+   ],
+   "validation_max_rel_deviation": 0.054593557864427544
   },
   "SH-10004": {
    "P4_turn_numerator": 0.023272332620763336,
@@ -460,7 +556,8 @@
    "calibration_validation": [
     0.5181179465726018,
     0.3998866379261017
-   ]
+   ],
+   "validation_max_rel_deviation": 0.03623589314520359
   },
   "SH-10005": {
    "P4_turn_numerator": 0.017301982319622766,
@@ -483,7 +580,8 @@
    "calibration_validation": [
     0.49481279458850624,
     0.4003778425976634
-   ]
+   ],
+   "validation_max_rel_deviation": 0.010374410822987512
   },
   "SH-10006": {
    "P4_turn_numerator": 0.01830160313693341,
@@ -506,7 +604,8 @@
    "calibration_validation": [
     0.4880256149917841,
     0.4123885501176119
-   ]
+   ],
+   "validation_max_rel_deviation": 0.030971375294029657
   },
   "SH-10007": {
    "P4_turn_numerator": 0.015735311700154853,
@@ -529,7 +628,8 @@
    "calibration_validation": [
     0.4952506011351943,
     0.4053168075159192
-   ]
+   ],
+   "validation_max_rel_deviation": 0.013292018789797938
   },
   "SH-10008": {
    "P4_turn_numerator": 0.009004380194710393,
@@ -549,7 +649,8 @@
     0.4953984240069985,
     0.3992031244561076
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10009": {
    "P4_turn_numerator": 0.020493515111411398,
@@ -569,7 +670,8 @@
     0.49641902800649407,
     0.398953727632761
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10010": {
    "P4_turn_numerator": 0.022333115116452973,
@@ -589,7 +691,8 @@
     0.49637691732496025,
     0.3989857263863087
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10011": {
    "P4_turn_numerator": 0.03822392183064949,
@@ -609,7 +712,8 @@
     0.4949457854032516,
     0.3993526831269264
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10012": {
    "P4_turn_numerator": 0.009624034380067314,
@@ -629,7 +733,8 @@
     0.49676392767578365,
     0.3987152762711048
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10013": {
    "P4_turn_numerator": 0.019554963767404843,
@@ -649,7 +754,8 @@
     0.49474777150899174,
     0.3984934527426958
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10014": {
    "P4_turn_numerator": 0.011971842691309575,
@@ -669,7 +775,8 @@
     0.499166102334857,
     0.39856354892253876
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10015": {
    "P4_turn_numerator": 0.018273240355483722,
@@ -689,7 +796,8 @@
     0.4961330657824874,
     0.3990511458367109
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10016": {
    "P4_turn_numerator": 0.016095112709990644,
@@ -709,7 +817,8 @@
     0.4945126326754689,
     0.39904005769640205
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10017": {
    "P4_turn_numerator": 0.020721922592201736,
@@ -729,7 +838,8 @@
     0.4956213068217039,
     0.39896064419299365
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10018": {
    "P4_turn_numerator": 0.01506359664563206,
@@ -749,7 +859,8 @@
     0.4959005469456315,
     0.39866381231695414
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10019": {
    "P4_turn_numerator": 0.016039412730606273,
@@ -769,7 +880,8 @@
     0.49583947416394947,
     0.3992471328005195
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10020": {
    "P4_turn_numerator": 0.010621536653161456,
@@ -789,7 +901,8 @@
     0.4940500957891345,
     0.3993036814033985
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10021": {
    "P4_turn_numerator": 0.02231007806767593,
@@ -809,7 +922,8 @@
     0.49336512107402086,
     0.3987288847565651
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10022": {
    "P4_turn_numerator": 0.016565013776926207,
@@ -829,7 +943,8 @@
     0.49668737817555664,
     0.3990109583362937
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10023": {
    "P4_turn_numerator": 0.01433562385955156,
@@ -849,7 +964,8 @@
     0.4990327421575785,
     0.39852547124028204
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10024": {
    "P4_turn_numerator": 0.01829127826840704,
@@ -869,7 +985,8 @@
     0.49389064945280553,
     0.39258663412183525
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10025": {
    "P4_turn_numerator": 0.03152788741135737,
@@ -889,7 +1006,8 @@
     0.4958574974909425,
     0.3988716933876276
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10026": {
    "P4_turn_numerator": 0.02090131592376565,
@@ -909,7 +1027,8 @@
     0.49677783343940973,
     0.39902710951864717
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10027": {
    "P4_turn_numerator": 0.034997470715097734,
@@ -929,7 +1048,8 @@
     0.49407446179538966,
     0.39899268504232166
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10028": {
    "P4_turn_numerator": 0.02722861470783755,
@@ -949,7 +1069,8 @@
     0.49431138429790733,
     0.39887488428503276
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10029": {
    "P4_turn_numerator": 0.017801286187022924,
@@ -969,7 +1090,8 @@
     0.4961356272920966,
     0.3991361457854509
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10030": {
    "P4_turn_numerator": 0.012384556529468682,
@@ -989,7 +1111,8 @@
     0.49668010175228117,
     0.3989447422325611
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10031": {
    "P4_turn_numerator": 0.015056444438414474,
@@ -1009,7 +1132,8 @@
     0.49471940752118826,
     0.39912561550736425
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10032": {
    "P4_turn_numerator": 0.024751449035647966,
@@ -1029,7 +1153,8 @@
     0.4960196502506733,
     0.3987872965633869
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10033": {
    "P4_turn_numerator": 0.03968579528554983,
@@ -1049,7 +1174,8 @@
     0.4947072708979249,
     0.39917233530431984
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10034": {
    "P4_turn_numerator": 0.013399709137047466,
@@ -1069,7 +1195,8 @@
     0.4956361556425691,
     0.3983438599854708
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10035": {
    "P4_turn_numerator": 0.02782823480629304,
@@ -1089,7 +1216,8 @@
     0.49559775087982416,
     0.39906665347516534
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10036": {
    "P4_turn_numerator": 0.023875531623161805,
@@ -1109,7 +1237,8 @@
     0.4998205127194524,
     0.3986594514921308
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10037": {
    "P4_turn_numerator": 0.018911052839030162,
@@ -1129,7 +1258,8 @@
     0.4971014779061079,
     0.3992744768038392
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10038": {
    "P4_turn_numerator": 0.019949803019699175,
@@ -1149,7 +1279,8 @@
     0.49796343836933377,
     0.3988834109157324
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10039": {
    "P4_turn_numerator": 0.01346793183029149,
@@ -1169,7 +1300,8 @@
     0.4961192453280091,
     0.399031631462276
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10040": {
    "P4_turn_numerator": 0.017383329744006915,
@@ -1189,7 +1321,8 @@
     0.492344300635159,
     0.39212299026548864
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10041": {
    "P4_turn_numerator": 0.016317268389684614,
@@ -1209,7 +1342,8 @@
     0.4952934129163623,
     0.3987680582329631
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10042": {
    "P4_turn_numerator": 0.011814056862931466,
@@ -1229,7 +1363,8 @@
     0.49565448574721815,
     0.39916570521891115
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10043": {
    "P4_turn_numerator": 0.02312727780918067,
@@ -1249,7 +1384,8 @@
     0.49865713734179734,
     0.3988914890214801
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10044": {
    "P4_turn_numerator": 0.0205835176338951,
@@ -1269,7 +1405,8 @@
     0.4967193776741624,
     0.39919137116521597
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10045": {
    "P4_turn_numerator": 0.01531500874170888,
@@ -1289,7 +1426,8 @@
     0.4963092176243663,
     0.3992123452946544
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10046": {
    "P4_turn_numerator": 0.017677846334663627,
@@ -1309,7 +1447,8 @@
     0.49469382632523773,
     0.3989270402118564
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10047": {
    "P4_turn_numerator": 0.030931152427001507,
@@ -1329,7 +1468,8 @@
     0.4966985495761037,
     0.3991527194157243
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10048": {
    "P4_turn_numerator": 0.020051872740623367,
@@ -1349,7 +1489,8 @@
     0.4948907781392336,
     0.3990865109488368
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10049": {
    "P4_turn_numerator": 0.015729669576103333,
@@ -1369,7 +1510,8 @@
     0.49619371015578506,
     0.39284291844815017
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10050": {
    "P4_turn_numerator": 0.017113037697527034,
@@ -1389,7 +1531,8 @@
     0.49805255699902773,
     0.3983367681503296
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10051": {
    "P4_turn_numerator": 0.024240894626018417,
@@ -1409,7 +1552,8 @@
     0.4958382438868284,
     0.39948668163269757
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10052": {
    "P4_turn_numerator": 0.018125491941191285,
@@ -1429,7 +1573,8 @@
     0.4974254067987204,
     0.3990590633824468
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10053": {
    "P4_turn_numerator": 0.016839488439472916,
@@ -1449,7 +1594,8 @@
     0.49407028760761024,
     0.39931724052876233
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10054": {
    "P4_turn_numerator": 0.03138042620048509,
@@ -1469,7 +1615,8 @@
     0.4962578574195504,
     0.3989137187600136
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10055": {
    "P4_turn_numerator": 0.015487454263166,
@@ -1489,7 +1636,8 @@
     0.4951587799936533,
     0.3993522500619292
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10056": {
    "P4_turn_numerator": 0.020234694788086927,
@@ -1509,7 +1657,8 @@
     0.49632396157830955,
     0.399177067913115
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10057": {
    "P4_turn_numerator": 0.01269395227154746,
@@ -1529,7 +1678,8 @@
     0.49171242769807577,
     0.3928197268396616
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10058": {
    "P4_turn_numerator": 0.025859732618300768,
@@ -1549,7 +1699,8 @@
     0.4963490480557084,
     0.3992421327158809
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10059": {
    "P4_turn_numerator": 0.010149393532628892,
@@ -1569,7 +1720,8 @@
     0.4975210396572948,
     0.398946568928659
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10060": {
    "P4_turn_numerator": 0.021883468974920106,
@@ -1589,7 +1741,8 @@
     0.4942703142762184,
     0.3991926722228527
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10061": {
    "P4_turn_numerator": 0.011804176232544705,
@@ -1609,7 +1762,8 @@
     0.4955592846497893,
     0.39905261900275946
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10062": {
    "P4_turn_numerator": 0.023369452360384457,
@@ -1629,7 +1783,8 @@
     0.49601962622255086,
     0.39897649362683296
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10063": {
    "P4_turn_numerator": 0.018792628254232113,
@@ -1649,7 +1804,8 @@
     0.4961344555020332,
     0.398607419244945
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10064": {
    "P4_turn_numerator": 0.01986827743530739,
@@ -1669,7 +1825,8 @@
     0.4935625517740846,
     0.39902986902743576
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10065": {
    "P4_turn_numerator": 0.021578513241365727,
@@ -1689,7 +1846,8 @@
     0.49606642220169306,
     0.39918314591050147
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10066": {
    "P4_turn_numerator": 0.019463660818473727,
@@ -1709,7 +1867,8 @@
     0.49597846195101736,
     0.39919193759560584
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10067": {
    "P4_turn_numerator": 0.03426334987216251,
@@ -1729,7 +1888,8 @@
     0.49686634317040446,
     0.3990271635353565
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10068": {
    "P4_turn_numerator": 0.02150594145314244,
@@ -1749,7 +1909,8 @@
     0.4952644484117627,
     0.3988258307799697
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10069": {
    "P4_turn_numerator": 0.02834498393622198,
@@ -1769,7 +1930,8 @@
     0.4947389308363199,
     0.3992280350998044
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10070": {
    "P4_turn_numerator": 0.017067757623408397,
@@ -1789,7 +1951,8 @@
     0.49444121718406675,
     0.3993541097268462
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10071": {
    "P4_turn_numerator": 0.014961406138354505,
@@ -1809,7 +1972,8 @@
     0.49536088909953835,
     0.3989685421809554
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10072": {
    "P4_turn_numerator": 0.02052586465197237,
@@ -1829,7 +1993,8 @@
     0.4953303445130587,
     0.3989789066836238
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10073": {
    "P4_turn_numerator": 0.013086139616461878,
@@ -1849,7 +2014,8 @@
     0.4964636588469148,
     0.3987654494121671
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10074": {
    "P4_turn_numerator": 0.012992405009754293,
@@ -1869,7 +2035,8 @@
     0.496063475497067,
     0.3986195743083954
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10075": {
    "P4_turn_numerator": 0.020987814916225034,
@@ -1889,7 +2056,8 @@
     0.4949458288028836,
     0.39910112898796796
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10076": {
    "P4_turn_numerator": 0.02263376650171267,
@@ -1909,7 +2077,8 @@
     0.4942259881645441,
     0.3988611925393343
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10077": {
    "P4_turn_numerator": 0.024307552908794605,
@@ -1929,7 +2098,8 @@
     0.49567992221564056,
     0.39867244474589825
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10078": {
    "P4_turn_numerator": 0.026347531551436987,
@@ -1949,7 +2119,8 @@
     0.4950363479554653,
     0.39905769396573304
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10079": {
    "P4_turn_numerator": 0.015689847015892155,
@@ -1969,7 +2140,8 @@
     0.49334912896156313,
     0.39924758337438104
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10080": {
    "P4_turn_numerator": 0.021755520506303583,
@@ -1989,7 +2161,8 @@
     0.494665602222085,
     0.39864972084760664
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10081": {
    "P4_turn_numerator": 0.015557103808532702,
@@ -2009,7 +2182,8 @@
     0.4921229129657149,
     0.3929683044552803
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10082": {
    "P4_turn_numerator": 0.025393712557161052,
@@ -2029,7 +2203,8 @@
     0.49500063601881267,
     0.3986854704096913
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10083": {
    "P4_turn_numerator": 0.02038029812683817,
@@ -2049,7 +2224,8 @@
     0.49611378125846384,
     0.39906651712954044
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10084": {
    "P4_turn_numerator": 0.01727051705802296,
@@ -2069,7 +2245,8 @@
     0.4959683636203408,
     0.3986850280314684
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10085": {
    "P4_turn_numerator": 0.01807425541755947,
@@ -2089,7 +2266,8 @@
     0.49609852451831105,
     0.398903096280992
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10086": {
    "P4_turn_numerator": 0.016797278115518566,
@@ -2109,7 +2287,8 @@
     0.4971802905201912,
     0.3989081112667918
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10087": {
    "P4_turn_numerator": 0.024960520953754894,
@@ -2129,7 +2308,8 @@
     0.49542963299900294,
     0.3985699713230133
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10088": {
    "P4_turn_numerator": 0.013162886419195274,
@@ -2149,7 +2329,8 @@
     0.4969227069988847,
     0.3986991561949253
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10089": {
    "P4_turn_numerator": 0.012464392354559095,
@@ -2169,7 +2350,8 @@
     0.4972064685076475,
     0.39900312703102825
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10090": {
    "P4_turn_numerator": 0.017472009326411353,
@@ -2189,7 +2371,8 @@
     0.4958250347524881,
     0.39897281527519224
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10091": {
    "P4_turn_numerator": 0.016142880290317407,
@@ -2209,7 +2392,8 @@
     0.4965215494856238,
     0.3992028769105673
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10092": {
    "P4_turn_numerator": 0.019249330758611904,
@@ -2229,7 +2413,8 @@
     0.4930711371824145,
     0.3988902261480689
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10093": {
    "P4_turn_numerator": 0.014534916377670015,
@@ -2249,7 +2434,8 @@
     0.4945975262671709,
     0.398911465331912
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10094": {
    "P4_turn_numerator": 0.012291697560613102,
@@ -2269,7 +2455,8 @@
     0.4952431505545974,
     0.399181816726923
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10095": {
    "P4_turn_numerator": 0.03819532205307041,
@@ -2289,7 +2476,8 @@
     0.4962573055177927,
     0.3988837955519557
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10096": {
    "P4_turn_numerator": 0.04150077833401156,
@@ -2309,7 +2497,8 @@
     0.4962159851565957,
     0.39931956976652144
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10097": {
    "P4_turn_numerator": 0.02519725806905626,
@@ -2329,7 +2518,8 @@
     0.49616370499134066,
     0.39911084827035664
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10098": {
    "P4_turn_numerator": 0.013835090057909838,
@@ -2349,7 +2539,8 @@
     0.4942987831309438,
     0.39856708105653527
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10099": {
    "P4_turn_numerator": 0.021274209500916186,
@@ -2369,7 +2560,8 @@
     0.49524977821856736,
     0.3936793219298124
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10100": {
    "P4_turn_numerator": 0.02882663649324968,
@@ -2389,7 +2581,8 @@
     0.4953465035185218,
     0.3983264721930027
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10101": {
    "P4_turn_numerator": 0.02957817842525401,
@@ -2409,7 +2602,8 @@
     0.49537616278976204,
     0.3989559359848499
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10102": {
    "P4_turn_numerator": 0.03682869332806149,
@@ -2429,7 +2623,8 @@
     0.4943442353978753,
     0.3991558089852333
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10103": {
    "P4_turn_numerator": 0.024819819680487853,
@@ -2449,7 +2644,8 @@
     0.49670602548867465,
     0.39897257164120675
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10104": {
    "P4_turn_numerator": 0.02207147583067126,
@@ -2469,7 +2665,8 @@
     0.4954385835677385,
     0.3987011779099703
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10105": {
    "P4_turn_numerator": 0.0191928847325471,
@@ -2489,7 +2686,8 @@
     0.495881043933332,
     0.3991699986159801
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10106": {
    "P4_turn_numerator": 0.022290168652943976,
@@ -2509,7 +2707,8 @@
     0.4955109251663089,
     0.39930177945643663
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10107": {
    "P4_turn_numerator": 0.016788997507319436,
@@ -2529,7 +2728,8 @@
     0.49579760525375605,
     0.39892787020653486
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10108": {
    "P4_turn_numerator": 0.016468096534936194,
@@ -2549,7 +2749,8 @@
     0.49484624825417994,
     0.3990268068388104
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10109": {
    "P4_turn_numerator": 0.019112407558168343,
@@ -2569,7 +2770,8 @@
     0.4970857445150614,
     0.3930821234360337
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10110": {
    "P4_turn_numerator": 0.011643264349913807,
@@ -2589,7 +2791,8 @@
     0.494934599660337,
     0.39855273589491846
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10111": {
    "P4_turn_numerator": 0.019434068872214993,
@@ -2609,7 +2812,8 @@
     0.4949373297393322,
     0.39845444075763226
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10112": {
    "P4_turn_numerator": 0.01681624059801834,
@@ -2629,7 +2833,8 @@
     0.496048197709024,
     0.3990793269127607
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10113": {
    "P4_turn_numerator": 0.019592659616137098,
@@ -2649,7 +2854,8 @@
     0.49563370551913977,
     0.39903335366398096
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10114": {
    "P4_turn_numerator": 0.014864495113670273,
@@ -2669,7 +2875,8 @@
     0.49896511193364856,
     0.3988395510241389
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10115": {
    "P4_turn_numerator": 0.022231130785257847,
@@ -2689,7 +2896,8 @@
     0.49708581529557705,
     0.3934953220188618
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10116": {
    "P4_turn_numerator": 0.022593847138523415,
@@ -2709,7 +2917,8 @@
     0.49358592499047516,
     0.3989178417250514
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10117": {
    "P4_turn_numerator": 0.017356313150230562,
@@ -2729,7 +2938,8 @@
     0.4946552300825715,
     0.3993684722110629
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10118": {
    "P4_turn_numerator": 0.012995487290027086,
@@ -2749,7 +2959,8 @@
     0.4951580360531807,
     0.399391869828105
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10119": {
    "P4_turn_numerator": 0.019059098256548168,
@@ -2769,7 +2980,8 @@
     0.490400324575603,
     0.39280908834189177
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10120": {
    "P4_turn_numerator": 0.017488286350271665,
@@ -2789,7 +3001,8 @@
     0.49469114001840353,
     0.39920930881053207
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10121": {
    "P4_turn_numerator": 0.012178212813523714,
@@ -2809,7 +3022,8 @@
     0.49477037228643894,
     0.398898515291512
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10122": {
    "P4_turn_numerator": 0.009415545358024247,
@@ -2829,7 +3043,8 @@
     0.49830108005553486,
     0.3988775234669447
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10123": {
    "P4_turn_numerator": 0.025997589168582635,
@@ -2849,7 +3064,8 @@
     0.492675163410604,
     0.3991541050374508
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10124": {
    "P4_turn_numerator": 0.01927720756339113,
@@ -2869,7 +3085,8 @@
     0.4953063378110528,
     0.39903430715203286
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10125": {
    "P4_turn_numerator": 0.033278710815466184,
@@ -2889,7 +3106,8 @@
     0.49197735376656054,
     0.3927039494737983
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10126": {
    "P4_turn_numerator": 0.01101879566340358,
@@ -2909,7 +3127,8 @@
     0.49491889495402575,
     0.3989156922325492
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-10127": {
    "P4_turn_numerator": 0.015052282380565885,
@@ -2929,7 +3148,8 @@
     0.4901559608057141,
     0.3920300345867872
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20000": {
    "P4_turn_numerator": 0.01580919576008455,
@@ -2952,7 +3172,8 @@
    "calibration_validation": [
     0.4872201668098569,
     0.4057324169203639
-   ]
+   ],
+   "validation_max_rel_deviation": 0.025559666380286172
   },
   "SH-route-20001": {
    "P4_turn_numerator": 0.014363743060130219,
@@ -2975,7 +3196,8 @@
    "calibration_validation": [
     0.49105666354298594,
     0.40809423122555016
-   ]
+   ],
+   "validation_max_rel_deviation": 0.020235578063875354
   },
   "SH-route-20002": {
    "P4_turn_numerator": 0.020151110048573173,
@@ -2998,7 +3220,8 @@
    "calibration_validation": [
     0.5091449165716767,
     0.4017468851059675
-   ]
+   ],
+   "validation_max_rel_deviation": 0.018289833143353418
   },
   "SH-route-20003": {
    "P4_turn_numerator": 0.014376699414242466,
@@ -3021,7 +3244,8 @@
    "calibration_validation": [
     0.497526983730495,
     0.4052154304459691
-   ]
+   ],
+   "validation_max_rel_deviation": 0.013038576114922651
   },
   "SH-route-20004": {
    "P4_turn_numerator": 0.015891228841610427,
@@ -3044,7 +3268,8 @@
    "calibration_validation": [
     0.49659513775259256,
     0.4063947664573789
-   ]
+   ],
+   "validation_max_rel_deviation": 0.015986916143447133
   },
   "SH-route-20005": {
    "P4_turn_numerator": 0.01274558576869822,
@@ -3067,7 +3292,8 @@
    "calibration_validation": [
     0.49680287297815084,
     0.3995041621848941
-   ]
+   ],
+   "validation_max_rel_deviation": 0.006394254043698311
   },
   "SH-route-20006": {
    "P4_turn_numerator": 0.025739121238075313,
@@ -3090,7 +3316,8 @@
    "calibration_validation": [
     0.479708350636065,
     0.3971571743488312
-   ]
+   ],
+   "validation_max_rel_deviation": 0.04058329872787003
   },
   "SH-route-20007": {
    "P4_turn_numerator": 0.014036679078344605,
@@ -3113,7 +3340,8 @@
    "calibration_validation": [
     0.522117779776454,
     0.3963795995339751
-   ]
+   ],
+   "validation_max_rel_deviation": 0.04423555955290803
   },
   "SH-route-20008": {
    "P4_turn_numerator": 0.015180040461928002,
@@ -3133,7 +3361,8 @@
     0.49563046228140595,
     0.39849177077412606
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20009": {
    "P4_turn_numerator": 0.019075854654147406,
@@ -3153,7 +3382,8 @@
     0.4971407227218151,
     0.3987593185156584
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20010": {
    "P4_turn_numerator": 0.02833293023195438,
@@ -3173,7 +3403,8 @@
     0.49550566244870425,
     0.39926740154623985
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20011": {
    "P4_turn_numerator": 0.01680031175874319,
@@ -3193,7 +3424,8 @@
     0.49298510514199734,
     0.393565833196044
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20012": {
    "P4_turn_numerator": 0.01070358445031161,
@@ -3213,7 +3445,8 @@
     0.4976339790970087,
     0.39865636490285394
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20013": {
    "P4_turn_numerator": 0.014174201205150894,
@@ -3233,7 +3466,8 @@
     0.4959078857675195,
     0.39901791922748087
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20014": {
    "P4_turn_numerator": 0.022792359143750218,
@@ -3253,7 +3487,8 @@
     0.4967092016711831,
     0.39900833293795585
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20015": {
    "P4_turn_numerator": 0.01366916734696133,
@@ -3273,7 +3508,8 @@
     0.49480611104518174,
     0.39902976527810097
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20016": {
    "P4_turn_numerator": 0.01850181319332478,
@@ -3293,7 +3529,8 @@
     0.4950382675975561,
     0.3991907613351941
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20017": {
    "P4_turn_numerator": 0.009471279520766984,
@@ -3313,7 +3550,8 @@
     0.4951393870636821,
     0.3990139912813902
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20018": {
    "P4_turn_numerator": 0.01525450674307649,
@@ -3333,7 +3571,8 @@
     0.4966155977919698,
     0.39909998811781405
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20019": {
    "P4_turn_numerator": 0.013498809906195675,
@@ -3353,7 +3592,8 @@
     0.49699404910206796,
     0.39903524052351713
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20020": {
    "P4_turn_numerator": 0.014271343444306694,
@@ -3373,7 +3613,8 @@
     0.4965055797249079,
     0.39942622985690834
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20021": {
    "P4_turn_numerator": 0.015621053330505674,
@@ -3393,7 +3634,8 @@
     0.4975941991433501,
     0.3989617211744189
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20022": {
    "P4_turn_numerator": 0.013751594160567038,
@@ -3413,7 +3655,8 @@
     0.49584319312125447,
     0.3987324140965939
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20023": {
    "P4_turn_numerator": 0.019064935267124383,
@@ -3433,7 +3676,8 @@
     0.4982785752043128,
     0.39874074552208183
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20024": {
    "P4_turn_numerator": 0.014518769499773043,
@@ -3453,7 +3697,8 @@
     0.49437133464962246,
     0.39416717644780874
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20025": {
    "P4_turn_numerator": 0.01239942320080445,
@@ -3473,7 +3718,8 @@
     0.4971570586785674,
     0.3992101773619652
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20026": {
    "P4_turn_numerator": 0.009264686395908939,
@@ -3493,7 +3739,8 @@
     0.49602846074849366,
     0.399074131436646
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20027": {
    "P4_turn_numerator": 0.019643508096123696,
@@ -3513,7 +3760,8 @@
     0.4958054019138217,
     0.39909553788602353
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20028": {
    "P4_turn_numerator": 0.01511552471856703,
@@ -3533,7 +3781,8 @@
     0.49336069393903015,
     0.39915839657187463
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20029": {
    "P4_turn_numerator": 0.033268548833802924,
@@ -3553,7 +3802,8 @@
     0.4952874526381493,
     0.39944550190120937
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20030": {
    "P4_turn_numerator": 0.019500855278238305,
@@ -3573,7 +3823,8 @@
     0.4962696373462677,
     0.3994024502113461
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20031": {
    "P4_turn_numerator": 0.020070954263246676,
@@ -3593,7 +3844,8 @@
     0.4964965019375086,
     0.3989006705582142
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20032": {
    "P4_turn_numerator": 0.010390652694695746,
@@ -3613,7 +3865,8 @@
     0.49023512098938227,
     0.392115855589509
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20033": {
    "P4_turn_numerator": 0.01589798996155878,
@@ -3633,7 +3886,8 @@
     0.4972385445609689,
     0.3988575542345643
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20034": {
    "P4_turn_numerator": 0.01406890035559627,
@@ -3653,7 +3907,8 @@
     0.4955843143165112,
     0.3990096254274249
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20035": {
    "P4_turn_numerator": 0.019976064781076275,
@@ -3673,7 +3928,8 @@
     0.49531422201544045,
     0.39905132353305817
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20036": {
    "P4_turn_numerator": 0.015027268170342722,
@@ -3693,7 +3949,8 @@
     0.4944369953125715,
     0.39918998125940564
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20037": {
    "P4_turn_numerator": 0.027961051179772767,
@@ -3713,7 +3970,8 @@
     0.49743216317147015,
     0.39864743538200853
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20038": {
    "P4_turn_numerator": 0.013214101142693835,
@@ -3733,7 +3991,8 @@
     0.4956232009455562,
     0.3991077208891511
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20039": {
    "P4_turn_numerator": 0.009641880298659089,
@@ -3753,7 +4012,8 @@
     0.49689711052924396,
     0.3989005036652088
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20040": {
    "P4_turn_numerator": 0.009212184740135854,
@@ -3773,7 +4033,8 @@
     0.49674854464828966,
     0.39916020426899196
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20041": {
    "P4_turn_numerator": 0.01207156961390865,
@@ -3793,7 +4054,8 @@
     0.497246990352869,
     0.39930847864598035
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20042": {
    "P4_turn_numerator": 0.010368327395553933,
@@ -3813,7 +4075,8 @@
     0.4969434723258018,
     0.3988884076476097
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20043": {
    "P4_turn_numerator": 0.01943879976442986,
@@ -3833,7 +4096,8 @@
     0.49484136160463094,
     0.3939296392723918
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20044": {
    "P4_turn_numerator": 0.01030595959537095,
@@ -3853,7 +4117,8 @@
     0.4965294091030955,
     0.39928929712623357
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20045": {
    "P4_turn_numerator": 0.021303341926795838,
@@ -3873,7 +4138,8 @@
     0.4963050907477736,
     0.39867785535752776
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20046": {
    "P4_turn_numerator": 0.030182768912709435,
@@ -3893,7 +4159,8 @@
     0.4945527486503124,
     0.3994174586609006
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20047": {
    "P4_turn_numerator": 0.01046599051096564,
@@ -3913,7 +4180,8 @@
     0.4945789471268654,
     0.398211457580328
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20048": {
    "P4_turn_numerator": 0.012441288951777096,
@@ -3933,7 +4201,8 @@
     0.494634167291224,
     0.39209349546581507
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20049": {
    "P4_turn_numerator": 0.01178131409415073,
@@ -3953,7 +4222,8 @@
     0.4971631921827793,
     0.3990698713809252
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20050": {
    "P4_turn_numerator": 0.009119857808400411,
@@ -3973,7 +4243,8 @@
     0.49668763037770985,
     0.39900918304920197
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20051": {
    "P4_turn_numerator": 0.014875452650812804,
@@ -3993,7 +4264,8 @@
     0.4976079262793064,
     0.3986570892855525
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20052": {
    "P4_turn_numerator": 0.017823825387495162,
@@ -4013,7 +4285,8 @@
     0.49580969028174876,
     0.39942073207348583
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20053": {
    "P4_turn_numerator": 0.02206091428979562,
@@ -4033,7 +4306,8 @@
     0.4960104482248425,
     0.39881767369806764
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20054": {
    "P4_turn_numerator": 0.02015430519440997,
@@ -4053,7 +4327,8 @@
     0.4970980755984783,
     0.3986152457073331
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20055": {
    "P4_turn_numerator": 0.0095298888581965,
@@ -4073,7 +4348,8 @@
     0.49665363784879446,
     0.39907240215688944
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20056": {
    "P4_turn_numerator": 0.01640991314616258,
@@ -4093,7 +4369,8 @@
     0.49603255093097687,
     0.3987794440239668
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20057": {
    "P4_turn_numerator": 0.013427084713839577,
@@ -4113,7 +4390,8 @@
     0.4949051808565855,
     0.3987301420420408
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20058": {
    "P4_turn_numerator": 0.036631853523431346,
@@ -4133,7 +4411,8 @@
     0.49616059474647045,
     0.3993362609297037
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20059": {
    "P4_turn_numerator": 0.011919665092136711,
@@ -4153,7 +4432,8 @@
     0.49525924138724803,
     0.39847251307219267
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20060": {
    "P4_turn_numerator": 0.01582317619204332,
@@ -4173,7 +4453,8 @@
     0.49592842571437357,
     0.3992105942219496
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20061": {
    "P4_turn_numerator": 0.010410277425762615,
@@ -4193,7 +4474,8 @@
     0.49964655432850125,
     0.3989798480644822
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20062": {
    "P4_turn_numerator": 0.021490244260348845,
@@ -4213,7 +4495,8 @@
     0.49533742014318705,
     0.39911242201924324
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20063": {
    "P4_turn_numerator": 0.023598072516506363,
@@ -4233,7 +4516,8 @@
     0.4966780537739396,
     0.39885756000876427
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20064": {
    "P4_turn_numerator": 0.015658230011467822,
@@ -4253,7 +4537,8 @@
     0.4922675620764494,
     0.392287603020668
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20065": {
    "P4_turn_numerator": 0.024576425042141636,
@@ -4273,7 +4558,8 @@
     0.49509976133704187,
     0.3991073828190565
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20066": {
    "P4_turn_numerator": 0.020612831202925008,
@@ -4293,7 +4579,8 @@
     0.49559146650135516,
     0.399316306039691
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20067": {
    "P4_turn_numerator": 0.017649098772380967,
@@ -4313,7 +4600,8 @@
     0.4932971833273768,
     0.3988521324470639
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20068": {
    "P4_turn_numerator": 0.014347578005981632,
@@ -4333,7 +4621,8 @@
     0.49632787313312293,
     0.39897329527884723
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20069": {
    "P4_turn_numerator": 0.012066292376857746,
@@ -4353,7 +4642,8 @@
     0.49467315673828127,
     0.3994295733049512
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20070": {
    "P4_turn_numerator": 0.022371946259227116,
@@ -4373,7 +4663,8 @@
     0.49453615490347147,
     0.3938515391200781
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20071": {
    "P4_turn_numerator": 0.015363602887191519,
@@ -4393,7 +4684,8 @@
     0.4965878492221236,
     0.39917364679276945
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20072": {
    "P4_turn_numerator": 0.0072429241527061095,
@@ -4413,7 +4705,8 @@
     0.4965402275323868,
     0.3987790234386921
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20073": {
    "P4_turn_numerator": 0.025249888911275775,
@@ -4433,7 +4726,8 @@
     0.493935377150774,
     0.3990929611027241
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20074": {
    "P4_turn_numerator": 0.02330005860494566,
@@ -4453,7 +4747,8 @@
     0.4976472109556198,
     0.39323313906788826
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20075": {
    "P4_turn_numerator": 0.015024769512820058,
@@ -4473,7 +4768,8 @@
     0.49637973476201297,
     0.3990883782505989
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20076": {
    "P4_turn_numerator": 0.01384379312639794,
@@ -4493,7 +4789,8 @@
     0.49365931786596773,
     0.3993203818798065
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20077": {
    "P4_turn_numerator": 0.01460739196591021,
@@ -4513,7 +4810,8 @@
     0.49608994778245685,
     0.3988321371376514
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20078": {
    "P4_turn_numerator": 0.010626402941852575,
@@ -4533,7 +4831,8 @@
     0.4942632172256708,
     0.39898358564823866
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20079": {
    "P4_turn_numerator": 0.02372035964981478,
@@ -4553,7 +4852,8 @@
     0.49487710781395433,
     0.39920543134212494
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20080": {
    "P4_turn_numerator": 0.012262499012649641,
@@ -4573,7 +4873,8 @@
     0.49006815515458585,
     0.39344938825815917
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20081": {
    "P4_turn_numerator": 0.011104573444754351,
@@ -4593,7 +4894,8 @@
     0.49624665174633265,
     0.3988753095269203
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20082": {
    "P4_turn_numerator": 0.015607321533025242,
@@ -4613,7 +4915,8 @@
     0.4950275979936123,
     0.3991174345836043
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20083": {
    "P4_turn_numerator": 0.011746639152988791,
@@ -4633,7 +4936,8 @@
     0.4951329557225108,
     0.39905185215175154
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20084": {
    "P4_turn_numerator": 0.020584934000908106,
@@ -4653,7 +4957,8 @@
     0.4962088720872998,
     0.3933729348704219
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20085": {
    "P4_turn_numerator": 0.016467178161292395,
@@ -4673,7 +4978,8 @@
     0.49564255252480505,
     0.398868653178215
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20086": {
    "P4_turn_numerator": 0.019971762931618287,
@@ -4693,7 +4999,8 @@
     0.4981837533414364,
     0.39880229625850916
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20087": {
    "P4_turn_numerator": 0.014365264755724638,
@@ -4713,7 +5020,8 @@
     0.4959169430658221,
     0.39891859497874976
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20088": {
    "P4_turn_numerator": 0.02090273033900303,
@@ -4733,7 +5041,8 @@
     0.49752618186175823,
     0.3987345861271024
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20089": {
    "P4_turn_numerator": 0.028554365246236557,
@@ -4753,7 +5062,8 @@
     0.4965299960225821,
     0.39871395863592624
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20090": {
    "P4_turn_numerator": 0.011552489966561552,
@@ -4773,7 +5083,8 @@
     0.49555114973336456,
     0.39885963685810566
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20091": {
    "P4_turn_numerator": 0.01847946676389256,
@@ -4793,7 +5104,8 @@
     0.49548070002347233,
     0.39861966427415607
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20092": {
    "P4_turn_numerator": 0.012274637675545819,
@@ -4813,7 +5125,8 @@
     0.4966186059638858,
     0.3987191401422024
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20093": {
    "P4_turn_numerator": 0.02119698838396289,
@@ -4833,7 +5146,8 @@
     0.49572739023715257,
     0.3920525871217251
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20094": {
    "P4_turn_numerator": 0.01992003712530277,
@@ -4853,7 +5167,8 @@
     0.49414790235459805,
     0.3988361474126577
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20095": {
    "P4_turn_numerator": 0.02748789972247323,
@@ -4873,7 +5188,8 @@
     0.49522720128297804,
     0.3990420840680599
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20096": {
    "P4_turn_numerator": 0.014746402708624373,
@@ -4893,7 +5209,8 @@
     0.49592291563749313,
     0.39899121299386026
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20097": {
    "P4_turn_numerator": 0.012311521071751486,
@@ -4913,7 +5230,8 @@
     0.49657423999160527,
     0.3989109415560961
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20098": {
    "P4_turn_numerator": 0.014501029560960887,
@@ -4933,7 +5251,8 @@
     0.4970476785674691,
     0.398683044873178
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20099": {
    "P4_turn_numerator": 0.014632639999035746,
@@ -4953,7 +5272,8 @@
     0.49449326395988463,
     0.39247410651296377
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20100": {
    "P4_turn_numerator": 0.014565594665327808,
@@ -4973,7 +5293,8 @@
     0.49691007677465676,
     0.3987638108432293
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20101": {
    "P4_turn_numerator": 0.01591704014572315,
@@ -4993,7 +5314,8 @@
     0.49608197771012785,
     0.39870649203658104
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20102": {
    "P4_turn_numerator": 0.027706246307388938,
@@ -5013,7 +5335,8 @@
     0.4955209031701088,
     0.39908360335975884
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20103": {
    "P4_turn_numerator": 0.01636175305247889,
@@ -5033,7 +5356,8 @@
     0.4936790939420462,
     0.39905293975025413
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20104": {
    "P4_turn_numerator": 0.018057510862490744,
@@ -5053,7 +5377,8 @@
     0.49704941008239983,
     0.39885150343179704
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20105": {
    "P4_turn_numerator": 0.015047262032567232,
@@ -5073,7 +5398,8 @@
     0.49586670827120544,
     0.39929631873965266
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20106": {
    "P4_turn_numerator": 0.017921456058502372,
@@ -5093,7 +5419,8 @@
     0.4926768772304058,
     0.39342855103313923
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20107": {
    "P4_turn_numerator": 0.021868864747375483,
@@ -5113,7 +5440,8 @@
     0.4953144509345293,
     0.3985266499221325
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20108": {
    "P4_turn_numerator": 0.017770597812159394,
@@ -5133,7 +5461,8 @@
     0.49623089991509917,
     0.39881576821208
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20109": {
    "P4_turn_numerator": 0.009925954965183337,
@@ -5153,7 +5482,8 @@
     0.4970696594566107,
     0.3985590681433678
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20110": {
    "P4_turn_numerator": 0.011932241752219852,
@@ -5173,7 +5503,8 @@
     0.49954853262752297,
     0.3986131750047207
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20111": {
    "P4_turn_numerator": 0.012852266886511643,
@@ -5193,7 +5524,8 @@
     0.4924979072064161,
     0.39258558843284846
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20112": {
    "P4_turn_numerator": 0.012234570480359253,
@@ -5213,7 +5545,8 @@
     0.49689112026244403,
     0.39896567184478043
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20113": {
    "P4_turn_numerator": 0.02374581657204544,
@@ -5233,7 +5566,8 @@
     0.4933304017409682,
     0.3929231222718954
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20114": {
    "P4_turn_numerator": 0.011846399941077834,
@@ -5253,7 +5587,8 @@
     0.4948845343664289,
     0.39438639041036366
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20115": {
    "P4_turn_numerator": 0.015059131093039468,
@@ -5273,7 +5608,8 @@
     0.4965749613940716,
     0.3988599168136716
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20116": {
    "P4_turn_numerator": 0.01647057261197915,
@@ -5293,7 +5629,8 @@
     0.4972320506349206,
     0.399198635853827
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20117": {
    "P4_turn_numerator": 0.024744575548538705,
@@ -5313,7 +5650,8 @@
     0.4967596476897597,
     0.39907488897442817
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20118": {
    "P4_turn_numerator": 0.01555192646173964,
@@ -5333,7 +5671,8 @@
     0.4954012928530574,
     0.3993117306381464
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20119": {
    "P4_turn_numerator": 0.011122586411147495,
@@ -5353,7 +5692,8 @@
     0.49611531011760235,
     0.3992761494591832
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20120": {
    "P4_turn_numerator": 0.009154310043413716,
@@ -5373,7 +5713,8 @@
     0.49388410318642856,
     0.39858173839747907
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20121": {
    "P4_turn_numerator": 0.020224032089572574,
@@ -5393,7 +5734,8 @@
     0.49592580143362286,
     0.39884948804974557
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20122": {
    "P4_turn_numerator": 0.017037438495208335,
@@ -5413,7 +5755,8 @@
     0.4900706006214023,
     0.3926723668351769
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20123": {
    "P4_turn_numerator": 0.024261618011223618,
@@ -5433,7 +5776,8 @@
     0.49271662477403877,
     0.3987054508179426
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20124": {
    "P4_turn_numerator": 0.0160172735559172,
@@ -5453,7 +5797,8 @@
     0.4957376059144735,
     0.39925270043313504
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20125": {
    "P4_turn_numerator": 0.01038536078431207,
@@ -5473,7 +5818,8 @@
     0.49517059084028003,
     0.39950541239231824
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20126": {
    "P4_turn_numerator": 0.01541623493312727,
@@ -5493,7 +5839,8 @@
     0.49554051775485275,
     0.399310564249754
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-route-20127": {
    "P4_turn_numerator": 0.025489822883173474,
@@ -5513,7 +5860,8 @@
     0.496460192091763,
     0.39950413126498463
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30000": {
    "P4_turn_numerator": 0.014329461568195256,
@@ -5536,7 +5884,8 @@
    "calibration_validation": [
     0.5073927976191044,
     0.4087134351953864
-   ]
+   ],
+   "validation_max_rel_deviation": 0.021783587988465913
   },
   "SH-class-30001": {
    "P4_turn_numerator": 0.03417880965935183,
@@ -5559,7 +5908,8 @@
    "calibration_validation": [
     0.4725753732025623,
     0.39393372014164924
-   ]
+   ],
+   "validation_max_rel_deviation": 0.05484925359487536
   },
   "SH-class-30002": {
    "P4_turn_numerator": 0.022450702407695644,
@@ -5582,7 +5932,8 @@
    "calibration_validation": [
     0.49919409658759833,
     0.4026493951678276
-   ]
+   ],
+   "validation_max_rel_deviation": 0.00662348791956896
   },
   "SH-class-30003": {
    "P4_turn_numerator": 0.021490298716344114,
@@ -5605,7 +5956,8 @@
    "calibration_validation": [
     0.48611136358231305,
     0.39305140599608424
-   ]
+   ],
+   "validation_max_rel_deviation": 0.0277772728353739
   },
   "SH-class-30004": {
    "P4_turn_numerator": 0.013828015456965659,
@@ -5628,7 +5980,8 @@
    "calibration_validation": [
     0.501376306451857,
     0.3992537876591086
-   ]
+   ],
+   "validation_max_rel_deviation": 0.002752612903714091
   },
   "SH-class-30005": {
    "P4_turn_numerator": 0.014682912858006603,
@@ -5651,7 +6004,8 @@
    "calibration_validation": [
     0.4872458269819617,
     0.42486479692161083
-   ]
+   ],
+   "validation_max_rel_deviation": 0.062161992304027025
   },
   "SH-class-30006": {
    "P4_turn_numerator": 0.020790589791886305,
@@ -5674,7 +6028,8 @@
    "calibration_validation": [
     0.48871256951242686,
     0.4082577215507627
-   ]
+   ],
+   "validation_max_rel_deviation": 0.02257486097514627
   },
   "SH-class-30007": {
    "P4_turn_numerator": 0.022359773398420657,
@@ -5697,7 +6052,8 @@
    "calibration_validation": [
     0.489482082426548,
     0.3853618521243334
-   ]
+   ],
+   "validation_max_rel_deviation": 0.0365953696891666
   },
   "SH-class-30008": {
    "P4_turn_numerator": 0.023377302445624082,
@@ -5717,7 +6073,8 @@
     0.4986490307375789,
     0.39900831077247856
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30009": {
    "P4_turn_numerator": 0.025814891740992607,
@@ -5737,7 +6094,8 @@
     0.49823413547128437,
     0.3986051484942436
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30010": {
    "P4_turn_numerator": 0.017267794447434426,
@@ -5757,7 +6115,8 @@
     0.49455457404255865,
     0.3992857998237014
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30011": {
    "P4_turn_numerator": 0.017212594675584114,
@@ -5777,7 +6136,8 @@
     0.4935554016381502,
     0.39372697807848456
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30012": {
    "P4_turn_numerator": 0.021854174197869725,
@@ -5797,7 +6157,8 @@
     0.4946384523063898,
     0.3993404349312186
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30013": {
    "P4_turn_numerator": 0.01311016588806524,
@@ -5817,7 +6178,8 @@
     0.4970300173386931,
     0.39865400791168215
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30014": {
    "P4_turn_numerator": 0.0315014971229175,
@@ -5837,7 +6199,8 @@
     0.4966862538829446,
     0.39917459040880204
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30015": {
    "P4_turn_numerator": 0.014081460116358357,
@@ -5857,7 +6220,8 @@
     0.4954461965709925,
     0.3990649921819568
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30016": {
    "P4_turn_numerator": 0.01734623420452408,
@@ -5877,7 +6241,8 @@
     0.4955910861492157,
     0.3992768097668886
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30017": {
    "P4_turn_numerator": 0.029124847461389436,
@@ -5897,7 +6262,8 @@
     0.49386450331658127,
     0.39897876866161824
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30018": {
    "P4_turn_numerator": 0.02193442326188233,
@@ -5917,7 +6283,8 @@
     0.49603600427508354,
     0.39934973102062943
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30019": {
    "P4_turn_numerator": 0.02048942617693683,
@@ -5937,7 +6304,8 @@
     0.49572589360177516,
     0.3990966884419322
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30020": {
    "P4_turn_numerator": 0.016278585102554644,
@@ -5957,7 +6325,8 @@
     0.49754426181316375,
     0.3987881863489747
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30021": {
    "P4_turn_numerator": 0.011327409391014953,
@@ -5977,7 +6346,8 @@
     0.4958660578355193,
     0.3988106992095709
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30022": {
    "P4_turn_numerator": 0.017255416106308985,
@@ -5997,7 +6367,8 @@
     0.4923385536298156,
     0.39391185268759726
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30023": {
    "P4_turn_numerator": 0.018351984523178544,
@@ -6017,7 +6388,8 @@
     0.4953746721148491,
     0.3990450596436858
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30024": {
    "P4_turn_numerator": 0.026100289289388456,
@@ -6037,7 +6409,8 @@
     0.49408677909523246,
     0.39930344484746455
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30025": {
    "P4_turn_numerator": 0.017575982999005646,
@@ -6057,7 +6430,8 @@
     0.49615559447556734,
     0.3991028850898147
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30026": {
    "P4_turn_numerator": 0.016641492734379426,
@@ -6077,7 +6451,8 @@
     0.49861723352223636,
     0.39874008763581514
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30027": {
    "P4_turn_numerator": 0.019899425557014183,
@@ -6097,7 +6472,8 @@
     0.4968965075910091,
     0.39899671394377945
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30028": {
    "P4_turn_numerator": 0.01672935786518792,
@@ -6117,7 +6493,8 @@
     0.4971407279372215,
     0.39922353755682705
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30029": {
    "P4_turn_numerator": 0.01537066511264129,
@@ -6137,7 +6514,8 @@
     0.4955053463578224,
     0.3986498346552253
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30030": {
    "P4_turn_numerator": 0.01929036927958805,
@@ -6157,7 +6535,8 @@
     0.49597840160131457,
     0.3985000032931566
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30031": {
    "P4_turn_numerator": 0.030748753685656993,
@@ -6177,7 +6556,8 @@
     0.49667931254953146,
     0.3988898303359747
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30032": {
    "P4_turn_numerator": 0.023603392301993154,
@@ -6197,7 +6577,8 @@
     0.4953058559447527,
     0.3992023032158613
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30033": {
    "P4_turn_numerator": 0.015681172468248405,
@@ -6217,7 +6598,8 @@
     0.4965292979031801,
     0.39915577657520773
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30034": {
    "P4_turn_numerator": 0.018444221377649228,
@@ -6237,7 +6619,8 @@
     0.4966288492083549,
     0.39923563618212937
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30035": {
    "P4_turn_numerator": 0.017113928763137665,
@@ -6257,7 +6640,8 @@
     0.4958025461062789,
     0.39835759680718186
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30036": {
    "P4_turn_numerator": 0.0633117526353999,
@@ -6277,7 +6661,8 @@
     0.49336181823164227,
     0.3932879539206624
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30037": {
    "P4_turn_numerator": 0.015134999266592786,
@@ -6297,7 +6682,8 @@
     0.4943494088947773,
     0.3990765349939466
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30038": {
    "P4_turn_numerator": 0.011762643557631236,
@@ -6317,7 +6703,8 @@
     0.4935881566256285,
     0.39917705208063126
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30039": {
    "P4_turn_numerator": 0.010524220170736953,
@@ -6337,7 +6724,8 @@
     0.4964535336941481,
     0.3989837128669024
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30040": {
    "P4_turn_numerator": 0.013754145802522544,
@@ -6357,7 +6745,8 @@
     0.4977041598409414,
     0.39846020452678205
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30041": {
    "P4_turn_numerator": 0.034077290047662245,
@@ -6377,7 +6766,8 @@
     0.4957294138148427,
     0.3990399155765772
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30042": {
    "P4_turn_numerator": 0.01612550144909619,
@@ -6397,7 +6787,8 @@
     0.49383439850062133,
     0.39908469244837763
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30043": {
    "P4_turn_numerator": 0.025547630531036702,
@@ -6417,7 +6808,8 @@
     0.49168395157903433,
     0.39295804519206284
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30044": {
    "P4_turn_numerator": 0.01557855484816173,
@@ -6437,7 +6829,8 @@
     0.4941991398110986,
     0.39905121121555565
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30045": {
    "P4_turn_numerator": 0.009877989607957716,
@@ -6457,7 +6850,8 @@
     0.4951123591512442,
     0.3991858266294003
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30046": {
    "P4_turn_numerator": 0.03262990440180147,
@@ -6477,7 +6871,8 @@
     0.49447525590658187,
     0.39893679358065126
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30047": {
    "P4_turn_numerator": 0.014131609326796024,
@@ -6497,7 +6892,8 @@
     0.4939494514837861,
     0.39887060690671206
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30048": {
    "P4_turn_numerator": 0.01108720068805269,
@@ -6517,7 +6913,8 @@
     0.49680591095238924,
     0.39944467730820177
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30049": {
    "P4_turn_numerator": 0.014133012481579499,
@@ -6537,7 +6934,8 @@
     0.49713347274810077,
     0.3989107059314847
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30050": {
    "P4_turn_numerator": 0.021073048797006777,
@@ -6557,7 +6955,8 @@
     0.4945343339815736,
     0.39926286730915306
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30051": {
    "P4_turn_numerator": 0.01481785985197348,
@@ -6577,7 +6976,8 @@
     0.495962125249207,
     0.3986649576574564
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30052": {
    "P4_turn_numerator": 0.012872367640738958,
@@ -6597,7 +6997,8 @@
     0.4966055903583765,
     0.39905402436852455
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30053": {
    "P4_turn_numerator": 0.021748497981207038,
@@ -6617,7 +7018,8 @@
     0.49673154968768357,
     0.3991879250854254
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30054": {
    "P4_turn_numerator": 0.016997583727061283,
@@ -6637,7 +7039,8 @@
     0.49508247394114735,
     0.3988686889410019
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30055": {
    "P4_turn_numerator": 0.019770443917877856,
@@ -6657,7 +7060,8 @@
     0.49602573160082103,
     0.3993064984679222
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30056": {
    "P4_turn_numerator": 0.014457058826337743,
@@ -6677,7 +7081,8 @@
     0.4971526823937893,
     0.3986060995608568
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30057": {
    "P4_turn_numerator": 0.01928542989298876,
@@ -6697,7 +7102,8 @@
     0.4954555228352547,
     0.3993761783465743
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30058": {
    "P4_turn_numerator": 0.01599375151181448,
@@ -6717,7 +7123,8 @@
     0.4959649724885821,
     0.3993350096046925
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30059": {
    "P4_turn_numerator": 0.023379728927466203,
@@ -6737,7 +7144,8 @@
     0.49651674516499045,
     0.39907445907592776
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30060": {
    "P4_turn_numerator": 0.0244226411323325,
@@ -6757,7 +7165,8 @@
     0.4946749582886696,
     0.3931611437350512
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30061": {
    "P4_turn_numerator": 0.022419105309836596,
@@ -6777,7 +7186,8 @@
     0.4967562695965171,
     0.3990381944924593
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30062": {
    "P4_turn_numerator": 0.01933534892668831,
@@ -6797,7 +7207,8 @@
     0.4966129636391997,
     0.39912623409181835
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30063": {
    "P4_turn_numerator": 0.023620438149009715,
@@ -6817,7 +7228,8 @@
     0.49614234920591116,
     0.3991491781547666
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30064": {
    "P4_turn_numerator": 0.02102129904415051,
@@ -6837,7 +7249,8 @@
     0.49599689450114964,
     0.3992584774270654
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30065": {
    "P4_turn_numerator": 0.01968284834856604,
@@ -6857,7 +7270,8 @@
     0.495239096134901,
     0.39905906189233065
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30066": {
    "P4_turn_numerator": 0.015565771736874012,
@@ -6877,7 +7291,8 @@
     0.49586658626794816,
     0.39883682653307917
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30067": {
    "P4_turn_numerator": 0.014960952419642126,
@@ -6897,7 +7312,8 @@
     0.4965613275766373,
     0.39851709492504594
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30068": {
    "P4_turn_numerator": 0.01276623338344507,
@@ -6917,7 +7333,8 @@
     0.5024930668994785,
     0.39252063203603027
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30069": {
    "P4_turn_numerator": 0.014127693329101021,
@@ -6937,7 +7354,8 @@
     0.4962945541366935,
     0.39917364846915004
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30070": {
    "P4_turn_numerator": 0.02123110513730353,
@@ -6957,7 +7375,8 @@
     0.49490578602999447,
     0.39921409711241723
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30071": {
    "P4_turn_numerator": 0.027638475698040565,
@@ -6977,7 +7396,8 @@
     0.4931504962965846,
     0.39910577666014435
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30072": {
    "P4_turn_numerator": 0.017600019760720897,
@@ -6997,7 +7417,8 @@
     0.4946967104449868,
     0.39396589044481517
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30073": {
    "P4_turn_numerator": 0.028780721077055205,
@@ -7017,7 +7438,8 @@
     0.49101016726344826,
     0.3924380099400878
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30074": {
    "P4_turn_numerator": 0.012772064868386224,
@@ -7037,7 +7459,8 @@
     0.49655252527445554,
     0.39901127833873035
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30075": {
    "P4_turn_numerator": 0.02868704625780083,
@@ -7057,7 +7480,8 @@
     0.49909452982246877,
     0.39867499079555274
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30076": {
    "P4_turn_numerator": 0.016702740922482917,
@@ -7077,7 +7501,8 @@
     0.4978346634656191,
     0.3986000968143344
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30077": {
    "P4_turn_numerator": 0.016206965354285785,
@@ -7097,7 +7522,8 @@
     0.4931230029091239,
     0.3986416207626462
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30078": {
    "P4_turn_numerator": 0.022847983191240928,
@@ -7117,7 +7543,8 @@
     0.4952945027500391,
     0.3987212894484401
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30079": {
    "P4_turn_numerator": 0.013686651747775613,
@@ -7137,7 +7564,8 @@
     0.49601445347070694,
     0.3989066407084465
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30080": {
    "P4_turn_numerator": 0.018922443151495827,
@@ -7157,7 +7585,8 @@
     0.4903901306912303,
     0.39212692379951475
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30081": {
    "P4_turn_numerator": 0.02467000121851015,
@@ -7177,7 +7606,8 @@
     0.4920213773846626,
     0.3928241470828652
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30082": {
    "P4_turn_numerator": 0.026356070571637247,
@@ -7197,7 +7627,8 @@
     0.49510559495538475,
     0.39837213810533284
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30083": {
    "P4_turn_numerator": 0.012362811683487962,
@@ -7217,7 +7648,8 @@
     0.4977750783786178,
     0.39875524062663315
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30084": {
    "P4_turn_numerator": 0.02415599696996651,
@@ -7237,7 +7669,8 @@
     0.4955944513902068,
     0.3991748383268714
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30085": {
    "P4_turn_numerator": 0.02243068320058228,
@@ -7257,7 +7690,8 @@
     0.4961454575881362,
     0.3985765138641
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30086": {
    "P4_turn_numerator": 0.023900842390503385,
@@ -7277,7 +7711,8 @@
     0.4976956667378545,
     0.39875876288861034
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30087": {
    "P4_turn_numerator": 0.014744290754151734,
@@ -7297,7 +7732,8 @@
     0.4966555478051305,
     0.39923536237329244
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30088": {
    "P4_turn_numerator": 0.030594283592108695,
@@ -7317,7 +7753,8 @@
     0.4966677848249674,
     0.3989342117682099
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30089": {
    "P4_turn_numerator": 0.021079688335703395,
@@ -7337,7 +7774,8 @@
     0.4972343184053898,
     0.39898846819996836
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30090": {
    "P4_turn_numerator": 0.01967857377985638,
@@ -7357,7 +7795,8 @@
     0.49631138537079095,
     0.39913484677672384
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30091": {
    "P4_turn_numerator": 0.022399050341846305,
@@ -7377,7 +7816,8 @@
     0.4903646033257246,
     0.39332529809325933
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30092": {
    "P4_turn_numerator": 0.014970694661315065,
@@ -7397,7 +7837,8 @@
     0.4905822206288576,
     0.39217489045113324
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30093": {
    "P4_turn_numerator": 0.012187481264390954,
@@ -7417,7 +7858,8 @@
     0.49721395745873453,
     0.3990150114521384
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30094": {
    "P4_turn_numerator": 0.021356713424211193,
@@ -7437,7 +7879,8 @@
     0.49356709420681,
     0.3994500655680895
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30095": {
    "P4_turn_numerator": 0.014708410064486088,
@@ -7457,7 +7900,8 @@
     0.49506756402552127,
     0.3994685973972082
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30096": {
    "P4_turn_numerator": 0.01897006975559634,
@@ -7477,7 +7921,8 @@
     0.4944522982463241,
     0.39882822837680576
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30097": {
    "P4_turn_numerator": 0.026936260014736035,
@@ -7497,7 +7942,8 @@
     0.49566942639648914,
     0.3996012806892395
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30098": {
    "P4_turn_numerator": 0.016287488642774406,
@@ -7517,7 +7963,8 @@
     0.49420053493231536,
     0.3992153054103255
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30099": {
    "P4_turn_numerator": 0.05157643825168634,
@@ -7537,7 +7984,8 @@
     0.49500588439404963,
     0.39899356234818695
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30100": {
    "P4_turn_numerator": 0.011276368055405328,
@@ -7557,7 +8005,8 @@
     0.4945803262293339,
     0.3990318825468421
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30101": {
    "P4_turn_numerator": 0.01426061227448372,
@@ -7577,7 +8026,8 @@
     0.4979428300634027,
     0.392522100917995
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30102": {
    "P4_turn_numerator": 0.04033412323042285,
@@ -7597,7 +8047,8 @@
     0.49709324184805154,
     0.3988712614402175
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30103": {
    "P4_turn_numerator": 0.01751446358503017,
@@ -7617,7 +8068,8 @@
     0.4984512334689498,
     0.3985720857977867
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30104": {
    "P4_turn_numerator": 0.01191793399175367,
@@ -7637,7 +8089,8 @@
     0.49521767217665913,
     0.3990348383784294
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30105": {
    "P4_turn_numerator": 0.01649890282897104,
@@ -7657,7 +8110,8 @@
     0.49620097056031226,
     0.39856914468109605
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30106": {
    "P4_turn_numerator": 0.014416320095733681,
@@ -7677,7 +8131,8 @@
     0.49650866352021694,
     0.39901553764939307
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30107": {
    "P4_turn_numerator": 0.029007211108364572,
@@ -7697,7 +8152,8 @@
     0.4954337766394019,
     0.3990610845386982
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30108": {
    "P4_turn_numerator": 0.02521721889206674,
@@ -7717,7 +8173,8 @@
     0.49475533328950405,
     0.398314768075943
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30109": {
    "P4_turn_numerator": 0.019731084225895756,
@@ -7737,7 +8194,8 @@
     0.4908494235947728,
     0.3924273522570729
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30110": {
    "P4_turn_numerator": 0.016744419292081147,
@@ -7757,7 +8215,8 @@
     0.4945872530341148,
     0.39889371749013663
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30111": {
    "P4_turn_numerator": 0.03610194836710434,
@@ -7777,7 +8236,8 @@
     0.49422627240419387,
     0.399119371548295
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30112": {
    "P4_turn_numerator": 0.01793654724406224,
@@ -7797,7 +8257,8 @@
     0.4946223897859454,
     0.3992473969236016
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30113": {
    "P4_turn_numerator": 0.03608751944739197,
@@ -7817,7 +8278,8 @@
     0.4968608355149627,
     0.39921645652502774
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30114": {
    "P4_turn_numerator": 0.023927821303004748,
@@ -7837,7 +8299,8 @@
     0.4953548951074481,
     0.39923985973000525
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30115": {
    "P4_turn_numerator": 0.01619134264456079,
@@ -7857,7 +8320,8 @@
     0.4987334419041872,
     0.3987952770665288
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30116": {
    "P4_turn_numerator": 0.016612853563856333,
@@ -7877,7 +8341,8 @@
     0.49737040176987646,
     0.39856554195284843
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30117": {
    "P4_turn_numerator": 0.021013529297306377,
@@ -7897,7 +8362,8 @@
     0.4983946854248643,
     0.398920489102602
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30118": {
    "P4_turn_numerator": 0.027572790358135535,
@@ -7917,7 +8383,8 @@
     0.4986735574901104,
     0.3989441776648164
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30119": {
    "P4_turn_numerator": 0.01523351922060101,
@@ -7937,7 +8404,8 @@
     0.49535217229276896,
     0.3987906169146299
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30120": {
    "P4_turn_numerator": 0.02855202778118837,
@@ -7957,7 +8425,8 @@
     0.49531655088067056,
     0.39819181710481644
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30121": {
    "P4_turn_numerator": 0.018773449818581867,
@@ -7977,7 +8446,8 @@
     0.4963191030547023,
     0.3989241627976298
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30122": {
    "P4_turn_numerator": 0.01921925355509302,
@@ -7997,7 +8467,8 @@
     0.4955085519701242,
     0.3992097839713097
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30123": {
    "P4_turn_numerator": 0.019111906186481065,
@@ -8017,7 +8488,8 @@
     0.4902921851724386,
     0.3925787877291441
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30124": {
    "P4_turn_numerator": 0.018626081425281882,
@@ -8037,7 +8509,8 @@
     0.49568453095853326,
     0.39862197525799276
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30125": {
    "P4_turn_numerator": 0.017671251433966972,
@@ -8057,7 +8530,8 @@
     0.49513168428093196,
     0.39850705303251743
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30126": {
    "P4_turn_numerator": 0.02446565532045497,
@@ -8077,7 +8551,8 @@
     0.4968921735882759,
     0.3990832569077611
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-class-30127": {
    "P4_turn_numerator": 0.018721574509072525,
@@ -8097,7 +8572,8 @@
     0.4956652956083417,
     0.3992658257484436
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40000": {
    "P4_turn_numerator": 0.027126356303597277,
@@ -8120,7 +8596,8 @@
    "calibration_validation": [
     0.5032434144988656,
     0.39431338794529436
-   ]
+   ],
+   "validation_max_rel_deviation": 0.01421653013676416
   },
   "SH-mirror-40001": {
    "P4_turn_numerator": 0.017439352084238635,
@@ -8143,7 +8620,8 @@
    "calibration_validation": [
     0.5142190888524055,
     0.39020032435655594
-   ]
+   ],
+   "validation_max_rel_deviation": 0.028438177704811052
   },
   "SH-mirror-40002": {
    "P4_turn_numerator": 0.012238253172654368,
@@ -8166,7 +8644,8 @@
    "calibration_validation": [
     0.5040500991046428,
     0.40576628912240265
-   ]
+   ],
+   "validation_max_rel_deviation": 0.014415722806006559
   },
   "SH-mirror-40003": {
    "P4_turn_numerator": 0.02780002026611328,
@@ -8189,7 +8668,8 @@
    "calibration_validation": [
     0.49464843329042196,
     0.38829572703689336
-   ]
+   ],
+   "validation_max_rel_deviation": 0.029260682407766664
   },
   "SH-mirror-40004": {
    "P4_turn_numerator": 0.026529487931838958,
@@ -8212,7 +8692,8 @@
    "calibration_validation": [
     0.4918272735551,
     0.41945751532912257
-   ]
+   ],
+   "validation_max_rel_deviation": 0.04864378832280636
   },
   "SH-mirror-40005": {
    "P4_turn_numerator": 0.025548192180394835,
@@ -8235,7 +8716,8 @@
    "calibration_validation": [
     0.5112952018156648,
     0.403040374815464
-   ]
+   ],
+   "validation_max_rel_deviation": 0.02259040363132958
   },
   "SH-mirror-40006": {
    "P4_turn_numerator": 0.03538902920354303,
@@ -8258,7 +8740,8 @@
    "calibration_validation": [
     0.49820215683430435,
     0.4111859746277332
-   ]
+   ],
+   "validation_max_rel_deviation": 0.027964936569332965
   },
   "SH-mirror-40007": {
    "P4_turn_numerator": 0.02228356946579879,
@@ -8281,7 +8764,8 @@
    "calibration_validation": [
     0.5030474482104182,
     0.40383506305515765
-   ]
+   ],
+   "validation_max_rel_deviation": 0.00958765763789407
   },
   "SH-mirror-40008": {
    "P4_turn_numerator": 0.024283634553285083,
@@ -8301,7 +8785,8 @@
     0.49548656940460206,
     0.39938432797789575
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40009": {
    "P4_turn_numerator": 0.019483108657368575,
@@ -8321,7 +8806,8 @@
     0.495839942060411,
     0.3989504612982273
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40010": {
    "P4_turn_numerator": 0.01497864228895196,
@@ -8341,7 +8827,8 @@
     0.4949475867673755,
     0.39945829939097166
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40011": {
    "P4_turn_numerator": 0.023723348132989486,
@@ -8361,7 +8848,8 @@
     0.4965113591402769,
     0.3940956836566329
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40012": {
    "P4_turn_numerator": 0.019953794180764817,
@@ -8381,7 +8869,8 @@
     0.4970510402694345,
     0.39887872580438855
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40013": {
    "P4_turn_numerator": 0.025089726823352976,
@@ -8401,7 +8890,8 @@
     0.4937540913000703,
     0.3996698359027505
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40014": {
    "P4_turn_numerator": 0.013853691467375029,
@@ -8421,7 +8911,8 @@
     0.4955240599811077,
     0.39877705108374356
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40015": {
    "P4_turn_numerator": 0.012724122530926252,
@@ -8441,7 +8932,8 @@
     0.4907753588631749,
     0.39325017519295213
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40016": {
    "P4_turn_numerator": 0.014424828626943054,
@@ -8461,7 +8953,8 @@
     0.49684619512408973,
     0.39886943604797126
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40017": {
    "P4_turn_numerator": 0.026380279270597384,
@@ -8481,7 +8974,8 @@
     0.4973932534456253,
     0.39432439133524894
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40018": {
    "P4_turn_numerator": 0.01560900262757059,
@@ -8501,7 +8995,8 @@
     0.497076803073287,
     0.39851340036839245
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40019": {
    "P4_turn_numerator": 0.022216316704543715,
@@ -8521,7 +9016,8 @@
     0.49551453106105325,
     0.3992486987262964
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40020": {
    "P4_turn_numerator": 0.01592634068492771,
@@ -8541,7 +9037,8 @@
     0.49001513328403234,
     0.39395600017160176
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40021": {
    "P4_turn_numerator": 0.013348094601496996,
@@ -8561,7 +9058,8 @@
     0.4979826111346483,
     0.3985726907849312
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40022": {
    "P4_turn_numerator": 0.0177929826440959,
@@ -8581,7 +9079,8 @@
     0.49627847913652656,
     0.39924560729414227
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40023": {
    "P4_turn_numerator": 0.015759945880745363,
@@ -8601,7 +9100,8 @@
     0.49610703643411397,
     0.39920920226722956
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40024": {
    "P4_turn_numerator": 0.03264966923779866,
@@ -8621,7 +9121,8 @@
     0.49615094196051357,
     0.39909646194428205
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40025": {
    "P4_turn_numerator": 0.025116166047155275,
@@ -8641,7 +9142,8 @@
     0.49658054653555156,
     0.39939175844192504
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40026": {
    "P4_turn_numerator": 0.017140654575086955,
@@ -8661,7 +9163,8 @@
     0.492110975459218,
     0.39452323615550994
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40027": {
    "P4_turn_numerator": 0.029028577546341694,
@@ -8681,7 +9184,8 @@
     0.4963334549218416,
     0.39384275786578654
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40028": {
    "P4_turn_numerator": 0.019894697770723724,
@@ -8701,7 +9205,8 @@
     0.4961594404652715,
     0.399295019172132
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40029": {
    "P4_turn_numerator": 0.018594990008750756,
@@ -8721,7 +9226,8 @@
     0.4922283962368965,
     0.3922170387580991
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40030": {
    "P4_turn_numerator": 0.017917116806074773,
@@ -8741,7 +9247,8 @@
     0.4980205915868282,
     0.39854754842817786
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40031": {
    "P4_turn_numerator": 0.01293498183167685,
@@ -8761,7 +9268,8 @@
     0.4973991077393293,
     0.3985967693850398
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40032": {
    "P4_turn_numerator": 0.011883591027071816,
@@ -8781,7 +9289,8 @@
     0.4958609567955136,
     0.39885698854923246
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40033": {
    "P4_turn_numerator": 0.04474540748742584,
@@ -8801,7 +9310,8 @@
     0.4955435307696462,
     0.399121112562716
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40034": {
    "P4_turn_numerator": 0.0188775990754948,
@@ -8821,7 +9331,8 @@
     0.4961221253499389,
     0.39914124123752115
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40035": {
    "P4_turn_numerator": 0.0124435406523844,
@@ -8841,7 +9352,8 @@
     0.4951718283817172,
     0.3988335968926549
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40036": {
    "P4_turn_numerator": 0.012961925662239082,
@@ -8861,7 +9373,8 @@
     0.49698962420225146,
     0.3986791085451841
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40037": {
    "P4_turn_numerator": 0.01968240032601898,
@@ -8881,7 +9394,8 @@
     0.4966876287013292,
     0.3983851786702871
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40038": {
    "P4_turn_numerator": 0.016289921511088323,
@@ -8901,7 +9415,8 @@
     0.4954837320372462,
     0.39893036149442196
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40039": {
    "P4_turn_numerator": 0.02518264067475684,
@@ -8921,7 +9436,8 @@
     0.49142222125083207,
     0.39390729535371066
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40040": {
    "P4_turn_numerator": 0.01500219354784349,
@@ -8941,7 +9457,8 @@
     0.4963371666148305,
     0.3992667268961668
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40041": {
    "P4_turn_numerator": 0.012566547921323945,
@@ -8961,7 +9478,8 @@
     0.49616593811661003,
     0.39916459787636993
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40042": {
    "P4_turn_numerator": 0.016544675695513433,
@@ -8981,7 +9499,8 @@
     0.4936502715572715,
     0.39901818707585335
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40043": {
    "P4_turn_numerator": 0.036732698186824564,
@@ -9001,7 +9520,8 @@
     0.49658634178340433,
     0.3989393575116992
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40044": {
    "P4_turn_numerator": 0.015812281607395562,
@@ -9021,7 +9541,8 @@
     0.4969920074567199,
     0.39925272166728976
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40045": {
    "P4_turn_numerator": 0.01796766031657171,
@@ -9041,7 +9562,8 @@
     0.49581662099808455,
     0.39925915375351906
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40046": {
    "P4_turn_numerator": 0.01631955596531043,
@@ -9061,7 +9583,8 @@
     0.49656937550753355,
     0.39909811355173586
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40047": {
    "P4_turn_numerator": 0.013373494278312137,
@@ -9081,7 +9604,8 @@
     0.4928274488076568,
     0.3926531715318561
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40048": {
    "P4_turn_numerator": 0.012731152564811055,
@@ -9101,7 +9625,8 @@
     0.49496588092297317,
     0.39915049709379674
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40049": {
    "P4_turn_numerator": 0.01929855175785633,
@@ -9121,7 +9646,8 @@
     0.4944008270278573,
     0.39921626411378386
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40050": {
    "P4_turn_numerator": 0.014366375780809904,
@@ -9141,7 +9667,8 @@
     0.4943549960851669,
     0.3988810133188963
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40051": {
    "P4_turn_numerator": 0.012760961953063088,
@@ -9161,7 +9688,8 @@
     0.4966274624690413,
     0.3989339565858245
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40052": {
    "P4_turn_numerator": 0.018294746761057468,
@@ -9181,7 +9709,8 @@
     0.4945331720635295,
     0.39900353029370306
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40053": {
    "P4_turn_numerator": 0.015859190453738847,
@@ -9201,7 +9730,8 @@
     0.49517028536647556,
     0.3981372222304344
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40054": {
    "P4_turn_numerator": 0.0195345915371945,
@@ -9221,7 +9751,8 @@
     0.4964766947552562,
     0.39937298055738213
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40055": {
    "P4_turn_numerator": 0.018927890479062626,
@@ -9241,7 +9772,8 @@
     0.49030664619058373,
     0.3948042465373874
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40056": {
    "P4_turn_numerator": 0.018146020822314313,
@@ -9261,7 +9793,8 @@
     0.49704929552972316,
     0.39886698257178066
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40057": {
    "P4_turn_numerator": 0.01721694389652839,
@@ -9281,7 +9814,8 @@
     0.49457509312778714,
     0.3992972580716014
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40058": {
    "P4_turn_numerator": 0.009350199400614656,
@@ -9301,7 +9835,8 @@
     0.49774623606353996,
     0.39812234714627265
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40059": {
    "P4_turn_numerator": 0.02386681745883834,
@@ -9321,7 +9856,8 @@
     0.49754311610013247,
     0.392993950098753
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40060": {
    "P4_turn_numerator": 0.017337856094854942,
@@ -9341,7 +9877,8 @@
     0.4974960658699274,
     0.3989852014929056
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40061": {
    "P4_turn_numerator": 0.02652687241698004,
@@ -9361,7 +9898,8 @@
     0.4907632149755955,
     0.3933472579345107
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40062": {
    "P4_turn_numerator": 0.013951220816124987,
@@ -9381,7 +9919,8 @@
     0.49595311637967826,
     0.3982486229389906
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40063": {
    "P4_turn_numerator": 0.010949629233437008,
@@ -9401,7 +9940,8 @@
     0.4961039716377854,
     0.3984863605350256
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40064": {
    "P4_turn_numerator": 0.02124753695261461,
@@ -9421,7 +9961,8 @@
     0.4913077479228377,
     0.39268106371164324
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40065": {
    "P4_turn_numerator": 0.01800294460645091,
@@ -9441,7 +9982,8 @@
     0.4908927733078599,
     0.3931612132117152
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40066": {
    "P4_turn_numerator": 0.026964592746480776,
@@ -9461,7 +10003,8 @@
     0.4969160854816437,
     0.39918146152049305
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40067": {
    "P4_turn_numerator": 0.01877489148228051,
@@ -9481,7 +10024,8 @@
     0.49460021685808897,
     0.3920963492244482
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40068": {
    "P4_turn_numerator": 0.010246065896353684,
@@ -9501,7 +10045,8 @@
     0.4954445257782936,
     0.399406049400568
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40069": {
    "P4_turn_numerator": 0.010999322157658753,
@@ -9521,7 +10066,8 @@
     0.4935374610126019,
     0.3993066193535924
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40070": {
    "P4_turn_numerator": 0.017274664980504895,
@@ -9541,7 +10087,8 @@
     0.4914892926812172,
     0.3927845923230052
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40071": {
    "P4_turn_numerator": 0.02088741829902574,
@@ -9561,7 +10108,8 @@
     0.4947698462754488,
     0.39871353525668385
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40072": {
    "P4_turn_numerator": 0.01373255886392144,
@@ -9581,7 +10129,8 @@
     0.49392990171909334,
     0.3993232846260071
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40073": {
    "P4_turn_numerator": 0.043068151109764585,
@@ -9601,7 +10150,8 @@
     0.49606046322733166,
     0.3990962453186512
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40074": {
    "P4_turn_numerator": 0.02223897224666871,
@@ -9621,7 +10171,8 @@
     0.4947829494252801,
     0.3991544798016548
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40075": {
    "P4_turn_numerator": 0.017238263912076945,
@@ -9641,7 +10192,8 @@
     0.4955155773088336,
     0.3987244239076972
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40076": {
    "P4_turn_numerator": 0.020266243614969426,
@@ -9661,7 +10213,8 @@
     0.49717345777899025,
     0.39917226545512674
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40077": {
    "P4_turn_numerator": 0.027516534486494493,
@@ -9681,7 +10234,8 @@
     0.4937177188694477,
     0.39902654364705087
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40078": {
    "P4_turn_numerator": 0.023741520344628952,
@@ -9701,7 +10255,8 @@
     0.4966561974957585,
     0.39835449103266
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40079": {
    "P4_turn_numerator": 0.020034348105582467,
@@ -9721,7 +10276,8 @@
     0.4960252298042178,
     0.3988215999677777
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40080": {
    "P4_turn_numerator": 0.012407772252117866,
@@ -9741,7 +10297,8 @@
     0.49426496755331756,
     0.3988713378086686
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40081": {
    "P4_turn_numerator": 0.020798591810489597,
@@ -9761,7 +10318,8 @@
     0.49859886672347786,
     0.3988370046019554
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40082": {
    "P4_turn_numerator": 0.015893283137302205,
@@ -9781,7 +10339,8 @@
     0.4963637238368392,
     0.39889379758387805
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40083": {
    "P4_turn_numerator": 0.011642615289474634,
@@ -9801,7 +10360,8 @@
     0.495113037712872,
     0.39247069619596003
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40084": {
    "P4_turn_numerator": 0.026812392680767516,
@@ -9821,7 +10381,8 @@
     0.49678873736411333,
     0.3992351537570357
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40085": {
    "P4_turn_numerator": 0.015174776773164922,
@@ -9841,7 +10402,8 @@
     0.49663137197494506,
     0.3993929302319884
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40086": {
    "P4_turn_numerator": 0.014980751264374703,
@@ -9861,7 +10423,8 @@
     0.4916808057576418,
     0.3922711793333292
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40087": {
    "P4_turn_numerator": 0.017426910642825533,
@@ -9881,7 +10444,8 @@
     0.4953683327883482,
     0.39910102244466544
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40088": {
    "P4_turn_numerator": 0.018410866539170456,
@@ -9901,7 +10465,8 @@
     0.4924494234845042,
     0.3927608095109463
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40089": {
    "P4_turn_numerator": 0.018157622084800096,
@@ -9921,7 +10486,8 @@
     0.4950325027108192,
     0.39904963281005623
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40090": {
    "P4_turn_numerator": 0.012339770599282929,
@@ -9941,7 +10507,8 @@
     0.4938583685085177,
     0.399171382561326
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40091": {
    "P4_turn_numerator": 0.03725188479256758,
@@ -9961,7 +10528,8 @@
     0.4938907265663147,
     0.39883451256901026
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40092": {
    "P4_turn_numerator": 0.0244006231628191,
@@ -9981,7 +10549,8 @@
     0.4946498744189739,
     0.3993289338424802
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40093": {
    "P4_turn_numerator": 0.02224404127264279,
@@ -10001,7 +10570,8 @@
     0.49828954935073855,
     0.3987209552899003
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40094": {
    "P4_turn_numerator": 0.011145855852191744,
@@ -10021,7 +10591,8 @@
     0.4955595271661878,
     0.3993296319618821
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40095": {
    "P4_turn_numerator": 0.023416201763211575,
@@ -10041,7 +10612,8 @@
     0.49645735900849103,
     0.3993907315656543
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40096": {
    "P4_turn_numerator": 0.019040952271097922,
@@ -10061,7 +10633,8 @@
     0.494510112516582,
     0.39912303946912286
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40097": {
    "P4_turn_numerator": 0.018045045639155433,
@@ -10081,7 +10654,8 @@
     0.4949498850852251,
     0.39926164504140615
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40098": {
    "P4_turn_numerator": 0.022623720230512845,
@@ -10101,7 +10675,8 @@
     0.49710190277546645,
     0.3988100778311491
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40099": {
    "P4_turn_numerator": 0.019677899365433404,
@@ -10121,7 +10696,8 @@
     0.4975321216508746,
     0.3986727070063353
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40100": {
    "P4_turn_numerator": 0.012417821995768463,
@@ -10141,7 +10717,8 @@
     0.49592297468334434,
     0.39819703474640844
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40101": {
    "P4_turn_numerator": 0.015506745352467988,
@@ -10161,7 +10738,8 @@
     0.4930243814364076,
     0.3991652995347977
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40102": {
    "P4_turn_numerator": 0.016534380095436063,
@@ -10181,7 +10759,8 @@
     0.4970394169911742,
     0.3993046246469021
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40103": {
    "P4_turn_numerator": 0.015153427143559384,
@@ -10201,7 +10780,8 @@
     0.49588322211056945,
     0.3984874514862895
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40104": {
    "P4_turn_numerator": 0.029397855977549625,
@@ -10221,7 +10801,8 @@
     0.491359874419868,
     0.3926351984962821
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40105": {
    "P4_turn_numerator": 0.017886537541926373,
@@ -10241,7 +10822,8 @@
     0.4957105193287134,
     0.39896378107368946
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40106": {
    "P4_turn_numerator": 0.021911224279392627,
@@ -10261,7 +10843,8 @@
     0.496073086373508,
     0.39900006614625455
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40107": {
    "P4_turn_numerator": 0.01958751712118101,
@@ -10281,7 +10864,8 @@
     0.49671725519001486,
     0.39894039295613765
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40108": {
    "P4_turn_numerator": 0.01752008118728554,
@@ -10301,7 +10885,8 @@
     0.49625321924686433,
     0.39895276091992854
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40109": {
    "P4_turn_numerator": 0.016774581807112554,
@@ -10321,7 +10906,8 @@
     0.49545441288501024,
     0.3983277648687363
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40110": {
    "P4_turn_numerator": 0.026447311197443923,
@@ -10341,7 +10927,8 @@
     0.49475501365959645,
     0.3922010326758027
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40111": {
    "P4_turn_numerator": 0.013906748149565828,
@@ -10361,7 +10948,8 @@
     0.4986146165058017,
     0.39228641595691444
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40112": {
    "P4_turn_numerator": 0.01979027009838319,
@@ -10381,7 +10969,8 @@
     0.49709232039749623,
     0.3990399857982993
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40113": {
    "P4_turn_numerator": 0.026796414255841228,
@@ -10401,7 +10990,8 @@
     0.49606740940362215,
     0.39902140013873577
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40114": {
    "P4_turn_numerator": 0.015608644553140039,
@@ -10421,7 +11011,8 @@
     0.49415209516882896,
     0.39909348618239165
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40115": {
    "P4_turn_numerator": 0.027116721589436565,
@@ -10441,7 +11032,8 @@
     0.4933327240869403,
     0.39901429526507853
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40116": {
    "P4_turn_numerator": 0.02901094539265614,
@@ -10461,7 +11053,8 @@
     0.4954572658985853,
     0.39888791684061287
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40117": {
    "P4_turn_numerator": 0.022656583088974003,
@@ -10481,7 +11074,8 @@
     0.4984265936538577,
     0.3986647380515933
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40118": {
    "P4_turn_numerator": 0.024608010858173657,
@@ -10501,7 +11095,8 @@
     0.49620048198848965,
     0.3985367467626929
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40119": {
    "P4_turn_numerator": 0.02198650611080666,
@@ -10521,7 +11116,8 @@
     0.496796222217381,
     0.39916477128863337
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40120": {
    "P4_turn_numerator": 0.013360545489376818,
@@ -10541,7 +11137,8 @@
     0.49031067416071894,
     0.3938110126182437
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40121": {
    "P4_turn_numerator": 0.009276928285544273,
@@ -10561,7 +11158,8 @@
     0.4910970376804471,
     0.3925244379788637
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40122": {
    "P4_turn_numerator": 0.017935438754648203,
@@ -10581,7 +11179,8 @@
     0.4964471561834216,
     0.3989174082875252
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40123": {
    "P4_turn_numerator": 0.01589525176495954,
@@ -10601,7 +11200,8 @@
     0.4954313516616821,
     0.3989559356123209
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40124": {
    "P4_turn_numerator": 0.01931117815820471,
@@ -10621,7 +11221,8 @@
     0.49632669184356926,
     0.3988468224182725
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40125": {
    "P4_turn_numerator": 0.02225263466243632,
@@ -10641,7 +11242,8 @@
     0.4929445831105113,
     0.39387016240507366
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40126": {
    "P4_turn_numerator": 0.017888723733449297,
@@ -10661,7 +11263,8 @@
     0.49572395961731675,
     0.3992017198354006
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-mirror-40127": {
    "P4_turn_numerator": 0.01860514662530477,
@@ -10681,7 +11284,8 @@
     0.49001287687569856,
     0.3929854141548276
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50000": {
    "P4_turn_numerator": 0.01776814150980499,
@@ -10704,7 +11308,8 @@
    "calibration_validation": [
     0.47745142318308353,
     0.39180949721485375
-   ]
+   ],
+   "validation_max_rel_deviation": 0.04509715363383293
   },
   "SH-recip-50001": {
    "P4_turn_numerator": 0.021638202041685872,
@@ -10727,7 +11332,8 @@
    "calibration_validation": [
     0.49888643324375154,
     0.4202418582513928
-   ]
+   ],
+   "validation_max_rel_deviation": 0.05060464562848199
   },
   "SH-recip-50002": {
    "P4_turn_numerator": 0.028827770560383215,
@@ -10750,7 +11356,8 @@
    "calibration_validation": [
     0.48325620740652087,
     0.3966368429362774
-   ]
+   ],
+   "validation_max_rel_deviation": 0.03348758518695827
   },
   "SH-recip-50003": {
    "P4_turn_numerator": 0.011525697374963784,
@@ -10773,7 +11380,8 @@
    "calibration_validation": [
     0.4973844729363918,
     0.41067569591104985
-   ]
+   ],
+   "validation_max_rel_deviation": 0.02668923977762458
   },
   "SH-recip-50004": {
    "P4_turn_numerator": 0.02348334742055158,
@@ -10796,7 +11404,8 @@
    "calibration_validation": [
     0.5113699002191424,
     0.4095842638984323
-   ]
+   ],
+   "validation_max_rel_deviation": 0.023960659746080637
   },
   "SH-recip-50005": {
    "P4_turn_numerator": 0.017414404469491274,
@@ -10819,7 +11428,8 @@
    "calibration_validation": [
     0.4834326529875398,
     0.4139371087774634
-   ]
+   ],
+   "validation_max_rel_deviation": 0.03484277194365851
   },
   "SH-recip-50006": {
    "P4_turn_numerator": 0.024360977556170837,
@@ -10842,7 +11452,8 @@
    "calibration_validation": [
     0.5000324837863446,
     0.3925195824354887
-   ]
+   ],
+   "validation_max_rel_deviation": 0.01870104391127836
   },
   "SH-recip-50007": {
    "P4_turn_numerator": 0.019902143944818818,
@@ -10865,7 +11476,8 @@
    "calibration_validation": [
     0.49788437094539406,
     0.40959611907601357
-   ]
+   ],
+   "validation_max_rel_deviation": 0.023990297690033857
   },
   "SH-recip-50008": {
    "P4_turn_numerator": 0.023824929985494236,
@@ -10885,7 +11497,8 @@
     0.4904332268983126,
     0.39268958289176226
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50009": {
    "P4_turn_numerator": 0.018202026620656397,
@@ -10905,7 +11518,8 @@
     0.49183331802487373,
     0.39502158872783183
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50010": {
    "P4_turn_numerator": 0.02258364288809389,
@@ -10925,7 +11539,8 @@
     0.49580331724137067,
     0.3990617016330361
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50011": {
    "P4_turn_numerator": 0.025735090941452654,
@@ -10945,7 +11560,8 @@
     0.49655339047312735,
     0.3990335583686829
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50012": {
    "P4_turn_numerator": 0.008591735674599477,
@@ -10965,7 +11581,8 @@
     0.49744723830372095,
     0.39866059012711047
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50013": {
    "P4_turn_numerator": 0.013212977597504505,
@@ -10985,7 +11602,8 @@
     0.4952073311433196,
     0.39945438615977763
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50014": {
    "P4_turn_numerator": 0.016661356934491778,
@@ -11005,7 +11623,8 @@
     0.499641433916986,
     0.3980375124141574
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50015": {
    "P4_turn_numerator": 0.01934727760271926,
@@ -11025,7 +11644,8 @@
     0.4957691250368953,
     0.3986572861671448
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50016": {
    "P4_turn_numerator": 0.02121154763517552,
@@ -11045,7 +11665,8 @@
     0.4945077018812299,
     0.39897524379193783
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50017": {
    "P4_turn_numerator": 0.024123310487084382,
@@ -11065,7 +11686,8 @@
     0.4959834096953273,
     0.3989275785163045
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50018": {
    "P4_turn_numerator": 0.04423868219964788,
@@ -11085,7 +11707,8 @@
     0.4943846074864268,
     0.393083737231791
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50019": {
    "P4_turn_numerator": 0.02953548919504101,
@@ -11105,7 +11728,8 @@
     0.49416160825639965,
     0.39870666693896056
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50020": {
    "P4_turn_numerator": 0.022132404654257698,
@@ -11125,7 +11749,8 @@
     0.49449206348508595,
     0.399351298995316
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50021": {
    "P4_turn_numerator": 0.017238160051419982,
@@ -11145,7 +11770,8 @@
     0.4973794700577855,
     0.3989752495661378
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50022": {
    "P4_turn_numerator": 0.03737719940090756,
@@ -11165,7 +11791,8 @@
     0.49585075546056034,
     0.3993508296087384
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50023": {
    "P4_turn_numerator": 0.012789944843461853,
@@ -11185,7 +11812,8 @@
     0.4967695718631148,
     0.39875915441662074
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50024": {
    "P4_turn_numerator": 0.015168778390943771,
@@ -11205,7 +11833,8 @@
     0.4949002370238304,
     0.39900419265031817
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50025": {
    "P4_turn_numerator": 0.03215003808509209,
@@ -11225,7 +11854,8 @@
     0.49418098386377096,
     0.3993420360609889
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50026": {
    "P4_turn_numerator": 0.019613286982348654,
@@ -11245,7 +11875,8 @@
     0.4900711724534631,
     0.39223496336489916
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50027": {
    "P4_turn_numerator": 0.020125781474689575,
@@ -11265,7 +11896,8 @@
     0.49026581440120937,
     0.39214120507240297
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50028": {
    "P4_turn_numerator": 0.021414512191768154,
@@ -11285,7 +11917,8 @@
     0.4944420626387,
     0.39889672175049784
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50029": {
    "P4_turn_numerator": 0.02757435475814418,
@@ -11305,7 +11938,8 @@
     0.4944569874554873,
     0.39891094956547024
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50030": {
    "P4_turn_numerator": 0.014881765390782675,
@@ -11325,7 +11959,8 @@
     0.49309750776737926,
     0.3989588309079409
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50031": {
    "P4_turn_numerator": 0.017953451658286212,
@@ -11345,7 +11980,8 @@
     0.497517516836524,
     0.39864719063043597
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50032": {
    "P4_turn_numerator": 0.02507572725698992,
@@ -11365,7 +12001,8 @@
     0.4969180690124631,
     0.3992357788607478
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50033": {
    "P4_turn_numerator": 0.0203971277906021,
@@ -11385,7 +12022,8 @@
     0.49721296448260544,
     0.3991208914667368
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50034": {
    "P4_turn_numerator": 0.019346961079463654,
@@ -11405,7 +12043,8 @@
     0.49392213858664036,
     0.3988322116434574
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50035": {
    "P4_turn_numerator": 0.024110834571729356,
@@ -11425,7 +12064,8 @@
     0.4942944282665849,
     0.3987552259117365
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50036": {
    "P4_turn_numerator": 0.028818673597925226,
@@ -11445,7 +12085,8 @@
     0.4952964896336198,
     0.39901609867811205
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50037": {
    "P4_turn_numerator": 0.023886748340373742,
@@ -11465,7 +12106,8 @@
     0.491945930570364,
     0.3920230269432068
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50038": {
    "P4_turn_numerator": 0.011197611927855178,
@@ -11485,7 +12127,8 @@
     0.4984746674075723,
     0.3989369774237275
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50039": {
    "P4_turn_numerator": 0.03384626589468098,
@@ -11505,7 +12148,8 @@
     0.49626714680343864,
     0.3993608981370926
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50040": {
    "P4_turn_numerator": 0.011410581807467679,
@@ -11525,7 +12169,8 @@
     0.4939432067796588,
     0.39867107663303614
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50041": {
    "P4_turn_numerator": 0.01930364638883475,
@@ -11545,7 +12190,8 @@
     0.49561449643224476,
     0.39873417764902114
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50042": {
    "P4_turn_numerator": 0.01440962818742264,
@@ -11565,7 +12211,8 @@
     0.4983213298022747,
     0.3990594927221537
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50043": {
    "P4_turn_numerator": 0.011794332997851598,
@@ -11585,7 +12232,8 @@
     0.49577117394655945,
     0.39888920113444326
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50044": {
    "P4_turn_numerator": 0.012011677224109008,
@@ -11605,7 +12253,8 @@
     0.4942652154713869,
     0.3929462505504489
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50045": {
    "P4_turn_numerator": 0.012043840491969604,
@@ -11625,7 +12274,8 @@
     0.4938438657671213,
     0.39885846674442293
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50046": {
    "P4_turn_numerator": 0.011124374822429672,
@@ -11645,7 +12295,8 @@
     0.4957263821735978,
     0.39339296892285347
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50047": {
    "P4_turn_numerator": 0.01638046009475147,
@@ -11665,7 +12316,8 @@
     0.4950082082301378,
     0.39836469646543265
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50048": {
    "P4_turn_numerator": 0.016495961447617447,
@@ -11685,7 +12337,8 @@
     0.49739014096558093,
     0.39851908627897503
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50049": {
    "P4_turn_numerator": 0.02566328704415355,
@@ -11705,7 +12358,8 @@
     0.49461335353553293,
     0.3992498964071274
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50050": {
    "P4_turn_numerator": 0.044179660097142914,
@@ -11725,7 +12379,8 @@
     0.4965232780203223,
     0.39934485368430617
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50051": {
    "P4_turn_numerator": 0.01747609027006547,
@@ -11745,7 +12400,8 @@
     0.49736350644379856,
     0.39877321626991036
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50052": {
    "P4_turn_numerator": 0.02083368174135103,
@@ -11765,7 +12421,8 @@
     0.49827180076390504,
     0.3986926138401031
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50053": {
    "P4_turn_numerator": 0.0339361984460993,
@@ -11785,7 +12442,8 @@
     0.4974263910204172,
     0.3987236412242055
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50054": {
    "P4_turn_numerator": 0.0227953449702909,
@@ -11805,7 +12463,8 @@
     0.4955380080267787,
     0.39916553236544133
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50055": {
    "P4_turn_numerator": 0.0301064982504613,
@@ -11825,7 +12484,8 @@
     0.49553263932466507,
     0.39918905422091483
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50056": {
    "P4_turn_numerator": 0.018139813917514402,
@@ -11845,7 +12505,8 @@
     0.49500540625303985,
     0.3993430458009243
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50057": {
    "P4_turn_numerator": 0.01639949689615605,
@@ -11865,7 +12526,8 @@
     0.496050119958818,
     0.39914158675819633
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50058": {
    "P4_turn_numerator": 0.015101515041351377,
@@ -11885,7 +12547,8 @@
     0.49715713653713467,
     0.39884236063808204
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50059": {
    "P4_turn_numerator": 0.018261525419802638,
@@ -11905,7 +12568,8 @@
     0.49062680173665285,
     0.39301822055131197
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50060": {
    "P4_turn_numerator": 0.02175777236607246,
@@ -11925,7 +12589,8 @@
     0.4920868495479226,
     0.3935468100011349
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50061": {
    "P4_turn_numerator": 0.020098652677006612,
@@ -11945,7 +12610,8 @@
     0.49575370121747253,
     0.399167725071311
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50062": {
    "P4_turn_numerator": 0.017314248364982632,
@@ -11965,7 +12631,8 @@
     0.4964152630418539,
     0.3994457732886076
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50063": {
    "P4_turn_numerator": 0.010746674037363846,
@@ -11985,7 +12652,8 @@
     0.49602635744959117,
     0.3992759346961975
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50064": {
    "P4_turn_numerator": 0.018508162195757905,
@@ -12005,7 +12673,8 @@
     0.4956789260730147,
     0.3989368611946702
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50065": {
    "P4_turn_numerator": 0.016745462220569607,
@@ -12025,7 +12694,8 @@
     0.49427798558026553,
     0.3993302984163165
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50066": {
    "P4_turn_numerator": 0.02107191003869957,
@@ -12045,7 +12715,8 @@
     0.49682413004338744,
     0.39878999143838884
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50067": {
    "P4_turn_numerator": 0.0190174655208466,
@@ -12065,7 +12736,8 @@
     0.49566815588623286,
     0.3990559123456478
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50068": {
    "P4_turn_numerator": 0.01641110622949782,
@@ -12085,7 +12757,8 @@
     0.4958153206855059,
     0.3986022390425205
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50069": {
    "P4_turn_numerator": 0.03538040939656639,
@@ -12105,7 +12778,8 @@
     0.4915653929114342,
     0.39249378107488153
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50070": {
    "P4_turn_numerator": 0.04087805412018497,
@@ -12125,7 +12799,8 @@
     0.4964778320863843,
     0.3989528201520443
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50071": {
    "P4_turn_numerator": 0.02404008545090619,
@@ -12145,7 +12820,8 @@
     0.4936585618183017,
     0.3988052472472191
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50072": {
    "P4_turn_numerator": 0.01449784478336369,
@@ -12165,7 +12841,8 @@
     0.4969604106619954,
     0.3987859530374408
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50073": {
    "P4_turn_numerator": 0.016588772625254933,
@@ -12185,7 +12862,8 @@
     0.49605621472001077,
     0.39912963584065436
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50074": {
    "P4_turn_numerator": 0.028745085800437664,
@@ -12205,7 +12883,8 @@
     0.49454693160951135,
     0.39880814403295517
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50075": {
    "P4_turn_numerator": 0.016163493404746987,
@@ -12225,7 +12904,8 @@
     0.4961764389649034,
     0.3993399845436215
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50076": {
    "P4_turn_numerator": 0.018301393551155343,
@@ -12245,7 +12925,8 @@
     0.4948656829074025,
     0.39916244279593227
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50077": {
    "P4_turn_numerator": 0.009596459649401368,
@@ -12265,7 +12946,8 @@
     0.4962444581091404,
     0.3986085094511509
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50078": {
    "P4_turn_numerator": 0.01655301426035294,
@@ -12285,7 +12967,8 @@
     0.4958918670192361,
     0.39946504812687633
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50079": {
    "P4_turn_numerator": 0.011452663695308729,
@@ -12305,7 +12988,8 @@
     0.4972883928567171,
     0.3987751454114914
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50080": {
    "P4_turn_numerator": 0.02061866032636317,
@@ -12325,7 +13009,8 @@
     0.49395373146981003,
     0.399048775807023
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50081": {
    "P4_turn_numerator": 0.01724897588519525,
@@ -12345,7 +13030,8 @@
     0.49367041476070883,
     0.3987017596140504
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50082": {
    "P4_turn_numerator": 0.01532287215195538,
@@ -12365,7 +13051,8 @@
     0.4967553807422519,
     0.39891983605921266
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50083": {
    "P4_turn_numerator": 0.020727052286929393,
@@ -12385,7 +13072,8 @@
     0.490623321197927,
     0.3941105617210269
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50084": {
    "P4_turn_numerator": 0.013555614054439502,
@@ -12405,7 +13093,8 @@
     0.4957777397707105,
     0.39891679491847754
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50085": {
    "P4_turn_numerator": 0.03443396612874494,
@@ -12425,7 +13114,8 @@
     0.4949504503980279,
     0.3984100541099906
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50086": {
    "P4_turn_numerator": 0.013752834537626768,
@@ -12445,7 +13135,8 @@
     0.4962974891066551,
     0.3989889116957784
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50087": {
    "P4_turn_numerator": 0.02021477782363945,
@@ -12465,7 +13156,8 @@
     0.4962871903553605,
     0.39886139407753946
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50088": {
    "P4_turn_numerator": 0.015334530168729543,
@@ -12485,7 +13177,8 @@
     0.49412410371005533,
     0.3985514918342233
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50089": {
    "P4_turn_numerator": 0.01003371411934495,
@@ -12505,7 +13198,8 @@
     0.49528357293456793,
     0.39929787814617157
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50090": {
    "P4_turn_numerator": 0.036848518895567395,
@@ -12525,7 +13219,8 @@
     0.49591155759990213,
     0.3993368143215775
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50091": {
    "P4_turn_numerator": 0.018317018529160123,
@@ -12545,7 +13240,8 @@
     0.49352562967687846,
     0.3991460995748639
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50092": {
    "P4_turn_numerator": 0.017664703680566163,
@@ -12565,7 +13261,8 @@
     0.4943244531750679,
     0.3989090986549854
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50093": {
    "P4_turn_numerator": 0.03401431307338498,
@@ -12585,7 +13282,8 @@
     0.49603928048163654,
     0.39900056160986425
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50094": {
    "P4_turn_numerator": 0.0203401726021184,
@@ -12605,7 +13303,8 @@
     0.49190396871417763,
     0.39902971163392065
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50095": {
    "P4_turn_numerator": 0.014740784073183022,
@@ -12625,7 +13324,8 @@
     0.4946184307336807,
     0.3985360385850072
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50096": {
    "P4_turn_numerator": 0.015487936728277418,
@@ -12645,7 +13345,8 @@
     0.4960417253896594,
     0.39918939769268036
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50097": {
    "P4_turn_numerator": 0.021128636274170276,
@@ -12665,7 +13366,8 @@
     0.4970702616497874,
     0.39909806437790396
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50098": {
    "P4_turn_numerator": 0.012229013998876326,
@@ -12685,7 +13387,8 @@
     0.4967084122821689,
     0.3982772955670953
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50099": {
    "P4_turn_numerator": 0.013191561905841809,
@@ -12705,7 +13408,8 @@
     0.4956565575674176,
     0.3993526864796877
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50100": {
    "P4_turn_numerator": 0.02093658126068476,
@@ -12725,7 +13429,8 @@
     0.49581784978508947,
     0.3988318771123886
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50101": {
    "P4_turn_numerator": 0.01895715133059639,
@@ -12745,7 +13450,8 @@
     0.49785921815782785,
     0.39889780431985855
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50102": {
    "P4_turn_numerator": 0.01625652372240438,
@@ -12765,7 +13471,8 @@
     0.4970886426046491,
     0.39864025712013246
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50103": {
    "P4_turn_numerator": 0.023976154127012705,
@@ -12785,7 +13492,8 @@
     0.498505874723196,
     0.39873351249843836
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50104": {
    "P4_turn_numerator": 0.027416462393375696,
@@ -12805,7 +13513,8 @@
     0.49494495429098606,
     0.3989493312314153
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50105": {
    "P4_turn_numerator": 0.022629160196629527,
@@ -12825,7 +13534,8 @@
     0.49323934949934484,
     0.39894532784819603
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50106": {
    "P4_turn_numerator": 0.013951165655271325,
@@ -12845,7 +13555,8 @@
     0.4992974916473031,
     0.39871712140738963
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50107": {
    "P4_turn_numerator": 0.016978947797724686,
@@ -12865,7 +13576,8 @@
     0.4999734664335847,
     0.39895713739097116
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50108": {
    "P4_turn_numerator": 0.01844001072277024,
@@ -12885,7 +13597,8 @@
     0.49545756746083497,
     0.3988789409399033
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50109": {
    "P4_turn_numerator": 0.027766455179516925,
@@ -12905,7 +13618,8 @@
     0.4959877224639058,
     0.39885750208050014
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50110": {
    "P4_turn_numerator": 0.017527825219076476,
@@ -12925,7 +13639,8 @@
     0.4957522375509143,
     0.39916603546589613
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50111": {
    "P4_turn_numerator": 0.029292049612195115,
@@ -12945,7 +13660,8 @@
     0.4947191569954157,
     0.3988730415701866
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50112": {
    "P4_turn_numerator": 0.01885687179492379,
@@ -12965,7 +13681,8 @@
     0.49710391480475663,
     0.3992272220551968
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50113": {
    "P4_turn_numerator": 0.02277520108873432,
@@ -12985,7 +13702,8 @@
     0.4903768876567483,
     0.39246211517602203
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50114": {
    "P4_turn_numerator": 0.016100412840387435,
@@ -13005,7 +13723,8 @@
     0.4946465453132987,
     0.39918467961251736
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50115": {
    "P4_turn_numerator": 0.05172770228546142,
@@ -13025,7 +13744,8 @@
     0.4928249692544341,
     0.39361366387456653
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50116": {
    "P4_turn_numerator": 0.022052744046050066,
@@ -13045,7 +13765,8 @@
     0.4948434541001916,
     0.3990059617906809
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50117": {
    "P4_turn_numerator": 0.021885564990952844,
@@ -13065,7 +13786,8 @@
     0.496832231990993,
     0.3994456870481372
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50118": {
    "P4_turn_numerator": 0.026037190815259237,
@@ -13085,7 +13807,8 @@
     0.49641106408089397,
     0.3989744855090976
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50119": {
    "P4_turn_numerator": 0.015749825851344212,
@@ -13105,7 +13828,8 @@
     0.4945159461349249,
     0.3989517277106643
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50120": {
    "P4_turn_numerator": 0.021335773570172023,
@@ -13125,7 +13849,8 @@
     0.49698348734527825,
     0.3993289157748222
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50121": {
    "P4_turn_numerator": 0.017718771092404495,
@@ -13145,7 +13870,8 @@
     0.497963728569448,
     0.39849954899400475
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50122": {
    "P4_turn_numerator": 0.018621677320879826,
@@ -13165,7 +13891,8 @@
     0.4975526934489608,
     0.39898128192871807
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50123": {
    "P4_turn_numerator": 0.017333356089693552,
@@ -13185,7 +13912,8 @@
     0.4956911072134972,
     0.3992153791710734
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50124": {
    "P4_turn_numerator": 0.031430350597929646,
@@ -13205,7 +13933,8 @@
     0.4945739690214396,
     0.39921888913959264
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50125": {
    "P4_turn_numerator": 0.025308726444563945,
@@ -13225,7 +13954,8 @@
     0.49439415615051985,
     0.3987806672230363
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50126": {
    "P4_turn_numerator": 0.012869744386989623,
@@ -13245,7 +13975,8 @@
     0.4968929482623935,
     0.3990396590903401
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   },
   "SH-recip-50127": {
    "P4_turn_numerator": 0.02114796087880677,
@@ -13265,7 +13996,8 @@
     0.49622567389160394,
     0.39908320885151627
    ],
-   "calibration_validation": null
+   "calibration_validation": null,
+   "validation_max_rel_deviation": null
   }
  }
 }
