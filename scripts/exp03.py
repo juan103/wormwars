@@ -62,7 +62,7 @@ INSTANCES = {
             # registered after review (D060): the cap, a per-ensemble completeness floor keeping 03's
             # retained fraction, a fresh permutation for the permuted-magnitude secondary, and the
             # N2 cache hashed with the other inputs
-            "max_hours": 28.0,
+            "max_hours": 32.0,  # 03r v3 (D061): headroom to about 150 s per graph
             "min_graphs": {"SH": 120, "SH-route": 240, "SH-class": 120, "SH-mirror": 120, "SH-recip": 120},
             "fresh_secondary_permutation": True, "pin_connectome": True},
 }
@@ -145,6 +145,11 @@ def _sha_raw(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def _input_sha(path: Path) -> str:
+    """Binary inputs (.npz) are hashed raw (D056); text inputs with line endings normalised."""
+    return _sha_raw(path) if path.suffix == ".npz" else _sha(path)
+
+
 def provenance(device) -> dict:
     """The code commit, the registered inputs' hashes and the device, stored in every
     measurement file; the report refuses a mixture (D054)."""
@@ -158,7 +163,7 @@ def provenance(device) -> dict:
     except Exception:  # noqa: BLE001
         commit, dirty = "unknown", True
     return {"instance": INSTANCE, "git_commit": commit, "code_dirty": dirty, "device": str(device),
-            "inputs": {k: _sha(v) for k, v in INPUT_FILES.items()}}
+            "inputs": {k: _input_sha(v) for k, v in INPUT_FILES.items()}}
 
 
 def check_provenance(measurements) -> None:
@@ -651,7 +656,7 @@ def cmd_report(args):
         planned = {k: [g["name"] for g in e["graphs"] if g["kind"] == k] for k in S.KINDS}
         out["accounting"] = accounting(planned, measures, out["counts"])
         out["accounting"]["N2"] = {"measured": "N2" in measures, "calibration_failed": "calibration_failed" in measures.get("N2", {})}
-        if out["signals"]["P4_complete"]:
+        if out["signals"]["P4"]:  # descriptive, whenever N2 is valid, withheld or not (D061)
             report03 = json.loads((ROOT / "experiments" / "03-generation0" / "report.json").read_text(encoding="utf-8"))
             out["P4_beside_03"] = side_by_side(out["signals"], report03)
         out["replication_primary"] = rp = R.replication_primary(out)

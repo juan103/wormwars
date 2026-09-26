@@ -102,6 +102,21 @@ def secondary(m: dict) -> dict:
             "P4_decay": float(np.median(np.abs(np.asarray(h["after"])) / np.maximum(np.abs(np.asarray(h["final"])), 1e-12)))}
 
 
+def gates(sig: dict, signal: str) -> dict:
+    """Every ensemble's own gates, so a split (some ensembles passing, one failing) is visible even
+    though the maximum-p rule gives every ensemble the same p (Astra, D060). Computed for withheld
+    signals too (D061)."""
+    sign = 1.0 if EXPECTED[signal] == "above" else -1.0
+    out = {}
+    for e, r in sig.items():
+        vals = np.asarray(r["values"], float)
+        lo_s = min(sign * r["effect_interval"][0], sign * r["effect_interval"][1])
+        out[e] = {"graphs": int(len(vals)),
+                  "at_or_above": int((vals >= r["n2"]).sum() if sign > 0 else (vals <= r["n2"]).sum()),
+                  "p": r["p"], "rank_gate": bool(r["p"] <= V.ALPHA), "margin_gate": bool(lo_s > r["margin"])}
+    return out
+
+
 def single_signal(sig: dict, signal: str) -> dict:
     """One signal tested alone (03r's registered primary test, D059): the maximum rank p over the
     ensembles against alpha, with the same effect-margin gate and verdict rules as §6 of 03, and
@@ -110,18 +125,8 @@ def single_signal(sig: dict, signal: str) -> dict:
     p_opp = max(r["p_opposite"] for r in sig.values())
     verdicts = {e: V.classify(p_max, p_opp, tuple(r["effect_interval"]), {"effect": r["margin"]}, EXPECTED[signal],
                               tuple(r["n2_interval"]), r["values"]) for e, r in sig.items()}
-    # every ensemble's own gates, so a split (some ensembles passing, one failing) is visible even
-    # though the maximum-p rule gives every ensemble the same p (Astra, D060)
-    sign = 1.0 if EXPECTED[signal] == "above" else -1.0
-    gates = {}
-    for e, r in sig.items():
-        vals = np.asarray(r["values"], float)
-        lo_s = min(sign * r["effect_interval"][0], sign * r["effect_interval"][1])
-        gates[e] = {"graphs": int(len(vals)),
-                    "at_or_above": int((vals >= r["n2"]).sum() if sign > 0 else (vals <= r["n2"]).sum()),
-                    "p": r["p"], "rank_gate": bool(r["p"] <= V.ALPHA), "margin_gate": bool(lo_s > r["margin"])}
     v = set(verdicts.values())
-    return {"p_max": p_max, "p_max_opposite": p_opp, "verdicts": verdicts, "gates": gates,
+    return {"p_max": p_max, "p_max_opposite": p_opp, "verdicts": verdicts, "gates": gates(sig, signal),
             "overall": ("distinctive relative to every ensemble" if v == {"distinctive"} else
                         "reversed against every ensemble" if v == {"reversed"} else "not distinctive")}
 
@@ -130,8 +135,10 @@ def replication_primary(out: dict, signal: str = "P4") -> dict:
     """03r's registered primary result from a built report: the single-signal test, or an explicit
     withheld record when the signal is incomplete (Fable, Astra, D060)."""
     if not out["signals"].get(signal + "_complete"):
+        sig = out["signals"].get(signal) or {}
         return {"overall": "withheld", "reason": "N2 invalid or too few valid graphs",
-                "counts": out["counts"].get(signal, {})}
+                "counts": out["counts"].get(signal, {}),
+                "gates": gates(sig, signal) if sig else "unavailable: N2 invalid on this signal"}
     return single_signal(out["signals"][signal], signal)
 
 
@@ -166,8 +173,12 @@ def build(measures: dict, n2: str, ensembles: dict, n_boot: int = EFFECT_BOOT,
         out["counts"][s] = {e: len(v) for e, v in valid_lists.items()}
         complete = n2 in ok and ok[n2][s] and all(len(v) >= floor[e] for e, v in valid_lists.items())
         res = {}
-        if complete:
+        # the per-ensemble statistics are descriptive and computed whenever N2 is valid, so a
+        # withheld signal still reports them (Astra, D061); only verdicts need completeness
+        if n2 in ok and ok[n2][s]:
             for e, names in valid_lists.items():
+                if len(names) < 2:
+                    continue
                 ev = np.array([vals[n][s] for n in names])
                 mse = float(np.mean([se[n][s] ** 2 for n in names]))
                 latent = float(np.sqrt(max(np.var(ev, ddof=1) - mse, 0.0)))  # truncated at 0 (registered)
@@ -180,6 +191,7 @@ def build(measures: dict, n2: str, ensembles: dict, n_boot: int = EFFECT_BOOT,
                           "n2_interval": [vals[n2][s] - 1.645 * se[n2][s], vals[n2][s] + 1.645 * se[n2][s]],
                           "ensemble_q05_q95": [float(np.quantile(ev, 0.05)), float(np.quantile(ev, 0.95))],
                           "values": ev.tolist()}
+        if complete:
             pv[s] = {e: r["p"] for e, r in res.items()}
             pv_opp[s] = {e: r["p_opposite"] for e, r in res.items()}
         else:

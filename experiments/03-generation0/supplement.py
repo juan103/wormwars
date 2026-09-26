@@ -60,6 +60,7 @@ def per_graph(m: dict) -> dict:
 
 def _quantiles(v) -> dict:
     v = np.array([x for x in v if x is not None], float)
+    v = v[np.isfinite(v)]  # non-finite values are not observations (Astra, D061)
     if not len(v):
         return {"n": 0}
     return {"n": int(len(v)), "q05": float(np.quantile(v, 0.05)), "median": float(np.median(v)),
@@ -87,7 +88,9 @@ def build_supplement(exp_dir: Path, measures: Path, variants, note: str = "") ->
             missing.append(name)
             continue
         m = json.loads(path.read_text(encoding="utf-8"))
-        provs.add(json.dumps(m.get("provenance"), sort_keys=True))
+        if "provenance" not in m:
+            raise ValueError(f"{name}: measurement has no provenance")
+        provs.add(json.dumps(m["provenance"], sort_keys=True))
         if "calibration_failed" in m:
             failed.append(name)
             continue

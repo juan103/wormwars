@@ -149,7 +149,7 @@ def test_completeness_floor_can_differ_by_ensemble():
 
 def test_the_cap_is_registered_per_instance_and_cannot_be_changed_on_the_command_line(exp):
     exp.use_instance("03r")
-    assert exp.MAX_HOURS == 28 and exp.cap_hours(None) == 28
+    assert exp.MAX_HOURS == 32 and exp.cap_hours(None) == 32
     with pytest.raises(exp.ProvenanceError):
         exp.cap_hours(30.0)
     assert exp.MIN_GRAPHS == {"SH": 120, "SH-route": 240, "SH-class": 120, "SH-mirror": 120, "SH-recip": 120}
@@ -226,3 +226,41 @@ def test_03s_p4_is_set_beside_03rs(exp):
     side = exp.side_by_side(ours, theirs)
     assert side["A"]["03"] == {"n2": 0.93, "effect_interval": [0.08, 0.1], "graphs": 4, "at_or_above": 1}
     assert side["A"]["03r"]["at_or_above"] == 1
+
+
+# ---- confirmation pass (D061) ----
+
+def test_a_withheld_signal_keeps_its_descriptive_per_ensemble_values_and_gates():
+    """Astra: §10 publishes the gate table for every outcome, withheld included."""
+    pilot = json.loads(PILOT.read_text(encoding="utf-8"))
+    measures = {m["name"]: m for m in pilot["graphs"]}
+    names = sorted(measures)
+    out = R.build(measures, names[0], {"A": names[1:9], "B": names[9:]}, n_boot=20, min_graphs={"A": 9, "B": 1})
+    assert not out["signals"]["P4_complete"]
+    assert set(out["signals"]["P4"]) == {"A", "B"} and "verdict" not in out["signals"]["P4"]["A"]
+    r = R.replication_primary(out)
+    assert r["overall"] == "withheld" and set(r["gates"]) == {"A", "B"} and "verdicts" not in r
+
+
+def test_binary_inputs_are_hashed_raw(exp):
+    exp.use_instance("03r")
+    import hashlib
+    path = exp.INPUT_FILES["cook2019_herm.npz"]
+    assert exp._input_sha(path) == hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def test_the_03r_cap_leaves_headroom(exp):
+    exp.use_instance("03r")
+    assert exp.MAX_HOURS == 32.0
+
+
+def test_the_supplement_drops_nonfinite_values_and_requires_provenance(supplement, tmp_path):
+    assert supplement._quantiles([1.0, float("nan"), float("inf")])["n"] == 1
+    exp_dir, meas = tmp_path / "exp", tmp_path / "meas"
+    exp_dir.mkdir(), meas.mkdir()
+    (exp_dir / "ensembles.json").write_text(json.dumps({"graphs": [{"kind": "A", "name": "g0"}]}))
+    rec = _record("g0")
+    del rec["provenance"]
+    (meas / "g0.json").write_text(json.dumps(rec))
+    with pytest.raises(ValueError):
+        supplement.build_supplement(exp_dir, meas, ())

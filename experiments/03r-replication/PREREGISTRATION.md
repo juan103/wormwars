@@ -1,8 +1,8 @@
 # WormWars 03r: pre-registration of the full replication of experiment 03
 
-**Status:** v2, after Astra's and Fable's review (D060). It becomes binding at the commit the
-run's first measurement follows. No brain on N2's wiring (N2, N2-rev or N2perm4-6) has been run
-for 03r.
+**Status:** v3, after Astra's and Fable's review (D060) and their confirmation pass (D061). It
+becomes binding at the commit recorded in the provenance of the formal run's first saved
+measurement. No brain on N2's wiring (N2, N2-rev or N2perm4-6) has been run for 03r.
 
 ## 0. Why this replication exists
 
@@ -38,8 +38,17 @@ genomes for every graph, N2 included (Astra's).
    Instance 03 was checked to be unchanged. Its report regenerates identically, a re-measured 03
    graph (SH-10000) matches its saved measurement bit for bit, and its supplement regenerates
    with every value unchanged.
-3. **Measured for 03r before this file:** only the ensembles' structure, from the build and its
-   validation (`ensembles.json`, `graphs_manifest.json`). No brain has been run for 03r.
+3. **Measured for 03r before this file:**
+   - **The ensembles' structure,** from the build and its validation (`ensembles.json`,
+     `graphs_manifest.json`).
+   - **One preflight measurement of one ensemble graph,** SH-1010000, with the 03r code, to check
+     the new code path end to end (D060).
+     - It was not saved, and it is excluded from the formal run, which measures that graph again
+       from scratch with the same seeds.
+     - **What was inspected:** the run time (126 s, including first-use warm-up), the keys of the
+       record, its gains (4.12 and 2.95), that its calibration validation ran, and its P4 value
+       (0.756).
+     - No other value was looked at, and no N2-wiring brain was run.
 4. **Reviews:** Astra 6 (maximum effort) and Fable 5.1 reviewed v1 of this file
    (`docs/reviews/*-03r-prereg/`). The changes are listed in §12.
 
@@ -112,7 +121,8 @@ of all for the low-power P3 (Astra, D060).
   - **Build time:** 0.36 hours on the CPU.
 - **Manifest:** every graph file is pinned by its raw SHA-256 in `graphs_manifest.json` (Astra
   re-verified all 768) and checked when loaded. N2's connectome cache
-  (`data/cache/cook2019_herm.npz`) is hashed into every measurement's provenance (Astra, D060).
+  (`data/cache/cook2019_herm.npz`) is hashed raw into every measurement's provenance (Astra,
+  D060; the raw hash is Fable's correction, D061).
 
 ## 4. Procedure for every graph
 
@@ -125,7 +135,7 @@ Identical to 03 §4. What is redrawn, and what is deliberately kept:
 | run seed | 3 | 5 |
 | calibration seed (1 024 genomes; it also sets the calibration world's map, so 03r's gains are not comparable with 03's) | 0 | 1003 |
 | validation seed (2 048 genomes; N2 and the first 8 graphs of every ensemble) | 1 | 1004 |
-| weight permutation of the permuted-magnitude secondary condition | the graph's configured seed (0 except for N2perm) | fresh per graph, from its salted genome seed |
+| weight permutation of the permuted-magnitude secondary condition | the graph's configured seed (0 except for N2perm, where it reused the graph's own permutation) | fresh per graph, from its salted genome seed (so for N2perm4-6 it is a second, different permutation: descriptive only) |
 | **kept:** the stimulus bank for the history test | 03's pilot bank | **the same**: the same probe |
 | **kept:** the remapping sets R1, R2 and MS (`02-screening/remaps.json`) | | the same |
 | **kept:** the analysis seeds (SE bootstrap 0, effect bootstrap 1) and all configs | | the same |
@@ -184,26 +194,33 @@ The per-ensemble quantities are computed exactly as in 03 §6:
 - **Passes:** *distinctive relative to every ensemble*. With the full planned samples, that means
   at most 5 of 128 graphs at or above N2 in each 128-graph ensemble, and at most 11 of 256 in
   SH-route, with every effect interval beyond its margin.
-- **The maximum-p rule gives every ensemble the same p.** So if one ensemble fails, all five read
-  "inconclusive". The report therefore also records each ensemble's own gates (Astra):
+- **The maximum-p rule gives every ensemble the same p.** So one ensemble's rank failure changes
+  every ensemble's label: the labels read "inconclusive" or "consistent", and a margin failure can
+  sit beside "distinctive" labels. The labels alone therefore hide which ensemble failed. The
+  report also records each ensemble's own gates (Astra):
   - valid n;
   - the count at or above N2;
   - the raw rank p;
   - the rank gate (raw p ≤ 0.05);
   - the margin gate.
-  Four passing ensembles cannot rescue the conjunction.
+  Four passing ensembles cannot rescue the conjunction. The per-ensemble statistics and gates
+  are computed whenever N2 is valid on P4, including when the verdict is withheld for
+  completeness (Astra, D061).
 - **Error rates:**
   - one-sided 5%, under the null that N2 is exchangeable with at least one ensemble;
   - the opposite direction is a separate family, as in 03, so up to 10% across both directions.
 
 **Why P4 alone, and not 03's three-signal Holm rule** (Fable's argument, D060):
-- At α/3, the rule's per-ensemble threshold is (r + 1)/(n + 1) ≤ 1.67%. That sits at 03's own
-  estimate of SH-route's exceedance rate (1 of 128; posterior mean about 1.2%). So under 03's
-  rule, SH-route is close to a coin flip at any sample size. Its cutoff is 3 versus 4 of 256
-  here, and 1 versus 2 of 128 in the other ensembles.
-- At α = 0.05 the threshold is about 4.7%, four times that estimate.
-- The single-signal test is therefore the only informative one. It is also the standard
-  analysis for a single hypothesis stated in advance.
+- At α/3, the rule's per-ensemble threshold is (r + 1)/(n + 1) ≤ 1.67%. That is close to 03's
+  own estimate of SH-route's exceedance rate (1 of 128; posterior mean about 1.2%).
+  - Under §7's model, SH-route alone then passes 03's rule with probability about 0.67 at 256
+    graphs, rising towards about 0.77 with more (Astra, D061). Its cutoff is 3 versus 4 of 256,
+    and 1 versus 2 of 128 in the other ensembles.
+  - With all five ensembles, the pass probability is about 0.41.
+- At α = 0.05 the threshold is about 4.7%, four times that estimate, and the pass probability is
+  about 0.97.
+- The single-signal test is also the standard analysis for a single hypothesis stated in
+  advance.
 - It was chosen after 03 and is disclosed as such.
 - 03's rule is also applied, unchanged, and reported alongside.
 
@@ -213,7 +230,8 @@ result.
 
 **Completeness:** a valid N2, and at least **120** valid graphs in each 128-graph ensemble and
 **240** in SH-route. That keeps 03's retained fraction (Astra). Otherwise the verdict is
-**withheld**, and the report says so explicitly. The report gives, separately:
+**withheld**, and the report says so explicitly, with the per-ensemble statistics and gates if
+N2 is valid. The report gives, separately:
 - planned counts;
 - measured counts;
 - calibration failures;
@@ -260,7 +278,12 @@ a model built from 03's counts, that the rank gates pass.
 
 - **Cost:** 768 ensemble graphs plus 5 N2 graphs, at about 111 s each (03's rate): about 24
   GPU-hours.
-- **Cap:** 28 GPU-hours for the ensemble graphs, cumulative across restarts.
+- **Cap:** 32 GPU-hours for the ensemble graphs, cumulative across restarts. v2 set 28 hours.
+  Fable noted that at the preflight's 126 s per graph, 768 graphs need about 27 hours, so the cap
+  was raised before binding (D061).
+  - 03 averaged about 110 s per graph.
+  - 32 hours covers up to about 150 s per graph.
+  - A resume after N2 is measured also counts N2's seconds, which only makes the cap stricter.
   - It is registered in code (`INSTANCES["03r"]["max_hours"]`). The runner refuses any other value
     on the command line (`scripts/exp03.py run --instance 03r`).
   - **The cap is never extended.** If it bites, the remaining ensemble graphs are skipped. The
@@ -296,8 +319,9 @@ Astra, D060).
 | **Withheld** (N2 invalid, or completeness not met) | "No verdict: the replication was incomplete or unevaluable (reason …). No rerun without a new pre-registration." |
 
 **Every outcome:**
-- **The gate table.** The per-ensemble gate table (§6) is published whatever the outcome. A split
-  is described from it, never from the labels alone.
+- **The gate table.** The per-ensemble gate table (§6) is published for every outcome in which
+  N2 is valid on P4, withheld included. A split is described from it, never from the labels
+  alone. If N2 is invalid, the accounting counts of §6 are published instead.
 - **How 03 and 03r are presented:**
   - side by side, each with both decision rules, and never replaced by a pooled result;
   - pooled analyses are exploratory (§11) and can never stand in for a failed or withheld
@@ -325,7 +349,26 @@ These are exploratory:
 - any analysis of N2-rev or N2perm4-6 beyond their values and ranks;
 - any mechanism analysis.
 
-## 12. Changes from the team's review of v1 (D060)
+## 12. Changes from the team's review
+
+### v3, from the confirmation pass (D061)
+
+**Astra: "not ready to bind" until two items were fixed.**
+- **A withheld verdict lost the per-ensemble statistics** (reproduced by Astra). They are now
+  computed whenever N2 is valid, with gates, and tested.
+- **The preflight measurement is disclosed** (§1), and the binding boundary is clarified.
+- **Also fixed:**
+  - the supplement drops non-finite values and requires provenance;
+  - the threshold argument for P4 alone is softened, using Astra's figures;
+  - the claim that one failing ensemble makes every label "inconclusive" is corrected.
+
+**Fable: "ready to bind" once a §10 sentence was corrected and the cache hashed raw.** Both are
+done, and:
+- the cap is raised to 32 hours for headroom;
+- §4 notes that N2perm4-6's permuted-magnitude condition is a second permutation;
+- §8 notes that a resume counts N2's seconds.
+
+### v2, from the review of v1 (D060)
 
 Both reviewers judged the design a faithful replication, and runnable once the outcome rules
 were completed. Astra checked the code, the 768 manifest hashes, graph distinctness and seed

@@ -1481,3 +1481,30 @@ Each finding was checked in the code before it was adopted:
 - Instance 03's report regenerates identically after the changes.
 - A smoke measurement of one 03r ensemble graph (SH-1010000, not N2; not saved) ran the new path
   end to end in 126 s.
+
+## D061 — 03r pre-registration v3 after the confirmation pass
+
+**The verdicts:**
+- **Fable:** ready to bind once one §10 sentence is corrected and the N2 cache is hashed raw.
+- **Astra:** not ready until two must-fix items are corrected.
+
+Both reviews are in `docs/reviews/*-03r-prereg-recheck/`. Every point was checked in the code
+before it was adopted:
+- **A withheld verdict lost the per-ensemble statistics** (Astra, reproduced). `build` now
+  computes the descriptive per-ensemble statistics whenever N2 is valid. `replication_primary`
+  reports the gates when withheld, and the side-by-side with 03 is written whenever it exists.
+  Tested. 03's report regenerates identically.
+- **The preflight measurement is disclosed** (Astra): SH-1010000 was measured once and not saved,
+  and the values inspected are listed in §1. The binding boundary is the commit in the formal
+  run's first saved measurement.
+- **The N2 cache is hashed raw** (Fable): `_input_sha` uses the raw hash for `.npz` inputs; 03 has
+  none, so it is unchanged.
+- **The cap is raised from 28 to 32 GPU-hours** before binding (Fable's headroom point: 126 s per
+  graph in the preflight would need about 27 h).
+- **The supplement** drops non-finite values and requires provenance (Astra). 03's supplement
+  regenerates unchanged.
+- **Text:**
+  - the threshold argument is softened with Astra's figures;
+  - the claim that "one failing ensemble makes every label inconclusive" is corrected;
+  - N2perm4-6's permuted-magnitude condition is noted as a second permutation;
+  - a resume counts N2's seconds.
