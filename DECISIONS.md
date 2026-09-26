@@ -1316,3 +1316,31 @@ none was altered.
   The run restarts from zero at the new commit.
 - **No N2 data existed:** N2 and its variants run last.
 - **Cost:** about 1.6 GPU-hours.
+
+## D057 — Experiment 03's results: P4 distinctive relative to every ensemble; P1 and P3 not
+
+The run finished at commit 132acae: 645 graphs, 19.75 GPU-hours, every signal with 128 valid
+graphs per ensemble, no calibration failure. The registered report
+(`experiments/03-generation0/report.json`) gives:
+- **P4, history dependence:** distinctive relative to every ensemble. N2 = 0.931. The maximum p
+  over the ensembles is 0.0155 and the Holm-adjusted p is 0.0465. One SH-route graph is at or
+  above N2, and none in the other four ensembles.
+- **P1, directional selectivity:** not distinctive (Holm-adjusted p 0.93). N2 is consistent with
+  SH and SH-recip, and inconclusive against the rest.
+- **P3, food-information dependence:** the criterion was not met (Holm-adjusted p 0.94), and N2
+  is inconclusive against every ensemble. This is not a bound.
+
+**Decisions:**
+- **RESULTS.md separates** the registered verdicts and secondary values from exploratory analysis
+  (§11). Exploratory: the P4 numerator and denominator decomposition, the reading of the N2
+  variants beyond their values and ranks, the comparison with 02b, and the corrections to 02's
+  readings.
+- **The P4 verdict is reported as borderline.** Two graphs at or above N2 in any one ensemble
+  would have given a Holm-adjusted p of 0.070. The registered power at the observed z (2.2-2.5)
+  was low. It passed because three ensembles' latent SDs were about half the pilot's.
+- **Two of 02's readings are marked as not holding at generation 0:**
+  - the signed directional response (+0.0029 in 02, +0.0001 here);
+  - "shuffles start worse under M0" (every ensemble's mean P2 is about 0).
+- **The per-graph measurements (about 640 MB) stay local,** git-ignored. The report, with every
+  per-graph value, is committed.
+- **Next:** results review by Astra (xhigh) and Fable. Nothing is pushed without the owner's go.

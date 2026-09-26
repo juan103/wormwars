@@ -61,3 +61,6 @@ Astra6/
 
 # --- agent working files (plan ledgers) ---
 .superpowers/
+# Experiment 03's per-graph measurements (about 640 MB; regenerable from the binding commit). The report is committed.
+runs/exp03/measures/
+runs/exp03/measures-aborted-0ef9a3d/
