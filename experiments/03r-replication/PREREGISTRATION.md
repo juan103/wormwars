@@ -362,6 +362,12 @@ These are exploratory:
   - the threshold argument for P4 alone is softened, using Astra's figures;
   - the claim that one failing ensemble makes every label "inconclusive" is corrected.
 
+**Astra's final check of v3:** still "not ready". Ensembles with 0-1 valid graphs were dropped
+from the table, and if every ensemble was that small, a valid N2 was reported as invalid (both
+reproduced). Such ensembles now keep their row, with the undefined statistics marked
+unavailable. A verdict needs at least two valid graphs in every ensemble; the registered floors
+of 120 and 240 already imply this. Tested.
+
 **Fable: "ready to bind" once a §10 sentence was corrected and the cache hashed raw.** Both are
 done, and:
 - the cap is raised to 32 hours for headroom;

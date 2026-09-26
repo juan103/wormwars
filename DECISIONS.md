@@ -1508,3 +1508,7 @@ before it was adopted:
   - the claim that "one failing ensemble makes every label inconclusive" is corrected;
   - N2perm4-6's permuted-magnitude condition is noted as a second permutation;
   - a resume counts N2's seconds.
+- **Astra's final check of v3** (`docs/reviews/20260926-233226-03r-prereg-final/`) found that
+  ensembles with 0-1 valid graphs were still dropped, and that a valid N2 could then be reported
+  as invalid (both reproduced). Those rows are now kept, with undefined statistics marked
+  unavailable. Tested; 03's report is unchanged.

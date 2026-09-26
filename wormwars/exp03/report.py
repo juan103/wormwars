@@ -110,6 +110,9 @@ def gates(sig: dict, signal: str) -> dict:
     out = {}
     for e, r in sig.items():
         vals = np.asarray(r["values"], float)
+        if "unavailable" in r:
+            out[e] = {"graphs": int(len(vals)), "at_or_above": r["at_or_above"], "unavailable": r["unavailable"]}
+            continue
         lo_s = min(sign * r["effect_interval"][0], sign * r["effect_interval"][1])
         out[e] = {"graphs": int(len(vals)),
                   "at_or_above": int((vals >= r["n2"]).sum() if sign > 0 else (vals <= r["n2"]).sum()),
@@ -171,13 +174,18 @@ def build(measures: dict, n2: str, ensembles: dict, n_boot: int = EFFECT_BOOT,
         valid_lists = {e: [n for n in names if n in ok and ok[n][s]] for e, names in ensembles.items()}
         out["exclusions"][s] = {e: [n for n in names if n not in ok or not ok[n][s]] for e, names in ensembles.items()}
         out["counts"][s] = {e: len(v) for e, v in valid_lists.items()}
-        complete = n2 in ok and ok[n2][s] and all(len(v) >= floor[e] for e, v in valid_lists.items())
+        # a verdict needs every ensemble's statistics, so at least two valid graphs each
+        complete = n2 in ok and ok[n2][s] and all(len(v) >= max(floor[e], 2) for e, v in valid_lists.items())
         res = {}
         # the per-ensemble statistics are descriptive and computed whenever N2 is valid, so a
         # withheld signal still reports them (Astra, D061); only verdicts need completeness
         if n2 in ok and ok[n2][s]:
             for e, names in valid_lists.items():
-                if len(names) < 2:
+                if len(names) < 2:  # kept as a row, with what is defined (Astra, D061)
+                    ev = [vals[n][s] for n in names]
+                    at = sum(v >= vals[n2][s] for v in ev) if direction == "above" else sum(v <= vals[n2][s] for v in ev)
+                    res[e] = {"n2": vals[n2][s], "n2_se": se[n2][s], "graphs": len(ev), "values": ev,
+                              "at_or_above": int(at), "unavailable": "fewer than 2 valid graphs"}
                     continue
                 ev = np.array([vals[n][s] for n in names])
                 mse = float(np.mean([se[n][s] ** 2 for n in names]))

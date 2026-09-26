@@ -264,3 +264,20 @@ def test_the_supplement_drops_nonfinite_values_and_requires_provenance(supplemen
     (meas / "g0.json").write_text(json.dumps(rec))
     with pytest.raises(ValueError):
         supplement.build_supplement(exp_dir, meas, ())
+
+
+def test_ensembles_too_small_for_statistics_keep_their_rows_and_n2_is_not_called_invalid():
+    """Astra (final check, D061): rows with 0-1 valid graphs were dropped, and with every
+    ensemble that small a valid N2 was reported as invalid."""
+    pilot = json.loads(PILOT.read_text(encoding="utf-8"))
+    measures = {m["name"]: m for m in pilot["graphs"]}
+    names = sorted(measures)
+    out = R.build(measures, names[0], {"A": names[1:9], "B": names[9:10], "C": []}, n_boot=20, min_graphs=1)
+    assert not out["signals"]["P4_complete"]  # a verdict needs at least two graphs everywhere
+    rows = out["signals"]["P4"]
+    assert set(rows) == {"A", "B", "C"} and "unavailable" in rows["B"] and "unavailable" in rows["C"]
+    r = R.replication_primary(out)
+    assert r["overall"] == "withheld" and "N2 invalid" not in str(r["gates"])
+    assert "unavailable" in r["gates"]["B"] and r["gates"]["A"]["graphs"] == 8
+    out = R.build(measures, names[0], {"B": names[9:10]}, n_boot=20, min_graphs=1)
+    assert "N2 invalid" not in str(R.replication_primary(out)["gates"])

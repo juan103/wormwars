@@ -636,7 +636,7 @@ def side_by_side(signals: dict, report03: dict, signal: str = "P4") -> dict:
     """03's and 03r's N2 value, effect interval, valid n and count at or above N2, per ensemble
     (03r's §5, descriptive; Fable, D060)."""
     def row(r):
-        return {"n2": r["n2"], "effect_interval": r["effect_interval"], "graphs": r["graphs"],
+        return {"n2": r["n2"], "effect_interval": r.get("effect_interval"), "graphs": r["graphs"],
                 "at_or_above": int(sum(v >= r["n2"] for v in r["values"]))}
     old = report03["signals"][signal]
     return {e: {"03": row(old[e]) if e in old else None, "03r": row(r)} for e, r in signals[signal].items()}
