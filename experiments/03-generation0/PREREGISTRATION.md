@@ -244,6 +244,10 @@ P4 (1.00) (both reviewers, D055).
 **P4:**
 - P4 is a bounded ratio. The pilot shuffles reach at most 0.86, and z = 3 corresponds to about
   1.0 (z = 4, about 1.07), so the table's upper rows are near the signal's ceiling.
+  - *Post-run annotation (D058, text above kept as registered):* P4 is not bounded by 1.
+    Nothing in its definition bounds the final history difference by the starting contrast
+    (Astra's results review). This sentence affected only the discussion of the power table, not
+    any rule.
 - 02b's history numbers used a different stimulus, so no expected z for N2 is available.
 - Real ensembles differ, so N2's effective z is its smallest across the five.
 

@@ -1344,3 +1344,59 @@ graphs per ensemble, no calibration failure. The registered report
 - **The per-graph measurements (about 640 MB) stay local,** git-ignored. The report, with every
   per-graph value, is committed.
 - **Next:** results review by Astra (xhigh) and Fable. Nothing is pushed without the owner's go.
+
+## D058 — Experiment 03's results review: write-up corrected, verdicts unchanged, replication recommended
+
+Astra 6 (xhigh) and Fable 5.1 reviewed RESULTS.md at f5ab9d9 independently
+(`docs/reviews/20260926-220511-03-results/`). Both reproduced the registered verdicts; Astra
+recomputed all 15 signal-by-ensemble classifications from `report.json`. Neither found a rule
+chosen after seeing the data. Each finding below was checked against the code, the report or
+the raw measurements before it was adopted.
+
+**Adopted (both reviewers unless named):**
+- **The "why it passed" explanation was wrong.** Smaller latent SDs cannot explain passing the
+  rank test, which does not depend on scale. What is relevant is the ensembles' compressed,
+  left-skewed upper tails. Checked: the maxima are 1.7-2.5 latent SDs above the means; SH-class
+  has skew −1.75 and a minimum 4.7 SDs below. The write-up now says the reason is not
+  established.
+- **The margins were never binding;** only the rank gate is borderline. This is now stated, with
+  the attainable Holm values 0.023 / 0.047 / 0.070.
+- **Rank p is exact only under exchangeability** (§2), so these are approximate reference-ensemble
+  tests. The IUT and Holm logic, and the 10% two-direction error, are now spelled out (Astra).
+- **The null moves weights as well as wiring,** so a rejection does not isolate wiring.
+- **The "one constraint at a time" example was false:** SH-mirror includes the routing cap.
+  Checked in `samplers.py` (Astra).
+- **P1's "inconclusive"** comes from N2's interval not fitting inside the three narrower
+  ensembles' central ranges, not from small margins (Astra, checked in `verdict.py`).
+- **P4 is not bounded by 1** (Astra). Within N2, the lowest-contrast quarter of genomes has a
+  ratio of 1.37. The "understates, not creates" sentence is deleted, and §7 of the
+  pre-registration is annotated, with its registered text kept.
+- **N2-rev's P4 is a ratio of two numbers near 4 × 10⁻⁴,** so it no longer supports any argument
+  (Fable).
+- **Calibration** acts only on the motor outputs, after the raw read-out, so it cannot enter P4 or
+  the raw magnitudes. The saturation check: within N2, the ratio does not rise with the contrast
+  (correlation −0.04). The forward read-out shows the same pattern (N2 0.899; at most 2 graphs
+  per ensemble at or above it).
+- **The 02b comparison:**
+  - it gives the aggregations correctly (0.88 is a median of per-genome decays);
+  - it notes the different stimulus banks and the shuffles' own 0.75-0.84;
+  - it no longer suggests that N2 is born where selection took the champions.
+- **The corrections to 02** now separate a different estimand from a failed replication. "P2 is
+  zero" becomes "its 95% intervals include zero".
+- **An auditable supplement:** `supplement.py` writes `supplement.json`, with per-graph P4
+  numerator and denominator, the forward-read-out ratio, the common mode, the gains, and
+  calibration validation (Astra). Calibration validation is within 7.4% of target everywhere,
+  and within 3% for N2.
+- **Minor numbers:** z is 2.2-2.6; P1's SE is 0.0205; the top-decile medians are 1.49-1.53; the
+  P3 ensemble means are +0.0006 to +0.0026; the variant ranks are now counts r.
+
+**Deferred:** `report.json` keeps `NaN` for N2-rev's invalid P1 (Astra). It is the registered
+output as produced. A publication export could use `null`. The write-up notes the issue.
+
+**Where they disagree: replication before publishing.**
+- Both recommend a separately pre-registered replication. It would use fresh ensemble draws (256
+  for SH-route, since one graph decided the result) and independent genome draws for N2 and the
+  controls, and would report either outcome.
+- **Fable:** replicate before any public claim.
+- **Astra:** the honestly qualified report of this completed experiment can be published first.
+- This is the owner's call, and it is put to them.

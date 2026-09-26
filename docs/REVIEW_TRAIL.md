@@ -28,6 +28,7 @@ led to several of the findings.
 | 8 | Experiment 02's pre-registration, as first written, would have misreported. The report crashed on a NumPy boolean; incomplete data (one N2 run, one shuffle) returned "supported"; a verdict branch challenged small contrasts the rule never required large; a promised budget fallback did not exist; a prevalence bound was unjustified. A fix pass then checked graph names instead of registered runs and seeds. | Claude Opus 5.5 (`5c69653`, `ba326e7`) | **Astra 6**, in an adversarial review and a confirmation pass, reproducing each defect on synthetic data before any N2 run | Each reproduced by Claude with a test that failed first, then fixed | D040 |
 | 9 | Unnamed alternative explanations in the same pre-registration: a degree-preserving shuffle destroys mirror symmetry (N2 keeps 64% of chemical edges mirrored, shuffles 13-16%), and on the stereo task the "history" jitter also scrambles the left-right difference | Claude Opus 5.5 | **Fable 5.1**, reviewing after the evolution had started and before any probe ran | Symmetry measured on every graph; jitter re-validated on scripted stereo controllers (costs a memoryless one 0.029 at radius 1) | D041 |
 | 10 | The first write-up of experiment 02 said evolution "erodes" N2's generation-0 advantage; in fact N2's own mapping preference is unchanged and the shuffles catch up. It also claimed champions do not use history (jitter cannot show that), that stereo steering is "real but worth little", that N2 "reads food more strongly" (an intervention effect), and "topology, not strengths" | Claude Opus 5.5 (`6dc7d71`) | **Astra 6 and Fable 5.1, independently**, before publication; Astra found the catch-up | Recomputed by Claude from the records before rewriting | D042 |
+| 11 | The first write-up of experiment 03 explained why P4 passed at low registered power by "smaller latent SDs" (the rank test does not depend on scale; the ensembles' compressed, left-skewed upper tails are the relevant fact), called the rank p exact without its exchangeability caveat, gave the wrong rule for P1's "inconclusive", called P4 bounded by 1, named "mirror symmetry together with routing" as untested (SH-mirror includes the routing cap), and leaned on N2-rev's ratio of two numbers near 4 × 10⁻⁴ | Claude Opus 5.5 (`f5ab9d9`) | **Astra 6 and Fable 5.1, independently**, before publication | Each claim re-checked by Claude against the code, `report.json` and the raw measurements; per-graph quantities published as `supplement.json` | D058 |
 
 Episode 6 went unnoticed for a week, through a passing test suite, every milestone report, a
 publication audit, the first public release and Claude's own review of the roadmap on the day it
@@ -50,7 +51,7 @@ adopted without being re-measured or re-read first, and the corrections above sa
   Confirming each one took execution.
 - Reviewers make errors too. Checking before adopting a finding was part of what made the reviews
   useful.
-- This is one project and ten episodes: an anecdote about multi-agent review, not a measurement
+- This is one project and eleven episodes: an anecdote about multi-agent review, not a measurement
   of it.
 
 ## In the history
