@@ -1400,3 +1400,36 @@ output as produced. A publication export could use `null`. The write-up notes th
 - **Fable:** replicate before any public claim.
 - **Astra:** the honestly qualified report of this completed experiment can be published first.
 - This is the owner's call, and it is put to them.
+
+## D059 — The owner chose a full replication of experiment 03 before publishing
+
+**Decision (the owner, 2026-09-26):** run a full, separately pre-registered replication of
+experiment 03 before anything from 03 is published: option 1 of three. When 03 is published, the
+publication must say plainly that a full replication was done, why, and what each AI contributed
+to that decision.
+
+**Who contributed what:**
+- **Fable 5.1** (results review, D058) judged the P4 verdict not publishable as a public claim
+  without replication: "Replicate before any public claim." It gave the reason: the pass
+  condition is discrete (at most one graph at or above N2 in every ensemble), and it was met with
+  exactly one routing-matched graph above N2. It proposed fresh draws of at least SH-route and
+  SH-mirror, ideally all five, with 256 graphs for SH-route.
+- **Astra 6** (results review, D058) recommended a separately registered replication with fresh
+  graph draws *and* independent genome draws for N2 and the controls, because reusing N2's
+  measurement tests only part of the uncertainty. Astra did not require it before publishing: an
+  honestly qualified report of the completed experiment could go first. It also asked that either
+  outcome be reported, and that nothing be rerun until the threshold passes.
+- **Claude Opus 5.5** (the experimenter) put the disagreement to the owner with three options and
+  costs:
+  - a full replication (about 24 GPU-hours);
+  - a targeted replication of SH-route and SH-mirror (about 12);
+  - publishing the qualified report now.
+  It leaned slightly toward replicating first, because one graph decided the result.
+- **The owner** chose the full replication.
+
+**What the replication takes from each:**
+- from Fable: all five ensembles, 256 for SH-route;
+- from Astra: independent genomes for N2, pre-registration, either outcome reported, no reruns
+  until it passes.
+
+Its design is `experiments/03r-replication/PREREGISTRATION.md`, reviewed by both before the run.

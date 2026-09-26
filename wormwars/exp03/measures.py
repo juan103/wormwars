@@ -13,11 +13,12 @@ from ..config import Config
 from ..world import World
 
 
-def genome_seed(name: str) -> int:
+def genome_seed(name: str, salt: str = "") -> int:
     """An independent random-genome seed per graph, from a hash of its whole name. The first
     version kept only the name's first four characters, so graphs shared genomes (Astra,
-    pilot review; D053)."""
-    return int.from_bytes(hashlib.sha256(name.encode()).digest()[:4], "little") % (2 ** 31)
+    pilot review; D053). A salt gives a replication independent genomes for the same graph
+    name, N2's included (03r, D059); no salt is 03's seed."""
+    return int.from_bytes(hashlib.sha256((salt + name).encode()).digest()[:4], "little") % (2 ** 31)
 
 
 def task_c_config(base: Config) -> Config:

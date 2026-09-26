@@ -102,14 +102,28 @@ def secondary(m: dict) -> dict:
             "P4_decay": float(np.median(np.abs(np.asarray(h["after"])) / np.maximum(np.abs(np.asarray(h["final"])), 1e-12)))}
 
 
+def single_signal(sig: dict, signal: str) -> dict:
+    """One signal tested alone (03r's registered primary test, D059): the maximum rank p over the
+    ensembles against alpha, with the same effect-margin gate and verdict rules as §6 of 03, and
+    no Holm across signals. `sig`: {ensemble: the per-ensemble record `build` writes}."""
+    p_max = max(r["p"] for r in sig.values())
+    p_opp = max(r["p_opposite"] for r in sig.values())
+    verdicts = {e: V.classify(p_max, p_opp, tuple(r["effect_interval"]), {"effect": r["margin"]}, EXPECTED[signal],
+                              tuple(r["n2_interval"]), r["values"]) for e, r in sig.items()}
+    v = set(verdicts.values())
+    return {"p_max": p_max, "p_max_opposite": p_opp, "verdicts": verdicts,
+            "overall": ("distinctive relative to every ensemble" if v == {"distinctive"} else
+                        "reversed against every ensemble" if v == {"reversed"} else "not distinctive")}
+
+
 def build(measures: dict, n2: str, ensembles: dict, n_boot: int = EFFECT_BOOT,
-          min_graphs: int = MIN_GRAPHS) -> dict:
+          min_graphs: int = MIN_GRAPHS, descriptive: tuple = DESCRIPTIVE) -> dict:
     """`measures`: {graph name: saved measures}; only N2, the registered ensemble graphs in
     `ensembles`, and the descriptive N2 variants are read. `n_boot` and `min_graphs` exist for
     tests on small synthetic or pilot sets; the registered values are EFFECT_BOOT and MIN_GRAPHS."""
     registered = {n for names in ensembles.values() for n in names}
     # a graph whose calibration failed is excluded from every signal and counted (registered)
-    use = [n for n in [n2, *DESCRIPTIVE, *sorted(registered)]
+    use = [n for n in [n2, *descriptive, *sorted(registered)]
            if n in measures and "calibration_failed" not in measures[n]]
     data = {n: per_genome(measures[n]) for n in use}
     ok = {n: {s: valid(s, data[n][s]) for s in PRIMARY} for n in use}
@@ -171,14 +185,14 @@ def build(measures: dict, n2: str, ensembles: dict, n_boot: int = EFFECT_BOOT,
                         "reversed against every ensemble" if v == {"reversed"} else "not distinctive")}
     # descriptive: the N2 variants' ranks against every ensemble, both directions
     out["ranks_descriptive"] = {}
-    for d in DESCRIPTIVE:
+    for d in descriptive:
         if d not in ok:
             continue
         out["ranks_descriptive"][d] = {s: {e: {"above": V.rank_p(vals[d][s], out["signals"][s][e]["values"], "above"),
                                                "below": V.rank_p(vals[d][s], out["signals"][s][e]["values"], "below")}
                                            for e in out["signals"][s]} for s in PRIMARY if ok[d][s] and out["signals"][s]}
     sec = {n: secondary(measures[n]) for n in use}
-    out["secondary"] = {n: sec[n] for n in [n2, *DESCRIPTIVE] if n in sec}
+    out["secondary"] = {n: sec[n] for n in [n2, *descriptive] if n in sec}
     out["secondary"]["ensemble_mean_P2"] = {e: _t_interval([sec[n]["P2"] for n in names if n in sec])
                                             for e, names in ensembles.items()}
     out["secondary"]["ensembles"] = {e: {k: [float(np.nanquantile([sec[n][k] for n in names if n in sec], q))

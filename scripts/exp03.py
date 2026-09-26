@@ -33,15 +33,62 @@ from wormwars.exp02 import probes as P  # noqa: E402
 from wormwars.exp03 import measures as M  # noqa: E402
 from wormwars.exp03 import samplers as S  # noqa: E402
 
-EXP = Path(__file__).resolve().parents[1] / "experiments" / "03-generation0"
-OUT = Path("runs/exp03")
-GRAPHS = OUT / "graphs"
-N_PER_ENSEMBLE = 128
-SEED_BASE = {"SH": 10_000, "SH-route": 20_000, "SH-class": 30_000, "SH-mirror": 40_000, "SH-recip": 50_000}
+ROOT = Path(__file__).resolve().parents[1]
 PILOT_SEEDS = range(101, 117)
-PLATEAU_SEEDS = range(90_000, 90_004)
-WORLDS = np.arange(993_000_000, 993_000_016)  # shared by every graph and task; disjoint from 02
-RUN_SEED = 3
+
+# Two instances share this runner (D059). "03" is the experiment as it ran at 132acae and must
+# not change. "03r" is its full replication: fresh graph seeds (substitutions add 100 000, so
+# they stay clear of 03's), independent genomes for every graph including N2 (a genome-seed
+# salt), fresh worlds, run, calibration and validation seeds, 256 routing-matched graphs, and
+# fresh weight permutations. The stimulus bank is 03's pilot bank: the same probe.
+INSTANCES = {
+    "03": {"exp": "03-generation0", "out": "runs/exp03",
+           "seed_base": {"SH": 10_000, "SH-route": 20_000, "SH-class": 30_000, "SH-mirror": 40_000,
+                         "SH-recip": 50_000},
+           "n": {"SH": 128, "SH-route": 128, "SH-class": 128, "SH-mirror": 128, "SH-recip": 128},
+           "plateau_seeds": range(90_000, 90_004),
+           "worlds": 993_000_000,  # shared by every graph and task; disjoint from 02
+           "run_seed": 3, "genome_salt": "", "calibration_seed": 0, "validation_seed": 1,
+           "real": ["N2", "N2-rev", "N2perm1", "N2perm2", "N2perm3"]},
+    "03r": {"exp": "03r-replication", "out": "runs/exp03r",
+            "seed_base": {"SH": 1_010_000, "SH-route": 1_020_000, "SH-class": 1_030_000, "SH-mirror": 1_040_000,
+                          "SH-recip": 1_050_000},
+            "n": {"SH": 128, "SH-route": 256, "SH-class": 128, "SH-mirror": 128, "SH-recip": 128},
+            "plateau_seeds": range(1_090_000, 1_090_004),
+            "worlds": 994_000_000,
+            "run_seed": 5, "genome_salt": "03r:", "calibration_seed": 1003, "validation_seed": 1004,
+            "real": ["N2", "N2-rev", "N2perm4", "N2perm5", "N2perm6"]},
+}
+
+
+def use_instance(name: str) -> None:
+    """Point every path, seed and size of this module at one instance. Also the initializer of
+    the build's worker processes, which re-import the module."""
+    global INSTANCE, EXP, OUT, GRAPHS, MEASURES, PILOT, N_PER, N_PER_ENSEMBLE, SEED_BASE, PLATEAU_SEEDS, WORLDS
+    global RUN_SEED, GENOME_SALT, CALIBRATION_SEED, VALIDATION_SEED, REAL, INPUT_FILES
+    c = INSTANCES[name]
+    INSTANCE = name
+    EXP = ROOT / "experiments" / c["exp"]
+    OUT = Path(c["out"])
+    GRAPHS, MEASURES = OUT / "graphs", OUT / "measures"
+    PILOT = ROOT / "experiments" / "03-generation0" / "pilot.json"
+    N_PER = dict(c["n"])
+    N_PER_ENSEMBLE = 128  # the pilot's and 03's ensemble size
+    SEED_BASE, PLATEAU_SEEDS = dict(c["seed_base"]), c["plateau_seeds"]
+    WORLDS = np.arange(c["worlds"], c["worlds"] + 16)
+    RUN_SEED, GENOME_SALT = c["run_seed"], c["genome_salt"]
+    CALIBRATION_SEED, VALIDATION_SEED = c["calibration_seed"], c["validation_seed"]
+    REAL = list(c["real"])
+    INPUT_FILES = {"ensembles.json": EXP / "ensembles.json", "graphs_manifest.json": EXP / "graphs_manifest.json",
+                   "pilot.json": PILOT,
+                   "mirror_pairs.yaml": ROOT / "configs" / "mirror_pairs.yaml",
+                   "remaps.json": ROOT / "experiments" / "02-screening" / "remaps.json"}
+
+
+def _gseed(name: str) -> int:
+    return M.genome_seed(name, GENOME_SALT)
+
+
 # Allocation, design v3.2 (D053): precision where the primary signals need it.
 GENOMES = 64                  # the secondary fitness cells and coverage
 P3_GENOMES = 256              # T1-M0 and T1const-M0, the two cells of P3 (primary)
@@ -55,10 +102,6 @@ class ProvenanceError(RuntimeError):
     """A graph file, an input or a measurement does not match what the pre-registration fixed."""
 
 
-INPUT_FILES = {"ensembles.json": EXP / "ensembles.json", "graphs_manifest.json": EXP / "graphs_manifest.json",
-               "pilot.json": EXP / "pilot.json",
-               "mirror_pairs.yaml": EXP.parents[1] / "configs" / "mirror_pairs.yaml",
-               "remaps.json": EXP.parent / "02-screening" / "remaps.json"}
 
 
 def _sha(path: Path) -> str:
@@ -79,13 +122,14 @@ def provenance(device) -> dict:
     measurement file; the report refuses a mixture (D054)."""
     import subprocess
     try:
-        commit = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=EXP.parents[1], text=True).strip()
+        commit = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
         dirty = bool(subprocess.check_output(["git", "status", "--porcelain", "--", "wormwars", "scripts", "configs",
-                                              "experiments/03-generation0", "experiments/02-screening/remaps.json"],
-                                             cwd=EXP.parents[1], text=True).strip())
+                                              EXP.relative_to(ROOT).as_posix(), PILOT.relative_to(ROOT).as_posix(),
+                                              "experiments/02-screening/remaps.json"],
+                                             cwd=ROOT, text=True).strip())
     except Exception:  # noqa: BLE001
         commit, dirty = "unknown", True
-    return {"git_commit": commit, "code_dirty": dirty, "device": str(device),
+    return {"instance": INSTANCE, "git_commit": commit, "code_dirty": dirty, "device": str(device),
             "inputs": {k: _sha(v) for k, v in INPUT_FILES.items()}}
 
 
@@ -150,11 +194,13 @@ def _build_one(args):
 
 
 def cmd_build(args):
+    if (EXP / "ensembles.json").exists():  # 03's record is binding; a build never replaces one
+        raise ProvenanceError(f"{EXP / 'ensembles.json'} exists: refusing to rebuild over it")
     t0 = time.perf_counter()
     # plateau check: 4 chains per ensemble at 20 and 40 passes (design v3)
     jobs = [(k, s, p, False) for k in S.KINDS for s in PLATEAU_SEEDS for p in (20, 40)]
-    jobs += [(k, SEED_BASE[k] + i, 20, True) for k in S.KINDS for i in range(N_PER_ENSEMBLE)]
-    with Pool(args.workers) as pool:
+    jobs += [(k, SEED_BASE[k] + i, 20, True) for k in S.KINDS for i in range(N_PER[k])]
+    with Pool(args.workers, initializer=use_instance, initargs=(INSTANCE,)) as pool:
         res = pool.map(_build_one, jobs, chunksize=1)
     plateau = {}
     for k in S.KINDS:
@@ -180,6 +226,8 @@ def cmd_build(args):
     n2 = _graph_stats(con, con, {"chem": {"accepted": 1, "attempted": 1}, "gap": {"accepted": 1, "attempted": 1}})
     _json(EXP / "ensembles.json", {"plateau": plateau, "validation": validation, "N2": n2, "graphs": graphs,
                                    "seconds": time.perf_counter() - t0})
+    # every graph file pinned by its raw bytes (D054, D056)
+    _json(EXP / "graphs_manifest.json", {r["name"]: _sha_raw(GRAPHS / f"{r['name']}.npz") for r in graphs})
     for k in S.KINDS:
         v = validation[k]
         print(f"{k:10} plateau {'ok' if plateau[k]['passes'] else 'FAILED'}; {v['graphs']} graphs, "
@@ -215,7 +263,7 @@ def _load_graph(con, name):
 def measure_graph(con, name, device, bank=None, only=None):
     """Every registered measure for one graph, per genome. `only` restricts to a subset
     (used by the pilot's first pass, which only needs the stimulus-bank replays)."""
-    remap_sets = json.loads((EXP.parent / "02-screening" / "remaps.json").read_text(encoding="utf-8"))["sets"]
+    remap_sets = json.loads(INPUT_FILES["remaps.json"].read_text(encoding="utf-8"))["sets"]
     graph = _load_graph(con, name)
     spec = BrainSpec.from_connectome(graph, device=device)
     base0 = grid.brain_config_for_graph(grid.task_config(Config(), "T0"), name)
@@ -223,7 +271,7 @@ def measure_graph(con, name, device, bank=None, only=None):
     t0 = time.perf_counter()
     try:
         cal = calib.calibrate_in_world(graph, base0, grid.interface_for(con, "M0", remap_sets), grid.TARGET_DRIVE,
-                                       n_strains=1024, device=device)
+                                       n_strains=1024, seed=CALIBRATION_SEED, device=device)
     except RuntimeError as e:  # registered: excluded from every signal and counted (D055)
         return {"name": name, "calibration_failed": str(e), "seconds": {"calibration": time.perf_counter() - t0}}
     gains = (cal.forward_gain, cal.turn_gain)
@@ -234,7 +282,7 @@ def measure_graph(con, name, device, bank=None, only=None):
         check = base0.copy()
         check.world.forward_gain, check.world.turn_gain = gains
         out["calibration_validation"] = calib.achieved_drive(graph, check, grid.interface_for(con, "M0", remap_sets),
-                                                             n_strains=2048, seed=1, device=device).as_dict()
+                                                             n_strains=2048, seed=VALIDATION_SEED, device=device).as_dict()
     t["calibration"] = time.perf_counter() - t0
 
     def cfg_for(task):
@@ -245,7 +293,7 @@ def measure_graph(con, name, device, bank=None, only=None):
             c.world.food_probe = "constant"
         return c
 
-    gen = torch.Generator(device=device).manual_seed(M.genome_seed(name))
+    gen = torch.Generator(device=device).manual_seed(_gseed(name))
     big = Genome.random(spec, cfg_for("T1").brain, P3_GENOMES, generator=gen, device=device)
     genomes = big.select(list(range(GENOMES)))  # the first 64 are shared by every cell: paired
     if only is None or "fitness" in only:
@@ -265,7 +313,7 @@ def measure_graph(con, name, device, bank=None, only=None):
         t["coverage"] = time.perf_counter() - t0
     if only is None or "response" in only:
         t0 = time.perf_counter()
-        pg = torch.Generator(device=device).manual_seed(M.genome_seed(name) + 1)
+        pg = torch.Generator(device=device).manual_seed(_gseed(name) + 1)
         cfg1 = cfg_for("T1")
         probe_g = Genome.random(spec, cfg1.brain, PRIMARY_PROBE_GENOMES, generator=pg, device=device)
         small_g = probe_g.select(list(range(SECONDARY_PROBE_GENOMES)))
@@ -282,7 +330,7 @@ def measure_graph(con, name, device, bank=None, only=None):
             cm = cfg1.copy()
             cm.brain.init_chem_magnitude = cm.brain.init_gap_magnitude = mode
             gm = Genome.random(spec, cm.brain, SECONDARY_PROBE_GENOMES,
-                               generator=torch.Generator(device=device).manual_seed(M.genome_seed(name) + 1), device=device)
+                               generator=torch.Generator(device=device).manual_seed(_gseed(name) + 1), device=device)
             resp[f"M0-{mode}"] = P.input_response(spec, cm, grid.interface_for(con, "M0", remap_sets), None, device,
                                                   genome=gm, per_genome=True)
         keep = ("directional_turn_signed_raw", "directional_turn_raw", "common_turn_raw", "common_forward_raw")
@@ -484,17 +532,22 @@ def cmd_power(args):
     _json(EXP / "pilot.json", pilot)
 
 
-MEASURES = OUT / "measures"
-REAL = ["N2", "N2-rev", "N2perm1", "N2perm2", "N2perm3"]
+def interleave(by: dict, kinds) -> list[str]:
+    """Graphs in order of their position within their own ensemble, as a fraction of its size,
+    so any prefix holds every ensemble in proportion to its size (03r's 256 SH-route graphs
+    come twice as often). With equal sizes it is plain graph-by-graph interleaving."""
+    from fractions import Fraction
+    keyed = [(Fraction(i, len(by[k])), j, name) for j, k in enumerate(kinds) for i, name in enumerate(by[k])]
+    return [name for _, _, name in sorted(keyed)]
 
 
 def run_order() -> list[str]:
-    """The ensembles interleaved graph by graph, so a budget stop removes graphs evenly, then N2
-    and its variants *last*, so no mid-run decision is taken with N2's numbers on disk (Fable,
-    D054). N2 and its variants are exempt from the cap."""
+    """The ensembles interleaved, so a budget stop removes graphs evenly, then N2 and its
+    variants *last*, so no mid-run decision is taken with N2's numbers on disk (Fable, D054).
+    N2 and its variants are exempt from the cap."""
     e = json.loads((EXP / "ensembles.json").read_text(encoding="utf-8"))
     by = {k: [g["name"] for g in e["graphs"] if g["kind"] == k] for k in S.KINDS}
-    return [by[k][i] for i in range(N_PER_ENSEMBLE) for k in S.KINDS] + REAL
+    return interleave(by, S.KINDS) + REAL
 
 
 def spent_hours() -> float:
@@ -510,7 +563,7 @@ def cmd_run(args):
     """Every graph, N2 last. Only after the pre-registration is committed. Stopping or resuming
     may not depend on any measured value (registered)."""
     con = load_connectome()
-    bank = json.loads((EXP / "pilot.json").read_text(encoding="utf-8"))["bank"]
+    bank = json.loads(PILOT.read_text(encoding="utf-8"))["bank"]
     MEASURES.mkdir(parents=True, exist_ok=True)
     prov = provenance(args.device)
     if prov["code_dirty"]:
@@ -537,8 +590,12 @@ def cmd_report(args):
                 if p.stem in registered}  # unregistered files are never read
     check_provenance(measures.values())
     ensembles = {k: [g["name"] for g in e["graphs"] if g["kind"] == k and g["name"] in measures] for k in S.KINDS}
-    out = R.build(measures, "N2", ensembles)
+    out = R.build(measures, "N2", ensembles, descriptive=tuple(REAL[1:]))
     out["provenance"] = next(iter(measures.values()))["provenance"]
+    if INSTANCE == "03r" and out["signals"]["P4_complete"]:  # 03r's registered primary test (D059)
+        out["replication_primary"] = R.single_signal(out["signals"]["P4"], "P4")
+        rp = out["replication_primary"]
+        print("03r primary (P4 alone)", rp["overall"], "p_max", round(rp["p_max"], 4), rp["verdicts"])
     out["descriptive"] = {n: out["per_graph"][n] for n in REAL if n in out["per_graph"]}
     _json(EXP / "report.json", out)
     print("valid graphs per signal and ensemble", out["counts"])
@@ -554,10 +611,16 @@ def main():
     ap.add_argument("--max-hours", type=float, default=24.0)
     ap.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
     ap.add_argument("--workers", type=int, default=8)
+    ap.add_argument("--instance", choices=sorted(INSTANCES), default="03")
     args = ap.parse_args()
+    use_instance(args.instance)
+    if args.instance != "03" and args.command in ("pilot", "variance", "power"):
+        raise SystemExit("the pilot, variance and power stages belong to 03 only; 03r reuses 03's pilot")
     {"build": cmd_build, "pilot": cmd_pilot, "variance": cmd_variance, "power": cmd_power,
      "run": cmd_run, "report": cmd_report}[args.command](args)
 
+
+use_instance("03")
 
 if __name__ == "__main__":
     main()
