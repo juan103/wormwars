@@ -110,17 +110,38 @@ def single_signal(sig: dict, signal: str) -> dict:
     p_opp = max(r["p_opposite"] for r in sig.values())
     verdicts = {e: V.classify(p_max, p_opp, tuple(r["effect_interval"]), {"effect": r["margin"]}, EXPECTED[signal],
                               tuple(r["n2_interval"]), r["values"]) for e, r in sig.items()}
+    # every ensemble's own gates, so a split (some ensembles passing, one failing) is visible even
+    # though the maximum-p rule gives every ensemble the same p (Astra, D060)
+    sign = 1.0 if EXPECTED[signal] == "above" else -1.0
+    gates = {}
+    for e, r in sig.items():
+        vals = np.asarray(r["values"], float)
+        lo_s = min(sign * r["effect_interval"][0], sign * r["effect_interval"][1])
+        gates[e] = {"graphs": int(len(vals)),
+                    "at_or_above": int((vals >= r["n2"]).sum() if sign > 0 else (vals <= r["n2"]).sum()),
+                    "p": r["p"], "rank_gate": bool(r["p"] <= V.ALPHA), "margin_gate": bool(lo_s > r["margin"])}
     v = set(verdicts.values())
-    return {"p_max": p_max, "p_max_opposite": p_opp, "verdicts": verdicts,
+    return {"p_max": p_max, "p_max_opposite": p_opp, "verdicts": verdicts, "gates": gates,
             "overall": ("distinctive relative to every ensemble" if v == {"distinctive"} else
                         "reversed against every ensemble" if v == {"reversed"} else "not distinctive")}
 
 
+def replication_primary(out: dict, signal: str = "P4") -> dict:
+    """03r's registered primary result from a built report: the single-signal test, or an explicit
+    withheld record when the signal is incomplete (Fable, Astra, D060)."""
+    if not out["signals"].get(signal + "_complete"):
+        return {"overall": "withheld", "reason": "N2 invalid or too few valid graphs",
+                "counts": out["counts"].get(signal, {})}
+    return single_signal(out["signals"][signal], signal)
+
+
 def build(measures: dict, n2: str, ensembles: dict, n_boot: int = EFFECT_BOOT,
-          min_graphs: int = MIN_GRAPHS, descriptive: tuple = DESCRIPTIVE) -> dict:
+          min_graphs: int | dict = MIN_GRAPHS, descriptive: tuple = DESCRIPTIVE) -> dict:
     """`measures`: {graph name: saved measures}; only N2, the registered ensemble graphs in
     `ensembles`, and the descriptive N2 variants are read. `n_boot` and `min_graphs` exist for
-    tests on small synthetic or pilot sets; the registered values are EFFECT_BOOT and MIN_GRAPHS."""
+    tests on small synthetic or pilot sets; the registered values are EFFECT_BOOT and MIN_GRAPHS.
+    `min_graphs` may be a per-ensemble dict (03r: 240 for its 256 SH-route graphs, D060)."""
+    floor = min_graphs if isinstance(min_graphs, dict) else {e: min_graphs for e in ensembles}
     registered = {n for names in ensembles.values() for n in names}
     # a graph whose calibration failed is excluded from every signal and counted (registered)
     use = [n for n in [n2, *descriptive, *sorted(registered)]
@@ -143,7 +164,7 @@ def build(measures: dict, n2: str, ensembles: dict, n_boot: int = EFFECT_BOOT,
         valid_lists = {e: [n for n in names if n in ok and ok[n][s]] for e, names in ensembles.items()}
         out["exclusions"][s] = {e: [n for n in names if n not in ok or not ok[n][s]] for e, names in ensembles.items()}
         out["counts"][s] = {e: len(v) for e, v in valid_lists.items()}
-        complete = n2 in ok and ok[n2][s] and all(len(v) >= min_graphs for v in valid_lists.values())
+        complete = n2 in ok and ok[n2][s] and all(len(v) >= floor[e] for e, v in valid_lists.items())
         res = {}
         if complete:
             for e, names in valid_lists.items():

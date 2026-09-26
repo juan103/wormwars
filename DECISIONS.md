@@ -1433,3 +1433,51 @@ to that decision.
   until it passes.
 
 Its design is `experiments/03r-replication/PREREGISTRATION.md`, reviewed by both before the run.
+
+## D060 — 03r pre-registration v2 after Astra's and Fable's review
+
+Both reviewed v1 (`docs/reviews/20260926-225906-03r-prereg/` for Astra,
+`docs/reviews/20260926-225909-03r-prereg/` for Fable). Both judged it a faithful replication,
+runnable once the outcome rules were complete.
+- **Astra** re-verified the 768 manifest hashes, the distinctness of all 1 408 ensemble graphs
+  across 03 and 03r, and the seed streams.
+- **Fable** recomputed the power figures by hand.
+
+Each finding was checked in the code before it was adopted:
+- **Outcome wording is fixed in advance** for every case (§10): both rules pass, a split between
+  the rules (probability about 0.5), a failure with or without consistency, and withheld.
+  - The gate table is published whatever the outcome.
+  - The two runs are presented side by side and never pooled or combined as confirmatory.
+- **Per-ensemble gates** in `single_signal`: under the maximum-p rule, one failing ensemble makes
+  every label read "inconclusive" (Astra reproduced this).
+- **A withheld primary is written, not omitted** (`replication_primary`).
+- **A fresh secondary permutation:** confirmed, the permuted-magnitude condition reused 03's
+  permutation for N2 and N2-rev (`init_permutation_seed` 0). It is now fresh per graph in 03r.
+  Instance 03 is unchanged.
+- **Retained elements are listed:** the stimulus bank, the remaps, the analysis seeds and the
+  configs. The calibration seed also sets the calibration world's map (confirmed in
+  `calibration.py`).
+- **§7 is relabelled** as a posterior-predictive probability of passing the rank gates, with:
+  - a uniform-prior sensitivity (0.91 and 0.17 at N2 = 0.931);
+  - N2's measurement noise (0.80 at 0.915);
+  - its omissions.
+  Astra's figures are reproduced by the updated `power.py`.
+- **The supplement** now counts missing and failed graphs, masks ratios below 10⁻⁴, summarises
+  every promised quantity, and checks provenance. There are tests. 03's supplement regenerates
+  with every value unchanged.
+- **SH-route's completeness floor is 240.** The report gives planned, measured,
+  calibration-failed, signal-invalid and valid counts, plus 03's P4 beside 03r's.
+- **The cap is registered in code** (28 GPU-hours). A different value on the command line is
+  refused, and the cap is never extended.
+- **The N2 cache** is hashed into 03r's provenance.
+- **Wording:**
+  - the two runs are not independent evidence;
+  - a recurring P1 or P3 label is not evidence of absence;
+  - the probe caveat goes into the README sentence;
+  - 256 SH-route graphs are Fable's request, not a power decision;
+  - the threshold argument for P4 alone is stated.
+
+**Checks:**
+- Instance 03's report regenerates identically after the changes.
+- A smoke measurement of one 03r ensemble graph (SH-1010000, not N2; not saved) ran the new path
+  end to end in 126 s.

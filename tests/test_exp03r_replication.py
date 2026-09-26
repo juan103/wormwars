@@ -95,7 +95,7 @@ def test_report_ranks_the_variants_it_is_given():
 
 
 def _one(p, lo, margin=0.01):
-    return {"p": p, "p_opposite": 1.0, "effect_interval": [lo, lo + 0.05], "margin": margin,
+    return {"n2": 0.93, "p": p, "p_opposite": 1.0, "effect_interval": [lo, lo + 0.05], "margin": margin,
             "n2_interval": [0.9, 0.95], "values": list(np.linspace(0.5, 0.8, 20))}
 
 
@@ -110,3 +110,119 @@ def test_the_replication_verdict_tests_p4_alone_with_the_maximum_over_ensembles(
     assert R.single_signal(sig, "P4")["overall"] == "not distinctive"
     sig["B"] = _one(0.02, 0.005)  # significant, but the effect interval is inside the margin
     assert R.single_signal(sig, "P4")["verdicts"]["B"] != "distinctive"
+
+
+# ---- changes from the pre-registration review (D060) ----
+
+def _one_r(p, lo, n2=0.93, margin=0.01, above=0):
+    vals = [0.5] * (20 - above) + [0.95] * above
+    return {"n2": n2, "p": p, "p_opposite": 1.0, "effect_interval": [lo, lo + 0.05], "margin": margin,
+            "n2_interval": [0.9, 0.95], "values": vals}
+
+
+def test_the_primary_reports_every_ensembles_gates_so_a_split_is_visible():
+    """Astra: four ensembles passing and one failing gives five 'inconclusive' labels under the
+    maximum-p rule; the gates must show which one failed."""
+    sig = {"A": _one_r(0.01, 0.1), "B": _one_r(0.06, 0.1, above=2)}
+    r = R.single_signal(sig, "P4")
+    assert r["overall"] == "not distinctive"
+    assert r["gates"]["A"] == {"graphs": 20, "at_or_above": 0, "p": 0.01, "rank_gate": True, "margin_gate": True}
+    assert r["gates"]["B"]["rank_gate"] is False and r["gates"]["B"]["at_or_above"] == 2
+
+
+def test_a_withheld_primary_is_written_not_omitted():
+    out = {"signals": {"P4": {}, "P4_complete": False}, "counts": {"P4": {"A": 10}}}
+    r = R.replication_primary(out)
+    assert r["overall"] == "withheld" and "reason" in r
+
+
+def test_completeness_floor_can_differ_by_ensemble():
+    pilot = json.loads(PILOT.read_text(encoding="utf-8"))
+    measures = {m["name"]: m for m in pilot["graphs"]}
+    names = sorted(measures)
+    ens = {"A": names[1:9], "B": names[9:]}
+    out = R.build(measures, names[0], ens, n_boot=20, min_graphs={"A": 9, "B": 1})
+    assert not any(out["signals"][s + "_complete"] for s in R.PRIMARY)
+    out = R.build(measures, names[0], ens, n_boot=20, min_graphs={"A": 8, "B": 1})
+    assert all(out["signals"][s + "_complete"] for s in R.PRIMARY)
+
+
+def test_the_cap_is_registered_per_instance_and_cannot_be_changed_on_the_command_line(exp):
+    exp.use_instance("03r")
+    assert exp.MAX_HOURS == 28 and exp.cap_hours(None) == 28
+    with pytest.raises(exp.ProvenanceError):
+        exp.cap_hours(30.0)
+    assert exp.MIN_GRAPHS == {"SH": 120, "SH-route": 240, "SH-class": 120, "SH-mirror": 120, "SH-recip": 120}
+    exp.use_instance("03")
+    assert exp.MAX_HOURS == 24 and exp.MIN_GRAPHS == 120
+
+
+def test_the_secondary_permutation_is_fresh_in_03r_and_unchanged_in_03(exp):
+    exp.use_instance("03")
+    assert exp.secondary_permutation_seed("N2", 0) == 0 and exp.secondary_permutation_seed("N2perm2", 2) == 2
+    exp.use_instance("03r")
+    s = exp.secondary_permutation_seed("N2", 0)
+    assert s != 0 and s != exp.secondary_permutation_seed("N2-rev", 0)
+
+
+def test_03r_pins_the_connectome_cache(exp):
+    exp.use_instance("03r")
+    assert "cook2019_herm.npz" in exp.INPUT_FILES
+    exp.use_instance("03")
+    assert "cook2019_herm.npz" not in exp.INPUT_FILES
+
+
+def _record(name, scale=1.0, prov="p", final=0.1):
+    h = {"final": [final * scale, -final * scale], "steady_contrast": [0.12 * scale, 0.12 * scale],
+         "after": [0.09 * scale, 0.08 * scale]}
+    return {"name": name, "gains": [4.0, 3.0], "provenance": prov,
+            "calibration": {"target": [0.5, 0.4], "achieved": {"forward": 0.5, "turn": 0.4}},
+            "calibration_validation": {"forward": 0.51, "turn": 0.39},
+            "history": {"raw_turn": h, "raw_forward": h}, "response": {"M0": {"common_turn_raw": [0.01, 0.02]}}}
+
+
+@pytest.fixture()
+def supplement():
+    spec = importlib.util.spec_from_file_location("supp", ROOT / "experiments" / "03-generation0" / "supplement.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+def test_the_supplement_counts_missing_and_failed_graphs_instead_of_crashing(supplement, tmp_path):
+    exp_dir, meas = tmp_path / "exp", tmp_path / "meas"
+    exp_dir.mkdir(), meas.mkdir()
+    (exp_dir / "ensembles.json").write_text(json.dumps({"graphs": [{"kind": "A", "name": f"g{i}"} for i in range(4)]}))
+    for name, rec in {"N2": _record("N2", 5, final=0.11), "g0": _record("g0"), "g1": _record("g1", 2),
+                      "g2": {"name": "g2", "calibration_failed": "x", "provenance": "p"}}.items():
+        (meas / f"{name}.json").write_text(json.dumps(rec))
+    out = supplement.build_supplement(exp_dir, meas, ("N2", "N2-rev"))
+    assert out["missing"] == ["N2-rev", "g3"] and out["calibration_failed"] == ["g2"]
+    a = out["summary"]["A"]
+    assert a["P4_turn_numerator"]["n"] == 2 and "forward_gain" in a and "validation_max_rel_deviation" in a
+    assert a["graphs_at_or_above_on_P4_forward"]["N2"] == 0
+    (meas / "g1.json").write_text(json.dumps(_record("g1", 2, prov="other")))
+    with pytest.raises(ValueError):
+        supplement.build_supplement(exp_dir, meas, ("N2",))
+
+
+def test_the_supplement_masks_a_forward_ratio_below_the_floor(supplement):
+    rec = _record("x", 1e-4)
+    assert supplement.per_graph(rec)["P4_forward"] is None
+
+
+def test_the_report_accounts_for_every_planned_graph(exp):
+    planned = {"A": ["a0", "a1", "a2", "a3"]}
+    measures = {"a0": {}, "a1": {"calibration_failed": "x"}, "a2": {}}
+    counts = {"P1": {"A": 2}, "P3": {"A": 1}, "P4": {"A": 2}}
+    acc = exp.accounting(planned, measures, counts)
+    assert acc["A"] == {"planned": 4, "measured": 3, "calibration_failed": 1,
+                        "valid": {"P1": 2, "P3": 1, "P4": 2}, "signal_invalid": {"P1": 0, "P3": 1, "P4": 0}}
+
+
+def test_03s_p4_is_set_beside_03rs(exp):
+    ours = {"P4": {"A": {"n2": 0.9, "effect_interval": [0.05, 0.1], "graphs": 5, "values": [0.1, 0.95, 0.2, 0.3, 0.4]}}}
+    theirs = {"signals": {"P4": {"A": {"n2": 0.93, "effect_interval": [0.08, 0.1], "graphs": 4, "values": [0.1, 0.2, 0.3, 0.94]}}}}
+    side = exp.side_by_side(ours, theirs)
+    assert side["A"]["03"] == {"n2": 0.93, "effect_interval": [0.08, 0.1], "graphs": 4, "at_or_above": 1}
+    assert side["A"]["03r"]["at_or_above"] == 1

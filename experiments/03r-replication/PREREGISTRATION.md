@@ -1,7 +1,8 @@
 # WormWars 03r: pre-registration of the full replication of experiment 03
 
-**Status:** draft for review. It becomes binding at the commit the run's first measurement
-follows. No brain on N2's wiring (N2, N2-rev or N2perm4-6) has been run for 03r.
+**Status:** v2, after Astra's and Fable's review (D060). It becomes binding at the commit the
+run's first measurement follows. No brain on N2's wiring (N2, N2-rev or N2perm4-6) has been run
+for 03r.
 
 ## 0. Why this replication exists
 
@@ -16,40 +17,54 @@ Both reviewers recommended a separately pre-registered replication (D058):
   as fresh graphs, and with either outcome reported.
 
 The owner chose a full replication before publishing (D059). This file follows both reviewers'
-specifications: all five ensembles, 256 routing-matched graphs, and independent genomes for
-every graph, N2 included.
+specifications: all five ensembles, 256 routing-matched graphs (Fable's request), and independent
+genomes for every graph, N2 included (Astra's).
 
 ## 1. Disclosures
 
 1. **Everything 03 measured is known,** including N2's values on every signal (N2's P4 is 0.931,
-   SE 0.006) and every ensemble's distribution. This design, and in particular the choice of P4
-   alone as the primary test (§6), was made after seeing them. That choice is justified in §6
-   and §7, and 03's full rule is also applied and reported.
-2. **Code changes since 03's binding commit (`132acae`)** only add a second instance to the same
-   runner (`scripts/exp03.py --instance 03r`, commit `fc42434`):
+   SE 0.006) and every ensemble's distribution. This design was made after seeing them, in
+   particular the choice of P4 alone as the primary test (§6). The choice is argued in §6, and
+   03's full rule is also applied and reported.
+2. **Code changes since 03's binding commit (`132acae`)** add a second instance to the same runner
+   (`scripts/exp03.py --instance 03r`, commit `fc42434`), plus the review's changes (D060):
    - the same measurement code, with different seeds, sizes and paths;
-   - a P4-alone verdict function;
-   - the variant list passed to the report.
-   Instance 03 was checked to be unchanged. Its report regenerates identically, and a re-measured
-   03 graph (SH-10000) matches its saved measurement bit for bit.
+   - a P4-alone verdict function with per-ensemble gates, written even when withheld;
+   - a per-ensemble completeness floor;
+   - the registered cap in code;
+   - a fresh permutation for one secondary condition (§4);
+   - the N2 cache hashed with the inputs;
+   - a supplement that counts missing and failed graphs.
+   Instance 03 was checked to be unchanged. Its report regenerates identically, a re-measured 03
+   graph (SH-10000) matches its saved measurement bit for bit, and its supplement regenerates
+   with every value unchanged.
 3. **Measured for 03r before this file:** only the ensembles' structure, from the build and its
    validation (`ensembles.json`, `graphs_manifest.json`). No brain has been run for 03r.
-4. **Reviews:** this file goes to Astra 6 (maximum effort) and Fable 5.1 before any run. Their
-   changes are listed in §12.
+4. **Reviews:** Astra 6 (maximum effort) and Fable 5.1 reviewed v1 of this file
+   (`docs/reviews/*-03r-prereg/`). The changes are listed in §12.
 
 ## 2. The question
 
 **Primary:** with fresh graphs from all five null ensembles, and fresh random genomes for every
 graph, including N2's, is N2 again *distinctive relative to every ensemble* on P4?
 
-**Secondary:** do 03's verdicts on P1 and P3 (not distinctive) replicate?
+**Secondary:** do 03's verdicts on P1 and P3 (not distinctive) recur? Repeating a "not
+distinctive" label reproduces a decision. It is not evidence that the property is absent, least
+of all for the low-power P3 (Astra, D060).
 
 **What a replication can and cannot address:**
 - **It tests the sampling in 03:** which graphs were drawn, which random genomes, which worlds,
   and which calibration and validation draws.
-- **It does not test the probe.** The code, the stimulus bank (03's pilot bank), the samplers
-  and the measurement procedure are unchanged. A result that depends on the probe's design would
-  replicate here and still be probe-specific.
+- **It does not test the probe or the code.** The code, the stimulus bank (03's pilot bank), the
+  samplers and the measurement procedure are unchanged. A probe-specific effect, or a systematic
+  implementation error, would replicate here. Passing does not validate the probe or identify a
+  memory mechanism.
+- **The two runs are not independent evidence.** Both compare the same N2 connectome with graphs
+  from the same generating procedure. Under an exchangeability model, an unusually high latent
+  value for N2 stays high across reruns. Fresh seeds also do not undo 03's selection of P4 from
+  three signals.
+  - For that reason 03's and 03r's p-values are never multiplied or combined as if they were
+    independent tests (Astra).
 - **The caveats of 03 §2 apply unchanged:**
   - The null moves weight placement as well as wiring.
   - The rank tests are approximate reference-ensemble tests, exact only under the assumption
@@ -63,7 +78,8 @@ graph, including N2's, is N2 again *distinctive relative to every ensemble* on P
   - **N2-rev:** as in 03;
   - **N2perm4-6:** N2's weights permuted over its own edges, with permutation seeds 4-6. These
     are fresh draws; 03 used 1-3.
-- **Five ensembles,** built with 03's samplers and fresh seeds:
+- **Five ensembles,** built with 03's samplers and fresh seeds. All 1 408 ensemble graph arrays
+  of 03 and 03r are distinct (checked by Astra).
 
   | ensemble | graphs | seeds | 03's seeds |
   |---|---|---|---|
@@ -76,6 +92,9 @@ graph, including N2's, is N2 again *distinctive relative to every ensemble* on P
   - A substitution after a sampler failure adds 100 000, as in 03. That stays clear of 03's seeds
     and names.
   - Plateau chains use seeds 1 090 000-1 090 003.
+- **Why 256 SH-route graphs:** Fable asked for them, because one SH-route graph decided 03. It is
+  not a power decision. Under §7's model it moves the primary pass probability only from about
+  0.95 to 0.97; its benefit is precision on the tail that decided 03.
 - **Validation,** the same rules as 03 (`ensembles.json`):
   - **The rules all passed.** Every ensemble's plateau at 20 and 40 passes agreed within 0.01.
     The lowest acceptance was 9% (SH-class), against a floor of 5%. No graph was over its
@@ -91,21 +110,25 @@ graph, including N2's, is N2 again *distinctive relative to every ensemble* on P
     | SH-recip | 0.045 / 0.050 / 0.058 (03: 0.043 / 0.050 / 0.058) | 0.150 (03: 0.150) | 669 exactly |
 
   - **Build time:** 0.36 hours on the CPU.
-- **Manifest:** every graph file is pinned by its raw SHA-256 in `graphs_manifest.json` and
-  checked when loaded.
+- **Manifest:** every graph file is pinned by its raw SHA-256 in `graphs_manifest.json` (Astra
+  re-verified all 768) and checked when loaded. N2's connectome cache
+  (`data/cache/cook2019_herm.npz`) is hashed into every measurement's provenance (Astra, D060).
 
 ## 4. Procedure for every graph
 
-Identical to 03 §4, with every random draw fresh:
+Identical to 03 §4. What is redrawn, and what is deliberately kept:
 
 | | 03 | 03r |
 |---|---|---|
 | genome seeds | SHA-256 of the graph's name | SHA-256 of "03r:" + the graph's name, so N2's genomes are new too |
 | worlds | 993 000 000-015 | 994 000 000-015 |
 | run seed | 3 | 5 |
-| calibration seed (1 024 genomes) | 0 | 1003 |
+| calibration seed (1 024 genomes; it also sets the calibration world's map, so 03r's gains are not comparable with 03's) | 0 | 1003 |
 | validation seed (2 048 genomes; N2 and the first 8 graphs of every ensemble) | 1 | 1004 |
-| stimulus bank for the history test | 03's pilot bank | **the same**: the same probe |
+| weight permutation of the permuted-magnitude secondary condition | the graph's configured seed (0 except for N2perm) | fresh per graph, from its salted genome seed |
+| **kept:** the stimulus bank for the history test | 03's pilot bank | **the same**: the same probe |
+| **kept:** the remapping sets R1, R2 and MS (`02-screening/remaps.json`) | | the same |
+| **kept:** the analysis seeds (SE bootstrap 0, effect bootstrap 1) and all configs | | the same |
 
 Sample sizes are unchanged:
 - 256 genomes × 16 worlds for P3's two cells;
@@ -124,110 +147,176 @@ below 10⁻⁴, or a non-finite value).
 - **Primary:** P4.
 - **Secondary, with verdicts under 03's full rule (§6):** P1 and P3.
 - **Secondary, descriptive:** 03's secondary values (03 §5).
-- **Secondary, descriptive, newly registered:** the quantities 03 reported as exploratory,
-  computed by `experiments/03-generation0/supplement.py --instance 03r` into
-  `experiments/03r-replication/supplement.json`:
-  - P4's numerator (mean |rising − falling|) and denominator (mean |steady contrast|);
-  - the same ratio on the raw forward read-out;
-  - the mean common-mode turn response;
-  - the gains and the calibration validation.
-  For each, the report gives N2's value, each ensemble's 5th, 50th and 95th percentiles and
-  maximum, and, for the forward-read-out ratio, the number of each ensemble's graphs at or above
-  N2. There are no verdicts on these.
+- **Secondary, descriptive, newly registered:**
+  - **What:** the quantities 03 reported as exploratory, computed by
+    `experiments/03-generation0/supplement.py --instance 03r` into
+    `experiments/03r-replication/supplement.json`:
+    - P4's numerator and denominator on the raw turn read-out;
+    - the same ratio on the raw forward read-out;
+    - the mean common-mode turn response;
+    - both gains;
+    - each validated graph's largest relative deviation from the target drive.
+  - **Summaries:** N2's value and each ensemble's 5th, 50th and 95th percentiles, maximum and
+    valid n. For the forward-read-out ratio, also the number of each ensemble's graphs at or above
+    N2 and each variant.
+  - **Masks:** a ratio whose denominator mean is below 10⁻⁴, or not finite, is masked. Missing
+    measurements and calibration failures are listed and counted. Every measurement must share
+    one provenance.
+  - There are no verdicts on these.
+- **Secondary, descriptive, newly registered:** 03's and 03r's P4 effect intervals and rank
+  counts, side by side for each ensemble, so that "replicated" is not read as "the same
+  magnitude" (Fable).
 
 ## 6. Verdicts
 
 The per-ensemble quantities are computed exactly as in 03 §6:
 - the SEs;
 - τ_E and the margin 0.5 τ_E;
-- the rank p = (r + 1)/(n + 1), with n = 256 for SH-route;
+- the rank p = (r + 1)/(n + 1), where n is the ensemble's number of **valid** graphs;
 - the effect interval;
 - N2's 90% interval.
 
-**Primary test: P4 alone** (`report.single_signal`):
+**Primary test: P4 alone** (`report.single_signal`, via `report.replication_primary`):
 - p = the maximum over the five ensembles of the rank p (intersection-union), at α = 0.05, with
   no correction across signals, since P4 is the only primary hypothesis.
-- The per-ensemble verdict rules are 03's (distinctive, reversed, consistent, inconclusive), with
-  the same effect-margin gate.
-- **Replicated:** *distinctive relative to every ensemble*. That means at most 5 of 128 graphs at
-  or above N2 in each 128-graph ensemble, and at most 11 of 256 in SH-route, with every effect
-  interval beyond its margin.
-- **Not replicated:** anything else. The per-ensemble verdicts say whether N2 is consistent with
-  some ensemble, or inconclusive.
+- The per-ensemble verdict rules are 03's (distinctive, reversed, consistent, inconclusive),
+  with the same effect-margin gate.
+- **Passes:** *distinctive relative to every ensemble*. With the full planned samples, that means
+  at most 5 of 128 graphs at or above N2 in each 128-graph ensemble, and at most 11 of 256 in
+  SH-route, with every effect interval beyond its margin.
+- **The maximum-p rule gives every ensemble the same p.** So if one ensemble fails, all five read
+  "inconclusive". The report therefore also records each ensemble's own gates (Astra):
+  - valid n;
+  - the count at or above N2;
+  - the raw rank p;
+  - the rank gate (raw p ≤ 0.05);
+  - the margin gate.
+  Four passing ensembles cannot rescue the conjunction.
+- **Error rates:**
+  - one-sided 5%, under the null that N2 is exchangeable with at least one ensemble;
+  - the opposite direction is a separate family, as in 03, so up to 10% across both directions.
 
-**Why P4 alone and not 03's three-signal Holm rule.**
-- 03 had three primary hypotheses; this replication has one, stated in advance: P4.
-- Under 03's rule, a replication of an effect exactly as large as 03's would pass only about 41%
-  of the time (§7). The outcome would again turn on whether one or two graphs land above N2.
-- 03's rule is also applied, unchanged, and reported alongside as a secondary result (below).
+**Why P4 alone, and not 03's three-signal Holm rule** (Fable's argument, D060):
+- At α/3, the rule's per-ensemble threshold is (r + 1)/(n + 1) ≤ 1.67%. That sits at 03's own
+  estimate of SH-route's exceedance rate (1 of 128; posterior mean about 1.2%). So under 03's
+  rule, SH-route is close to a coin flip at any sample size. Its cutoff is 3 versus 4 of 256
+  here, and 1 versus 2 of 128 in the other ensembles.
+- At α = 0.05 the threshold is about 4.7%, four times that estimate.
+- The single-signal test is therefore the only informative one. It is also the standard
+  analysis for a single hypothesis stated in advance.
+- It was chosen after 03 and is disclosed as such.
+- 03's rule is also applied, unchanged, and reported alongside.
 
 **Secondary: 03's full rule, applied unchanged** (Holm across P1, P3 and P4 of the maximum p over
 ensembles, as in 03 §6), with every per-ensemble verdict. It is reported whatever the primary
 result.
 
-**Completeness:** as in 03. A valid N2, and at least 120 valid graphs in every ensemble.
-Otherwise the verdict is withheld.
+**Completeness:** a valid N2, and at least **120** valid graphs in each 128-graph ensemble and
+**240** in SH-route. That keeps 03's retained fraction (Astra). Otherwise the verdict is
+**withheld**, and the report says so explicitly. The report gives, separately:
+- planned counts;
+- measured counts;
+- calibration failures;
+- signal-invalid counts;
+- valid counts.
 
-## 7. Power
+## 7. Probability of passing the rank gates (posterior predictive)
 
-**Method:**
-- For each ensemble, the probability that one fresh graph is at or above N2 is given a Jeffreys
-  posterior from 03's count, Beta(r + ½, n − r + ½).
-- Fresh ensembles of 03r's sizes are drawn from it, 200 000 times (seed 0,
-  `experiments/03r-replication/power.py`).
-- **Limits:** this assumes the ensembles' tails are as 03 sampled them, and it ignores N2's own
-  measurement noise (SE 0.006, small against the ensembles' spreads).
+**What this is.** Not the power of the whole registered procedure. It is the probability, under
+a model built from 03's counts, that the rank gates pass.
+- **Not simulated:** the margin gate (never binding in 03), exclusions and completeness.
+- **03's-rule column:** it uses α/3, which is P4's Holm threshold only when P4 has the smallest p
+  of the three signals, as it did in 03.
 
-| if N2's true P4 is | P4 alone, α 0.05 (primary) | 03's full rule |
-|---|---|---|
-| 0.931 (03's estimate) | **0.97** | 0.41 |
-| 0.925 (one SE lower) | 0.97 | 0.41 |
-| 0.915 | 0.89 | 0.18 |
-| 0.905 | 0.35 | 0.00 |
+**Method** (`experiments/03r-replication/power.py`, seed 0, 200 000 draws):
+- For each ensemble, the probability that one fresh graph is at or above N2's value gets a
+  posterior from 03's count, Beta(r + a, n − r + a).
+- Fresh ensembles of 03r's sizes are drawn from it.
+- The table's rows fix N2's measured value. The noise column instead draws N2's fresh measurement
+  around the row's value with 03's SE (0.006).
+- The five tail rates are treated as independent given their posteriors.
 
-A Gaussian model at 03's observed z values gives 0.98 for the primary test and 0.18 for 03's rule.
-03's own ensembles have compressed upper tails, so the Gaussian figure for 03's rule is
-pessimistic.
+| N2's P4 | primary, Jeffreys (a = ½) | 03's rule, Jeffreys | primary, uniform prior (a = 1) | 03's rule, uniform | primary with N2 noise | 03's rule with N2 noise |
+|---|---|---|---|---|---|---|
+| 0.931 (03's estimate) | **0.97** | 0.41 | 0.91 | 0.17 | 0.97 | 0.46 |
+| 0.925 | 0.97 | 0.41 | 0.91 | 0.18 | 0.95 | 0.40 |
+| 0.915 | 0.89 | 0.18 | 0.81 | 0.07 | 0.80 | 0.22 |
+| 0.905 | 0.35 | 0.00 | 0.27 | 0.00 | 0.39 | 0.03 |
 
-**Reading the power:**
+- **The 0.925 row equals the 0.931 row** because no 03 graph lies between them.
+- **The figures depend on the assumptions.** With four ensembles at zero exceedances, the prior
+  matters (Astra). A Gaussian model at 03's observed z values gives 0.98 for the primary test and
+  0.18 for 03's rule, which is lower under that alternative model.
+- **The most likely split:** by this table the primary test passes and 03's rule fails with
+  probability roughly 0.5. §10 fixes the wording for that case in advance.
+
+**Reading it:**
 - If 03's effect is real and about as large as measured, the primary test should pass.
-- If N2's true P4 is nearer the top of the routing-matched and mirror ensembles (about 0.905),
-  it will usually fail.
-- A failure is not proof that there is no difference. The report gives every rank count and
-  effect interval.
+- If N2's P4 is nearer the top of the routing-matched and mirror ensembles (about 0.905), it will
+  usually fail.
+- A failure is not proof that there is no difference. The report gives every count and interval.
 
 ## 8. Budget and run
 
 - **Cost:** 768 ensemble graphs plus 5 N2 graphs, at about 111 s each (03's rate): about 24
   GPU-hours.
-- **Cap:** 28 GPU-hours for the ensemble graphs, cumulative across restarts
-  (`scripts/exp03.py run --instance 03r --max-hours 28`).
-- **Order:** the ensembles are interleaved in proportion to their sizes, so a stop removes graphs
-  evenly. N2, N2-rev and N2perm4-6 come **last** and are exempt from the cap.
-- **The same rules as 03 §8:** stopping and resuming never depend on a measured value; the run
-  refuses uncommitted code; measurements record their commit, input hashes, device and instance;
-  the report refuses a mixture; graph files are checked against the manifest; measurements go to
-  `runs/exp03r/measures/`.
+- **Cap:** 28 GPU-hours for the ensemble graphs, cumulative across restarts.
+  - It is registered in code (`INSTANCES["03r"]["max_hours"]`). The runner refuses any other value
+    on the command line (`scripts/exp03.py run --instance 03r`).
+  - **The cap is never extended.** If it bites, the remaining ensemble graphs are skipped. The
+    skips are proportional across ensembles because of the interleaving. N2 and its variants are
+    then measured, and the report is run on what exists, with the completeness rule of §6
+    (Fable).
+- **Order:** the ensembles are interleaved in proportion to their sizes. N2, N2-rev and N2perm4-6
+  come **last** and are exempt from the cap.
+- **The same rules as 03 §8:**
+  - stopping and resuming never depend on a measured value;
+  - the run refuses uncommitted code;
+  - measurements record their commit, input hashes (including the N2 cache), device and instance;
+  - the report refuses a mixture;
+  - graph files are checked against the manifest;
+  - measurements go to `runs/exp03r/measures/`.
 
 ## 9. Deviations
 
 As in 03 §9. Any deviation is recorded in DECISIONS.md and in the results, and any mid-run code
 change means re-measuring every graph.
 
-## 10. What the results decide, and what will be published
+## 10. Outcomes, their fixed wording, and what will be published
 
-- **Replicated:** 03's P4 finding is reported as replicated, with both runs' effect sizes and
-  rank counts. The mechanism is the next step (03 §10).
-- **Not replicated:** 03's P4 finding is reported as a borderline result that did not replicate.
-  There will be no further attempt designed to make it pass. A later experiment on the mechanism
-  would need its own case and its own pre-registration.
-- **Either way:**
-  - 03 and 03r are published together;
-  - the README says that a full replication was run before publishing, why (one graph decided
-    03's verdict, D058), and who contributed what to that decision (D059): Fable asked for
-    replication before any public claim, Astra specified independent genomes and did not require
-    it, Claude leaned toward replicating, and the owner decided;
-  - P1's and P3's replication results are reported whatever they are.
+The wording for each outcome is fixed now, and it is used in RESULTS.md and the README (Fable,
+Astra, D060).
+
+| outcome | fixed wording |
+|---|---|
+| **The primary test passes, and so does 03's full rule for P4** | "Replicated under the registered single-signal test and under 03's original three-signal rule." |
+| **The primary test passes; 03's full rule fails** | "Replicated under the registered single-signal test (maximum p = x). Under 03's three-signal rule the Holm-adjusted p would have been y (counts …). 03's full significance criterion was not reproduced." |
+| **The primary test fails, and N2 is not consistent with any ensemble** | "Not replicated under the registered rule. N2 remained above the central 90% of k of 5 ensembles (counts …). The failing gates were …." |
+| **The primary test fails, and N2 is consistent with some ensemble** | "Not replicated; N2 is consistent with ensemble(s) X." |
+| **Withheld** (N2 invalid, or completeness not met) | "No verdict: the replication was incomplete or unevaluable (reason …). No rerun without a new pre-registration." |
+
+**Every outcome:**
+- **The gate table.** The per-ensemble gate table (§6) is published whatever the outcome. A split
+  is described from it, never from the labels alone.
+- **How 03 and 03r are presented:**
+  - side by side, each with both decision rules, and never replaced by a pooled result;
+  - pooled analyses are exploratory (§11) and can never stand in for a failed or withheld
+    registered verdict;
+  - p-values from the two runs are never combined.
+- **The README's sentence:**
+  - it carries the probe caveat: "with the same probe, stimulus bank and code; the replication
+    tests sampling, not the probe";
+  - it says that a full replication was run before publishing, and why: one graph decided 03's
+    verdict (D058);
+  - it says who contributed what to that decision (D059): Fable asked for replication before any
+    public claim; Astra specified independent genomes and did not require replication first;
+    Claude leaned toward replicating first; the owner decided.
+- **P1 and P3:** their results are reported whatever they are, as recurring or not recurring
+  decision labels, not as evidence of absence.
+- **No further attempt designed to make P4 pass.** A later experiment on the mechanism needs its
+  own case and its own pre-registration.
+- **Replicated:** the mechanism is the next step (03 §10). A pass supports sampling stability
+  under this probe. It is not an independent confirmation, and not a mechanism (§2).
 
 ## 11. Not registered
 
@@ -236,6 +325,42 @@ These are exploratory:
 - any analysis of N2-rev or N2perm4-6 beyond their values and ranks;
 - any mechanism analysis.
 
-## 12. Changes from the team's review of this file
+## 12. Changes from the team's review of v1 (D060)
 
-(To be filled after Astra's and Fable's review.)
+Both reviewers judged the design a faithful replication, and runnable once the outcome rules
+were completed. Astra checked the code, the 768 manifest hashes, graph distinctness and seed
+streams; it ran `power.py` and 14 report tests. Fable checked the code by reading and recomputed
+the power figures.
+
+**Must fix (both):** outcome rules and wording for every case (§10):
+- the split between the two rules;
+- a per-ensemble split, shown by the new gate table;
+- a withheld result, which is now written explicitly by the code;
+- how the two runs are presented together.
+
+**Astra:**
+- **The permutation was not fresh.** The permuted-magnitude secondary condition reused 03's
+  weight permutation for N2 and N2-rev. It is now fresh per graph, and the retained elements are
+  listed (§4).
+- **§7 is a posterior-predictive probability of the rank gates,** not the power of the whole
+  procedure. It is relabelled, with its omissions, its prior sensitivity and N2's own noise now
+  shown.
+- **The supplement** crashed on a missing or calibration-failed graph and did not summarise
+  everything promised. It is fixed, with registered masks and counts, and there are tests.
+- **The two runs are not independent evidence,** so p-values are never combined (§2).
+- **Completeness:** SH-route's floor is now 240, and counts are reported separately.
+- **The cutoffs** use n = valid graphs; SH-route's cutoff under 03's rule is 3 versus 4 of 256.
+- **The N2 cache** is now hashed into provenance.
+- **P1 and P3 wording:** a recurring label is not evidence of absence.
+
+**Fable:**
+- **The threshold argument for P4 alone** (§6), and the error rates.
+- **256 SH-route graphs** are stated as Fable's request, not a power decision.
+- **The cap** is registered in code, refused on the command line if different, and never
+  extended.
+- **The withheld primary** is written, not omitted.
+- **The probe caveat** goes into the README sentence.
+- **Effect intervals** for 03 and 03r are compared side by side.
+- **The calibration seed** also sets the calibration map, so the gains are not comparable across
+  runs.
+- **`power.py`'s** α/3 and margin assumptions are stated.

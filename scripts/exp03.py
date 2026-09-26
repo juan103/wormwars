@@ -49,7 +49,8 @@ INSTANCES = {
            "plateau_seeds": range(90_000, 90_004),
            "worlds": 993_000_000,  # shared by every graph and task; disjoint from 02
            "run_seed": 3, "genome_salt": "", "calibration_seed": 0, "validation_seed": 1,
-           "real": ["N2", "N2-rev", "N2perm1", "N2perm2", "N2perm3"]},
+           "real": ["N2", "N2-rev", "N2perm1", "N2perm2", "N2perm3"],
+           "max_hours": 24.0, "min_graphs": 120, "fresh_secondary_permutation": False, "pin_connectome": False},
     "03r": {"exp": "03r-replication", "out": "runs/exp03r",
             "seed_base": {"SH": 1_010_000, "SH-route": 1_020_000, "SH-class": 1_030_000, "SH-mirror": 1_040_000,
                           "SH-recip": 1_050_000},
@@ -57,7 +58,13 @@ INSTANCES = {
             "plateau_seeds": range(1_090_000, 1_090_004),
             "worlds": 994_000_000,
             "run_seed": 5, "genome_salt": "03r:", "calibration_seed": 1003, "validation_seed": 1004,
-            "real": ["N2", "N2-rev", "N2perm4", "N2perm5", "N2perm6"]},
+            "real": ["N2", "N2-rev", "N2perm4", "N2perm5", "N2perm6"],
+            # registered after review (D060): the cap, a per-ensemble completeness floor keeping 03's
+            # retained fraction, a fresh permutation for the permuted-magnitude secondary, and the
+            # N2 cache hashed with the other inputs
+            "max_hours": 28.0,
+            "min_graphs": {"SH": 120, "SH-route": 240, "SH-class": 120, "SH-mirror": 120, "SH-recip": 120},
+            "fresh_secondary_permutation": True, "pin_connectome": True},
 }
 
 
@@ -65,7 +72,8 @@ def use_instance(name: str) -> None:
     """Point every path, seed and size of this module at one instance. Also the initializer of
     the build's worker processes, which re-import the module."""
     global INSTANCE, EXP, OUT, GRAPHS, MEASURES, PILOT, N_PER, N_PER_ENSEMBLE, SEED_BASE, PLATEAU_SEEDS, WORLDS
-    global RUN_SEED, GENOME_SALT, CALIBRATION_SEED, VALIDATION_SEED, REAL, INPUT_FILES
+    global RUN_SEED, GENOME_SALT, CALIBRATION_SEED, VALIDATION_SEED, REAL, INPUT_FILES, MAX_HOURS, MIN_GRAPHS
+    global FRESH_SECONDARY_PERMUTATION
     c = INSTANCES[name]
     INSTANCE = name
     EXP = ROOT / "experiments" / c["exp"]
@@ -79,14 +87,34 @@ def use_instance(name: str) -> None:
     RUN_SEED, GENOME_SALT = c["run_seed"], c["genome_salt"]
     CALIBRATION_SEED, VALIDATION_SEED = c["calibration_seed"], c["validation_seed"]
     REAL = list(c["real"])
+    MAX_HOURS, MIN_GRAPHS = c["max_hours"], c["min_graphs"]
+    FRESH_SECONDARY_PERMUTATION = c["fresh_secondary_permutation"]
     INPUT_FILES = {"ensembles.json": EXP / "ensembles.json", "graphs_manifest.json": EXP / "graphs_manifest.json",
                    "pilot.json": PILOT,
                    "mirror_pairs.yaml": ROOT / "configs" / "mirror_pairs.yaml",
                    "remaps.json": ROOT / "experiments" / "02-screening" / "remaps.json"}
+    if c["pin_connectome"]:
+        from wormwars.connectome.loader import DEFAULT_CACHE
+        INPUT_FILES["cook2019_herm.npz"] = DEFAULT_CACHE
 
 
 def _gseed(name: str) -> int:
     return M.genome_seed(name, GENOME_SALT)
+
+
+def secondary_permutation_seed(name: str, current: int) -> int:
+    """The weight-permutation seed of the permuted-magnitude secondary condition. 03 kept the
+    graph's configured seed (0 for every graph but N2perm); 03r draws a fresh one per graph from
+    its salted genome seed, so N2's permutation is not 03's (Astra, D060)."""
+    return _gseed(name) + 2 if FRESH_SECONDARY_PERMUTATION else current
+
+
+def cap_hours(requested) -> float:
+    """The registered cap; a different value on the command line is refused, so the cap is never
+    silently changed or extended (Fable, D060)."""
+    if requested is not None and float(requested) != MAX_HOURS:
+        raise ProvenanceError(f"the registered cap for {INSTANCE} is {MAX_HOURS} GPU-hours, not {requested}")
+    return MAX_HOURS
 
 
 # Allocation, design v3.2 (D053): precision where the primary signals need it.
@@ -329,6 +357,8 @@ def measure_graph(con, name, device, bank=None, only=None):
         for mode in ("uniform", "permuted"):
             cm = cfg1.copy()
             cm.brain.init_chem_magnitude = cm.brain.init_gap_magnitude = mode
+            if mode == "permuted":
+                cm.brain.init_permutation_seed = secondary_permutation_seed(name, cm.brain.init_permutation_seed)
             gm = Genome.random(spec, cm.brain, SECONDARY_PROBE_GENOMES,
                                generator=torch.Generator(device=device).manual_seed(_gseed(name) + 1), device=device)
             resp[f"M0-{mode}"] = P.input_response(spec, cm, grid.interface_for(con, "M0", remap_sets), None, device,
@@ -569,17 +599,42 @@ def cmd_run(args):
     if prov["code_dirty"]:
         raise ProvenanceError("uncommitted changes in code, configs or registered inputs: commit before running")
     check_resumable([json.loads(p.read_text(encoding="utf-8")) for p in MEASURES.glob("*.json")], prov)
+    cap = cap_hours(args.max_hours)  # refused before anything is measured if it differs from the registered cap
     for name in run_order():
         path = MEASURES / f"{name}.json"
         if path.exists():
             continue
-        if name not in REAL and spent_hours() > args.max_hours:
+        if name not in REAL and spent_hours() > cap:
             print(f"cap reached ({spent_hours():.2f} h): skipping ensemble graph {name}")
             continue
         m = measure_graph(con, name, args.device, bank=bank)
         m["provenance"] = prov
         _json(path, m)
     print(f"run finished: {len(list(MEASURES.glob('*.json')))} graphs measured, {spent_hours():.2f} h")
+
+
+def accounting(planned: dict, measures: dict, counts: dict) -> dict:
+    """Per ensemble: planned, measured and calibration-failed graphs, and valid and signal-invalid
+    counts per signal (03r's §6, D060)."""
+    out = {}
+    for e, names in planned.items():
+        measured = [n for n in names if n in measures]
+        failed = [n for n in measured if "calibration_failed" in measures[n]]
+        usable = len(measured) - len(failed)
+        out[e] = {"planned": len(names), "measured": len(measured), "calibration_failed": len(failed),
+                  "valid": {s: counts[s][e] for s in counts},
+                  "signal_invalid": {s: usable - counts[s][e] for s in counts}}
+    return out
+
+
+def side_by_side(signals: dict, report03: dict, signal: str = "P4") -> dict:
+    """03's and 03r's N2 value, effect interval, valid n and count at or above N2, per ensemble
+    (03r's §5, descriptive; Fable, D060)."""
+    def row(r):
+        return {"n2": r["n2"], "effect_interval": r["effect_interval"], "graphs": r["graphs"],
+                "at_or_above": int(sum(v >= r["n2"] for v in r["values"]))}
+    old = report03["signals"][signal]
+    return {e: {"03": row(old[e]) if e in old else None, "03r": row(r)} for e, r in signals[signal].items()}
 
 
 def cmd_report(args):
@@ -590,12 +645,17 @@ def cmd_report(args):
                 if p.stem in registered}  # unregistered files are never read
     check_provenance(measures.values())
     ensembles = {k: [g["name"] for g in e["graphs"] if g["kind"] == k and g["name"] in measures] for k in S.KINDS}
-    out = R.build(measures, "N2", ensembles, descriptive=tuple(REAL[1:]))
+    out = R.build(measures, "N2", ensembles, descriptive=tuple(REAL[1:]), min_graphs=MIN_GRAPHS)
     out["provenance"] = next(iter(measures.values()))["provenance"]
-    if INSTANCE == "03r" and out["signals"]["P4_complete"]:  # 03r's registered primary test (D059)
-        out["replication_primary"] = R.single_signal(out["signals"]["P4"], "P4")
-        rp = out["replication_primary"]
-        print("03r primary (P4 alone)", rp["overall"], "p_max", round(rp["p_max"], 4), rp["verdicts"])
+    if INSTANCE == "03r":  # 03r's registered primary test (D059), written even when withheld (D060)
+        planned = {k: [g["name"] for g in e["graphs"] if g["kind"] == k] for k in S.KINDS}
+        out["accounting"] = accounting(planned, measures, out["counts"])
+        out["accounting"]["N2"] = {"measured": "N2" in measures, "calibration_failed": "calibration_failed" in measures.get("N2", {})}
+        if out["signals"]["P4_complete"]:
+            report03 = json.loads((ROOT / "experiments" / "03-generation0" / "report.json").read_text(encoding="utf-8"))
+            out["P4_beside_03"] = side_by_side(out["signals"], report03)
+        out["replication_primary"] = rp = R.replication_primary(out)
+        print("03r primary (P4 alone)", rp["overall"], "p_max", rp.get("p_max"), rp.get("gates"))
     out["descriptive"] = {n: out["per_graph"][n] for n in REAL if n in out["per_graph"]}
     _json(EXP / "report.json", out)
     print("valid graphs per signal and ensemble", out["counts"])
@@ -608,7 +668,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("command", choices=["build", "pilot", "variance", "power", "run", "report"])
     ap.add_argument("--sims", type=int, default=2000)
-    ap.add_argument("--max-hours", type=float, default=24.0)
+    ap.add_argument("--max-hours", type=float, default=None, help="must equal the instance's registered cap")
     ap.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
     ap.add_argument("--workers", type=int, default=8)
     ap.add_argument("--instance", choices=sorted(INSTANCES), default="03")

@@ -1,0 +1,37 @@
+**Verdict up front:** the design is a faithful replication and the code does what §3 and §4 say. It can run once §10 is completed with outcome wording fixed in advance, plus three small code hardenings. I could not run `git diff` or the tests in this session (no shell tool), so the "instance 03 unchanged" claim is checked by reading, not by execution.
+
+## Must fix before running
+
+**1. §10 has no wording for the single most likely outcome: primary passes, 03's rule fails.** By §7's own table, that split has roughly a 55% chance (0.97 minus 0.41). Everything in §10 is written for "replicated" or "not replicated" as if the two rules agree. The README headline, the phrase used for the secondary, and the combined statement across 03 and 03r must be fixed now, or the choice will be made after seeing which rule passed. Also missing: wording for a per-ensemble split under the primary (four distinctive, one inconclusive at 12 of 256 is "not replicated" by §6, but "a borderline result that did not replicate" would misdescribe it), and for a withheld verdict (N2 calibration failure or incomplete ensembles), including whether any rerun is allowed (it should need a new pre-registration). Suggested fixed sentences:
+- both pass: "replicated under the registered test and under 03's original rule";
+- primary passes, 03's rule fails: "replicated under the registered single-signal test (p_max = x); under 03's three-signal rule the Holm-adjusted p would have been y (counts r = …). No claim is made that 03's rule replicated";
+- primary fails, no ensemble consistent: "not replicated under the registered rule; N2 remained above the central 90% of k of 5 ensembles (counts …)";
+- primary fails with any ensemble consistent: "not replicated; consistent with ensemble X";
+- withheld: "no verdict; reason; no rerun without a new pre-registration";
+- always: "03 and 03r are reported side by side; no pooled p-value is a confirmatory result" (§11 already makes pooling exploratory, §10 should say so).
+
+## Should fix
+
+**2. The justification for P4 alone is weaker than the real argument (§6).** The text says 03's rule would pass only 41% of the time, which reads as "we picked the easier test". The stronger fact: at α/3 the per-ensemble threshold fraction (1/128, 3/256, 1.67% in the limit) sits at 03's own estimate of SH-route's exceedance rate (1 of 128, posterior mean 1.16%). So 03's rule is near a coin flip for SH-route at any sample size (asymptote about 0.7), while the α 0.05 threshold (4.65%) is four times the estimate. That makes the single-signal rule the only informative one, and the choice is standard for a single pre-stated hypothesis. Add this, plus one line on type I error: one-sided 5% under the null that N2 is exchangeable with at least one ensemble, and the opposite-direction family still gives up to 10% across both directions (03 §6, not restated here). I would not require a stricter α, a combined analysis, or an effect-size primary. Do pre-register a descriptive comparison of 03's and 03r's per-ensemble effect intervals so "replicated" is not read as "same magnitude".
+
+**3. Allocation (§3).** 256 for SH-route changes almost nothing: the primary goes from about 0.97 at 128 to 0.975 at 256, 03's rule from about 0.55 to 0.62. The 0.41 for 03's rule is dominated by the four zero-count ensembles at critical count 1 (about 0.9 each), and doubling all five would only reach about 0.5 because SH-route still limits. Keep the 256 (built and hashed already), but say it is Fable's request, not a power decision.
+
+**4. The cap can defeat "N2 last" (`scripts/exp03.py:572-581`).** When the cap bites, ensemble graphs are skipped and N2 and its variants are measured in the same invocation. Any later extension is then a resume with N2's numbers on disk. Pre-declare one of: the cap is never extended, or the run stops before the real graphs whenever any ensemble graph was skipped and the cap may be raised once to a stated figure. The second needs a two-line code change. Headroom is 18% (773 graphs at 03's 110 s is 23.6 h against 28 h), so this is unlikely but cheap to close.
+
+**5. The cap is a CLI flag whose default is 24, not 28 (`scripts/exp03.py:611`).** The pre-registration pins 28 in a command line only. Put `max_hours` in `INSTANCES` and make the flag default to it, so a mistyped invocation cannot be a silent deviation.
+
+**6. A withheld primary leaves no record (`scripts/exp03.py:595-598`).** If P4 is incomplete, `replication_primary` is simply absent from the report. Write an explicit `{"overall": "withheld"}` so the registered output says what happened.
+
+**7. §7 is a posterior-predictive replication probability, not power, and one row is empty.** Label it as such. The 0.925 row is identical to the 0.931 row because no 03 graph lies between 0.916 and 0.934, so it shows no sensitivity; drop it or say why. The model also treats the five tail rates as independent given their posteriors and ignores that a lower fresh N2 raises all five counts together; second-order at SE 0.006 against a 0.027 gap to SH-route's 95th percentile, but say it. Figures check: critical counts 5/128 and 11/256 (α 0.05), 1/128 and 3/256 (α/3) are right. Recounting 03's `report.json`, graphs at or above 0.905 are 0, 7, 1, 3, 0 and at or above 0.915 are 0, 2, 0, 1, 0; hand beta-binomial calculations give about 0.97, 0.89 and 0.3 for the primary rows and 0.41 for 03's rule, consistent with the table. The Gaussian cross-check reproduces to within rounding (I get about 0.2 for 03's rule).
+
+**8. Probe caveat must be in the fixed README sentence (§10).** The RESULTS exploratory section raised saturation and finite warm-up as unexcluded readings. This replication cannot touch them, and §2 says so, but the publication's "replicated" sentence should carry "with the same probe, stimulus bank and code; it tests sampling, not the probe" now, not after the result.
+
+## Minor
+
+- **§6:** "n = 256 for SH-route" should read "n = the number of valid graphs".
+- **§4, undisclosed fresh element:** the calibration seed also seeds the calibration world's map (`calibration.py:198`, `world.py:160-166, 244`), so 03r calibrates in a different T0 map from 03. Fresh is right, but the gains are not comparable across runs and the text implies only the genomes changed.
+- **Shared with 03, undisclosed:** the M0-permuted secondary condition uses the default permutation seed for every ensemble graph (`grid.py:174-179` only sets it for N2perm names). Descriptive only.
+- **power.py:** the "03's rule" simulation assumes P4 is the smallest of the three p values and ignores the margin gate. Both hold here; say so.
+- **Verified:** seeds, worlds, run, calibration and validation seeds, salt "03r:", N2perm4-6 parsed from the name, REAL list, pilot bank shared, instance paths (`scripts/exp03.py:44-85`); `interleave` reduces to 03's order for equal sizes; `genome_seed` with empty salt is unchanged; `single_signal` applies 03's per-ensemble rules with p_max and no Holm; `ensembles.json` and the manifest hold 768 graphs, no substitutions, all plateaus pass, minimum acceptance 0.093, and every number in the §3 table matches the file.
+
+**Overall:** yes, this can run once item 1 is written into §10 and, ideally, items 4 to 6 are committed as the small code changes they are. No random element is shared with 03 except the declared stimulus bank and configs. The P4-alone primary is justified; it just needs the threshold argument to defend it.
