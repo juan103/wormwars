@@ -1690,5 +1690,6 @@ Both reviewed the island fixes (D064) and the T0 plan v1 (`docs/reviews/*-T0/`).
 - stronger island tests;
 - a single-island regression against a stored log, after 03r.
 
-**Agreement:** all three (Claude, Astra and Fable) agree on v2's substance. So under the owner's
-delegation, T0 proceeds and the owner is informed.
+**Agreement:** both reviewers accepted the island fixes and agreed on what v2 had to change.
+Every must-fix item is adopted. v2 itself has not yet been confirmed by them: it goes to both with
+the first T0 code, and T0 is only treated as agreed after that confirmation.
