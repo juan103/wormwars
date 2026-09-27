@@ -82,18 +82,7 @@ def breed(
     children = genome.select(list(pick))
     children.mutate(cfg.mutation, generator=generator)
 
-    keep = genome.select(list(elites))
-    return Genome(
-        genome.spec,
-        genome.cfg,
-        torch.cat([keep.w, children.w]),
-        torch.cat([keep.g, children.g]),
-        torch.cat([keep.tau, children.tau]),
-        torch.cat([keep.bias, children.bias]),
-        None
-        if genome.dale_sign is None
-        else torch.cat([keep.dale_sign, children.dale_sign]),
-    )
+    return Genome.cat([genome.select(list(elites)), children])
 
 
 def evolve(
@@ -168,9 +157,11 @@ def evolve(
                 genome, fit = _migrate(genome, fit, island_of, e, gen_t)
             genome = _breed_islands(genome, fit, island_of, cfg, gen_t)
 
-    fit_final = np.array([g.best for g in result.log])
-    best_i = int(np.argmax(evaluate_on(cfg, iface, genome, pool.train_ids(e.generations - 1),
-                                       run_seed, device, combat_stage).per_strain()))
+    # The champion is the final generation's logged best, from the evaluation already made. The
+    # first version re-evaluated the population on the same worlds, which cost an uncounted
+    # evaluation and under default CUDA could pick a different strain than the log names (D066).
+    best_per_generation = np.array([g.best for g in result.log])
+    best_i = int(np.argmax(fit))
     result.champion = genome.select([best_i])
     result.champion_id = strain_id(spec.label, run, e.generations - 1, 1)
     result.gpu_seconds = time.perf_counter() - t_start
@@ -184,7 +175,8 @@ def evolve(
             run=run,
             run_seed=run_seed,
             generations=e.generations,
-            fitness=[float(x) for x in fit_final],
+            fitness=[float(x) for x in fit],  # per strain, index-aligned with the genomes
+            best_per_generation=[float(x) for x in best_per_generation],
         )
         (out / f"{spec.label}-run{run:02d}-log.json").write_text(
             json.dumps([asdict(x) for x in result.log], indent=2), encoding="utf-8"
@@ -198,8 +190,7 @@ def _breed_islands(genome, fit, island_of, cfg, gen_t) -> Genome:
     # each island's children are written back into that island's own slots, so `island_of`
     # stays true from generation to generation. The first version concatenated the islands in
     # blocks while `island_of` stayed interleaved, mixing islands from the second generation (D064).
-    w, g_, tau, b = genome.w.clone(), genome.g.clone(), genome.tau.clone(), genome.bias.clone()
-    dale = None if genome.dale_sign is None else genome.dale_sign.clone()
+    out = genome
     for isl in range(cfg.evo.islands):
         idx = np.flatnonzero(island_of == isl)
         sub_cfg = cfg.copy()
@@ -207,36 +198,21 @@ def _breed_islands(genome, fit, island_of, cfg, gen_t) -> Genome:
         sub_cfg.evo.population = len(idx)
         sub_cfg.evo.elites = max(1, cfg.evo.elites // cfg.evo.islands)
         sub_cfg.evo.truncation = max(2, cfg.evo.truncation // cfg.evo.islands)
-        part = breed(sub, fit[idx], sub_cfg, gen_t)
-        t = torch.as_tensor(idx, device=w.device)
-        w[t], g_[t], tau[t], b[t] = part.w, part.g, part.tau, part.bias
-        if dale is not None:
-            dale[t] = part.dale_sign
-    return Genome(genome.spec, genome.cfg, w, g_, tau, b, dale)
+        out = out.assign(idx, breed(sub, fit[idx], sub_cfg, gen_t))
+    return out
 
 
 def _migrate(genome, fit, island_of, e, gen_t):
     """Send each island's best to the next island, replacing its worst. Within a run only.
     Returns the new population and its fitness: every migrant keeps all of its parameters,
     its Dale sign vector included, and its own fitness (D064)."""
-    w = genome.w.clone()
-    g_ = genome.g.clone()
-    tau = genome.tau.clone()
-    b = genome.bias.clone()
-    dale = None if genome.dale_sign is None else genome.dale_sign.clone()
+    out = genome
     new_fit = np.array(fit, dtype=float, copy=True)
     for isl in range(e.islands):
         src = np.flatnonzero(island_of == isl)
         dst = np.flatnonzero(island_of == (isl + 1) % e.islands)
         best = src[np.argsort(-fit[src])[: e.migrants]]
         worst = dst[np.argsort(fit[dst])[: e.migrants]]
-        w[worst], g_[worst], tau[worst], b[worst] = (
-            genome.w[best],
-            genome.g[best],
-            genome.tau[best],
-            genome.bias[best],
-        )
-        if dale is not None:
-            dale[worst] = genome.dale_sign[best]
+        out = out.assign(worst, genome.select(list(best)))  # read from the original: synchronous
         new_fit[worst] = fit[best]
-    return Genome(genome.spec, genome.cfg, w, g_, tau, b, dale), new_fit
+    return out, new_fit

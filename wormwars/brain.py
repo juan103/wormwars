@@ -137,6 +137,46 @@ class Genome:
     bias: Tensor  # [S, N]
     dale_sign: Tensor | None = None  # [S, N] fixed sign per presynaptic neuron, if Dale's law
 
+    # Every per-strain parameter tensor. Operations iterate this tuple instead of listing fields
+    # by hand, so a field added later cannot be dropped silently (T0, D066); a test checks that
+    # it names every tensor field of the dataclass.
+    PARAMS = ("w", "g", "tau", "bias", "dale_sign")
+
+    def params(self) -> dict:
+        return {k: getattr(self, k) for k in self.PARAMS}
+
+    def with_params(self, spec=None, cfg=None, **params) -> "Genome":
+        """A new genome with some parameters (or the spec or config) replaced; every parameter
+        not given is copied, so the result never aliases this genome."""
+        unknown = set(params) - set(self.PARAMS)
+        if unknown:
+            raise ValueError(f"not Genome parameters: {sorted(unknown)}")
+        new = {k: (params[k] if k in params else (None if v is None else v.clone()))
+               for k, v in self.params().items()}
+        return Genome(self.spec if spec is None else spec, self.cfg if cfg is None else cfg, **new)
+
+    @staticmethod
+    def cat(parts: list, cfg=None) -> "Genome":
+        """Strains of several genomes on one spec, in order. Every parameter is concatenated."""
+        base = parts[0]
+        dales = [p.dale_sign is None for p in parts]
+        if any(dales) and not all(dales):
+            raise ValueError("cannot concatenate genomes with and without Dale signs")
+        new = {k: None if getattr(base, k) is None else torch.cat([getattr(p, k) for p in parts])
+               for k in Genome.PARAMS}
+        return Genome(base.spec, base.cfg if cfg is None else cfg, **new)
+
+    def assign(self, idx, src: "Genome") -> "Genome":
+        """A copy of this genome with the strains at `idx` replaced by `src`'s strains, every
+        parameter included."""
+        idx = torch.as_tensor(idx, dtype=torch.long, device=self.device)
+        out = self.clone()
+        for k in self.PARAMS:
+            t = getattr(out, k)
+            if t is not None:
+                t[idx] = getattr(src, k).to(t.device)
+        return out
+
     @property
     def n_strains(self) -> int:
         return int(self.w.shape[0])
@@ -227,28 +267,14 @@ class Genome:
         return self.clamp_()
 
     def clone(self) -> "Genome":
-        return Genome(
-            self.spec,
-            self.cfg,
-            self.w.clone(),
-            self.g.clone(),
-            self.tau.clone(),
-            self.bias.clone(),
-            None if self.dale_sign is None else self.dale_sign.clone(),
-        )
+        return Genome(self.spec, self.cfg, **{k: None if v is None else v.clone()
+                                              for k, v in self.params().items()})
 
     def select(self, idx) -> "Genome":
         """A new genome holding copies of the strains at `idx` (a LongTensor or list)."""
         idx = torch.as_tensor(idx, dtype=torch.long, device=self.device)
-        return Genome(
-            self.spec,
-            self.cfg,
-            self.w[idx].clone(),
-            self.g[idx].clone(),
-            self.tau[idx].clone(),
-            self.bias[idx].clone(),
-            None if self.dale_sign is None else self.dale_sign[idx].clone(),
-        )
+        return Genome(self.spec, self.cfg, **{k: None if v is None else v[idx].clone()
+                                              for k, v in self.params().items()})
 
     def flat(self) -> Tensor:
         """[S, n_params] view used for hashing, distance and serialisation."""

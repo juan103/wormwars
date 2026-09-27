@@ -176,6 +176,34 @@ def arena_side(cfg, total_weys: int) -> int:
     return max(side, cfg.world.min_side)
 
 
+_M32 = 0xFFFFFFFF
+
+
+def _mul32(x: Tensor, c: int) -> Tensor:
+    """(x * c) mod 2^32 for x in [0, 2^32), without overflowing int64: two 16-bit halves of c."""
+    lo, hi = c & 0xFFFF, (c >> 16) & 0xFFFF
+    return (x * lo + (((x * hi) & 0xFFFF) << 16)) & _M32
+
+
+def _hash32(x: Tensor) -> Tensor:
+    """A 32-bit integer hash (lowbias32) on int64 tensors holding values in [0, 2^32)."""
+    x = x ^ (x >> 16)
+    x = _mul32(x, 0x7FEB352D)
+    x = x ^ (x >> 15)
+    x = _mul32(x, 0x846CA68B)
+    return x ^ (x >> 16)
+
+
+def _mix32(x: int) -> int:
+    """The same hash on a Python int, for scalar keys."""
+    x &= _M32
+    x ^= x >> 16
+    x = (x * 0x7FEB352D) & _M32
+    x ^= x >> 15
+    x = (x * 0x846CA68B) & _M32
+    return x ^ (x >> 16)
+
+
 class World:
     def __init__(
         self,
@@ -298,11 +326,9 @@ class World:
         self.last_signals: dict[str, Tensor] | None = None
         self._food_sample: Tensor | None = None
         self._held_food: Tensor | None = None
-        # the jitter probe's own generator, so a probe never touches any other randomness
-        self._probe_gen = (
-            torch.Generator(device=self.device).manual_seed(int(run_seed) * 7919 + 17)
-            if wcfg.food_probe == "jitter" else None
-        )
+        # the jitter probe's noise is a hash of (run seed, world id, tick, sample point), so it
+        # follows world identity, never batch position, and touches no other randomness (D066)
+        self._world_id_t = torch.as_tensor(np.asarray(self.world_ids, dtype=np.int64), device=self.device)
         self.v = [
             self.brains[s].initial_state(self.assigns[s].n_slots * self.n_weys)
             for s in range(self.n_swarms)
@@ -472,6 +498,19 @@ class World:
 
     # -------------------------------------------------------------- sensing
 
+    def _keyed_uniform(self, n: int, stream: int) -> Tensor:
+        """[worlds, n] uniforms in [0, 1), a pure function of (run seed, stream, world id, tick,
+        point index): common random numbers for every strain that plays the same world."""
+        h = torch.full((1, 1), _mix32((int(self.run_seed) & _M32) ^ (stream * 0x9E3779B9 & _M32)),
+                       dtype=torch.int64, device=self.device)
+        wid = self._world_id_t.view(-1, 1)
+        h = _hash32(h ^ (wid & _M32))
+        h = _hash32(h ^ ((wid >> 32) & _M32))
+        h = _hash32(h ^ (self.tick_count & _M32))
+        pt = torch.arange(n, dtype=torch.int64, device=self.device).view(1, -1)
+        h = _hash32(h ^ pt)
+        return (h >> 8).to(torch.float32) / float(1 << 24)
+
     def _sensed_food(self, pts: Tensor) -> Tensor:
         """Food + pellet as sensed: blurred into odour if food_odour_sigma > 0, and read at the
         point reflection of every sample point under the "mirrored" probe."""
@@ -483,10 +522,9 @@ class World:
             x, y = pts[..., 0], pts[..., 1]
             pts = torch.stack((self.W - 1 - x, self.H - 1 - y), dim=-1)
         elif wcfg.food_probe == "jitter":
-            shape = pts.shape[:-1]
-            r = wcfg.food_probe_radius * torch.sqrt(
-                torch.rand(shape, generator=self._probe_gen, device=self.device, dtype=pts.dtype))
-            a = 2 * math.pi * torch.rand(shape, generator=self._probe_gen, device=self.device, dtype=pts.dtype)
+            n = pts.shape[1]  # pts is [worlds, points, 2]
+            r = wcfg.food_probe_radius * torch.sqrt(self._keyed_uniform(n, 0).to(pts.dtype))
+            a = 2 * math.pi * self._keyed_uniform(n, 1).to(pts.dtype)
             pts = pts + torch.stack((r * torch.cos(a), r * torch.sin(a)), dim=-1)
         s = sample_bilinear(field.unsqueeze(1).contiguous(), pts)
         return s[:, 0].reshape(self.n_worlds, self.n_swarms, self.n_weys, N_POINTS)

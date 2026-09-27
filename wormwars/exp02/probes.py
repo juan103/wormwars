@@ -19,15 +19,14 @@ def flip_food_signs(genome: Genome, food_neurons) -> Genome:
     s = torch.ones(spec.n, device=genome.device)
     s[torch.as_tensor(sorted(food_neurons), device=genome.device)] = -1.0
     w = genome.w * (s[spec.chem_i] * s[spec.chem_j]).unsqueeze(0)
-    return Genome(spec, genome.cfg, w, genome.g.clone(), genome.tau.clone(), genome.bias * s,
-                  genome.dale_sign)
+    return genome.with_params(w=w, bias=genome.bias * s)
 
 
 def valence_check(spec, cfg, con, iface, n_strains, ids, seed, device, gaps: bool) -> dict:
     gen = torch.Generator(device=device).manual_seed(seed)
     g = Genome.random(spec, cfg.brain, n_strains, generator=gen, device=device)
     if not gaps:
-        g = Genome(g.spec, g.cfg, g.w, torch.zeros_like(g.g), g.tau, g.bias, g.dale_sign)
+        g = g.with_params(g=torch.zeros_like(g.g))
     food = {int(i) for s, i in zip(iface.signal_names, iface.sensor_neuron) if s.startswith("food_")}
     neg = interface_from_spec(con, negated_spec(iface.raw, "food"))
     a = rollout(cfg, iface, g, ids, seed, device).score
@@ -142,8 +141,7 @@ def integrator_rescore(cfg, iface, champion, ids, seed, device) -> dict:
     for name, sub, eps in (("s32", 32, 0.0), ("s128", 128, 0.0), ("s32_bias_perturbed", 32, 1e-6)):
         c = cfg.copy()
         c.brain.substeps = sub
-        g = Genome(champion.spec, c.brain, champion.w, champion.g, champion.tau,
-                   champion.bias + eps, champion.dale_sign)
+        g = champion.with_params(cfg=c.brain, bias=champion.bias + eps)
         out[name] = rollout(c, iface, g, ids, seed, device).score[0].tolist()
     return out
 

@@ -1693,3 +1693,39 @@ Both reviewed the island fixes (D064) and the T0 plan v1 (`docs/reviews/*-T0/`).
 **Agreement:** both reviewers accepted the island fixes and agreed on what v2 had to change.
 Every must-fix item is adopted. v2 itself has not yet been confirmed by them: it goes to both with
 the first T0 code, and T0 is only treated as agreed after that confirmation.
+
+## D066 — T0 item 1: complete inheritance and genome-score pairing
+
+Following T0 plan v2 (D065). Each defect was confirmed by a failing test in
+`tests/test_t0_pairing.py` before it was fixed.
+- **Complete inheritance.**
+  - `Genome.PARAMS` names every per-strain tensor, and a test checks it against the dataclass.
+  - `select`, `clone`, and the new `cat`, `assign` and `with_params` iterate over it.
+  - Every hand-built `Genome(...)` in the library moved to them: `evolve`, `coevolve`, `deletion`
+    and the exp02 probes. A scan test forbids new ones outside `brain.py` and the loader.
+  - **Real defect:** coevolution's opponent batch and frozen suite dropped `dale_sign`. That
+    matters only with Dale on; every recorded config has `dale: false`.
+- **Tested, with Dale on and off:** every parameter survives `select`, `clone`, `cat`, `assign`,
+  `breed`, `_breed_islands`, `_migrate`, save and load. No output aliases its input.
+- **The champion is the logged best of the final generation,** reusing that generation's
+  evaluation. The old code re-evaluated the population on the same worlds. That was uncounted,
+  and under default CUDA it could pick a different strain than the log named. On CPU the two are
+  identical, and the test passes.
+- **The saved population's `fitness` is per strain,** index-aligned with the genomes. The
+  per-generation bests move to `best_per_generation`. Nothing read the old field.
+- **Jitter noise follows world identity.** It is a 32-bit counter hash of the run seed, stream,
+  world id, tick and sample point, the same for every strain that plays the same world (common
+  random numbers).
+  - Astra's reproduction now passes: the scores are identical across chunkings and strain
+    orders.
+  - **Consequence:** jitter draws differ from those used in experiment 02. Its jitter estimates are
+    averages over independent noise, so they are unaffected in expectation, but they are not
+    bit-reproducible with the current code.
+- **Integrity on load:** the stored genome hash (one genome) or nicknames (a population) are
+  checked, and a tampered file is refused.
+  - The hash covers Dale signs when present. No recorded genome has them, so hashes and nicknames
+    are unchanged, and every committed N2 genome passes.
+- **Scores pair exactly on CPU** (the deterministic mode) under strain permutation and any chunking,
+  over full [strain, world] arrays.
+- **Not touched:** `scripts/exp03.py` builds one genome by hand (gaps off). It stays unchanged until
+  03r's report is done, because 03r runs from it.

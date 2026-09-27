@@ -34,8 +34,7 @@ def delete_neurons(genome: Genome, per_strain: list[list[int]]) -> Genome:
         w[s, torch.isin(spec.chem_i, k) | torch.isin(spec.chem_j, k)] = 0.0
         g[s, torch.isin(spec.gap_i, k) | torch.isin(spec.gap_j, k)] = 0.0
         bias[s, k] = 0.0
-    return Genome(spec, genome.cfg, w, g, genome.tau.clone(), bias,
-                  None if genome.dale_sign is None else genome.dale_sign.clone())
+    return genome.with_params(spec=spec, w=w, g=g, bias=bias)
 
 
 def without_neuron(con: Connectome, k: int, label: str | None = None) -> Connectome:

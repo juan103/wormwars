@@ -37,8 +37,13 @@ ANIMALS = (
 
 
 def genome_hash(genome: Genome, index: int = 0) -> str:
+    """sha256 of the strain's parameters. Dale signs are included when present (D066); every
+    recorded genome so far has none, so their hashes and nicknames are unchanged."""
     flat = genome.flat()[index].detach().to("cpu").numpy().astype(np.float32)
-    return hashlib.sha256(flat.tobytes()).hexdigest()
+    h = hashlib.sha256(flat.tobytes())
+    if genome.dale_sign is not None:
+        h.update(genome.dale_sign[index].detach().to("cpu").numpy().astype(np.float32).tobytes())
+    return h.hexdigest()
 
 
 def edge_hash(spec: BrainSpec) -> str:
@@ -212,6 +217,11 @@ def load_genome(
         bias=bias,
         dale_sign=None if dale.size == 0 else torch.from_numpy(np.atleast_2d(dale)).to(device),
     )
+    # integrity: the stored hash (one genome) or nicknames (a population) must match (T0, D066)
+    if "genome_sha256" in meta and genome.n_strains == 1 and genome_hash(genome, 0) != meta["genome_sha256"]:
+        raise ValueError(f"{Path(path).name}: parameters do not match the stored genome hash")
+    if "nicknames" in meta and [nickname(genome, i) for i in range(genome.n_strains)] != meta["nicknames"]:
+        raise ValueError(f"{Path(path).name}: parameters do not match the stored genome hashes")
     if strain is not None:
         genome = genome.select([strain])
     return genome, meta

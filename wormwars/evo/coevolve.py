@@ -245,14 +245,7 @@ class HallOfFame:
     def as_genome(self, entries) -> Genome | None:
         if not entries:
             return None
-        gs = [g for _, g, _ in entries]
-        base = gs[0]
-        return Genome(
-            base.spec, base.cfg,
-            torch.cat([g.w for g in gs]), torch.cat([g.g for g in gs]),
-            torch.cat([g.tau for g in gs]), torch.cat([g.bias for g in gs]),
-            None if base.dale_sign is None else torch.cat([g.dale_sign for g in gs]),
-        )
+        return Genome.cat([g for _, g, _ in entries])
 
 
 SUITE_VERSION = 1
@@ -275,12 +268,7 @@ def make_frozen_suite(
         c.init_w_scale = cfg.brain.init_w_scale * float(s)
         c.init_bias_std = cfg.brain.init_bias_std * float(s)
         parts.append(Genome.random(spec, c, 1, generator=gen, device=device))
-    base = parts[0]
-    suite = Genome(
-        base.spec, cfg.brain,
-        torch.cat([p.w for p in parts]), torch.cat([p.g for p in parts]),
-        torch.cat([p.tau for p in parts]), torch.cat([p.bias for p in parts]),
-    )
+    suite = Genome.cat(parts, cfg=cfg.brain)  # every parameter, Dale signs included (D066)
     suite.clamp_()
     meta = {
         "suite_version": SUITE_VERSION,
@@ -351,11 +339,8 @@ def coevolve(
         hof_genome = hof.as_genome(hof_entries)
         if hof_genome is not None:
             opp_parts.append(hof_genome)
-        opponents = Genome(
-            spec, cfg.brain,
-            torch.cat([p.w for p in opp_parts]), torch.cat([p.g for p in opp_parts]),
-            torch.cat([p.tau for p in opp_parts]), torch.cat([p.bias for p in opp_parts]),
-        )
+        # every parameter, Dale signs included: the hand-built version dropped them (D066)
+        opponents = Genome.cat(opp_parts, cfg=cfg.brain)
 
         ids = pool.train_ids(g, e.coevo_worlds)
         sizes = (
