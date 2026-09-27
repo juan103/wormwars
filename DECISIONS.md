@@ -1616,3 +1616,7 @@ with their go for push 1.
 
 **Operational:** HEAD is past `7c146fc`, so a resumed 03r run would be refused unless run from a
 checkout of `7c146fc`.
+- **Pushed on the owner's "go both" (2026-09-27):**
+  - `roadmap` was pushed as a new branch at `ff17f00`, 17:28:15 +02:00. At that moment 565 of 773
+    03r graphs were measured, and N2 was not;
+  - then `main` was fast-forwarded from `5706c7e` to `76c613a`, publishing the 02 correction.
