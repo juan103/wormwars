@@ -1980,3 +1980,52 @@ the amended plan text.
   real `__main__` block and answered "item 2: accept". Fable had accepted. So T0 item 2, compute
   accounting, is agreed by all three, and the owner is informed. It remains open on CUDA
   bit-identity with the ledger on and off, which is checked when the GPU is free.
+
+## D073 — T0 items 3-5, CPU parts, and the jitter test owed from item 1
+
+Per T0 plan v2.1 (`tests/test_t0_items345.py`). Tests were written first. Seven failed, for the
+missing features; five passed on the existing code, as the plan expected. Those five cover CPU
+re-simulation, finiteness of extreme genomes and of a published champion, a migrant surviving
+breeding, and island isolation.
+
+**Item 3 (CPU):**
+- save, load and re-simulate reproduce every tensor and the full [strain, world] scores
+  **exactly** on CPU;
+- rolling out twice is also exact.
+
+**Item 4:**
+- **The energy ledger, per the declared bound.** `cfg.world.check_ledger_every_tick` (opt-in,
+  because it costs a reduction per tick) tracks each world's error relative to its own starting
+  energy, at every tick.
+  - **The gate test:** N2, SH and RD, 8 worlds each, at 02's T0 and T1 settings. All stay below
+    **1e-5**.
+  - Every rollout now reports `ledger_rel_error`: the per-tick maximum when tracked, else the
+    final residual.
+- **NaN is no longer swallowed.** Python's `max(0.0, nan)` is 0.0, so a NaN residual was
+  reported as 0. `_nanmax` propagates it, and a test checks.
+- **Numbers:** extreme genomes (every bound saturated, both signs) and a published 01b N2 champion
+  stay finite over a full episode, in brain states and energies.
+
+**Item 5:**
+- **Unsupported island settings are refused** before anything runs, with readable errors: an
+  empty island, `migrate_every` below 1, or migrants above half the smallest island.
+- **The per-island elite and truncation rule is documented** in `_breed_islands`.
+- **Tests:**
+  - a migrant survives breeding with every field, Dale included;
+  - with migration off, every logged best over 3 generations is one of the generation-0 genomes
+    (sigma 0).
+- **Still waiting for the GPU:** the single-island regression against a stored published log.
+
+**The owed jitter test:** end to end, through `_jittered` with real batch layouts, a (2, 2)
+world's jitter offsets are identical alone and beside a (1, 3) world.
+- **Found while writing it:** the (2, 2) world's wey *positions* differ between the two layouts.
+  This is a pre-existing layout dependence in multi-headcount placement, not jitter. Astra noted
+  a non-jitter chunking discrepancy in variable-headcount coevolution in D067, and this is
+  probably its cause. It is recorded here, to be fixed with the coevolution work. It does not
+  affect single-swarm experiments.
+
+**Waiting for the GPU:**
+- item 3's `replay_mode` exactness and the declared default-CUDA tolerance;
+- historical replay of a published champion on CUDA;
+- CUDA ledger on/off identity (item 2);
+- item 5's single-island regression.

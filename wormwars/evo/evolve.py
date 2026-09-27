@@ -107,6 +107,15 @@ def evolve(
     e = cfg.evo
     if e.generations < 1:
         raise ValueError("evolve needs at least one generation")
+    if e.islands > 1:  # supported island settings, checked before anything runs (T0 item 5, D073)
+        sizes = np.bincount(np.arange(e.population) % e.islands, minlength=e.islands)
+        if sizes.min() == 0:
+            raise ValueError(f"{e.islands} islands for {e.population} strains leaves an island empty")
+        if e.migrate_every < 1:
+            raise ValueError("migrate_every must be at least 1 with islands")
+        if not 0 <= e.migrants <= sizes.min() // 2:
+            raise ValueError(f"migrants={e.migrants} exceeds half the smallest island ({sizes.min()} strains): "
+                             "an island would overwrite its own best strains with immigrants")
     gen_t = torch.Generator(device=device).manual_seed(run_seed)
     genome = Genome.random(spec, cfg.brain, e.population, generator=gen_t, device=device)
     pool = SeedPool(cfg, run_seed)
@@ -196,6 +205,11 @@ def evolve(
 
 
 def _breed_islands(genome, fit, island_of, cfg, gen_t) -> Genome:
+    """Each island breeds from its own members only, with `max(1, elites // islands)` elites and
+    `max(2, truncation // islands)` parents per island. That rule changes the *total* selection
+    pressure with the island count: with elites=3, two islands keep 2 elites in total and four
+    keep 4, and elites=0 still keeps one per island. Compare an island arm with a one-island arm
+    only with this in mind (Fable, D065; documented in D073)."""
     if cfg.evo.islands <= 1:
         return breed(genome, fit, cfg, gen_t)
     # each island's children are written back into that island's own slots, so `island_of`

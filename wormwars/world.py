@@ -352,6 +352,7 @@ class World:
         self._update_body_field()
         self.start_energy_total = self.total_energy().clone()
         LEDGER.worlds(self.n_worlds)  # compute accounting (T0, D068)
+        self.ledger_rel_max: Tensor | None = None  # per-tick maximum, when tracked (T0, D073)
 
     # ---------------------------------------------------------------- setup
 
@@ -734,6 +735,9 @@ class World:
         self._reap()
         self._update_fields()
         self.tick_count += 1
+        if self.cfg.world.check_ledger_every_tick:  # T0 (D073): the ledger at every tick
+            rel = self.energy_ledger_rel_error()
+            self.ledger_rel_max = rel if self.ledger_rel_max is None else torch.maximum(self.ledger_rel_max, rel)
         if self.recorder is not None:
             self.recorder.record(self)
 
@@ -938,6 +942,11 @@ class World:
     def energy_ledger_error(self) -> Tensor:
         """[worlds] -- how far the books are from balancing. Must stay at rounding level."""
         return self.total_energy() - (self.start_energy_total + self.ledger.net())
+
+    def energy_ledger_rel_error(self) -> Tensor:
+        """[worlds] -- |ledger error| relative to each world's own starting energy (T0's declared
+        bound is 1e-5). NaN propagates: torch.maximum keeps it."""
+        return self.energy_ledger_error().abs() / self.start_energy_total.abs().clamp_min(1e-12)
 
     @property
     def damage_by_point(self) -> Tensor:

@@ -34,6 +34,9 @@ class RolloutResult:
     ledger_error: float
     pellet_eaten: np.ndarray | None = None  # corpse pellets eaten, [strains, worlds]
     food_start: np.ndarray | None = None  # plant food on the map at tick 0, [strains, worlds]
+    # relative to each world's starting energy: the per-tick maximum when
+    # cfg.world.check_ledger_every_tick is on, else the final residual (T0, D073)
+    ledger_rel_error: float = float("nan")
 
     def per_strain(self) -> np.ndarray:
         return self.score.mean(axis=1)
@@ -72,8 +75,14 @@ def _play(cfg, iface, brain, world_ids, run_seed, device, combat_stage=0, ticks=
         "pellet": world.pellet_eaten.reshape(shape).cpu().numpy(),
         "food0": food0.reshape(shape).cpu().numpy(),
         "err": world.energy_ledger_error().abs().max().item(),
+        "err_rel": (world.ledger_rel_max if world.ledger_rel_max is not None
+                    else world.energy_ledger_rel_error()).max().item(),
         "ticks": world.tick_count,
     }
+
+
+def _nanmax(a: float, b: float) -> float:
+    return float("nan") if (a != a or b != b) else max(a, b)
 
 
 def rollout_brain(cfg, iface, brain, world_ids, run_seed, device="cpu", ticks=None) -> RolloutResult:
@@ -81,7 +90,7 @@ def rollout_brain(cfg, iface, brain, world_ids, run_seed, device="cpu", ticks=No
     world_ids = np.asarray(world_ids, dtype=np.int64)
     r = _play(cfg, iface, brain, world_ids, run_seed, device, ticks=ticks)
     return RolloutResult(r["score"], r["energy"], r["alive"], r["eaten"], r["ticks"], r["err"],
-                         pellet_eaten=r["pellet"], food_start=r["food0"])
+                         pellet_eaten=r["pellet"], food_start=r["food0"], ledger_rel_error=r["err_rel"])
 
 
 def rollout(
@@ -108,7 +117,7 @@ def rollout(
     strains_per_chunk = max(1, chunk_worlds // max(n_ids, 1))
 
     scores, energies, alives, eatens, pellets = [], [], [], [], []
-    worst_err = 0.0
+    worst_err = worst_rel = 0.0
     used_ticks = 0
 
     for lo in range(0, S, strains_per_chunk):
@@ -125,7 +134,9 @@ def rollout(
         alives.append(r["alive"])
         eatens.append(r["eaten"])
         pellets.append(r["pellet"])
-        worst_err = max(worst_err, r["err"])
+        # NaN must not be swallowed: max(0.0, nan) is 0.0 in Python (T0, D073)
+        worst_err = _nanmax(worst_err, r["err"])
+        worst_rel = _nanmax(worst_rel, r["err_rel"])
         used_ticks = r["ticks"]
 
     return RolloutResult(
@@ -135,6 +146,7 @@ def rollout(
         eaten=np.concatenate(eatens),
         ticks=used_ticks,
         ledger_error=worst_err,
+        ledger_rel_error=worst_rel,
         pellet_eaten=np.concatenate(pellets),
     )
 
