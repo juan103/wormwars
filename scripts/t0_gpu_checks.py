@@ -87,6 +87,7 @@ def check_exact_and_tolerance(con, iface, spec, device, quick):
             out[f"{label} / {kind}"] = {
                 "replay_mode_repeat_identical": bool(np.array_equal(a, b)),
                 "replay_mode_chunking_identical": bool(np.array_equal(a, c)),
+                "replay_mode_chunking_max_abs_diff": float(np.abs(a - c).max()),
                 "default_cuda_max_abs_diff": float(dev.max()),
                 "default_cuda_quantiles_abs_diff": [float(np.quantile(dev, q)) for q in (0.5, 0.9, 0.99, 1.0)],
                 "within_declared_1e-4": bool(dev.max() <= DECLARED_TOL),
