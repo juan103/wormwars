@@ -18,6 +18,7 @@ import torch
 
 _sys.path.insert(0, str(_Path(__file__).resolve().parents[1]))
 
+from wormwars import accounting as acct
 from wormwars.brain import BrainSpec, Genome
 from wormwars.config import Config
 from wormwars.connectome import load_connectome
@@ -81,10 +82,11 @@ def main():
         baseline = Genome.random(
             spec, cfg.brain, cfg.evo.population, generator=gen_r, device=args.device
         )
-        champ = rollout(cfg, iface, res.champion, pool.holdout, run_seed, args.device,
-                        combat_stage=args.stage)
-        base = rollout(cfg, iface, baseline, pool.holdout, run_seed, args.device,
-                       combat_stage=args.stage)
+        with acct.category("final"):
+            champ = rollout(cfg, iface, res.champion, pool.holdout, run_seed, args.device,
+                            combat_stage=args.stage)
+            base = rollout(cfg, iface, baseline, pool.holdout, run_seed, args.device,
+                           combat_stage=args.stage)
         base_per_strain = base.per_strain()
 
         row = {
@@ -116,8 +118,6 @@ def main():
         )
 
     (out / "summary.json").write_text(json.dumps(rows, indent=2), encoding="utf-8")
-    from wormwars.accounting import LEDGER  # compute accounting (T0, D068)
-    LEDGER.write(out / "compute.json", extra={"script": "evolve_forage"})
 
     champ = np.array([r["champion_holdout"] for r in rows])
     rand = np.array([r["random_holdout_mean"] for r in rows])
@@ -140,4 +140,8 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    # compute accounting: one attempt file per invocation, written even on failure (T0, D069)
+    from pathlib import Path as _AcctPath
+    from wormwars.accounting import attempt
+    with attempt(_AcctPath("runs/compute/evolve_forage"), default="measure", script="evolve_forage"):
+        main()

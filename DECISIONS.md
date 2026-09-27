@@ -1852,3 +1852,56 @@ Implemented per T0 plan v2.1, section 1 (`wormwars/accounting.py`, `tests/test_t
 
 The tests were written before the module, but not run red first: they would have failed on the
 missing import.
+
+## D069 — T0 item 2 after review: the output layer completed
+
+Astra and Fable both answered "not yet" on D068 (`docs/reviews/*-T0-item2/`). Both found the core
+sound: the hooks, the S × B × substeps arithmetic, early termination and nesting. Astra
+independently verified the calibration and probe counts and early termination on CPU. Both found
+the output layer incomplete. Every point was adopted after checking it in the code:
+- **Untimed "other":** work outside any category was counted with 0 seconds, and no production code
+  set "final" or "tuning".
+  - "other" is now written as `seconds: null` and flagged `uncategorised`.
+  - Every experiment script runs inside `accounting.attempt(..., default=...)`, so nothing falls
+    outside a category.
+  - **Explicit categories:** "final" for champion hold-out evaluations (exp02 `cmd_run`,
+    `evolve_forage`, `experiment.py`); "tuning" for scripted `tune` and `tune_batched`;
+    "selection" and "holdout" in coevolution; "probe" for geometry's `duel`, the exp03 stimulus
+    bank and 02b.
+  - Categories are set at call sites, not on shared helpers such as `score_policy`, because
+    innermost-wins would otherwise bill tuning as measurement.
+- **Lost on failure:** `attempt` writes a uniquely named file (UTC time plus a random suffix) when
+  its block ends, **including on an exception**. The file holds status, error, pid, commit and
+  devices. `aggregate` sums every attempt, failed ones included. exp02's and exp03's `report`
+  commands write `compute.json`. exp02's per-run `records.jsonl` now carries each run's
+  `compute`.
+- **API fixes:**
+  - `pop` restores the stack even if the CUDA sync raises;
+  - `snapshot` includes the open segment's time, so `since` is right mid-category (Astra's
+    0-5-10 case);
+  - `since` keeps time-only changes;
+  - sync runs on every visible device;
+  - a `reset()` inside a category no longer breaks the next `pop`;
+  - the `enabled` toggle no longer produces absolute-clock seconds.
+- **Tests added** (`tests/test_t0_accounting_b.py`):
+  - exact counts for calibration, the input-response probe and the history probe;
+  - early termination (starving worlds);
+  - the substeps override;
+  - scripted brains counting ticks but zero neural updates;
+  - exclusive nested time on a fake clock;
+  - a snapshot inside a category;
+  - a failing sync still restoring the category;
+  - untimed "other" written as null and flagged;
+  - a failed attempt still written, and aggregation;
+  - geometry categorised.
+- **Documented:**
+  - "measure", a ninth category, added in D068 for coverage, fitness measurement and reference
+    scoring, now in the schema;
+  - the neural unit ignores network size;
+  - category seconds do not sum to `gpu_seconds`;
+  - `SparseBrain` and geometry's zero-tick worlds are known gaps.
+- **exp03** (Astra's point, not deferred after all). The running 03r process has its code loaded,
+  and any resume uses the binding worktree, so `scripts/exp03.py` now runs inside `attempt`. Its
+  "gaps off" genome uses `with_params`, which is numerically identical. 03's `report.json`
+  regenerates byte-identically.
+- **Not verified:** CUDA bit-identity with the ledger on and off. That waits for the GPU.

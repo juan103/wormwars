@@ -14,6 +14,7 @@ import itertools
 import numpy as np
 import torch
 
+from ..accounting import counted
 from ..evo.rollout import rollout_brain
 
 
@@ -181,6 +182,7 @@ def score_policy(cfg, iface, policy, world_ids, run_seed, device) -> np.ndarray:
     return rollout_brain(cfg, iface, brain, world_ids, run_seed, device).score[0]
 
 
+@counted("tuning")
 def tune(make_policy, grid: dict, cfg, iface, world_ids, run_seed, device) -> tuple[dict, float]:
     """Exhaustive grid search on tuning worlds; returns (best parameters, their mean score)."""
     keys = sorted(grid)
@@ -193,6 +195,7 @@ def tune(make_policy, grid: dict, cfg, iface, world_ids, run_seed, device) -> tu
     return best, best_score
 
 
+@counted("tuning")
 def tune_batched(make_policy, grid: dict, cfg, iface, world_ids, run_seed, device) -> tuple[dict, float]:
     """`tune`, with every grid point run as one strain of a single batched world: the same maps,
     the same winner and score, in one rollout instead of one per point. Policies take their

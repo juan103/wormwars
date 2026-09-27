@@ -27,6 +27,7 @@ import torch
 
 _sys.path.insert(0, str(_Path(__file__).resolve().parents[1]))
 
+from wormwars import accounting as acct
 from wormwars.analysis import area_under_curve, compare, hierarchical_bootstrap, per_graph_table
 from wormwars import calibration as calib
 from wormwars.brain import BrainSpec
@@ -144,7 +145,8 @@ def main():
                     out_dir=out, holdout_every=max(1, args.generations // 5), verbose=False,
                 )
                 pool = SeedPool(gcfg, seed_counter)
-                held = rollout(gcfg, iface, res.champion, pool.holdout, seed_counter, args.device)
+                with acct.category("final"):
+                    held = rollout(gcfg, iface, res.champion, pool.holdout, seed_counter, args.device)
                 hist = res.history()
                 rec = {
                     "condition": cond,
@@ -247,4 +249,8 @@ def report(records, out: _Path, wall: float, calibrated: bool = False) -> None:
 
 
 if __name__ == "__main__":
-    main()
+    # compute accounting: one attempt file per invocation, written even on failure (T0, D069)
+    from pathlib import Path as _AcctPath
+    from wormwars.accounting import attempt
+    with attempt(_AcctPath("runs/compute/experiment"), default="measure", script="experiment"):
+        main()

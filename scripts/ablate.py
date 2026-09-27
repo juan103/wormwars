@@ -195,4 +195,8 @@ def _graph_for(con, label):
 
 
 if __name__ == "__main__":
-    main()
+    # compute accounting: one attempt file per invocation, written even on failure (T0, D069)
+    from pathlib import Path as _AcctPath
+    from wormwars.accounting import attempt
+    with attempt(_AcctPath("runs/compute/ablate"), default="probe", script="ablate"):
+        main()

@@ -23,6 +23,7 @@ import numpy as np
 import torch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from wormwars.accounting import counted
 from wormwars import calibration as calib  # noqa: E402
 from wormwars.brain import BrainSpec, Genome  # noqa: E402
 from wormwars.config import Config  # noqa: E402
@@ -355,8 +356,7 @@ def measure_graph(con, name, device, bank=None, only=None):
         for m in ("R1", "R2", "MS"):
             resp[m] = P.input_response(spec, cfg1, grid.interface_for(con, m, remap_sets), None, device,
                                        genome=small_g, per_genome=True)
-        no_gap = Genome(small_g.spec, small_g.cfg, small_g.w, torch.zeros_like(small_g.g), small_g.tau,
-                        small_g.bias, small_g.dale_sign)
+        no_gap = small_g.with_params(g=torch.zeros_like(small_g.g))
         resp["M0-gaps-off"] = P.input_response(spec, cfg1, grid.interface_for(con, "M0", remap_sets), None, device,
                                                genome=no_gap, per_genome=True)
         for mode in ("uniform", "permuted"):
@@ -382,6 +382,7 @@ def measure_graph(con, name, device, bank=None, only=None):
     return out
 
 
+@counted("probe")  # the stimulus bank's replays (T0, D069)
 def _typical_signals(cfg, iface, genomes, device):
     """Mean sensed signals over ticks 20-60 of generation-0 replays (alive weys), for the bank."""
     from wormwars.brain import Brain
@@ -643,6 +644,8 @@ def side_by_side(signals: dict, report03: dict, signal: str = "P4") -> dict:
 
 
 def cmd_report(args):
+    from wormwars.accounting import write_aggregate
+    write_aggregate(OUT / "compute", OUT / "compute.json")  # beside the measurements (T0, D069)
     from wormwars.exp03 import report as R
     e = json.loads((EXP / "ensembles.json").read_text(encoding="utf-8"))
     registered = {g["name"] for g in e["graphs"]} | set(REAL)
@@ -681,8 +684,10 @@ def main():
     use_instance(args.instance)
     if args.instance != "03" and args.command in ("pilot", "variance", "power"):
         raise SystemExit("the pilot, variance and power stages belong to 03 only; 03r reuses 03's pilot")
-    {"build": cmd_build, "pilot": cmd_pilot, "variance": cmd_variance, "power": cmd_power,
-     "run": cmd_run, "report": cmd_report}[args.command](args)
+    from wormwars.accounting import attempt  # compute accounting (T0, D069)
+    with attempt(OUT / "compute", default="measure", experiment=INSTANCE, command=args.command):
+        {"build": cmd_build, "pilot": cmd_pilot, "variance": cmd_variance, "power": cmd_power,
+         "run": cmd_run, "report": cmd_report}[args.command](args)
 
 
 use_instance("03")

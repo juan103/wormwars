@@ -19,6 +19,7 @@ from dataclasses import dataclass
 
 import torch
 
+from ..accounting import counted
 from ..brain import Brain, BrainSpec, Genome
 from ..config import Config
 from ..connectome.loader import Connectome
@@ -73,6 +74,7 @@ def place(pose: str, gap: float, centre: float, body_length: float):
     return a, b
 
 
+@counted("probe")
 def duel(
     con: Connectome,
     cfg: Config | None = None,

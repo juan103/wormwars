@@ -150,14 +150,13 @@ def test_the_ledger_writes_an_experiment_level_json(tmp_path, parts):
     cfg = Config()
     cfg.world.max_ticks = 5
     g = Genome.random(spec, cfg.brain, 1, generator=torch.Generator().manual_seed(5))
-    with A.category("probe"):
-        rollout(cfg, iface, g, np.array([1]), run_seed=1)
-    path = A.LEDGER.write(tmp_path / "compute.json", extra={"experiment": "test"})
+    with A.attempt(tmp_path, experiment="test"):
+        with A.category("probe"):
+            rollout(cfg, iface, g, np.array([1]), run_seed=1)
     import json
-    d = json.loads(path.read_text(encoding="utf-8"))
+    d = json.loads(next(tmp_path.glob("*.json")).read_text(encoding="utf-8"))
     assert d["experiment"] == "test" and d["categories"]["probe"]["worlds_built"] == 1
-    assert d["time_unit"].startswith("synchronised wall")
-
+    assert d["time_unit"].startswith("synchronised wall") and d["status"] == "completed"
 
 def test_coverage_and_the_behaviour_probe_record_under_their_categories(parts):
     from wormwars.exp02 import probes as P

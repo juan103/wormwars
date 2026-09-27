@@ -23,6 +23,7 @@ from pathlib import Path
 import numpy as np
 import torch
 
+from .. import accounting as acct
 from ..brain import Brain, BrainSpec, Genome
 from ..config import Config
 from ..interface import Interface
@@ -353,8 +354,9 @@ def coevolve(
             e.population, opponents.n_strains, ids, rng,
             sizes=sizes, lopsided=e.coevo_lopsided or e.coevo_vary_sizes,
         )
-        res = play(cfg, iface, pop, opponents, matches, run_seed, device, combat_stage,
-                   chunk_worlds=e.chunk_worlds)
+        with acct.category("selection"):
+            res = play(cfg, iface, pop, opponents, matches, run_seed, device, combat_stage,
+                       chunk_worlds=e.chunk_worlds)
         fit = candidate_scores(matches, res.score, e.population)
         best_i = int(np.argmax(fit))
         hof.add(pop, best_i, g)
@@ -367,8 +369,9 @@ def coevolve(
                 1, suite.n_strains, pool.holdout[: e.suite_worlds], rng,
                 sizes=suite_size, lopsided=False,
             )
-            sres = play(cfg, iface, pop.select([best_i]), suite, held, run_seed, device,
-                        combat_stage, chunk_worlds=e.chunk_worlds)
+            with acct.category("holdout"):
+                sres = play(cfg, iface, pop.select([best_i]), suite, held, run_seed, device,
+                            combat_stage, chunk_worlds=e.chunk_worlds)
             sb = float(sres.score.mean())
             sm = float(np.median(sres.score))
 

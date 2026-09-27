@@ -66,3 +66,7 @@ runs/exp03/measures/
 runs/exp03/measures-aborted-0ef9a3d/
 # Experiment 03r's per-graph measurements (regenerable from the binding commit).
 runs/exp03r/measures/
+# compute-accounting attempt files and aggregates written by runs (T0, D069)
+runs/**/compute/
+runs/compute/
+runs/**/compute.json

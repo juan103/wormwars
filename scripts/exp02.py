@@ -23,6 +23,7 @@ import torch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
+from wormwars import accounting as acct
 from wormwars import calibration as calib
 from wormwars.brain import BrainSpec
 from wormwars.config import Config
@@ -347,13 +348,15 @@ def _execute(spec: grid.RunSpec, con, remap_sets, device, out: Path, graph=None,
         champs[spec.generations - 1] = res.champion
     for g, champ in champs.items():
         tag = f"g{g:02d}"
-        held = rollout(cfg, iface, champ, pool.holdout, spec.run_seed, device)
+        with acct.category("final"):
+            held = rollout(cfg, iface, champ, pool.holdout, spec.run_seed, device)
         rec[f"holdout_{tag}"] = held.score[0].tolist()
         eaten, pellet = float(held.eaten.sum()), float(held.pellet_eaten.sum())
         rec[f"pellet_share_{tag}"] = pellet / max(eaten + pellet, 1e-9)
         save_genome(out / f"{spec.key}-{tag}.npz", champ, 0, cfg=cfg, run_seed=spec.run_seed,
                     snapshot_generation=g, **manifest)
     rec["wall_seconds"] = time.perf_counter() - t0
+    rec["compute"] = res.compute  # this run's evolution, by category (T0, D069)
     return rec
 
 
@@ -591,6 +594,7 @@ def cmd_probes(args, con, iface):
 
 
 def cmd_report(args, con, iface):
+    acct.write_aggregate(OUT / "compute", OUT / "compute.json")
     out = report.build(grid.read_records(OUT / "records.jsonl"), _load(grid.EXP02_DIR / "diagnostics.json"),
                        _load(OUT / "probes.json"), _load(grid.EXP02_DIR / "calibration.json"),
                        An.sign_of_01b(Path("runs/exp01b-direction-corrected/records.json")))
@@ -620,13 +624,12 @@ def main():
         args.max_hours = {"run": 8.0, "probes": 12.0}.get(args.command, 12.0)
     con = load_connectome()
     iface = load_interface(con)
-    {"remaps": cmd_remaps, "calibrate": cmd_calibrate, "diagnostics": cmd_diagnostics, "validate-probes": cmd_validate_probes, "extend": cmd_extend,
-     "pilot": cmd_pilot, "run": cmd_run, "probes": cmd_probes, "report": cmd_report}[args.command](args, con, iface)
-    # experiment-level compute accounting, one file per invocation, summed over processes (T0, D068)
-    from datetime import datetime, timezone
-    from wormwars.accounting import LEDGER
-    stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
-    LEDGER.write(OUT / "compute" / f"{args.command}-{stamp}.json", extra={"experiment": "02", "command": args.command})
+    # compute accounting: one attempt file per invocation, written even on failure; work not
+    # categorised more specifically is "measure" (T0, D069). `report` sums them into compute.json.
+    from wormwars.accounting import attempt
+    with attempt(OUT / "compute", default="measure", experiment="02", command=args.command):
+        {"remaps": cmd_remaps, "calibrate": cmd_calibrate, "diagnostics": cmd_diagnostics, "validate-probes": cmd_validate_probes, "extend": cmd_extend,
+         "pilot": cmd_pilot, "run": cmd_run, "probes": cmd_probes, "report": cmd_report}[args.command](args, con, iface)
 
 
 if __name__ == "__main__":
