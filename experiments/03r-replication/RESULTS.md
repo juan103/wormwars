@@ -61,8 +61,10 @@ disclosure came while the run was in progress ([`DISCLOSURE.md`](DISCLOSURE.md))
   - code was committed in the working directory while the run was going (T0 work, D064-D076), but
     it could not reach the already-loaded process;
   - every input file the run read, with the hashes recorded at the start, still hashes identically;
-  - the check that matters, a bit-for-bit re-measurement of N2 and a late ensemble graph from the
-    binding worktree, is in [`DISCLOSURE.md`](DISCLOSURE.md) (dated addendum).
+  - **the check that matters:** N2 and the last ensemble graph measured (SH-route-1020255) were
+    re-measured with the binding commit's code (worktree at `7c146fc`), and both are
+    **bit-for-bit identical** to their saved measurements ([`DISCLOSURE.md`](DISCLOSURE.md), dated
+    addendum).
 - **Report:** [`report.json`](report.json). It was produced by the binding commit's code (from a
   worktree at `7c146fc`) and again by the current code, and the two are identical.
 - **Completeness:** every ensemble complete, and no calibration failure. All three signals were

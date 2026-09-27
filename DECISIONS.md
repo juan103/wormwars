@@ -2260,3 +2260,51 @@ ensembles.
 `experiments/03r-replication/RESULTS.md` is written with §10's fixed wording and the D063
 deviation. 03's RESULTS.md gets a pointer. Both go to Astra and Fable for review, then to the
 owner for the go to main, together.
+
+## D081 — T0's GPU checks, and the 03r results review
+
+**T0 GPU checks** (`scripts/t0_gpu_checks.py`, `docs/foundations/T0_gpu.json`, RTX 5080), as
+declared in T0 plan v2.1:
+- **Historical replay: exact.** All 9 01b champions (N2, SH1 and RD1, three runs each) reproduce
+  their stored `holdout_score` to 6 decimals, in default and replay mode. This confirms on the same
+  device that the SH1 and RD1 graphs rebuilt from their seeds are 01b's (D076, D079). The wrong
+  graph (SH2) gives 0.110 against 1.703.
+- **Single-island regression: exact.** Generations 0-2 of 01b's N2-run00, rerun from its bundle
+  configuration and seed at current code, reproduce the logged best, mean and best nickname. So
+  T0's changes left the published evolution path unchanged.
+- **Identity:** scores are the same with the per-tick ledger on and off, and with accounting on and
+  off.
+- **`replay_mode`:** repeats are identical.
+- **The declared default-CUDA tolerance (1e-4 per world) is exceeded, and the reason is found.**
+  - A targeted follow-up shows that repeats at the same chunking are **identical**, even in default
+    mode, and that replay and default modes agree at the same chunking.
+  - Chunks of 64, 256, 1 024 and 4 096 worlds agree exactly.
+  - Only a chunk holding **a single strain** differs: 3 of 512 worlds, by up to 0.027 at 200 ticks,
+    and up to 0.15 in the 600-tick stress test.
+  - The likely cause is a different GPU kernel path for a batch of one, whose rounding the chaotic
+    dynamics amplify in a few worlds.
+  - **Per the plan, this is a finding, not a widened bound.** The claim becomes: *on CUDA, results
+    are exact for the same batch composition; a single-strain evaluation can differ from the same
+    genome inside a population batch.* `docs/REPRODUCIBILITY.md` is corrected: its "chunking is a
+    memory strategy, not an approximation" holds on CPU, and on CUDA only for chunks of more than
+    one strain.
+  - **Consequence:** analyses should compare genomes evaluated in the same batch composition. A
+    possible fix, padding single-strain evaluations, is a T1 option.
+
+**03r results review** (`docs/reviews/*-03r-results/`): both reviewers answered "not yet", both on
+presentation. The verdicts are confirmed: Astra recomputed them, and the report hashes match.
+Revised (bb2f245 and this commit):
+- **P3's noise caveat** (Fable, confirmed): N2's P3 SE is 0.012, against an ensemble median of
+  0.0065, with only 3 of 768 as large. So the rank p is too small for P3. A noise-aware check gives
+  about 0.08 after Holm. Also added: the fragility (one more SH-recip graph gives 0.070), the
+  approximate-test and weights-plus-wiring caveats, and the variants' P3 values.
+- **Both runs under both rules,** with the one-graph margin stated.
+- **The validity claim is corrected:** N2-rev's descriptive P1 is invalid.
+- **The discrete-p ordinal claim** is replaced by the concrete fragility.
+- **The provenance claim is scoped** to the run's start, with the **bit-for-bit re-measurement** of
+  N2 and SH-route-1020255 from the binding worktree (identical) and a dated DISCLOSURE addendum.
+- **Stale status lines** in 03's RESULTS, the roadmap and the branch banner are fixed.
+- **The README's lead section for main** carries §10's outcome sentence, the probe caveat, D063's
+  amended sentence and D059's contributions, including that P4 alone was chosen after 03 on
+  Fable's argument.
+- **Rounding** corrected.
