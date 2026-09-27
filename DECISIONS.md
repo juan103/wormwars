@@ -1620,3 +1620,28 @@ checkout of `7c146fc`.
   - `roadmap` was pushed as a new branch at `ff17f00`, 17:28:15 +02:00. At that moment 565 of 773
     03r graphs were measured, and N2 was not;
   - then `main` was fast-forwarded from `5706c7e` to `76c613a`, publishing the 02 correction.
+
+## D064 — T0: three island-path bugs, each confirmed by a failing test, then fixed
+
+Roadmap v3's T0 says three island-path bugs are "suspected from reading the code", but it keeps no
+record of which. Claude audited `wormwars/evo/evolve.py` and found three. Each was confirmed by a
+failing test (`tests/test_evo_islands.py`) before its fix:
+1. **Islands mixed after the first generation.** Membership is interleaved (strain i belongs to
+   island i mod k). `_breed_islands` wrote each island's children back in contiguous blocks, but
+   `island_of` stayed interleaved. From the second generation, every "island" held members of all
+   islands. Children now return to their own island's slots.
+   - The old test `test_islands_breed_independently` checked slots 0-3, the blocked layout. It
+     encoded the bug and is corrected.
+2. **Migrants were culled.** `_migrate` copied the best genomes over the worst but did not update
+   `fit`. So migrants entered breeding with the fitness of the strains they replaced, and
+   truncation removed them. `_migrate` now returns the new fitness, and migration happens after
+   the generation is logged, so the log describes the evaluated population.
+3. **Migrants lost their Dale sign vector.** `dale_sign` is per strain, but migration kept the
+   destination's, so a migrant arrived as a different brain. It is now copied. This only matters
+   with `brain.dale` on.
+
+**Scope:**
+- **No published result is affected.** All 20 recorded run configs have `islands: 1`, and the
+  one-island path is unchanged (tested: `_breed_islands` equals `breed` exactly).
+- An end-to-end island run with migration and Dale signs is tested.
+- **Reviews:** these fixes will be reviewed with the rest of T0 by Astra and Fable.

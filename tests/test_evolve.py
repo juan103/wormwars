@@ -83,9 +83,11 @@ def test_islands_breed_independently(parts):
     fit = np.where(island_of == 1, 100.0, np.where(island_of == 0, -100.0, 0.0))
     nxt = _breed_islands(p, fit, island_of, cfg, torch.Generator().manual_seed(7))
     assert nxt.n_strains == 12
-    # island 0's slots must still hold island 0 genomes: a bad island is not replaced by a good one
+    # island 0's slots must still hold island 0 genomes: a bad island is not replaced by a good one.
+    # Its slots are those `island_of` gives it. This test first checked slots 0-3, which encoded the
+    # blocked layout that mixed islands from the second generation (D064).
     island0 = set(np.flatnonzero(island_of == 0).tolist())
-    for slot in range(len(island0)):
+    for slot in sorted(island0):
         srcs = {s for s in range(12) if torch.equal(nxt.w[slot], p.w[s])}
         assert srcs & island0, "an island bred from another island's genomes"
 

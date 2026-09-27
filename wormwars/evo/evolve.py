@@ -140,9 +140,6 @@ def evolve(
             hb = float(hres.per_strain()[0])
             hm = hb
 
-        if e.islands > 1 and g > 0 and g % e.migrate_every == 0:
-            genome, island_of = _migrate(genome, fit, island_of, e, gen_t)
-
         best_i = int(np.argmax(fit))
         entry = GenerationLog(
             generation=g,
@@ -165,6 +162,10 @@ def evolve(
             )
 
         if g < e.generations - 1:
+            # migration after logging, so the log describes the evaluated generation; the
+            # migrants carry their own fitness into breeding (D064)
+            if e.islands > 1 and g > 0 and g % e.migrate_every == 0:
+                genome, fit = _migrate(genome, fit, island_of, e, gen_t)
             genome = _breed_islands(genome, fit, island_of, cfg, gen_t)
 
     fit_final = np.array([g.best for g in result.log])
@@ -194,7 +195,11 @@ def evolve(
 def _breed_islands(genome, fit, island_of, cfg, gen_t) -> Genome:
     if cfg.evo.islands <= 1:
         return breed(genome, fit, cfg, gen_t)
-    parts = []
+    # each island's children are written back into that island's own slots, so `island_of`
+    # stays true from generation to generation. The first version concatenated the islands in
+    # blocks while `island_of` stayed interleaved, mixing islands from the second generation (D064).
+    w, g_, tau, b = genome.w.clone(), genome.g.clone(), genome.tau.clone(), genome.bias.clone()
+    dale = None if genome.dale_sign is None else genome.dale_sign.clone()
     for isl in range(cfg.evo.islands):
         idx = np.flatnonzero(island_of == isl)
         sub_cfg = cfg.copy()
@@ -202,24 +207,24 @@ def _breed_islands(genome, fit, island_of, cfg, gen_t) -> Genome:
         sub_cfg.evo.population = len(idx)
         sub_cfg.evo.elites = max(1, cfg.evo.elites // cfg.evo.islands)
         sub_cfg.evo.truncation = max(2, cfg.evo.truncation // cfg.evo.islands)
-        parts.append(breed(sub, fit[idx], sub_cfg, gen_t))
-    return Genome(
-        genome.spec,
-        genome.cfg,
-        torch.cat([p.w for p in parts]),
-        torch.cat([p.g for p in parts]),
-        torch.cat([p.tau for p in parts]),
-        torch.cat([p.bias for p in parts]),
-        None if genome.dale_sign is None else torch.cat([p.dale_sign for p in parts]),
-    )
+        part = breed(sub, fit[idx], sub_cfg, gen_t)
+        t = torch.as_tensor(idx, device=w.device)
+        w[t], g_[t], tau[t], b[t] = part.w, part.g, part.tau, part.bias
+        if dale is not None:
+            dale[t] = part.dale_sign
+    return Genome(genome.spec, genome.cfg, w, g_, tau, b, dale)
 
 
 def _migrate(genome, fit, island_of, e, gen_t):
-    """Send each island's best to the next island, replacing its worst. Within a run only."""
+    """Send each island's best to the next island, replacing its worst. Within a run only.
+    Returns the new population and its fitness: every migrant keeps all of its parameters,
+    its Dale sign vector included, and its own fitness (D064)."""
     w = genome.w.clone()
     g_ = genome.g.clone()
     tau = genome.tau.clone()
     b = genome.bias.clone()
+    dale = None if genome.dale_sign is None else genome.dale_sign.clone()
+    new_fit = np.array(fit, dtype=float, copy=True)
     for isl in range(e.islands):
         src = np.flatnonzero(island_of == isl)
         dst = np.flatnonzero(island_of == (isl + 1) % e.islands)
@@ -231,7 +236,7 @@ def _migrate(genome, fit, island_of, e, gen_t):
             genome.tau[best],
             genome.bias[best],
         )
-    return (
-        Genome(genome.spec, genome.cfg, w, g_, tau, b, genome.dale_sign),
-        island_of,
-    )
+        if dale is not None:
+            dale[worst] = genome.dale_sign[best]
+        new_fit[worst] = fit[best]
+    return Genome(genome.spec, genome.cfg, w, g_, tau, b, dale), new_fit
