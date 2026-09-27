@@ -1,5 +1,11 @@
 # WormWars 03: results
 
+> **Replicated (03r, 2026-09-28).** The pre-registered full replication, with fresh graphs and
+> fresh genomes, gives: *"Replicated under the registered single-signal test and under 03's
+> original three-signal rule."* In 03r, P1 recurs as "not distinctive", and P3 comes out
+> *reversed* (N2 below every ensemble), a new, unpredicted secondary label. See
+> [03r's results](../03r-replication/RESULTS.md).
+
 **N2 stands out on one of three pre-registered signals: history dependence (P4).** The test brings
 two food histories to the same input, then asks how much of the difference set by the earlier
 food level is still in the turn read-out. On that probe, N2's random, unselected brains keep more

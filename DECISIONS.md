@@ -2229,3 +2229,34 @@ It writes `docs/foundations/T0_gpu.json` and runs when 03r frees the GPU.
 - **The single-island regression cannot be judged on CPU,** because `torch.Generator` draws
   different random numbers on CPU and CUDA, so generation 0 differs from 01b's. It is judged on
   the GPU run.
+
+## D080 — 03r's results: replicated under both rules; P3 reversed (secondary, unpredicted)
+
+The run finished at `7c146fc`: 773 graphs, 23.95 GPU-hours of the 32-hour cap, N2 last. Every
+ensemble was complete, with no calibration failure. The registered report was produced by the
+binding commit's code (worktree at `7c146fc`) and again at HEAD, and the two are identical.
+
+**Primary:**
+- **P4 alone:** maximum p 0.0155, distinctive relative to every ensemble. N2 = 0.924. Graphs at
+  or above N2: 0, 0 of 256, 1, 0 and 0.
+- **03's full rule for P4:** Holm-adjusted 0.0465, distinctive.
+- **§10's fixed wording applies:** "Replicated under the registered single-signal test and under
+  03's original three-signal rule."
+
+**Secondary** (03's rule):
+- **P1:** "not distinctive", recurring.
+- **P3:** **"reversed against every ensemble"**, with an opposite-direction Holm-adjusted p of
+  0.0465. N2 = −0.024 against ensemble means of about 0. N2's random brains score slightly worse
+  with the real food signal than with a constant one.
+  - The label is new: 03 was inconclusive, with N2 −0.010 on the low side.
+  - It is reported as found, as an unpredicted secondary controlled only within 03's
+    opposite-direction family (up to 10% error across both directions). No causal claim is
+    made; one would need its own pre-registered test.
+
+**Descriptive:** N2's P4 magnitudes again exceed every ensemble graph's. One fresh weight
+permutation (N2perm6) keeps P4 at N2's level; two others fall to the upper-middle of the
+ensembles.
+
+`experiments/03r-replication/RESULTS.md` is written with §10's fixed wording and the D063
+deviation. 03's RESULTS.md gets a pointer. Both go to Astra and Fable for review, then to the
+owner for the go to main, together.
