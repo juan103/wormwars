@@ -49,6 +49,10 @@ RUN01B = ROOT / "runs" / "exp01b-direction-corrected"
 DECLARED_TOL = 1e-4
 
 
+def _to(g: Genome, device) -> Genome:
+    return Genome(g.spec.to(device), g.cfg, **{k: None if v is None else v.to(device) for k, v in g.params().items()})
+
+
 def _scores(cfg, iface, genome, ids, seed, device, chunk=None):
     return rollout(cfg, iface, genome, ids, run_seed=seed, device=device, chunk_worlds=chunk).score
 
@@ -61,17 +65,16 @@ def _champions(spec, n, device):
 def check_exact_and_tolerance(con, iface, spec, device, quick):
     out = {}
     n_rand, n_champ, n_worlds, repeats = (4, 2, 4, 2) if quick else (32, 8, 16, 3)
-    rand = Genome.random(spec, grid.task_config(Config(), "T1").brain, n_rand,
-                         generator=torch.Generator().manual_seed(1)).select(list(range(n_rand)))
+    cpu_spec = spec.to("cpu")  # genomes are drawn with a CPU generator, then moved
+    rand = Genome.random(cpu_spec, grid.task_config(Config(), "T1").brain, n_rand,
+                         generator=torch.Generator().manual_seed(1))
     for task, ticks, label in (("T0", 200, "02-T0"), ("T1", 200, "02-T1"), ("T1", 600, "02-T1 600-tick stress")):
         cfg = grid.task_config(Config(), task)
         cfg.world.max_ticks = ticks
         ids = np.arange(n_worlds)
         for kind, g in (("random", rand.select(list(range(n_rand)))),
-                        ("champions", _champions(spec, n_champ, "cpu"))):
-            g = g.select(list(range(g.n_strains)))
-            g = Genome.cat([g]).with_params()  # a clean copy
-            g = Genome(g.spec.to(device), g.cfg, **{k: None if v is None else v.to(device) for k, v in g.params().items()})
+                        ("champions", _champions(cpu_spec, n_champ, "cpu"))):
+            g = _to(g.with_params(), device)  # a clean copy on the device
             gcfg = cfg.copy()
             gcfg.brain = g.cfg if kind == "champions" else cfg.brain
             with replay_mode(warn=True):
@@ -93,8 +96,7 @@ def check_exact_and_tolerance(con, iface, spec, device, quick):
 
 def check_identity(con, iface, spec, device):
     cfg = grid.task_config(Config(), "T1")
-    g = Genome.random(spec, cfg.brain, 4, generator=torch.Generator().manual_seed(2))
-    g = Genome(g.spec.to(device), g.cfg, **{k: None if v is None else v.to(device) for k, v in g.params().items()})
+    g = _to(Genome.random(spec.to("cpu"), cfg.brain, 4, generator=torch.Generator().manual_seed(2)), device)
     ids = np.arange(8)
     with replay_mode(warn=True):
         off = _scores(cfg, iface, g, ids, 4, device)
