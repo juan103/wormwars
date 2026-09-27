@@ -2137,3 +2137,10 @@ Astra's final check (`docs/reviews/*-T0-345c/`) answered "not yet" on two points
   01b used, beyond the documented construction (`make_graphs`, seed 1).
   - **A real check** is to replay each champion's stored `holdout_score` on its recorded device.
     That is item 3's historical replay on CUDA, after 03r. The test's docstring says so.
+- **Consensus:** Astra's second final check (`docs/reviews/*-T0-345d/`) answered "items 3-5 CPU:
+  accept". It ran all six champion cases on CPU and confirmed independently that the files lack
+  `edge_hash`. Fable had accepted.
+  - So T0's CPU work (items 1-5) is agreed by all three, and the owner is informed.
+  - **Open until the GPU is free:** `replay_mode` exactness, the default-CUDA tolerance,
+    historical replay (which also verifies the SH1 and RD1 rebuilds), CUDA ledger identity, and
+    the single-island regression against a published log.
