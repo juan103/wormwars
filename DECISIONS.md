@@ -1976,3 +1976,7 @@ the amended plan text.
     inside `attempt`;
   - the "twelve places" count is corrected.
 - **"tuning" is now tested.**
+- **Consensus:** Astra's final check (`docs/reviews/*-T0-item2e/`) verified the fix through 02b's
+  real `__main__` block and answered "item 2: accept". Fable had accepted. So T0 item 2, compute
+  accounting, is agreed by all three, and the owner is informed. It remains open on CUDA
+  bit-identity with the ledger on and off, which is checked when the GPU is free.
