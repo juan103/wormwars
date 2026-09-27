@@ -1752,7 +1752,9 @@ That is not consensus, so every point was addressed. Each code point got a test 
 - **The champion test could not detect the old bug** (Astra). A rigged evaluator now reverses the
   ranking on any later population evaluation. The test fails when the old re-evaluation is
   restored, which was checked by running it that way. `GenerationLog` gains `best_sha256`.
-  - Fable asked for a one-time check: all 153 published champions equal their log's final best.
+  - Fable asked for a one-time check: the 153 published champions that have a log match their
+    log's final best *by nickname* (about 12 bits; old logs have no full hashes). That is no
+    detected mismatch, not proof (corrected after the re-check).
 - **Tests added:** the full saved fitness vector, holdout-to-genome pairing, snapshot pairing, and
   mutation never changing Dale signs (both).
 - **Jitter keys are explicit coordinates:** (swarm, wey, sample point), not a padded flat index. A
@@ -1787,3 +1789,23 @@ That is not consensus, so every point was addressed. Each code point got a test 
   `scripts/exp03.py`, which stays unchanged while 03r runs. All three keep `dale_sign`.
 - **The 03r safety net:** a worktree at the binding commit (`../wormWars-03r-binding`) is ready for
   a resume if the run crashes (Fable).
+
+**Re-check, and consensus reached** (`docs/reviews/*-T0c/`): Astra and Fable both answered
+"T0 plan v2.1: confirmed" and "item 1: accept". Astra ran 49 focused CPU tests and saw the rigged
+champion test fail with the old re-evaluation restored. So T0 item 1 is agreed by all three
+(Claude, Astra and Fable), and under the owner's delegation the owner is informed. Also done:
+- **Wording:** the 153-champion check is nickname-level only (both). The plan's "independent
+  noise" is replaced by D066's corrected wording (Astra).
+- **Jitter draws changed twice:** at f6af625 and at 59217da. Jitter outputs are comparable only
+  from 59217da on (Fable). 03r uses no jitter.
+- **Tests:**
+  - `best_sha256` is anchored to an independent argmax of the captured fitness (Fable);
+  - the 153-champion check is a test.
+
+**Owed before the T0 gate:**
+- an end-to-end jitter test with a (1, 3) match beside a (2, 2) match (Fable; the current test
+  exercises `_keyed_uniform` directly);
+- a readable error when `assign` rejects unsupported island settings inside `_migrate`, which
+  comes with item 5's validation;
+- jitter keys drop run-seed bits above 32, which is harmless for the seeds in use. It will be
+  recorded in the jitter docstring.

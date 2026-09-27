@@ -131,6 +131,8 @@ def test_saved_fitness_is_the_full_final_vector_and_holdouts_and_snapshots_pair(
                  out_dir=tmp_path, snapshots=(0, 2))
     pop_, meta = load_genome(tmp_path / f"{spec.label}-run00-final.npz", spec)
     np.testing.assert_array_equal(np.asarray(meta["fitness"]), seen["fit"])
+    # anchor the logged hash independently of evolve's own argmax (Fable, D067)
+    assert genome_hash(seen["pop"], int(np.argmax(seen["fit"]))) == r.log[-1].best_sha256
     assert all(same_strain(pop_, i, seen["pop"], i) for i in range(5))
     for g in r.log:
         if g.holdout_best is not None:
@@ -215,3 +217,19 @@ def test_jitter_keys_are_explicit_coordinates_not_a_padded_flat_index(parts):
     a = w._keyed_uniform(0, n_swarms=2, n_weys=2)  # [worlds, swarms, weys, points]
     b = w._keyed_uniform(0, n_swarms=2, n_weys=3)
     torch.testing.assert_close(a, b[:, :, :2], rtol=0, atol=0)
+
+
+def test_published_champions_match_their_logs_final_best_by_nickname():
+    """Fable's one-time check, made reproducible. Old logs carry only the nickname (about 12
+    bits), so this detects mismatches at nickname resolution only; it is not proof of identity."""
+    import re
+    n = 0
+    for f in sorted(ROOT.glob("runs/**/champion-*.npz")):
+        m = re.match(r"champion-(.+)-run(\d+)\.npz", f.name)
+        log = f.parent / f"{m.group(1)}-run{m.group(2)}-log.json" if m else None
+        if log is None or not log.exists():
+            continue
+        meta = json.loads(str(np.load(f, allow_pickle=False)["meta"]))
+        assert meta["nickname"] == json.loads(log.read_text())[-1]["best_nickname"], f.name
+        n += 1
+    assert n == 153
