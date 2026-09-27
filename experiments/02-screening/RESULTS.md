@@ -1,5 +1,8 @@
 # WormWars 02: results of the screening
 
+> **Correction after publication (2026-09-26):** the mirror-symmetry reasoning in 02's
+> pre-registration was wrong. No result changes. See [Corrections](#corrections).
+
 **The primary prediction is challenged: in the primary cell, neither group of evolved champions
 meaningfully uses the left-right food difference.** In stereo foraging with food entering the
 biological neurons, removing the difference costs N2's champions +0.027 [+0.000, +0.060] and
@@ -34,6 +37,42 @@ Run: `runs/exp02-screening/`. 190 runs, 5.64 GPU-hours of evolution and 7.44 GPU
 with the probes, of a 12-hour cap; no probe step was dropped; one RTX 5080. The evolution ran
 from commit `225e8f8`, and the probes and report from `971bbb3`. The only difference between the
 two is Fable's review amendments, which touch probes, analysis and wording (D041).
+
+## Corrections
+
+### 1. The mirror-symmetry reading was wrong (2026-09-26, D050)
+
+The pre-registration registered this reading in §4, under "Registered readings", and D041 records
+the same reasoning. The registered text, unchanged:
+
+> **Mirror symmetry.** A degree-preserving shuffle destroys the left-right pairing of targets,
+> and the turn read-out is bilateral. So any mirror-symmetric graph gets a left-minus-right
+> comparison almost for free. The remaps cannot control for this, because R1 and R2 are
+> symmetric pairs inside N2 too. **If the verdict is supported and N2 shows a comparable
+> advantage under R1 and R2, the result is read as a symmetry effect, not as something specific
+> to the food neurons' wiring. The full design then needs a mirror-symmetric shuffle control.**
+
+**Why it is wrong.** The turn read-out is dorsal minus ventral, not left minus right, and each of
+those groups holds both left and right neurons. So it is unchanged when left and right are
+swapped. Food on the left and food on the right are mirror images of each other. An exactly
+mirror-symmetric network therefore turns the same way for both. Symmetry does not give the
+left-right comparison for free: it forbids it, and steering needs the symmetry broken.
+
+**What changes:**
+- **No result above.** The reading applied only if the primary had been supported, and the
+  primary was challenged. The sentence "The mirror-symmetry reading registered for a supported
+  result does not arise" still holds.
+- **The rationale for a mirror-symmetric control.** Such a control is still useful, but as a
+  control predicted to *lower* directional response, not as a test of a symmetry explanation.
+  That is how experiment 03 uses it.
+
+**Where else the reasoning appears:**
+- **The pre-registration (§4) and D041:** left as registered and recorded.
+- **The docstring of `wormwars/exp02/structure.py`:** corrected on the `roadmap` branch, and it
+  reaches main with that branch, as does D050 itself.
+
+**Found by** Astra 6, reviewing experiment 03's design. Checked against the read-out's
+definition by Claude before it was adopted.
 
 ---
 
