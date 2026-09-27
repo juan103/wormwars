@@ -64,3 +64,5 @@ Astra6/
 # Experiment 03's per-graph measurements (about 640 MB; regenerable from the binding commit). The report is committed.
 runs/exp03/measures/
 runs/exp03/measures-aborted-0ef9a3d/
+# Experiment 03r's per-graph measurements (regenerable from the binding commit).
+runs/exp03r/measures/
