@@ -28,7 +28,7 @@ from wormwars.interface import load_interface
 
 
 def main():
-    ap = argparse.ArgumentParser()
+    ap = argparse.ArgumentParser(allow_abbrev=False)  # --out must match the accounting route (D071)
     ap.add_argument("--runs", type=int, default=3)
     ap.add_argument("--generations", type=int, default=25)
     ap.add_argument("--population", type=int, default=32)

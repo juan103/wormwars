@@ -462,3 +462,5 @@ if __name__ == "__main__":
          "criticality_R1": lambda: stage_criticality("R1", ("N2",)),
          "criticality_R2": lambda: stage_criticality("R2", ("N2",)),
          "kept_edges": stage_kept_edges, "summarise": stage_summarise}[stage]()
+    from wormwars.accounting import write_aggregate  # every stage's attempts summed (D071)
+    write_aggregate(Path(__file__).parent / "compute", Path(__file__).parent / "compute.json")

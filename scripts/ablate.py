@@ -42,7 +42,7 @@ from wormwars.interface import load_interface
 
 
 def main():
-    ap = argparse.ArgumentParser()
+    ap = argparse.ArgumentParser(allow_abbrev=False)  # --out must match the accounting route (D071)
     ap.add_argument("--champions", nargs="+", default=["runs/m4/champion-run*.npz"])
     ap.add_argument("--controls", type=int, default=12, help="matched random ablations per target")
     ap.add_argument("--worlds", type=int, default=16)

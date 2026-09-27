@@ -90,3 +90,21 @@ def test_category_boundaries_synchronise(monkeypatch):
     with A.category("probe"):
         pass
     assert len(calls) == 2  # once on entry, once on exit, never in between
+
+
+def test_a_nonzero_exit_is_a_failed_attempt_and_the_aggregate_names_the_script(tmp_path):
+    def main():
+        raise SystemExit(3)
+    with pytest.raises(SystemExit):
+        A.run_script(main, out_default=str(tmp_path / "o"), default="measure", name="demo", argv=["--x"])
+    agg = json.loads((tmp_path / "o" / "compute.json").read_text(encoding="utf-8"))
+    a = agg["attempts"][0]
+    assert a["status"] == "failed" and a["script"] == "demo" and a["argv"] == ["--x"]
+    assert agg["failed_attempts"] == 1
+
+
+def test_the_legacy_scripts_refuse_abbreviated_options():
+    """Astra: --ou was accepted by argparse, sending results and accounting to different folders."""
+    for name in ("evolve_forage", "experiment", "coevolve", "ablate", "tactics"):
+        src = (ROOT / "scripts" / f"{name}.py").read_text(encoding="utf-8")
+        assert "ArgumentParser(allow_abbrev=False)" in src, name

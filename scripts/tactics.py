@@ -102,7 +102,7 @@ def _ratios(res, matches, n_strains: int, side: str):
 
 
 def main():
-    ap = argparse.ArgumentParser()
+    ap = argparse.ArgumentParser(allow_abbrev=False)  # --out must match the accounting route (D071)
     ap.add_argument("--runs", default="runs/m7")
     ap.add_argument("--worlds", type=int, default=8)
     ap.add_argument("--out", default="runs/tactics")

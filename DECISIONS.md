@@ -1937,3 +1937,25 @@ yet". Every point was adopted after checking it:
   - 02b's replays are categorised by its `attempt` default ("probe") but not tested;
   - a hard kill still loses the attempt file;
   - CUDA bit-identity with the ledger on and off is still unverified until the GPU is free.
+
+## D071 — T0 item 2, second re-check
+
+Second re-check (`docs/reviews/*-T0-item2c/`): Fable answered "item 2: accept" and Astra "not
+yet". Addressed:
+- **02b now writes its aggregate** after every stage, as `compute.json` beside its attempt files.
+  Both are git-ignored.
+- **The plan's test claim is amended to what is tested** (`T0.md` section 1). Tested: evolve
+  categories, calibration, the input-response, history and behaviour probes, exp03 coverage and
+  stimulus bank, coevolution and geometry. Counted by construction but untested: 02b's replays,
+  the viewers and the benchmarks, which are not experiments. The hooks make them count, but no
+  test asserts it. Astra asked for this to be stated rather than implied.
+- **`--out` abbreviations are refused** (Astra reproduced `--ou` sending results and accounting
+  to different folders). The five legacy parsers use `allow_abbrev=False`, and a test checks it.
+- **The aggregate names each attempt** by script, argv, stage, experiment, command and default
+  category (Fable).
+- **A test checks** that a non-zero `SystemExit` is recorded as failed (Fable).
+- **Left as is:**
+  - a usage error (argparse exit code 2) still records a failed attempt with zero work. That is
+    truthful, and harmless;
+  - exp02's and exp03's `compute.json` is written inside the `report` attempt, so it excludes the
+    report's own seconds (Fable).

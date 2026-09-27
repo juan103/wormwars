@@ -235,8 +235,9 @@ def aggregate(directory) -> dict:
     attempts = []
     for path in sorted(Path(directory).glob("*.json")):
         d = json.loads(path.read_text(encoding="utf-8"))
-        attempts.append({"file": path.name, "status": d.get("status"), "command": d.get("command"),
-                         "git_commit": d.get("git_commit")})
+        attempts.append({"file": path.name, "status": d.get("status"),
+                         **{k: d.get(k) for k in ("experiment", "command", "script", "stage", "argv",
+                                                  "default_category", "git_commit") if k in d}})
         for k, v in d.get("categories", {}).items():
             c = cats.setdefault(k, {**{f: 0 for f in COUNT_FIELDS}, "seconds": 0.0})
             for f in COUNT_FIELDS:
