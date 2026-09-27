@@ -61,7 +61,7 @@ swapped. Food on the left and food on the right are mirror images of each other.
 - **A fully mirror-equivariant network** turns the same way for both. That means mirror-symmetric
   wiring *and* weights, signs, biases and time constants, with mirror-related initial states.
   For such a network, symmetry does not give the comparison for free: it forbids it.
-- **Symmetric wiring alone is not enough.** This project draws each neuron's random parameters
+- **Symmetric wiring alone is not enough.** This project draws each neuron's and each synapse's random parameters
   independently, which breaks the symmetry (D051). So the correct statement is not "symmetry
   forbids steering". It is that symmetric wiring gives no left-right comparison for free.
 - **Any comparison has to come from asymmetry,** in the weights or elsewhere.
