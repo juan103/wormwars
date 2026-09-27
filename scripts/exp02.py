@@ -158,6 +158,7 @@ def _paired(a, b, n=20000):
     return {"estimate": float(d.mean()), "lo": float(np.quantile(m, 0.025)), "hi": float(np.quantile(m, 0.975))}
 
 
+@acct.counted("probe")  # validating a probe is probe work, not measurement (Fable, D070)
 def _history_probe_validation(cfg, iface, fam, device):
     """Which history ablation is valid: the memoryless controller must be unchanged within its
     interval, and the memory controller must fall toward it. Returns every candidate's numbers."""
@@ -222,6 +223,7 @@ def cmd_extend(args, con, iface):
     _json(diag_path, diag)
 
 
+@acct.counted("probe")
 def cmd_validate_probes(args, con, iface):
     """D038: the capability probes on scripted controllers, with the equivalence rule. History
     (T1): K must move less than the margin; M's gain over K must fall. Stereo (T0): K reads only
@@ -324,6 +326,7 @@ def cmd_diagnostics(args, con, iface):
 # ----------------------------------------------------------------------------- one run
 
 def _execute(spec: grid.RunSpec, con, remap_sets, device, out: Path, graph=None, gains=None) -> dict:
+    compute_before = acct.LEDGER.snapshot()  # the whole run: drive, evolution, final (Fable, D070)
     cfg = grid.brain_config_for_graph(grid.task_config(Config(), spec.cell.task), spec.graph)
     cfg.evo.generations = spec.generations
     cfg.world.forward_gain, cfg.world.turn_gain = gains or _gains(spec.graph)
@@ -356,7 +359,7 @@ def _execute(spec: grid.RunSpec, con, remap_sets, device, out: Path, graph=None,
         save_genome(out / f"{spec.key}-{tag}.npz", champ, 0, cfg=cfg, run_seed=spec.run_seed,
                     snapshot_generation=g, **manifest)
     rec["wall_seconds"] = time.perf_counter() - t0
-    rec["compute"] = res.compute  # this run's evolution, by category (T0, D069)
+    rec["compute"] = acct.LEDGER.since(compute_before)  # this run, by category (T0, D069, D070)
     return rec
 
 

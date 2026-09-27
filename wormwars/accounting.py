@@ -14,8 +14,11 @@ Known gaps, by design:
 
 Each count goes to the innermost active category. Work outside any category goes to "other",
 whose time is not measured: it is written as null, and the file flags it as uncategorised.
-Experiment scripts run inside `attempt(...)` with a default category, so they leave nothing in
-"other".
+Experiment scripts run inside `attempt(...)` with a **default category**, so they leave nothing in
+"other". The default category therefore also absorbs the script's overhead time (breeding, I/O,
+bootstraps, whole bookkeeping commands) with zero counts, and it would silently absorb a future
+uncategorised path too. So every attempt file records which category was the default, and its
+seconds are overhead as much as work (Fable, D070).
 
 **Time:** synchronised wall-clock seconds per category. `torch.cuda.synchronize()` runs on every
 visible device at category boundaries only, never in the hot loop. Time in a nested category is
@@ -30,6 +33,7 @@ from __future__ import annotations
 
 import json
 import os
+import sys
 import subprocess
 import time
 import uuid
@@ -200,12 +204,16 @@ def attempt(directory, default: str | None = None, **extra):
                 yield
         else:
             yield
+    except SystemExit as e:  # argparse's --help and sys.exit(0) are not failures (Astra, D070)
+        if e.code not in (0, None):
+            status, error = "failed", f"SystemExit: {e.code}"
+        raise
     except BaseException as e:  # noqa: BLE001  (recorded, then re-raised)
         status, error = "failed", f"{type(e).__name__}: {e}"
         raise
     finally:
         cats = LEDGER.since(before)
-        doc = {**extra, "status": status, "error": error,
+        doc = {**extra, "default_category": default, "status": status, "error": error,
                "started_utc": t0.isoformat(timespec="seconds"),
                "ended_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"),
                "pid": os.getpid(), "git_commit": _git_commit(),
@@ -237,6 +245,28 @@ def aggregate(directory) -> dict:
     return {"time_unit": TIME_UNIT, "neural_update_unit": NEURAL_UNIT, "attempts": attempts,
             "failed_attempts": sum(a["status"] == "failed" for a in attempts),
             "uncategorised": "other" in cats, "categories": cats, "totals": totals(cats)}
+
+
+def run_script(main, *, out_default: str, default: str, name: str, argv=None):
+    """Run a script's `main` as one recorded attempt in `<--out>/compute/`, then aggregate every
+    attempt there into `<--out>/compute.json`, beside the script's results (Astra, D070).
+    `--help` runs without accounting."""
+    argv = sys.argv[1:] if argv is None else list(argv)
+    if any(a in ("-h", "--help") for a in argv):
+        return main()
+    out = out_default
+    for i, a in enumerate(argv):
+        if a == "--out" and i + 1 < len(argv):
+            out = argv[i + 1]
+        elif a.startswith("--out="):
+            out = a.split("=", 1)[1]
+    directory = Path(out) / "compute"
+    try:
+        with attempt(directory, default=default, script=name, argv=argv):
+            return main()
+    finally:
+        if directory.exists():
+            write_aggregate(directory, Path(out) / "compute.json")
 
 
 def write_aggregate(directory, path) -> Path:

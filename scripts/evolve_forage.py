@@ -140,8 +140,7 @@ def main():
 
 
 if __name__ == "__main__":
-    # compute accounting: one attempt file per invocation, written even on failure (T0, D069)
-    from pathlib import Path as _AcctPath
-    from wormwars.accounting import attempt
-    with attempt(_AcctPath("runs/compute/evolve_forage"), default="measure", script="evolve_forage"):
-        main()
+    # compute accounting: one attempt per invocation in <--out>/compute/, written even on failure,
+    # and every attempt there summed into <--out>/compute.json (T0, D069, D070)
+    from wormwars.accounting import run_script
+    run_script(main, out_default="runs/m4", default="measure", name="evolve_forage")

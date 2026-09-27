@@ -1905,3 +1905,35 @@ the output layer incomplete. Every point was adopted after checking it in the co
   "gaps off" genome uses `with_params`, which is numerically identical. 03's `report.json`
   regenerates byte-identically.
 - **Not verified:** CUDA bit-identity with the ledger on and off. That waits for the GPU.
+
+## D070 — T0 item 2, re-check: script integration completed
+
+Re-check of D069 (`docs/reviews/*-T0-item2b/`): Fable answered "item 2: accept" and Astra "not
+yet". Every point was adopted after checking it:
+- **Legacy scripts are routed by `--out`** (Astra). `evolve_forage`, `experiment`, `coevolve`,
+  `ablate` and `tactics` pooled attempts in `runs/compute/<script>` and wrote no aggregate. They
+  now use `accounting.run_script`: attempts go to `<--out>/compute/`, and all of them are summed
+  into `<--out>/compute.json`, beside the results.
+- **`--help` is not a failure** (Astra reproduced `SystemExit: 0` recorded as failed). `--help`
+  runs without accounting, and `SystemExit` with code 0 or None counts as completed.
+- **The default category absorbs overhead** (Fable). The attempt file now records
+  `default_category`, and the docstring says its seconds are overhead as much as work.
+- **02b's attempt files were in a tracked folder** and could carry local paths into the public
+  repo (Fable). `experiments/*/compute/` and `experiments/*/compute.json` are now ignored.
+- **exp02's per-run compute** now covers the whole run, including drive and final evaluations
+  (Fable).
+- **Probe validation** (`cmd_validate_probes`, `_history_probe_validation`) is "probe", not the
+  default "measure" (Fable).
+- **Tests** (`tests/test_t0_accounting_c.py`):
+  - an end-to-end coevolution run, categorised as selection and holdout, with nothing in
+    "other". It is the first end-to-end coevolution test in the suite;
+  - exp03's stimulus bank counted as a probe;
+  - `run_script`'s routing and aggregation;
+  - `--help` and exit 0;
+  - boundary syncs.
+  The geometry test is renamed: it did not test coevolution.
+- **Recorded, not changed:**
+  - viewers (`watch`, `showcase`) and benchmarks are not experiments, and write no compute file;
+  - 02b's replays are categorised by its `attempt` default ("probe") but not tested;
+  - a hard kill still loses the attempt file;
+  - CUDA bit-identity with the ledger on and off is still unverified until the GPU is free.

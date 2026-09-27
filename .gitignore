@@ -70,3 +70,5 @@ runs/exp03r/measures/
 runs/**/compute/
 runs/compute/
 runs/**/compute.json
+experiments/*/compute/
+experiments/*/compute.json

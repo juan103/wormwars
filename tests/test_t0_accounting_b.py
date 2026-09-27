@@ -173,7 +173,7 @@ def test_an_attempt_is_written_even_when_it_fails_and_aggregation_sums_attempts(
     assert agg["totals"]["worlds_built"] == 5
 
 
-def test_coevolution_and_geometry_work_is_categorised(parts):
+def test_geometry_work_is_categorised(parts):
     from wormwars.analysis import geometry
     con, iface, spec = parts
     geometry.duel(con, Config(), pose="head_on", gap=1.0)
