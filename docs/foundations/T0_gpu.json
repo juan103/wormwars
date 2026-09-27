@@ -1,254 +1,631 @@
 {
+ "provenance_at_start": {
+  "git_commit": "bcee5a87c5493b5e0a518f87941a733bc167a83f",
+  "dirty": false
+ },
  "device": "cuda",
  "cuda": "NVIDIA GeForce RTX 5080",
  "torch": "2.12.0+cu130",
  "quick": false,
  "declared_tolerance": 0.0001,
- "exact_and_tolerance": {
+ "composition": {
   "02-T0 / random": {
-   "replay_mode_repeat_identical": true,
-   "replay_mode_chunking_identical": false,
-   "replay_mode_chunking_max_abs_diff": 0.015380263328552246,
-   "default_cuda_max_abs_diff": 0.015380263328552246,
-   "default_cuda_quantiles_abs_diff": [
-    0.0,
-    0.0,
-    1.1920928955078125e-07,
-    0.015380263328552246
-   ],
-   "within_declared_1e-4": false,
    "strains": 32,
-   "worlds": 16,
-   "ticks": 200
+   "worlds_per_strain": 16,
+   "ticks": 200,
+   "substeps": 32,
+   "default repeat": {
+    "max_abs_diff": 0.0,
+    "worlds_over_1e-4": 0,
+    "worlds": 512
+   },
+   "default chunking 1 strain(s) per chunk": {
+    "max_abs_diff": 0.015380263328552246,
+    "worlds_over_1e-4": 3,
+    "worlds": 512
+   },
+   "default chunking 2 strain(s) per chunk": {
+    "max_abs_diff": 0.0,
+    "worlds_over_1e-4": 0,
+    "worlds": 512
+   },
+   "default chunking 3 strain(s) per chunk": {
+    "max_abs_diff": 0.0,
+    "worlds_over_1e-4": 0,
+    "worlds": 512
+   },
+   "default chunking 4 strain(s) per chunk": {
+    "max_abs_diff": 0.0,
+    "worlds_over_1e-4": 0,
+    "worlds": 512
+   },
+   "default chunking 16 strain(s) per chunk": {
+    "max_abs_diff": 0.0,
+    "worlds_over_1e-4": 0,
+    "worlds": 512
+   },
+   "default chunking 32 strain(s) per chunk": {
+    "max_abs_diff": 0.0,
+    "worlds_over_1e-4": 0,
+    "worlds": 512
+   },
+   "default chunking 31 + remainder of 1": {
+    "max_abs_diff": 0.0003476142883300781,
+    "worlds_over_1e-4": 1,
+    "worlds": 512
+   },
+   "replay_mode repeat": {
+    "max_abs_diff": 0.0,
+    "worlds_over_1e-4": 0,
+    "worlds": 512
+   },
+   "replay_mode chunking 1 strain(s) per chunk": {
+    "max_abs_diff": 0.015380263328552246,
+    "worlds_over_1e-4": 3,
+    "worlds": 512
+   },
+   "replay_mode chunking 2 strain(s) per chunk": {
+    "max_abs_diff": 0.0,
+    "worlds_over_1e-4": 0,
+    "worlds": 512
+   },
+   "replay_mode chunking 3 strain(s) per chunk": {
+    "max_abs_diff": 0.0,
+    "worlds_over_1e-4": 0,
+    "worlds": 512
+   },
+   "replay_mode chunking 4 strain(s) per chunk": {
+    "max_abs_diff": 0.0,
+    "worlds_over_1e-4": 0,
+    "worlds": 512
+   },
+   "replay_mode chunking 16 strain(s) per chunk": {
+    "max_abs_diff": 0.0,
+    "worlds_over_1e-4": 0,
+    "worlds": 512
+   },
+   "replay_mode chunking 32 strain(s) per chunk": {
+    "max_abs_diff": 0.0,
+    "worlds_over_1e-4": 0,
+    "worlds": 512
+   },
+   "replay_mode chunking 31 + remainder of 1": {
+    "max_abs_diff": 0.0003476142883300781,
+    "worlds_over_1e-4": 1,
+    "worlds": 512
+   },
+   "replay vs default, same chunking": {
+    "max_abs_diff": 0.0,
+    "worlds_over_1e-4": 0,
+    "worlds": 512
+   }
   },
-  "02-T0 / champions": {
-   "replay_mode_repeat_identical": true,
-   "replay_mode_chunking_identical": false,
-   "replay_mode_chunking_max_abs_diff": 0.002496957778930664,
-   "default_cuda_max_abs_diff": 0.002496957778930664,
-   "default_cuda_quantiles_abs_diff": [
-    0.0,
-    0.0,
-    2.8176307750982232e-05,
-    0.002496957778930664
-   ],
-   "within_declared_1e-4": false,
+  "02-T0 / 02-champions": {
    "strains": 8,
-   "worlds": 16,
-   "ticks": 200
+   "worlds_per_strain": 16,
+   "ticks": 200,
+   "substeps": 32,
+   "default repeat": {
+    "max_abs_diff": 0.0,
+    "worlds_over_1e-4": 0,
+    "worlds": 128
+   },
+   "default chunking 1 strain(s) per chunk": {
+    "max_abs_diff": 0.009597539901733398,
+    "worlds_over_1e-4": 8,
+    "worlds": 128
+   },
+   "default chunking 2 strain(s) per chunk": {
+    "max_abs_diff": 0.0,
+    "worlds_over_1e-4": 0,
+    "worlds": 128
+   },
+   "default chunking 3 strain(s) per chunk": {
+    "max_abs_diff": 0.0,
+    "worlds_over_1e-4": 0,
+    "worlds": 128
+   },
+   "default chunking 4 strain(s) per chunk": {
+    "max_abs_diff": 0.0,
+    "worlds_over_1e-4": 0,
+    "worlds": 128
+   },
+   "default chunking 7 + remainder of 1": {
+    "max_abs_diff": 2.384185791015625e-07,
+    "worlds_over_1e-4": 0,
+    "worlds": 128
+   },
+   "replay_mode repeat": {
+    "max_abs_diff": 0.0,
+    "worlds_over_1e-4": 0,
+    "worlds": 128
+   },
+   "replay_mode chunking 1 strain(s) per chunk": {
+    "max_abs_diff": 0.009597539901733398,
+    "worlds_over_1e-4": 8,
+    "worlds": 128
+   },
+   "replay_mode chunking 2 strain(s) per chunk": {
+    "max_abs_diff": 0.0,
+    "worlds_over_1e-4": 0,
+    "worlds": 128
+   },
+   "replay_mode chunking 3 strain(s) per chunk": {
+    "max_abs_diff": 0.0,
+    "worlds_over_1e-4": 0,
+    "worlds": 128
+   },
+   "replay_mode chunking 4 strain(s) per chunk": {
+    "max_abs_diff": 0.0,
+    "worlds_over_1e-4": 0,
+    "worlds": 128
+   },
+   "replay_mode chunking 7 + remainder of 1": {
+    "max_abs_diff": 2.384185791015625e-07,
+    "worlds_over_1e-4": 0,
+    "worlds": 128
+   },
+   "replay vs default, same chunking": {
+    "max_abs_diff": 0.0,
+    "worlds_over_1e-4": 0,
+    "worlds": 128
+   }
   },
   "02-T1 / random": {
-   "replay_mode_repeat_identical": true,
-   "replay_mode_chunking_identical": false,
-   "replay_mode_chunking_max_abs_diff": 0.02737569808959961,
-   "default_cuda_max_abs_diff": 0.02737569808959961,
-   "default_cuda_quantiles_abs_diff": [
-    0.0,
-    0.0,
-    1.1920928955078125e-07,
-    0.02737569808959961
-   ],
-   "within_declared_1e-4": false,
    "strains": 32,
-   "worlds": 16,
-   "ticks": 200
+   "worlds_per_strain": 16,
+   "ticks": 200,
+   "substeps": 32,
+   "default repeat": {
+    "max_abs_diff": 0.0,
+    "worlds_over_1e-4": 0,
+    "worlds": 512
+   },
+   "default chunking 1 strain(s) per chunk": {
+    "max_abs_diff": 0.02737569808959961,
+    "worlds_over_1e-4": 3,
+    "worlds": 512
+   },
+   "default chunking 2 strain(s) per chunk": {
+    "max_abs_diff": 0.0,
+    "worlds_over_1e-4": 0,
+    "worlds": 512
+   },
+   "default chunking 3 strain(s) per chunk": {
+    "max_abs_diff": 0.0,
+    "worlds_over_1e-4": 0,
+    "worlds": 512
+   },
+   "default chunking 4 strain(s) per chunk": {
+    "max_abs_diff": 0.0,
+    "worlds_over_1e-4": 0,
+    "worlds": 512
+   },
+   "default chunking 16 strain(s) per chunk": {
+    "max_abs_diff": 0.0,
+    "worlds_over_1e-4": 0,
+    "worlds": 512
+   },
+   "default chunking 32 strain(s) per chunk": {
+    "max_abs_diff": 0.0,
+    "worlds_over_1e-4": 0,
+    "worlds": 512
+   },
+   "default chunking 31 + remainder of 1": {
+    "max_abs_diff": 0.02737569808959961,
+    "worlds_over_1e-4": 1,
+    "worlds": 512
+   },
+   "replay_mode repeat": {
+    "max_abs_diff": 0.0,
+    "worlds_over_1e-4": 0,
+    "worlds": 512
+   },
+   "replay_mode chunking 1 strain(s) per chunk": {
+    "max_abs_diff": 0.02737569808959961,
+    "worlds_over_1e-4": 3,
+    "worlds": 512
+   },
+   "replay_mode chunking 2 strain(s) per chunk": {
+    "max_abs_diff": 0.0,
+    "worlds_over_1e-4": 0,
+    "worlds": 512
+   },
+   "replay_mode chunking 3 strain(s) per chunk": {
+    "max_abs_diff": 0.0,
+    "worlds_over_1e-4": 0,
+    "worlds": 512
+   },
+   "replay_mode chunking 4 strain(s) per chunk": {
+    "max_abs_diff": 0.0,
+    "worlds_over_1e-4": 0,
+    "worlds": 512
+   },
+   "replay_mode chunking 16 strain(s) per chunk": {
+    "max_abs_diff": 0.0,
+    "worlds_over_1e-4": 0,
+    "worlds": 512
+   },
+   "replay_mode chunking 32 strain(s) per chunk": {
+    "max_abs_diff": 0.0,
+    "worlds_over_1e-4": 0,
+    "worlds": 512
+   },
+   "replay_mode chunking 31 + remainder of 1": {
+    "max_abs_diff": 0.02737569808959961,
+    "worlds_over_1e-4": 1,
+    "worlds": 512
+   },
+   "replay vs default, same chunking": {
+    "max_abs_diff": 0.0,
+    "worlds_over_1e-4": 0,
+    "worlds": 512
+   }
   },
-  "02-T1 / champions": {
-   "replay_mode_repeat_identical": true,
-   "replay_mode_chunking_identical": false,
-   "replay_mode_chunking_max_abs_diff": 0.0005552768707275391,
-   "default_cuda_max_abs_diff": 0.0005552768707275391,
-   "default_cuda_quantiles_abs_diff": [
-    0.0,
-    0.0,
-    4.816055252376827e-07,
-    0.0005552768707275391
-   ],
-   "within_declared_1e-4": false,
+  "02-T1 / 02-champions": {
    "strains": 8,
-   "worlds": 16,
-   "ticks": 200
+   "worlds_per_strain": 16,
+   "ticks": 200,
+   "substeps": 32,
+   "default repeat": {
+    "max_abs_diff": 0.0,
+    "worlds_over_1e-4": 0,
+    "worlds": 128
+   },
+   "default chunking 1 strain(s) per chunk": {
+    "max_abs_diff": 0.002213716506958008,
+    "worlds_over_1e-4": 2,
+    "worlds": 128
+   },
+   "default chunking 2 strain(s) per chunk": {
+    "max_abs_diff": 0.0,
+    "worlds_over_1e-4": 0,
+    "worlds": 128
+   },
+   "default chunking 3 strain(s) per chunk": {
+    "max_abs_diff": 0.0,
+    "worlds_over_1e-4": 0,
+    "worlds": 128
+   },
+   "default chunking 4 strain(s) per chunk": {
+    "max_abs_diff": 0.0,
+    "worlds_over_1e-4": 0,
+    "worlds": 128
+   },
+   "default chunking 7 + remainder of 1": {
+    "max_abs_diff": 4.76837158203125e-07,
+    "worlds_over_1e-4": 0,
+    "worlds": 128
+   },
+   "replay_mode repeat": {
+    "max_abs_diff": 0.0,
+    "worlds_over_1e-4": 0,
+    "worlds": 128
+   },
+   "replay_mode chunking 1 strain(s) per chunk": {
+    "max_abs_diff": 0.002213716506958008,
+    "worlds_over_1e-4": 2,
+    "worlds": 128
+   },
+   "replay_mode chunking 2 strain(s) per chunk": {
+    "max_abs_diff": 0.0,
+    "worlds_over_1e-4": 0,
+    "worlds": 128
+   },
+   "replay_mode chunking 3 strain(s) per chunk": {
+    "max_abs_diff": 0.0,
+    "worlds_over_1e-4": 0,
+    "worlds": 128
+   },
+   "replay_mode chunking 4 strain(s) per chunk": {
+    "max_abs_diff": 0.0,
+    "worlds_over_1e-4": 0,
+    "worlds": 128
+   },
+   "replay_mode chunking 7 + remainder of 1": {
+    "max_abs_diff": 4.76837158203125e-07,
+    "worlds_over_1e-4": 0,
+    "worlds": 128
+   },
+   "replay vs default, same chunking": {
+    "max_abs_diff": 0.0,
+    "worlds_over_1e-4": 0,
+    "worlds": 128
+   }
   },
   "02-T1 600-tick stress / random": {
-   "replay_mode_repeat_identical": true,
-   "replay_mode_chunking_identical": false,
-   "replay_mode_chunking_max_abs_diff": 0.07324731349945068,
-   "default_cuda_max_abs_diff": 0.07324731349945068,
-   "default_cuda_quantiles_abs_diff": [
-    0.0,
-    4.0978193283081055e-08,
-    0.005089610815048218,
-    0.07324731349945068
-   ],
-   "within_declared_1e-4": false,
    "strains": 32,
-   "worlds": 16,
-   "ticks": 600
+   "worlds_per_strain": 16,
+   "ticks": 600,
+   "substeps": 32,
+   "default repeat": {
+    "max_abs_diff": 0.0,
+    "worlds_over_1e-4": 0,
+    "worlds": 512
+   },
+   "default chunking 1 strain(s) per chunk": {
+    "max_abs_diff": 0.07324731349945068,
+    "worlds_over_1e-4": 49,
+    "worlds": 512
+   },
+   "default chunking 2 strain(s) per chunk": {
+    "max_abs_diff": 0.0,
+    "worlds_over_1e-4": 0,
+    "worlds": 512
+   },
+   "default chunking 3 strain(s) per chunk": {
+    "max_abs_diff": 0.0,
+    "worlds_over_1e-4": 0,
+    "worlds": 512
+   },
+   "default chunking 4 strain(s) per chunk": {
+    "max_abs_diff": 0.0,
+    "worlds_over_1e-4": 0,
+    "worlds": 512
+   },
+   "default chunking 16 strain(s) per chunk": {
+    "max_abs_diff": 0.0,
+    "worlds_over_1e-4": 0,
+    "worlds": 512
+   },
+   "default chunking 32 strain(s) per chunk": {
+    "max_abs_diff": 0.0,
+    "worlds_over_1e-4": 0,
+    "worlds": 512
+   },
+   "default chunking 31 + remainder of 1": {
+    "max_abs_diff": 0.07324731349945068,
+    "worlds_over_1e-4": 2,
+    "worlds": 512
+   },
+   "replay_mode repeat": {
+    "max_abs_diff": 0.0,
+    "worlds_over_1e-4": 0,
+    "worlds": 512
+   },
+   "replay_mode chunking 1 strain(s) per chunk": {
+    "max_abs_diff": 0.07324731349945068,
+    "worlds_over_1e-4": 49,
+    "worlds": 512
+   },
+   "replay_mode chunking 2 strain(s) per chunk": {
+    "max_abs_diff": 0.0,
+    "worlds_over_1e-4": 0,
+    "worlds": 512
+   },
+   "replay_mode chunking 3 strain(s) per chunk": {
+    "max_abs_diff": 0.0,
+    "worlds_over_1e-4": 0,
+    "worlds": 512
+   },
+   "replay_mode chunking 4 strain(s) per chunk": {
+    "max_abs_diff": 0.0,
+    "worlds_over_1e-4": 0,
+    "worlds": 512
+   },
+   "replay_mode chunking 16 strain(s) per chunk": {
+    "max_abs_diff": 0.0,
+    "worlds_over_1e-4": 0,
+    "worlds": 512
+   },
+   "replay_mode chunking 32 strain(s) per chunk": {
+    "max_abs_diff": 0.0,
+    "worlds_over_1e-4": 0,
+    "worlds": 512
+   },
+   "replay_mode chunking 31 + remainder of 1": {
+    "max_abs_diff": 0.07324731349945068,
+    "worlds_over_1e-4": 2,
+    "worlds": 512
+   },
+   "replay vs default, same chunking": {
+    "max_abs_diff": 0.0,
+    "worlds_over_1e-4": 0,
+    "worlds": 512
+   }
   },
-  "02-T1 600-tick stress / champions": {
-   "replay_mode_repeat_identical": true,
-   "replay_mode_chunking_identical": false,
-   "replay_mode_chunking_max_abs_diff": 0.15317749977111816,
-   "default_cuda_max_abs_diff": 0.15317749977111816,
-   "default_cuda_quantiles_abs_diff": [
-    0.0,
-    0.008283901028335094,
-    0.0382440946996212,
-    0.15317749977111816
-   ],
-   "within_declared_1e-4": false,
+  "02-T1 600-tick stress / 02-champions": {
    "strains": 8,
-   "worlds": 16,
-   "ticks": 600
+   "worlds_per_strain": 16,
+   "ticks": 600,
+   "substeps": 32,
+   "default repeat": {
+    "max_abs_diff": 0.0,
+    "worlds_over_1e-4": 0,
+    "worlds": 128
+   },
+   "default chunking 1 strain(s) per chunk": {
+    "max_abs_diff": 0.05496835708618164,
+    "worlds_over_1e-4": 98,
+    "worlds": 128
+   },
+   "default chunking 2 strain(s) per chunk": {
+    "max_abs_diff": 0.0,
+    "worlds_over_1e-4": 0,
+    "worlds": 128
+   },
+   "default chunking 3 strain(s) per chunk": {
+    "max_abs_diff": 0.0,
+    "worlds_over_1e-4": 0,
+    "worlds": 128
+   },
+   "default chunking 4 strain(s) per chunk": {
+    "max_abs_diff": 0.0,
+    "worlds_over_1e-4": 0,
+    "worlds": 128
+   },
+   "default chunking 7 + remainder of 1": {
+    "max_abs_diff": 0.027743816375732422,
+    "worlds_over_1e-4": 13,
+    "worlds": 128
+   },
+   "replay_mode repeat": {
+    "max_abs_diff": 0.0,
+    "worlds_over_1e-4": 0,
+    "worlds": 128
+   },
+   "replay_mode chunking 1 strain(s) per chunk": {
+    "max_abs_diff": 0.05496835708618164,
+    "worlds_over_1e-4": 98,
+    "worlds": 128
+   },
+   "replay_mode chunking 2 strain(s) per chunk": {
+    "max_abs_diff": 0.0,
+    "worlds_over_1e-4": 0,
+    "worlds": 128
+   },
+   "replay_mode chunking 3 strain(s) per chunk": {
+    "max_abs_diff": 0.0,
+    "worlds_over_1e-4": 0,
+    "worlds": 128
+   },
+   "replay_mode chunking 4 strain(s) per chunk": {
+    "max_abs_diff": 0.0,
+    "worlds_over_1e-4": 0,
+    "worlds": 128
+   },
+   "replay_mode chunking 7 + remainder of 1": {
+    "max_abs_diff": 0.027743816375732422,
+    "worlds_over_1e-4": 13,
+    "worlds": 128
+   },
+   "replay vs default, same chunking": {
+    "max_abs_diff": 0.0,
+    "worlds_over_1e-4": 0,
+    "worlds": 128
+   }
+  }
+ },
+ "bmm_cause": {
+  "16 rows": {
+   "single strain vs batch of 4": 0.0,
+   "batch of 2 vs batch of 4": 0.0
+  },
+  "64 rows": {
+   "single strain vs batch of 4": 4.1961669921875e-05,
+   "batch of 2 vs batch of 4": 0.0
+  },
+  "320 rows": {
+   "single strain vs batch of 4": 6.4849853515625e-05,
+   "batch of 2 vs batch of 4": 0.0
   }
  },
  "identity": {
   "ledger_tracking_identical": true,
   "accounting_identical": true
  },
+ "ledger_cuda": {
+  "N2 T0": {
+   "ledger_rel_error_per_tick_max": 1.4047045897695465e-07,
+   "below_1e-5": true,
+   "finite": true
+  },
+  "N2 T1": {
+   "ledger_rel_error_per_tick_max": 8.214296214793644e-08,
+   "below_1e-5": true,
+   "finite": true
+  },
+  "SH T0": {
+   "ledger_rel_error_per_tick_max": 9.029443188988316e-08,
+   "below_1e-5": true,
+   "finite": true
+  },
+  "SH T1": {
+   "ledger_rel_error_per_tick_max": 6.946787261102153e-08,
+   "below_1e-5": true,
+   "finite": true
+  },
+  "RD T0": {
+   "ledger_rel_error_per_tick_max": 1.0958521674447364e-07,
+   "below_1e-5": true,
+   "finite": true
+  },
+  "RD T1": {
+   "ledger_rel_error_per_tick_max": 7.773047613776534e-08,
+   "below_1e-5": true,
+   "finite": true
+  }
+ },
  "historical": {
+  "_note": "at current code, not 01b's; 01b's bundle records git_dirty: true (deviation)",
   "N2-run00": {
-   "default": {
-    "replayed": 1.5572395324707031,
-    "stored": 1.5572395324707031,
-    "abs_diff": 0.0
-   },
-   "replay_mode": {
-    "replayed": 1.5572395324707031,
-    "stored": 1.5572395324707031,
-    "abs_diff": 0.0
-   }
+   "replayed": 1.5572395324707031,
+   "stored": 1.5572395324707031,
+   "exact": true
   },
   "N2-run01": {
-   "default": {
-    "replayed": 1.48091721534729,
-    "stored": 1.48091721534729,
-    "abs_diff": 0.0
-   },
-   "replay_mode": {
-    "replayed": 1.48091721534729,
-    "stored": 1.48091721534729,
-    "abs_diff": 0.0
-   }
+   "replayed": 1.48091721534729,
+   "stored": 1.48091721534729,
+   "exact": true
   },
   "N2-run02": {
-   "default": {
-    "replayed": 1.6714885234832764,
-    "stored": 1.6714885234832764,
-    "abs_diff": 0.0
-   },
-   "replay_mode": {
-    "replayed": 1.6714885234832764,
-    "stored": 1.6714885234832764,
-    "abs_diff": 0.0
-   }
+   "replayed": 1.6714885234832764,
+   "stored": 1.6714885234832764,
+   "exact": true
   },
   "SH1-run00": {
-   "default": {
-    "replayed": 1.7031117677688599,
-    "stored": 1.7031117677688599,
-    "abs_diff": 0.0
-   },
-   "replay_mode": {
-    "replayed": 1.7031117677688599,
-    "stored": 1.7031117677688599,
-    "abs_diff": 0.0
-   }
+   "replayed": 1.7031117677688599,
+   "stored": 1.7031117677688599,
+   "exact": true
   },
   "SH1-run01": {
-   "default": {
-    "replayed": 1.5193369388580322,
-    "stored": 1.5193369388580322,
-    "abs_diff": 0.0
-   },
-   "replay_mode": {
-    "replayed": 1.5193369388580322,
-    "stored": 1.5193369388580322,
-    "abs_diff": 0.0
-   }
+   "replayed": 1.5193369388580322,
+   "stored": 1.5193369388580322,
+   "exact": true
   },
   "SH1-run02": {
-   "default": {
-    "replayed": 1.6109485626220703,
-    "stored": 1.6109485626220703,
-    "abs_diff": 0.0
-   },
-   "replay_mode": {
-    "replayed": 1.6109485626220703,
-    "stored": 1.6109485626220703,
-    "abs_diff": 0.0
-   }
+   "replayed": 1.6109485626220703,
+   "stored": 1.6109485626220703,
+   "exact": true
   },
   "RD1-run00": {
-   "default": {
-    "replayed": 1.6812666654586792,
-    "stored": 1.6812666654586792,
-    "abs_diff": 0.0
-   },
-   "replay_mode": {
-    "replayed": 1.6812666654586792,
-    "stored": 1.6812666654586792,
-    "abs_diff": 0.0
-   }
+   "replayed": 1.6812666654586792,
+   "stored": 1.6812666654586792,
+   "exact": true
   },
   "RD1-run01": {
-   "default": {
-    "replayed": 1.61822509765625,
-    "stored": 1.61822509765625,
-    "abs_diff": 0.0
-   },
-   "replay_mode": {
-    "replayed": 1.61822509765625,
-    "stored": 1.61822509765625,
-    "abs_diff": 0.0
-   }
+   "replayed": 1.61822509765625,
+   "stored": 1.61822509765625,
+   "exact": true
   },
   "RD1-run02": {
-   "default": {
-    "replayed": 1.493840217590332,
-    "stored": 1.493840217590332,
-    "abs_diff": 0.0
-   },
-   "replay_mode": {
-    "replayed": 1.493840217590332,
-    "stored": 1.493840217590332,
-    "abs_diff": 0.0
-   }
+   "replayed": 1.493840217590332,
+   "stored": 1.493840217590332,
+   "exact": true
   },
   "control: SH1 champion on the SH2 graph": {
    "replayed": 0.10966185480356216,
-   "stored": 1.7031117677688599,
-   "abs_diff": 1.5934499129652977
+   "stored": 1.7031117677688599
   }
  },
- "single_island_regression": [
-  {
-   "generation": 0,
-   "best": 1.3272258043289185,
-   "stored_best": 1.3272258043289185,
-   "mean": 0.606960654258728,
-   "stored_mean": 0.606960654258728,
-   "best_nickname": "crimson-eider",
-   "stored_best_nickname": "crimson-eider"
-  },
-  {
-   "generation": 1,
-   "best": 1.4970219135284424,
-   "stored_best": 1.4970219135284424,
-   "mean": 0.8909108638763428,
-   "stored_mean": 0.8909108638763428,
-   "best_nickname": "velvet-gannet",
-   "stored_best_nickname": "velvet-gannet"
-  },
-  {
-   "generation": 2,
-   "best": 1.796970248222351,
-   "stored_best": 1.796970248222351,
-   "mean": 1.2242000102996826,
-   "stored_mean": 1.2242000102996826,
-   "best_nickname": "grave-cicada",
-   "stored_best_nickname": "grave-cicada"
-  }
- ],
- "seconds": 813.0604353998788
+ "single_island_regression": {
+  "generations": [
+   {
+    "generation": 0,
+    "best": 1.3272258043289185,
+    "stored_best": 1.3272258043289185,
+    "mean": 0.606960654258728,
+    "stored_mean": 0.606960654258728,
+    "same_best_nickname": true
+   },
+   {
+    "generation": 1,
+    "best": 1.4970219135284424,
+    "stored_best": 1.4970219135284424,
+    "mean": 0.8909108638763428,
+    "stored_mean": 0.8909108638763428,
+    "same_best_nickname": true
+   },
+   {
+    "generation": 2,
+    "best": 1.796970248222351,
+    "stored_best": 1.796970248222351,
+    "mean": 1.2242000102996826,
+    "stored_mean": 1.2242000102996826,
+    "same_best_nickname": true
+   }
+  ],
+  "pass": true
+ },
+ "seconds": 1683.4208895999473
 }

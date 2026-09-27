@@ -2308,3 +2308,58 @@ Revised (bb2f245 and this commit):
   amended sentence and D059's contributions, including that P4 alone was chosen after 03 on
   Fable's argument.
 - **Rounding** corrected.
+
+## D082 — After the combined review: T0 checks rerun clean, the CUDA contract amended, 03r text fixed
+
+Both reviewers answered "not yet" on both parts (`docs/reviews/*-03r-T0-combo/`). Every point was
+checked and adopted.
+
+**T0:**
+- **Provenance** is now recorded at the start, and the real run refuses a dirty tree. The earlier
+  run's provenance was unusable: the commit was read at the end, and a quick run executed an
+  uncommitted fix. The rerun is `bcee5a8`, clean (`docs/foundations/T0_gpu.json`).
+- **The declared cohort:** the tolerance rows now use **02's** N2 champions, 8 per cell, at their
+  own configuration with 32 substeps (Astra). The earlier "champions" rows used 01b's at 8
+  substeps and were mislabelled.
+- **Repeats and chunking are separated,** with 1, 2, 3, 4, 16 and 32 strains per chunk and a
+  remainder chunk of one, each with its count of worlds over 1e-4.
+- **Results:**
+  - repeats are identical everywhere, in both modes;
+  - chunkings of two or more strains agree exactly with each other;
+  - replay and default agree at the same chunking;
+  - single-strain chunks, including a remainder of one, differ in a few worlds at 200 ticks (up
+    to 0.027) and in many at 600 ticks (98 of 128 champion worlds, up to 0.055).
+  - **The recorded cause:** a direct `torch.bmm` test shows a single strain differing by 4-6e-5
+    from the same strain in a batch, while batches of two or more are identical.
+- **The failure of the original contracts, §2 (chunk invariance) and §4 (replay-mode exactness),
+  is recorded, and the contract is amended** (T0.md, dated). The contract is now exact at the same
+  batch composition, with single-strain chunks as their own composition. No bound is widened.
+- **No behaviour is changed in T0:** padding would break the exact replays of 01b's single-strain
+  evaluations. Padding, or a guard, is a T1 decision.
+- **The implication for existing runs:** a rollout whose last chunk happens to hold one strain gives
+  that strain deterministic but slightly different scores. It is deterministic, so no result is
+  unreproducible. 03 and 03r evaluate each graph's genomes in one chunk.
+- **The CUDA ledger bound:** below 1e-5, with everything finite, for N2, SH and RD at 02-T0 and
+  02-T1.
+- **Historical replay: 9 of 9 exactly equal,** with the deviation stated. It runs at current code,
+  and 01b's bundle records `git_dirty: true`.
+- **The single-island regression** has a pass field: pass.
+- **`REPRODUCIBILITY.md`'s wording is narrowed:** "in the tested configurations", "consistent
+  with a different kernel path"; default-mode nondeterminism was not observed but is not
+  guaranteed absent.
+
+**03r:**
+- **The README lead** now says "unusually high relative to all five null ensembles … reproduced
+  it", with §10's probe caveat verbatim.
+- **P3:** the registered label comes first, then the caveat, with the exploratory check labelled as
+  such.
+- **Both runs under both rules, and P4 alone** as the registered primary for 03r only.
+- **The fragile ensemble is named,** and the ensemble descriptions corrected.
+- **RESULTS:**
+  - the §9 deviation is stated: the running process never reloaded, which the bit-for-bit
+    re-measurement supports;
+  - "did not, as far as checked";
+  - the noise wording (unequal noise undermines exchangeability), with the exploratory
+    calculation stated;
+  - the committed re-measurement record and script, with provenance.
+- **Stale roadmap status is fixed.**
