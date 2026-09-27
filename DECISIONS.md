@@ -2147,3 +2147,39 @@ Astra's final check (`docs/reviews/*-T0-345c/`) answered "not yet" on two points
   - **Open until the GPU is free:** `replay_mode` exactness, the default-CUDA tolerance,
     historical replay (which also verifies the SH1 and RD1 rebuilds), CUDA ledger identity, and
     the single-island regression against a published log.
+
+## D077 — E1 design v2 after Astra's and Fable's review
+
+Both reviewed E1 design v1 (`docs/reviews/*-E1/`) and both answered "proceed to v2", with largely
+the same must-change points. Nothing has been run. Key claims were checked in the code before
+adoption:
+- the odour blur is truncated at 3σ;
+- the map builder scales patch radius and mass by headcount, so one wey shrinks a radius of 1.5
+  to about 0.34;
+- `_play` hard-codes `foraging_score`;
+- K turns constantly, and M remembers one tick.
+
+**v2** (`docs/E1/DESIGN.md`):
+- **Task N:** energy is off (no drain, cost or eating; a non-depleting scent source), and the
+  target bypasses headcount scaling.
+- **The pilot picks σ, A and R,** measuring zero-signal coverage and clamp saturation.
+- **Targets are a fixed sequence per world,** by (seed, world, index), so they pair across strains;
+  they keep at least 3 cells from walls.
+- **The score** gets plumbing into rollouts and tuning.
+- **An event table.**
+- **Replay** claims exactness only for counts and events under deterministic replay.
+- **Controls** are described correctly and all tuned alike: tuned blind baselines, including a
+  wall-follower with the declared collision inputs, K, an oracle ceiling, and k ≤ 32 reporting.
+- **The pilot-first gate:**
+  - absolute reliability (at least 2 arrivals);
+  - paired count differences against every baseline;
+  - **cue use**: scent displaced while the target stays, so the count must fall;
+  - failure-aware latency and path efficiency.
+- **04a** gets its own run count and pass rule, a generation-0 baseline, and optional bounded
+  shaping.
+- **E3:** the goal-cue input is committed to the food neurons in every module copy (Astra). E1's
+  limits for E3 are stated: no trails, junctions or occlusion.
+- **Bridge 1 is deferred** (both).
+
+**Consensus:** both answered "proceed to v2", and v2 adopts every must-change point. It goes to both
+for confirmation before any implementation, after 03r's report.
