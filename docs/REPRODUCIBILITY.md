@@ -26,12 +26,16 @@ close the result comes depends on where you run it.
   `index_add_` nondeterminism applies as below, and the same comparison over 8 strains x 8 worlds
   measured max |score difference| = **5.96e-08** on scores of order 1.4 -- rounding, not a
   different simulation.
-  - **Corrected 2026-09-28 (T0, D081): on CUDA that holds only while every chunk holds more than
-    one strain.** A chunk of a *single* strain takes a different GPU kernel path. At 200 ticks, 3 of
+  - **Corrected 2026-09-28 (T0, D081, D082): on CUDA, in the tested configurations, that holds
+    only while every chunk holds more than one strain.** A chunk of a *single* strain behaves
+    consistently with a different GPU kernel path: a direct `torch.bmm` test shows a batch of one
+    strain differing by about 5e-5 from the same strain in a larger batch. At 200 ticks, 3 of
     512 worlds then differed by up to 0.027, and a 600-tick stress test differed by up to 0.15:
     chaotic amplification of different rounding (`docs/foundations/T0_gpu.json`).
-  - With the same batch composition, results are identical, even in default mode. Chunks of 64,
-    256, 1 024 and 4 096 worlds all agreed exactly.
+  - With the same batch composition, results were identical in the tested configurations, even
+    in default mode. Chunkings with 2, 3, 4, 16 and 32 strains per chunk all agreed exactly
+    (`docs/foundations/T0_gpu.json`). The default-mode nondeterminism described below was not
+    observed in these tests, but it is not guaranteed absent.
   - So a genome evaluated alone (a champion's hold-out) can differ slightly from the same genome
     evaluated inside a population batch. Historical replays match exactly because they repeat the
     original single-strain evaluation.

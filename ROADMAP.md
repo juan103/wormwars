@@ -33,7 +33,7 @@ Several results point the same way:
 
 **Hypothesis.** N2 starts with more capacity to hold recent history. Evolution then builds such memory into every graph, which would explain why N2's early advantages fade.
 
-**Status.** 03r tests the first link. If it replicates, the testable predictions include these: N2's early advantage should be larger on tasks that require memory than on tasks that do not; it should shrink over generations; and the history effect should localise to identifiable circuitry. If 03r does not replicate, the thread is dropped, and no redesign aimed at rescuing it is attempted.
+**Status.** 03r tested the first link, and it replicated (D080). So, the testable predictions include these: N2's early advantage should be larger on tasks that require memory than on tasks that do not; it should shrink over generations; and the history effect should localise to identifiable circuitry. If 03r does not replicate, the thread is dropped, and no redesign aimed at rescuing it is attempted.
 
 ## Two tracks, one priority
 

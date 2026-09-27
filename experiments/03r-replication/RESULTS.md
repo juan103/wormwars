@@ -58,20 +58,21 @@ disclosure came while the run was in progress ([`DISCLOSURE.md`](DISCLOSURE.md))
 - **Code:**
   - every measurement records commit `7c146fc` with `code_dirty: false`. That provenance is
     computed once, at the run's start;
-  - code was committed in the working directory while the run was going (T0 work, D064-D076), but
-    it could not reach the already-loaded process;
+  - code was committed in the working directory while the run was going (T0 work, D064-D076). As
+    far as checked, it did not reach the already-loaded process;
   - every input file the run read, with the hashes recorded at the start, still hashes identically;
   - **the check that matters:** N2 and the last ensemble graph measured (SH-route-1020255) were
     re-measured with the binding commit's code (worktree at `7c146fc`), and both are
-    **bit-for-bit identical** to their saved measurements ([`DISCLOSURE.md`](DISCLOSURE.md), dated
-    addendum).
+    **bit-for-bit identical** to their saved measurements ([`remeasure.json`](remeasure.json),
+    [`remeasure.py`](remeasure.py), [`DISCLOSURE.md`](DISCLOSURE.md), dated addendum).
 - **Report:** [`report.json`](report.json). It was produced by the binding commit's code (from a
   worktree at `7c146fc`) and again by the current code, and the two are identical.
 - **Completeness:** every ensemble complete, and no calibration failure. All three signals were
   valid for N2 and every ensemble graph (the accounting table in `report.json`). N2-rev's
   descriptive P1 is invalid: its common-mode denominator is about 9 × 10⁻⁵, below the registered
   10⁻⁴ floor. `report.json` stores it as `NaN`, and the validity flags mark it.
-- **The supplement** (`supplement.json`) was produced by `supplement.py` at commit `eca542d`.
+- **The supplement** (`supplement.json`) was produced by `experiments/03-generation0/supplement.py`
+  at commit `eca542d`.
 
 ---
 
@@ -137,12 +138,13 @@ p in the opposite direction is **0.0465**.
   generation-0 02-T1 score is about 0.89 (03 pre-registration §7), so roughly 3%.
   `report.json` does not export the two T1 means, so this is a scale comparison, not a measured
   percentage.
-- **The rank test overstates it** (Fable). N2's P3 measurement is much noisier than the ensemble
-  graphs': its SE is 0.012, while the ensemble median is 0.0065 and only 3 of 768 graphs have an
-  SE as large. The rank test treats N2's measured value as exchangeable with the ensembles', so a
-  noisier N2 lands in the tails more often, and its rank p is too small here.
-  - **A noise-aware check** (exploratory): N2 is about 1.9-2.0 SE below zero, a one-sided p of about
-    0.027, or about 0.08 after Holm across three signals.
+- **The rank test can overstate it** (Fable, Astra). N2's P3 measurement is much noisier than the
+  ensemble graphs': its SE is 0.012, while the ensemble median is 0.0065 and only 3 of 768 graphs
+  have an SE as large. Unequal measurement noise undermines the exchangeability the rank test
+  assumes, and can make it anti-conservative.
+  - **A noise-aware check** (exploratory; a normal approximation using N2's own SE only): N2 is
+    0.0237 / 0.0120 = 1.98 SE below zero, a one-sided p of about 0.024, or about 0.072 after Holm
+    across three signals.
   - **P4 is not affected:** N2's P4 SE (0.0065) is ordinary, and its effect is more than 10 SE.
 - **The rank result is also borderline.** One additional SH-recip graph at or below N2 would give
   an opposite-direction Holm p of 0.070.
@@ -230,6 +232,12 @@ The ensemble quantiles are in `report.json`.
   ([`DISCLOSURE.md`](DISCLOSURE.md)). No signal value from the formal run was inspected before the
   report. The one value seen before binding was the preflight's P4 (0.756, SH-1010000), which is
   disclosed.
+- **Pre-registration §9** says any mid-run code change means re-measuring every graph. Code was
+  committed in the *working directory* during the run (T0 work, including `scripts/exp03.py`,
+  D069), but **the running process never reloaded**: one invocation, no resume. So §9's rule, which
+  concerns the code the run executes, was not triggered. The bit-for-bit re-measurement of N2 and
+  the last ensemble graph from the binding worktree checks this. The two graphs are evidence, not
+  proof, for all 773.
 - **Otherwise none.** The run used its registered cap and order (N2 last); the report ran as
   registered, and no parameter was chosen after seeing the data.
 - **`report.json` holds non-standard `NaN` values** for invalid descriptive quantities (N2-rev's

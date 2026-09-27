@@ -20,18 +20,18 @@ selection acts on team results.
 
 ## Newest: experiment 03 and its full replication, 03r
 
-**At generation 0, before any evolution, the real wiring's random brains hold on to a past food
-level more than any of five null wirings do. A full replication confirmed it.** In the wording fixed
-in advance: *"Replicated under the registered single-signal test and under 03's original
-three-signal rule."* The replication used the same probe, stimulus bank and code; it tests
-sampling, not the probe.
+**At generation 0, before any evolution, the real wiring's random brains showed unusually high
+normalised history dependence relative to all five null ensembles, and a full replication
+reproduced it.** In the wording fixed in advance: *"Replicated under the registered single-signal
+test and under 03's original three-signal rule."* The replication ran with the same probe,
+stimulus bank and code; the replication tests sampling, not the probe.
 
 **What was compared:** N2 against five ensembles of shuffled wirings, each keeping N2's degrees and
 also, respectively:
 - nothing else (SH);
-- its food routing (SH-route);
+- a cap on direct food read-out edges and weight (SH-route);
 - its neuron-class structure (SH-class);
-- its mirror symmetry (SH-mirror);
+- its mirror-symmetric share, plus the routing cap (SH-mirror);
 - its two-way connections (SH-recip).
 
 Only unselected random brains were measured, before any evolution.
@@ -39,24 +39,29 @@ Only unselected random brains were measured, before any evolution.
 **History dependence (P4):** after two food histories converge to the same input, how much of the
 earlier difference is still in the turning output.
 - **03:** N2 is above all 128 graphs in four ensembles and 127 of 128 in SH-route, with a
-  Holm-adjusted p of 0.047. One more graph would have made it 0.070.
+  Holm-adjusted p of 0.047 under 03's registered three-signal rule. One more SH-route graph would
+  have made it 0.070.
 - **03r** (768 fresh graphs, 256 of them routing-matched, and fresh random brains for N2 too): N2
   is above all graphs in four ensembles, including all 256 routing-matched ones, and 127 of 128 in
   SH-class.
-  - **The registered primary test** (P4 alone): p = 0.0155.
-  - **03's original rule:** p = 0.047 again. One additional graph would still tip it, so it
+  - **03r's registered primary test** (P4 alone): p = 0.0155.
+  - **03's original rule:** p = 0.047 again. One additional SH-class graph would tip it, so it
     remains borderline under that rule.
-- **Effect sizes are close:** N2 0.931 in 03 and 0.924 in 03r.
+- **Both runs under both rules:** P4 alone gives 0.0155 in both 03 and 03r; 03's rule gives 0.047
+  in both. P4 alone is the registered primary for 03r only.
+- **N2's P4 values are close:** 0.931 in 03 and 0.924 in 03r.
 
 **The other two signals:**
 - **Steering toward food (P1):** nothing distinctive, in either run.
 - **Use of food information (P3):**
   - **03:** inconclusive.
-  - **03r:** N2's random brains score slightly *worse* with the real food signal than with a
-    constant one, below the ensembles (0, 0 of 256, 0, 0 and 1 graphs at or below N2).
-  - **It is small, and unpredicted.** N2's P3 measurement is much noisier than the ensembles', so a
-    noise-aware check gives only about p ≈ 0.08 after correction. It is reported as found, with no
-    claim about its cause.
+  - **03r's registered label is "reversed against every ensemble"** (opposite-direction
+    Holm-adjusted p 0.047; 0, 0 of 256, 0, 0 and 1 graphs at or below N2). The estimated mean score
+    was slightly lower with the real food signal than with a constant one.
+  - **The caveat:** it is small and unpredicted. N2's P3 measurement is much noisier than the
+    ensembles', which undermines the rank test's exchangeability assumption and can make it
+    anti-conservative. An exploratory noise-aware check gives about p = 0.07 after correction. It
+    is reported as found, with no claim about its cause.
 
 **What this is not:**
 - **Not independent evidence.** 03 and 03r compare the same wiring with the same kind of null.
@@ -77,7 +82,7 @@ while 03r ran; its pre-registration was pushed there mid-run, as its
 
 Details: [`experiments/03-generation0/RESULTS.md`](experiments/03-generation0/RESULTS.md),
 [`experiments/03r-replication/RESULTS.md`](experiments/03r-replication/RESULTS.md), and
-decisions D050-D063 and D080.
+decisions D050-D063, D080 and D081.
 
 ## Experiment 02, a screening
 

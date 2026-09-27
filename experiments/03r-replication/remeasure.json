@@ -1,0 +1,20 @@
+{
+ "what": "N2 and the last ensemble graph measured, re-measured with the binding commit's code and compared with the saved 03r measurements",
+ "script": "experiments/03r-replication/remeasure.py",
+ "code": "the worktree at 7c146fc (the binding commit); the script asserts that wormwars was imported from it",
+ "device": "cuda, NVIDIA GeForce RTX 5080",
+ "run_at_utc": "2026-09-27T22:47:42+00:00",
+ "compared": "every array and value in each saved measurement except 'seconds' and 'provenance'",
+ "results": {
+  "N2": {
+   "identical": true,
+   "n_differences": 0,
+   "first": []
+  },
+  "SH-route-1020255": {
+   "identical": true,
+   "n_differences": 0,
+   "first": []
+  }
+ }
+}
