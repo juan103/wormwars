@@ -2402,3 +2402,5 @@ Re-check of D082 (`docs/reviews/*-03r-T0-re/`):
 - **T0 is closed:** Astra said "close", and Fable's two conditions are met. So T1 (throughput,
   profile first) is next. Its equivalence tolerance must be declared with D082's batch-composition
   finding in hand, and padding or a guard for single-strain chunks is a T1 decision (Fable).
+
+**Test suite at the closing commit** (`205d929`): 467 tests, all passing.
