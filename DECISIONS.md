@@ -1515,3 +1515,39 @@ before it was adopted:
 - **Astra's second final check** (`docs/reviews/20260926-234038-03r-prereg-final2/`): both issues
   resolved, 34 tests passed, no new issues, "ready to bind". Fable had already judged it ready.
   The owner gave the go for the GPU, and the run starts from the next commit, which is binding.
+
+## D062 — Roadmap v3 adopted; 03a not scheduled; the publishing plan
+
+**The owner's roadmap v3 replaces v2.2** (`ROADMAP.md`). It has two tracks: E (engineering, which
+drives the schedule) and B (biology, which runs independently). Its thread is memory, as a
+hypothesis. The immediate sequence is deliberately small.
+
+**As v3 asks, v2.2's additions are merged** into a "Carried over from v2.2" section:
+- the owner's question;
+- the plasticity design (D045);
+- the untested task-specificity control;
+- the old meaning of "04";
+- later ideas from the 03a draft.
+
+**Four factual corrections on installation,** each checked against the records:
+- **"5 to 7 times more strongly … than any shuffled graph":** it is 5-7 times the typical graph,
+  above every one of the 640, and about 1.5 times the largest (03 RESULTS, supplement).
+- **"into every champion":** 02b's evidence is group means, "the champions of every group".
+- **03r** has fresh genomes for N2 too, and P1 and P3 as secondaries. The timing is stated plainly:
+  neither 03's nor 03r's pre-registration was pushed before its run started. 03r's is public
+  before its results, not before its start. The new standing rule applies from now on.
+- **Credits:**
+  - this session's model is Claude Opus 5.5;
+  - Astra 6's and Fable 5.1's stage-by-stage reviews of 02, 02b, 03 and 03r are credited, as the
+    owner's rule on AI contributions requires.
+
+**03a is not scheduled** (the owner's plan, item 5). Its task and budget are revisited after 03r
+at measured throughput. The draft's header says so.
+
+**The publishing plan** (the owner, 2026-09-27):
+- every push is shown first, and nothing merges into main without a go;
+- the `roadmap` branch is pushed as a separate branch;
+- D050 goes on main as a Corrections entry;
+- 02b is reconciled with 02's registered result before it reaches main;
+- 03 and 03r go to main together;
+- the hygiene tests and the identity check run before every push.

@@ -1,186 +1,286 @@
-# WormWars roadmap (v2, 2026-09-25)
+# WormWars roadmap, v3
 
-**Status: v2.2, revised after review by Astra 6 and Fable 5.1** (`docs/reviews/20260925-163118-roadmap/`,
-`docs/reviews/20260925-172550-v3/`, `docs/reviews/20260925-174815-v31/`; D044-D047). The owner delegated the open decisions. Each is recorded in D045 with its reason.
-Costs are GPU-hours on the one RTX 5080. Nothing below is pre-registered yet: each experiment gets
-its own pre-registration and review before its confirmatory runs.
+*27 September 2026. Replaces v2. Written from roadmap v2, Astra 6's review of v2, and Claude Code's status report of the same day. A local v2.2 exists on the `roadmap` branch and was not seen when this version was written, so merge anything it adds. (Merged: see "Carried over from v2.2" below. Four factual corrections were made on installation; they are listed in D062.) This is a living document, not a pre-registration. When a result changes it, the change is recorded here with the reason.*
 
-## Where the series stands
+## Where the project stands
 
-- **01** (superseded): chemical synapses ran backwards; its conclusions do not hold.
-- **01b:** with synapses right, N2 reaches higher mean best-of-generation fitness than shuffles
-  (SH) and random graphs (RD) on stereo foraging. As a point estimate, its edge over SH is a head
-  start.
-- **02** (screening): evolution found meaningful stereo use for neither N2 nor SH, so the primary
-  prediction was challenged. Under the biological mapping, the shuffles start worse and catch up.
-  N2's random brains are more sensitive to food input overall, not more selective for the
-  left-right difference. Shuffles break mirror symmetry and give food neurons direct routes to
-  the motor read-out.
+- **Experiment 01 / 01b.** Real C. elegans wiring (N2) against shuffled (SH) and random (RD) graphs on a foraging game. 01b is the rerun after a chemical-synapse direction bug was fixed. The README states exactly what it establishes; in particular, it does not establish faster improvement.
+- **Experiment 02 (published).** The primary prediction failed: champions did not meaningfully use the left-right food difference. Its write-up explains the mirror-symmetry reading wrongly. The turn output subtracts dorsal from ventral, so no left-right comparison is involved. Correction D050 is written but not yet public.
+- **02b (re-analysis of 02's champions, reviewed, not yet public):**
+  - Champions circle and slow down on food and near obstacles, and N2 and shuffles do this equally well.
+  - One statement, that champions "steer by which side the food is on", must be reconciled with 02's registered result before publication.
+  - Selection built history dependence into the champions: a slow memory of the recent food level, not a response to its change.
+  - N2 has a core of critical neurons (AIZ, RIA) that survives changes to the sensor mapping.
+  - By generation 39, evolved weights keep only a weak resemblance to the anatomy (rank correlation 0.35).
+  - 94 of the 96 most critical N2 neurons connect directly to sensor or motor neurons.
+- **Experiment 03 (random, unevolved brains; N2 against five null ensembles of 128 graphs each):** SH, SH-route, SH-class, SH-mirror and SH-recip.
+  - **P4, history dependence:** borderline. N2 is above every graph in four ensembles and above 127 of 128 in the routing-matched one (adjusted p = 0.047).
+  - **P1, steering toward food:** N2 is unremarkable.
+  - **P3, use of food information:** no criterion met, with low power.
+  - **Exploratory:** N2's random brains respond 5 to 7 times more strongly to food input than the typical shuffled graph, and more strongly than every one of the 640. That does not explain P4. Two readings from 02 do not hold for unselected random brains.
+- **03r:** a pre-registered replication on 768 new graphs and new random brains for N2 too, currently running. P4 alone is its primary test; P1 and P3 are secondary. Its outcome wording is fixed in advance.
+  - **Timing, stated plainly:** neither 03's nor 03r's pre-registration was pushed before its run started. 03r's is pushed while the run is in progress, so GitHub's receipt time proves it came before the results, not before the run began. The standing rule below applies from now on.
+- **03a (your self-consistency hypothesis):** draft v3.2, nothing run. Estimated at about 31 million genome evaluations, roughly 785 GPU-hours. Measured throughput so far is about 2 times experiment 02's; the one-week cap needs about 5 times.
+- **Related work:** a first survey exists, with corrections pending (see Related work below).
 
-**The owner's question:** is the worm connectome shaped for worm-like tasks, under worm-like
-plasticity? Every N2-specific signal so far appears at generation 0. Every control so far differs
-from N2 in two generic ways, symmetry and routing. Worm-task *specificity* has never been tested
-against a matched non-worm-like task.
+## The thread worth following: memory (a hypothesis)
 
-## Pipeline
+Several results point the same way:
 
-### 1. 02b: what the champions compute, plus the deletion operator (about 1 GPU-hour)
+- N2's random brains hold on to past food levels more than any null ensemble (03, borderline).
+- Selection builds that kind of slow memory into the champions of every group, N2 and shuffles alike (02b, group means).
+- N2's critical core, AIZ and RIA, belongs to interneuron classes worth comparing with the navigation circuitry described in the experimental and modelling literature.
 
-No evolution; experiment 02's saved genomes.
-- **Replay champions with per-tick logging.** Measure speed and turning against food level, food
-  change, the left-right difference and collision. Replay matched current input after different
-  histories.
-- **Run the corrected input-response probe on evolved genomes,** at generation 0 and 39. Did
-  evolution grow or shrink the directional response, and does it track each champion's use of
-  stereo?
-- **Measure magnitude erosion:** the correlation of |w| at generation 39 with anatomical
-  magnitude.
-- **Build a true deletion operator.** It removes a neuron's chemical and gap terms, time constant
-  and bias, and is tested against a network built without the neuron. The code has only silencing
-  (D044).
-- **Map deletion criticality** over every non-interface neuron of each evolved T1 champion. 03a's
-  panel and headroom depend on it.
-- **Gate:** none. It is descriptive, and it informs 03a and 04.
+**Hypothesis.** N2 starts with more capacity to hold recent history. Evolution then builds such memory into every graph, which would explain why N2's early advantages fade.
 
-### 2. 03: generation-0 structure and task specificity (no evolution; cost set by its pre-registration, see below)
+**Status.** 03r tests the first link. If it replicates, the testable predictions include these: N2's early advantage should be larger on tasks that require memory than on tasks that do not; it should shrink over generations; and the history effect should localise to identifiable circuitry. If 03r does not replicate, the thread is dropped, and no redesign aimed at rescuing it is attempted.
 
-**Question:** is anything about N2 at generation 0 specific to N2 beyond generic graph structure,
-and specific to worm-like tasks?
+## Two tracks, one priority
 
-**Graphs:**
-- N2, and N2 with the chemical direction reversed;
-- 64 graphs from each of these ensembles:
-  - ordinary degree-preserving shuffles;
-  - routing-matched shuffles (the food pairs get no direct read-out weight beyond N2's);
-  - routing- and mirror-matched shuffles (N2's *partial* symmetry, about 0.64 of chemical edges);
-  - class-preserving shuffles (swaps within neuron-class blocks).
-- Each ensemble is validated for mixing, diversity and residual similarity to N2 near the
-  interface.
+| Track | Question | Success looks like |
+|---|---|---|
+| **E: engineering** (drives the schedule) | Does assembling validated neural skills reduce the total cost of evolving useful collective behaviour, and which structural or functional features survive further evolution? | Organisms that work on unseen situations, with controls showing what each component and each peer contributes |
+| **B: biology** (runs independently) | Does the worm's wiring matter, and does behaviour identify anatomy? | Pre-registered comparisons against well-specified null graphs, reported whatever they show |
 
-**Conditions:**
-- mappings: M0; four remaps; and a remap of the motor read-out, which is new;
-- gap junctions on and off;
-- magnitudes anatomical, uniform and permuted.
+Failure in one track says nothing about the other. Track E may include optional **bridges**, meaning arms run on null graphs as well as N2. Each bridge is independent and uses several graphs per null ensemble. No single bridge can answer whether the worm wiring matters in general.
 
-**Tasks:** 02's stereo (T0) and single-nose (T1) foraging, and a matched non-worm-like control
-task on the same interface and world, such as a reward for staying away from food.
+## Immediate sequence (deliberately small)
 
-**Measures:** about 2048 random genomes per graph, with per-brain values saved:
-- input response: directional (signed and absolute), common-mode, and their ratio;
-- generation-0 fitness: the mean, and the best of 32.
+1. **Publishing housekeeping.**
+   - Push the `roadmap` branch so 03r's pre-registration is public before 03r finishes.
+   - Publish correction D050.
+   - Reconcile and publish 02b.
+   - Merge 03 and 03r into main together once 03r is done.
+2. **T0 and T1:** correctness and throughput on the code path actually used.
+3. **E1:** scripted navigation first, then the evolved navigation primitive (04a).
+4. **E2:** a short optimizer screen on that task.
+5. **E3:** the minimal A/B organism (04b).
+6. **E4:** does useful information cross between the two modules (04c)?
 
-**Registered signals**, each with an effect margin and an equivalence margin fixed before the
-run:
-- (a) N2's signed directional response under M0, relative to its common-mode response;
-- (b) the generation-0 mapping interaction, and its shuffle-deficit component;
-- (c) N2's generation-0 head start on stereo foraging (01b). This overlaps with (b) on T0. The
-  pre-registration merges them or says why both are kept (Fable);
-- (d) the task-specificity contrast: N2's edge on T0 and T1 minus its edge on the control task.
+Track B continues in parallel: 03r, then the mechanism follow-up or closure, then the 03a redesign.
 
-For each signal, N2 is placed within each ensemble as a percentile, and compared with the
-ensemble mean. These are two different claims, and both are reported.
+**Tripwire.** No new infrastructure beyond T0, T1 and minimal module save/load until the minimal A/B organism runs. Everything after E4 is direction, not schedule.
 
-**Gate:**
-- **A signal inside an ensemble's equivalence band** is explained by that ensemble's structure.
-  The claim narrows accordingly. It does not stop the series (D045).
-- **A signal outside every ensemble** stands as N2-specific at generation 0.
-- **(d) inside its equivalence band** means N2's edge is general, not worm-task specific.
+## Shared foundations
 
-**Also builds the control ensembles** every later experiment uses, whatever 03 finds.
+### T0: correctness on the path you use
 
-**Cost: v2 got this wrong by two orders of magnitude** (Fable's review of v2, checked). The
-input-response probe runs outside the world and is cheap for every graph and condition.
-Generation-0 fitness is not: 258 graphs × 3 tasks × 2048 genomes is about 1.6 million genome
-evaluations *per condition*, about 41 GPU-hours at 02's throughput. So the pre-registration must
-choose one of two plans:
-- **a base condition for fitness** (gaps on, anatomical magnitudes) under M0, R1 and R2, since
-  signal (b) is a fitness mapping interaction and needs the remaps (Astra). The other conditions
-  are measured by input response only, or on a predefined subset of graphs;
-- **fewer genomes or worlds per graph,** for example 256 genomes × 4 worlds. That is about 3
-  GPU-hours per condition by extrapolation, not measurement.
+- **Compute accounting:** count every rollout, tick, neural update and GPU-second actually used, including checkpoints, validation, final evaluation and tuning.
+- **Tests:** a genome and its score stay paired through every operation; every parameter is inherited completely; save, load and replay reproduce behaviour.
+- **Replay:** exact only in a deterministic mode. Otherwise it must agree within a tolerance declared in advance.
+- **Island-path bugs:** three are suspected from reading the code. Confirm each with a failing test, then fix it. These fixes block only experiments that use islands; single-island work proceeds.
+- **Gate:** the tests pass, and the energy ledger and numerical checks pass.
 
-Either way, it is fixed after a measured timing at the planned batch width.
+### T1: throughput, profile first
 
-**What the 03 pre-registration must fix that this roadmap leaves open** (Fable):
-- **The control task,** and what "matched" means: same world, interface and reward scale. Also
-  how edges on different tasks are made commensurable for (d), for example N2's z-score within
-  each ensemble per task.
-- **The sampler for the matched shuffles:**
-  - how partial symmetry and the routing cap are enforced under degree preservation;
-  - whether gap junctions are mirrored;
-  - numeric thresholds for the mixing, diversity and interface-local similarity checks.
-- **Numeric margins per signal,** sourced from 02's observed effects.
-- **Which claim drives the gate,** percentile or mean difference, with the threshold stated.
-  With 64 graphs the resolution is 1/65.
-- **How ensembles are compared.** Ordinary, routing-matched and routing-plus-mirror-matched form a
-  nested sequence of constraints, but class-preserving shuffles are a separate branch (Astra,
-  correcting a claim of Fable's). So the gate reports N2's compatibility with *each* ensemble. It
-  does not promise a unique narrowest explanation.
-- **The input-response probe itself,** defined in 03, not borrowed from 02b.
+- The repository already batches evaluations in chunks. Profile to find the actual bottleneck, then tune chunk size, memory use and batching.
+- Any implementation change gets an equivalence check against the previous engine within a declared tolerance, recorded in DECISIONS.md.
+- **Gate:** the next scheduled experiment fits its budget at the measured speed, which is currently about 2 times experiment 02's.
+- A port to another framework, such as a JAX toolkit, is considered only if profiling points at the framework itself and the next experiments cannot fit otherwise.
 
-### 3. Three pilots, in any order (cost measured, not assumed: pilot 3a alone is about 11 GPU-hours per arm at 02's batch-32 throughput, less if wider batching works)
+### Module save/load now, assembly later
 
-**3a. Reconstruction feasibility** (for 03a; pilot shuffles only, never N2).
-- A refit screen: original-partner refits against random-partner and structural-baseline
-  partner sets.
-- A real-model planted test: from a brain trained with the neuron, the free search must
-  recover that neuron's own evolved wiring where the reference is reachable.
-- Timing for the batched search.
-- **Pass criterion** is registered in 03a v3.
-- **If it fails:** 03a's panel is not run, and the pilot is reported.
+04a needs to save and replay a module. The full assembly layer is built when 04b starts:
 
-**3b. Capability task and search** (for 04; shuffles only).
-- Design a task where matched current observations require different actions, so memory or
-  stereo is necessary.
-- Validate the task against expressive memoryless controllers with the same inputs, and a
-  capable positive control.
-- Then show that some search finds the capability in evolved champions.
-- **If no search finds it,** that procedure stops and is reported, and the capability question is
-  not closed.
+- the interface contract (identity, inputs, internal state, outputs, parameters, evidence);
+- separate recurrent blocks;
+- an explicit rule for what inactive modules do.
 
-**3c. Plasticity design** (no GPU; D045).
-- Define one within-lifetime adaptation task, for example a food-odour association that
-  reverses mid-life.
-- Choose one explicit plasticity rule, for example reward-modulated Hebbian on chemical synapses.
-- Plan three controls: frozen weights, recurrent memory without plasticity, and the rule on
-  shuffled graphs.
-- Write it up as a design document and have it reviewed.
-- It runs only after 3b shows a task and search can be validated.
+## Track E
 
-### 4. The substantial experiment, chosen by the pilots (budget set at that point)
+### E1 / 04a: navigation primitive
 
-- **03a,** the self-consistency panel (`experiments/03a-self-consistency/`, v3): if pilot 3a
-  passes. It uses 03's matched ensembles as its control graphs.
-- **04,** capability use with the 03 controls: if pilot 3b passes. It does *not* require a
-  positive 03 (D045).
-- **P,** plasticity × topology on the 3c task: if 3b validated its task and search, and 3c's
-  design survived review.
+- **Positive control first.** Experiment 02's champions circled rather than navigated. A scripted navigator must reach moved targets with the declared body and sensors before any evolution. If it cannot, redesign the body or sensors first, for example by adding head oscillation for sensing over time.
+- **Gate:** reaches moved targets on unseen layouts and beats simple movement baselines. Food collection alone is not enough.
+- **Bridge 1 (optional):** also build the module on two of experiment 03's validated null ensembles, such as SH and SH-route, with several graphs each and runs within graphs.
 
-If more than one qualifies, the owner chooses. Each needs its own pre-registration and review.
+### E2: short optimizer screen
 
-### 5. Later
+- Run on E1's task, with equal total simulator work including tuning, comparable initialisation, 3 runs per method, and GPU time reported. The methods:
+  - independent random sampling, meaning fresh random genomes with no adaptation;
+  - the current genetic algorithm, with a single island;
+  - one adaptive evolution strategy;
+  - optionally, Augmented Random Search, labelled as an adaptive method.
+- **Its only job is to choose the optimizer for E3.** The full topology × optimizer study belongs to Track B, later.
+- Read ENOMAD before this screen. An ENOMAD-inspired hybrid is a later option.
 
-03b (the full self-consistency map), more tasks, leave-k-out, missing synapses, and a full
-self-consistent-field loop, all from the 03a draft.
+### E3 / 04b: minimal A/B organism
 
-## Budget
+- **The organism:** two copies of the validated navigation module. A-related observations go to one copy and B-related observations to the other.
+- **The selector:** a set-reset latch. A confirmed visit to A switches to "go to B", and a confirmed visit to B switches to "go to A". It is engineered starting structure, labelled hybrid.
+- **Build it in order:**
+  1. frozen modules with a fixed selector;
+  2. then an evolved selector;
+  3. then joint fine-tuning, keeping a fraction of evaluations on the component skills.
+- **The trails:**
 
-| item | cost |
-|---|---|
-| 02b | about 1 GPU-hour |
-| 03 | fixed by its pre-registration after a timing run; about 3 GPU-hours per fitness condition at 256 genomes × 4 worlds by extrapolation; input-response conditions are cheap |
-| pilot 3a | about 11 GPU-hours per arm at batch-32 throughput, plus 10 whole-brain evolutions; less with wider batching |
-| pilot 3b | set by its task design |
-| subtotal, up to the choice of the substantial experiment | roughly one to three GPU-days, depending on batching and 03's plan |
-| 03a panel | set by its batched pilot; v3 as written is about 31 million genome evaluations, 785 GPU-hours unbatched, so its one-week cap binds unless batching gives more than 5 times the speed |
+  | Current goal | Trail followed | Trail deposited after a confirmed visit |
+  |---|---|---|
+  | Find A | the A trail | the B trail |
+  | Find B | the B trail | the A trail |
 
-## Decisions taken for this version (D045)
+  Deposition weakens with time since the last confirmed visit; that timer is engineered state and labelled as such. Keep evaporation and exploration. Declare what walls block.
+- **Gate:** repeated alternating journeys, counted with an event ledger, on unseen branching mazes, and better than the seed design.
+- **Peer-signal controls:** shared trails, own trails only, and scrambled or replayed peer trails, plus a colony evolved without trails from the start.
+- **After the minimal organism works, the assembly comparison:**
+  1. one task-conditioned controller of matched size;
+  2. pretrained modules with a fixed selector;
+  3. the same modules with an evolved selector;
+  4. a modular organism of the same size trained from scratch.
 
-1. **03 comes first,** with registered margins, 64 graphs per ensemble, a task-specificity
-   contrast and the controls both reviewers named. Both reviewers.
-2. **04 does not depend on 03 favouring N2.** It depends on 03's controls and its own
-   feasibility pilot. Both reviewers.
-3. **A generic explanation narrows the claim; it does not stop the series.** Both reviewers.
-4. **03a is gated by its own feasibility pilot, not by 03's outcome.** Fable and Astra.
-5. **Plasticity: design now, run later.** This follows Astra, because the owner's question names
-   plasticity. It keeps Fable's condition: the run needs a task and search validated first.
+  Report first-use cost including pretraining, and cumulative reuse cost as later organisms reuse the modules. One loss on first use does not settle the value of modularity.
+- **Bridge 2 (optional, independent of bridge 1):** the shuttle is a memory task by design. If 03r replicates, running it on N2 and matched null ensembles tests whether N2's memory head start matters for behaviour.
+
+### E4 / 04c: do the two minds share?
+
+Three separate questions, from easiest to hardest:
+
+1. **Shared dependence:** does the same circuitry support both behaviours?
+   - Delete each neuron in each mode. Module A's motor output is switched off during B mode, so an A-neuron whose deletion hurts B mode must act through the cross-links.
+   - This detects influence between modules, but not whether that influence is useful.
+2. **Useful transfer (the primary question of 04c):** does information crossing between modules improve behaviour?
+   - Evolve with and without cross-links, matched in everything else.
+   - In evolved organisms, cut or scramble the cross-links, and compare against cutting the same number of links inside a module.
+   - Add a diagnostic task in which one module senses something the other needs; for example, only module A senses a hazard that module B must avoid.
+3. **Consolidation:** can the organism keep both abilities with less circuitry or computation?
+   - This needs a mechanism that lets evolution silence or bypass circuitry, such as a cost on active computation that actually differs between candidates, with the savings measured.
+   - A cost on cross-links alone would simply delete the cross-links.
+   - Without such a mechanism, this question moves to stage 09.
+
+**Also report:**
+
+- the prior results to compare against: goals varying across modular subtasks (Kashtan and Alon, 2005), connection costs (Clune, Mouret and Lipson, 2013), and duplicated modules specialising (Calabretta and colleagues, 2000);
+- each run's gene-duplication fate, as description only;
+- controls: cross-links impossible; the unevolved duplicates at generation 0; the selector removed.
+
+### Direction after E4 (not scheduled)
+
+| Stage | Build | Gate |
+|---|---|---|
+| 05: hunter | Prey progression: stationary, moving, obstacle-aware, then a frozen suite of competent prey; food other than prey limited | Captures moving prey from the frozen suite on unseen maps. Coevolution only after that, with historical opponents and a frozen evaluation suite |
+| 06: hive logistics | Home, carrying and unloading, resource ledger | Sustained deliveries, balanced accounting, recovery after a blocked route or a moved food source |
+| 07: defender | Foraging and homing plus hunter, with an alarm-responsive selector | Better hive outcomes than foragers alone, always-hunters, and fixed switching, across attacks and quiet periods |
+| 08: adaptive roles | Identical capabilities, no assigned roles | Measured specialisation and benefit, and redistribution after workers are removed |
+| 09: structural evolution | Mutable routing, module removal and duplication, rewiring within modules, and consolidation if it was deferred from 04c | Gains over parameter-only evolution at matched budgets |
+
+The first social experiments use colonies of clones: one genome for every wey, each wey with its own state. Alarm starts as a simple local signal with a fixed lifetime and evolves only once responses to it can be measured.
+
+### Scoring rules for Track E
+
+- Log every raw outcome component. Fix coefficients and ranking rules before any comparison.
+- Never reward how trails look, the number of alarms, or use of a particular brain.
+- Use fixed horizons and comparable starting resources, not ratios with near-zero denominators.
+- Shaping is training assistance: bounded, recorded, and removed from the final benchmark.
+- The scorer may know the map; the controller gets only its declared observations.
+- Keep separate training, validation and test suites, with the test suite used once.
+
+## Track B
+
+### 03 and 03r
+
+- Merge both into main together when 03r finishes, reported by the pre-registered rule whatever the outcome.
+- **If P4 replicates**, the mechanism follow-up asks:
+  - where the history effect lives, using neuron and connection deletions;
+  - whether it runs through gap junctions or chemical synapses;
+  - whether it holds for inputs other than food;
+  - what gives N2's random brains their 5 to 7 times stronger response to food input.
+
+  Its label is assigned at pre-registration.
+- **If it does not replicate**, it is reported as a borderline result that did not replicate. The memory thread leaves the plan.
+- **Either way**, the five validated null ensembles become the standard controls for later experiments.
+
+### 03a: redesign after 03r, before any confirmatory run
+
+- **Keep:** the question; the feasibility pilot on shuffled graphs only, never N2; the three-outcome classification (anatomical recovery, functional substitution, search failure).
+- **Change:**
+  - **Task.** If P4 replicates, use a task that requires memory. In any case, the feasibility pilot must show that solutions to the task use interneurons.
+  - **The 02b risk.** The connections that make neurons critical (to sensor and motor neurons) are ones v3.2 keeps fixed. Either search the targets' interface connections, or pick targets whose criticality does not come only from interface adjacency.
+  - **Nulls.** Use experiment 03's validated ensembles, with several graphs each, instead of unconstrained SH.
+  - **Budget.** Fit the design to the measured throughput. Shrink the panel (24, then 16, then 12) or the searches before extending the cap, and say which was cut.
+  - **Wording.** Animal-to-animal variability is not a ceiling on recovery from one fixed graph.
+- **The full map** (label assigned at pre-registration) runs only if 03a separates the three outcomes.
+
+### Later biology questions (unscheduled)
+
+- **Topology × optimizer × normalisation.** Matching spectral radius is one control, not a complete match.
+- **A family of named nulls.** State what each preserves, including how the somatic–pharyngeal gap-junction bridge is treated.
+- **Activity-anchored fitness.** Match a few recorded perturbation responses; task scores alone leave the wiring underdetermined.
+- **A neuromodulatory layer.** The worm's real roaming and dwelling switch is largely neuromodulatory.
+- **Sensing over time versus stereo sensing.** Use head oscillation and scripted positive controls for both.
+
+## Standing rules
+
+- **Develop and pilot openly.** Before confirmatory runs, freeze the hypotheses, comparisons, code version, analysis, budget and stopping rules. Keep pilot results separate. Pilots never run the confirmatory comparison itself.
+- **Push each pre-registration to GitHub before its confirmatory runs start.** Commit dates are set locally, so only GitHub's receipt time proves the order.
+- Change one thing per experiment. Record deviations in DECISIONS.md.
+- **Unit of analysis:** the independent evolutionary run. Comparisons against wiring nulls use several independent graphs per ensemble, with runs within graphs.
+- Every behaviour claim needs baselines: random or generation-0 strains, and scripted controllers. Every new task gets a scripted positive control before evolution.
+- Compare methods at equal total simulator work, including tuning and pretraining, and report GPU time.
+- Implementation changes get documented equivalence checks. A suspected bug gets a failing test before its fix.
+- Name every null operation. Prefer experiment 03's validated ensembles.
+- Publish corrections to public claims promptly, quoting the wrong text rather than deleting it.
+- **Novelty wording:** "we did not find a matching study".
+- Before each confirmatory freeze, get external review from a model family different from the designer's.
+- **Data hygiene:** no connectome data redistributed in any form; `allow_pickle=False` everywhere.
+
+**Reading negative results:**
+
+| Result | Say | Don't say |
+|---|---|---|
+| Random sampling matches the GA | Check task saturation, optimizer effectiveness, noise and budget | "The task is too easy" |
+| N2 matches the nulls | "No detected advantage under these tasks, controls and budgets" | "The worm wiring is neutral" |
+| Assembly loses on first use | "This assembly method did not improve the tested cost–performance trade-off"; judge again on cumulative reuse | "Modularity fails" |
+| A replication fails | "A borderline result that did not replicate" | Redesigning until it passes |
+
+## Related work
+
+- **Survey v2.** Apply the external review's corrections before citing the survey:
+  - remove the claim that N2 learns faster;
+  - state fading biological advantage as a hypothesis;
+  - name each study's shuffle operation;
+  - separate random sampling from Augmented Random Search;
+  - drop the 43% animal-to-animal variability as a recovery ceiling;
+  - cite the Creamer et al. preprint by version;
+  - describe named neurons as solving gene correspondence, not co-adaptation.
+- **ENOMAD** (Churchland and Garcia-Ojalvo) is the closest prior work. Read it in full before E2.
+- **For the memory thread,** compare 02b's critical core and 03's history effect with the state-dependent mechanisms in evolved klinotaxis models (Izquierdo and colleagues) and with the navigation interneurons in the experimental literature, citing only what survey v2 has checked.
+- **A collective-behaviour survey** is needed before claims for stages 05 to 08. It should cover double-pheromone mechanisms, evolved signalling, swarm robotics, task allocation, behaviour arbitration, predator–prey coevolution, and causal measures of cooperation.
+
+## What would change this roadmap
+
+- **03r replicates:** the mechanism follow-up comes next in Track B, 03a switches to a memory task, and bridge 2 gains priority.
+- **03r does not replicate:** the memory thread leaves the plan, and 03a's task is chosen on other grounds.
+- **The next experiment does not fit at measured speed:** shrink the experiment first. Change frameworks only if profiling points there.
+- **The E1 positive control fails:** redesign the body or sensors before evolving anything.
+- **E2 finds random sampling matching the GA:** diagnose saturation, noise and budget before building on the task.
+- **The minimal A/B organism fails:** diagnose sensing, objective, controller capacity and optimizer progress separately before adding capability.
+- **04c finds no useful transfer:** report it, and check whether the latch or the module interfaces block transfer before concluding anything about evolution.
+- **Infrastructure keeps growing while the first organism does not exist:** the tripwire applies. Stop and ship the minimal A/B organism.
+
+## Carried over from v2.2
+
+Items v2.2 had that v3's text does not, kept here until the owner decides them:
+
+- **The owner's question, as v2.2 put it:** is the worm connectome shaped for worm-like tasks,
+  under worm-like plasticity?
+- **Plasticity.** D045 recorded "design now, run later":
+  - one within-lifetime adaptation task, for example a food-odour association that reverses
+    mid-life;
+  - one explicit rule, for example reward-modulated Hebbian learning on chemical synapses;
+  - three controls: frozen weights, recurrent memory without plasticity, and the rule on
+    shuffled graphs.
+  It runs only after a task and search are validated.
+- **Task specificity.** A matched non-worm-like control task on the same interface and world,
+  such as a reward for staying away from food. Worm-task *specificity* has still never been
+  tested. 03 compared N2 with null graphs, not tasks with control tasks.
+- **The label "04".** v2.2 and older documents (the 03a draft, 03's pre-registration and
+  DECISIONS) use "04" for *capability use with the 03 controls*, gated by a capability-task
+  pilot (3b): a task where matched current observations need different actions, validated
+  against memoryless controllers. In v3, 04a-c are Track E stages. Documents written before v3
+  keep the old meaning.
+- **Later, from the 03a draft:** the full self-consistency map, leave-k-out, missing synapses,
+  and a full self-consistent-field loop.
+
+## Credits
+
+Ideas, direction and decisions: Juan H. González Estefan. Stage structure and two roadmap reviews: Astra 6 (OpenAI). Experiments 02b, 03 and 03r and the status report: Claude Code running Claude Opus 5.5 (Anthropic). Reviews of 02, 02b, 03 and 03r at every stage: Astra 6 (OpenAI) and Fable 5.1 (Anthropic); each review is archived in `docs/reviews/`, and the errors they caught are in `docs/REVIEW_TRAIL.md`. Roadmap versions, in conversation: Claude (Anthropic), using Claude Fable 5.1 and later Claude Opus 5.5.

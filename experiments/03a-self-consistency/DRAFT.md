@@ -1,5 +1,9 @@
 # WormWars 03a: the self-consistency hypothesis. A 24-neuron panel study
 
+**Not scheduled (the owner's decision, 2026-09-27, D062).** 03a's task and budget are revisited
+after 03r, using measured throughput (about 2 times experiment 02's), not the hoped-for 5 times.
+Roadmap v3 lists what the redesign keeps and changes.
+
 **Status: DRAFT v3.2** (2026-09-25). v2 was reviewed by Astra 6 and Fable 5.1 as part of the
 roadmap review (`docs/reviews/20260925-163118-roadmap/`). v3 folded in their points and
 experiment 02's lessons (`NOTES_FROM_02.md`). v3.1 folds in Fable's review of v3
