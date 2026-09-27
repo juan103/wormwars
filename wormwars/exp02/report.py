@@ -16,6 +16,12 @@ PRIMARY = ("food_mean", ("T0", "M0"))
 SNAPSHOTS = ("g00", "g39")
 
 
+
+def _max_keeping_nan(xs) -> float:
+    """max() that reports NaN if any value is NaN: Python's max(0.0, nan) is 0.0 (D074)."""
+    xs = [float(x) for x in xs]
+    return float("nan") if any(x != x for x in xs) else max(xs)
+
 def _cells(tasks):
     return [c for c in MAIN if c[0] in tasks]
 
@@ -216,7 +222,7 @@ def build(raw_records, diagnostics, probes, calibration, sign_01b, n_boot: int =
         "valence_no_gap_max": max(v["max_abs_score_diff"] for v in probes["valence"] if not v["gaps"]),
         "strength": An.strength_contrast(recs, "norm_g39"),
         "pellet_share_g39": float(np.mean([r["pellet_share_g39"] for r in recs])),
-        "max_ledger_error": max(r["ledger_error"] for r in recs),
+        "max_ledger_error": _max_keeping_nan([r["ledger_error"] for r in recs]),
     }
     out["summary"] = summary
     out["tripwires"] = An.tripwires(summary)

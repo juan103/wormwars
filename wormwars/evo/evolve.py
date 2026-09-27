@@ -107,13 +107,20 @@ def evolve(
     e = cfg.evo
     if e.generations < 1:
         raise ValueError("evolve needs at least one generation")
-    if e.islands > 1:  # supported island settings, checked before anything runs (T0 item 5, D073)
+    if e.islands < 1:
+        raise ValueError(f"islands must be at least 1, got {e.islands}")
+    if e.islands > 1:  # supported island settings, checked before anything runs (T0 item 5, D073, D074)
         sizes = np.bincount(np.arange(e.population) % e.islands, minlength=e.islands)
         if sizes.min() == 0:
             raise ValueError(f"{e.islands} islands for {e.population} strains leaves an island empty")
+        if sizes.min() < 2:
+            raise ValueError(f"each island needs at least 2 strains: {e.population} strains on "
+                             f"{e.islands} islands leaves one of {sizes.min()}, a single frozen elite")
         if e.migrate_every < 1:
             raise ValueError("migrate_every must be at least 1 with islands")
-        if not 0 <= e.migrants <= sizes.min() // 2:
+        if e.migrants < 0:
+            raise ValueError(f"migrants must not be negative, got {e.migrants}")
+        if e.migrants > sizes.min() // 2:
             raise ValueError(f"migrants={e.migrants} exceeds half the smallest island ({sizes.min()} strains): "
                              "an island would overwrite its own best strains with immigrants")
     gen_t = torch.Generator(device=device).manual_seed(run_seed)
@@ -131,6 +138,9 @@ def evolve(
         with acct.category("selection"):
             res = evaluate_on(cfg, iface, genome, ids, run_seed, device, combat_stage)
         fit = res.per_strain()
+        if not np.isfinite(fit).all():  # np.argmax would pick a NaN strain as the best (Fable, D074)
+            bad = np.flatnonzero(~np.isfinite(fit)).tolist()
+            raise FloatingPointError(f"generation {g}: non-finite fitness for strains {bad}")
         result.evaluations += fit.size * len(ids)
         if g in snapshots:
             result.snapshots[g] = genome.select([int(np.argmax(fit))])
@@ -209,7 +219,8 @@ def _breed_islands(genome, fit, island_of, cfg, gen_t) -> Genome:
     `max(2, truncation // islands)` parents per island. That rule changes the *total* selection
     pressure with the island count: with elites=3, two islands keep 2 elites in total and four
     keep 4, and elites=0 still keeps one per island. Compare an island arm with a one-island arm
-    only with this in mind (Fable, D065; documented in D073)."""
+    only with this in mind (Fable, D065; documented in D073). Inside `breed` both counts are also
+    capped by the island's own size (Astra, D074)."""
     if cfg.evo.islands <= 1:
         return breed(genome, fit, cfg, gen_t)
     # each island's children are written back into that island's own slots, so `island_of`

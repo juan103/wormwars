@@ -345,7 +345,8 @@ def _execute(spec: grid.RunSpec, con, remap_sets, device, out: Path, graph=None,
            "run": spec.run, "run_seed": spec.run_seed, "generations": spec.generations,
            "gen0_drive": drive.as_dict(),
            "checkpoints": [(x.generation, x.holdout_best) for x in res.log if x.holdout_best is not None],
-           "ledger_error": max(x.ledger_error for x in res.log)}
+           "ledger_error": float(np.nanmax([x.ledger_error for x in res.log]))
+           if all(x.ledger_error == x.ledger_error for x in res.log) else float("nan")}  # NaN kept (D074)
     champs = {g: res.snapshots[g] for g in spec.snapshots}
     if spec.generations > 40:
         champs[spec.generations - 1] = res.champion

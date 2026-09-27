@@ -2029,3 +2029,62 @@ world's jitter offsets are identical alone and beside a (1, 3) world.
 - historical replay of a published champion on CUDA;
 - CUDA ledger on/off identity (item 2);
 - item 5's single-island regression.
+
+## D074 — T0 items 3-5 after review: two vacuous tests replaced, coverage completed
+
+Both reviewers answered "not yet" on D073 (`docs/reviews/*-T0-345/`). Both found the
+implementation sound: the ledger normalisation, per-tick maximum, NaN propagation, opt-in cost,
+the island validation and the CPU round trip. **Two of my new tests could not fail,** and Astra
+proved both by sabotage:
+- **The jitter test compared zeros.** It never set `food_probe_radius`, which defaults to 0. It
+  now uses radius 1, asserts that jitter moves points, and compares the keyed draws taken from the
+  two real layouts.
+  - Checked by sabotage: it fails with identity jitter and with the old padded flat-index keys.
+- **The isolation test compared winners with the union of both islands' ancestors.** Now every
+  slot of every generation must descend from its own island.
+  - Checked by sabotage: it fails when per-island breeding is replaced by global breeding.
+
+**Coverage the plan promised, now added** (`tests/test_t0_items345_b.py`):
+- **Islands:**
+  - every ring edge, including the wrap 2 → 0, and the untouched slots;
+  - an uneven population (5 strains, 2 islands) running through migration;
+  - log and snapshot pairing with islands and migration active.
+- **Numbers:** brain states and energies are checked at **every tick**, and scores at the end.
+  This covers N2, SH and RD, at T0 and T1, for random genomes pushed into the mutation bounds plus
+  the mixed-sign corner.
+- **Ledger, adversarial:**
+  - an early peak survives a zero final residual;
+  - an early NaN survives later finite ticks;
+  - Inf is reported;
+  - NaN propagates across chunks in either order;
+  - each world is normalised by its own start;
+  - a forced-death case: at 02's settings nothing starves in 200 ticks, so this case raises the
+    drain, and weys die;
+  - tracking changes no result.
+
+**Real defects fixed:**
+- **NaN was still swallowed** by the same `max(0.0, nan)` pattern in coevolution's `play`, exp02's
+  run record and exp02's report (both; Astra reproduced the coevolution case). All three keep NaN
+  now.
+- **A non-finite fitness now stops `evolve`** (`FloatingPointError`); before, `np.argmax` could
+  pick a NaN strain as the best (Fable).
+- **Also refused:**
+  - `islands < 1`;
+  - negative migrants, with their own message;
+  - an island of fewer than 2 strains, which would be a single frozen elite (Fable).
+
+**Documentation:**
+- `_breed_islands` notes that `breed` also caps the counts by island size;
+- the jitter docstring notes that run-seed bits above 32 are dropped (owed since D067).
+
+**D073 corrected:**
+- **The layout defect is broader than stated** (both; Astra reproduced it). `_build_maps` draws a
+  number of values set by the batch's padded wey count (`world.py`, around line 412) from the RNG
+  that later draws food and hazards. So a neighbour's headcount changes the whole map: positions,
+  headings, food and hazards. That, in turn, changes coevolution scores across chunkings (Astra
+  reproduced this). The cause is confirmed, and it predates T0.
+  - Fixed-headcount runs are unaffected, and no other caller passes `swarm_sizes`.
+  - **Suggested fix** (Fable): size the draws by the world's own largest swarm, which keeps every
+    uniform-headcount map exactly. It is deferred to the coevolution work.
+- **The ledger cost** is several float64 conversions and reductions per tick, not one.
+- **The review prompt numbered the plan's sections off by one:** items 3-5 are sections 4-6.

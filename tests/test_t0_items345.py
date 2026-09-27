@@ -151,37 +151,45 @@ def test_a_migrant_survives_breeding_with_every_field(parts):
 
 
 def test_islands_stay_isolated_over_generations_without_migration(parts):
+    """The first version checked winners against the union of both islands' ancestors, so it could
+    not fail (both reviewers, D074). Now every slot of every generation's population must descend,
+    unmutated, from its own island's generation-0 members."""
     con, iface, spec = parts
     cfg = _island_cfg(pop=6, migrate_every=99)
-    cfg.evo.generations = 3
     cfg.mutation.w_sigma = cfg.mutation.g_sigma = cfg.mutation.tau_sigma = cfg.mutation.bias_sigma = 0.0
-    init = Genome.random(spec, cfg.brain, 6, generator=torch.Generator().manual_seed(1))
-    by_island = {i: {genome_hash(init, j) for j in range(i, 6, 2)} for i in (0, 1)}
-    r = E.evolve(cfg, iface, spec, run=0, run_seed=1, verbose=False, holdout_every=99)
-    # the champion descends, unmutated, from its own island's generation-0 members; and the
-    # logged best of every generation is one of the initial genomes (sigma 0)
-    everyone = by_island[0] | by_island[1]
-    assert all(g.best_sha256 in everyone for g in r.log)
+    isl = np.arange(6) % 2
+    p = Genome.random(spec, cfg.brain, 6, generator=torch.Generator().manual_seed(1))
+    own = {i: {genome_hash(p, j) for j in np.flatnonzero(isl == i)} for i in (0, 1)}
+    rng = np.random.default_rng(0)
+    for gen in range(4):
+        fit = rng.normal(size=6)
+        p = E._breed_islands(p, fit, isl, cfg, torch.Generator().manual_seed(gen))
+        for slot in range(6):
+            assert genome_hash(p, slot) in own[isl[slot]], f"generation {gen}, slot {slot}"
 
 
 # ------------------------------------------------------------------ owed from item 1
 
 def test_jitter_end_to_end_a_3_wey_neighbour_does_not_change_a_2_2_match(parts):
     """Astra: a (1, 3) match beside a (2, 2) match changed swarm 1's noise in the (2, 2) match.
-    Through the real jitter path (`_jittered`) with real batch layouts, the (2, 2) world's offsets
-    are the same alone and beside a (1, 3) world. (Wey *positions* differ between the two layouts:
-    a separate, pre-existing layout dependence in multi-headcount placement, recorded in D073.)"""
+    The first version of this test left the radius at 0, so it compared zeros (both reviewers,
+    D074). Now: radius 1; jitter must move points; and the (2, 2) world's draws, taken from the
+    real layouts, are identical alone and beside a (1, 3) world. (The two layouts place weys
+    differently, a separate map defect recorded in D073/D074, so offsets are compared through the
+    keyed draws, not through points that differ.)"""
     con, iface, spec = parts
     cfg = Config()
-    cfg.world.n_swarms, cfg.world.food_probe = 2, "jitter"
+    cfg.world.n_swarms, cfg.world.food_probe, cfg.world.food_probe_radius = 2, "jitter", 1.0
     g = Genome.random(spec, cfg.brain, 1, generator=torch.Generator().manual_seed(12))
 
-    def sensed(sizes, ids):
-        w = World(cfg, iface, Brain(g), torch.zeros(len(ids), 2, dtype=torch.long), run_seed=5,
-                  world_ids=np.array(ids), swarm_sizes=torch.tensor(sizes))
-        pts = w.sample_points()
-        return (w._jittered(pts) - pts).reshape(w.n_worlds, 2, w.n_weys, -1, 2)
+    def world(sizes, ids):
+        return World(cfg, iface, Brain(g), torch.zeros(len(ids), 2, dtype=torch.long), run_seed=5,
+                     world_ids=np.array(ids), swarm_sizes=torch.tensor(sizes))
 
-    alone = sensed([[2, 2]], [7])
-    beside = sensed([[2, 2], [1, 3]], [7, 8])
-    torch.testing.assert_close(beside[0, :, :2], alone[0], rtol=0, atol=0)
+    alone, beside = world([[2, 2]], [7]), world([[2, 2], [1, 3]], [7, 8])
+    assert beside.n_weys == 3 and alone.n_weys == 2
+    pts = alone.sample_points()
+    assert (alone._jittered(pts) - pts).abs().max() > 0.1  # jitter really moves points
+    for stream in (0, 1):
+        a, b = alone._keyed_uniform(stream), beside._keyed_uniform(stream)  # real layouts
+        torch.testing.assert_close(b[0, :, :2], a[0], rtol=0, atol=0)

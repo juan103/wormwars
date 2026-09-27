@@ -24,6 +24,7 @@ import numpy as np
 import torch
 
 from .. import accounting as acct
+from .rollout import _nanmax
 from ..brain import Brain, BrainSpec, Genome
 from ..config import Config
 from ..interface import Interface
@@ -194,7 +195,7 @@ def play(
         out["bit"].append(world.energy_from_biting.cpu().numpy())
         flank += world.flank_damage
         head += world.head_damage
-        worst_err = max(worst_err, world.energy_ledger_error().abs().max().item())
+        worst_err = _nanmax(worst_err, world.energy_ledger_error().abs().max().item())  # NaN kept (D074)
 
     cat = {k: np.concatenate(v) for k, v in out.items()}
     # results came back grouped by headcount; put them back in the caller's order

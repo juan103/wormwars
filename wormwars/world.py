@@ -506,7 +506,8 @@ class World:
         """[worlds, swarms, weys, sample points] uniforms in [0, 1), a pure function of (run seed,
         stream, world id, tick, swarm, wey, sample point): common random numbers for every strain
         that plays the same world. The coordinates are explicit, so a batch's padded wey count
-        never changes a draw (Astra, D067)."""
+        never changes a draw (Astra, D067). Run-seed bits above 32 are dropped from the key, which
+        is harmless for every seed in use (Fable, D067)."""
         S = self.n_swarms if n_swarms is None else n_swarms
         B = self.n_weys if n_weys is None else n_weys
         dev, i64 = self.device, torch.int64
