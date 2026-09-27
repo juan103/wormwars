@@ -2205,3 +2205,27 @@ round; the freeze document is what deserves the next review. v2.1 makes the edit
 
 **E1 is agreed by all three,** and the owner is informed. Implementation follows roadmap v3's
 order: T0's GPU items and T1 first.
+
+## D079 — T0's GPU checks: the script, and what its CPU smoke run already shows
+
+`scripts/t0_gpu_checks.py` implements T0 plan v2.1's GPU checks, as declared before measuring:
+- `replay_mode` exactness, over repeats and chunkings;
+- the default-CUDA tolerance: declared 1e-4 per world; 3 repeats; 02-T0 and 02-T1 at 200 ticks,
+  plus a 600-tick stress test;
+- CUDA identity with ledger tracking on and off, and with accounting on and off;
+- historical replay of 01b champions against their stored `holdout_score`;
+- the single-island regression against 01b's stored log.
+
+It writes `docs/foundations/T0_gpu.json` and runs when 03r frees the GPU.
+
+**The CPU smoke run** (`--quick`; `runs/t0-gpu-quick-cpu.json`, not committed) already shows:
+- **The rebuilt SH1 and RD1 graphs are 01b's,** answering D076's open question on the evidence.
+  Each 01b champion replays close to its stored score: N2 1.5582 against 1.5572, SH1 1.7045
+  against 1.7031, RD1 1.6823 against 1.6813. The gaps of about 0.001 are CPU against 01b's CUDA.
+  The SH1 champion on the *wrong* graph (SH2) scores 0.110 against 1.703. The GPU run gives the
+  same-device comparison.
+- **On CPU:** repeats and chunkings are identical, and so are ledger-tracking and accounting
+  on/off.
+- **The single-island regression cannot be judged on CPU,** because `torch.Generator` draws
+  different random numbers on CPU and CUDA, so generation 0 differs from 01b's. It is judged on
+  the GPU run.
