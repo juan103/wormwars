@@ -132,8 +132,9 @@ class WorldConfig:
     # food_probe_radius cells of each sample point, fresh every tick, so the level survives but
     # tick-to-tick change is mostly noise; "hold" refreshes the reading every food_probe_hold ticks.
     food_probe_radius: float = 0.0
-    # T0 (D073): track the energy ledger's relative error at every tick (costs a reduction per
-    # tick, so it is opt-in; the gate test turns it on). The final residual is always reported.
+    # T0 (D073): track the energy ledger's relative error at every tick (costs several float64
+    # conversions and reductions per tick, so it is opt-in; the gate test turns it on). The final
+    # residual is always reported.
     check_ledger_every_tick: bool = False
     food_probe_hold: int = 1
 

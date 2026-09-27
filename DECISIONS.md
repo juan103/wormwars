@@ -2088,3 +2088,38 @@ proved both by sabotage:
     uniform-headcount map exactly. It is deferred to the coevolution work.
 - **The ledger cost** is several float64 conversions and reductions per tick, not one.
 - **The review prompt numbered the plan's sections off by one:** items 3-5 are sections 4-6.
+
+## D075 — T0 items 3-5, re-check: numerical coverage completed
+
+Re-check of D074 (`docs/reviews/*-T0-345b/`):
+- **Fable answered "items 3-5 CPU: accept"**, with small items and no further round needed.
+- **Astra answered "not yet"** on numerical coverage. It independently confirmed the three
+  sabotage results and the NaN propagation in rollout, coevolution, exp02's run record and
+  `report.build`.
+
+Fixed:
+- **8 distinct worlds per genome** in the every-tick matrix (Astra). The earlier test repeated two
+  world ids across strains.
+- **The corners are in the every-tick matrix:** both uniform-sign extremes, and the mixed-sign
+  corner with the bias sign mixed too, not only the weights (Fable). This covers N2, SH and RD at
+  T0 and T1, with brain states and energies checked at every tick and scores at the end.
+- **One published 01b champion per family** (N2, SH1, RD1), 8 worlds each, checked at every tick,
+  with scores (Astra, Fable). The SH and RD graphs are rebuilt from their seeds, and the loader's
+  edge-hash check confirms each rebuild.
+- **The jitter test also compares `_jittered` itself,** on identical zero points, so no position
+  rounding enters (Fable).
+- **Coevolution's NaN handling is tested by behaviour** (a NaN ledger through `play`), not by
+  searching the source (Fable).
+- **The pairing test asserts its snapshot keys,** so it cannot pass with none (Fable).
+- **`config.py`'s comment** now states the real cost of per-tick tracking.
+
+**Full suite at this commit: 463 tests, all passing** (Fable noted that earlier entries never
+stated the suite result).
+
+**Recorded, not changed** (Fable):
+- coevolution's `argmax` is not guarded against NaN; D074's guard covers single-swarm `evolve`
+  only. It is left for the coevolution work;
+- `coevolve.play` tests a stale `lo == 0` when attaching the recorder, which is pre-existing;
+- the per-tick flag lives in `WorldConfig`, so it enters bundles, and older code would refuse such
+  a bundle;
+- item 3's CPU test is small (50 ticks, one genome, Dale off).

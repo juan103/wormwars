@@ -193,3 +193,7 @@ def test_jitter_end_to_end_a_3_wey_neighbour_does_not_change_a_2_2_match(parts):
     for stream in (0, 1):
         a, b = alone._keyed_uniform(stream), beside._keyed_uniform(stream)  # real layouts
         torch.testing.assert_close(b[0, :, :2], a[0], rtol=0, atol=0)
+    # and through _jittered itself, on identical (zero) points, so no position rounding enters (Fable)
+    za = alone._jittered(torch.zeros_like(alone.sample_points())).reshape(1, 2, 2, -1, 2)
+    zb = beside._jittered(torch.zeros_like(beside.sample_points())).reshape(2, 2, 3, -1, 2)
+    torch.testing.assert_close(zb[0, :, :2], za[0], rtol=0, atol=0)

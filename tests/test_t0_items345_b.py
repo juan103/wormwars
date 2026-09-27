@@ -80,6 +80,7 @@ def test_log_and_snapshots_pair_with_islands_and_migration(parts, monkeypatch):
                  holdout_every=1, snapshots=(1, 2))
     for gen, (pop, fit) in enumerate(seen["pops"]):
         assert r.log[gen].best_sha256 == genome_hash(pop, int(np.argmax(fit)))
+    assert set(r.snapshots) == {1, 2}  # not vacuous (Fable)
     for gen, snap in r.snapshots.items():
         assert genome_hash(snap, 0) == r.log[gen].best_sha256
 
@@ -121,11 +122,16 @@ def _bounded_random(spec, cfg, n, seed):
         getattr(g, k).add_(torch.randn(getattr(g, k).shape, generator=torch.Generator().manual_seed(seed + 1)) * scale)
     g.tau.mul_(torch.exp(torch.randn(g.tau.shape, generator=torch.Generator().manual_seed(seed + 2)) * 5))
     g.clamp_()
-    sign = torch.where(torch.rand(1, spec.n_chem, generator=torch.Generator().manual_seed(seed + 3)) < 0.5, -1.0, 1.0)
-    corner = g.select([0]).with_params(w=sign * cfg.w_max, g=torch.full((1, spec.n_gap), cfg.g_max),
-                                       tau=torch.full((1, spec.n), cfg.tau_min),
-                                       bias=torch.full((1, spec.n), cfg.b_max))
-    return Genome.cat([g, corner])
+    gen = torch.Generator().manual_seed(seed + 3)
+    w_sign = torch.where(torch.rand(1, spec.n_chem, generator=gen) < 0.5, -1.0, 1.0)
+    b_sign = torch.where(torch.rand(1, spec.n, generator=gen) < 0.5, -1.0, 1.0)  # mixed bias too (Fable)
+
+    def corner(ws, bs):
+        return g.select([0]).with_params(w=ws * cfg.w_max, g=torch.full((1, spec.n_gap), cfg.g_max),
+                                         tau=torch.full((1, spec.n), cfg.tau_min), bias=bs * cfg.b_max)
+
+    one_w, one_b = torch.ones(1, spec.n_chem), torch.ones(1, spec.n)
+    return Genome.cat([g, corner(w_sign, b_sign), corner(one_w, one_b), corner(-one_w, -one_b)])
 
 
 @pytest.mark.parametrize("task", ["T0", "T1"])
@@ -135,10 +141,11 @@ def test_everything_stays_finite_at_every_tick(parts, task, which):
     graph = {"N2": con, "SH": shuffled(con, seed=11), "RD": random_graph(con, seed=12)}[which]
     gspec = BrainSpec.from_connectome(graph)
     cfg = grid.task_config(Config(), task)
-    g = _bounded_random(gspec, cfg.brain, 3, seed=21)
-    strain_of = torch.arange(g.n_strains).repeat_interleave(2).reshape(-1, 1)
+    g = _bounded_random(gspec, cfg.brain, 1, seed=21)  # 1 bounded random + 3 corners
+    n_worlds = 8  # distinct world ids per genome, as T0.md section 5 declares (Astra)
+    strain_of = torch.arange(g.n_strains).repeat_interleave(n_worlds).reshape(-1, 1)
     w = World(cfg, load_interface(graph), Brain(g), strain_of, run_seed=6,
-              world_ids=np.tile(np.arange(2), g.n_strains))
+              world_ids=np.tile(np.arange(n_worlds), g.n_strains))
     while not w.done():
         w.tick()
         assert all(torch.isfinite(v).all() for v in w.v), f"brain state, tick {w.tick_count}"
@@ -238,3 +245,39 @@ def test_nan_is_not_swallowed_in_coevolution_and_exp02_reporting():
         assert not bare_max.search((root / rel).read_text(encoding="utf-8")), rel
     from wormwars.exp02.report import _max_keeping_nan
     assert math.isnan(_max_keeping_nan([0.0, float("nan"), 1.0])) and _max_keeping_nan([1.0, 3.0]) == 3.0
+
+
+@pytest.mark.parametrize("family", ["N2", "SH1", "RD1"])
+def test_a_published_champion_of_each_family_stays_finite_at_every_tick(parts, family):
+    """One 01b champion per graph family, 8 worlds, checked at every tick (Astra, Fable)."""
+    from pathlib import Path
+    from wormwars.evo.genomes import apply_world_meta, load_genome
+    con, iface, spec = parts
+    graph = {"N2": con, "SH1": shuffled(con, seed=1, label="SH1"), "RD1": random_graph(con, seed=1, label="RD1")}[family]
+    f = Path(__file__).resolve().parents[1] / "runs" / "exp01b-direction-corrected" / f"champion-{family}-run00.npz"
+    champ, meta = load_genome(f, BrainSpec.from_connectome(graph))  # the edge hash checks the rebuilt graph
+    cfg, _ = apply_world_meta(Config(), meta)
+    cfg.brain = champ.cfg
+    w = World(cfg, load_interface(graph), Brain(champ), torch.zeros(8, 1, dtype=torch.long), run_seed=8,
+              world_ids=np.arange(8))
+    while not w.done():
+        w.tick()
+        assert all(torch.isfinite(v).all() for v in w.v), f"brain state, tick {w.tick_count}"
+        assert torch.isfinite(w.energy).all(), f"energy, tick {w.tick_count}"
+    from wormwars.evo.rollout import foraging_score
+    assert torch.isfinite(foraging_score(w)).all()
+
+
+def test_coevolution_keeps_a_nan_ledger_error(parts, monkeypatch):
+    """Behaviour, not a source search (Fable): coevolution's play reports NaN, not 0."""
+    from wormwars.evo.coevolve import build_schedule, play
+    con, iface, spec = parts
+    cfg = Config()
+    cfg.world.n_swarms, cfg.world.max_ticks = 2, 3
+    a = Genome.random(spec, cfg.brain, 1, generator=torch.Generator().manual_seed(1))
+    b = Genome.random(spec, cfg.brain, 1, generator=torch.Generator().manual_seed(2))
+    matches = build_schedule(1, 1, np.array([1]), np.random.default_rng(0), sizes=(2, 2))
+    monkeypatch.setattr(World, "energy_ledger_error",
+                        lambda self: torch.full((self.n_worlds,), float("nan"), dtype=torch.float64))
+    res = play(cfg, iface, a, b, matches, 1, "cpu", 1)
+    assert math.isnan(res.ledger_error)
