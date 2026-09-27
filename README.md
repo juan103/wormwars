@@ -2,7 +2,8 @@
 
 > **This is the `roadmap` working branch, not the published record (main).** It holds work in
 > progress:
-> - experiment 03's first-run results (borderline), whose replication 03r is running;
+> - experiment 03's first-run results (borderline), and their replication 03r, finished on
+>   2026-09-28 and replicated (not yet on main);
 > - 03r's pre-registration, first made public here while it ran
 >   ([disclosure](experiments/03r-replication/DISCLOSURE.md));
 > - 02b;
@@ -17,7 +18,68 @@ and fight. Every wey's brain is a small continuous-time recurrent network whose 
 mask. Weights, time constants and biases are evolved. All weys in a swarm share one genome, and
 selection acts on team results.
 
-## Newest: experiment 02, a screening
+## Newest: experiment 03 and its full replication, 03r
+
+**At generation 0, before any evolution, the real wiring's random brains hold on to a past food
+level more than any of five null wirings do. A full replication confirmed it.** In the wording fixed
+in advance: *"Replicated under the registered single-signal test and under 03's original
+three-signal rule."* The replication used the same probe, stimulus bank and code; it tests
+sampling, not the probe.
+
+**What was compared:** N2 against five ensembles of shuffled wirings, each keeping N2's degrees and
+also, respectively:
+- nothing else (SH);
+- its food routing (SH-route);
+- its neuron-class structure (SH-class);
+- its mirror symmetry (SH-mirror);
+- its two-way connections (SH-recip).
+
+Only unselected random brains were measured, before any evolution.
+
+**History dependence (P4):** after two food histories converge to the same input, how much of the
+earlier difference is still in the turning output.
+- **03:** N2 is above all 128 graphs in four ensembles and 127 of 128 in SH-route, with a
+  Holm-adjusted p of 0.047. One more graph would have made it 0.070.
+- **03r** (768 fresh graphs, 256 of them routing-matched, and fresh random brains for N2 too): N2
+  is above all graphs in four ensembles, including all 256 routing-matched ones, and 127 of 128 in
+  SH-class.
+  - **The registered primary test** (P4 alone): p = 0.0155.
+  - **03's original rule:** p = 0.047 again. One additional graph would still tip it, so it
+    remains borderline under that rule.
+- **Effect sizes are close:** N2 0.931 in 03 and 0.924 in 03r.
+
+**The other two signals:**
+- **Steering toward food (P1):** nothing distinctive, in either run.
+- **Use of food information (P3):**
+  - **03:** inconclusive.
+  - **03r:** N2's random brains score slightly *worse* with the real food signal than with a
+    constant one, below the ensembles (0, 0 of 256, 0, 0 and 1 graphs at or below N2).
+  - **It is small, and unpredicted.** N2's P3 measurement is much noisier than the ensembles', so a
+    noise-aware check gives only about p ≈ 0.08 after correction. It is reported as found, with no
+    claim about its cause.
+
+**What this is not:**
+- **Not independent evidence.** 03 and 03r compare the same wiring with the same kind of null.
+- **Not a wiring-only result.** The nulls move weights as well as wiring.
+- **Not a mechanism, nor any advantage for the worm.** The mechanism follow-up is next.
+
+**Why a full replication, and who decided.** One graph decided 03's verdict. So a full,
+separately pre-registered replication was run before 03 was merged into main and presented as a
+result. 03's first-run results were publicly readable on the `roadmap` branch from 2026-09-27
+while 03r ran; its pre-registration was pushed there mid-run, as its
+[disclosure](experiments/03r-replication/DISCLOSURE.md) states.
+- **Fable 5.1** (Anthropic) asked for replication before any public claim. It also argued for
+  testing P4 alone, which was chosen after seeing 03.
+- **Astra 6** (OpenAI) specified fresh random brains for N2 as well as fresh graphs. It did not
+  require replication first.
+- **Claude Opus 5.5** (Anthropic), who ran the experiments, leaned toward replicating first.
+- **The owner decided** on the full replication.
+
+Details: [`experiments/03-generation0/RESULTS.md`](experiments/03-generation0/RESULTS.md),
+[`experiments/03r-replication/RESULTS.md`](experiments/03r-replication/RESULTS.md), and
+decisions D050-D063 and D080.
+
+## Experiment 02, a screening
 
 **Evolution did not find stereo foraging for the real wiring or for its shuffles, so the
 pre-registered prediction that N2 would use it more is challenged.** Experiment 02 is a

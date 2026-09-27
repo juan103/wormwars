@@ -3,8 +3,9 @@
 > **Replicated (03r, 2026-09-28).** The pre-registered full replication, with fresh graphs and
 > fresh genomes, gives: *"Replicated under the registered single-signal test and under 03's
 > original three-signal rule."* In 03r, P1 recurs as "not distinctive", and P3 comes out
-> *reversed* (N2 below every ensemble), a new, unpredicted secondary label. See
-> [03r's results](../03r-replication/RESULTS.md).
+> *reversed*, a new, unpredicted secondary label: 0, 0 of 256, 0, 0 and 1 graphs at or below N2.
+> N2's P3 measurement is noisier than the ensembles', so this is weaker than its rank p suggests.
+> See [03r's results](../03r-replication/RESULTS.md).
 
 **N2 stands out on one of three pre-registered signals: history dependence (P4).** The test brings
 two food histories to the same input, then asks how much of the difference set by the earlier
@@ -329,7 +330,8 @@ The reviewers differ on whether it must come before publishing:
 - **Astra:** an honestly qualified report of this completed experiment can be published first.
 
 **What happened next.** The owner chose a full replication before merging into main (D059). 03r is
-pre-registered in `experiments/03r-replication/` and running. These first-run results became
+pre-registered in `experiments/03r-replication/`, and it finished on 2026-09-28 (see the note at
+the top). These first-run results became
 public on the `roadmap` branch while it ran (D063).
 
 Further questions, not registered:
