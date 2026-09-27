@@ -1551,3 +1551,66 @@ at measured throughput. The draft's header says so.
 - 02b is reconciled with 02's registered result before it reaches main;
 - 03 and 03r go to main together;
 - the hygiene tests and the identity check run before every push.
+
+## D063 — Pre-push review of the two pushes; the publication plan amended
+
+Before either push, the owner asked for review. Astra 6 (xhigh) and Fable 5.1 reviewed both pushes
+(`docs/reviews/20260927-160621-pushes/`, `docs/reviews/20260927-160623-pushes/`), and both answered "push after fixes" for each. Every
+finding was checked before it was adopted.
+
+**The publication plan, amended.** D059 said the full replication comes "before anything from 03
+is published". Pushing the `roadmap` branch now makes 03's first-run results publicly readable on
+that branch while 03r runs. The owner chose this knowingly, to get a public timestamp for 03r's
+pre-registration. They were told the consequence in the push description, and it takes effect
+with their go for push 1.
+- 03 and 03r reach main together, reported by the pre-registered rule whatever the outcome.
+- The README sentence bound in 03r §10 ("a full replication was run before publishing") will be
+  written as: a full replication was run before 03 was merged into main and presented as a
+  result, and 03's first-run results were public on the `roadmap` branch from the push date
+  while 03r ran.
+
+**The timing claim, narrowed (both):**
+- GitHub's receipt time shows public disclosure, not registration before the run.
+- `experiments/03r-replication/DISCLOSURE.md` states the binding commit and when disclosure came.
+  It also gives the state at disclosure (528 of 773 graphs, N2 not measured) and what had been
+  inspected (operational information only; no 03r signal value).
+- The same caveat is added to 03's RESULTS.md and to the roadmap.
+
+**02b reconciled before this push (Astra), the owner's item 3:**
+- "Steer by which side the food is on" becomes a replay association with the turn command. A
+  table states the task, the measure and the output against 02's registered primary.
+- 02b does not revise 02's primary reading, and says so.
+
+**Also fixed:**
+- **03's conclusion** is at the ensemble-comparison level: "unusually high … relative to all five";
+  one SH-route graph is above N2.
+- **Roadmap:**
+  - the read-out's sign;
+  - where the wrong reasoning was;
+  - the 96 *targets*, which was Claude's error in its status report, copied into v3;
+  - the avoid-food example, which 03's design rejected;
+  - "proves", narrowed.
+- **A banner on the branch README.**
+
+**Push 2 (main) fixed:**
+- **The Corrections entry** no longer repeats D050's withdrawn prediction: D051, no predicted
+  direction.
+- **The symmetry argument** is qualified: it holds for a fully equivariant network, and symmetric
+  wiring with independent random parameters is not one.
+- **The dates:** found 2026-09-25, published 2026-09-27.
+- **Who made the error and who found it:** Fable 5.1's review originated the reasoning, Claude
+  adopted it, and Astra 6 found it.
+- **The docstring** is corrected on main, with the same text on both branches.
+- **Pointers** beside the pre-registration passage and D041, with their text unchanged.
+- **The review trail's episode 9** notes that its rationale was itself wrong.
+
+**Noted for the owner, not changed:**
+- **Archived reviews contain the local path `D:/Claude/random/wormWars`.** 02's reviews on main
+  already do, and it names no user.
+- **02b names four connections and gives degree percentiles and per-neuron interface-edge
+  counts.** These are not reconstructable graph data. The owner decides whether "in any form"
+  covers them.
+- **`report.json` keeps `NaN`,** and says so.
+
+**Operational:** HEAD is past `7c146fc`, so a resumed 03r run would be refused unless run from a
+checkout of `7c146fc`.

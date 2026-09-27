@@ -20,6 +20,8 @@ made it 0.070.
 **How the run was done:**
 - Everything was fixed in [`PREREGISTRATION.md`](PREREGISTRATION.md) before any N2 measurement,
   after several rounds of review by Astra 6 and Fable 5.1 (D050-D055).
+  - **What that rests on:** local commit records and the run's provenance. The pre-registration
+    was first pushed to GitHub on 2026-09-27, after the run (D062, D063).
 - N2 and its variants were measured last.
 - One deviation occurred (D056): the first run stopped on a faulty hash check, and every graph
   was re-measured from zero. No N2 data existed at that point.
@@ -304,8 +306,9 @@ every ensemble graph.
 
 ## What this decides (§10)
 
-**P4, distinctive relative to every ensemble.** Under this probe, N2 has a generation-0 property
-that none of the five reference ensembles matched: high normalised history dependence. The
+**P4, distinctive relative to every ensemble.** Under this probe, N2 has unusually high
+normalised history dependence at generation 0, relative to all five reference ensembles. One
+SH-route graph, SH-route-20078, is above N2. The
 verdict is borderline on the rank gate, and the null moves weights as well as wiring. It does not
 establish a memory mechanism, or any advantage for the worm.
 

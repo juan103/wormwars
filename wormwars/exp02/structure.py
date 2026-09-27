@@ -4,8 +4,9 @@ A degree-preserving shuffle keeps every neuron's degrees but not the left-right 
 targets. An earlier version of this docstring said a mirror-symmetric graph gets a
 left-minus-right comparison "almost for free". That is wrong for this interface (D050, Astra 6):
 the turn read-out is dorsal minus ventral, and each group holds left and right neurons, so a
-mirror-equivariant network responds identically to food on either side. Symmetry forbids the
-comparison; steering needs the symmetry broken. These scalars are reported per graph. They carry
+mirror-equivariant network responds identically to food on either side. Exact symmetry of the
+wiring and of every parameter would forbid the comparison; symmetric wiring alone does not,
+because random parameters break it (D051). These scalars are reported per graph. They carry
 no edges. The left-right map here uses name suffixes; experiment 03 uses a curated file instead.
 """
 

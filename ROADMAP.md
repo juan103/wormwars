@@ -5,21 +5,21 @@
 ## Where the project stands
 
 - **Experiment 01 / 01b.** Real C. elegans wiring (N2) against shuffled (SH) and random (RD) graphs on a foraging game. 01b is the rerun after a chemical-synapse direction bug was fixed. The README states exactly what it establishes; in particular, it does not establish faster improvement.
-- **Experiment 02 (published).** The primary prediction failed: champions did not meaningfully use the left-right food difference. Its write-up explains the mirror-symmetry reading wrongly. The turn output subtracts dorsal from ventral, so no left-right comparison is involved. Correction D050 is written but not yet public.
+- **Experiment 02 (published).** The primary prediction failed: champions did not meaningfully use the left-right food difference. Its pre-registration's mirror-symmetry reasoning was wrong: the turn read-out is dorsal minus ventral, so symmetric wiring gives no left-right comparison for free. Correction D050 is prepared as a Corrections entry in 02's RESULTS.md on main.
 - **02b (re-analysis of 02's champions, reviewed, not yet public):**
   - Champions circle and slow down on food and near obstacles, and N2 and shuffles do this equally well.
-  - One statement, that champions "steer by which side the food is on", must be reconciled with 02's registered result before publication.
+  - One statement, that champions "steer by which side the food is on", is now reconciled with 02's registered result: it is a replay association with the turn command, not fitness use, and it does not revise 02 (D063).
   - Selection built history dependence into the champions: a slow memory of the recent food level, not a response to its change.
   - N2 has a core of critical neurons (AIZ, RIA) that survives changes to the sensor mapping.
   - By generation 39, evolved weights keep only a weak resemblance to the anatomy (rank correlation 0.35).
-  - 94 of the 96 most critical N2 neurons connect directly to sensor or motor neurons.
+  - Of 96 high-criticality targets (N2's 12 most critical neurons in each of 8 champions, counted with repeats), 94 connect directly to sensor or motor neurons.
 - **Experiment 03 (random, unevolved brains; N2 against five null ensembles of 128 graphs each):** SH, SH-route, SH-class, SH-mirror and SH-recip.
   - **P4, history dependence:** borderline. N2 is above every graph in four ensembles and above 127 of 128 in the routing-matched one (adjusted p = 0.047).
   - **P1, steering toward food:** N2 is unremarkable.
   - **P3, use of food information:** no criterion met, with low power.
   - **Exploratory:** N2's random brains respond 5 to 7 times more strongly to food input than the typical shuffled graph, and more strongly than every one of the 640. That does not explain P4. Two readings from 02 do not hold for unselected random brains.
 - **03r:** a pre-registered replication on 768 new graphs and new random brains for N2 too, currently running. P4 alone is its primary test; P1 and P3 are secondary. Its outcome wording is fixed in advance.
-  - **Timing, stated plainly:** neither 03's nor 03r's pre-registration was pushed before its run started. 03r's is pushed while the run is in progress, so GitHub's receipt time proves it came before the results, not before the run began. The standing rule below applies from now on.
+  - **Timing, stated plainly:** neither 03's nor 03r's pre-registration was pushed before its run started. 03r's is pushed while the run is in progress, so GitHub's receipt time shows only when the text became public. That no 03r result had been seen by then rests on local records: at the push, N2 had not been measured, and no 03r signal value had been inspected (D063). The standing rule below applies from now on.
 - **03a (your self-consistency hypothesis):** draft v3.2, nothing run. Estimated at about 31 million genome evaluations, roughly 785 GPU-hours. Measured throughput so far is about 2 times experiment 02's; the one-week cap needs about 5 times.
 - **Related work:** a first survey exists, with corrections pending (see Related work below).
 
@@ -270,8 +270,8 @@ Items v2.2 had that v3's text does not, kept here until the owner decides them:
   - three controls: frozen weights, recurrent memory without plasticity, and the rule on
     shuffled graphs.
   It runs only after a task and search are validated.
-- **Task specificity.** A matched non-worm-like control task on the same interface and world,
-  such as a reward for staying away from food. Worm-task *specificity* has still never been
+- **Task specificity.** A matched non-worm-like control task on the same interface and world.
+  "Avoid food" is not suitable: 03's design rejected it because it can be solved by not moving. Worm-task *specificity* has still never been
   tested. 03 compared N2 with null graphs, not tasks with control tasks.
 - **The label "04".** v2.2 and older documents (the 03a draft, 03's pre-registration and
   DECISIONS) use "04" for *capability use with the 03 controls*, gated by a capability-task

@@ -15,9 +15,17 @@ control, and three readings stated too strongly. What changed is at the end (D04
 
 ## Summary
 
-1. **Evolved champions circle, slow down on food and near obstacles, and steer by which side
-   the food is on.** N2 and shuffles do this equally. The side dependence survives within each
-   wey (standardised coefficient 0.27 N2, 0.22 SH), so it is not the geometry of circling.
+1. **Evolved champions circle, and slow down on food and near obstacles.** In stereo foraging
+   (T0, biological mapping), their turn command is also *associated* with which side the food
+   is on. N2 and shuffles do this equally: the within-wey standardised coefficient is 0.27 for
+   N2 and 0.22 for SH.
+   - **This is a replay correlation,** not evidence that the left-right difference drives the
+     turning. Removing each wey's mean does not remove time-varying confounds from the trajectory
+     (Astra).
+   - **It does not revise 02's registered result.** That result is about fitness: feeding both
+     noses the mean costs the champions only +0.027 (N2) and +0.023 (SH), below 02's threshold of
+     0.10 for meaningful use. A turn can covary with the side difference and still be worth
+     little score. Section 1 gives the details.
 2. **Selection, not parameter drift, made the champions' turning history-dependent.** After
    identical current input, the turn read-out differs by food history far more at generation
    39 than at generation 0, or after 39 generations of mutation without selection. This holds in
@@ -52,6 +60,26 @@ mean removed). Means over champions:
 These are correlations, not causes. Moving fast changes the food reading, so the food-change
 coefficient is not evidence of temporal sensing. The history test (section 2) is the controlled
 version.
+
+**How this relates to 02's registered result** (reconciled before publication; the owner's
+publishing plan, D063). The two measure different things, and neither revises the other:
+
+| | 02's registered primary | 02b's "turn on food left minus right" |
+|---|---|---|
+| task and cell | stereo foraging, T0-M0 | the same cell's champions, T0-M0 |
+| measure | fitness lost when both noses get the mean food, generation 39 | standardised regression coefficient in replays, within wey |
+| output | the task score | the turn motor command, per tick |
+| result | N2 +0.027 [+0.000, +0.060], SH +0.023 [+0.003, +0.047]; meaningful use needs 0.10 | 0.27 (N2), 0.22 (SH) |
+| reads as | the side difference is worth little score | the turn covaries with the side difference |
+
+- **They fit together, and 02 already pointed this way.** The left-right swap costs more than the
+  mean (+0.079 N2, +0.082 SH), and 10 of 72 T0 champions are meaningfully swap-sensitive. 02
+  concluded that a few champions depend on the side the food is on, but that the probes cannot
+  say whether that is a left-right comparison or one-sided sampling.
+- **02b adds that the association is common** in replays.
+- **What 02b cannot say:** whether the turn *uses* the difference in a way that matters for
+  score. 02 says it mostly does not.
+- **02's primary reading is unchanged.
 
 **Input-response probe on the evolved genomes** (fixed artificial input from rest; T0-M0). N2's
 signed turn toward food is +0.009 [−0.007, +0.026] at generation 39 (5 of 8 positive). It is
