@@ -1642,6 +1642,53 @@ failing test (`tests/test_evo_islands.py`) before its fix:
 
 **Scope:**
 - **No published result is affected.** All 20 recorded run configs have `islands: 1`, and the
-  one-island path is unchanged (tested: `_breed_islands` equals `breed` exactly).
+  one-island path is unchanged.
+  - *Corrected in D065:* the evidence is Astra's parent-versus-current run of a single-island
+    evolution, bit-identical in scores, champions, snapshots and Dale signs. The `breed`
+    comparison test is a tautology for one island.
 - An end-to-end island run with migration and Dale signs is tested.
 - **Reviews:** these fixes will be reviewed with the rest of T0 by Astra and Fable.
+
+## D065 — T0 plan v2 after Astra's and Fable's review; the island fixes accepted
+
+Both reviewed the island fixes (D064) and the T0 plan v1 (`docs/reviews/*-T0/`).
+- **The island fixes: accepted by both.** Astra confirmed each regression test fails on the
+  parent. It also ran the parent and current code on one island: bit-identical in scores,
+  champions, snapshots and Dale signs. The three bugs plausibly match the roadmap's unnamed
+  three, but nothing establishes that they are the same.
+- **D064's wording is corrected** (Astra):
+  - the stale Dale vector corrupts later mutation and clamping, not the migrant's immediate
+    forward pass;
+  - stale fitness culls a migrant when truncation excludes its slot, not invariably.
+
+**T0 plan: "revise" from both, with largely the same must-fix points.** All are adopted in v2
+(`docs/foundations/T0.md`), after checking them in the code:
+- **World simulation is counted in `World`, not in `_play`.** Twelve construction sites were
+  confirmed.
+- **Neural updates count the batch axis:** S × B × effective substeps.
+- **Experiment-level `compute.json`.**
+- **Replay is split into three claims:** a round trip, re-simulation in the same mode, and
+  historical replay on the recorded device. Published runs were scored on CUDA.
+- **The CUDA tolerance is declared per comparison:** statistic, genomes, worlds, repeats and
+  hardware.
+- **The energy bound is declared now:** relative 1e-5 per world at every tick. That is confirmed
+  as the documented bound in `tests/test_world.py`.
+
+**Two real defects the reviewers found:**
+- **Jitter noise follows batch position,** not world identity (Astra reproduced it: chunking moved a
+  per-world score by 0.0053; the generator was checked in `world.py`). It breaks pairing across
+  chunks. 02's jitter estimates are unaffected in expectation. The fix keys noise by world, tick
+  and individual; future jitter results will not be bit-comparable with 02's.
+- **The saved population's `fitness` holds per-generation bests** beside per-strain genomes (both
+  reviewers; latent, since nothing reads it).
+
+**Also adopted:**
+- the champion re-evaluation is counted and paired, by genome hash;
+- `Genome.cat` and `assign`, with a scan test;
+- the load-time hash check;
+- island configuration validation;
+- stronger island tests;
+- a single-island regression against a stored log, after 03r.
+
+**Agreement:** all three (Claude, Astra and Fable) agree on v2's substance. So under the owner's
+delegation, T0 proceeds and the owner is informed.
