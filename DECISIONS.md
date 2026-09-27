@@ -2123,3 +2123,17 @@ stated the suite result).
 - the per-tick flag lives in `WorldConfig`, so it enters bundles, and older code would refuse such
   a bundle;
 - item 3's CPU test is small (50 ticks, one genome, Dale off).
+
+## D076 — T0 items 3-5, final check: champions at T0/T1, and a false claim in D075 corrected
+
+Astra's final check (`docs/reviews/*-T0-345c/`) answered "not yet" on two points, both confirmed:
+- **The champions ran at their own 01b settings** (600 ticks, stereo, no odour, 8 substeps), not
+  at the declared T0 and T1 settings (200 ticks, odour, 32 substeps). The champion test now runs
+  each of N2, SH1 and RD1 at both T0 and T1, with the task's brain configuration, over 8 worlds,
+  checked at every tick: six cases, all finite.
+- **D075's claim that "the loader's edge-hash check confirms each rebuild" was false.** 01b's
+  champion files carry no `edge_hash` (checked). Astra showed that SH1 and RD1 also load against
+  seed-2 graphs under the same labels. So nothing verifies that the rebuilt graphs are the ones
+  01b used, beyond the documented construction (`make_graphs`, seed 1).
+  - **A real check** is to replay each champion's stored `holdout_score` on its recorded device.
+    That is item 3's historical replay on CUDA, after 03r. The test's docstring says so.

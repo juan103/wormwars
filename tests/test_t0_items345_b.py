@@ -247,17 +247,20 @@ def test_nan_is_not_swallowed_in_coevolution_and_exp02_reporting():
     assert math.isnan(_max_keeping_nan([0.0, float("nan"), 1.0])) and _max_keeping_nan([1.0, 3.0]) == 3.0
 
 
+@pytest.mark.parametrize("task", ["T0", "T1"])
 @pytest.mark.parametrize("family", ["N2", "SH1", "RD1"])
-def test_a_published_champion_of_each_family_stays_finite_at_every_tick(parts, family):
-    """One 01b champion per graph family, 8 worlds, checked at every tick (Astra, Fable)."""
+def test_a_published_champion_of_each_family_stays_finite_at_every_tick(parts, family, task):
+    """One 01b champion per graph family, run at T0 and T1 task settings (200 ticks, odour,
+    32 substeps; Astra), 8 worlds, checked at every tick. SH1 and RD1 are rebuilt from the
+    documented construction (`make_graphs`, seed 1). 01b's files carry no edge hash, so nothing
+    here verifies the rebuild (Astra, D076)."""
     from pathlib import Path
-    from wormwars.evo.genomes import apply_world_meta, load_genome
+    from wormwars.evo.genomes import load_genome
     con, iface, spec = parts
     graph = {"N2": con, "SH1": shuffled(con, seed=1, label="SH1"), "RD1": random_graph(con, seed=1, label="RD1")}[family]
     f = Path(__file__).resolve().parents[1] / "runs" / "exp01b-direction-corrected" / f"champion-{family}-run00.npz"
-    champ, meta = load_genome(f, BrainSpec.from_connectome(graph))  # the edge hash checks the rebuilt graph
-    cfg, _ = apply_world_meta(Config(), meta)
-    cfg.brain = champ.cfg
+    cfg = grid.task_config(Config(), task)
+    champ, _ = load_genome(f, BrainSpec.from_connectome(graph), cfg=cfg.brain)  # the task's brain config
     w = World(cfg, load_interface(graph), Brain(champ), torch.zeros(8, 1, dtype=torch.long), run_seed=8,
               world_ids=np.arange(8))
     while not w.done():
