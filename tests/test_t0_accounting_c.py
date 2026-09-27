@@ -108,3 +108,26 @@ def test_the_legacy_scripts_refuse_abbreviated_options():
     for name in ("evolve_forage", "experiment", "coevolve", "ablate", "tactics"):
         src = (ROOT / "scripts" / f"{name}.py").read_text(encoding="utf-8")
         assert "ArgumentParser(allow_abbrev=False)" in src, name
+
+
+def test_the_aggregate_is_written_even_when_an_attempt_fails(tmp_path):
+    """Astra reproduced 02b's stale aggregate: success then failure reported one attempt, no failure."""
+    d, agg = tmp_path / "compute", tmp_path / "compute.json"
+    with A.recorded(d, agg, default="probe", stage="ok"):
+        pass
+    with pytest.raises(RuntimeError):
+        with A.recorded(d, agg, default="probe", stage="bad"):
+            raise RuntimeError("stage failed")
+    doc = json.loads(agg.read_text(encoding="utf-8"))
+    assert len(doc["attempts"]) == 2 and doc["failed_attempts"] == 1
+
+
+def test_scripted_tuning_is_categorised(parts):
+    from wormwars.exp02 import grid, scripted
+    con, iface, spec = parts
+    cfg = grid.task_config(Config(), "T1")
+    cfg.world.max_ticks = 6
+    scripted.tune_batched(lambda **p: scripted.LevelKinesis(**p),
+                          {"slow": [0.2], "fast": [0.8], "threshold": [0.1], "turn": [0.2, 0.4]},
+                          cfg, iface, np.array([1]), 3, "cpu")
+    assert A.LEDGER.counts["tuning"].world_ticks > 0 and "other" not in A.LEDGER.counts

@@ -1959,3 +1959,20 @@ yet". Addressed:
     truthful, and harmless;
   - exp02's and exp03's `compute.json` is written inside the `report` attempt, so it excludes the
     report's own seconds (Fable).
+
+## D072 — T0 item 2, third re-check
+
+Third re-check (`docs/reviews/*-T0-item2d/`): Fable answered "item 2: accept" and asked for
+wording only, with no further round needed. Astra answered "not yet" on one blocker, and approved
+the amended plan text.
+- **02b's aggregate was skipped when a stage raised** (Astra reproduced it; Fable found it too).
+  `accounting.recorded` wraps an attempt and writes the aggregate in `finally`. 02b and
+  `run_script` use it, and a regression test covers success followed by failure.
+- **Plan text** (`T0.md` section 1; Fable):
+  - `SparseBrain` is named as the exception to "the same hooks";
+  - the untested list adds the "final" category, four exp02 probes and two calibration
+    functions;
+  - the pilot and exploration scripts are named as not recorded at all, and future pilots run
+    inside `attempt`;
+  - the "twelve places" count is corrected.
+- **"tuning" is now tested.**

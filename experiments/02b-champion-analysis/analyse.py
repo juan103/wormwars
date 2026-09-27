@@ -455,12 +455,11 @@ def stage_summarise():
 
 if __name__ == "__main__":
     stage = sys.argv[1]
-    from wormwars.accounting import attempt  # compute accounting (T0, D069)
-    with attempt(Path(__file__).parent / "compute", default="probe", experiment="02b", stage=stage):
+    from wormwars.accounting import recorded  # compute accounting, aggregated even on failure (D069, D072)
+    here = Path(__file__).parent
+    with recorded(here / "compute", here / "compute.json", default="probe", experiment="02b", stage=stage):
         {"magnitudes": stage_magnitudes, "response": stage_response, "behaviour": stage_behaviour,
          "history": stage_history, "criticality": stage_criticality,
          "criticality_R1": lambda: stage_criticality("R1", ("N2",)),
          "criticality_R2": lambda: stage_criticality("R2", ("N2",)),
          "kept_edges": stage_kept_edges, "summarise": stage_summarise}[stage]()
-    from wormwars.accounting import write_aggregate  # every stage's attempts summed (D071)
-    write_aggregate(Path(__file__).parent / "compute", Path(__file__).parent / "compute.json")

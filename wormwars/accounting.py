@@ -248,6 +248,18 @@ def aggregate(directory) -> dict:
             "uncategorised": "other" in cats, "categories": cats, "totals": totals(cats)}
 
 
+@contextmanager
+def recorded(directory, aggregate_to, default: str | None = None, **extra):
+    """One attempt, then the aggregate of every attempt in `directory`, **whether the attempt
+    succeeds or raises**, so `aggregate_to` never goes stale after a failure (Astra, D072)."""
+    try:
+        with attempt(directory, default=default, **extra):
+            yield
+    finally:
+        if Path(directory).exists():
+            write_aggregate(directory, aggregate_to)
+
+
 def run_script(main, *, out_default: str, default: str, name: str, argv=None):
     """Run a script's `main` as one recorded attempt in `<--out>/compute/`, then aggregate every
     attempt there into `<--out>/compute.json`, beside the script's results (Astra, D070).
@@ -261,13 +273,8 @@ def run_script(main, *, out_default: str, default: str, name: str, argv=None):
             out = argv[i + 1]
         elif a.startswith("--out="):
             out = a.split("=", 1)[1]
-    directory = Path(out) / "compute"
-    try:
-        with attempt(directory, default=default, script=name, argv=argv):
-            return main()
-    finally:
-        if directory.exists():
-            write_aggregate(directory, Path(out) / "compute.json")
+    with recorded(Path(out) / "compute", Path(out) / "compute.json", default=default, script=name, argv=argv):
+        return main()
 
 
 def write_aggregate(directory, path) -> Path:
