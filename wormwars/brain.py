@@ -32,6 +32,7 @@ import numpy as np
 import torch
 from torch import Tensor
 
+from .accounting import LEDGER
 from .config import CHEM_DIRECTIONS, BrainConfig, MutationConfig
 from .connectome.loader import Connectome
 
@@ -371,6 +372,7 @@ class Brain:
         the world only updates once per tick.
         """
         k = self.cfg.substeps if substeps is None else substeps
+        LEDGER.neural(v.shape[0] * v.shape[1] * k)  # S x B x substeps network updates (T0, D068)
         if k == self.cfg.substeps:
             c, den = self.c, self.den
         else:

@@ -116,6 +116,8 @@ def main():
         )
 
     (out / "summary.json").write_text(json.dumps(rows, indent=2), encoding="utf-8")
+    from wormwars.accounting import LEDGER  # compute accounting (T0, D068)
+    LEDGER.write(out / "compute.json", extra={"script": "evolve_forage"})
 
     champ = np.array([r["champion_holdout"] for r in rows])
     rand = np.array([r["random_holdout_mean"] for r in rows])

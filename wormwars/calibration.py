@@ -43,6 +43,7 @@ from dataclasses import dataclass
 import numpy as np
 import torch
 
+from .accounting import counted
 from .brain import Brain, BrainSpec, Genome
 from .config import Config
 from .connectome.loader import Connectome
@@ -77,6 +78,7 @@ class MotorCalibration:
         }
 
 
+@counted("calibration")
 def raw_motor_magnitude(
     graph: Connectome,
     cfg: Config,
@@ -182,6 +184,7 @@ class DriveReport:
         return dict(vars(self))
 
 
+@counted("calibration")
 def achieved_drive(graph, cfg, iface, n_strains=24, ticks=80, seed=0, device="cpu") -> DriveReport:
     """Drive of a random population at `cfg`'s gains, measured inside the world it will run in.
 
@@ -233,6 +236,7 @@ class InWorldCalibration:
         return d
 
 
+@counted("calibration")
 def calibrate_in_world(graph, cfg, iface, target, *, n_strains=24, ticks=80, seed=0,
                        device="cpu", tol=0.02, max_iter=8, max_gain=40.0) -> InWorldCalibration:
     """Multiplicative fixed-point iteration on the gains until the achieved drive is within `tol`

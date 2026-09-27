@@ -1809,3 +1809,46 @@ champion test fail with the old re-evaluation restored. So T0 item 1 is agreed b
   comes with item 5's validation;
 - jitter keys drop run-seed bits above 32, which is harmless for the seeds in use. It will be
   recorded in the jitter docstring.
+
+## D068 — T0 item 2: compute accounting
+
+Implemented per T0 plan v2.1, section 1 (`wormwars/accounting.py`, `tests/test_t0_accounting.py`).
+
+**Counting:**
+- **Where:** where the work happens. `World.__init__` counts worlds built, `World.tick` counts
+  world-ticks (one per world in the batch per simulated tick), and `Brain.step` counts neural
+  updates as S × B × substeps. So no construction site can be missed. Scripted controllers count
+  zero.
+- **Categories:** selection, holdout, snapshot, final, calibration, probe, measure, tuning and
+  other. They are set by a context manager or the `counted` decorator. Nesting resolves to the
+  innermost category, and a parent's time excludes its children's. An unknown category is
+  refused.
+- **Where categories are set:**
+  - `evolve`: selection; holdout or snapshot, counted once when both apply.
+  - Calibration: `raw_motor_magnitude`, `achieved_drive`, `calibrate_in_world`.
+  - The exp02 probes: `input_response`, `behaviour`, `valence_check`, `channel_dependence`,
+    `gen0_scores`, `integrator_rescore`.
+  - exp03: `history` is a probe, and `coverage` is a measure.
+- **Time:** synchronised wall-clock seconds per category, labelled as such; not GPU kernel time.
+
+**Output:**
+- `RunResult.compute` holds a run's counts by category. `evaluations` is unchanged (selection
+  strain-worlds only).
+- Experiment level: `scripts/exp02.py` writes `compute/<command>-<time>.json` per invocation, and
+  `evolve_forage.py` writes `compute.json`.
+- `scripts/exp03.py` gets its file after 03r's report, because 03r runs from it.
+
+**Tests:**
+- a rollout counted exactly;
+- a small `evolve` counted by hand: selection, holdout and snapshot, with nothing in "other" or
+  "final";
+- pure measurement: bit-identical scores with the ledger on and off, and no random numbers
+  consumed;
+- nesting;
+- the category restored after an exception;
+- an unknown category refused;
+- calibration, input response, history, coverage and behaviour each under their category;
+- the JSON output.
+
+The tests were written before the module, but not run red first: they would have failed on the
+missing import.

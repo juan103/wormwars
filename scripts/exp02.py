@@ -622,6 +622,11 @@ def main():
     iface = load_interface(con)
     {"remaps": cmd_remaps, "calibrate": cmd_calibrate, "diagnostics": cmd_diagnostics, "validate-probes": cmd_validate_probes, "extend": cmd_extend,
      "pilot": cmd_pilot, "run": cmd_run, "probes": cmd_probes, "report": cmd_report}[args.command](args, con, iface)
+    # experiment-level compute accounting, one file per invocation, summed over processes (T0, D068)
+    from datetime import datetime, timezone
+    from wormwars.accounting import LEDGER
+    stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    LEDGER.write(OUT / "compute" / f"{args.command}-{stamp}.json", extra={"experiment": "02", "command": args.command})
 
 
 if __name__ == "__main__":

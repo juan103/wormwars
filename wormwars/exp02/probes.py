@@ -5,6 +5,7 @@ from __future__ import annotations
 import numpy as np
 import torch
 
+from ..accounting import counted
 from ..brain import Brain, Genome
 from ..evo.rollout import rollout
 from ..interface import interface_from_spec, negated_spec
@@ -22,6 +23,7 @@ def flip_food_signs(genome: Genome, food_neurons) -> Genome:
     return genome.with_params(w=w, bias=genome.bias * s)
 
 
+@counted("probe")
 def valence_check(spec, cfg, con, iface, n_strains, ids, seed, device, gaps: bool) -> dict:
     gen = torch.Generator(device=device).manual_seed(seed)
     g = Genome.random(spec, cfg.brain, n_strains, generator=gen, device=device)
@@ -43,6 +45,7 @@ def _variant(cfg, **world):
     return c
 
 
+@counted("probe")
 def channel_dependence(cfg, iface, champion, ids, seed, device, with_pheromone: bool) -> dict:
     """Per-world scores of one champion with the real food signal and under each intervention:
     food replaced by each world's tick-0 mean level ("constant"), by the mirrored signal,
@@ -71,12 +74,14 @@ def channel_dependence(cfg, iface, champion, ids, seed, device, with_pheromone: 
                        for k, c in variants.items()}}
 
 
+@counted("probe")
 def gen0_scores(spec, cfg, iface, n_strains, ids, seed, device) -> float:
     gen = torch.Generator(device=device).manual_seed(seed)
     g = Genome.random(spec, cfg.brain, n_strains, generator=gen, device=device)
     return float(rollout(cfg, iface, g, ids, seed, device).score.mean())
 
 
+@counted("probe")
 def input_response(spec, cfg, iface, n_strains, device, ticks=40, base=0.1, diff=0.05,
                    genome=None, per_genome=False) -> dict:
     """Motor response of random brains to food input, outside the world, per tick.
@@ -133,6 +138,7 @@ def input_response(spec, cfg, iface, n_strains, device, ticks=40, base=0.1, diff
     return out
 
 
+@counted("probe")
 def integrator_rescore(cfg, iface, champion, ids, seed, device) -> dict:
     """Per-world scores at 32 and 128 substeps, and at 32 with every bias moved by 1e-6. The last
     is the chaos floor: a persistent parameter perturbation, not a perturbation of the initial
@@ -146,6 +152,7 @@ def integrator_rescore(cfg, iface, champion, ids, seed, device) -> dict:
     return out
 
 
+@counted("probe")
 def behaviour(cfg, iface, champion, ids, seed, device) -> dict:
     from ..world import World
 

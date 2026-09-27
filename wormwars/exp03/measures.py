@@ -8,6 +8,7 @@ import hashlib
 import numpy as np
 import torch
 
+from ..accounting import counted
 from ..brain import Brain, Genome
 from ..config import Config
 from ..world import World
@@ -33,6 +34,7 @@ def task_c_config(base: Config) -> Config:
     return c
 
 
+@counted("measure")
 def coverage(cfg, iface, genome: Genome, world_ids, run_seed, device, chunk_worlds=None) -> dict:
     """Distinct grid cells visited by each strain's swarm (union over its weys) on each world,
     with food and pellets removed from the built map. Returns cells [strains, worlds], the food
@@ -86,6 +88,7 @@ def _readout(iface, cfg, v):
                         (turn * 0.5 * cfg.world.turn_gain).clamp(-1, 1)], -1)
 
 
+@counted("probe")
 def history(genome: Genome, cfg, iface, bank: dict, rising_start=0.25, falling_start=1.75,
             warm=100, span=10, after=5) -> dict:
     """02b's matched-input history test on every genome of `genome`, with one stimulus bank

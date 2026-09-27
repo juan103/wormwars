@@ -15,6 +15,7 @@ from pathlib import Path
 import numpy as np
 import torch
 
+from .. import accounting as acct
 from ..brain import BrainSpec, Genome
 from ..config import Config
 from ..interface import Interface
@@ -46,8 +47,9 @@ class RunResult:
     champion: Genome | None = None
     champion_id: str = ""
     gpu_seconds: float = 0.0
-    evaluations: int = 0
+    evaluations: int = 0  # selection strain-worlds only, as before; see `compute` for everything
     snapshots: dict = field(default_factory=dict)  # generation -> best-of-generation strain
+    compute: dict = field(default_factory=dict)  # per category, from the ledger (T0, D068)
 
     def history(self) -> dict[str, np.ndarray]:
         return {
@@ -110,13 +112,15 @@ def evolve(
     pool = SeedPool(cfg, run_seed)
     result = RunResult(graph=spec.label, run=run, run_seed=run_seed)
     t_start = time.perf_counter()
+    ledger_before = acct.LEDGER.snapshot()
 
     island_of = np.arange(e.population) % e.islands if e.islands > 1 else np.zeros(e.population, int)
 
     for g in range(e.generations):
         t0 = time.perf_counter()
         ids = pool.train_ids(g)
-        res = evaluate_on(cfg, iface, genome, ids, run_seed, device, combat_stage)
+        with acct.category("selection"):
+            res = evaluate_on(cfg, iface, genome, ids, run_seed, device, combat_stage)
         fit = res.per_strain()
         result.evaluations += fit.size * len(ids)
         if g in snapshots:
@@ -126,9 +130,11 @@ def evolve(
         if g % holdout_every == 0 or g == e.generations - 1 or g in snapshots:
             best_i = int(np.argmax(fit))
             suite = pool.holdout if checkpoint_ids is None else np.asarray(checkpoint_ids)
-            hres = evaluate_on(
-                cfg, iface, genome.select([best_i]), suite, run_seed, device, combat_stage
-            )
+            # one evaluation, counted once: a snapshot generation's check is the snapshot
+            with acct.category("snapshot" if g in snapshots else "holdout"):
+                hres = evaluate_on(
+                    cfg, iface, genome.select([best_i]), suite, run_seed, device, combat_stage
+                )
             hb = float(hres.per_strain()[0])
             hm = hb
 
@@ -169,6 +175,7 @@ def evolve(
     result.champion = genome.select([best_i])
     result.champion_id = strain_id(spec.label, run, e.generations - 1, 1)
     result.gpu_seconds = time.perf_counter() - t_start
+    result.compute = acct.LEDGER.since(ledger_before)
 
     if out_dir is not None:
         out = Path(out_dir)

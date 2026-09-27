@@ -28,6 +28,7 @@ import torch
 import torch.nn.functional as F
 from torch import Tensor
 
+from .accounting import LEDGER
 from .brain import Brain
 from .config import Config
 from .fields import (
@@ -350,6 +351,7 @@ class World:
         self._food_constant = self.fields[:, self.ch.FOOD].mean(dim=(1, 2))
         self._update_body_field()
         self.start_energy_total = self.total_energy().clone()
+        LEDGER.worlds(self.n_worlds)  # compute accounting (T0, D068)
 
     # ---------------------------------------------------------------- setup
 
@@ -625,6 +627,7 @@ class World:
     # ------------------------------------------------------------ the tick
 
     def tick(self) -> None:
+        LEDGER.ticks(self.n_worlds)  # one tick of every world in the batch (T0, D068)
         wcfg = self.cfg.world
         alive_f = self.alive.to(self.dtype)
 
