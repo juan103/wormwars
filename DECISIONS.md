@@ -1573,7 +1573,9 @@ with their go for push 1.
 - GitHub's receipt time shows public disclosure, not registration before the run.
 - `experiments/03r-replication/DISCLOSURE.md` states the binding commit and when disclosure came.
   It also gives the state at disclosure (528 of 773 graphs, N2 not measured) and what had been
-  inspected (operational information only; no 03r signal value).
+  inspected: operational information only. No signal value from the formal run has been
+  inspected since binding; the preflight's P4, seen before binding, is disclosed (Astra's
+  confirmation pass).
 - The same caveat is added to 03's RESULTS.md and to the roadmap.
 
 **02b reconciled before this push (Astra), the owner's item 3:**

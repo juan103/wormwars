@@ -209,7 +209,8 @@ only, not to the shuffles.
 assumed that a mirror-symmetric graph gets a left-right food comparison "almost for free". That
 is wrong for this interface. The turn read-out is dorsal minus ventral, and each group holds left
 and right neurons, so a mirror-equivariant network turns the same way for food on either side.
-Symmetry forbids the comparison, and steering needs it broken. The reading was never triggered,
+Exact symmetry of wiring and every parameter would forbid the comparison; symmetric wiring with
+independent random parameters does not (D051). The reading was never triggered,
 because the primary was challenged, so no result above changes. Astra 6 found this while
 reviewing experiment 03's design.
 

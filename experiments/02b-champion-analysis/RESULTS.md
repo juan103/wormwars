@@ -72,14 +72,16 @@ publishing plan, D063). The two measure different things, and neither revises th
 | result | N2 +0.027 [+0.000, +0.060], SH +0.023 [+0.003, +0.047]; meaningful use needs 0.10 | 0.27 (N2), 0.22 (SH) |
 | reads as | the side difference is worth little score | the turn covaries with the side difference |
 
-- **They fit together, and 02 already pointed this way.** The left-right swap costs more than the
-  mean (+0.079 N2, +0.082 SH), and 10 of 72 T0 champions are meaningfully swap-sensitive. 02
+- **They fit together, and 02 already pointed this way.**
+  - The left-right swap's point estimates are larger than the mean probe's: +0.079 [+0.000,
+    +0.179] for N2 and +0.082 [+0.021, +0.158] for SH. The intervals are wide.
+  - 10 of 72 T0 champions (all mappings) are meaningfully swap-sensitive. 02
   concluded that a few champions depend on the side the food is on, but that the probes cannot
   say whether that is a left-right comparison or one-sided sampling.
-- **02b adds that the association is common** in replays.
+- **02b adds that the association is present in the group means** in replays.
 - **What 02b cannot say:** whether the turn *uses* the difference in a way that matters for
   score. 02 says it mostly does not.
-- **02's primary reading is unchanged.
+- **02's primary reading is unchanged.**
 
 **Input-response probe on the evolved genomes** (fixed artificial input from rest; T0-M0). N2's
 signed turn toward food is +0.009 [−0.007, +0.026] at generation 39 (5 of 8 positive). It is
@@ -195,6 +197,7 @@ generation 0 (roadmap).
   food) was added, and "AWC and ASE become critical" is corrected: they were not eligible under
   M0. The kept-edge check for 03a was added.
 - **Steering claim withdrawn:** "evolved N2 champions steer toward food; shuffles do not" rested on
-  two champions. Within-wey regression shows both groups steer by side equally.
+  two champions. Within-wey regression shows the turn associated with the food side equally in
+  both groups; that is an association, not fitness use (see section 1 and D063).
 - **Also:** rank correlations use average ranks, every number comes from `summarise`, a null
   strain goes in every deletion batch, and the wording on maxima and ratios is corrected.

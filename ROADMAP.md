@@ -6,7 +6,7 @@
 
 - **Experiment 01 / 01b.** Real C. elegans wiring (N2) against shuffled (SH) and random (RD) graphs on a foraging game. 01b is the rerun after a chemical-synapse direction bug was fixed. The README states exactly what it establishes; in particular, it does not establish faster improvement.
 - **Experiment 02 (published).** The primary prediction failed: champions did not meaningfully use the left-right food difference. Its pre-registration's mirror-symmetry reasoning was wrong: the turn read-out is dorsal minus ventral, so symmetric wiring gives no left-right comparison for free. Correction D050 is prepared as a Corrections entry in 02's RESULTS.md on main.
-- **02b (re-analysis of 02's champions, reviewed, not yet public):**
+- **02b (re-analysis of 02's champions, reviewed, not yet on main):**
   - Champions circle and slow down on food and near obstacles, and N2 and shuffles do this equally well.
   - One statement, that champions "steer by which side the food is on", is now reconciled with 02's registered result: it is a replay association with the turn command, not fitness use, and it does not revise 02 (D063).
   - Selection built history dependence into the champions: a slow memory of the recent food level, not a response to its change.
@@ -19,7 +19,7 @@
   - **P3, use of food information:** no criterion met, with low power.
   - **Exploratory:** N2's random brains respond 5 to 7 times more strongly to food input than the typical shuffled graph, and more strongly than every one of the 640. That does not explain P4. Two readings from 02 do not hold for unselected random brains.
 - **03r:** a pre-registered replication on 768 new graphs and new random brains for N2 too, currently running. P4 alone is its primary test; P1 and P3 are secondary. Its outcome wording is fixed in advance.
-  - **Timing, stated plainly:** neither 03's nor 03r's pre-registration was pushed before its run started. 03r's is pushed while the run is in progress, so GitHub's receipt time shows only when the text became public. That no 03r result had been seen by then rests on local records: at the push, N2 had not been measured, and no 03r signal value had been inspected (D063). The standing rule below applies from now on.
+  - **Timing, stated plainly:** neither 03's nor 03r's pre-registration was pushed before its run started. 03r's is pushed while the run is in progress, so GitHub's receipt time shows only when the text became public. That no 03r result had been seen by then rests on local records: at the push, N2 had not been measured, and no signal value from the formal run had been inspected since binding. The one exception is a disclosed preflight value from before binding (D063). The standing rule below applies from now on.
 - **03a (your self-consistency hypothesis):** draft v3.2, nothing run. Estimated at about 31 million genome evaluations, roughly 785 GPU-hours. Measured throughput so far is about 2 times experiment 02's; the one-week cap needs about 5 times.
 - **Related work:** a first survey exists, with corrections pending (see Related work below).
 

@@ -322,6 +322,10 @@ The reviewers differ on whether it must come before publishing:
 - **Fable:** replicate before any public claim.
 - **Astra:** an honestly qualified report of this completed experiment can be published first.
 
+**What happened next.** The owner chose a full replication before merging into main (D059). 03r is
+pre-registered in `experiments/03r-replication/` and running. These first-run results became
+public on the `roadmap` branch while it ran (D063).
+
 Further questions, not registered:
 - Where does the persistence live? Silencing or deletion of candidate loops can test that.
 - Does it survive with gap junctions removed?
