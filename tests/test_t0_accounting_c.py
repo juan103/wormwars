@@ -131,3 +131,14 @@ def test_scripted_tuning_is_categorised(parts):
                           {"slow": [0.2], "fast": [0.8], "threshold": [0.1], "turn": [0.2, 0.4]},
                           cfg, iface, np.array([1]), 3, "cpu")
     assert A.LEDGER.counts["tuning"].world_ticks > 0 and "other" not in A.LEDGER.counts
+
+
+def test_an_attempt_records_the_commit_and_dirty_state_at_its_start(tmp_path, monkeypatch):
+    """Fable: the commit was read in `finally`, so a commit landing mid-attempt was misattributed."""
+    calls = iter([("start-sha", False), ("end-sha", True)])
+    monkeypatch.setattr(A, "_git_state", lambda: next(calls))
+    with A.attempt(tmp_path, command="c"):
+        pass
+    d = json.loads(next(tmp_path.glob("*.json")).read_text(encoding="utf-8"))
+    assert (d["git_commit"], d["code_dirty"]) == ("start-sha", False)
+    assert d["git_commit_at_end"] == "end-sha"

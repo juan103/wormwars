@@ -27,13 +27,13 @@
 
 Several results point the same way:
 
-- N2's random brains hold on to past food levels more than any null ensemble (03, borderline).
+- N2's random brains hold on to past food levels unusually strongly relative to all five null ensembles (03, borderline; replicated in 03r, D080).
 - Selection builds that kind of slow memory into the champions of every group, N2 and shuffles alike (02b, group means).
 - N2's critical core, AIZ and RIA, belongs to interneuron classes worth comparing with the navigation circuitry described in the experimental and modelling literature.
 
 **Hypothesis.** N2 starts with more capacity to hold recent history. Evolution then builds such memory into every graph, which would explain why N2's early advantages fade.
 
-**Status.** 03r tested the first link, and it replicated (D080). So, the testable predictions include these: N2's early advantage should be larger on tasks that require memory than on tasks that do not; it should shrink over generations; and the history effect should localise to identifiable circuitry. If 03r does not replicate, the thread is dropped, and no redesign aimed at rescuing it is attempted.
+**Status.** 03r tested the first link, and it replicated (D080). So, the testable predictions include these: N2's early advantage should be larger on tasks that require memory than on tasks that do not; it should shrink over generations; and the history effect should localise to identifiable circuitry.
 
 ## Two tracks, one priority
 

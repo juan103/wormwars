@@ -54,11 +54,14 @@ the outcome.
 
 **After the first push,** development continued in the same working directory while 03r ran: T0's
 correctness work (D064-D076), which also changed `scripts/exp03.py` (D069). At HEAD the same
-`git diff` shows changes across many files. None of them reached the run, which was already a
-loaded process that never restarted (one invocation, no resume). Checks after the run:
+`git diff` shows changes across many files. As far as checked, none of them reached the run,
+which was already a loaded process that never restarted (one invocation, no resume). Checks after
+the run:
 - **Bit-for-bit re-measurement:** N2 and the last ensemble graph measured (SH-route-1020255) were
   re-measured with the binding commit's code (a worktree at `7c146fc`). Both are identical to
-  their saved measurements in every array (`runs/remeasure-03r.json`, local).
+  their saved measurements in every array, under a strict comparison (the same keys and lengths,
+  exact values, NaN in the same positions): [`remeasure.json`](remeasure.json), written by
+  [`remeasure.py`](remeasure.py), with its own provenance.
 - **Inputs:** every input file hashed at the run's start (ensembles, graph manifest, pilot, mirror
   pairs, remaps, connectome cache) still has the recorded hash.
 - **The report:** `report.json` from the binding commit's code and from HEAD are identical (D080).

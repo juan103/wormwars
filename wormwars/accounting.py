@@ -180,12 +180,17 @@ def totals(categories: dict) -> dict:
     return out
 
 
-def _git_commit() -> str:
+def _git_state() -> tuple[str, bool | None]:
+    """(HEAD commit, whether code or configs are uncommitted)."""
+    root = Path(__file__).parents[1]
     try:
-        return subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=Path(__file__).parents[1],
-                                       text=True, stderr=subprocess.DEVNULL).strip()
+        sha = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=root, text=True,
+                                      stderr=subprocess.DEVNULL).strip()
+        dirty = bool(subprocess.check_output(["git", "status", "--porcelain", "--", "wormwars", "scripts", "configs"],
+                                             cwd=root, text=True, stderr=subprocess.DEVNULL).strip())
+        return sha, dirty
     except Exception:  # noqa: BLE001
-        return "unknown"
+        return "unknown", None
 
 
 @contextmanager
@@ -197,6 +202,7 @@ def attempt(directory, default: str | None = None, **extra):
     directory = Path(directory)
     before = LEDGER.snapshot()
     t0 = datetime.now(timezone.utc)
+    commit, dirty = _git_state()  # at the start: the code that runs (Fable, D083)
     status, error = "completed", None
     try:
         if default is not None:
@@ -216,7 +222,8 @@ def attempt(directory, default: str | None = None, **extra):
         doc = {**extra, "default_category": default, "status": status, "error": error,
                "started_utc": t0.isoformat(timespec="seconds"),
                "ended_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"),
-               "pid": os.getpid(), "git_commit": _git_commit(),
+               "pid": os.getpid(), "git_commit": commit, "code_dirty": dirty,
+               "git_commit_at_end": _git_state()[0],
                "cuda_devices": [torch.cuda.get_device_name(d) for d in range(torch.cuda.device_count())]
                if torch.cuda.is_available() else [],
                "time_unit": TIME_UNIT, "neural_update_unit": NEURAL_UNIT,

@@ -28,20 +28,27 @@ out = {}
 
 
 def cmp(a, b, path, diffs):
-    if isinstance(a, dict):
-        for k in a:
-            if k in ("seconds", "provenance"):
-                continue
+    """Strict comparison (Astra, Fable): the same structure and keys on both sides, the same lengths,
+    exactly equal values, and NaN in the same positions."""
+    if isinstance(a, dict) or isinstance(b, dict):
+        if not (isinstance(a, dict) and isinstance(b, dict)):
+            diffs.append((path, "type")); return
+        ka, kb = set(a) - {"seconds", "provenance"}, set(b) - {"seconds", "provenance"}
+        if ka != kb:
+            diffs.append((path, "keys", sorted(ka ^ kb)))
+        for k in ka & kb:
             cmp(a[k], b[k], f"{path}/{k}", diffs)
-    elif isinstance(a, list) and a and isinstance(a[0], (dict, list)) and not isinstance(a[0], (int, float)):
-        for i, (u, v) in enumerate(zip(a, b)):
-            cmp(u, v, f"{path}[{i}]", diffs)
-    elif isinstance(a, list):
-        x, y = np.asarray(a, float), np.asarray(b, float)
-        d = float(np.nanmax(np.abs(x - y))) if x.size else 0.0
-        if d > 0 or x.shape != y.shape:
-            diffs.append((path, d))
-    elif a != b and not (isinstance(a, float) and np.isnan(a) and np.isnan(b)):
+    elif isinstance(a, list) or isinstance(b, list):
+        if not (isinstance(a, list) and isinstance(b, list)) or len(a) != len(b):
+            diffs.append((path, "length")); return
+        if a and isinstance(a[0], (dict, list)):
+            for i, (u, v) in enumerate(zip(a, b)):
+                cmp(u, v, f"{path}[{i}]", diffs)
+        else:
+            x, y = np.asarray(a, float), np.asarray(b, float)
+            if x.shape != y.shape or not np.array_equal(x, y, equal_nan=True):
+                diffs.append((path, "values"))
+    elif not (a == b or (isinstance(a, float) and isinstance(b, float) and np.isnan(a) and np.isnan(b))):
         diffs.append((path, a, b))
 
 
@@ -52,4 +59,16 @@ for name in names:
     cmp(saved, fresh, name, diffs)
     out[name] = {"identical": not diffs, "n_differences": len(diffs), "first": [str(x) for x in diffs[:5]]}
     print(name, out[name], flush=True)
-(MAIN / "runs" / "remeasure-03r.json").write_text(json.dumps(out, indent=1), encoding="utf-8")
+import datetime  # noqa: E402
+import subprocess  # noqa: E402
+import torch  # noqa: E402
+doc = {"what": "N2 and the last ensemble graph measured, re-measured with the binding commit's code and compared "
+               "with the saved 03r measurements",
+       "code_commit": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=BIND, text=True).strip(),
+       "code_dirty": bool(subprocess.check_output(["git", "status", "--porcelain", "--", "wormwars", "scripts"],
+                                                  cwd=BIND, text=True).strip()),
+       "device": torch.cuda.get_device_name(0), "run_at_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"),
+       "compared": "every key, list length and value of each saved measurement except 'seconds' and 'provenance'; "
+                   "exact equality with NaN in the same positions",
+       "results": out}
+(MAIN / "experiments" / "03r-replication" / "remeasure.json").write_text(json.dumps(doc, indent=1), encoding="utf-8")

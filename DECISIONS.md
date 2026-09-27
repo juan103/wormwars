@@ -2363,3 +2363,42 @@ checked and adopted.
     calculation stated;
   - the committed re-measurement record and script, with provenance.
 - **Stale roadmap status is fixed.**
+
+## D083 — 03r ready to publish (both); T0 closed
+
+Re-check of D082 (`docs/reviews/*-03r-T0-re/`):
+- **03r:** Astra and Fable both answered "03r results: ready to publish".
+- **T0:** Astra answered "T0: close". Fable answered "not yet" on two must-fix items, and said
+  neither needed another review once done. Both are now done:
+  - **`REPRODUCIBILITY.md` cited 0.15,** a number from the superseded run with 01b's champions at 8
+    substeps. It now gives the clean run's numbers: 49 of 512 and 98 of 128 worlds over 1e-4 at
+    600 ticks, maxima 0.073 and 0.055; at 200 ticks 2-8 worlds, maximum 0.027. It says "exceeded
+    1e-4" rather than "differed".
+  - **The test suite's result at the closing commit** is recorded below.
+
+**Also fixed, from both reviewers' non-blocking points:**
+- **The re-measurement comparator was not strict** (both). `nanmax` hid finite-to-NaN changes, and
+  `zip` hid missing entries. It now requires the same keys and lengths, exact values and NaN in
+  the same positions, and it writes its own provenance.
+  - **Rerun on the GPU with the binding code** (`7c146fc`, clean): N2 and SH-route-1020255 are still
+    identical (`experiments/03r-replication/remeasure.json`).
+  - The previously committed file had been annotated by hand. It is replaced by the script's own
+    output.
+- **`accounting.attempt` recorded the commit at the end,** without a dirty flag (Fable). It now
+  records `git_commit` and `code_dirty` at the start, and the commit at the end separately. A test
+  failed first.
+- **Wording:**
+  - the replay-mode guarantee is scoped to the same batch composition, and says that only chunking
+    4 096 was repeat-tested (Astra);
+  - T0.md's `bmm` numbers: 4.2e-5 at 64 rows, 6.5e-5 at 320, none at 16;
+  - the disclosure's "none reached the run" is hedged, and it points to the committed record;
+  - the roadmap's stale lines;
+  - the README's details line.
+- **D082's "everything finite" on CUDA** covers final scores and swarm energies. Brain states at
+  every tick are covered by the accepted CPU tests (D075).
+
+**Consensus:**
+- **03r is ready to publish,** by both. Main still needs the owner's explicit go.
+- **T0 is closed:** Astra said "close", and Fable's two conditions are met. So T1 (throughput,
+  profile first) is next. Its equivalence tolerance must be declared with D082's batch-composition
+  finding in hand, and padding or a guard for single-strain chunks is a T1 decision (Fable).

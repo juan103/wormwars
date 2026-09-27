@@ -82,7 +82,7 @@ while 03r ran; its pre-registration was pushed there mid-run, as its
 
 Details: [`experiments/03-generation0/RESULTS.md`](experiments/03-generation0/RESULTS.md),
 [`experiments/03r-replication/RESULTS.md`](experiments/03r-replication/RESULTS.md), and
-decisions D050-D063, D080 and D081.
+decisions D050-D063 and D080-D083.
 
 ## Experiment 02, a screening
 

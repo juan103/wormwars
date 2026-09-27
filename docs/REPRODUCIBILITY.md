@@ -29,9 +29,13 @@ close the result comes depends on where you run it.
   - **Corrected 2026-09-28 (T0, D081, D082): on CUDA, in the tested configurations, that holds
     only while every chunk holds more than one strain.** A chunk of a *single* strain behaves
     consistently with a different GPU kernel path: a direct `torch.bmm` test shows a batch of one
-    strain differing by about 5e-5 from the same strain in a larger batch. At 200 ticks, 3 of
-    512 worlds then differed by up to 0.027, and a 600-tick stress test differed by up to 0.15:
-    chaotic amplification of different rounding (`docs/foundations/T0_gpu.json`).
+    strain differing by about 5e-5 from the same strain in a larger batch (at 64 and 320 rows per
+    strain; none at 16). In the clean rerun (`docs/foundations/T0_gpu.json`, `bcee5a8`),
+    single-strain chunks gave these per-world differences, amplified by the chaotic dynamics:
+    - at 200 ticks: 3 of 512 worlds (random genomes) and 2-8 of 128 (02's champions) exceeded
+      1e-4, with a maximum of 0.027;
+    - in the 600-tick stress test: 49 of 512 and 98 of 128 exceeded 1e-4, with maxima of 0.073 and
+      0.055.
   - With the same batch composition, results were identical in the tested configurations, even
     in default mode. Chunkings with 2, 3, 4, 16 and 32 strains per chunk all agreed exactly
     (`docs/foundations/T0_gpu.json`). The default-mode nondeterminism described below was not
@@ -61,7 +65,10 @@ with replay_mode():
 
 `replay_mode()` sets `torch.use_deterministic_algorithms(True)` and
 `CUBLAS_WORKSPACE_CONFIG=:4096:8`. Under **the pinned environment in `requirements.txt`, on the same
-GPU**, results inside that context are reproducible.
+GPU, with the same batch composition**, results inside that context are reproducible. A
+single-strain chunk is its own composition: see the correction under "Chunking" above (D082). The
+T0 checks test repeats directly at one chunking, 4 096 worlds; other chunkings were compared with
+that reference, not repeated.
 
 Outside it, expect **approximate** trajectory agreement: the same strategies, similar scores, and
 positions that diverge over a long match. Aggregate results across many worlds are stable either
