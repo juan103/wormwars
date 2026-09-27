@@ -34,6 +34,11 @@ Episode 6 went unnoticed for a week, through a passing test suite, every milesto
 publication audit, the first public release and Claude's own review of the roadmap on the day it
 was found. No test had ever sent a signal down a single synapse and looked where it arrived.
 
+**Episode 9, corrected:** the mirror-symmetry rationale Fable raised there (and Claude adopted) was
+itself wrong. The turn read-out is dorsal minus ventral, so symmetric wiring gives no left-right
+comparison for free. Astra 6 found this while reviewing experiment 03's design. See
+`experiments/02-screening/RESULTS.md`, Corrections (D050).
+
 ## The reviewers were not always right either
 
 Two reviewer figures in episode 7 did not survive checking. Fable 5.1 said every condition's
@@ -41,6 +46,8 @@ scores rose by 0.1-0.2 between experiments 01 and 01b; the measured rises are 0.
 controls and 0.22-0.23 for N2. Astra 6 found 8 of 1440 weys with an integrator error above 0.05; the
 same check with different inputs found 0. Both are reported as measured. No reviewer finding was
 adopted without being re-measured or re-read first, and the corrections above say who measured what.
+One exception came to light later: the mirror-symmetry rationale of episode 9 was adopted after
+checking the symmetry index, not the argument itself (see the note above).
 
 ## What this does and does not show
 

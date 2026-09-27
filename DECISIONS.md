@@ -887,6 +887,9 @@ one place. All three are now fixed. Every paired difference goes through one che
 
 ## D041 — Fable's review of the pre-registration: symmetry, jitter on T0, split verdicts
 
+*Post-publication pointer (2026-09-27; the entry below is unchanged):* its mirror-symmetry rationale
+is wrong. See `experiments/02-screening/RESULTS.md`, Corrections (D050).
+
 Fable 5.1 reviewed the pre-registration at 08:00. The evolution had started at 06:25 from commit
 225e8f8; no probe had run and no N2 result had been read. Fable found nothing that required
 stopping the evolution. All ten of its points were checked and adopted, and they change only

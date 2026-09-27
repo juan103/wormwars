@@ -1,5 +1,9 @@
 # WormWars 02: results of the screening
 
+> **Correction after publication** (found 2026-09-25, published 2026-09-27): the
+> mirror-symmetry reasoning in 02's pre-registration was wrong. No result changes. See
+> [Corrections](#corrections).
+
 **The primary prediction is challenged: in the primary cell, neither group of evolved champions
 meaningfully uses the left-right food difference.** In stereo foraging with food entering the
 biological neurons, removing the difference costs N2's champions +0.027 [+0.000, +0.060] and
@@ -34,6 +38,60 @@ Run: `runs/exp02-screening/`. 190 runs, 5.64 GPU-hours of evolution and 7.44 GPU
 with the probes, of a 12-hour cap; no probe step was dropped; one RTX 5080. The evolution ran
 from commit `225e8f8`, and the probes and report from `971bbb3`. The only difference between the
 two is Fable's review amendments, which touch probes, analysis and wording (D041).
+
+## Corrections
+
+### 1. The mirror-symmetry reading was wrong (D050; found 2026-09-25, published 2026-09-27)
+
+The pre-registration registered this reading in §4, under "Registered readings", and D041 records
+the same reasoning. The reading's text, unchanged:
+
+> **Mirror symmetry.** A degree-preserving shuffle destroys the left-right pairing of targets,
+> and the turn read-out is bilateral. So any mirror-symmetric graph gets a left-minus-right
+> comparison almost for free. The remaps cannot control for this, because R1 and R2 are
+> symmetric pairs inside N2 too. **If the verdict is supported and N2 shows a comparable
+> advantage under R1 and R2, the result is read as a symmetry effect, not as something specific
+> to the food neurons' wiring. The full design then needs a mirror-symmetric shuffle control.**
+> Each graph's mirror-symmetry index and the food pairs' routing features (D036's six) are
+> reported as covariates (`structure.covariates`).
+
+**Why it is wrong.** The turn read-out is dorsal minus ventral, not left minus right, and each of
+those groups holds both left and right neurons. So it is unchanged when left and right are
+swapped. Food on the left and food on the right are mirror images of each other.
+- **A fully mirror-equivariant network** turns the same way for both. That means mirror-symmetric
+  wiring *and* weights, signs, biases and time constants, with mirror-related initial states.
+  For such a network, symmetry does not give the comparison for free: it forbids it.
+- **Symmetric wiring alone is not enough.** This project draws each neuron's and each synapse's random parameters
+  independently, which breaks the symmetry (D051). So the correct statement is not "symmetry
+  forbids steering". It is that symmetric wiring gives no left-right comparison for free.
+- **Any comparison has to come from asymmetry,** in the weights or elsewhere.
+
+**What changes:**
+- **No result above.** The reading applied only if the primary had been supported, and the
+  primary was challenged. The sentence "The mirror-symmetry reading registered for a supported
+  result does not arise" still holds.
+- **The rationale for a mirror-symmetric control.** Such a control is still useful, as a
+  structural control for a generic property N2 has. It is not a test of a symmetry explanation.
+  Experiment 03 uses it that way.
+  - Its predicted direction: D050 first predicted a *lower* directional response. D051 withdrew
+    that, because symmetric wiring with random weights is not equivariant.
+  - So it has no predicted direction.
+
+**Where else the reasoning appears:**
+- **The pre-registration (§4) and D041:** their text is left as registered and recorded, with a
+  pointer to this entry beside each.
+- **The docstring of `wormwars/exp02/structure.py`:** corrected with this entry.
+- **D050, D051, and an earlier, shorter note on this correction:** on the `roadmap` branch. At
+  merge, that note becomes a pointer to this entry.
+
+**Who made the error, and who found it:**
+- **Made:** the reasoning came from Fable 5.1's review of 02's pre-registration. Claude Opus 5.5
+  adopted it after checking the symmetry index, not the argument.
+- **Found:** Astra 6, reviewing experiment 03's design.
+- **Checked:** Claude, against the read-out's definition. Astra (D051) added the qualification
+  about random weights.
+- **Wording of this entry:** corrected before publication by Astra 6 and Fable 5.1. The first
+  draft of this entry wrongly repeated D050's withdrawn prediction.
 
 ---
 
@@ -205,14 +263,8 @@ Shuffles destroy mirror symmetry. They also give the food neurons direct edges o
 read-out, which N2's food neurons nearly lack. D036 applied the no-shortcut rule to N2's remaps
 only, not to the shuffles.
 
-**Correction (D050, after publication).** The pre-registration's registered reading (§4) and D041
-assumed that a mirror-symmetric graph gets a left-right food comparison "almost for free". That
-is wrong for this interface. The turn read-out is dorsal minus ventral, and each group holds left
-and right neurons, so a mirror-equivariant network turns the same way for food on either side.
-Exact symmetry of wiring and every parameter would forbid the comparison; symmetric wiring with
-independent random parameters does not (D051). The reading was never triggered,
-because the primary was challenged, so no result above changes. Astra 6 found this while
-reviewing experiment 03's design.
+**Correction (D050):** see [Corrections](#corrections) above. This short note, written before the
+Corrections entry, is reduced to this pointer at the merge of main into the `roadmap` branch.
 
 ### Other registered estimates
 
