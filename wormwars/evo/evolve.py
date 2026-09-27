@@ -18,7 +18,7 @@ import torch
 from ..brain import BrainSpec, Genome
 from ..config import Config
 from ..interface import Interface
-from .genomes import nickname, save_population, strain_id
+from .genomes import genome_hash, nickname, save_population, strain_id
 from .rollout import RolloutResult, SeedPool, rollout
 
 
@@ -34,6 +34,7 @@ class GenerationLog:
     evaluations: int
     ledger_error: float
     best_nickname: str
+    best_sha256: str = ""  # the full hash of the logged best genome (T0, D067)
 
 
 @dataclass
@@ -102,6 +103,8 @@ def evolve(
 ) -> RunResult:
     """One independent evolutionary run. This is the unit of statistical analysis."""
     e = cfg.evo
+    if e.generations < 1:
+        raise ValueError("evolve needs at least one generation")
     gen_t = torch.Generator(device=device).manual_seed(run_seed)
     genome = Genome.random(spec, cfg.brain, e.population, generator=gen_t, device=device)
     pool = SeedPool(cfg, run_seed)
@@ -141,6 +144,7 @@ def evolve(
             evaluations=fit.size * len(ids),
             ledger_error=res.ledger_error,
             best_nickname=nickname(genome, best_i),
+            best_sha256=genome_hash(genome, best_i),
         )
         result.log.append(entry)
         if verbose and (g % log_every == 0 or g == e.generations - 1):

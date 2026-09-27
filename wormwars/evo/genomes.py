@@ -132,6 +132,8 @@ def save_population(path, genome: Genome, cfg=None, **meta) -> Path:
         "n_strains": genome.n_strains,
         "brain_config": dataclasses.asdict(genome.cfg),
         "nicknames": [nickname(genome, i) for i in range(genome.n_strains)],
+        # full per-strain hashes: nicknames have only 3 969 values (Astra, D067)
+        "genome_sha256s": [genome_hash(genome, i) for i in range(genome.n_strains)],
         **meta,
     }
     np.savez_compressed(
@@ -220,8 +222,12 @@ def load_genome(
     # integrity: the stored hash (one genome) or nicknames (a population) must match (T0, D066)
     if "genome_sha256" in meta and genome.n_strains == 1 and genome_hash(genome, 0) != meta["genome_sha256"]:
         raise ValueError(f"{Path(path).name}: parameters do not match the stored genome hash")
-    if "nicknames" in meta and [nickname(genome, i) for i in range(genome.n_strains)] != meta["nicknames"]:
-        raise ValueError(f"{Path(path).name}: parameters do not match the stored genome hashes")
+    if "genome_sha256s" in meta:
+        if [genome_hash(genome, i) for i in range(genome.n_strains)] != meta["genome_sha256s"]:
+            raise ValueError(f"{Path(path).name}: parameters do not match the stored genome hashes")
+    elif "nicknames" in meta:  # legacy population files: a weak check, 3 969 possible names
+        if [nickname(genome, i) for i in range(genome.n_strains)] != meta["nicknames"]:
+            raise ValueError(f"{Path(path).name}: parameters do not match the stored genome hashes")
     if strain is not None:
         genome = genome.select([strain])
     return genome, meta

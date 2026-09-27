@@ -498,18 +498,31 @@ class World:
 
     # -------------------------------------------------------------- sensing
 
-    def _keyed_uniform(self, n: int, stream: int) -> Tensor:
-        """[worlds, n] uniforms in [0, 1), a pure function of (run seed, stream, world id, tick,
-        point index): common random numbers for every strain that plays the same world."""
-        h = torch.full((1, 1), _mix32((int(self.run_seed) & _M32) ^ (stream * 0x9E3779B9 & _M32)),
-                       dtype=torch.int64, device=self.device)
-        wid = self._world_id_t.view(-1, 1)
+    def _keyed_uniform(self, stream: int, n_swarms: int | None = None,
+                       n_weys: int | None = None) -> Tensor:
+        """[worlds, swarms, weys, sample points] uniforms in [0, 1), a pure function of (run seed,
+        stream, world id, tick, swarm, wey, sample point): common random numbers for every strain
+        that plays the same world. The coordinates are explicit, so a batch's padded wey count
+        never changes a draw (Astra, D067)."""
+        S = self.n_swarms if n_swarms is None else n_swarms
+        B = self.n_weys if n_weys is None else n_weys
+        dev, i64 = self.device, torch.int64
+        h = torch.full((1, 1, 1, 1), _mix32((int(self.run_seed) & _M32) ^ (stream * 0x9E3779B9 & _M32)),
+                       dtype=i64, device=dev)
+        wid = self._world_id_t.view(-1, 1, 1, 1)
         h = _hash32(h ^ (wid & _M32))
         h = _hash32(h ^ ((wid >> 32) & _M32))
         h = _hash32(h ^ (self.tick_count & _M32))
-        pt = torch.arange(n, dtype=torch.int64, device=self.device).view(1, -1)
-        h = _hash32(h ^ pt)
+        h = _hash32(h ^ torch.arange(S, dtype=i64, device=dev).view(1, -1, 1, 1))
+        h = _hash32(h ^ torch.arange(B, dtype=i64, device=dev).view(1, 1, -1, 1))
+        h = _hash32(h ^ torch.arange(N_POINTS, dtype=i64, device=dev).view(1, 1, 1, -1))
         return (h >> 8).to(torch.float32) / float(1 << 24)
+
+    def _jittered(self, pts: Tensor) -> Tensor:
+        """The jitter probe: each sample point moved uniformly within the probe radius."""
+        r = self.cfg.world.food_probe_radius * torch.sqrt(self._keyed_uniform(0).reshape(pts.shape[:-1]).to(pts.dtype))
+        a = 2 * math.pi * self._keyed_uniform(1).reshape(pts.shape[:-1]).to(pts.dtype)
+        return pts + torch.stack((r * torch.cos(a), r * torch.sin(a)), dim=-1)
 
     def _sensed_food(self, pts: Tensor) -> Tensor:
         """Food + pellet as sensed: blurred into odour if food_odour_sigma > 0, and read at the
@@ -522,10 +535,7 @@ class World:
             x, y = pts[..., 0], pts[..., 1]
             pts = torch.stack((self.W - 1 - x, self.H - 1 - y), dim=-1)
         elif wcfg.food_probe == "jitter":
-            n = pts.shape[1]  # pts is [worlds, points, 2]
-            r = wcfg.food_probe_radius * torch.sqrt(self._keyed_uniform(n, 0).to(pts.dtype))
-            a = 2 * math.pi * self._keyed_uniform(n, 1).to(pts.dtype)
-            pts = pts + torch.stack((r * torch.cos(a), r * torch.sin(a)), dim=-1)
+            pts = self._jittered(pts)
         s = sample_bilinear(field.unsqueeze(1).contiguous(), pts)
         return s[:, 0].reshape(self.n_worlds, self.n_swarms, self.n_weys, N_POINTS)
 

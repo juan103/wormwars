@@ -146,13 +146,14 @@ class Genome:
         return {k: getattr(self, k) for k in self.PARAMS}
 
     def with_params(self, spec=None, cfg=None, **params) -> "Genome":
-        """A new genome with some parameters (or the spec or config) replaced; every parameter
-        not given is copied, so the result never aliases this genome."""
+        """A new genome with some parameters (or the spec or config) replaced. Every parameter,
+        supplied or not, is copied, so the result never aliases this genome or the arguments
+        (Astra, D067)."""
         unknown = set(params) - set(self.PARAMS)
         if unknown:
             raise ValueError(f"not Genome parameters: {sorted(unknown)}")
-        new = {k: (params[k] if k in params else (None if v is None else v.clone()))
-               for k, v in self.params().items()}
+        src = {**self.params(), **params}
+        new = {k: None if src[k] is None else src[k].clone() for k in self.PARAMS}
         return Genome(self.spec if spec is None else spec, self.cfg if cfg is None else cfg, **new)
 
     @staticmethod
@@ -169,7 +170,11 @@ class Genome:
     def assign(self, idx, src: "Genome") -> "Genome":
         """A copy of this genome with the strains at `idx` replaced by `src`'s strains, every
         parameter included."""
-        idx = torch.as_tensor(idx, dtype=torch.long, device=self.device)
+        idx = torch.as_tensor(idx, dtype=torch.long, device=self.device).reshape(-1)
+        if src.n_strains != len(idx):  # a one-strain source would broadcast silently (D067)
+            raise ValueError(f"assigning {src.n_strains} strains to {len(idx)} slots")
+        if (self.dale_sign is None) != (src.dale_sign is None):
+            raise ValueError("cannot assign between genomes with and without Dale signs")
         out = self.clone()
         for k in self.PARAMS:
             t = getattr(out, k)
@@ -278,7 +283,7 @@ class Genome:
 
     def flat(self) -> Tensor:
         """[S, n_params] view used for hashing, distance and serialisation."""
-        return torch.cat([self.w, self.g, self.tau, self.bias], dim=1)
+        return torch.cat([getattr(self, k) for k in self.PARAMS if k != "dale_sign"], dim=1)
 
     def dense(self) -> tuple[Tensor, Tensor]:
         """Materialise `W [S,N,N]` and `G [S,N,N]` (symmetric, zero diagonal)."""
