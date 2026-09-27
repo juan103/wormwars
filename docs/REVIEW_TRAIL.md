@@ -33,6 +33,11 @@ Episode 6 went unnoticed for a week, through a passing test suite, every milesto
 publication audit, the first public release and Claude's own review of the roadmap on the day it
 was found. No test had ever sent a signal down a single synapse and looked where it arrived.
 
+**Episode 9, corrected:** the mirror-symmetry rationale Fable raised there (and Claude adopted) was
+itself wrong. The turn read-out is dorsal minus ventral, so symmetric wiring gives no left-right
+comparison for free. Astra 6 found this while reviewing experiment 03's design. See
+`experiments/02-screening/RESULTS.md`, Corrections (D050).
+
 ## The reviewers were not always right either
 
 Two reviewer figures in episode 7 did not survive checking. Fable 5.1 said every condition's

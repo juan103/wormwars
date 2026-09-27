@@ -123,6 +123,8 @@ is already present at generation 0.
   to the food neurons' wiring. The full design then needs a mirror-symmetric shuffle control.**
   Each graph's mirror-symmetry index and the food pairs' routing features (D036's six) are
   reported as covariates (`structure.covariates`).
+  - *Post-publication pointer (2026-09-27, registered text above unchanged):* this reading's
+    rationale is wrong. See [RESULTS.md, Corrections](RESULTS.md#corrections) (D050).
 - **Mean and swap together.** A champion that reads one side only is changed by the mean probe
   without comparing anything. Meaningful use under the mean probe with no loss under the swap is
   read as sample-point sensitivity, not as a left-right comparison.

@@ -1,10 +1,14 @@
 """Graph covariates for the primary outcome (Fable 5.1's pre-registration review, points 1 and 7).
 
 A degree-preserving shuffle keeps every neuron's degrees but not the left-right pairing of its
-targets, while the turn read-out is bilateral. Any mirror-symmetric graph gets a left-minus-right
-comparison almost for free, so a stereo advantage for N2 may be a symmetry effect rather than
-anything specific to its wiring. These scalars are reported per graph next to the capability
-results. They carry no edges."""
+targets. An earlier version of this docstring said a mirror-symmetric graph gets a
+left-minus-right comparison "almost for free". That is wrong for this interface (D050, Astra 6):
+the turn read-out is dorsal minus ventral, and each group holds left and right neurons, so a
+mirror-equivariant network responds identically to food on either side. Exact symmetry of the
+wiring and of every parameter would forbid the comparison; symmetric wiring alone does not,
+because random parameters break it (D051). These scalars are reported per graph. They carry
+no edges. The left-right map here uses name suffixes; experiment 03 uses a curated file instead.
+"""
 
 from __future__ import annotations
 
