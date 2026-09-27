@@ -2183,3 +2183,25 @@ adoption:
 
 **Consensus:** both answered "proceed to v2", and v2 adopts every must-change point. It goes to both
 for confirmation before any implementation, after 03r's report.
+
+## D078 — E1 design v2: consensus, and v2.1's text edits
+
+Both confirmed v2 (`docs/reviews/*-E1b/`): Fable and Astra each answered "E1 v2: ready to
+implement". Each listed small text edits due before the pilot, and neither wanted another design
+round; the freeze document is what deserves the next review. v2.1 makes the edits:
+- **The target is sensing-only**, added in `_sensed_food` and never in `fields[FOOD]` (both;
+  `total_energy` sums FOOD, confirmed). The ledger test covers relocations.
+- **σ is chosen over actual leg starts** with a usable-signal floor. The blur's per-axis, square
+  support is measured from the sampled field. D is a pilot parameter, with D > 2R and wall
+  clearance checked against R.
+- **S-const** is `StereoKinesis` with slow = fast and a grid turn that includes 0.
+- **The oracle** stays outside scripted observations.
+- **The wall-follower's thresholds** sit above the own-body collision readings.
+- **The mirrored probe is described correctly:** a decoy at the reflected target, so counts can
+  fall below the blind level. The `constant` probe is reported as each controller's blind level.
+- **The freeze is a committed file** whose hash the gate run records. It fixes the configuration,
+  navigator, baselines, thresholds, interval method, intervention, sample sizes and execution mode.
+- **Shaping** is capped below one arrival per episode.
+
+**E1 is agreed by all three,** and the owner is informed. Implementation follows roadmap v3's
+order: T0's GPU items and T1 first.

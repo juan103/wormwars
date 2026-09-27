@@ -1,4 +1,4 @@
-# E1: navigation primitive (design v2)
+# E1: navigation primitive (design v2.1)
 
 Roadmap v3, Track E, step E1 (and 04a). This is a design, not a pre-registration. Nothing has been
 run.
@@ -8,6 +8,8 @@ run.
 - **v1 review:** Astra 6 and Fable 5.1 both answered "proceed to v2" (`docs/reviews/*-E1/`,
   D077), with largely the same must-change points. v2 adopts all of them, after the key claims
   were checked in the code.
+- **v2 review:** both answered "E1 v2: ready to implement" (`docs/reviews/*-E1b/`, D078). v2.1
+  makes their text edits, which are due before the pilot.
 
 ## What E1 must show (roadmap v3)
 
@@ -38,6 +40,9 @@ policy that reliably follows the current cue to moved destinations qualifies.
 - hazards, pheromones and combat off; `food_patches` = 0; `hazard_patches` = 0.
 
 **Energy is off for this task:**
+- **the target is sensing-only.** It is added in `_sensed_food` and never written into
+  `fields[FOOD]`. `total_energy` sums the FOOD channel, so a relocatable blob there would show up
+  as ledger error (both, D078). The ledger test covers relocations;
 - metabolic drain 0, movement cost 0, eating off (`eat_rate` 0);
 - the wey lives for the whole horizon, and there are no corpse pellets;
 - the target is a scent source, not food: it is never depleted, and moving it creates or destroys
@@ -53,12 +58,19 @@ policy that reliably follows the current cue to moved destinations qualifies.
 - **reached** when the head is within R of the centre;
 - the sensing scale keeps the peak below the input clamp.
 
-**The pilot chooses σ, A and R.** σ is one of 2, 3, 4 or 6.
-- The blur is truncated at 3σ (checked: `world.py`, `gaussian_blur`), so the field is exactly
-  zero beyond about 3σ + R. Amplitude cannot fix that.
-- The pilot measures zero-signal coverage (the share of the arena with no signal) and clamp
-  saturation for each σ. It picks the smallest σ at which a start at the minimum separation D is
-  inside the scent for most placements.
+**The pilot chooses σ, A, R and D**, and the chosen values go in the pilot configuration. σ is one
+of 2, 3, 4 or 6.
+- **The blur is truncated at ceil(3σ) along each axis** (checked: `world.py`, `gaussian_blur`), so
+  its support is a square, reaching farther diagonally. Amplitude cannot restore signal where the
+  field is zero. So coverage is measured from the **actual sampled field** (Astra, D078).
+- **The σ rule works on actual leg starts,** from each previous centre to the next, which do not
+  depend on the controller (Fable, D078). The pilot picks the smallest σ at which a declared share
+  of leg starts sit above a declared **usable-signal floor**. The support edge, about 1% of peak on
+  an axis, steers nothing at realistic gains. Clamp saturation is measured too.
+- **Geometry:**
+  - consecutive goal discs are disjoint, D > 2R, so each arrival is a new approach;
+  - a maximum separation may be declared;
+  - wall clearance is checked against the chosen R (Astra).
 
 **Target sequence, pairable across strains (Astra, Fable):**
 - a fixed sequence per world: target k's centre is a function of (evaluation seed, world id, k)
@@ -97,17 +109,23 @@ legs are kept, for failure-aware timing.
 - **S-const:** constant-speed stereo steering. Slowing near food helped eating, not arrival.
 - **M-avg:** M on the average of the two stereo readings, for a clean comparison with S.
 
+**S-const is defined as `StereoKinesis` with slow = fast and the turn in the grid,** including 0.
+`StereoProportional` has no constant turn: with no signal it would go straight and jam in a
+corner (Fable, D078).
+
 **Blind baselines**, tuned on the same tuning worlds with `tune_batched` (both):
 - constant speed × constant turn, which covers circling at any curvature;
 - a persistent random walk (turn persistence and rate tuned);
-- a **wall-follower** using the declared collision inputs. `ScriptedBrain` passes policies food
+- a **wall-follower** using the declared collision inputs. Its thresholds sit above the collision
+  readings the wey's own body produces (Fable, D078). `ScriptedBrain` passes policies food
   readings only, so it gains the collision readings, and every control gets the same access.
   There are no privileged coordinates.
 
 **Reference points:**
 - tuned K;
 - an **oracle** that steers at the true target position. It is not a control; it gives the
-  achievable ceiling (Fable);
+  achievable ceiling (Fable). Its position, heading and target plumbing is privileged, so it stays
+  outside `ScriptedBrain`'s observation path (Fable, D078);
 - optionally, a few frozen 02 champions, as a check only.
 
 **Gain:** 02's stereo grid runs to k = 8192, which is effectively bang-bang. S is also reported at
@@ -127,6 +145,17 @@ From the pilot, the task parameters, controller settings, margins and sample siz
 Which navigator (S-const or M-avg) goes forward is chosen **on tuning data**. Everything is frozen
 before the gate worlds are used, and the gate worlds are used once.
 
+**The freeze is a committed file,** whose hash the gate run records (Fable, D078). It fixes:
+- the task configuration (σ, A, R, D, the horizon);
+- the gains;
+- the selected navigator, tuned or k ≤ 32 as declared;
+- the tuned baselines;
+- every numerical threshold;
+- the interval method (paired, with the sidedness stated);
+- the cue intervention;
+- the sample sizes;
+- the execution mode.
+
 **Gate rules** (the numbers are set by the pilot; the structure is fixed now):
 1. **Absolute reliability:** the navigator reaches at least 2 targets in at least a declared share
    of hold-out episodes. The second arrival tests relocation.
@@ -137,8 +166,13 @@ before the gate worlds are used, and the gate worlds are used once.
    - no ratio against a near-zero baseline (the roadmap's own scoring rule).
 3. **Uses the cue:**
    - with the scored target unchanged but its scent displaced, the navigator's count must fall
-     by a declared amount, toward the blind level (Astra). The displacement is the existing
-     `mirrored` food probe, or an equivalent declared one;
+     by a declared amount (Astra).
+   - **The displacement:** the existing `mirrored` probe reads the field at the point reflection
+     of each sample point, about (11.5, 11.5), not the arena centre. That creates a consistent
+     decoy at the reflected target.
+   - A navigator will park at the decoy, so its count can fall *below* the blind level, not only
+     toward it (Fable, D078).
+   - The `constant` probe is reported, non-gating, as each controller's own blind level;
    - reported as a fraction of the oracle.
 4. **Secondary:**
    - first-arrival success;
@@ -168,7 +202,8 @@ hold-out.
 - if the pilot shows generation-0 counts mostly zero, a bounded shaping term is declared: the
   fractional progress toward the current target;
 - it is used in training only, recorded, and removed from the benchmark (the roadmap's scoring
-  rules).
+  rules);
+- it is capped below the value of one arrival per episode (Fable, D078).
 
 **Gate** (numbers fixed before the hold-out, from the pilot and the scripted results):
 - reaches moved targets on unseen layouts, with the same reliability, baseline and cue-use rules
@@ -209,7 +244,8 @@ built now.
 
 ## Implementation scope (the tripwire)
 
-- a target mode in the world;
+- a target mode in the world, sensing-only;
+- the oracle's privileged plumbing, kept outside scripted observations;
 - a score selector in rollouts;
 - the collision readings for scripted controls;
 - the fixed event table;
