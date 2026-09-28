@@ -2544,7 +2544,8 @@ Astra 6 and Fable 5.1 checked D087's documentation (`docs/reviews/20260928-10352
 - **Astra:** "Docs: not yet".
 - They agree on every concrete must-fix point, and each found some the other did not. Both
   confirmed that 03r's outcome sentence, 02's verdict, 01b's predictions and the D063 amendment
-  are quoted exactly, and that the experiment numbers match their sources.
+  are quoted exactly, apart from the literal corrections listed below, and that the experiment
+  numbers match their sources.
 
 **A correction to main.** Main's README led 01b with "does better than random graphs, and better
 than or level with shuffles of itself" (since `44cdf75`, 2026-09-25). "Level with" is a
@@ -2610,3 +2611,38 @@ kept.
 
 **Before this goes to main:** `docs/foundations/T1_profile.json` is rerun with the fixed script
 and committed, because the ROADMAP cites it (Fable). The owner gives the go.
+
+## D089 — Documentation confirmation pass; no pre-registration so far was pushed before its run
+
+Confirmation pass on D088's fixes (`docs/reviews/20260928-105220-docs-confirm/`):
+- **Astra 6:** "Docs: ready to publish". It added one wording note on D088, now fixed.
+- **Fable 5.1:** "Docs: not yet", on three points:
+  - **The review archive.** "01b's review is the one kept outside the repository" was false.
+    Reviews before 25 September are not archived verbatim: 01's, Astra's 24 September roadmap
+    review, and 01b's. The README and AGENTS.md now say so.
+  - **The push-before-run rule.** Checked against GitHub's push log (`gh api
+    repos/juan103/wormwars/events`). **No pre-registration so far reached GitHub before its run
+    started:**
+    - 01b ran 20:21-21:24 UTC on 24 September at `5161e76`. The first push after the
+      repository's creation came at 22:09 UTC.
+    - 02's pre-registration was committed at 03:58 UTC on 25 September and the run started at
+      04:25 UTC. It was first pushed at 06:37 UTC.
+    - 03's and 03r's are already disclosed (D062, D063).
+
+    Each was committed locally before its run. AGENTS.md states that the rule dates from 27
+    September (roadmap v3) and that no run so far met it.
+  - **`T1_profile.json` must be regenerated and committed,** and the ROADMAP's figures rechecked
+    against it.
+- **Also fixed, from Fable:**
+  - T1.md no longer calls the batching candidate "exact" or gives ×1.36: it is about ×1.35, with
+    exactness untested;
+  - the ROADMAP gives the D050 correction's own date (27 September) and says "02's task T1";
+  - 03r's graph-files bullet is renamed;
+  - "its output" becomes "their output";
+  - 02b's rerun says to bring along 02's own `probes.json` when the regenerated genomes differ.
+- **Checked:** every commit a rerun recipe names (`225e8f8`, `971bbb3`, `7b26c87`, `132acae`,
+  `7c146fc`, `5161e76`, `cebbefa`) is reachable from `origin/main`, so `git worktree add` works
+  from a fresh clone.
+
+**Consensus:** Astra approves. Fable's three conditions are two fixes, done here, and the profile
+rerun, which comes before the push to main.

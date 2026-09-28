@@ -4,17 +4,16 @@
 
 ## Status, 28 September 2026 (updates the section below; that section's later edits are recorded in DECISIONS.md)
 
-- **Published on main** (D085):
-  - 03 and 03r together, reported by the pre-registered rule;
-  - 02b;
-  - 02's D050 correction, as a Corrections entry.
+- **Published on main:**
+  - 02's D050 correction, as a Corrections entry (27 September, D063);
+  - 03 and 03r together, reported by the pre-registered rule, and 02b (28 September, D085).
 - **T0 (correctness) is closed** (D083). On CUDA, results repeated exactly for the same batch
   composition in the tested configurations; exact reproduction is guaranteed only inside
   `replay_mode()`. A chunk holding a single strain can differ from the same strain in a larger
   chunk (D082).
 - **T1 (throughput) is in progress** (plan v2: [`docs/foundations/T1.md`](docs/foundations/T1.md),
   D086):
-  - **the profile** (`docs/foundations/T1_profile.json`). On 02's task, at evolution's batch, the
+  - **the profile** (`docs/foundations/T1_profile.json`). On 02's task T1, at evolution's batch, the
     brain's matrix products take about 70% of GPU kernel time, and the world about 55% of a
     tick's wall time. On a Task N-like shape (one wey per world) the world's share is about 70%,
     so batching more worlds together pays much more there;

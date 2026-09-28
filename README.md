@@ -107,9 +107,11 @@ decisions D050-D063 and D080-D083. Summaries and how to rerun:
 
 ## How to help, or get ahead of us
 
-**Nearly everything is public:** the pre-registrations, the reviews verbatim (01b's pre-publication
-review, D033, is the one kept outside the repository), the decisions with their reasons, and the
-roadmap. Our bottleneck is compute: everything so far ran on one consumer
+**Nearly everything is public:** the pre-registrations, the reviews verbatim from 25 September
+on, the decisions with their reasons, and the roadmap. Earlier reviews (experiment 01's, Astra's
+24 September roadmap review that found the reversed synapses, and 01b's pre-publication review,
+D033) are summarised in `DECISIONS.md` and [`docs/REVIEW_TRAIL.md`](docs/REVIEW_TRAIL.md) but not
+archived verbatim. Our bottleneck is compute: everything so far ran on one consumer
 GPU. If you have more, you can get to the next answers first, and we would count that as a good
 outcome. Useful things anyone can do:
 
@@ -290,7 +292,7 @@ python scripts/showcase.py --a A.npz --b B.npz --size 2000
 ```
 
 The evolution scripts (`evolve_forage`, `coevolve`, `experiment`, `exp02`) write a run bundle (config, dataset hashes, package versions, git commit, seed
-scheme) next to its output.
+scheme) next to their output.
 
 ## What a wey is, and is not
 

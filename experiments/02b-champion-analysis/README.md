@@ -150,6 +150,9 @@ python scripts/fetch_connectome.py
 cp ../wormWars-02-probes/runs/exp02-screening/*.npz runs/exp02-screening/
 ```
 
+   If your regenerated genomes differ from 02's (for example on other hardware), `response` would
+   still pair them with the original stereo-use scores in the tracked `probes.json`: copy in the
+   `probes.json` from your own 02 rerun as well.
 3. Then run the stages in this order (`kept_edges` reads `criticality.json`):
 
 ```

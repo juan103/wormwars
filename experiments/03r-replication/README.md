@@ -186,7 +186,7 @@ python scripts/exp03.py report --instance 03r     # writes experiments/03r-repli
 python experiments/03-generation0/supplement.py --instance 03r
 ```
 
-- **The graph files come first.** They are not committed. `rebuild-graphs` (added after the run,
+- **The graph files.** They are not committed. `rebuild-graphs` (added after the run,
   D087) regenerates each from the kind, seed and passes recorded in the committed `ensembles.json`,
   and checks it against the committed manifest's raw hash, without touching the record.
   **Checked on 2026-09-28: all 768 rebuilt files matched the manifest byte for byte.** The runner

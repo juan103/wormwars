@@ -44,7 +44,7 @@ The tested platform is one NVIDIA RTX 5080, Windows 11, Python 3.13, and PyTorch
 
 ## Rules the work follows
 
-These are the rules for new work. Earlier work did not always meet them, and the exceptions are
+These are the rules for new work. Earlier work did not always meet them; the known exceptions are
 named. A change that breaks one should say so openly.
 
 1. **Never redistribute the connectome.** Its source states no licence for redistribution.
@@ -56,12 +56,13 @@ named. A change that breaks one should say so openly.
    - Anything decided after seeing data is labelled exploratory.
    - Registered text is never changed or removed. Amendments and annotations are added beside it,
      dated.
-   - **Exceptions so far:**
+   - **Known exceptions so far:**
      - 01 had no pre-registration document;
      - 02b is exploratory by design;
      - 02's pre-registration was amended after evolution began, openly (D041);
-     - 03's and 03r's pre-registrations were bound locally but pushed only after or during their
-       runs (D062, D063).
+     - **the push-before-run rule dates from 27 September, and no run so far met it.** 01b's, 02's,
+       03's and 03r's pre-registrations were committed locally before their runs but first
+       reached GitHub after the runs started, as GitHub's push log shows (D062, D063, D089).
 3. **Report whatever comes out.** Null and failed predictions are published, in the wording fixed
    in advance.
 4. **Correct in the open.** Wrong statements are corrected by adding a dated correction that
@@ -86,8 +87,9 @@ named. A change that breaks one should say so openly.
    that cannot fail gets a sabotage check.
 10. **Independent review.** Designs, pre-registrations and results have been reviewed by two
     models from different families: Astra 6 (OpenAI) and Claude Fable 5.1 (Anthropic). Their
-    reviews are archived under `docs/reviews/` and the experiment folders, except 01b's
-    pre-publication review (D033), which is kept outside the repository.
+    reviews from 25 September on are archived verbatim under `docs/reviews/` and the experiment
+    folders. Earlier ones (01's, Astra's 24 September roadmap review, and 01b's, D033) are
+    summarised in `DECISIONS.md` and `docs/REVIEW_TRAIL.md` but not archived.
 
 ## Where to start
 
