@@ -3137,3 +3137,18 @@ AGENTS.md now says E1 is the first registration to meet the push-before-run rule
 - per-run random streams;
 - the champions' effective gain measured against the curve, with no threshold relative to k ≤ 32;
 - runs as the unit, with a declared share of runs that must pass.
+
+## D102 — E1 published on main (the owner's go)
+
+On the owner's go ("sure", 2026-09-28), main was fast-forwarded from `c34d01b` to `3765db0`: the
+roadmap branch at `addfba1` plus one commit removing its banner. Before the push, the suite passed on
+a clean checkout of the candidate (577 tests), and the hygiene and identity checks passed.
+
+Now on main:
+- **E1:** Task N, the controls and the runner; the bound pre-registration and its five reviews; the
+  pilot's freeze, the gate's results and event tables, and the development records; RESULTS.md with
+  its dated corrections, and the E1 README;
+- **03a's six-neuron proof of concept** (D094);
+- decisions D094-D101.
+
+The roadmap branch continues from main, with its banner. Next: 04a's pre-registration.
