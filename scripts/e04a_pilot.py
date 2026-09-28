@@ -37,7 +37,8 @@ def main():
     val, base, span = M.projection_ids()
     t0 = time.perf_counter()
     with acct.category("measure"):
-        recs = M.EV.evolve_batch(cfg, iface, spec, M.run_specs("A"), generations=args.generations,
+        # the seeds it ran with: v1's formal seeds, since moved (D105), so the record stays reproducible
+        recs = M.EV.evolve_batch(cfg, iface, spec, M.run_specs("A", 1_104_000), generations=args.generations,
                                  checkpoint_every=25, validation_ids=val, world_seed=M.REGISTERED["world_seed"],
                                  id_base=base, id_span=span, device=args.device, rollout_fn=M.rollout_mod.rollout)
     doc = {"what": "development pilot on smoke ids, before binding; descriptive only (D104)",

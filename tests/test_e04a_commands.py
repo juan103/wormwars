@@ -83,8 +83,9 @@ def m(tmp_path, monkeypatch):
     return mod
 
 
-def _args(command, batch=None, rerun=False):
-    return SimpleNamespace(command=command, batch=batch, device="cpu", smoke=True, guarded=False, rerun=rerun)
+def _args(command, batch=None, rerun=False, reason=None):
+    return SimpleNamespace(command=command, batch=batch, device="cpu", smoke=True, guarded=False, rerun=rerun,
+                           reason=reason)
 
 
 def _all(m):
@@ -160,12 +161,15 @@ def test_the_projection_runs_once(m):
         m.cmd_project(_args("project"))
 
 
-def test_the_projection_verdict_counts_generations_and_checkpoints(m):
-    m.REGISTERED["projection"].update(generations=2000, checkpoints=82, max_training_hours=4.5)
-    v = m.projection_verdict([9.0, 4.0, 5.0, 4.0, 4.0, 7.0])
+def test_the_projection_verdict_counts_generations_and_checkpoints():
+    mod = _load()
+    assert mod.training_plan() == {"generations": 2000, "checkpoints": 82}  # derived from the registered evolution
+    v = mod.projection_verdict([9.0, 4.0, 5.0, 4.0, 4.0, 7.0])
     assert v["median_seconds_per_generation"] == 4.0 and v["seconds_per_checkpoint"] == 3.0
     assert v["projected_training_hours"] == pytest.approx((2000 * 4 + 82 * 3) / 3600) and v["within_limit"]
-    assert not m.projection_verdict([9.0, 9.0, 9.0, 9.0])["within_limit"]
+    assert not mod.projection_verdict([9.0, 9.0, 9.0, 9.0])["within_limit"]
+    mod.REGISTERED["evolution"]["generations"] = 500
+    assert mod.training_plan() == {"generations": 1000, "checkpoints": 42}
 
 
 def test_a_batch_runs_once(m):
@@ -244,7 +248,7 @@ def test_a_cap_hit_in_training_is_not_completed_and_keeps_the_checkpoints(m, mon
     assert a["outcome"] == m.OUTCOMES["cap"] and a["records"][0]["checkpoints"]
     assert m.genomes_path(0).exists()
     with pytest.raises(SystemExit, match="only a stage stopped by a crash"):  # no rerun after the cap
-        m.cmd_train(_args("train", "A", rerun=True))
+        m.cmd_train(_args("train", "A", rerun=True, reason="x"))
 
 
 def test_a_crash_before_the_first_checkpoint_is_not_completed(m):
@@ -256,18 +260,65 @@ def test_a_crash_before_the_first_checkpoint_is_not_completed(m):
     assert a["outcome"] == m.OUTCOMES["stopped"] and a["records"] == []
 
 
-def test_a_stopped_batch_is_rerun_once_with_the_attempt_kept(m):
+def _hashes(path):
+    d = np.load(path, allow_pickle=False)
+    return json.loads(str(d["meta"]))["genome_sha256s"]
+
+
+def test_a_stopped_batch_is_rerun_once_with_the_attempt_and_its_genomes_kept(m):
     m.cmd_project(_args("project"))
-    m._fakes.crash_at = len(m._fakes.calls) + 3
+    m._fakes.crash_at = len(m._fakes.calls) + 3  # after the first checkpoint
     with pytest.raises(RuntimeError):
         m.cmd_train(_args("train", "A"))
-    m._fakes.crash_at = None
-    m.cmd_train(_args("train", "A", rerun=True))
-    assert json.loads(m.train_path("A").read_text())["outcome"] == "completed"
+    before = _hashes(m.genomes_path(0))
+    with pytest.raises(SystemExit, match="needs --reason"):
+        m.cmd_train(_args("train", "A", rerun=True))
+    m._fakes.crash_at = len(m._fakes.calls) + 3  # the rerun stops too
+    with pytest.raises(RuntimeError):
+        m.cmd_train(_args("train", "A", rerun=True, reason="test: a crash"))
     kept = json.loads((m.EXP / "train-A-attempt1.json").read_text())
     assert kept["outcome"] == m.OUTCOMES["stopped"] and (m.EXP / "train-A-started-attempt1.json").exists()
-    with pytest.raises(SystemExit, match="only a stage stopped"):
-        m.cmd_train(_args("train", "A", rerun=True))
+    assert _hashes(m.genomes_path(0).with_name("run00-candidates-attempt1.npz")) == before
+    note = json.loads((m.EXP / "train-A-rerun.json").read_text())
+    assert note["reason"] == "test: a crash" and note["how_the_first_attempt_ended"] == "stopped"
+    with pytest.raises(SystemExit, match="rerun once already"):  # a second stop is not rerun
+        m.cmd_train(_args("train", "A", rerun=True, reason="again"))
+
+
+def test_a_killed_stage_with_a_marker_and_no_record_can_be_rerun(m):
+    m.cmd_project(_args("project"))
+    m.reg.start_marker(m.EXP, "train-A", {"stage": "killed"})  # what a hard kill leaves
+    with pytest.raises(SystemExit, match="started before"):
+        m.cmd_train(_args("train", "A"))
+    m.cmd_train(_args("train", "A", rerun=True, reason="test: killed"))
+    assert json.loads(m.train_path("A").read_text())["outcome"] == "completed"
+    note = json.loads((m.EXP / "train-A-rerun.json").read_text())
+    assert note["how_the_first_attempt_ended"].startswith("killed")
+
+
+def test_the_projection_is_rerun_after_a_stop_or_over_its_limit_only(m):
+    m.cmd_project(_args("project"))
+    with pytest.raises(SystemExit, match="only a stage stopped"):  # completed within its limit
+        m.cmd_project(_args("project", rerun=True, reason="x"))
+    p = json.loads((m.EXP / "projection.json").read_text())
+    p["within_limit"] = False
+    (m.EXP / "projection.json").write_text(json.dumps(p))
+    m.cmd_project(_args("project", rerun=True, reason="test: over the limit, generations amended"))
+    assert json.loads((m.EXP / "projection.json").read_text())["within_limit"]
+    assert (m.EXP / "projection-attempt1.json").exists()
+
+
+def test_a_failing_genome_save_still_leaves_a_stopped_record(m, monkeypatch):
+    m.cmd_project(_args("project"))
+
+    def broken(*a, **k):
+        raise OSError("disk full")
+
+    monkeypatch.setattr(m, "save_genomes", broken)
+    with pytest.raises(OSError, match="disk full"):
+        m.cmd_train(_args("train", "A"))
+    a = json.loads(m.train_path("A").read_text())
+    assert a["outcome"] == m.OUTCOMES["stopped"] and "disk full" in a["genome_save_error"]
 
 
 def test_a_cap_already_spent_does_not_start_a_stage(m, monkeypatch):
@@ -301,6 +352,54 @@ def test_the_cap_after_the_analysis_is_not_a_verdict(m, monkeypatch):
     ev = json.loads((m.EXP / "evaluation.json").read_text())
     assert ev["outcome"] == m.OUTCOMES["cap"] and "rules" not in ev
     assert not (m.EXP / "evaluation-extras.json").exists()
+
+
+def test_the_decoy_measure_failing_is_recorded_in_the_extras(m, monkeypatch):
+    _trained(m)
+    monkeypatch.setattr(m, "decoy_capture", lambda *a: (_ for _ in ()).throw(IndexError("no unfinished leg")))
+    m.cmd_evaluate(_args("evaluate"))
+    extras = json.loads((m.EXP / "evaluation-extras.json").read_text())
+    assert "no unfinished leg" in extras["errors"]["decoy 0"] and extras["replay"]
+
+
+def test_a_genome_file_that_loads_with_another_brain_configuration_is_refused(m):
+    _trained(m)
+    path = m.genomes_path(0)
+    d = dict(np.load(path, allow_pickle=False))
+    meta = json.loads(str(d["meta"]))
+    meta["brain_config"]["pad_single_strain"] = not meta["brain_config"]["pad_single_strain"]
+    d["meta"] = np.array(json.dumps(meta))
+    np.savez_compressed(path, **d)  # every parameter, and so every hash, unchanged
+    with pytest.raises(SystemExit, match="another brain configuration"):
+        m.cmd_evaluate(_args("evaluate"))
+    assert not (m.EXP / "evaluate-started.json").exists()
+
+
+def test_a_stopped_projection_does_not_open_batch_a(m):
+    (m.EXP / "projection.json").write_text(json.dumps({"outcome": m.OUTCOMES["stopped"], "within_limit": True}))
+    with pytest.raises(SystemExit, match="did not complete"):
+        m.cmd_train(_args("train", "A"))
+
+
+def test_guarded_stages_compare_code_and_environment_with_the_earlier_stage(m, monkeypatch):
+    m.cmd_project(_args("project"))
+    seen = []
+    monkeypatch.setattr(m.reg, "require_same_code", lambda commit, guarded: seen.append(("code", commit)))
+    monkeypatch.setattr(m.reg, "require_same_env", lambda was, now: seen.append(("env", was["git_commit"])))
+    args = SimpleNamespace(smoke=True, guarded=True)
+    m.require_earlier(args, {"git_commit": "now"}, m.EXP / "projection.json", "the projection")
+    commit = json.loads((m.EXP / "projection.json").read_text())["provenance_at_start"]["git_commit"]
+    assert seen == [("code", commit), ("env", commit)]
+
+
+def test_formal_seeds_are_disjoint_from_the_development_and_projection_seeds():
+    mod = _load()
+    formal = {r.run_seed for b in ("A", "B") for r in mod.run_specs(b)}
+    pilot_and_v1 = set(range(1_104_000, 1_104_016))  # v1's formal seeds, used by the pilot and projection
+    projection = {r.run_seed for r in mod.run_specs("A", mod.REGISTERED["projection"]["seed_base"])}
+    smoke = {mod.SMOKE_SEED_BASE + i for i in range(16)}
+    assert not formal & (pilot_and_v1 | projection | smoke)
+    assert not projection & pilot_and_v1
 
 
 def test_the_verdict_is_written_before_the_extras(m, monkeypatch):
@@ -340,7 +439,7 @@ def test_runs_are_seeded_by_run_number_and_the_arms_are_as_registered():
     mod = _load()
     a, b = mod.run_specs("A"), mod.run_specs("B")
     assert [r.run for r in a + b] == list(range(16))
-    assert [r.run_seed for r in a + b] == [1_104_000 + i for i in range(16)]
+    assert [r.run_seed for r in a + b] == [1_105_000 + i for i in range(16)]
     assert [r.shaping for r in a + b] == [0.5] * 12 + [0.0] * 4
 
 

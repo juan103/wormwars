@@ -1,10 +1,13 @@
-# 04a: an evolved N2 navigation primitive. Pre-registration (draft v2)
+# 04a: an evolved N2 navigation primitive. Pre-registration (draft v3)
 
 **Status:**
 - Written 2026-09-28 for review by Astra 6 and Fable 5.1. Nothing below has run on 04a's
   validation or hold-out worlds, or on its (moved) training range (§9).
   - v1 (`b38c7cc`, `docs/reviews/20260928-213057-04a-prereg/`): both said "revise" (D104). Every
     must-fix is adopted in v2, and most suggestions; §11 lists them.
+  - v2 (`68f8aa3`, `docs/reviews/20260928-221414-04a-prereg-v2/`): both said "revise", and both
+    advised keeping 1 000 generations and 02's optimizer (D105). Every must-fix is adopted in v3;
+    §12 lists them.
 - **The order:** review until both agree; bind (a commit); push; the guarded projection and a
   guarded smoke run on the binding commit; then the formal stages, each on a clean tree whose HEAD
   is pushed, with each stage's record committed and pushed before the next stage starts.
@@ -109,7 +112,9 @@ re-run on 04a's hold-out worlds (§5). No gate-world number is reused.
   generation (common random numbers);
 - **1 000 generations per run.**
 
-**Runs:** 16, each with its own run seed, **1 104 000 + run number**:
+**Runs:** 16, each with its own run seed, **1 105 000 + run number**. (v1 and v2 used 1 104 000 +
+run number; the development pilot and projection then played those seeds, so they were moved; §9.)
+The projection has its own seeds, 1 109 000 onward, and smoke runs 1 108 000 onward:
 - **the shaped arm (primary):** runs 0-11, shaping c = 0.5;
 - **the unshaped arm (secondary):** runs 12-15, c = 0.
 
@@ -201,13 +206,16 @@ world), and no exact replay is claimed on CUDA default mode.
 
 **Before the first hold-out world:** both training records must be completed, committed and
 unchanged; the code and environment must equal the training stages'; E1's input hashes must equal
-batch A's; every champion and baseline file must match its committed hash; and every generation-0
+batch A's; every champion and baseline file must match its committed hash; every genome file must
+load with exactly the registered brain configuration (a file's metadata could otherwise override
+single-strain padding without changing any parameter hash; Astra, review v2); and every generation-0
 baseline must appear in its run's regenerated initial population.
 
 **Arms,** each one strain on all 1 024 worlds in one rollout:
 - **per run (16 runs):** the champion; the champion with the scent read at the mirrored decoy
   (`food_probe = "mirrored"`); the champion under the constant probe (the scent replaced by a
-  constant, so no direction information); the generation-0 baseline;
+  constant level, so it carries neither direction nor changes in level); the generation-0
+  baseline;
 - **the gating baselines,** at E1's frozen parameters: constant motion, the persistent random walk,
   the wall-follower, and level kinesis (K);
 - **references (non-gating):** E1's navigator (S-const), S-const with k ≤ 32, M-avg and the oracle;
@@ -250,6 +258,14 @@ seed 0, exactly as E1's.
 - "not passed" means this procedure did not meet the criterion within this budget, not that N2
   cannot be evolved to navigate.
 
+**The expectation, stated in advance.** The development pilot (§9) makes failing rule 1 a real
+risk. A validation mean near 2 does not settle it either way: rule 1 needs at least 820 of 1 024
+episodes with 2 or more targets, which a mean as low as 1.60 could meet only if nearly every episode
+reached exactly 2, and a spread like a Poisson count's would need a mean near 3. We would not be
+surprised by "not passed" or "some runs passed". If so, the next step is E2's optimizer screen at
+equal simulator work, and any new attempt at 04a is a new registration on fresh hold-out ids, not a
+change inside this one.
+
 **The unshaped arm** gets the same per-run rules and its count of passing runs, but no verdict. With
 4 runs, a shaped-versus-unshaped comparison is descriptive only.
 
@@ -260,8 +276,9 @@ is optimistic; E3 re-measures it on its own fresh worlds.
 ## 7. Reported, not gating
 
 These are written to `evaluation-extras.json` after the verdict, except the gain curve and the
-secondary measures, which are computed from the arms and written with it. An error in the extras is
-recorded there and cannot change the verdict.
+secondary measures, which are computed from the arms and written with it. An error in the extras,
+including the cap being reached during them, is recorded there and cannot change the verdict. The
+extras run under the same all-stage cap.
 - **Effective steering gain (D101):** each champion's hold-out mean placed on the hold-out gain
   curve. The performance-equivalent k is interpolated linearly in log k inside the first pair of
   neighbouring grid points (in increasing k) whose means satisfy mean(lower k) ≤ champion ≤
@@ -300,26 +317,31 @@ and must match the earlier stages'.
 **The budget.** Measured on this code's predecessors, on smoke ids (§9): 4.749 s per training
 generation in the (256, 8, 1) composition, against E1's 4.676 s per rollout; about 3 s per neural
 hold-out arm and 2.2 s per scripted arm. The development pilot (§9) measured the (8, 256, 1)
-checkpoint only within its total time: 200 generations and 9 checkpoints took 1 044 s, which leaves about 10 s per checkpoint beyond 4.749 s per generation, a conservative figure.
+checkpoint only within its total time: 200 generations and 9 checkpoints took 1 044 s, which leaves
+about 10 s per checkpoint beyond 4.749 s per generation, a conservative figure.
 
 | Part | Calculation | Estimate |
 |---|---|---|
 | training | 2 batches × 1 000 generations × 4.749 s | 9 498 s |
 | checkpoints | 82 × about 10 s | about 820 s |
 | hold-out, neural arms | 64 arms × 3 s | 192 s |
-| hold-out, scripted arms and replays | 18 × 2.2 s, plus 16 replays | about 100 s |
-| projection | 6 generations and 2 checkpoints | about 45 s |
-| **total** | | **about 10 650 s, 2.96 GPU-hours** |
+| hold-out, scripted arms | 18 × 2.2 s | about 40 s |
+| replays | 16 replays of an (8, 256, 1) checkpoint, about 10 s each | about 160 s |
+| projection | 6 generations and 2 checkpoints | about 50 s |
+| **total** | | **about 10 760 s, 2.99 GPU-hours** |
 
 - **The cap is 6 GPU-hours** for every stage together, counted by the accounting across all
   attempts, the projection included. It is checked before every rollout and after each stage's
   analysis.
 - **The projection is a gate** (`e04a.py project`, once, guarded, on the binding commit): 6
-  generations of batch A's shape at full size on smoke ids, with checkpoints at generations 0 and 5.
-  Training is projected as 2 000 × the median time of generations 1-4, plus 82 × the last
-  generation's excess over that median (one checkpoint). **If the projection exceeds 4.5 hours,
-  batch A refuses to start;** the generations are then reduced by a dated amendment, before any
-  formal data exist.
+  generations of batch A's shape at full size on smoke ids and the projection's own seeds, with
+  checkpoints at generations 0 and 5, their genome files written as in training. Training is
+  projected as (2 × the registered generations) × the median time of generations 1-4, plus (2 × the
+  checkpoints per run) × the last generation's excess over that median (one checkpoint); both counts
+  are derived from the registered evolution settings (2 000 and 82). It is an estimate, not a bound:
+  the last generation has no breeding step, and later checkpoint files are larger. **If the
+  projection exceeds 4.5 hours, batch A refuses to start;** the generations are then reduced by a
+  dated amendment in `AMENDMENTS.md`, and the projection is rerun on the amended commit.
 
 **Guards,** as in E1 and tested the same way:
 - exclusive start markers, one per stage, written before the stage touches its worlds;
@@ -328,10 +350,17 @@ checkpoint only within its total time: 200 generations and 9 checkpoints took 1 
 - a stage that stops (the cap, a crash or an interrupt) writes its result as **not completed**.
   Training keeps every completed checkpoint (records and local genomes, written atomically after
   each); the evaluation keeps every completed arm;
-- **the rerun rule, fixed now:** a stage stopped by a crash or an interrupt may be rerun **once**,
-  from scratch with the same seeds (`--rerun`). The stopped attempt's record, marker and partial
-  files are kept beside it, renamed `-attempt1`, and disclosed. A stage stopped by the cap is not
-  rerun. Anything else needs a dated amendment;
+- **the rerun rule, fixed now:** a stage stopped by a crash, an interrupt, or a kill that left a
+  start marker and no record, may be rerun **once**, from scratch with the same seeds
+  (`--rerun --reason "..."`). The reason is written to `<stage>-rerun.json` before the rerun
+  starts; an interrupt must name its external cause. The stopped attempt's record, marker, partial
+  files and local genome files are kept beside it, renamed `-attempt1`, and disclosed. A stage
+  stopped by the cap is not rerun, and a second stop is final. The projection may also be rerun
+  once after an over-limit result, on an amended commit. Anything else needs a dated amendment;
+- **amendments** go in `AMENDMENTS.md`, which is not a guarded file. This file is guarded: editing
+  it after binding would stop the next stage;
+- if saving genomes fails while a stage is stopping, the not-completed record is written first and
+  the failure is added to it; the previous checkpoint's files remain;
 - JSON written with LF endings; files hashed normalised to LF;
 - a smoke mode with tiny sizes, ids 0-9 999 (outside every E1 and 04a range) for every stage, and a
   scratch folder, `runs/e04a-smoke/`. Its cleanup removes files only inside that folder.
@@ -340,8 +369,11 @@ checkpoint only within its total time: 200 generations and 9 checkpoints took 1 
 
 **Worlds touched before binding,** all recorded in `development-records/`:
 - **v1's CPU smoke run drew 24 training worlds from v1's formal training range** (Astra, review v1):
-  the smoke mode did not rebind the training ids. The 24 ids are reconstructed exactly from the
-  deterministic schedule and match the attempt records' world counts
+  the smoke mode did not rebind the training ids. The 24 ids are reconstructed from the
+  deterministic schedule and the smoke settings, and are consistent with the run's accounting
+  ledgers (48 selection worlds and 1 920 selection ticks per batch; the ledgers are preserved in
+  `development-records/smoke-ledgers/`). They are not directly verified: the run used uncommitted
+  code, its own records were deleted (next item), and the ledgers record counts, not ids
   (`smoke-training-exposure.json`). They were the first two draws of the formal schedule for runs
   0, 1, 12 and 13 at generations 0-2, played by 4 random or barely mutated genomes for 40 ticks.
   **The training range is moved** to 999 000 000 onward, which no run has touched; a test checks
@@ -361,7 +393,16 @@ checkpoint only within its total time: 200 generations and 9 checkpoints took 1 
   worlds, and its navigator 8.68. The pilot does not show whether these genomes use the cue. **It
   suggests that with 02's optimizer many runs may not reach rule 1 (80% of episodes with at least
   2 targets) within 1 000 generations.** The generation count was not changed on that basis; the
-  question is put to the reviewers (§11).
+  question was put to the reviewers, and both advised keeping it (§12).
+- **The pilot, v1's development projection and the smoke runs used v1's formal run seeds** (Fable,
+  Astra, review v2). Generation 0 is drawn from the seed, so formal runs 0-7 would have started
+  from the very populations the pilot evolved for 200 generations, with the same mutation streams.
+  **The formal seeds are moved** to 1 105 000 onward; the projection and smoke runs get their own
+  seeds, and a test checks all of them are disjoint. The worlds were always different (smoke ids).
+- **Development compute,** outside the cap (it went to `runs/e04a-smoke/` and `runs/e04a-pilot/`,
+  not `runs/e04a/`): the pilot 1 044 s (0.29 GPU-hours), v1's projection 41 s, the CPU smoke run
+  and the arm timing a few seconds each; the equivalence runs were not accounted, and took about
+  two minutes.
 - **The design saw E1's results,** including the gain curve and the generation-0 zero share, before
   this registration. Those shaped the choices of shaping, budget and references.
 
@@ -418,4 +459,33 @@ checkpoint only within its total time: 200 generations and 9 checkpoints took 1 
 
 **Open for review v2:** the pilot's plateau near 2 targets (§9). Keep 1 000 generations and accept a
 likely "some runs passed" or "not passed", which E2's optimizer screen would then address; or
-change the budget or the optimizer settings now, before binding?
+change the budget or the optimizer settings now, before binding? *(Answered in review v2: keep them;
+§6 states the expectation.)*
+
+## 12. Changes from v2 (review v2, D105)
+
+**Must-fixes:**
+- **the formal run seeds moved** to 1 105 000 onward, since the pilot and projection had played
+  1 104 000 onward; the projection and smoke runs get their own seeds; disclosed in §9 (Fable 1);
+- **a genome file's effective brain configuration** must equal the registered one before the
+  evaluation starts; tested with a file whose padding metadata alone was changed (Astra 1);
+- **the rerun rule, implemented as written:** a kill that left only a marker can be rerun; the
+  projection can be rerun (after a stop, or over its limit on an amended commit); the stopped
+  attempt's local genome files are archived; a reason is recorded first; a second stop is refused,
+  and the tests exercise that refusal (Astra 2, Fable 2);
+- **amendments** get their own unguarded file, `AMENDMENTS.md` (Fable 2);
+- **failure records:** the not-completed record is written before any genome save; the decoy
+  measure has its own error record in the extras (Astra 3, Fable);
+- **the exposure reconstruction** is described as consistent with the ledgers, not directly
+  verified, and the two ledgers are preserved (Astra 4, Fable).
+
+**Suggestions adopted:** the expectation and what follows each outcome (§6); the constant probe's
+wording; the projection's counts derived from the evolution settings, with a test, and its checkpoint
+writes timed; the budget's replay row (160 s); development compute reported (§9); a stopped
+projection refused by batch A, and the guarded code and environment comparison, tested; a test of the
+non-finite check at validation; the equivalence script exits with failure on any difference; the arm
+timing's repeat count corrected (3, not 4).
+
+**Not adopted:** a second pilot saving genomes and per-world counts (Fable). The formal training
+records keep checkpoint per-world counts, so the reliability question is answered by the run
+itself.

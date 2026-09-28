@@ -1,5 +1,5 @@
 {
- "what": "04a's CPU smoke run of 2026-09-28 (before review v1) drew its training worlds from the formal training range, because use_smoke did not rebind it (Astra, review v1). Reconstructed from the deterministic schedule train_ids(run seed, generation, 2, 997 000 000, 1 000 000), and matched against the attempt records' world counts (48 selection worlds per batch = 3 generations x 2 runs x 4 genomes x 2 worlds).",
+ "what": "04a's CPU smoke run of 2026-09-28 (before review v1) drew its training worlds from v1's formal training range, because use_smoke did not rebind it (Astra, review v1). The ids below are reconstructed from the deterministic schedule train_ids(run seed, generation, 2, 997 000 000, 1 000 000) and the smoke settings, and are consistent with the accounting (48 selection worlds and 1 920 selection ticks per batch = 3 generations x 2 runs x 4 genomes x 2 worlds x 40 ticks). They are not directly verified: the run's own records were deleted by a test (D104), the run used uncommitted code, and the ledgers record counts, not ids (Astra, Fable, review v2).",
  "settings": {
   "population": 4,
   "worlds_per_strain": 2,
@@ -18,8 +18,8 @@
   }
  },
  "attempt_records": [
-  "runs/e04a-smoke/compute/20260928T192259Z-628a050d.json",
-  "runs/e04a-smoke/compute/20260928T192302Z-d033f82d.json"
+  "smoke-ledgers/20260928T192259Z-628a050d.json",
+  "smoke-ledgers/20260928T192302Z-d033f82d.json"
  ],
  "per_generation": [
   {
@@ -159,5 +159,6 @@
  ],
  "count": 24,
  "these_are_the_first_two_draws_of_the_formal_schedule_for_those_runs_and_generations": true,
- "validation_and_holdout": "not touched: the smoke run used ids 5 000-5 003 for validation and 0-15 for the hold-out"
+ "validation_and_holdout": "not touched: the smoke run used ids 5 000-5 003 for validation and 0-15 for the hold-out",
+ "remedy": "the formal training range moved to 999 000 000 onward (D104)"
 }

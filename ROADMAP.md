@@ -35,8 +35,11 @@
       for shaping;
     - throughput in 04a's shape is 110, 336 and 438 strain-worlds/s at 1, 4 and 8 runs batched;
     - a gain curve for stereo steering is measured (RESULTS.md).
-- **04a's pre-registration is drafted** (v1, D103, `experiments/04a-navigation-primitive/`) and is
-  with Astra 6 and Fable 5.1 for review. Nothing has run on 04a's worlds.
+- **04a's pre-registration is at draft v3** (D103-D105, `experiments/04a-navigation-primitive/`),
+  after two review rounds with Astra 6 and Fable 5.1 (both "revise", every must-fix adopted). Nothing
+  has run on 04a's validation, hold-out or training worlds, or with its run seeds. A development
+  pilot on smoke ids plateaued near 2 targets per episode, so "not passed" or "some runs passed"
+  would not surprise us; both reviewers advised keeping the design, and E2 compares optimizers.
   - 16 N2 runs of 1 000 generations with 02's optimizer: 12 with a bounded shaping term (at most
     half an arrival per episode, training only) and 4 without;
   - runs are batched 8 at a time in one rollout, each with its own random streams. This is T1's

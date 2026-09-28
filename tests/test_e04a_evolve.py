@@ -153,3 +153,16 @@ def test_the_initial_population_does_not_depend_on_the_device_argument(spec):
     b = E.initial_population(spec, Config().brain, 3, 4, torch.device("cpu"))
     assert all(torch.equal(x, y) for x, y in zip(a.params().values(), b.params().values()) if x is not None)
     assert E.init_seed(3) != E.breed_seed(3)
+
+
+def test_a_non_finite_validation_count_stops_the_batch(spec):
+    good = FakeRollout()
+
+    def bad_validation(cfg, iface, genome, ids, world_seed, device, chunk_worlds=None):
+        r = good(cfg, iface, genome, ids, world_seed, device, chunk_worlds)
+        if np.asarray(ids).ndim == 1:  # the checkpoint's shared validation ids
+            r.score = np.full_like(r.score, np.nan)
+        return r
+
+    with pytest.raises(FloatingPointError, match="validation"):
+        _evolve(spec, _runs(), bad_validation, generations=2, every=1)

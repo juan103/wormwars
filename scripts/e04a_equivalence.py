@@ -83,6 +83,8 @@ def compare(args):
     if args.json:
         Path(args.json).write_text(json.dumps(doc, indent=1) + "\n", encoding="utf-8", newline="\n")
     print("all identical" if ok else "DIFFERENT: " + ", ".join(k for k, r in rows.items() if not r["identical"]))
+    if not ok:
+        raise SystemExit(1)  # a failed exact comparison fails the command (Astra, review v2)
 
 
 def main():
