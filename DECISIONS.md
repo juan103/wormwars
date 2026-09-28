@@ -2296,7 +2296,7 @@ presentation. The verdicts are confirmed: Astra recomputed them, and the report 
 Revised (bb2f245 and this commit):
 - **P3's noise caveat** (Fable, confirmed): N2's P3 SE is 0.012, against an ensemble median of
   0.0065, with only 3 of 768 as large. So the rank p is too small for P3. A noise-aware check gives
-  about 0.08 after Holm. Also added: the fragility (one more SH-recip graph gives 0.070), the
+  about 0.08 after Holm *(note 2026-09-28: 0.072 after the rounding fix in D082; RESULTS.md and the READMEs give 0.072)*. Also added: the fragility (one more SH-recip graph gives 0.070), the
   approximate-test and weights-plus-wiring caveats, and the variants' P3 values.
 - **Both runs under both rules,** with the one-graph margin stated.
 - **The validity claim is corrected:** N2-rev's descriptive P1 is invalid.
@@ -2536,3 +2536,77 @@ existing `build` also refuses to run over the committed record.
 
 **Review:** the documentation goes to Astra 6 and Fable 5.1 for an accuracy check before it goes
 to main, which needs the owner's go.
+
+## D088 — The documentation review: fixes, and a correction to main's 01b headline
+
+Astra 6 and Fable 5.1 checked D087's documentation (`docs/reviews/20260928-103526-docs/`).
+- **Fable:** "Docs: ready with fixes".
+- **Astra:** "Docs: not yet".
+- They agree on every concrete must-fix point, and each found some the other did not. Both
+  confirmed that 03r's outcome sentence, 02's verdict, 01b's predictions and the D063 amendment
+  are quoted exactly, and that the experiment numbers match their sources.
+
+**A correction to main.** Main's README led 01b with "does better than random graphs, and better
+than or level with shuffles of itself" (since `44cdf75`, 2026-09-25). "Level with" is a
+non-inferiority claim that was never registered and that D033 had already withdrawn (Astra).
+- It now states 01b's measured distinction: higher mean best-of-generation fitness than both
+  controls, a higher final score than RD, and a final score not detectably different from SH.
+- A dated note quotes the old line.
+- 02's new README had repeated the phrase; it is fixed there too.
+
+**Fixed (both reviewers unless named):**
+- **The 03 and 03r rerun recipes** rebuilt the graphs into the worktree's folder before `git
+  worktree add`, which git would refuse. The worktree now comes first. 03's README also says to
+  copy `supplement.py` in after `run`, because an untracked file there makes `run` refuse the
+  tree (Fable).
+- **02 and 02b** now rerun in worktrees at `225e8f8`, `971bbb3` and `7b26c87`, not by checking
+  out the clone. 02b copies in only the champion genomes, because `7b26c87` tracks 02's records
+  (Astra).
+- **03's symmetry sentence** said mirror symmetry "forbids" a left-right comparison. It now
+  qualifies this to full mirror equivariance, as 02's Corrections entry does (Astra).
+- **What can be checked without a GPU:**
+  - `report.json` lets rank counts and p-values be recomputed;
+  - the margin gate, SEs and intervals need uncommitted per-genome measurements (Fable).
+- **01's total compute:** "about 2.2 GPU-hours", from the frozen SUMMARY.md, is 2.66 hours by the
+  committed timing records, before ablations and benchmarks. The README says so, and the frozen
+  file is unchanged (Astra; checked).
+- **Main's table:**
+  - 03's fragility says "failed the test", not "reversed the verdict", which is a registered
+    label with another meaning;
+  - 03a's cost says "searches alone" (Astra);
+  - 02's verdict is quoted in lower case.
+- **Main's README:**
+  - "everything is public, reviews verbatim" now names the exception, 01b's review (D033);
+  - 03's own late push is stated;
+  - `PLAN.md` is milestones 0-11 done, 12 deferred;
+  - the run-bundle sentence names the scripts that write one;
+  - the install line carries the CUDA index (Astra).
+- **03r's README** adds two registered caveats (Astra and Fable):
+  - a systematic implementation error would also replicate;
+  - both P3 directions together allow up to 10% error.
+- **02's README** adds its one meaningful bilateral-mean user, a shuffle already at +0.35 at
+  generation 0 (Astra).
+- **01b's prediction 2** is quoted in full ("... as in 01") (Astra).
+- **Exactness:** every summary now separates equality observed in default mode from the guarantee
+  inside `replay_mode()` (Astra).
+- **Multi-line commands** are single lines, so they work in PowerShell as well as bash (Astra).
+- **AGENTS.md** described history as if every rule had always held (both). It now:
+  - states the rules for new work and names the exceptions (01 with no pre-registration, 02b,
+    02's amendment D041, 03's and 03r's late pushes);
+  - says registered text is kept and dated notes are added;
+  - scopes run bundles, accounting and review archives to where they apply.
+- **ROADMAP.md's status block:**
+  - the header no longer says "kept as written";
+  - the stale 02b and D050 lines carry their publication dates;
+  - "dominate" is replaced by measured shares;
+  - 03a's gap is "about 2.5 times the measured throughput", with T1's best candidate at about 1.35
+    and its exactness not yet tested;
+  - padding is said to be on a working branch (both).
+- **D081's "about 0.08"** gets a dated note: 0.072 after D082's rounding fix (Fable).
+
+**Declined:** Fable suggested 0.0465 instead of 0.047 throughout the main README. Both are correct
+roundings of the same value, and the main README's lead is reviewed text already on main, so it is
+kept.
+
+**Before this goes to main:** `docs/foundations/T1_profile.json` is rerun with the fixed script
+and committed, because the ROADMAP cites it (Fable). The owner gives the go.

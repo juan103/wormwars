@@ -23,7 +23,7 @@ It reruns only 01's headline arm
   reported in [`RESULTS.md`](RESULTS.md):
   1. "Final held-out score: no contrast separates." **Falsified, in part.** N2 − RD separates, N2
      higher: +0.094 [+0.029, +0.160]. N2 − SH (+0.069 [−0.015, +0.169]) and SH − RD do not.
-  2. "SH vs RD: no separation on either measure." **Held**, on both.
+  2. "SH vs RD: no separation on either measure, as in 01." **Held**, on both.
   3. "Speed of improvement, N2 against the controls: no prediction." N2 higher than both:
      N2 − SH +0.068 [+0.034, +0.102], N2 − RD +0.067 [+0.021, +0.105].
 - **Multiple comparisons.** Six contrasts were tested. With Bonferroni-adjusted intervals
@@ -119,9 +119,7 @@ python scripts/fetch_connectome.py
 The run, as pre-registered. Use a new `--out` to keep the committed run intact:
 
 ```
-python scripts/experiment.py --k 5 --runs 3 --generations 25 --population 32 --worlds 8 \
-    --ticks 400 --holdout 32 --base-seed 40000 --conditions N2,SH,RD --calibrate \
-    --chem-direction pre_to_post --device cuda --out runs/exp01b-repro
+python scripts/experiment.py --k 5 --runs 3 --generations 25 --population 32 --worlds 8 --ticks 400 --holdout 32 --base-seed 40000 --conditions N2,SH,RD --calibrate --chem-direction pre_to_post --device cuda --out runs/exp01b-repro
 ```
 
 `experiment.py` writes the report itself. Compare `records.json` and `REPORT.md` with

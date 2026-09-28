@@ -126,8 +126,7 @@ pre-registered, and nothing here is a confirmatory claim."** ([`RESULTS.md`](RES
 ## Reproduce it
 
 **Environment and connectome:** see [../../README.md#how-to-reproduce](../../README.md#how-to-reproduce)
-(`pip install -r requirements.txt`, `python scripts/check_env.py`,
-`python scripts/fetch_connectome.py`).
+(`pip install -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cu130`, `python scripts/check_env.py`, `python scripts/fetch_connectome.py`).
 
 **Recompute every reported number from committed files.** `summarise` reads the stage JSON files
 in this folder, `runs/exp02-screening/records.jsonl`, 02's `remaps.json` and `calibration.json`,
@@ -137,9 +136,21 @@ and the connectome. It needs no genomes:
 py -3.13 experiments/02b-champion-analysis/analyse.py summarise    # -> summary.json
 ```
 
-**Rerun the stages.** Every other stage loads 02's champion genomes, which are local-only. To
-regenerate them, rerun experiment 02's evolution ([`../02-screening/README.md`](../02-screening/README.md#reproduce-it)).
-Then, in this order (`kept_edges` reads `criticality.json`):
+**Rerun the stages.** Every other stage loads 02's champion genomes, which are local-only.
+1. Regenerate them by rerunning experiment 02 in its worktrees
+   ([`../02-screening/README.md`](../02-screening/README.md#reproduce-it)).
+2. Run the stages at `7b26c87`, the commit that produced the committed outputs, in a worktree of
+   their own. That commit tracks 02's `records.jsonl`, `bundle.json` and `probes.json`, so copy in
+   only the champion genome files (bash):
+
+```
+git worktree add ../wormWars-02b 7b26c87
+cd ../wormWars-02b
+python scripts/fetch_connectome.py
+cp ../wormWars-02-probes/runs/exp02-screening/*.npz runs/exp02-screening/
+```
+
+3. Then run the stages in this order (`kept_edges` reads `criticality.json`):
 
 ```
 py -3.13 experiments/02b-champion-analysis/analyse.py magnitudes
@@ -159,10 +170,12 @@ took about 1.5 GPU-hours. The script uses CUDA when available.
 **What is exactly reproducible** ([../../docs/REPRODUCIBILITY.md](../../docs/REPRODUCIBILITY.md)):
 - The committed outputs came from `7b26c87`. Later commits wrapped the script in compute
   accounting, which writes git-ignored `compute/` and `compute.json` here (D069-D072), and changed
-  how `wormwars/deletion.py` and the exp02 probes build genomes (D066). For a like-for-like rerun,
-  check out `7b26c87`.
-- CUDA reproduction is exact only for the same GPU, pinned environment and batch composition.
-  Regenerated genomes match 02's only under the same conditions.
+  how `wormwars/deletion.py` and the exp02 probes build genomes (D066). Hence the worktree at
+  `7b26c87` above.
+- On CUDA, exact reproduction is guaranteed only inside `replay_mode()`, on the same GPU, with the
+  pinned environment and the same batch composition. Outside it, equality was observed in the
+  tested configurations but is not guaranteed. Regenerated genomes match 02's only under the same
+  conditions.
 
 ## Extend it
 

@@ -2,34 +2,39 @@
 
 *27 September 2026. Replaces v2. Written from roadmap v2, Astra 6's review of v2, and Claude Code's status report of the same day. A local v2.2 exists on the `roadmap` branch and was not seen when this version was written, so merge anything it adds. (Merged: see "Carried over from v2.2" below. Four factual corrections were made on installation; they are listed in D062.) This is a living document, not a pre-registration. When a result changes it, the change is recorded here with the reason.*
 
-## Status, 28 September 2026 (updates the section below, which is kept as written on 27 September)
+## Status, 28 September 2026 (updates the section below; that section's later edits are recorded in DECISIONS.md)
 
 - **Published on main** (D085):
   - 03 and 03r together, reported by the pre-registered rule;
   - 02b;
   - 02's D050 correction, as a Corrections entry.
-- **T0 (correctness) is closed** (D083). On CUDA, results are exact for the same batch
-  composition. A chunk holding a single strain can differ (D082).
+- **T0 (correctness) is closed** (D083). On CUDA, results repeated exactly for the same batch
+  composition in the tested configurations; exact reproduction is guaranteed only inside
+  `replay_mode()`. A chunk holding a single strain can differ from the same strain in a larger
+  chunk (D082).
 - **T1 (throughput) is in progress** (plan v2: [`docs/foundations/T1.md`](docs/foundations/T1.md),
   D086):
-  - the profile is measured (`docs/foundations/T1_profile.json`). On 02's task the brain's matrix
-    products dominate. On a Task N-like shape (one wey per world), the world's fixed per-tick
-    cost dominates, so batching more worlds together pays much more there;
-  - single-strain padding is implemented and under its equivalence test;
+  - **the profile** (`docs/foundations/T1_profile.json`). On 02's task, at evolution's batch, the
+    brain's matrix products take about 70% of GPU kernel time, and the world about 55% of a
+    tick's wall time. On a Task N-like shape (one wey per world) the world's share is about 70%,
+    so batching more worlds together pays much more there;
+  - **single-strain padding** is implemented on a working branch and is under its equivalence
+    test;
   - **T1's budget gate moves to E1's pilot** (D086): E1 measures Task N's own throughput, and
     04a's and E2's budgets are fitted to it.
 - **Documentation for outsiders:** every experiment folder now has a README with its question,
   result, caveats and exact commands to rerun it, and [`AGENTS.md`](AGENTS.md) describes the
   repository and its rules. Others are welcome to take any open question here, and to get there
   first.
-- **03a stays unscheduled,** as decided on 27 September. No exact speed-up found in T1 closes its
-  gap: it needs about 2.5 times more than the best found, which is ×1.36 on 02's task.
+- **03a stays unscheduled,** as decided on 27 September. It needs about 2.5 times the measured
+  throughput. The largest candidate found in T1, batching several runs together, gives about
+  1.35 times on 02's task, and its exactness is not yet tested.
 
 ## Where the project stands
 
 - **Experiment 01 / 01b.** Real C. elegans wiring (N2) against shuffled (SH) and random (RD) graphs on a foraging game. 01b is the rerun after a chemical-synapse direction bug was fixed. The README states exactly what it establishes; in particular, it does not establish faster improvement.
-- **Experiment 02 (published).** The primary prediction failed: champions did not meaningfully use the left-right food difference. Its pre-registration's mirror-symmetry reasoning was wrong: the turn read-out is dorsal minus ventral, so symmetric wiring gives no left-right comparison for free. Correction D050 is prepared as a Corrections entry in 02's RESULTS.md on main.
-- **02b (re-analysis of 02's champions, reviewed, not yet on main):**
+- **Experiment 02 (published).** The primary prediction failed: champions did not meaningfully use the left-right food difference. Its pre-registration's mirror-symmetry reasoning was wrong: the turn read-out is dorsal minus ventral, so symmetric wiring gives no left-right comparison for free. Correction D050 is prepared as a Corrections entry in 02's RESULTS.md on main *(published 27 September)*.
+- **02b (re-analysis of 02's champions, reviewed, not yet on main *(published 28 September, D085)*):**
   - Champions circle and slow down on food and near obstacles, and N2 and shuffles do this equally well.
   - One statement, that champions "steer by which side the food is on", is now reconciled with 02's registered result: it is a replay association with the turn command, not fitness use, and it does not revise 02 (D063).
   - Selection built history dependence into the champions: a slow memory of the recent food level, not a response to its change.

@@ -3,7 +3,8 @@
 **Status:** superseded by [01b](../01b-direction-corrected/README.md); frozen at tag `exp01-v1.0` ·
 **Run:** 2026-09-17 to 2026-09-18 · **Commit:** `cebbefa` for the headline arm (the bundle records
 the pre-rewrite hash `d4f4acf`; working tree dirty) · **Compute:** 0.897 GPU-hours for the headline
-arm, about 2.2 GPU-hours for all reported experiments, one RTX 5080
+arm; 2.66 hours for all reported experiments by the committed timing records, before ablations
+and benchmarks (the frozen `SUMMARY.md` says about 2.2; corrected in D088), one RTX 5080
 
 > **Read this first.** Every run in this experiment used chemical synapses that carried signal
 > from the postsynaptic neuron to the presynaptic one (`DECISIONS.md` D031, correction C5 in
@@ -150,9 +151,7 @@ switch. Its current defaults are `--chem-direction pre_to_post` and `--base-seed
 must be given. The other arguments are those recorded in `configs/m9-calibrated.json`:
 
 ```
-python scripts/experiment.py --k 5 --runs 3 --generations 25 --population 32 --worlds 8 \
-    --ticks 400 --holdout 32 --base-seed 40000 --conditions N2,SH,RD --calibrate \
-    --chem-direction post_to_pre --device cuda --out runs/m9-calibrated-repro
+python scripts/experiment.py --k 5 --runs 3 --generations 25 --population 32 --worlds 8 --ticks 400 --holdout 32 --base-seed 40000 --conditions N2,SH,RD --calibrate --chem-direction post_to_pre --device cuda --out runs/m9-calibrated-repro
 ```
 
 Drop `--calibrate` for the uncalibrated arm. Compare `records.json` and `REPORT.md` with

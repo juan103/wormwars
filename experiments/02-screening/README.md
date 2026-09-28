@@ -6,7 +6,8 @@
 12-hour cap; one RTX 5080
 
 Experiment 01b found that the real *C. elegans* wiring (N2) did better than random graphs on
-foraging, and better than or level with shuffles of itself. Experiment 02 asks whether that edge
+foraging, with higher mean best-of-generation fitness than shuffles of itself (its final score
+was not detectably different from theirs). Experiment 02 asks whether that edge
 generalises across tasks and interfaces, and whether it is concentrated where conditions are
 worm-like ([`DESIGN.md`](DESIGN.md)). The full grid would cost 40-150+ GPU-hours, so 02 is a
 screening fraction of it, capped at 12 GPU-hours, meant to find failure modes and size the full
@@ -28,6 +29,9 @@ the shuffles' champions.
   of this search found stereo use in neither group. The registered prediction was tested and
   challenged under this search procedure. Whether N2's wiring could support stereo foraging under
   a different search remains open." ([`RESULTS.md`](RESULTS.md))
+- **Across all 72 champions, one meaningful bilateral-mean user exists, and it is a shuffle:**
+  T0-R1-SH1 run 0, at +0.43 [+0.34, +0.52]. It was already at +0.35 at generation 0
+  ([`RESULTS.md`](RESULTS.md)).
 - **Exploratory: random N2 brains respond more to food input, not more selectively.** Under the
   biological mapping, their turn read-out responds 3.5-11 times more strongly than the shuffles'
   to a left-right food difference, but more strongly to total food too. Relative to that, N2's
@@ -143,7 +147,7 @@ Where [`DESIGN.md`](DESIGN.md) (v3) differs, the pre-registration is binding.
 **Environment and connectome** ([../../README.md#how-to-reproduce](../../README.md#how-to-reproduce)):
 
 ```
-pip install -r requirements.txt
+pip install -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cu130
 python scripts/check_env.py
 python scripts/fetch_connectome.py
 ```
@@ -163,14 +167,20 @@ It overwrites `analysis.json`; compare with the committed version (`git diff`). 
 block should read `"verdict": "challenged: no meaningful N2 use"`.
 
 **Rerun the whole experiment.** Evolution ran at `225e8f8`, the probes and report at `971bbb3`.
-At `225e8f8` the output folder `runs/exp02-screening/` is empty; at the current commit it holds
-the committed `records.jsonl` and `probes.json`, and `run` and `probes` resume from them (they
-skip completed work). So run from the historical commits:
+At the current commit `runs/exp02-screening/` holds the committed `records.jsonl` and
+`probes.json`, and `run` and `probes` resume from them (they skip completed work). At both
+historical commits that folder is empty, so run there, in separate worktrees so that your clone is
+untouched (bash; in PowerShell use `Copy-Item -Recurse`):
 
 ```
-git checkout 225e8f8
+git worktree add ../wormWars-02-evo 225e8f8
+git worktree add ../wormWars-02-probes 971bbb3
+cd ../wormWars-02-evo
+python scripts/fetch_connectome.py
 py -3.13 scripts/exp02.py run             # 190 runs; default --max-hours 8.0 (evolution budget)
-git checkout 971bbb3
+cd ../wormWars-02-probes
+python scripts/fetch_connectome.py
+cp -r ../wormWars-02-evo/runs/exp02-screening runs/
 py -3.13 scripts/exp02.py probes          # default --max-hours 12.0 (total, evolution included)
 py -3.13 scripts/exp02.py report
 ```
@@ -182,8 +192,9 @@ on one RTX 5080: 5.64 GPU-hours of evolution, 7.44 in total. Compare against the
 
 **What is exactly reproducible** ([../../docs/REPRODUCIBILITY.md](../../docs/REPRODUCIBILITY.md)):
 - World maps and seeds are reproducible from the run seeds.
-- On CUDA, exact reproduction holds only for the same GPU, the pinned environment and the same
-  batch composition, inside `replay_mode()`. The bundle records the environment (Python 3.13.3,
+- On CUDA, exact reproduction is guaranteed only inside `replay_mode()`, on the same GPU, with the
+  pinned environment and the same batch composition. Outside it, equality was observed in the
+  tested configurations but is not guaranteed. The bundle records the environment (Python 3.13.3,
   torch 2.12.0+cu130, RTX 5080) and the commit, but not whether deterministic mode was on (D067).
 - A single-strain chunk takes a different GPU kernel path. In the T0 checks, 2-8 of 128 worlds of
   02's champions differed by more than 1e-4 at 200 ticks, with a maximum of 0.027 (D082).

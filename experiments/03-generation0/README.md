@@ -102,9 +102,12 @@ measurement. Where it differs from `DESIGN.md` (v3.1), the pre-registration is b
 - **Before the pre-registration:** the first pilot was discarded because of a seed bug that made
   graphs share random genomes (D053). Design v3's hop-distance rule for SH-route was never
   enforced by the build and was retired (D054).
-- **D050, a correction that started here:** the turn read-out is dorsal minus ventral, so mirror
-  symmetry forbids, rather than gives, a left-right comparison at this read-out. This reversed the
-  rationale of D041 and 02's registered reading. SH-mirror has no predicted direction (D051).
+- **D050, a correction that started here:** the turn read-out is dorsal minus ventral, so a *fully*
+  mirror-equivariant network (mirror-symmetric wiring and parameters) cannot make a left-right
+  comparison at this read-out. Symmetric wiring alone does not forbid one, because each synapse's
+  parameters are drawn independently, but it does not give the comparison for free either. This
+  reversed the rationale of D041 and 02's registered reading. SH-mirror has no predicted direction
+  (D050, D051; [02's Corrections entry](../02-screening/RESULTS.md)).
 - **`report.json` stores N2-rev's invalid P1 as `NaN`,** which strict JSON readers reject; the
   validity flags mark it (D058).
 - **Replication:** because one graph decided the verdict, both reviewers recommended a separately
@@ -139,22 +142,24 @@ measurement. Where it differs from `DESIGN.md` (v3.1), the pre-registration is b
 `check_env.py`, `fetch_connectome.py`). The tested platform is one NVIDIA RTX 5080 with Python
 3.13.
 
-**What you can check without a GPU:** every verdict and table is computed from the committed
-[`report.json`](report.json) and [`supplement.json`](supplement.json). The per-graph measurements
-themselves (about 640 MB) are not committed, so `report` cannot be rerun from a fresh clone
-without re-measuring.
+**What you can check without a GPU:** the committed [`report.json`](report.json) holds every
+graph's signal values, so the rank counts and p-values can be recomputed from it, and
+[`supplement.json`](supplement.json) holds the decomposition. The margin gate, the standard errors
+and the effect intervals need the per-genome measurements (about 640 MB), which are not committed.
+So `report` itself cannot be rerun from a fresh clone without re-measuring.
 
 **Re-running the experiment as registered** uses the binding commit. At `132acae`, `exp03.py` has
 no `--instance` flag (added later, at `fc42434`, for 03r):
 
 ```
-# 1. the graph files (not committed), from a current checkout: regenerated from the committed
-#    record and checked byte for byte against graphs_manifest.json
+# from a current checkout
 python scripts/fetch_connectome.py
+git worktree add ../wormWars-03 132acae
+# the graph files (not committed): regenerated from the committed record, each checked byte for
+# byte against graphs_manifest.json
 python scripts/exp03.py rebuild-graphs --into ../wormWars-03/runs/exp03/graphs
 
-# 2. the run itself, at the binding commit
-git worktree add ../wormWars-03 132acae
+# the run itself, at the binding commit
 cd ../wormWars-03
 python scripts/fetch_connectome.py
 python scripts/exp03.py run --max-hours 24
@@ -163,19 +168,22 @@ python scripts/exp03.py report          # writes experiments/03-generation0/repo
 
 Then `python experiments/03-generation0/supplement.py` writes `supplement.json` from
 `runs/exp03/measures/`. The script was added after the run (D058), so it is not in `132acae`; it
-reads the measurements under the checkout it sits in, so place a current copy in the worktree.
+reads the measurements under the checkout it sits in, so copy the current version into the
+worktree **after** `run`: before it, the untracked file would make `run` refuse the tree as dirty.
 
 - **The graph files.** They are not committed. `rebuild-graphs` (added after the run, D087)
   regenerates each from the kind, seed and passes recorded in the committed `ensembles.json`, and
   checks it against the committed manifest's raw hash. It never touches the record, unlike `build`.
   **Checked on 2026-09-28: all 640 rebuilt files matched the manifest byte for byte.** numpy writes a
   fixed timestamp into the `.npz`, so the bytes are reproducible in the pinned environment. The
-  runner checks every file against the manifest again when it loads it.
+  runner checks every file against the manifest again when it loads it. The files carry permuted
+  anatomical weights derived from the connectome, so do not commit or share them.
 - **Wall time:** 19.75 GPU-hours on one GPU; the pilot measured about 111 s per graph.
 - **Compare against:** `report.json` (verdicts, ranks, per-graph values) and `supplement.json`.
-- **Exactness:** see [`docs/REPRODUCIBILITY.md`](../../docs/REPRODUCIBILITY.md). CUDA results are
-  exact only on the same GPU, in the pinned environment, with the same batch composition (D082);
-  03 evaluates each graph's genomes in one chunk. When 03r's code was added, a re-measured 03
+- **Exactness:** see [`docs/REPRODUCIBILITY.md`](../../docs/REPRODUCIBILITY.md). On CUDA, exact
+  reproduction is guaranteed only inside `replay_mode()`, on the same GPU, in the pinned
+  environment, with the same batch composition (D082). Outside it, equality was observed in the
+  tested configurations but is not guaranteed. 03 evaluates each graph's genomes in one chunk. When 03r's code was added, a re-measured 03
   graph (SH-10000) matched its saved measurement bit for bit, and 03's report regenerated
   identically (03r pre-registration §1). The stages `pilot`, `variance` and `power` produced
   `pilot.json` and §7's tables; they are not needed to recompute the verdicts.

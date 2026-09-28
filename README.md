@@ -26,11 +26,11 @@ selection acts on team results.
 |---|---|---|---|
 | [01](experiments/01-foraging-n2-vs-controls/README.md) | Does the real wiring (N2) evolve better foragers than shuffled (SH) and random (RD) graphs? | Superseded: its chemical synapses ran backwards (D031) | Reported N2 improving more slowly; that does not hold for the real wiring |
 | [01b](experiments/01b-direction-corrected/README.md) | 01's question with the synapses the right way round | Published; pre-registered | N2 reaches higher mean best-of-generation fitness than SH and RD, and a higher final score than RD. It is not shown to improve faster |
-| [02](experiments/02-screening/README.md) | Does evolution find stereo foraging, and does N2 use it more? A 12 GPU-hour screening across tasks and food mappings | Published; pre-registered | "Challenged: no meaningful N2 use" |
+| [02](experiments/02-screening/README.md) | Does evolution find stereo foraging, and does N2 use it more? A 12 GPU-hour screening across tasks and food mappings | Published; pre-registered | "challenged: no meaningful N2 use" |
 | [02b](experiments/02b-champion-analysis/README.md) | What did 02's champions actually learn? | Published; exploratory re-analysis | They circle and slow down on food. Selection built a slow memory of recent food. It does not revise 02 |
-| [03](experiments/03-generation0/README.md) | Before any evolution, do N2's random brains differ from five null ensembles? | Published; pre-registered | History dependence (P4) is distinctive, but borderline: one more graph would have reversed the verdict (Holm p 0.047) |
+| [03](experiments/03-generation0/README.md) | Before any evolution, do N2's random brains differ from five null ensembles? | Published; pre-registered | History dependence (P4) is distinctive, but borderline: one more routing-matched graph at or above N2 would have failed the test (Holm p 0.047, then 0.070) |
 | [03r](experiments/03r-replication/README.md) | A full, separately pre-registered replication of 03 | Published; pre-registered | "Replicated under the registered single-signal test and under 03's original three-signal rule." |
-| [03a](experiments/03a-self-consistency/README.md) | Can a missing neuron's wiring be predicted from the rest of the brain plus a task? | Draft, not run, not scheduled | None yet. As drafted, it needs about 785 GPU-hours at 02's throughput |
+| [03a](experiments/03a-self-consistency/README.md) | Can a missing neuron's wiring be predicted from the rest of the brain plus a task? | Draft, not run, not scheduled | None yet. As drafted, its searches alone need about 785 GPU-hours at 02's throughput, plus about 37 for whole-brain evolution |
 
 Next on the roadmap: throughput work (T1), then a navigation task (E1), and in the biology track
 the mechanism behind 03's history dependence.
@@ -89,7 +89,9 @@ earlier difference is still in the turning output.
 separately pre-registered replication was run before 03 was merged into main and presented as a
 result. 03's first-run results were publicly readable on the `roadmap` branch from 2026-09-27
 while 03r ran; its pre-registration was pushed there mid-run, as its
-[disclosure](experiments/03r-replication/DISCLOSURE.md) states.
+[disclosure](experiments/03r-replication/DISCLOSURE.md) states. 03's own pre-registration was first
+pushed to GitHub after its run; that it preceded the run rests on local commit records (D062,
+D063).
 - **Fable 5.1** (Anthropic) asked for replication before any public claim. It also argued for
   testing P4 alone, which was chosen after seeing 03.
 - **Astra 6** (OpenAI) specified fresh random brains for N2 as well as fresh graphs. It did not
@@ -105,15 +107,16 @@ decisions D050-D063 and D080-D083. Summaries and how to rerun:
 
 ## How to help, or get ahead of us
 
-**Everything here is public:** the pre-registrations, the reviews verbatim, the decisions with
-their reasons, and the roadmap. Our bottleneck is compute: everything so far ran on one consumer
+**Nearly everything is public:** the pre-registrations, the reviews verbatim (01b's pre-publication
+review, D033, is the one kept outside the repository), the decisions with their reasons, and the
+roadmap. Our bottleneck is compute: everything so far ran on one consumer
 GPU. If you have more, you can get to the next answers first, and we would count that as a good
 outcome. Useful things anyone can do:
 
 - **Replicate on other hardware.** 03 took 19.75 GPU-hours and 03r 23.95, on one RTX 5080,
   and their READMEs give the commands. CUDA results are exact only on the same GPU, so an independent
   replication is a real test.
-- **Re-analyse without a GPU.** Every verdict is computed from committed files (`report.json`,
+- **Re-analyse without a GPU.** Every verdict can be checked from committed files (`report.json`,
   `analysis.json`, `records.jsonl`).
 - **Take an open question from [`ROADMAP.md`](ROADMAP.md):**
   - [the mechanism behind 03's history dependence](ROADMAP.md#03-and-03r): where it lives, gap
@@ -158,8 +161,12 @@ champions: [02b](experiments/02b-champion-analysis/README.md).
 
 ## Experiment 01b: the main confirmatory result
 
-**On foraging, the real wiring (N2) does better than random graphs, and better than or level with
-shuffles of itself.** This is the pre-registered comparison with chemical synapses running the
+**On foraging, the real wiring (N2) reaches higher mean best-of-generation fitness than random
+graphs and than shuffles of itself, and a higher final score than random graphs; against the
+shuffles its final score is not detectably different.** *(Corrected 2026-09-28, D088: this line
+said "does better than random graphs, and better than or level with shuffles of itself". "Level
+with" is a non-inferiority claim that was never registered and that D033 had already withdrawn.)*
+This is the pre-registered comparison with chemical synapses running the
 right way round. Each condition has 15 independent evolutionary runs, and the controls are five
 degree-preserving shuffles (SH) and five random sparse graphs (RD), three runs each. Intervals come
 from a hierarchical bootstrap over graphs and runs.
@@ -260,7 +267,7 @@ Every number, and the correction, is C5 in [`docs/RESULTS.md`](docs/RESULTS.md).
 ## How to reproduce
 
 ```
-pip install -r requirements.txt          # torch from the cu130 index
+pip install -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cu130
 python scripts/check_env.py              # runs a real CUDA kernel, not just is_available()
 python scripts/fetch_connectome.py       # downloads + hashes + caches the connectome
 python -m pytest
@@ -282,7 +289,7 @@ python scripts/bench_scaling.py --showcase           # wey-ticks/s and peak VRAM
 python scripts/showcase.py --a A.npz --b B.npz --size 2000
 ```
 
-Every script writes a run bundle (config, dataset hashes, package versions, git commit, seed
+The evolution scripts (`evolve_forage`, `coevolve`, `experiment`, `exp02`) write a run bundle (config, dataset hashes, package versions, git commit, seed
 scheme) next to its output.
 
 ## What a wey is, and is not
@@ -349,7 +356,7 @@ The data terms are also stated in `NOTICE`; `LICENSE` (MIT) covers the code and 
 
 [`ROADMAP.md`](ROADMAP.md) says where the project stands and what comes next. `DECISIONS.md`
 records every non-trivial decision, and `docs/REPRODUCIBILITY.md` says exactly what is and is not
-reproducible. `PLAN.md` is the original build plan (milestones 0-9), kept for its measurements.
+reproducible. `PLAN.md` is the original build plan (milestones 0-11 done, 12 deferred), kept for its measurements.
 
 ## How this was made
 

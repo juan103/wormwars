@@ -35,11 +35,13 @@ every graph, N2's included, is N2 again distinctive relative to every ensemble o
     anti-conservative. An **exploratory** noise-aware check gives a one-sided p of about 0.024, or
     about **0.072 after Holm** across three signals.
   - It is also fragile: one additional SH-recip graph at or below N2 would give 0.070. It is
-    reported as found, with no claim about its cause; a claim would need its own pre-registered
-    test.
+    controlled only within 03's opposite-direction family, and both directions together allow up
+    to 10% error (§6). It is reported as found, with no claim about its cause; a claim would need
+    its own pre-registered test.
 - **What it does not show:**
-  - it tests the sampling in 03 (graphs, genomes, worlds, seeds), **not the probe**: the
-    replication used the same probe, stimulus bank and code;
+  - it tests the sampling in 03 (graphs, genomes, worlds, seeds), **not the probe or the code**:
+    the replication used the same probe, stimulus bank and code, so a probe-specific effect, or a
+    systematic implementation error, would replicate too (pre-registration §2);
   - the two runs are **not independent evidence**: both compare the same N2 connectome with graphs
     from the same generating procedure, and their p-values are never combined;
   - it establishes neither a mechanism nor any advantage for the worm.
@@ -160,21 +162,23 @@ at `7c146fc`). The procedure for every graph is identical to 03's (03 pre-regist
 **Setup:** follow [the main README](../../README.md#how-to-reproduce). The tested platform is one
 NVIDIA RTX 5080 with Python 3.13; `remeasure.json` records that device.
 
-**What you can check without a GPU:** the verdicts and tables come from the committed
-[`report.json`](report.json) and [`supplement.json`](supplement.json). The per-graph measurements
-are not committed. `python experiments/03r-replication/power.py` reprints §7's table from 03's
+**What you can check without a GPU:** the committed [`report.json`](report.json) holds every
+graph's signal values, so the rank counts and p-values can be recomputed from it, and
+[`supplement.json`](supplement.json) holds the decomposition. The margin gate, the standard errors
+and the effect intervals need the per-genome measurements, which are not committed. `python experiments/03r-replication/power.py` reprints §7's table from 03's
 committed `report.json` (CPU only).
 
 **Re-running the experiment as registered** uses the binding commit:
 
 ```
-# 1. the graph files (not committed), from a current checkout: regenerated from the committed
-#    record and checked byte for byte against graphs_manifest.json
+# from a current checkout
 python scripts/fetch_connectome.py
+git worktree add ../wormWars-03r 7c146fc
+# the graph files (not committed): regenerated from the committed record, each checked byte for
+# byte against graphs_manifest.json
 python scripts/exp03.py rebuild-graphs --instance 03r --into ../wormWars-03r/runs/exp03r/graphs
 
-# 2. the run itself, at the binding commit
-git worktree add ../wormWars-03r 7c146fc
+# the run itself, at the binding commit
 cd ../wormWars-03r
 python scripts/fetch_connectome.py
 python scripts/exp03.py run --instance 03r        # the 32 GPU-hour cap is registered in code
@@ -186,7 +190,8 @@ python experiments/03-generation0/supplement.py --instance 03r
   D087) regenerates each from the kind, seed and passes recorded in the committed `ensembles.json`,
   and checks it against the committed manifest's raw hash, without touching the record.
   **Checked on 2026-09-28: all 768 rebuilt files matched the manifest byte for byte.** The runner
-  checks every file against the manifest again when it loads it.
+  checks every file against the manifest again when it loads it. The files carry permuted
+  anatomical weights derived from the connectome, so do not commit or share them.
 - **`--max-hours`:** any value other than the registered 32 is refused. The `pilot`, `variance`
   and `power` subcommands belong to 03 only; 03r reuses 03's pilot.
 - **From the current checkout,** a resumed 03r run would be refused, because HEAD is past
@@ -197,9 +202,11 @@ python experiments/03-generation0/supplement.py --instance 03r
   graph).
 - **Compare against:** `report.json` (`replication_primary`, `signals`, `accounting`,
   `P4_beside_03`) and `supplement.json`.
-- **Exactness:** see [`docs/REPRODUCIBILITY.md`](../../docs/REPRODUCIBILITY.md). CUDA results are
-  exact only on the same GPU, in the pinned environment, with the same batch composition; 03 and
-  03r evaluate each graph's genomes in one chunk (D082). The re-measurement of two graphs with the
+- **Exactness:** see [`docs/REPRODUCIBILITY.md`](../../docs/REPRODUCIBILITY.md). On CUDA, exact
+  reproduction is guaranteed only inside `replay_mode()`, on the same GPU, in the pinned
+  environment, with the same batch composition (D082). Outside it, equality was observed in the
+  tested configurations but is not guaranteed. 03 and 03r evaluate each graph's genomes in one
+  chunk. The re-measurement of two graphs with the
   binding code was bit-for-bit identical (`remeasure.json`).
 
 ## Extend it

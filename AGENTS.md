@@ -20,7 +20,7 @@ what comes next.
 | `wormwars/evo/` | Evolution (`evolve.py`), rollouts and seed pools (`rollout.py`), genome files (`genomes.py`), run bundles and `replay_mode` (`bundle.py`), coevolution. |
 | `wormwars/accounting.py` | Compute accounting: worlds, ticks and neural updates, by category. |
 | `wormwars/exp02/`, `wormwars/exp03/` | Experiment-specific code: grids, probes, samplers, statistics and reports. |
-| `scripts/` | Entry points. Each writes a run bundle and a compute record next to its output. |
+| `scripts/` | Entry points. The evolution drivers write a run bundle (config, hashes, versions, commit); `exp03.py` records provenance per measurement instead. The experiment drivers write a compute record. |
 | `experiments/<id>/` | One folder per experiment, each with a README: design, pre-registration, results, reviews, and the committed summary data. |
 | `runs/` | Run outputs. Small summaries are committed; bulky files, such as most genome `.npz` files, stay local. |
 | `docs/` | Reproducibility (`REPRODUCIBILITY.md`), the foundations work (`foundations/`: T0 correctness, T1 throughput), design notes (`E1/`), archived reviews (`reviews/`), and the review trail. |
@@ -33,7 +33,7 @@ what comes next.
 See [README: How to reproduce](README.md#how-to-reproduce). In short:
 
 ```
-pip install -r requirements.txt
+pip install -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cu130
 python scripts/check_env.py          # a real CUDA kernel, not only is_available()
 python scripts/fetch_connectome.py   # downloads, hashes and caches the connectome
 python -m pytest                     # the whole suite; markers: slow, gpu
@@ -44,20 +44,29 @@ The tested platform is one NVIDIA RTX 5080, Windows 11, Python 3.13, and PyTorch
 
 ## Rules the work follows
 
-These are the invariants. A change that breaks one should say so openly.
+These are the rules for new work. Earlier work did not always meet them, and the exceptions are
+named. A change that breaks one should say so openly.
 
 1. **Never redistribute the connectome.** Its source states no licence for redistribution.
    `fetch_connectome.py` downloads it and checks its sha256. Do not commit data files, and never
    substitute synthetic data when the data is missing.
-2. **Pre-register before running.**
-   - An experiment's design, measures, tests and outcome wording are fixed in a
-     `PREREGISTRATION.md` and committed before the formal run.
+2. **Pre-register confirmatory experiments before running them.**
+   - The design, measures, tests and outcome wording are fixed in a `PREREGISTRATION.md`,
+     committed, and pushed before the formal run (`ROADMAP.md`, "Standing rules").
    - Anything decided after seeing data is labelled exploratory.
-   - A bound pre-registration is never edited. Deviations are reported in the results.
+   - Registered text is never changed or removed. Amendments and annotations are added beside it,
+     dated.
+   - **Exceptions so far:**
+     - 01 had no pre-registration document;
+     - 02b is exploratory by design;
+     - 02's pre-registration was amended after evolution began, openly (D041);
+     - 03's and 03r's pre-registrations were bound locally but pushed only after or during their
+       runs (D062, D063).
 3. **Report whatever comes out.** Null and failed predictions are published, in the wording fixed
    in advance.
-4. **Correct in the open.** Wrong statements are corrected by adding a dated Corrections entry
-   that quotes what was wrong, never by deleting it. Every correction gets a `DECISIONS.md` entry.
+4. **Correct in the open.** Wrong statements are corrected by adding a dated correction that
+   quotes what was wrong, never by deleting it silently. Corrections are recorded in `DECISIONS.md`
+   or in a results file's Corrections section (the C-numbered entries in `docs/RESULTS.md`).
 5. **Numbers come from committed files.** A number in a document should be traceable to a file
    in the repository, or to a script that regenerates it.
 6. **Exactness is claimed only where it is tested.** See
@@ -65,16 +74,20 @@ These are the invariants. A change that breaks one should say so openly.
    - CPU runs repeat exactly;
    - CUDA runs are exact only on the same GPU, in the pinned environment, with the same batch
      composition, and inside `replay_mode()` where claimed;
-   - a single-strain batch is its own composition (D082; T1 adds padding for new work).
+   - a single-strain batch is its own composition (D082). T1 is adding padding for new work, on a
+     working branch until its equivalence test passes.
 7. **Every engine change gets an equivalence check,** against the previous engine at a tolerance
    declared in advance ([`docs/foundations/T1.md`](docs/foundations/T1.md) §3).
-8. **Count compute.** Scripts run inside `wormwars.accounting` (`attempt`, `recorded` or
-   `run_script`), so every rollout and neural update is counted.
+8. **Count compute.** Since T0 (D068-D072), the experiment drivers run inside
+   `wormwars.accounting` (`attempt`, `recorded` or `run_script`), so their rollouts and neural
+   updates are counted. Viewers, benchmarks and older pilot scripts are not. Earlier published
+   GPU-hours, 03r's included, are sums of wall time.
 9. **Tests fail before they pass.** New behaviour gets a test that was first seen failing. A check
    that cannot fail gets a sabotage check.
 10. **Independent review.** Designs, pre-registrations and results have been reviewed by two
     models from different families: Astra 6 (OpenAI) and Claude Fable 5.1 (Anthropic). Their
-    reviews are archived under `docs/reviews/` and the experiment folders.
+    reviews are archived under `docs/reviews/` and the experiment folders, except 01b's
+    pre-publication review (D033), which is kept outside the repository.
 
 ## Where to start
 
