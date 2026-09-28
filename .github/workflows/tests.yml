@@ -1,0 +1,32 @@
+# The CPU test suite, on every push and pull request, so anyone can see it pass.
+# The connectome is downloaded from its source and hash-checked at run time by
+# scripts/fetch_connectome.py; it is never committed or cached here (AGENTS.md rule 1).
+# GPU tests (marker `gpu`) need CUDA and are not run.
+name: tests
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  cpu:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # some tests read git history
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Install the pinned versions (torch's CPU build)
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install torch==2.12.0 --index-url https://download.pytorch.org/whl/cpu
+          grep -v '^torch==' requirements.txt > "$RUNNER_TEMP/requirements-cpu.txt"
+          python -m pip install -r "$RUNNER_TEMP/requirements-cpu.txt"
+      - name: Fetch and hash-check the connectome
+        run: python scripts/fetch_connectome.py
+      - name: CPU tests
+        run: python -m pytest -m "not gpu" -p no:cacheprovider
