@@ -1,4 +1,4 @@
-"""T1's diagnostics behind D090's explanations (docs/foundations/T1.md §6; D091).
+"""T1's diagnostics behind the explanations in docs/foundations/T1.md §7 (D091, D092).
 
     python scripts/t1_diagnostics.py [--device cuda] [--quick]
 
@@ -8,17 +8,19 @@ file or on the equivalence results (`T1_equivalence_*.json`).
 
 1. `bmm_strain_count`: `torch.bmm` for the first S strains of a batch of 32, against the same
    strains inside the batch of 32, for S = 1, 2, 3, 4, 8, 16, at 1, 8, 16, 20, 32, 64, 160, 320 and
-   1 280 rows per strain (random inputs; the connectome's size, 302).
+   1 280 rows per strain (random inputs; the connectome's size, 302). Also a batch of 2 against 4,
+   and 1 against 2.
 2. `world_reduction`: each world's food total, `fields[:, FOOD].sum(dim=(1, 2))`, computed over the
    first n worlds of a batch, against the same worlds inside a batch of 2 048: real starting maps,
-   and random fields. `eaten_cause`: whether a single strain's final food fields are bit-identical
-   to its fields in a 2 048-world batch, and whether their per-world sums differ.
+   and random fields. `eaten_cause`: for the first 32 strains alone, on 8 worlds and on 1 world,
+   whether the final food fields are bit-identical to the same strain's fields in the batch, and
+   whether their per-world sums differ.
 3. `remainder_chunk`: 256 random genomes x 8 worlds in chunks of 3 (a last chunk of one strain),
    with the switch off and on, against the same genomes in one chunk of 256.
 4. `cpu_single_strain`: on the CPU, a brain batch of one against the same strain in a batch of 2
    and of 4, at 1, 5, 8, 16, 20 and 64 rows, with the switch off and on.
 5. `padding_cost`: single-strain evaluations with the switch off and on (02-T1 checkpoint and
-   hold-out shapes; the Task N proxy's), 5 repeats, median and range.
+   hold-out shapes; the Task N proxy's), 5 repeats each, interleaved, median and range.
 """
 
 from __future__ import annotations
@@ -80,6 +82,11 @@ def bmm_strain_count(device) -> dict:
         full = torch.bmm(v, m)
         out[str(rows)] = {str(S): _diff(torch.bmm(v[:S], m[:S]), full[:S]) for S in STRAINS}
         out[str(rows)]["repeat_32"] = _diff(torch.bmm(v, m), full)
+        # the brain test's own comparison: a padded strain (a batch of 2) against a batch of 4, and
+        # a batch of 1 against 2 (D092)
+        four = torch.bmm(v[:4], m[:4])
+        out[str(rows)]["2_vs_4"] = _diff(torch.bmm(v[:2], m[:2]), four[:2])
+        out[str(rows)]["1_vs_2"] = _diff(torch.bmm(v[:1], m[:1]), torch.bmm(v[:2], m[:2])[:1])
     return out
 
 
@@ -103,32 +110,37 @@ def world_reduction(con, iface, spec, device) -> dict:
 
 
 def eaten_cause(con, iface, spec, device, quick) -> dict:
-    """Where the single-strain `eaten` difference comes from (D091). 256 random genomes x 8 worlds,
-    switch on, as one batch (2 048 worlds) and strain 0 alone (8 worlds): are the final food fields
-    bit-identical (then only the per-world sum differs), and does each per-world sum depend on the
-    batch it is computed in?"""
+    """Where the single-strain `eaten` difference comes from (D091, D092). 256 random genomes, switch
+    on, on 8 worlds and on 1 world (the two cases that differed), as one batch and each of the first
+    32 strains alone: are the final food fields bit-identical (then only the per-world sum can
+    differ), and do the per-world sums, computed as `_play` computes them, differ?"""
     t1 = grid.task_config(Config(), "T1")
     n = 16 if quick else 256
     g = Genome.random(spec, t1.brain, n, generator=torch.Generator().manual_seed(1))
     g = _pad(Genome(g.spec.to(device), g.cfg, **{k: None if v is None else v.to(device) for k, v in g.params().items()}), True)
-    ids = np.arange(8)
+    out = {"strains_in_batch": n}
+    for worlds in (8, 1):
+        ids = np.arange(worlds)
 
-    def final_food(genome):
-        strain_of = torch.arange(genome.n_strains, device=device).repeat_interleave(len(ids)).reshape(-1, 1)
-        w = World(t1, iface, Brain(genome), strain_of, run_seed=3, world_ids=np.tile(ids, genome.n_strains),
-                  device=device)
-        w.run(20 if quick else None)
-        food = w.fields[:, w.ch.FOOD].contiguous().clone()
-        return food, w.fields[:, w.ch.FOOD].sum(dim=(1, 2))  # the per-world sum as _play computes it
-    batch_fields, batch_sums = final_food(g)
-    rows = {}
-    for i in range(min(32, n)):  # every strain the equivalence test evaluated alone
-        fields, sums = final_food(g.select([i]))
-        rows[str(i)] = {"final_food_fields_bit_identical": bool(torch.equal(fields, batch_fields[i * 8:(i + 1) * 8])),
-                        "final_sums_equal": bool(torch.equal(sums, batch_sums[i * 8:(i + 1) * 8]))}
-    return {"strains_in_batch": n, "worlds_alone": 8, "per_strain": rows,
+        def final_food(genome):
+            strain_of = torch.arange(genome.n_strains, device=device).repeat_interleave(len(ids)).reshape(-1, 1)
+            w = World(t1, iface, Brain(genome), strain_of, run_seed=3, world_ids=np.tile(ids, genome.n_strains),
+                      device=device)
+            w.run(20 if quick else None)
+            food = w.fields[:, w.ch.FOOD].contiguous().clone()
+            return food, w.fields[:, w.ch.FOOD].sum(dim=(1, 2))  # the per-world sum as _play computes it
+        batch_fields, batch_sums = final_food(g)
+        rows = {}
+        for i in range(min(32, n)):  # every strain the equivalence test evaluated alone
+            fields, sums = final_food(g.select([i]))
+            sl = slice(i * worlds, (i + 1) * worlds)
+            rows[str(i)] = {"final_food_fields_bit_identical": bool(torch.equal(fields, batch_fields[sl])),
+                            "final_sums_equal": bool(torch.equal(sums, batch_sums[sl]))}
+        out[f"{worlds}_worlds"] = {
+            "per_strain": rows,
             "strains_with_different_fields": sum(not r["final_food_fields_bit_identical"] for r in rows.values()),
             "strains_with_different_sums": sum(not r["final_sums_equal"] for r in rows.values())}
+    return out
 
 
 def remainder_chunk(con, iface, spec, device, quick) -> dict:
@@ -182,18 +194,20 @@ def padding_cost(con, iface, spec, device, quick) -> dict:
     for name, cfg, worlds in (("02-T1 checkpoint 1 x 16", t1, 16), ("02-T1 hold-out 1 x 64", t1, 64),
                               ("proxy checkpoint 1 x 16", proxy, 16), ("proxy hold-out 1 x 64", proxy, 64)):
         row = {}
-        for label, on in (("off", False), ("on", True)):
-            g = _pad(one, on)
-            ticks = 20 if quick else None
+        ticks = 20 if quick else None
+        gs = {"off": _pad(one, False), "on": _pad(one, True)}
+        for g in gs.values():
             rollout(cfg, iface, g, np.arange(worlds), 1, device, ticks=5)
-            ts = []
-            for _ in range(reps):
+        ts = {"off": [], "on": []}
+        for r in range(reps):  # off and on interleaved, alternating which goes first (Fable, D092)
+            for label in (("off", "on") if r % 2 == 0 else ("on", "off")):
                 _sync(device)
                 t = time.perf_counter()
-                rollout(cfg, iface, g, np.arange(worlds), 1, device, ticks=ticks)
+                rollout(cfg, iface, gs[label], np.arange(worlds), 1, device, ticks=ticks)
                 _sync(device)
-                ts.append(time.perf_counter() - t)
-            row[label] = {"median_s": statistics.median(ts), "min_s": min(ts), "max_s": max(ts), "reps": reps}
+                ts[label].append(time.perf_counter() - t)
+        for label, v in ts.items():
+            row[label] = {"median_s": statistics.median(v), "min_s": min(v), "max_s": max(v), "reps": reps}
         row["slowdown"] = row["on"]["median_s"] / row["off"]["median_s"]
         out[name] = row
     return out

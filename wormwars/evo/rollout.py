@@ -5,8 +5,11 @@ Two rules hold everywhere in here:
 - **Common random numbers.** Within one evaluation, every strain plays the *same* world ids. A
   world's map and spawn depend only on (run_seed, world_id), so comparisons between strains are
   paired rather than noisy.
-- **Chunking is invisible.** Splitting a rollout to fit memory must not change any score, because a
-  world is generated from its id and simulated independently of its batch-mates.
+- **Chunking does not change what is simulated.** A world is generated from its id and simulated
+  independently of its batch-mates, so splitting a rollout to fit memory changes neither which
+  world a strain plays nor how it is built. The floating-point results are exact only within the
+  same batch composition, (strains per chunk, worlds per strain, weys per world), and across
+  compositions only where tested (docs/REPRODUCIBILITY.md; D082, D091).
 """
 
 from __future__ import annotations

@@ -172,3 +172,26 @@ def test_writing_a_child_ledger_without_the_variable_does_nothing(tmp_path, monk
     from wormwars import accounting as A
     monkeypatch.delenv(A.CHILD_LEDGER_ENV, raising=False)
     assert A.write_child_ledger() is None
+
+
+def test_a_failed_child_still_hands_over_its_partial_counts(tmp_path):
+    """A child that counts work and then fails must not lose the counts; the parent merges them and
+    still reports the failure (Astra, D092)."""
+    import subprocess
+    import sys
+    from wormwars import accounting as A
+    script = tmp_path / "child.py"
+    script.write_text("\n".join([
+        "import sys",
+        f"sys.path.insert(0, {str(Path(__file__).parents[1])!r})",
+        "from wormwars import accounting as A",
+        "with A.child_ledger(), A.category('measure'):",
+        "    A.LEDGER.worlds(5)",
+        "    raise RuntimeError('boom')",
+        ""]), encoding="utf-8")
+    A.LEDGER.reset()
+    with pytest.raises(subprocess.CalledProcessError):
+        with A.category("measure"):
+            A.run_counted_child([sys.executable, str(script)], tmp_path / "ledger.json")
+    assert A.LEDGER.counts["measure"].worlds_built == 5
+    A.LEDGER.reset()

@@ -8,18 +8,19 @@ The script runs at both commits: before the change `BrainConfig` has no `pad_sin
 the script leaves the config alone.
 
 **Cases** (every one run in default mode and, in a fresh process, in `replay_mode(warn=False)`):
-- 02-T1 at 200 ticks, 256 random N2 genomes x 8 worlds (B = 160 rows per strain), with 2, 3, 4, 16,
-  32, 64, 128 and 256 strains per chunk, and the first 32 strains one per chunk;
-- the first 32 random genomes on 1, 16 and 64 worlds (B = 20, 320, 1 280), one per chunk and 32 per
-  chunk; the 16-world set also with 31 per chunk (a remainder of one: T0's known failing case), and
-  at 600 ticks (the stress test);
-- 02's 8 N2 champions for T1 on 16 worlds (checkpoints) and 64 worlds (hold-outs), alone and 8 per
-  chunk;
-- the Task N proxy (one wey, 300 ticks): the first 32 random genomes on 16 and 20 worlds (B = 16,
-  20), one, two and 32 per chunk;
-- the brain alone: 4 random genomes stepped 10 ticks at B = 1, 16, 20, 160, 320 and 1 280, as a
-  batch of 4 and each strain alone, plain, silenced, with a gap junction cut, and with the substeps
-  overridden. The final states are compared.
+- 02-T1 at 200 ticks, 256 random N2 genomes x 8 worlds (160 rows per strain), with 2, 3, 4, 16, 32,
+  64, 128 and 256 strains per chunk, and the first 32 strains one per chunk;
+- the first 32 random genomes on 1, 16 and 64 worlds (20, 320 and 1 280 rows), one per chunk and 32
+  per chunk; the 16-world set also with 31 per chunk (a remainder of one) and at 600 ticks;
+- 02's 8 N2 champions for T1 on 16 and 64 worlds, alone and 8 per chunk;
+- the Task N proxy (one wey, 300 ticks): the first 32 random genomes on 8, 16, 20 and 64 worlds (as
+  many rows), one, two and 32 per chunk;
+- the brain alone: 4 random genomes stepped 10 ticks at 1, 8, 16, 20, 64, 160, 320 and 1 280 rows,
+  as a batch of 4 and each strain alone, plain, silenced, with a gap junction cut, and with the
+  substeps overridden. The final states are compared.
+- Fields compared: score, energy, alive, eaten, pellets eaten and starting food.
+- With `--quick` (used for the CPU leg), rollouts run 20 ticks (30 for the stress test and the
+  proxy) on fewer genomes.
 
 **Legs** (tolerance zero; unequal values and the maximum difference recorded):
 - **off:** every output equals the pre-change reference;
@@ -222,6 +223,8 @@ def _single_strain(d: dict) -> bool:
 def single_strain_pairs(keys, desc) -> list[tuple[str, str, int]]:
     """(single-strain key, multi-strain reference key, strains) for every output of a case with a
     single-strain chunk."""
+    keys = list(keys)
+    present = set(keys)
     pairs = []
     for k in keys:
         if k.startswith("brain/"):  # brain keys carry no field: brain/B{rows}/{variant}/{alone|batch4}
@@ -229,16 +232,16 @@ def single_strain_pairs(keys, desc) -> list[tuple[str, str, int]]:
                 pairs.append((k, k[: -len("alone")] + "batch4", 4))
             continue
         case, field = k.rsplit("/", 1)
-        d = desc.get(case, {})
+        if case not in desc or "per_chunk" not in desc[case] or "strains" not in desc[case]:
+            raise AssertionError(f"{k}: no case description, so it cannot be classified")
+        d = desc[case]
         if _single_strain(d):
             batch = d.get("batch_ref") or case.rsplit("/chunk", 1)[0] + f"/chunk{d['strains']}"
             pairs.append((k, f"{batch}/{field}", d["strains"]))
-    # every single-strain output must be paired, or a leg would silently test the wrong thing
-    alone = [k for k in keys if k.endswith("/alone")
-             or (not k.startswith("brain/") and _single_strain(desc.get(k.rsplit("/", 1)[0], {})))]
-    missing = set(alone) - {p[0] for p in pairs}
+    # every pair needs its batch output, or a leg would silently compare against nothing (D092)
+    missing = sorted(p[0] for p in pairs if p[1] not in present)
     if missing:
-        raise AssertionError(f"single-strain outputs without a batch reference: {sorted(missing)[:5]}")
+        raise AssertionError(f"single-strain outputs whose batch output is missing: {missing[:5]}")
     return pairs
 
 
@@ -263,6 +266,13 @@ def cross_composition(outputs: dict, desc: dict) -> dict:
 
 
 def compare(ref: dict, desc: dict, off: dict, on: dict) -> dict:
+    """The three legs. The reference and both new runs must hold the same, non-empty set of outputs,
+    so nothing added or dropped passes silently (Astra, D092)."""
+    if not ref:
+        raise AssertionError("empty reference")
+    if not (set(ref) == set(off) == set(on)):
+        raise AssertionError(f"output inventories differ: only in the reference {sorted(set(ref) - set(off))[:5]}, "
+                             f"only in the new run {sorted(set(off) - set(ref))[:5]}")
     pairs = {p[0]: p for p in single_strain_pairs(ref.keys(), desc)}
     res = {"off_equals_reference": {}, "on_multi_equals_reference": {}, "on_single_equals_batch": {}}
     for k in ref:
@@ -301,9 +311,8 @@ def one_mode(args, mode: str) -> dict:
         cmd = [sys.executable, str(Path(__file__)), "--in-replay", "--device", args.device, "--tag", args.tag,
                "--runs02", str(args.runs02)] + (["--quick"] if args.quick else [])
         cmd += ["--save-reference"] if args.save_reference else ["--compare"]
-        ledger = OUT / f"{args.tag}-{args.device}-replay_mode-ledger.json"
-        subprocess.run(cmd, check=True, env={**os.environ, acct.CHILD_LEDGER_ENV: str(ledger)})
-        acct.merge_child_ledger(ledger)  # the child's counts join this attempt's record (D091)
+        # the child's counts join this attempt's record, even if it fails (D091, D092)
+        acct.run_counted_child(cmd, OUT / f"{args.tag}-{args.device}-replay_mode-ledger.json")
         return json.loads((OUT / f"{args.tag}-{args.device}-replay_mode.json").read_text(encoding="utf-8"))
     return run_mode(args, mode)
 
@@ -335,7 +344,6 @@ def run_mode(args, mode: str) -> dict:
     res["seconds"] = time.perf_counter() - t
     if args.in_replay:
         (OUT / f"{args.tag}-{args.device}-replay_mode.json").write_text(json.dumps(res, indent=1), encoding="utf-8")
-        acct.write_child_ledger()
     return res
 
 
@@ -425,7 +433,8 @@ def main():
     if sum((args.save_reference, args.compare, args.published)) != 1:
         raise SystemExit("choose one of --save-reference, --compare, --published")
     if args.in_replay:
-        with replay_mode(warn=False), acct.category("measure"):  # the child's counts under "measure"
+        # the child's counts under "measure", written even if it fails (D092)
+        with acct.child_ledger(), replay_mode(warn=False), acct.category("measure"):
             run_mode(args, "replay_mode")
         return
     prov = provenance()

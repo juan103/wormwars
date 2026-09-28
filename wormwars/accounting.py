@@ -194,6 +194,30 @@ def write_child_ledger() -> Path | None:
     return out
 
 
+@contextmanager
+def child_ledger():
+    """In a child process: whatever happens inside, write the counts so far on the way out, so a
+    failed child still hands over its partial work (D092)."""
+    try:
+        yield
+    finally:
+        write_child_ledger()
+
+
+def run_counted_child(cmd, ledger_path, **kwargs) -> subprocess.CompletedProcess:
+    """Run a child process that records its counts (see `child_ledger`), merge them into this
+    ledger, and only then raise if the child failed (D092)."""
+    ledger_path = Path(ledger_path)
+    ledger_path.unlink(missing_ok=True)
+    env = {**kwargs.pop("env", os.environ), CHILD_LEDGER_ENV: str(ledger_path)}
+    done = subprocess.run(cmd, env=env, **kwargs)
+    if ledger_path.exists():
+        merge_child_ledger(ledger_path)
+    if done.returncode != 0:
+        raise subprocess.CalledProcessError(done.returncode, cmd)
+    return done
+
+
 def merge_child_ledger(path) -> None:
     """In the parent, add a child's counts to this ledger, category by category."""
     for name, row in json.loads(Path(path).read_text(encoding="utf-8")).items():

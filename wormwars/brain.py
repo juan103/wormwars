@@ -391,9 +391,11 @@ class Brain:
         G = self.G
         mask = self.silence_mask
         if pad:
-            # A single strain as two identical copies, so `bmm` takes the same path as for a strain
-            # inside a population (D082, T1). Per-strain terms broadcast over the copy; only the
-            # matrices and the state are doubled, and the first copy is returned.
+            # A single strain as two identical copies, so `bmm` takes a two-strain path instead of
+            # the one-strain path (D082). A mitigation, not composition independence: at some row
+            # counts the result still depends on the strain count (T1.md §7, D091). Per-strain
+            # terms broadcast over the copy; only the matrices and the state are doubled, and the
+            # first copy is returned.
             if self._padded is None:
                 # doubled in W's stored orientation, then oriented as W_drive is, so the legacy
                 # direction keeps its transposed layout and hence its bmm path (D091)

@@ -153,11 +153,18 @@ def concurrency(device, quick) -> dict:
         # each worker counts its own work; the parent merges the counts (D091)
         ledgers = [ROOT / "runs" / "t1-profile" / f"worker-{n}-{i}-ledger.json" for i in range(n)]
         ledgers[0].parent.mkdir(parents=True, exist_ok=True)
+        for path in ledgers:
+            path.unlink(missing_ok=True)
         procs = [subprocess.Popen(cmd, stdout=subprocess.PIPE, text=True,
                                   env={**os.environ, acct.CHILD_LEDGER_ENV: str(path)}) for path in ledgers]
-        rates = [float(p.communicate()[0].strip().splitlines()[-1]) for p in procs]
-        for path in ledgers:
-            acct.merge_child_ledger(path)
+        outs = [p.communicate()[0] for p in procs]
+        for path in ledgers:  # merged before any failure is raised, so partial counts are kept (D092)
+            if path.exists():
+                acct.merge_child_ledger(path)
+        failed = [p.returncode for p in procs if p.returncode != 0]
+        if failed:
+            raise RuntimeError(f"{len(failed)} profile workers failed")
+        rates = [float(o.strip().splitlines()[-1]) for o in outs]
         out[str(n)] = {"per_process": rates, "total": sum(rates)}
     return out
 
@@ -175,7 +182,6 @@ def worker(device, quick):
         rollout(cfg, iface, g, np.arange(8) + 8 * i, run_seed=1, device=device, ticks=ticks)
     _sync(device)
     print(32 * 8 * reps / (time.perf_counter() - t))
-    acct.write_child_ledger()
 
 
 def _scripted(cfg, iface, n, device):
@@ -460,7 +466,8 @@ def main():
     ap.add_argument("--result", default=str(ROOT / "docs" / "foundations" / "T1_profile.json"))
     args = ap.parse_args()
     if args.worker:
-        with acct.category("measure"):  # the worker's counts under "measure" when merged (D091)
+        # the worker's counts under "measure", written even if it fails (D091, D092)
+        with acct.child_ledger(), acct.category("measure"):
             return worker(args.device, args.quick)
     prov = provenance()  # at the start
     if prov["dirty"] and not args.quick:

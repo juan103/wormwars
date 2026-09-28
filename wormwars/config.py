@@ -58,11 +58,12 @@ class BrainConfig:
     # "post_to_pre": the reversed update experiment 01 actually ran (DECISIONS.md D031). It exists
     # only so that experiment 01 reproduces exactly; never choose it for anything new.
     chem_direction: str = "pre_to_post"
-    # On CUDA a batch of one strain can take a different matmul path from the same strain inside
-    # a larger batch, so its scores can differ (D082). On: `Brain.step` runs a single strain as two
-    # identical copies and keeps the first, so it matches its in-population evaluation (T1, D086).
-    # Results computed before T1 ran without it: a saved genome or bundle without the field reads
-    # it as off, and 02's config builder pins it off.
+    # A batch of one strain can take a different matmul path from the same strain inside a larger
+    # batch, so its scores can differ (D082). On: `Brain.step` runs a single strain as two
+    # identical copies and keeps the first. That matched the in-population evaluation in the shapes
+    # T1 tested, except at 16 rows and 1 row per strain (docs/foundations/T1.md §7, D091); it is a
+    # mitigation, not composition independence. Results computed before T1 ran without it: a saved
+    # genome or bundle without the field reads it as off, and 02's config builder pins it off.
     pad_single_strain: bool = True
 
     @property
