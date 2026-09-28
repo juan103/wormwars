@@ -224,7 +224,9 @@ def test_published_champions_match_their_logs_final_best_by_nickname():
     bits), so this detects mismatches at nickname resolution only; it is not proof of identity."""
     import re
     n = 0
-    for f in sorted(ROOT.glob("runs/**/champion-*.npz")):
+    import subprocess
+    tracked = subprocess.check_output(["git", "ls-files", "runs/**/champion-*.npz"], cwd=ROOT, text=True).split()
+    for f in sorted(ROOT / t for t in tracked):  # committed files only, so a fresh clone agrees (D084)
         m = re.match(r"champion-(.+)-run(\d+)\.npz", f.name)
         log = f.parent / f"{m.group(1)}-run{m.group(2)}-log.json" if m else None
         if log is None or not log.exists():
@@ -232,4 +234,4 @@ def test_published_champions_match_their_logs_final_best_by_nickname():
         meta = json.loads(str(np.load(f, allow_pickle=False)["meta"]))
         assert meta["nickname"] == json.loads(log.read_text())[-1]["best_nickname"], f.name
         n += 1
-    assert n == 153
+    assert n == 135  # the committed champions with a log; 18 more exist only locally (D084)

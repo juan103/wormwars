@@ -2404,3 +2404,16 @@ Re-check of D082 (`docs/reviews/*-03r-T0-re/`):
   finding in hand, and padding or a guard for single-strain chunks is a T1 decision (Fable).
 
 **Test suite at the closing commit** (`205d929`): 467 tests, all passing.
+
+## D084 — The "153 published champions" was 135; a test depended on local files
+
+Running the full suite in a fresh worktree of the main candidate failed one test:
+`test_published_champions_match_their_logs_final_best_by_nickname` expected 153 and found 135.
+- **The test globbed `runs/` on disk.** This machine has 18 local-only, superseded champion files
+  (`runs/m5`, `runs/m4-pilot`) besides the **135 committed** ones. A fresh clone has 135.
+- **Corrected:** D067, D075's review trail and T0.md said "153 published champions". The accurate
+  statement is 135 committed champions with logs, plus 18 local-only ones: all 153 match by
+  nickname.
+- **The test** now reads committed files only (`git ls-files`) and expects 135.
+- **Lesson:** the suite is now also run in a fresh worktree before a push to main. That is how
+  this was caught.
