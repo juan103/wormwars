@@ -3320,3 +3320,21 @@ sabotage-checked); a killed rerun is charged before its refusal; an over-limit p
 must fit the limit at its own measured rates; the text slips; and D107's "ends normally" is better
 said "when its cleanup handlers run" (Astra). Fable's suggested CPU smoke run of all four stages with
 real rollouts was run and completed without errors.
+
+## D109 — 04a's pre-registration: both reviewers "ready to bind"; bound
+
+Astra 6 and Fable 5.1 checked v5 (`627b886`; `docs/reviews/20260928-231738-04a-prereg-v5/`) and both
+said **"ready to bind"**, after five rounds (D103-D108). Corrections made in the binding commit, as
+they asked:
+- "the aggregate is rebuilt before every cap check" (§8, §14, D108) overstated the code (both). The
+  cap clock now rebuilds the accounting's total whenever a stage starts (Fable's preferred fix), and
+  the text says what is true: at each reconciliation and at each stage's start; the per-rollout
+  checks read it as it stands;
+- a killed rerun is charged only when the operator runs `--rerun` once more and takes the refusal;
+  §8 says so (Fable);
+- the v5 CPU smoke run ran on the working tree before the v5 commit (Fable, Astra);
+- `REGISTERED["rerun"]` states the stricter over-limit condition (Fable);
+- one unreconciled case is disclosed: a stopped record whose own accounting file is missing (Fable).
+
+**The binding commit** is the commit the formal projection records; the projection, the guarded smoke
+run and the stages follow, each record committed and pushed before the next stage.

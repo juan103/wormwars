@@ -35,8 +35,8 @@
       for shaping;
     - throughput in 04a's shape is 110, 336 and 438 strain-worlds/s at 1, 4 and 8 runs batched;
     - a gain curve for stereo steering is measured (RESULTS.md).
-- **04a's pre-registration is at draft v4** (D103-D107, `experiments/04a-navigation-primitive/`),
-  after three review rounds with Astra 6 and Fable 5.1 (each "revise", every must-fix adopted).
+- **04a's pre-registration is bound** (v5, D103-D109, `experiments/04a-navigation-primitive/`), after
+  five review rounds with Astra 6 and Fable 5.1, the last "ready to bind" from both.
   Nothing has run on 04a's validation, hold-out or training worlds, or with its run seeds.
   - 16 N2 runs of 1 000 generations with 02's optimizer: 12 with a bounded shaping term (at most
     half an arrival per episode, training only) and 4 without;
@@ -49,8 +49,7 @@
     runs passed" would not surprise us; both reviewers advised keeping the design, and E2 compares
     optimizers;
   - about 2.99 GPU-hours estimated, with a cap of 6.
-  - **Next:** confirmation of v4, then bind and push, the guarded projection and smoke run, and the
-    stages.
+  - **Next:** the guarded projection and smoke run, then the stages.
 - **Documentation for outsiders:** every experiment folder now has a README with its question,
   result, caveats and exact commands to rerun it, and [`AGENTS.md`](AGENTS.md) describes the
   repository and its rules. Others are welcome to take any open question here, and to get there

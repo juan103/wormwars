@@ -97,7 +97,8 @@ REGISTERED = {
     "projection": {"generations_timed": 6, "seed_base": 1_109_000, "max_training_hours": 4.5},
     "rerun": ("once per stage, from scratch with the same seeds, after a crash, an interrupt or a kill, with the "
               "reason written first; never after the cap. The projection may also be rerun after an over-limit "
-              "result, once the generations are reduced by an amendment in AMENDMENTS.md (not guarded)"),
+              "result, once an amendment in AMENDMENTS.md (not guarded) reduces the generations so that training "
+              "fits the limit at that projection's own rates"),
     "rerun_kill_tail_seconds": 900,  # charged beyond a killed attempt's last file write (D107)
 }
 SMOKE_SEED_BASE = 1_108_000  # smoke runs' own seeds
@@ -117,6 +118,10 @@ def genomes_path(run: int) -> Path:
 
 
 def clock() -> reg.CapClock:
+    """The cap clock, after rebuilding the accounting's total from every attempt record, so a stage
+    never starts on a stale or missing total (Fable, review v5)."""
+    if (OUT / "compute").exists():
+        acct.write_aggregate(OUT / "compute", OUT / "compute.json")
     return reg.CapClock(REGISTERED["cap_gpu_hours"], OUT / "compute.json")
 
 
