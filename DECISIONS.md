@@ -2819,3 +2819,20 @@ gate stays with E1 (D086).
   contain.
 - **The 02b link** no longer suggests N2 "starts where selection took the champions". RESULTS.md
   says the comparison does not show this.
+
+## D093 — Documentation, T1 and the corrections published on main (the owner's go)
+
+On the owner's go ("Push, yes", 2026-09-28), main was fast-forwarded from `8e125b2` to `c34d01b`:
+the roadmap branch at `01e2204` plus one commit removing its working-branch banner. Before the push,
+the suite passed in a fresh worktree (511 tests), and the hygiene tests and identity checks passed.
+
+Now on main:
+- the documentation for outsiders (D087-D089), with 03's plain-words signals text (D092);
+- the correction of the 01b headline (D088);
+- T1: the profile, the single-strain padding (off for everything published), the equivalence
+  evidence, and closure by dated amendment (D086, D090-D092).
+
+The roadmap branch continues from main, with its banner restored. Next: E1.
+
+**Disclosed:** the roadmap-branch push of `01e2204` went out before its identity check. The check,
+run immediately afterwards, was clean. The checks run strictly before every push from now on.
