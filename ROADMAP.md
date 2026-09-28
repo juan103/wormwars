@@ -17,9 +17,10 @@
     brain's matrix products take about 70% of GPU kernel time, and the world about 55% of a
     tick's wall time. On a Task N-like shape (one wey per world) the world's share is about 70%,
     so batching more worlds together pays much more there;
-  - **single-strain padding** is implemented. Its equivalence test fails the general claim and
-    holds a narrower one (at least 20 rows per strain). The results and the adoption decision are
-    under review (D090);
+  - **single-strain padding** is implemented. Its declared equivalence test failed at 16 rows per
+    strain and at 1 row. It is kept as a mitigation of the batch-of-one path, with no measurable
+    cost, and changes no published evaluation. T1 closes by a dated amendment, not by passing its
+    gate (D091, under review);
   - **T1's budget gate moves to E1's pilot** (D086): E1 measures Task N's own throughput, and
     04a's and E2's budgets are fitted to it.
 - **Documentation for outsiders:** every experiment folder now has a README with its question,

@@ -43,24 +43,33 @@ close the result comes depends on where you run it.
   - So a genome evaluated alone (a champion's hold-out) can differ slightly from the same genome
     evaluated inside a population batch. Historical replays match exactly because they repeat the
     original single-strain evaluation.
-  - **Extended 2026-09-28 (T1, D090):**
-    - **Small row counts.** At 1 and 16 rows per strain (worlds × weys), `bmm` results depend on
-      the number of strains in the batch, not only on one strain against many: batches of 2-16
-      differ from a batch of 32. At 8, 20, 64, 160, 320 and 1 280 rows, only a batch of one
-      differed.
-    - **Reductions over fewer than 16 worlds** (a world's food total, for example) can differ in
-      the last bits from the same worlds summed inside a larger batch.
-    - **The CPU has a single-strain path too:** a brain batch of one differed from its batch
-      member by 1.2e-7 after three steps at 5 rows. The rollouts tested matched exactly.
+  - **Extended 2026-09-28 (T1, D090, corrected in D091).** A batch's composition is the tuple
+    (strains per chunk, worlds per strain, weys per world). Exact reproduction is claimed only
+    within the same composition. Equality across compositions is claimed only for the pairs
+    tested in `docs/foundations/T1_equivalence_v2_*.json`. What was measured
+    (`docs/foundations/T1_diagnostics.json`):
+    - **`bmm` at 1 and 16 rows per strain** (worlds × weys): batches of 1-16 strains differ from a
+      batch of 32. At 8 and 1 280 rows none differs. At 20, 32, 64, 160 and 320 only a batch of one
+      differs. (D090's version said "only a batch of one" at 8 and 1 280 rows; that was wrong.)
+    - **Per-world sums over a few worlds.** A world's food total, summed in a batch of 2-15 worlds,
+      can differ in the last bits from the same sum in a batch of 2 048. This was seen on random
+      fields and on the final food fields of the `eaten` report, not on the sparse starting maps.
+      The fields themselves were bit-identical: it is a reporting effect.
+    - **The CPU:** among the shapes tested, a brain batch of one differed from its batch member only
+      at 5 rows. The CPU rollouts tested matched exactly.
   - **Single-strain padding (T1).** `BrainConfig.pad_single_strain` makes `Brain.step` compute a
-    single strain as two identical copies:
-    - with it on, a single strain's score and energy equal its in-batch values at 20 or more rows
-      per strain;
+    single strain as two identical copies. It mitigates the batch-of-one path; it does not make
+    results independent of composition:
+    - with it on, a single strain's score and energy equalled its in-batch values in every tested
+      rollout shape except 16 rows per strain. Its brain states did at every tested row count
+      except 1 (`docs/foundations/T1.md` §7);
     - it is on by default for new configs;
-    - it is off for anything saved before T1: genome files and bundles without the field, and
-      02's config builder. So published results replay unchanged; all 388 of 02's hold-outs were
-      checked with it off. With it on, none of them changed.
-- **Everything on the CPU.** CPU rollouts with the same seeds reproduce bit for bit.
+    - it is off for anything saved before T1: genome files and bundles without the field, and 02's
+      config builder. A supplied config does not override a file's setting. So published results
+      replay unchanged: with it off, all 388 of 02's hold-outs and 468 of its probe evaluations
+      reproduce, and with it on, none of them changed.
+- **Everything on the CPU.** CPU rollouts with the same seeds and the same composition reproduce bit for
+  bit.
 
 ## What is not exactly reproducible by default, and why
 

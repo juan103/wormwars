@@ -2689,3 +2689,71 @@ follow-up note).
 3. E1 and 04a checkpoints use at least 20 rows per strain, or accept composition-specific
    results. Row padding is not proposed;
 4. whether T1's engineering closes.
+
+## D091 — T1 after review: fixes, the rerun, and closure by amendment (proposed)
+
+D090 went to Astra 6 and Fable 5.1 (`docs/reviews/20260928-120548-T1-results/`).
+- **Astra:** "T1: not yet". **Fable:** "T1: close with changes".
+- They agreed on the substance:
+  - keep padding, described as a mitigation;
+  - no padding in `rollout` and no row padding;
+  - state the tested shapes, not thresholds, and label the narrowed claim post hoc;
+  - commit the evidence behind every explanation;
+  - close T1 by a dated amendment, because its gate was not met.
+
+**Fixed** (T1.md §7 has the details):
+- **The checker:**
+  - strict bit equality;
+  - remainders inferred from the counts;
+  - starting food compared;
+  - E1's shapes, a cross-composition table and a CPU leg added;
+  - 02's capability probes replayed;
+  - the mean-change dtype fixed;
+  - tests, sabotage-checked.
+- **The padding:** the legacy direction now keeps its layout (Fable's suspicion, confirmed by a
+  failing test).
+- **The loader:** a supplied config can no longer switch padding on for an old file (Astra).
+- **Child-process compute** is recorded and merged (Astra).
+- **Diagnostics are committed** (`scripts/t1_diagnostics.py`).
+- **Documents:**
+  - `test_t1_padding.py`'s wrong docstring and citation are fixed;
+  - its CPU contract test uses a two-strain batch, so it does not depend on the BLAS (Fable).
+
+**Rerun:**
+- **The reference engine** is `ffeb541`: the pre-change engine plus three support files, merged
+  into history with the "ours" strategy so the commit is reachable.
+- **The comparison** ran at `3c12e7c`; the diagnostics at `27cb0d1`.
+- **Switch off:** 268 of 268 outputs (CUDA) and 250 of 250 (CPU) equal the pre-change engine.
+  02's 388 hold-outs and 468 probe evaluations reproduce exactly.
+- **Switch on:**
+  - multi-strain outputs are unchanged, 158 of 158;
+  - a single strain equals its batch in 102 of 110 on CUDA and 104 of 104 on CPU;
+  - no published evaluation changes.
+- **The 8 remaining differences** are explained by committed diagnostics:
+  - **`bmm` at 16 rows and 1 row** depends on the strain count. The two-strain composition that
+    padding produces itself differs from 32 strains there.
+  - **`eaten` at 8 worlds and 1 world** is a reporting artefact of per-world sums. The final food
+    fields are bit-identical for all 32 strains; their sums differ for 22.
+- **Corrected:**
+  - D090 and REPRODUCIBILITY.md said "only a batch of one" differed at 8 and 1 280 rows; the
+    diagnostics show none differs there;
+  - T0.md's "CPU: exact under any chunking" gets a dated correction (5 rows).
+- **Padding's cost:** none measurable (0.95-1.01).
+
+**Proposed for the reviewers' confirmation:**
+- padding kept, on by default for new work, as a mitigation;
+- the contract amended: a composition is a tuple, exact only within it, and equal across
+  compositions only for the pairs tested;
+- E1 guidance: composition-specific results with matched arms, E1's shapes tested before relying
+  on them, and E1's own config builder with a test;
+- **T1's engineering closes by the amendment in T1.md §7.**
+
+**Also disclosed:** the profile's single timings; the first-round reference's deleted compute
+record (about 1.36 h); uncounted scratch exploration. T1's recorded compute is about 6.9 GPU
+wall-clock hours.
+
+**Repository metadata (the owner's go, 2026-09-28):**
+- the GitHub "About" description now leads with the question and the latest replicated result;
+- nine topics were added (c-elegans, connectome, neuroevolution, computational-neuroscience,
+  artificial-life, pytorch, open-science, preregistration, reproducibility);
+- main's README links the roadmap under its intro (`8e125b2`).
