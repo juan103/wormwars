@@ -2441,3 +2441,56 @@ removing the working-branch banner.
 - no connectome files.
 
 `roadmap` continues as the working branch from `main`, with a short banner.
+
+## D086 — T1 plan: reviewed, approved with changes, v2 adopts them
+
+T1's plan v1 (`98dc4f7`) was reviewed by Astra 6 and Fable 5.1 (`docs/reviews/20260928-074601-T1/`).
+Both answered **"T1 plan: approve with changes"**, and the changes largely overlap. Plan v2
+(`docs/foundations/T1.md`) adopts all of them.
+
+**Agreed by both, as proposed:**
+- keep dense FP32 and do not port frameworks;
+- pad single-strain batches in `Brain.step`, on by default for new work;
+- defer batching several runs until a budget needs it;
+- adopt no numerics-changing engine in T1.
+
+**Changed:**
+- **The bottleneck reading (Fable).** The brain step is already GPU-bound; the gain from larger
+  batches comes from the world's fixed per-tick cost, which v1 did not profile. "The CPU is the
+  limit" is withdrawn (Astra: CPU time in a profiler is not a cause). T1.1 now profiles the world,
+  its two host syncs per tick, a whole short run, single-strain shapes, `replay_mode`'s cost and a
+  Task N proxy (one wey, 300 ticks), with 5 repeats.
+- **Wording:**
+  - "the framework is not the bottleneck" became "these measurements do not justify a port";
+  - "Windows time-slices processes" became "the cause is not established";
+  - the cuSPARSE finding is scoped to the tested implementation, and rechecked under
+    `replay_mode(warn=False)`.
+- **03a's gap.** No exact lever found closes it: about ×2.5 is needed, the best is ×1.36.
+- **Class E** is now:
+  - old against new on each device;
+  - against a reference saved from the pre-change commit;
+  - bit-equality recorded;
+  - rows per strain 16 to 1 280, and 1 to 256 strains per chunk;
+  - the replay leg in a fresh process.
+- **Class N's numbers are withdrawn** (both). The category stays, and needs its own plan.
+- **The padding switch is legacy-off where published results are read** (both):
+  - a missing field means off in `load_genome`, `Config.from_bundle` and `brain_config_for`;
+  - 02's `task_config` pins it off.
+  Without this, published champions would have silently loaded with padding on.
+- **Padding's own specification:**
+  - its work is counted, with a separate `neural_padding` field;
+  - a CPU test spies the batch size reaching `bmm`;
+  - the environment-dependent negative control is a sensitivity check, not a suite assertion;
+  - 02's single-strain hold-outs are replayed with it off, and the change with it on is
+    reported.
+- **T1.3's trigger:**
+  - it needs a fixed-scope experiment that misses its cap, after shrinking first;
+  - the vacuous "twice as long" branch is removed;
+  - its scope now includes per-run world ids, accounting and early termination.
+- **The gate is staged** (both). "Scripted, so it fits any budget" was wrong (Astra). T1's
+  engineering closes on T1.1 and T1.2. The budget gate moves to a bounded E1 pilot, then to a
+  committed 04a and E2 budget calculation against an explicit cap. This is an amendment to the
+  roadmap's T1 gate.
+
+**Consensus:** both approve with changes, and v2 adopts every change. Under the owner's standing
+rule, T1 proceeds and the owner is informed.
