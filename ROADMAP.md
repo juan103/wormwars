@@ -6,13 +6,15 @@
 
 - **Published on main:**
   - 02's D050 correction, as a Corrections entry (27 September, D063);
-  - 03 and 03r together, reported by the pre-registered rule, and 02b (28 September, D085).
+  - 03 and 03r together, reported by the pre-registered rule, and 02b (28 September, D085);
+  - the documentation for outsiders, and T1 (28 September, D093);
+  - E1, with its pre-registration, results and corrections (28 September, D102).
 - **T0 (correctness) is closed** (D083). On CUDA, results repeated exactly for the same batch
   composition in the tested configurations; exact reproduction is guaranteed only inside
   `replay_mode()`. A chunk holding a single strain can differ from the same strain in a larger
   chunk (D082).
-- **T1 (throughput) is in progress** (plan v2: [`docs/foundations/T1.md`](docs/foundations/T1.md),
-  D086):
+- **T1 (throughput) is closed by a dated amendment** (plan v2:
+  [`docs/foundations/T1.md`](docs/foundations/T1.md), D086, D092):
   - **the profile** (`docs/foundations/T1_profile.json`). On 02's task T1, at evolution's batch, the
     brain's matrix products take about 70% of GPU kernel time, and the world about 55% of a
     tick's wall time. On a Task N-like shape (one wey per world) the world's share is about 70%,
@@ -33,7 +35,16 @@
       for shaping;
     - throughput in 04a's shape is 110, 336 and 438 strain-worlds/s at 1, 4 and 8 runs batched;
     - a gain curve for stereo steering is measured (RESULTS.md).
-  - **Next: 04a's pre-registration.**
+- **04a's pre-registration is drafted** (v1, D103, `experiments/04a-navigation-primitive/`) and is
+  with Astra 6 and Fable 5.1 for review. Nothing has run on 04a's worlds.
+  - 16 N2 runs of 1 000 generations with 02's optimizer: 12 with a bounded shaping term (at most
+    half an arrival per episode, training only) and 4 without;
+  - runs are batched 8 at a time in one rollout, each with its own random streams. This is T1's
+    batching of runs; its exactness across compositions is still not claimed;
+  - "04a: passed" needs 6 of the 12 shaped runs to pass E1's rules on 1 024 hold-out worlds, and to
+    beat their own generation 0;
+  - about 2.75 GPU-hours estimated, with a cap of 6.
+  - **Next:** review until both agree, then bind, push, run a guarded budget projection, and run.
 - **Documentation for outsiders:** every experiment folder now has a README with its question,
   result, caveats and exact commands to rerun it, and [`AGENTS.md`](AGENTS.md) describes the
   repository and its rules. Others are welcome to take any open question here, and to get there
