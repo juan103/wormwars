@@ -19,6 +19,7 @@ this project does not redistribute (D028). The records carry every genome's hash
 from __future__ import annotations
 
 import argparse
+import calendar
 import dataclasses
 import hashlib
 import importlib
@@ -97,6 +98,7 @@ REGISTERED = {
     "rerun": ("once per stage, from scratch with the same seeds, after a crash, an interrupt or a kill, with the "
               "reason written first; never after the cap. The projection may also be rerun after an over-limit "
               "result, once the generations are reduced by an amendment in AMENDMENTS.md (not guarded)"),
+    "rerun_kill_tail_seconds": 900,  # charged beyond a killed attempt's last file write (D105)
 }
 SMOKE_SEED_BASE = 1_108_000  # smoke runs' own seeds
 OUTCOMES = {"passed": "04a: passed", "some": "04a: some runs passed ({k} of {n})", "none": "04a: not passed",
@@ -225,12 +227,13 @@ def attempt1(f: Path) -> Path:
     return f.with_name(f.stem.replace(".tmp", "") + "-attempt1" + f.suffix)
 
 
-def archive_attempt(stage: str, files: list[Path], reason: str | None, over_limit_ok: bool = False) -> dict:
-    """The registered rerun: once per stage, after a crash, an interrupt or a kill (never the cap), with
-    its reason written first. `files[0]` is the record and `files[1]` the start marker; the stopped
-    attempt's files, local genome files included, are kept beside, renamed `-attempt1`. A kill leaves a
-    marker and no record: that counts as stopped. With `over_limit_ok` (the projection), a completed
-    projection over its limit may also be rerun."""
+def rerun_plan(stage: str, files: list[Path], reason: str | None, over_limit_ok: bool = False) -> dict:
+    """The registered rerun, checked but not yet applied: once per stage, after a crash, an interrupt or
+    a kill (never the cap), with a reason. `files[0]` is the record and `files[1]` the start marker. A
+    kill leaves a marker and no record; its compute is reconciled into the accounting first
+    (`reconcile_kill`), so the cap check that follows includes it. With `over_limit_ok` (the
+    projection), a completed projection over its limit may be rerun only once the registered
+    generations are below the ones it projected (an amendment, D105)."""
     if not reason or not reason.strip():
         raise SystemExit("a rerun needs --reason, written before it runs")
     record, marker = files[0], files[1]
@@ -241,17 +244,52 @@ def archive_attempt(stage: str, files: list[Path], reason: str | None, over_limi
         over = over_limit_ok and rec.get("outcome") == "completed" and rec.get("within_limit") is False
         if rec.get("outcome") != OUTCOMES["stopped"] and not over:
             raise SystemExit(f"only a stage stopped by a crash, an interrupt or a kill is rerun, not: {rec.get('outcome')}")
-        how = "over its limit" if over else "stopped"
+        if over and not training_plan()["generations"] < rec.get("plan", {}).get("generations", 0):
+            raise SystemExit("an over-limit projection is rerun only after an amendment reduces the generations")
+        how, reconciled = ("over its limit" if over else "stopped"), None
     elif marker.exists():
-        how = "killed: a start marker and no record"
+        how, reconciled = "killed: a start marker and no record", reconcile_kill(stage, files)
     else:
         raise SystemExit(f"{stage} has not run: nothing to rerun")
+    return {"stage": stage, "files": files, "reason": reason.strip(), "how": how, "reconciled": reconciled}
+
+
+def reconcile_kill(stage: str, files: list[Path]) -> dict:
+    """A kill skips the accounting's `finally`, so the attempt's time is missing from compute.json. It
+    is charged here, once: from the marker's start to the attempt's last file write, plus the
+    registered tail for the unrecorded end. Written as an attempt record and re-aggregated."""
+    marker = files[1]
+    started = json.loads(marker.read_text(encoding="utf-8"))["started_utc"]
+    t_start = calendar.timegm(time.strptime(started, "%Y-%m-%dT%H:%M:%SZ"))
+    last = max(f.stat().st_mtime for f in files if f.exists())
+    tail = float(REGISTERED["rerun_kill_tail_seconds"])
+    seconds = max(0.0, last - t_start) + tail
+    compute = OUT / "compute"
+    name = f"killed-{marker.stem}-{started.replace(':', '')}.json"
+    doc = {"status": "killed (reconciled)", "stage": stage, "marker": marker.name, "started_utc": started,
+           "last_write_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(last)), "tail_seconds": tail,
+           "categories": {"killed attempt": {**{f: 0 for f in acct.COUNT_FIELDS}, "seconds": seconds}},
+           "note": "counts unknown; seconds estimated from the marker and the last file write (D105)"}
+    compute.mkdir(parents=True, exist_ok=True)
+    if not (compute / name).exists():  # once, however often the rerun is refused and retried
+        reg.write_json(compute / name, doc)
+        acct.write_aggregate(compute, OUT / "compute.json")
+    return {"file": name, "seconds": seconds}
+
+
+def apply_rerun(plan: dict | None) -> dict | None:
+    """After every other check has passed: keep the stopped attempt's files beside, renamed
+    `-attempt1`, and write the reason and the mapping to `<record>-rerun.json`."""
+    if plan is None:
+        return None
     moved = {}
-    for f in files:
+    for f in plan["files"]:
         if f.exists():
             os.replace(f, attempt1(f))
-            moved[str(f.name)] = str(attempt1(f).name)
-    note = {"stage": stage, "how_the_first_attempt_ended": how, "reason": reason.strip(), "archived": moved,
+            moved[f.name] = attempt1(f).name
+    record = plan["files"][0]
+    note = {"stage": plan["stage"], "how_the_first_attempt_ended": plan["how"], "reason": plan["reason"],
+            "reconciled_compute": plan["reconciled"], "archived": moved,
             "written_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())}
     reg.write_json(record.with_name(record.stem + "-rerun.json"), note)
     return note
@@ -311,11 +349,11 @@ def cmd_project(args):
     if formal(args):
         reg.require_formal(args.device, prov)
     path = EXP / "projection.json"
-    rerun = None
-    if args.rerun:
-        rerun = archive_attempt("the projection", [path, EXP / "project-started.json"], args.reason,
-                                over_limit_ok=True)
-    if path.exists():
+    scratch = [OUT / "projection-genomes" / f"run{r.run:02d}-candidates.npz"
+               for r in run_specs("A", REGISTERED["projection"]["seed_base"])]
+    plan = rerun_plan("the projection", [path, EXP / "project-started.json", *scratch], args.reason,
+                      over_limit_ok=True) if args.rerun else None
+    if plan is None and path.exists():
         raise SystemExit(f"{path.name} exists: the projection runs once")
     cap = clock()
     try:
@@ -325,6 +363,7 @@ def cmd_project(args):
     con, iface = preflight(args.device)
     spec = BrainSpec.from_connectome(con)
     cfg = task_config()
+    rerun = apply_rerun(plan)
     marker = reg.start_marker(EXP, "project", prov)
     n = REGISTERED["projection"]["generations_timed"]
     val, base, span = projection_ids()
@@ -336,7 +375,8 @@ def cmd_project(args):
     t0 = time.perf_counter()
     try:
         with acct.category("measure"):
-            # the checkpoint writes are timed too, as in training (local files, then discarded)
+            # the checkpoint writes are timed too, as in training (local scratch files, kept, and
+            # archived with the projection on a rerun)
             recs = EV.evolve_batch(cfg, iface, spec, run_specs("A", REGISTERED["projection"]["seed_base"]),
                                    generations=n, checkpoint_every=n - 1, validation_ids=val,
                                    world_seed=REGISTERED["world_seed"], id_base=base, id_span=span,
@@ -375,13 +415,11 @@ def cmd_train(args):
     if formal(args):
         reg.require_formal(args.device, prov)
     path, partial_path = train_path(batch), EXP / f"train-{batch}-partial.json"
-    rerun = None
-    if args.rerun:
-        local = [genomes_path(r.run) for r in run_specs(batch)] + [OUT / f"run{r.run:02d}-final.npz"
-                                                                    for r in run_specs(batch)]
-        rerun = archive_attempt(f"batch {batch}", [path, EXP / f"train-{batch}-started.json", partial_path, *local],
-                                args.reason)
-    if path.exists():
+    local = [genomes_path(r.run) for r in run_specs(batch)] + [OUT / f"run{r.run:02d}-final.npz"
+                                                                for r in run_specs(batch)]
+    plan = rerun_plan(f"batch {batch}", [path, EXP / f"train-{batch}-started.json", partial_path, *local],
+                      args.reason) if args.rerun else None
+    if plan is None and path.exists():
         raise SystemExit(f"{path.name} exists: batch {batch} runs once")
     if batch == "A":
         require_projection(args, prov)
@@ -395,6 +433,7 @@ def cmd_train(args):
     con, iface = preflight(args.device)
     spec = BrainSpec.from_connectome(con)
     cfg = task_config()
+    rerun = apply_rerun(plan)
     marker = reg.start_marker(EXP, f"train-{batch}", prov)
     t0 = time.perf_counter()
     runs = run_specs(batch)
@@ -591,11 +630,9 @@ def cmd_evaluate(args):
         reg.require_formal(args.device, prov)
     result_path, events_path = EXP / "evaluation.json", EXP / "evaluation_events.npz"
     partial = EXP / "evaluation_partial.npz"
-    rerun = None
-    if args.rerun:
-        rerun = archive_attempt("the evaluation", [result_path, EXP / "evaluate-started.json", events_path, partial],
-                                args.reason)
-    if result_path.exists():
+    plan = rerun_plan("the evaluation", [result_path, EXP / "evaluate-started.json", events_path, partial],
+                      args.reason) if args.rerun else None
+    if plan is None and result_path.exists():
         raise SystemExit(f"{result_path.name} exists: the hold-out worlds are used once")
     trains = {b: require_earlier(args, prov, train_path(b), f"batch {b}") for b in ("A", "B")}
     if trains["A"]["e1_inputs_sha256"] != e1_input_hashes():
@@ -612,6 +649,7 @@ def cmd_evaluate(args):
     genomes = check_genomes(records, spec, cfg)  # before any hold-out world is used
     tuned = json.loads(E1_FREEZE.read_text(encoding="utf-8"))["tuned"]
     curve = gain_curve_params(tuned)
+    rerun = apply_rerun(plan)
     marker = reg.start_marker(EXP, "evaluate", prov)
     t0 = time.perf_counter()
     ids = holdout_ids()

@@ -35,19 +35,22 @@
       for shaping;
     - throughput in 04a's shape is 110, 336 and 438 strain-worlds/s at 1, 4 and 8 runs batched;
     - a gain curve for stereo steering is measured (RESULTS.md).
-- **04a's pre-registration is at draft v3** (D103-D105, `experiments/04a-navigation-primitive/`),
-  after two review rounds with Astra 6 and Fable 5.1 (both "revise", every must-fix adopted). Nothing
-  has run on 04a's validation, hold-out or training worlds, or with its run seeds. A development
-  pilot on smoke ids plateaued near 2 targets per episode, so "not passed" or "some runs passed"
-  would not surprise us; both reviewers advised keeping the design, and E2 compares optimizers.
+- **04a's pre-registration is at draft v4** (D103-D107, `experiments/04a-navigation-primitive/`),
+  after three review rounds with Astra 6 and Fable 5.1 (each "revise", every must-fix adopted).
+  Nothing has run on 04a's validation, hold-out or training worlds, or with its run seeds.
   - 16 N2 runs of 1 000 generations with 02's optimizer: 12 with a bounded shaping term (at most
     half an arrival per episode, training only) and 4 without;
   - runs are batched 8 at a time in one rollout, each with its own random streams. This is T1's
     batching of runs; its exactness across compositions is still not claimed;
-  - "04a: passed" needs 6 of the 12 shaped runs to pass E1's rules on 1 024 hold-out worlds, and to
-    beat their own generation 0;
-  - about 2.75 GPU-hours estimated, with a cap of 6.
-  - **Next:** review until both agree, then bind, push, run a guarded budget projection, and run.
+  - "04a: passed" needs 6 of the 12 shaped runs to pass five rules on 1 024 hold-out worlds: E1's
+    three, the real cue beating the champion's own constant probe, and beating their own
+    generation 0;
+  - a development pilot on smoke ids plateaued near 2 targets per episode, so "not passed" or "some
+    runs passed" would not surprise us; both reviewers advised keeping the design, and E2 compares
+    optimizers;
+  - about 2.99 GPU-hours estimated, with a cap of 6.
+  - **Next:** confirmation of v4, then bind and push, the guarded projection and smoke run, and the
+    stages.
 - **Documentation for outsiders:** every experiment folder now has a README with its question,
   result, caveats and exact commands to rerun it, and [`AGENTS.md`](AGENTS.md) describes the
   repository and its rules. Others are welcome to take any open question here, and to get there

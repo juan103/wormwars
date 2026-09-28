@@ -285,6 +285,46 @@ def test_a_stopped_batch_is_rerun_once_with_the_attempt_and_its_genomes_kept(m):
         m.cmd_train(_args("train", "A", rerun=True, reason="again"))
 
 
+def _killed_batch_a(m, hours_ago=2.0, last_write_hours_ago=1.0):
+    """What a hard kill of batch A leaves: a marker, a partial record, no result, no accounting."""
+    import os
+    import time
+    m.cmd_project(_args("project"))
+    started = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(time.time() - hours_ago * 3600))
+    (m.EXP / "train-A-started.json").write_text(json.dumps({"stage": "train-A", "started_utc": started}))
+    partial = m.EXP / "train-A-partial.json"
+    partial.write_text("{}")
+    t = time.time() - last_write_hours_ago * 3600
+    for f in (partial, m.EXP / "train-A-started.json"):
+        os.utime(f, (t, t))
+
+
+def _spent(m):
+    return json.loads((m.OUT / "compute.json").read_text())["totals"]["seconds_timed"]
+
+
+def test_a_killed_attempts_time_is_charged_once_before_the_rerun(m):
+    _killed_batch_a(m)
+    m.cmd_train(_args("train", "A", rerun=True, reason="test: killed"))
+    note = json.loads((m.EXP / "train-A-rerun.json").read_text())
+    assert note["how_the_first_attempt_ended"].startswith("killed")
+    charged = note["reconciled_compute"]["seconds"]
+    assert charged == pytest.approx(3600 + 900, abs=5)  # start to the last write, plus the tail
+    assert _spent(m) >= charged
+
+
+def test_a_killed_attempt_that_exhausts_the_cap_is_not_rerun_and_keeps_its_rerun(m):
+    _killed_batch_a(m, hours_ago=3.0, last_write_hours_ago=0.5)  # 2.5 h, plus the tail
+    m.REGISTERED["cap_gpu_hours"] = 2.0
+    with pytest.raises(SystemExit, match="did not start"):
+        m.cmd_train(_args("train", "A", rerun=True, reason="test: killed"))
+    assert (m.EXP / "train-A-started.json").exists() and not (m.EXP / "train-A-started-attempt1.json").exists()
+    before = _spent(m)
+    with pytest.raises(SystemExit, match="did not start"):  # retried: charged once, not twice
+        m.cmd_train(_args("train", "A", rerun=True, reason="test: killed"))
+    assert _spent(m) == before
+
+
 def test_a_killed_stage_with_a_marker_and_no_record_can_be_rerun(m):
     m.cmd_project(_args("project"))
     m.reg.start_marker(m.EXP, "train-A", {"stage": "killed"})  # what a hard kill leaves
@@ -296,16 +336,42 @@ def test_a_killed_stage_with_a_marker_and_no_record_can_be_rerun(m):
     assert note["how_the_first_attempt_ended"].startswith("killed")
 
 
-def test_the_projection_is_rerun_after_a_stop_or_over_its_limit_only(m):
+def test_an_over_limit_projection_is_rerun_only_with_fewer_generations(m):
     m.cmd_project(_args("project"))
     with pytest.raises(SystemExit, match="only a stage stopped"):  # completed within its limit
         m.cmd_project(_args("project", rerun=True, reason="x"))
     p = json.loads((m.EXP / "projection.json").read_text())
     p["within_limit"] = False
     (m.EXP / "projection.json").write_text(json.dumps(p))
+    with pytest.raises(SystemExit, match="reduces the generations"):  # unchanged: not rerun until it passes
+        m.cmd_project(_args("project", rerun=True, reason="over the limit"))
+    assert not (m.EXP / "projection-attempt1.json").exists()
+    m.REGISTERED["evolution"]["generations"] -= 1  # the amendment
     m.cmd_project(_args("project", rerun=True, reason="test: over the limit, generations amended"))
     assert json.loads((m.EXP / "projection.json").read_text())["within_limit"]
     assert (m.EXP / "projection-attempt1.json").exists()
+
+
+def test_a_stopped_projection_is_rerun_once(m):
+    m._fakes.crash_at = 1
+    with pytest.raises(RuntimeError):
+        m.cmd_project(_args("project"))
+    m._fakes.crash_at = None
+    m.cmd_project(_args("project", rerun=True, reason="test: a crash"))
+    assert json.loads((m.EXP / "projection.json").read_text())["outcome"] == "completed"
+    assert json.loads((m.EXP / "projection-attempt1.json").read_text())["outcome"] == m.OUTCOMES["stopped"]
+
+
+def test_a_stopped_evaluation_is_rerun_once(m):
+    _trained(m)
+    m._fakes.crash_at = len(m._fakes.calls) + 2
+    with pytest.raises(RuntimeError):
+        m.cmd_evaluate(_args("evaluate"))
+    m._fakes.crash_at = None
+    m.cmd_evaluate(_args("evaluate", rerun=True, reason="test: a crash"))
+    assert json.loads((m.EXP / "evaluation.json").read_text())["outcome"].startswith("04a: ")
+    assert json.loads((m.EXP / "evaluation-attempt1.json").read_text())["outcome"] == m.OUTCOMES["stopped"]
+    assert json.loads((m.EXP / "evaluation-rerun.json").read_text())["reason"] == "test: a crash"
 
 
 def test_a_failing_genome_save_still_leaves_a_stopped_record(m, monkeypatch):

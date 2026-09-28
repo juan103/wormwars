@@ -1,4 +1,4 @@
-# 04a: an evolved N2 navigation primitive. Pre-registration (draft v3)
+# 04a: an evolved N2 navigation primitive. Pre-registration (draft v4)
 
 **Status:**
 - Written 2026-09-28 for review by Astra 6 and Fable 5.1. Nothing below has run on 04a's
@@ -8,6 +8,8 @@
   - v2 (`68f8aa3`, `docs/reviews/20260928-221414-04a-prereg-v2/`): both said "revise", and both
     advised keeping 1 000 generations and 02's optimizer (D105). Every must-fix is adopted in v3;
     §12 lists them.
+  - v3 (`082210e`, `docs/reviews/20260928-224400-04a-prereg-v3/`): both said "revise", narrowly
+    (D107). Every must-fix is adopted in v4; §13 lists them.
 - **The order:** review until both agree; bind (a commit); push; the guarded projection and a
   guarded smoke run on the binding commit; then the formal stages, each on a clean tree whose HEAD
   is pushed, with each stage's record committed and pushed before the next stage starts.
@@ -259,9 +261,11 @@ seed 0, exactly as E1's.
   cannot be evolved to navigate.
 
 **The expectation, stated in advance.** The development pilot (§9) makes failing rule 1 a real
-risk. A validation mean near 2 does not settle it either way: rule 1 needs at least 820 of 1 024
-episodes with 2 or more targets, which a mean as low as 1.60 could meet only if nearly every episode
-reached exactly 2, and a spread like a Poisson count's would need a mean near 3. We would not be
+risk. A validation mean near 2 does not settle it either way. Rule 1 requires at least 820 of 1 024
+episodes to reach two targets; its lowest possible passing mean is 1.6015625, attained by 820
+episodes reaching exactly two and the other 204 reaching none, and a higher mean alone does not
+establish a pass. As a hypothetical illustration only, a count spread like a Poisson's would need a
+mean near 3 (Astra, Fable, review v3). We would not be
 surprised by "not passed" or "some runs passed". If so, the next step is E2's optimizer screen at
 equal simulator work, and any new attempt at 04a is a new registration on fresh hold-out ids, not a
 change inside this one.
@@ -351,12 +355,21 @@ about 10 s per checkpoint beyond 4.749 s per generation, a conservative figure.
   Training keeps every completed checkpoint (records and local genomes, written atomically after
   each); the evaluation keeps every completed arm;
 - **the rerun rule, fixed now:** a stage stopped by a crash, an interrupt, or a kill that left a
-  start marker and no record, may be rerun **once**, from scratch with the same seeds
-  (`--rerun --reason "..."`). The reason is written to `<stage>-rerun.json` before the rerun
+  start marker and no record, **is rerun once**, from scratch with the same seeds
+  (`--rerun --reason "..."`): the rerun is obligatory, not a choice made after seeing partial
+  curves or arms (Fable, review v3). **A kill's compute is charged first:** the accounting writes its
+  record only when a process ends normally, so before a rerun the killed attempt is charged from its
+  start marker to its last file write, plus a registered tail of 900 s, as an attempt record in the
+  accounting; the cap check that follows includes it, and a rerun the cap refuses is not used up
+  (Astra, Fable, review v3). The rerun is applied only after every other check has passed. The reason is written to `<stage>-rerun.json` before the rerun
   starts; an interrupt must name its external cause. The stopped attempt's record, marker, partial
   files and local genome files are kept beside it, renamed `-attempt1`, and disclosed. A stage
   stopped by the cap is not rerun, and a second stop is final. The projection may also be rerun
-  once after an over-limit result, on an amended commit. Anything else needs a dated amendment;
+  after an over-limit result, only once an amendment has reduced the registered generations below the
+  ones it projected (the runner checks this); one projection rerun in total. Its scratch genome files
+  are archived with it. A crash caused by the guarded code itself cannot be fixed inside this
+  registration: fixing it changes the binding commit, so it needs a dated amendment and a new
+  projection on the new commit, all disclosed. Anything else needs a dated amendment;
 - **amendments** go in `AMENDMENTS.md`, which is not a guarded file. This file is guarded: editing
   it after binding would stop the next stage;
 - if saving genomes fails while a stage is stopping, the not-completed record is written first and
@@ -400,7 +413,7 @@ about 10 s per checkpoint beyond 4.749 s per generation, a conservative figure.
   **The formal seeds are moved** to 1 105 000 onward; the projection and smoke runs get their own
   seeds, and a test checks all of them are disjoint. The worlds were always different (smoke ids).
 - **Development compute,** outside the cap (it went to `runs/e04a-smoke/` and `runs/e04a-pilot/`,
-  not `runs/e04a/`): the pilot 1 044 s (0.29 GPU-hours), v1's projection 41 s, the CPU smoke run
+  not `runs/e04a/`): the pilot 1 044 s (0.29 GPU-hours), v1's projection 33.8 s (`dev-projection-v1.json`), the CPU smoke run
   and the arm timing a few seconds each; the equivalence runs were not accounted, and took about
   two minutes.
 - **The design saw E1's results,** including the gain curve and the generation-0 zero share, before
@@ -489,3 +502,26 @@ timing's repeat count corrected (3, not 4).
 **Not adopted:** a second pilot saving genomes and per-world counts (Fable). The formal training
 records keep checkpoint per-world counts, so the reliability question is answered by the run
 itself.
+
+## 13. Changes from v3 (review v3, D107)
+
+**Must-fixes:**
+- **a killed attempt's compute is charged before any rerun** (Astra 1, Fable 1): `reconcile_kill`
+  writes an estimated attempt record (start marker to last write, plus 900 s) once, the cap check
+  then includes it, and a refused rerun is not used up. Tested with time already consumed, including
+  refusal at the cap and no double charge on a retry;
+- **an over-limit projection is rerun only with fewer registered generations** (Fable 2); tested,
+  including the refusal of an unchanged rerun;
+- **§6's minimum passing mean** corrected: 820 episodes at exactly two and 204 at none (Astra 2,
+  Fable 3);
+- **§9's projection time** corrected to the committed record's 33.8 s (Fable 3).
+
+**Suggestions adopted:** the rerun is applied only after every other refusal check (Fable); the rerun
+is obligatory after a crash or kill (Fable); one projection rerun in total, with its scratch genomes
+archived (both); what happens after a crash caused by the guarded code (Fable); tests of a stopped
+projection's and a stopped evaluation's rerun (both).
+
+**Not adopted:** running all four stages unguarded on smoke ids before binding (Fable). The GPU is
+paused by its owner; the guarded smoke run on the binding commit exercises the same path with real
+rollouts before any formal stage. Wrapping the secondary measures and the gain placement so an error
+there cannot void a finished hold-out (Fable): they stay inside the verdict, as §7 registers.

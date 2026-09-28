@@ -3278,3 +3278,28 @@ qualification.
 
 The published results are unaffected: the measurements ran on the committed files, checked by raw
 hash on the machine that wrote them.
+
+## D107 — 04a review v3: both "revise", narrowly; v4 charges a killed attempt's compute before a rerun
+
+Astra 6 and Fable 5.1 reviewed draft v3 (`082210e`; `docs/reviews/20260928-224400-04a-prereg-v3/`).
+Both found every v2 must-fix fixed in the code. Both said "revise" for one shared gap, and Fable
+said a confirmation of the diff would do, not a full round.
+
+**Found, and done in v4:**
+- **A killed attempt's compute was never counted** (both): the accounting writes its record only when
+  a process ends normally, and v3 had just made kills rerunnable. Before a rerun, the killed attempt
+  is now charged from its start marker to its last file write, plus a registered 900 s tail, as an
+  attempt record, once; the cap check follows, and a rerun the cap refuses is not used up. Tested.
+- **An over-limit projection could be rerun unchanged** until timing noise let it pass (Fable). A
+  rerun now requires fewer registered generations than it projected. Tested.
+- **§6 misstated the lowest passing mean** (both): it is 820 episodes at exactly two and 204 at none.
+- **§9 gave v1's projection as 41 s** (Fable): the committed record says 33.8 s.
+
+**Also:** the rerun is applied after every other check and is obligatory after a crash or kill; one
+projection rerun in total, its scratch genomes archived; the path after a crash in guarded code is
+stated; tests of stopped-projection and stopped-evaluation reruns.
+
+**CI:** the second run passed on Linux (651 passed, 2 skipped), with D106's content-hash check.
+
+**The GPU was paused** at the owner's request during this round (2026-09-28), and freed again the
+same evening. No GPU work ran while it was paused.
