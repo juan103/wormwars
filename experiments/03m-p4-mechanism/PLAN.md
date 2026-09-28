@@ -1,4 +1,4 @@
-# 03m: what drives P4? An exploratory look (plan v3)
+# 03m: what drives P4? An exploratory look (plan v4)
 
 **Status:** exploratory, declared before the simulations run. Written 2026-09-29 for review by Astra 6
 and Fable 5.1.
@@ -6,6 +6,9 @@ and Fable 5.1.
 - v2 (`0916f41`, `docs/reviews/20260929-002434-03m-plan-v2/`): both said "revise": two v1 fixes were
   only partial, v2 added bugs (among them a filter that pooled every ensemble under "SH"), and four
   Q1 sentences overstated. v3 fixes them (§Changes).
+- v3 (`fecf8d4`, `docs/reviews/20260929-003735-03m-plan-v3/`): both said "revise", narrowly (a misread
+  rank; results still losable at a few cap boundaries; the graph rebuild outside the cap). Fable
+  asked for no further round if the fixes are made as described. v4 makes them (§Changes).
 - Nothing here is confirmatory. A confirmatory mechanism study, if one follows, gets its own
   pre-registration, and its label is assigned there (ROADMAP.md, Track B).
 
@@ -28,7 +31,10 @@ contrast, not a verified equilibrium one; §Q4 records how much the holds still 
 and the probe genomes, drawn exactly as 03 drew them.
 - **Every simulating command first recomputes N2's numerator and denominator** in 03's composition
   (2 048 strains, one row each) and stops unless they match 03's committed supplement to a relative
-  10⁻⁶. Q4 applies the same check to every panel graph.
+  10⁻⁶. Q4 applies the same check to every panel graph. **A failed check stops the command, and is
+  reported; the tolerance is not changed without a dated amendment** (Fable). Same-composition
+  exactness has been observed on CUDA in default mode, but is not guaranteed
+  (`docs/REPRODUCIBILITY.md`).
 - **Every batch keeps that composition** (T1, D091): the lesions run one probe set at a time. The first
   lesion entry is an empty deletion, checked immediately to reproduce the intact values exactly.
 - **Formal runs** need 03's 2 048 genomes, a clean tree pushed to its branch, and the registered GPU
@@ -71,18 +77,22 @@ of their names and contents is recorded):
   and P4 from even genomes against the response from odd genomes still gives Spearman −0.25 to −0.61.
   An explanation by estimation noise alone is therefore unlikely, though not excluded;
 - **N2's numerator and response are concentrated in few genomes:** its top 5% of genomes by numerator
-  carry 40% of the numerator, above every graph in four ensembles and all but one in SH-recip (median
-  graphs: 18-20%); its top 5% by response carry 38% of the response (medians 17-19%); and the two
-  top-5% sets are 92% the same genomes (medians 75-84%);
-- **but N2's high P4 does not rest on that minority:** with its top 5% by numerator removed, N2's P4
-  is 0.895, still above 97% to 100% of each ensemble's graphs with the same removal.
+  carry 40% of the numerator, above every graph in four ensembles and above 124 of 128 in SH-recip
+  (median graphs: 18-20%); its top 5% by response carry 38% of the response, above every graph in
+  four ensembles and all but one in SH-recip (medians 17-19%); and the two top-5% sets are 92% the
+  same genomes (medians 75-84%; 0, 2, 2, 3 and 4 graphs per ensemble match or exceed it, the largest
+  at 97%);
+- **N2's high P4 survives removing that minority:** with its top 5% by numerator removed, N2's P4 is
+  0.895, above 97% to 100% of each ensemble's graphs with the same removal. With the removal, six of
+  the 640 graphs are at or above N2 (four in SH-route, two in SH-mirror), against one before.
 
 ## Q2. Which neurons does it depend on? Deletions
 
 - N2's 2 048 probe genomes with each neuron deleted in turn (`wormwars/deletion.py`: every edge and
   gap junction touching it, and its bias), and each bilateral pair deleted together (for example RIAL
-  with RIAR). Only the **turn** read-out neurons (SMD and RMD) are excluded, since P4 reads turn
-  alone; the forward read-out neurons (AVA, AVB, AVD, AVE, PVC) are included.
+  with RIAR). Only the eight **turn** read-out neurons are excluded (RMDDL, RMDDR, RMDVL, RMDVR,
+  SMDDL, SMDDR, SMDVL, SMDVR), since P4 reads turn alone; RMDL and RMDR are not read out and are
+  deleted like any other, and the forward read-out neurons (AVA, AVB, AVD, AVE, PVC) are included.
 - **Order:** the empty deletion; the pre-named targets (RIA, AIZ, AIY, AIB, RIB, RIM, from 02b's
   critical core and the outside review), as pairs and then singly; every other single; every other
   pair. A cap hit loses the pre-named targets last.
@@ -116,11 +126,16 @@ of their names and contents is recorded):
 - N2 with only the chemical, or only the gap-junction, weight magnitudes permuted among the existing
   edges, over **8 seeds** (100-107), paired with N2's own genome draws;
 - **gap junctions off is also measured on Q4's 80 null graphs.**
-- **Reading:** "change" is the difference from intact N2, in P4 and in the response. Gaps off matters
-  if N2's change lies outside the null panel's range of changes under the same condition. A by-type
-  permutation matters if its 8 seeds' changes lie on one side of zero. Chemical off has no matched
-  null. Switching one type off tests dependence on that type; it does not show that the other type is
-  irrelevant.
+- **Reading:** "change" is each brain's difference from its own intact measurement, in P4 and in the
+  response: N2's from intact N2, and each null graph's from its own intact values. Gaps off matters if
+  N2's change lies outside the null panel's range of changes under the same condition. A by-type
+  permutation's changes are read by their size against the gap between N2 and the null median, not
+  only by their sign, since N2 is extreme on both measures and almost any change lowers both (Fable).
+  Chemical off has no matched null. Switching one type off tests dependence on that type; it does not
+  show that the other type is irrelevant.
+- **Q3 and Q5 share draws:** for seeds 100-107, the chemical and gap magnitude permutations use the
+  same generator seeds in Q3 (one type permuted) and in Q5's paired design (both permuted), so the
+  four conditions form a 2 × 2 with intact N2, not independent draws.
 
 ## Q4. How long does the history last?
 
@@ -195,6 +210,21 @@ over 8 seeds; per-genome arrays; Q4's reading narrowed, with a floor and a settl
 lead classes; Q5's wording narrowed and a paired design added; Q1's arithmetic and tail checks; the
 forward read-out neurons included; gaps off on the null panel; saturation; a follow-up by synapse
 type; CPU tests; provenance; the outside review archived.
+
+**From v3 (review v3):**
+- **Retention at every cap boundary** (Astra): weights save after each design; decay saves the long
+  history before the gaps-off check, and keeps the gaps-off arrays; the lesions' arrays are flushed on
+  any stop, and the follow-ups checkpoint after every deletion. Each boundary has a test that stops
+  there and checks what survived.
+- **The graph rebuild runs under the cap,** one graph at a time, tested (Astra).
+- **Q1b's SH-recip rank** corrected: N2's numerator concentration is above 124 of 128, not all but one;
+  the response's rank added (both). The overlap and the removal of the top 5% are given with their
+  exceptions (Fable).
+- **Also:** a failed reproduction stops the command; the turn read-out neurons named exactly; Q3's
+  reading rule by the size of the change, each graph against its own intact values; Q3 and Q5 sharing
+  draws stated; the numerator's change from intact recorded; each lesion row computed once; Q1b's
+  actual input directory recorded; the command smoke runs repeated on this code before the formal
+  runs (Fable).
 
 **From v2 (review v2):**
 - **Bugs:** Q1b pooled every ensemble under "SH" (both): exact membership, a test, and `tails.json`

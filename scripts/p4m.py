@@ -316,7 +316,7 @@ def cmd_tails(args):
             **{f"{key}_max": float(col(key).max()) for key in keys},
             **({f"N2_{key}_share_of_graphs_below": float((col(key) < n2[key]).mean()) for key in keys} if n2 else {})}
     write(EXP / "tails.json", {"what": "exploratory (PLAN.md Q1b); no simulation; from 03's local per-genome measures",
-                               "stamp": stamp(), "inputs": {"directory": "runs/exp03/measures (local)",
+                               "stamp": stamp(), "inputs": {"directory": str(d),
                                                             "files": len(rows), "sha256_of_name_and_file_hashes": hashes.hexdigest()},
                                **out})
     print({k: round(v, 3) for k, v in (n2 or {}).items()})
@@ -344,9 +344,14 @@ def ensure_graphs(names: list[str]) -> dict:
 
 
 def cmd_graphs(args):
-    """Rebuild Q4's null panel before the GPU commands, so the rebuild does not run inside them."""
-    rep = ensure_graphs(panel_names(2 if SMOKE else PLAN["decay"]["graphs_per_ensemble"]))
-    print(rep)
+    """Rebuild Q4's null panel before the GPU commands, so the rebuild does not run inside them; one
+    graph at a time, under the cap (Astra, review v3). Completed files are kept on a stop."""
+    cap = clock()
+    done = []
+    for name in panel_names(2 if SMOKE else PLAN["decay"]["graphs_per_ensemble"]):
+        cap.check()
+        done.append(ensure_graphs([name]))
+    print({"rebuilt": sum(r.get("rebuilt", 0) for r in done)})
 
 
 # ----------------------------------------------------------------------------- Q3 synapse types
@@ -427,8 +432,8 @@ def cmd_weights(args):
                 rows[design][name] = {**r, "null_position": null_position(r, pg), "class": lead_class(r, pg)}
                 for k, v in per_genome(h).items():
                     arrays[f"{design}|{name}|{k}"] = v
-            write(EXP / "weights-partial.json", {**base, "permutations": rows})
-            save_arrays(OUT / "weights-per-genome.npz", arrays)
+                write(EXP / "weights-partial.json", {**base, "permutations": rows})  # after every condition
+                save_arrays(OUT / "weights-per-genome.npz", arrays)
     n2 = pg["N2"]
     p4_null, den_null = pooled(pg)
     summary = {}
@@ -576,14 +581,19 @@ def cmd_decay(args):
             s["reproduce_03"] = reproduce(name, {"numerator": s["numerator"], "denominator": s["denominator"]})
             if not s["reproduce_03"]["reproduced"] and not SMOKE:
                 raise SystemExit(f"{name}: tick 0 does not reproduce 03 ({s['reproduce_03']['relative_difference']})")
-            cap.check()
-            s["gaps_off"] = p4_of(M.history(g.with_params(g=torch.zeros_like(g.g)), cfg, iface, bank))
             out[name] = s
             key = name.replace("-", "_")
             for k in ("diff", "steady_contrast", "hold_state_range", "hold_turn_range", "end_state_range",
                       "end_turn_range", "slope_hold", "slope_ramp"):
                 arrays[f"{key}|{k}"] = np.asarray(h[k], dtype=np.float32)
             arrays["ticks"] = np.array(h["ticks"])
+            write(EXP / "decay-partial.json", {**base, "graphs": out})  # the long history, before the next check
+            save_arrays(OUT / "decay-per-genome.npz", arrays)
+            cap.check()
+            hg = M.history(g.with_params(g=torch.zeros_like(g.g)), cfg, iface, bank)
+            s["gaps_off"] = p4_of(hg)
+            for k, v in per_genome(hg).items():
+                arrays[f"{key}|gaps_off|{k}"] = v
             write(EXP / "decay-partial.json", {**base, "graphs": out})
             save_arrays(OUT / "decay-per-genome.npz", arrays)
     write(EXP / "decay.json", {**base, "graphs": out, "seconds": time.perf_counter() - t0})
@@ -699,27 +709,40 @@ def cmd_lesions(args):
             out["residual_from_pooled_trend"] = float(r["P4"] - np.polyval(b, np.log(r["denominator"])))
             it = state["intact"]
             if it is not None and it["valid"]:
-                out["change_from_intact"] = {"P4": r["P4"] - it["P4"], "denominator": r["denominator"] - it["denominator"]}
+                out["change_from_intact"] = {"P4": r["P4"] - it["P4"], "numerator": r["numerator"] - it["numerator"],
+                                             "denominator": r["denominator"] - it["denominator"]}
         if len(dl) == 1:
             out["degree"] = degrees(con, dl[0])
         return out
 
-    def checkpoint(results, extra=None):
+    done_rows, latest = [], {"results": []}
+
+    def save_main_arrays():
+        results = latest["results"]
+        if results:
+            save_arrays(OUT / "lesions-per-genome.npz", {"labels": np.array([lbl for lbl, _ in entries[:len(results)]]),
+                                                         "final": np.stack([r["_final"] for r in results]),
+                                                         "steady": np.stack([r["_steady"] for r in results])})
+
+    def checkpoint(results):
+        latest["results"] = results
         if state["intact"] is None and results:
             state["intact"] = results[0]
             if not SMOKE and (results[0]["numerator"], results[0]["denominator"]) != (repro["got"]["numerator"],
                                                                                       repro["got"]["denominator"]):
                 raise SystemExit("the empty deletion does not reproduce the intact brain in the same composition")
-        write(EXP / "lesions-partial.json", {**base, "rows": [row(lbl, dl, r) for (lbl, dl), r in zip(entries, results)],
-                                             **(extra or {})})
+        for (lbl, dl), r in zip(entries[len(done_rows):len(results)], results[len(done_rows):]):
+            done_rows.append(row(lbl, dl, r))  # each row computed once (Fable, review v3)
+        write(EXP / "lesions-partial.json", {**base, "rows": done_rows})
         if len(results) % 20 == 0 or len(results) == len(entries):
-            save_arrays(OUT / "lesions-per-genome.npz", {"labels": np.array([lbl for lbl, _ in entries[:len(results)]]),
-                                                         "final": np.stack([r["_final"] for r in results]),
-                                                         "steady": np.stack([r["_steady"] for r in results])})
+            save_main_arrays()
 
-    with acct.category("probe"):
-        res = history_in_chunks(g, cfg, iface, bank, [d for _, d in entries], args.per_chunk, cap.check, checkpoint)
-    rows = [row(lbl, dl, r) for (lbl, dl), r in zip(entries, res)]
+    try:
+        with acct.category("probe"):
+            res = history_in_chunks(g, cfg, iface, bank, [d for _, d in entries], args.per_chunk, cap.check, checkpoint)
+    finally:
+        save_main_arrays()  # on a stop too: every completed deletion's arrays (Astra, Fable, review v3)
+    rows = done_rows
     # follow-up: the valid singles with the lowest P4 among those keeping at least the pooled null median response
     singles = [(lbl, dl, r) for (lbl, dl), r in zip(entries, res) if len(dl) == 1 and r["valid"]
                and r["denominator"] >= th["response_pooled_median"]]
@@ -727,12 +750,14 @@ def cmd_lesions(args):
     follow, farr = {}, {}
     with acct.category("probe"):
         for kind in ("chemical", "gap"):
-            rr = history_in_chunks(g, cfg, iface, bank, [dl for _, dl, _ in top], args.per_chunk, cap.check, kind=kind)
-            follow[kind] = [row(lbl, dl, r) for (lbl, dl, _), r in zip(top, rr)]
-            for (lbl, _, _), r in zip(top, rr):
-                farr[f"{kind}|{lbl}|final"], farr[f"{kind}|{lbl}|steady"] = r["_final"], r["_steady"]
-            save_arrays(OUT / "lesions-follow-up-per-genome.npz", farr)
-            write(EXP / "lesions-partial.json", {**base, "rows": rows, "follow_up_by_synapse_type": follow})
+            def follow_checkpoint(rr, kind=kind):  # after every follow-up deletion
+                follow[kind] = [row(lbl, dl, r) for (lbl, dl, _), r in zip(top, rr)]
+                for (lbl, _, _), r in zip(top, rr):
+                    farr[f"{kind}|{lbl}|final"], farr[f"{kind}|{lbl}|steady"] = r["_final"], r["_steady"]
+                save_arrays(OUT / "lesions-follow-up-per-genome.npz", farr)
+                write(EXP / "lesions-partial.json", {**base, "rows": rows, "follow_up_by_synapse_type": follow})
+            history_in_chunks(g, cfg, iface, bank, [dl for _, dl, _ in top], args.per_chunk, cap.check,
+                              follow_checkpoint, kind=kind)
     write(EXP / "lesions.json", {**base, "rows": rows, "follow_up_by_synapse_type": follow,
                                  "classes": {c: [r["deleted"] for r in rows if r["class"] == c]
                                              for c in ("both", "P4 only", "response only")},

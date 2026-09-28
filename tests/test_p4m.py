@@ -156,3 +156,63 @@ def test_the_compute_record_includes_the_attempt_that_writes_it(p, tmp_path, fai
     p.export_compute_record(out, exp)
     rec = json.loads((exp / "compute-record.json").read_text())
     assert len(rec["attempts"]) == 1 and rec["attempts"][0]["status"] == ("failed" if fails else "completed")
+
+
+# ------------------------------------------------------------------ retention on a cap stop (review v3)
+
+@pytest.fixture
+def smoke(p, tmp_path, monkeypatch):
+    from types import SimpleNamespace
+    monkeypatch.setattr(p, "SMOKE", True)
+    monkeypatch.setattr(p, "EXP", tmp_path)
+    monkeypatch.setattr(p, "OUT", tmp_path)
+    calls = {"n": 0, "stop_at": None}
+
+    def check(self):
+        calls["n"] += 1
+        if calls["stop_at"] is not None and calls["n"] >= calls["stop_at"]:
+            raise p.reg.CapReached("cap")
+
+    monkeypatch.setattr(p.reg.CapClock, "check", check)
+    return SimpleNamespace(device="cpu", genomes=8, per_chunk=8), calls, tmp_path
+
+
+def test_weights_keep_every_finished_condition_on_a_stop(p, smoke):
+    args, calls, d = smoke
+    calls["stop_at"] = 3  # the command's first check, the independent condition, then the paired one
+    with pytest.raises(p.reg.CapReached):
+        p.cmd_weights(args)
+    part = json.loads((d / "weights-partial.json").read_text())
+    assert list(part["permutations"]["independent"]) == ["N2perm100"] and part["permutations"]["paired"] == {}
+    assert "independent|N2perm100|final" in np.load(d / "weights-per-genome.npz").files
+
+
+def test_decay_keeps_the_long_history_when_the_gaps_off_check_stops(p, smoke):
+    args, calls, d = smoke
+    calls["stop_at"] = 3  # the command's check, N2's long history, then N2's gaps-off
+    with pytest.raises(p.reg.CapReached):
+        p.cmd_decay(args)
+    part = json.loads((d / "decay-partial.json").read_text())
+    assert list(part["graphs"]) == ["N2"] and "gaps_off" not in part["graphs"]["N2"]
+    assert "N2|diff" in np.load(d / "decay-per-genome.npz").files
+
+
+def test_lesions_flush_every_finished_deletion_on_a_stop(p, smoke):
+    args, calls, d = smoke
+    calls["stop_at"] = 4  # the command's check, then one check per deletion batch: two done, the third stops
+    with pytest.raises(p.reg.CapReached):
+        p.cmd_lesions(args)
+    arr = np.load(d / "lesions-per-genome.npz")
+    assert arr["labels"].tolist() == ["intact", "pair RIA"] and arr["final"].shape == (2, 8)
+    part = json.loads((d / "lesions-partial.json").read_text())
+    assert [r["deleted"] for r in part["rows"]] == ["intact", "pair RIA"]
+
+
+def test_graph_rebuilding_stops_at_the_cap(p, smoke, monkeypatch):
+    args, calls, d = smoke
+    built = []
+    monkeypatch.setattr(p, "ensure_graphs", lambda names: built.append(names) or {"rebuilt": 1})
+    calls["stop_at"] = 3
+    with pytest.raises(p.reg.CapReached):
+        p.cmd_graphs(args)
+    assert len(built) == 2
