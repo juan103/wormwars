@@ -252,7 +252,7 @@ def _save(path: Path, arrays: dict) -> str:
 
 
 def _load(path: Path) -> dict:
-    with np.load(path) as d:
+    with np.load(path, allow_pickle=False) as d:
         return {k.replace("|", "/"): d[k] for k in d.files}
 
 

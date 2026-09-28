@@ -47,7 +47,9 @@ import torch
 
 CATEGORIES = ("selection", "holdout", "snapshot", "final", "calibration", "probe", "measure",
               "tuning", "other")
-COUNT_FIELDS = ("worlds_built", "world_ticks", "neural_updates")
+# neural_updates counts computed work, padding included (T0.md); neural_padding is the padded
+# share (T1, D086), so neural_updates - neural_padding is comparable with records before T1
+COUNT_FIELDS = ("worlds_built", "world_ticks", "neural_updates", "neural_padding")
 TIME_UNIT = "synchronised wall-clock seconds per category (not GPU kernel time)"
 NEURAL_UNIT = "strains x batch x substeps network updates (network size not included)"
 
@@ -57,6 +59,7 @@ class Counts:
     worlds_built: int = 0
     world_ticks: int = 0
     neural_updates: int = 0
+    neural_padding: int = 0
     seconds: float = 0.0
 
 
@@ -91,9 +94,11 @@ class Ledger:
         if self.enabled:
             self._bucket().world_ticks += int(n_worlds)
 
-    def neural(self, n: int) -> None:
+    def neural(self, n: int, padding: int = 0) -> None:
         if self.enabled:
-            self._bucket().neural_updates += int(n)
+            b = self._bucket()
+            b.neural_updates += int(n)
+            b.neural_padding += int(padding)
 
     # ---- categories
     def _close_segment(self, now: float) -> None:

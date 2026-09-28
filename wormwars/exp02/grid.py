@@ -51,6 +51,9 @@ def task_config(base: Config, task: str) -> Config:
         raise ValueError(f"unknown task {task!r}")
     c = base.copy()
     c.brain.substeps = 32
+    # 02 and 03 ran before T1's single-strain padding; pinned off so their scripts reproduce the
+    # published evaluations (D086)
+    c.brain.pad_single_strain = False
     c.world.max_ticks = 400
     c.evo.generations, c.evo.population = 40, 32
     c.evo.worlds_per_strain, c.evo.holdout_worlds = 8, 64

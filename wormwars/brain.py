@@ -322,6 +322,7 @@ class Brain:
         # Optional per-strain silencing mask, [S, 1, N] of 1.0 (alive) / 0.0 (silenced). Kept per
         # strain so that dozens of different ablations of the same champion run in one batch.
         self.silence_mask: Tensor | None = None
+        self._padded: tuple[Tensor, Tensor] | None = None  # (M, G) doubled for a single strain
 
     def silence(self, per_strain: list[list[int]] | None) -> "Brain":
         """Clamp the named neurons to zero after every substep, one neuron list per strain.
@@ -352,6 +353,7 @@ class Brain:
                 self.G[s, j, i] = 0.0
         self.g_row = self.G.sum(dim=2)
         self.den = 1.0 + self.c * (1.0 + self.g_row)
+        self._padded = None  # the doubled G is stale
         return self
 
     @property
@@ -372,7 +374,10 @@ class Brain:
         the world only updates once per tick.
         """
         k = self.cfg.substeps if substeps is None else substeps
-        LEDGER.neural(v.shape[0] * v.shape[1] * k)  # S x B x substeps network updates (T0, D068)
+        pad = v.shape[0] == 1 and self.cfg.pad_single_strain
+        # S x B x substeps network updates (T0, D068); a padded copy is computed, so it counts
+        LEDGER.neural((2 if pad else 1) * v.shape[0] * v.shape[1] * k,
+                      padding=v.shape[1] * k if pad else 0)
         if k == self.cfg.substeps:
             c, den = self.c, self.den
         else:
@@ -383,14 +388,23 @@ class Brain:
         den = den.unsqueeze(1)
         drive = self.bias.unsqueeze(1) + current  # [S, B, N]
         M = self.W_drive  # see __init__: the chemical term, oriented by cfg.chem_direction
+        G = self.G
         mask = self.silence_mask
+        if pad:
+            # A single strain as two identical copies, so `bmm` takes the same path as for a strain
+            # inside a population (D082, T1). Per-strain terms broadcast over the copy; only the
+            # matrices and the state are doubled, and the first copy is returned.
+            if self._padded is None:
+                self._padded = (M.repeat(2, 1, 1), G.repeat(2, 1, 1))
+            M, G = self._padded
+            v = v.repeat(2, 1, 1)
         for _ in range(k):
             chem = torch.bmm(torch.tanh(v), M)
-            gap = torch.bmm(v, self.G)  # G symmetric, so no transpose needed
+            gap = torch.bmm(v, G)  # G symmetric, so no transpose needed
             v = (v + c * (drive + chem + gap)) / den
             if mask is not None:
                 v = v * mask
-        return v
+        return v[:1] if pad else v
 
     def activity(self, v: Tensor) -> Tensor:
         """The bounded output the motors read."""

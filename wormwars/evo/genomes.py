@@ -16,7 +16,7 @@ import numpy as np
 import torch
 
 from ..brain import BrainSpec, Genome
-from ..config import LEGACY_CHEM_DIRECTION, BrainConfig
+from ..config import LEGACY_CHEM_DIRECTION, LEGACY_PAD_SINGLE_STRAIN, BrainConfig
 
 # Deterministic nicknames for hall-of-fame champions. Two short word lists: 64 x 64 = 4096 names,
 # which is plenty for one run's champions and short enough to say out loud.
@@ -155,13 +155,23 @@ def genome_chem_direction(path) -> str:
     return meta.get("brain_config", {}).get("chem_direction", LEGACY_CHEM_DIRECTION)
 
 
+def genome_pad_single_strain(path) -> bool:
+    """Whether a saved genome was evaluated with single-strain padding (off if the file predates
+    T1's switch, D086)."""
+    with np.load(Path(path), allow_pickle=False) as d:
+        meta = json.loads(str(d["meta"]))
+    return bool(meta.get("brain_config", {}).get("pad_single_strain", LEGACY_PAD_SINGLE_STRAIN))
+
+
 def brain_config_for(path, cfg: BrainConfig) -> BrainConfig:
-    """`cfg` with the synapse direction set to the one this saved genome evolved with.
+    """`cfg` with the synapse direction and the single-strain padding set to this saved genome's.
 
     For scripts that replay saved genomes under the current defaults: everything else in `cfg`
-    is kept, but a genome must always run in its own direction (DECISIONS.md D031).
+    is kept, but a genome must always run in its own direction (DECISIONS.md D031), and a genome
+    saved before T1 replays without padding (D086).
     """
-    return dataclasses.replace(cfg, chem_direction=genome_chem_direction(path))
+    return dataclasses.replace(cfg, chem_direction=genome_chem_direction(path),
+                               pad_single_strain=genome_pad_single_strain(path))
 
 
 def load_genome(
@@ -200,6 +210,7 @@ def load_genome(
     # the direction fix carry no field and all ran reversed (DECISIONS.md D031).
     stored = dict(meta["brain_config"])
     stored.setdefault("chem_direction", LEGACY_CHEM_DIRECTION)
+    stored.setdefault("pad_single_strain", LEGACY_PAD_SINGLE_STRAIN)  # T1, D086
     if cfg is None:
         cfg = BrainConfig(**stored)
     elif cfg.chem_direction != stored["chem_direction"]:
