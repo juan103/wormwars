@@ -3069,3 +3069,29 @@ run, on the passing path only.
 4. the pilot.
 
 `experiments/E1-navigation/` is on a local drive and not under a sync tool.
+
+## D100 — E1 positive control: passed
+
+**The pilot** ran at the binding commit `eb0b781` in 316 s, and wrote the freeze by rule:
+- σ = 6, flagged: coverage 0.878, against the registered 0.90, as disclosed in advance;
+- the navigator is S-const, at k = 8192, speed 1 and turn 0, with a tuned mean of 8.78 targets
+  against the oracle's 8.85.
+
+The freeze was committed and pushed at `a73a67d`.
+
+**The gate** ran once at `a73a67d`, in 36 s, on gate worlds 996 201 000-996 202 023:
+**"E1 positive control: passed"**, with no rule failed.
+- **Reliability:** 1 023 of 1 024 episodes reached at least 2 targets.
+- **The baselines:** the lower bounds of the paired differences were 8.19 (constant), 8.37 (random
+  walk), 7.97 (wall-follower) and 7.68 (K), against a margin of 0.5.
+- **The cue:** the lower bound of 0.5 × real − mirrored was 4.29, against a required 0.
+- **The navigator's mean** was 8.68 (98.7% of the oracle), and 0.03 under the mirrored decoy.
+  S-const at k ≤ 32 reached 5.62 (64% of the oracle).
+
+**For 04a:**
+- 74% of generation-0 random N2 brains score zero on every pilot world, so the bounded shaping term
+  will be needed;
+- throughput in 04a's shape is 110, 336 and 438 strain-worlds/s at 1, 4 and 8 runs batched;
+- 04a gets its own pre-registration, reviewed and pushed before its run, as E1's was.
+
+Results: `experiments/E1-navigation/RESULTS.md`, which goes to Astra 6 and Fable 5.1 for review.
