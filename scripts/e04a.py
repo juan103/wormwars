@@ -1,19 +1,26 @@
 """04a: the evolved N2 navigation primitive (experiments/04a-navigation-primitive/PREREGISTRATION.md).
 
-    python scripts/e04a.py train --batch A    # runs 0-7; writes train-A.json and the genomes
+    python scripts/e04a.py project            # the budget projection, on smoke ids; writes projection.json
+    python scripts/e04a.py train --batch A    # runs 0-7; needs the committed projection, within its limit
     python scripts/e04a.py train --batch B    # runs 8-15; needs batch A committed, the same code and environment
     python scripts/e04a.py evaluate           # once, on the hold-out; needs both training records committed
     python scripts/e04a.py train --batch A --smoke   # tiny sizes, ids 0-9 999, runs/e04a-smoke/
+    python scripts/e04a.py train --batch A --rerun   # once, after a crash or interrupt (not the cap)
 
 Every number the pre-registration fixes is in `REGISTERED`, and every rule is applied mechanically.
 Task N and the controls are E1's, imported from `scripts/e1.py` unchanged; the guards are the shared
 ones in `wormwars/registration.py`.
+
+The experiment folder holds records only (JSON, and the hold-out's event tables). Genome files stay
+local under `runs/e04a/`: generation 0 is drawn with weights proportional to the connectome's, which
+this project does not redistribute (D028). The records carry every genome's hash.
 """
 
 from __future__ import annotations
 
 import argparse
 import hashlib
+import importlib
 import importlib.util
 import itertools
 import json
@@ -26,6 +33,7 @@ from pathlib import Path
 
 import numpy as np
 import torch
+from scipy.stats import beta
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
@@ -35,11 +43,12 @@ from wormwars.brain import BrainSpec, Genome  # noqa: E402
 from wormwars.connectome import load_connectome  # noqa: E402
 from wormwars.e04a import evolve as EV  # noqa: E402
 from wormwars.e1.task import HOLDOUT_04A_IDS  # noqa: E402
-rollout_mod = importlib.import_module("wormwars.evo.rollout")  # the module: `wormwars.evo.rollout` is also a function
 from wormwars.evo.genomes import genome_hash, load_population, save_genome, save_population  # noqa: E402
 from wormwars.evo.rollout import rollout_brain  # noqa: E402
 from wormwars.interface import load_interface  # noqa: E402
 from wormwars.world import arena_side  # noqa: E402
+
+rollout_mod = importlib.import_module("wormwars.evo.rollout")  # the module: `wormwars.evo.rollout` is also a function
 
 _spec = importlib.util.spec_from_file_location("e1_frozen", ROOT / "scripts" / "e1.py")
 E1 = importlib.util.module_from_spec(_spec)
@@ -48,12 +57,12 @@ _spec.loader.exec_module(E1)  # Task N's config, the controls and the secondary 
 EXP = ROOT / "experiments" / "04a-navigation-primitive"
 OUT = ROOT / "runs" / "e04a"
 PREREG = "experiments/04a-navigation-primitive/PREREGISTRATION.md"
-GUARDED = ["wormwars", "scripts", "configs", "requirements.txt", PREREG]
 E1_FREEZE = ROOT / "experiments" / "E1-navigation" / "freeze.json"
 E1_GATE = ROOT / "experiments" / "E1-navigation" / "gate.json"
+E1_INPUTS = ["experiments/E1-navigation/freeze.json", "experiments/E1-navigation/gate.json"]
+GUARDED = ["wormwars", "scripts", "configs", "requirements.txt", PREREG, *E1_INPUTS]
 SMOKE_IDS = np.arange(10_000)  # outside every E1 and 04a range
 SMOKE = False
-GUARDED_SMOKE = False
 
 REGISTERED = {
     "world_seed": 1_100_001,  # E1's run seed: with the world id it generates each world and its targets
@@ -64,21 +73,25 @@ REGISTERED = {
                                              "bias_sigma": 0.05, "p_mutate": 1.0}},
     "runs": {"seed_base": 1_104_000, "shaping": 0.5, "shaped": list(range(12)), "unshaped": [12, 13, 14, 15],
              "batches": {"A": list(range(8)), "B": list(range(8, 16))}},
-    "train_ids": {"base": 997_000_000, "span": 1_000_000},
-    "validation": {"first": 998_000_000, "worlds": 64, "every": 25},
+    # moved from 997 000 000 after the first smoke run drew 24 ids from that range (review v1, D104)
+    "train_ids": {"base": 999_000_000, "span": 1_000_000},
+    "validation": {"first": 998_000_000, "worlds": 256, "every": 25},
     "holdout": {"offset": 1000, "worlds": 1024},
     "rules": {
         "reliability": {"min_arrivals": 2, "required_share": 0.80},
         "baselines": ["constant", "random-walk", "wall-follower", "K"],
         "baseline_margin": 0.5,
         "cue": {"probe": "mirrored", "contrast": "0.5 x real - mirrored, per world", "required_lower_bound": 0.0},
+        "cue_helps": {"probe": "constant", "contrast": "real - constant probe, per world", "margin": 0.5},
         "generation0_margin": 0.5,
         "interval": {"method": "paired percentile bootstrap over worlds, one-sided 95% lower bound",
                      "resamples": 10_000, "seed": 0},
     },
-    "outcome": {"arm": "shaped", "required_passing_runs": 6},
+    "outcome": {"arm": "shaped", "required_passing_runs": 6,
+                "interval": "exact (Clopper-Pearson) one-sided 95% lower bound on the passing share, reported"},
     "references": ["S-const", "S-const k<=32", "M-avg", "oracle"],
-    "projection": {"generations": 2000, "max_training_hours": 4.5},
+    "projection": {"generations_timed": 6, "generations": 2000, "checkpoints": 82, "max_training_hours": 4.5},
+    "rerun": "once, from scratch with the same seeds, after a crash or interrupt; never after the cap",
 }
 OUTCOMES = {"passed": "04a: passed", "some": "04a: some runs passed ({k} of {n})", "none": "04a: not passed",
             "cap": "04a: not completed (the registered cap was reached)",
@@ -92,7 +105,7 @@ def train_path(batch: str) -> Path:
 
 
 def genomes_path(run: int) -> Path:
-    return EXP / "genomes" / f"run{run:02d}-candidates.npz"
+    return OUT / "genomes" / f"run{run:02d}-candidates.npz"
 
 
 def clock() -> reg.CapClock:
@@ -113,6 +126,10 @@ def preflight(device: str):
 
 def config_sha256(cfg) -> str:
     return hashlib.sha256(json.dumps(cfg.to_dict(), sort_keys=True).encode()).hexdigest()
+
+
+def e1_input_hashes() -> dict:
+    return {p: reg.file_sha256(ROOT / p) for p in E1_INPUTS}
 
 
 def task_config():
@@ -139,13 +156,17 @@ def run_specs(batch: str) -> list[EV.RunSpec]:
 
 def validation_ids() -> np.ndarray:
     v = REGISTERED["validation"]
-    return (SMOKE_IDS[5000:5000 + v["worlds"]] if SMOKE else np.arange(v["first"], v["first"] + v["worlds"]))
+    return SMOKE_IDS[5000:5000 + v["worlds"]] if SMOKE else np.arange(v["first"], v["first"] + v["worlds"])
 
 
 def holdout_ids() -> np.ndarray:
     h = REGISTERED["holdout"]
-    base = SMOKE_IDS if SMOKE else HOLDOUT_04A_IDS
-    return base[h["offset"]:h["offset"] + h["worlds"]]
+    return SMOKE_IDS[6000:6000 + h["worlds"]] if SMOKE else HOLDOUT_04A_IDS[h["offset"]:h["offset"] + h["worlds"]]
+
+
+def projection_ids() -> tuple[np.ndarray, int, int]:
+    """The projection always runs on smoke ids: training 0-4 999, validation from 5 000."""
+    return SMOKE_IDS[5000:5000 + REGISTERED["validation"]["worlds"]], 0, 5000
 
 
 def id_record(ids) -> dict:
@@ -153,12 +174,52 @@ def id_record(ids) -> dict:
     return {"first": int(ids[0]), "last": int(ids[-1]), "count": int(len(ids))}
 
 
-def require_committed(path: Path) -> None:
+def require_committed(path: Path, root: Path | None = None) -> None:
     """Tracked, unchanged, and (with the HEAD check in `require_formal`) pushed."""
-    tracked = subprocess.run(["git", "ls-files", "--error-unmatch", str(path)], cwd=ROOT,
+    root = root or ROOT
+    tracked = subprocess.run(["git", "ls-files", "--error-unmatch", str(path)], cwd=root,
                              capture_output=True).returncode == 0
-    if not tracked or reg.git("status", "--porcelain", "--", str(path)):
-        raise SystemExit(f"{path.name} must be committed, unchanged and pushed first")
+    if not tracked or reg.git("status", "--porcelain", "--", str(path), root=root):
+        raise SystemExit(f"{Path(path).name} must be committed, unchanged and pushed first")
+
+
+def load_record(path: Path, what: str) -> dict:
+    if not path.exists():
+        raise SystemExit(f"{what} has not run")
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def require_earlier(args, prov: dict, path: Path, what: str, need: str = "completed") -> dict:
+    """An earlier stage: completed, committed (formal), the same code and environment (guarded)."""
+    rec = load_record(path, what)
+    if rec.get("outcome") != need:
+        raise SystemExit(f"{what} did not complete")
+    if formal(args):
+        if not args.smoke:
+            require_committed(path)
+        reg.require_same_code(rec["provenance_at_start"]["git_commit"], GUARDED)
+        reg.require_same_env(rec["provenance_at_start"], prov)
+    return rec
+
+
+def write_atomic(path: Path, doc) -> None:
+    reg.write_json(path, doc, atomic=True)
+
+
+def archive_attempt(stage: str, files: list[Path]) -> None:
+    """The registered rerun: once, after a stage stopped by a crash or an interrupt (never the cap).
+    The stopped attempt's record, marker and partial files are kept beside, renamed `-attempt1`."""
+    record = files[0]
+    rec = load_record(record, stage)
+    if rec.get("outcome") != OUTCOMES["stopped"]:
+        raise SystemExit(f"only a stage stopped by a crash or an interrupt is rerun, not: {rec.get('outcome')}")
+    for f in files:
+        dest = f.with_name(f.stem + "-attempt1" + f.suffix)
+        if dest.exists():
+            raise SystemExit(f"{stage} has been rerun once already")
+    for f in files:
+        if f.exists():
+            os.replace(f, f.with_name(f.stem + "-attempt1" + f.suffix))
 
 
 def _device_genome(g: Genome, device) -> Genome:
@@ -172,13 +233,16 @@ def run_record(rec: EV.RunRecord) -> dict:
            "generations_completed": len(rec.log)}
     if rec.checkpoints:
         ci = rec.champion_index()
-        out["champion"] = {"checkpoint": ci, **rec.checkpoints[ci]}
-        out["generation0_baseline"] = {"checkpoint": 0, **rec.checkpoints[0]}
+        out["champion"] = {"checkpoint": ci, **{k: v for k, v in rec.checkpoints[ci].items() if k != "validation_counts"}}
+        out["generation0_baseline"] = {"checkpoint": 0, **{k: v for k, v in rec.checkpoints[0].items()
+                                                           if k != "validation_counts"}}
+    if rec.final is not None:
+        out["final_population_sha256"] = [genome_hash(rec.final, i) for i in range(rec.final.n_strains)]
     return out
 
 
 def save_genomes(records: list[EV.RunRecord], cfg) -> None:
-    """Each run's checkpoint candidates, written to a temporary file and moved into place."""
+    """Each run's checkpoint candidates, local, written to a temporary file and moved into place."""
     for rec in records:
         if not rec.candidates:
             continue
@@ -189,8 +253,75 @@ def save_genomes(records: list[EV.RunRecord], cfg) -> None:
         os.replace(tmp, path)
 
 
-def write_atomic(path: Path, doc) -> None:
-    reg.write_json(path, doc, atomic=True)
+# ----------------------------------------------------------------------------- the projection
+
+def projection_verdict(secs: list[float]) -> dict:
+    """The median time of the timed generations after the first (which includes warm-up and the
+    first checkpoint) sets the per-generation time; the last generation's excess over it is one
+    checkpoint's cost. Training is projected for both batches, checkpoints included."""
+    P = REGISTERED["projection"]
+    per_gen = float(np.median(secs[1:-1])) if len(secs) > 2 else float(secs[-1])
+    per_checkpoint = max(0.0, float(secs[-1]) - per_gen)
+    hours = (P["generations"] * per_gen + P["checkpoints"] * per_checkpoint) / 3600
+    return {"median_seconds_per_generation": per_gen, "seconds_per_checkpoint": per_checkpoint,
+            "projected_training_hours": hours, "limit_hours": P["max_training_hours"],
+            "within_limit": hours <= P["max_training_hours"]}
+
+
+def cmd_project(args):
+    """Before the formal stages (PREREGISTRATION.md §8): batch A's shape at full size, on smoke ids,
+    timed per generation, once. Batch A refuses to start without a completed projection within its
+    limit, on the same code and environment."""
+    prov = reg.provenance(GUARDED)
+    if formal(args):
+        reg.require_formal(args.device, prov)
+    path = EXP / "projection.json"
+    if path.exists():
+        raise SystemExit(f"{path.name} exists: the projection runs once")
+    cap = clock()
+    try:
+        cap.check()
+    except reg.CapReached as e:
+        raise SystemExit(f"the projection did not start: {e}") from None
+    con, iface = preflight(args.device)
+    spec = BrainSpec.from_connectome(con)
+    cfg = task_config()
+    marker = reg.start_marker(EXP, "project", prov)
+    n = REGISTERED["projection"]["generations_timed"]
+    val, base, span = projection_ids()
+    doc = {"registered": REGISTERED["projection"], "provenance_at_start": prov, "device": args.device,
+           "resolved_config_sha256": config_sha256(cfg), "e1_inputs_sha256": e1_input_hashes(),
+           "start_marker": marker.name, "generations_timed": n,
+           "ids": {"training": [base, base + span - 1], "validation": id_record(val)}}
+    t0 = time.perf_counter()
+    try:
+        with acct.category("measure"):
+            recs = EV.evolve_batch(cfg, iface, spec, run_specs("A"), generations=n, checkpoint_every=n - 1,
+                                   validation_ids=val, world_seed=REGISTERED["world_seed"], id_base=base,
+                                   id_span=span, device=args.device, rollout_fn=rollout_mod.rollout, check=cap.check)
+        secs = [x["batch_seconds"] for x in recs[0].log]
+        doc.update(outcome="completed", batch_seconds=secs, **projection_verdict(secs),
+                   seconds=time.perf_counter() - t0)
+        cap.check()
+    except reg.CapReached as e:
+        doc.update(outcome=OUTCOMES["cap"], error=str(e), seconds=time.perf_counter() - t0)
+        write_atomic(path, doc)
+        raise SystemExit(doc["outcome"]) from None
+    except BaseException as e:  # noqa: BLE001
+        doc.update(outcome=OUTCOMES["stopped"], error=f"{type(e).__name__}: {e}", seconds=time.perf_counter() - t0)
+        write_atomic(path, doc)
+        raise
+    write_atomic(path, doc)
+    print(f"{doc['median_seconds_per_generation']:.3f} s per generation; training projected at "
+          f"{doc['projected_training_hours']:.2f} h (limit {doc['limit_hours']} h): "
+          f"{'within' if doc['within_limit'] else 'OVER: the formal stages do not start'}")
+
+
+def require_projection(args, prov) -> dict:
+    p = require_earlier(args, prov, EXP / "projection.json", "the projection")
+    if not p.get("within_limit"):
+        raise SystemExit("the projection is over its limit: reduce the generations by a dated amendment first")
+    return p
 
 
 # ----------------------------------------------------------------------------- training
@@ -200,20 +331,15 @@ def cmd_train(args):
     prov = reg.provenance(GUARDED)
     if formal(args):
         reg.require_formal(args.device, prov)
-    path = train_path(batch)
+    path, partial_path = train_path(batch), EXP / f"train-{batch}-partial.json"
+    if args.rerun:
+        archive_attempt(f"batch {batch}", [path, EXP / f"train-{batch}-started.json", partial_path])
     if path.exists():
         raise SystemExit(f"{path.name} exists: batch {batch} runs once")
-    if batch == "B":
-        if not train_path("A").exists():
-            raise SystemExit("batch B runs after batch A")
-        a = json.loads(train_path("A").read_text(encoding="utf-8"))
-        if a.get("outcome") != "completed":
-            raise SystemExit("batch A did not complete")
-        if formal(args):
-            if not args.smoke:
-                require_committed(train_path("A"))
-            reg.require_same_code(a["provenance_at_start"]["git_commit"], GUARDED)
-            reg.require_same_env(a["provenance_at_start"], prov)
+    if batch == "A":
+        require_projection(args, prov)
+    else:
+        require_earlier(args, prov, train_path("A"), "batch A")
     cap = clock()
     try:
         cap.check()
@@ -226,33 +352,33 @@ def cmd_train(args):
     t0 = time.perf_counter()
     runs = run_specs(batch)
     val = validation_ids()
+    ti = REGISTERED["train_ids"]
     result = {"batch": batch, "registered": REGISTERED, "provenance_at_start": prov, "device": args.device,
               "resolved_config": cfg.to_dict(), "resolved_config_sha256": config_sha256(cfg),
-              "runs": [asdict(r) for r in runs], "validation_worlds": id_record(val),
+              "e1_inputs_sha256": e1_input_hashes(), "runs": [asdict(r) for r in runs],
+              "training_ids": [ti["base"], ti["base"] + ti["span"] - 1], "validation_worlds": id_record(val),
               "composition": {"training": [len(runs) * cfg.evo.population, cfg.evo.worlds_per_strain, 1],
                               "validation": [len(runs), len(val), 1]},
-              "start_marker": marker.name}
+              "genome_files": "local, runs/e04a/genomes/ (not published; D028)", "start_marker": marker.name}
     records: list = []
 
     def partial(recs, g):
         records[:] = recs
         save_genomes(recs, cfg)
-        write_atomic(EXP / f"train-{batch}-partial.json",
-                     {**result, "generation": g, "records": [run_record(r) for r in recs]})
+        write_atomic(partial_path, {**result, "generation": g, "records": [run_record(r) for r in recs]})
 
     try:
         recs = EV.evolve_batch(
             cfg, iface, spec, runs, generations=cfg.evo.generations, checkpoint_every=REGISTERED["validation"]["every"],
-            validation_ids=val, world_seed=REGISTERED["world_seed"], id_base=REGISTERED["train_ids"]["base"],
-            id_span=REGISTERED["train_ids"]["span"], device=args.device, rollout_fn=rollout_mod.rollout,
-            check=cap.check, category=acct.category, on_checkpoint=partial)
+            validation_ids=val, world_seed=REGISTERED["world_seed"], id_base=ti["base"], id_span=ti["span"],
+            device=args.device, rollout_fn=rollout_mod.rollout, check=cap.check, category=acct.category,
+            on_checkpoint=partial)
         records[:] = recs
         save_genomes(recs, cfg)
-        for r in recs:  # the final populations stay local (runs/), for any continuation
+        for r in recs:  # the final populations stay local, for any continuation
             save_population(OUT / f"run{r.spec.run:02d}-final.npz", r.final, cfg=cfg, run=r.spec.run,
                             run_seed=r.spec.run_seed, shaping=r.spec.shaping, generations=cfg.evo.generations)
         summary = {"outcome": "completed", "records": [run_record(r) for r in recs],
-                   "genome_files": {r.spec.run: str(genomes_path(r.spec.run).relative_to(EXP)) for r in recs},
                    "seconds": time.perf_counter() - t0}
         cap.check()  # the final budget decision, before the record is written
     except reg.CapReached as e:
@@ -261,7 +387,7 @@ def cmd_train(args):
         _train_not_completed(path, result, records, cfg, f"{type(e).__name__}: {e}", t0, "stopped", reraise=e)
     result.update(summary)
     write_atomic(path, result)
-    (EXP / f"train-{batch}-partial.json").unlink(missing_ok=True)
+    partial_path.unlink(missing_ok=True)
     for r in result["records"]:
         print(f"run {r['spec']['run']:2d} c={r['spec']['shaping']}: champion g{r['champion']['generation']} "
               f"validation {r['champion']['validation_mean']:.3f}")
@@ -275,40 +401,6 @@ def _train_not_completed(path, result, records, cfg, error, t0, reason, reraise=
     if reraise is not None:
         raise reraise
     raise SystemExit(result["outcome"])
-
-
-# ----------------------------------------------------------------------------- the projection
-
-def cmd_project(args):
-    """Before the formal stages (PREREGISTRATION.md §8): batch A's shape at full size, for a few
-    generations on smoke ids (outside every E1 and 04a range), timed per generation. The training
-    projection is the registered number of generations for both batches at the median time of the
-    generations after the first, which includes warm-up and a checkpoint."""
-    prov = reg.provenance(GUARDED)
-    if formal(args):
-        reg.require_formal(args.device, prov)
-    con, iface = preflight(args.device)
-    spec = BrainSpec.from_connectome(con)
-    cfg = task_config()
-    n = args.generations
-    t0 = time.perf_counter()
-    with acct.category("measure"):
-        recs = EV.evolve_batch(cfg, iface, spec, run_specs("A"), generations=n, checkpoint_every=n,
-                               validation_ids=SMOKE_IDS[5000:5000 + REGISTERED["validation"]["worlds"]],
-                               world_seed=REGISTERED["world_seed"], id_base=0, id_span=5000, device=args.device,
-                               rollout_fn=rollout_mod.rollout)
-    secs = [x["batch_seconds"] for x in recs[0].log]
-    per_gen = float(np.median(secs[1:])) if n > 1 else secs[0]
-    P = REGISTERED["projection"]
-    hours = P["generations"] * per_gen / 3600
-    doc = {"provenance": prov, "device": args.device, "generations_timed": n, "batch_seconds": secs,
-           "median_seconds_per_generation_after_the_first": per_gen,
-           "projected_training_hours": hours, "limit_hours": P["max_training_hours"],
-           "within_limit": hours <= P["max_training_hours"], "seconds": time.perf_counter() - t0,
-           "ids": "training 0-4 999 and validation 5 000 onward (smoke ids, outside every E1 and 04a range)"}
-    reg.write_json(EXP / "projection.json", doc)
-    print(f"{per_gen:.3f} s per generation; training projected at {hours:.2f} h "
-          f"(limit {P['max_training_hours']} h): {'within' if doc['within_limit'] else 'OVER'}")
 
 
 # ----------------------------------------------------------------------------- the evaluation
@@ -329,21 +421,23 @@ def gain_curve_params(tuned: dict) -> dict[float, dict]:
 
 
 def equivalent_k(mean: float, curve: dict[float, float]):
-    """The performance-equivalent k: linear in log k between the grid points whose means bracket
-    `mean`, at the first crossing; "< k_min" below the first point and "> k_max" above the largest."""
+    """The performance-equivalent k: linear in log k inside the first pair of neighbouring grid points
+    (in increasing k) with mean(lower k) <= `mean` <= mean(higher k). "< k_min" below the first
+    point's mean; "> k_max" above every point's mean. ("not bracketed" is a guard only: a curve that
+    starts at or below `mean` and reaches above it crosses it upward between some neighbours.)"""
     ks = sorted(curve)
     if mean < curve[ks[0]]:
         return f"< {ks[0]:g}"
     for a, b in zip(ks, ks[1:]):
         lo, hi = curve[a], curve[b]
-        if lo <= mean <= hi and hi > lo:
+        if lo <= mean <= hi:
+            if hi == lo:
+                return float(a)
             f = (mean - lo) / (hi - lo)
             return float(np.exp(np.log(a) + f * (np.log(b) - np.log(a))))
-        if lo <= mean <= hi:
-            return float(a)
     if mean > max(curve.values()):
         return f"> {ks[-1]:g}"
-    return None  # a non-monotone curve with no bracketing pair: reported as such
+    return "not bracketed"
 
 
 def run_rules(counts: dict, run: int) -> dict:
@@ -366,16 +460,27 @@ def run_rules(counts: dict, run: int) -> dict:
     v = lb(contrast)
     rules["cue"] = {"mean": float(contrast.mean()), "lower_95": v, "required": G["cue"]["required_lower_bound"],
                     "passed": v >= G["cue"]["required_lower_bound"]}
+    d = real - counts[f"{tag} constant"]
+    v = lb(d)
+    rules["cue_helps"] = {"mean_difference": float(d.mean()), "lower_95": v, "margin": G["cue_helps"]["margin"],
+                          "passed": v > G["cue_helps"]["margin"]}
     d = real - counts[f"{tag} generation 0"]
     v = lb(d)
     rules["generation0"] = {"mean_difference": float(d.mean()), "lower_95": v, "margin": G["generation0_margin"],
                             "passed": v > G["generation0_margin"]}
     checks = {"reliability": rules["reliability"]["passed"],
               **{f"beats {b}": x["passed"] for b, x in rules["baselines"].items()},
-              "uses the cue": rules["cue"]["passed"], "beats generation 0": rules["generation0"]["passed"]}
+              "fails with the mirrored cue": rules["cue"]["passed"],
+              "beats its own constant probe": rules["cue_helps"]["passed"],
+              "beats generation 0": rules["generation0"]["passed"]}
     rules["passed"] = all(checks.values())
     rules["failed"] = [k for k, ok in checks.items() if not ok]
     return rules
+
+
+def share_lower_bound(k: int, n: int) -> float:
+    """Exact (Clopper-Pearson) one-sided 95% lower bound on a binomial share."""
+    return 0.0 if k == 0 else float(beta.ppf(0.05, k, n - k + 1))
 
 
 def outcome_of(per_run: dict) -> str:
@@ -401,8 +506,25 @@ def decoy_capture(events: dict, side: int) -> dict:
 
 
 def load_candidates(run: int, spec, cfg) -> Genome:
-    g, meta = load_population(genomes_path(run), spec, cfg.brain)
+    g, _ = load_population(genomes_path(run), spec, cfg.brain)
     return g
+
+
+def check_genomes(records: dict, spec, cfg) -> dict:
+    """The champions and baselines, from the local files, checked against the committed hashes;
+    and each generation-0 baseline found in its run's regenerated initial population."""
+    genomes = {}
+    for run, r in records.items():
+        cands = load_candidates(run, spec, cfg)
+        for label, key in (("champion", "champion"), ("generation 0", "generation0_baseline")):
+            g = cands.select([r[key]["checkpoint"]])
+            if genome_hash(g, 0) != r[key]["sha256"]:
+                raise SystemExit(f"run {run}'s {label} does not match its committed hash")
+            genomes[(run, label)] = g
+        init = EV.initial_population(spec, cfg.brain, r["spec"]["run_seed"], cfg.evo.population, "cpu")
+        if r["generation0_baseline"]["sha256"] not in {genome_hash(init, i) for i in range(init.n_strains)}:
+            raise SystemExit(f"run {run}'s generation-0 baseline is not in its regenerated initial population")
+    return genomes
 
 
 def cmd_evaluate(args):
@@ -410,23 +532,14 @@ def cmd_evaluate(args):
     if formal(args):
         reg.require_formal(args.device, prov)
     result_path, events_path = EXP / "evaluation.json", EXP / "evaluation_events.npz"
+    partial = EXP / "evaluation_partial.npz"
+    if args.rerun:
+        archive_attempt("the evaluation", [result_path, EXP / "evaluate-started.json", events_path, partial])
     if result_path.exists():
         raise SystemExit(f"{result_path.name} exists: the hold-out worlds are used once")
-    trains = {}
-    for b in ("A", "B"):
-        if not train_path(b).exists():
-            raise SystemExit(f"batch {b} has not run")
-        trains[b] = json.loads(train_path(b).read_text(encoding="utf-8"))
-        if trains[b].get("outcome") != "completed":
-            raise SystemExit(f"batch {b} did not complete")
-        if not args.smoke:
-            require_committed(train_path(b))
-            for r in trains[b]["records"]:
-                require_committed(genomes_path(r["spec"]["run"]))
-    if formal(args):
-        was = trains["A"]["provenance_at_start"]
-        reg.require_same_code(was["git_commit"], GUARDED)
-        reg.require_same_env(was, prov)
+    trains = {b: require_earlier(args, prov, train_path(b), f"batch {b}") for b in ("A", "B")}
+    if trains["A"]["e1_inputs_sha256"] != e1_input_hashes():
+        raise SystemExit("E1's freeze or gate record differs from what batch A recorded")
     cap = clock()
     try:
         cap.check()
@@ -436,15 +549,7 @@ def cmd_evaluate(args):
     spec = BrainSpec.from_connectome(con)
     cfg = task_config()
     records = {r["spec"]["run"]: r for b in ("A", "B") for r in trains[b]["records"]}
-    # the champions and baselines are the committed ones, checked before any hold-out world is used
-    genomes = {}
-    for run, r in records.items():
-        cands = load_candidates(run, spec, cfg)
-        for label, key in (("champion", "champion"), ("generation 0", "generation0_baseline")):
-            g = cands.select([r[key]["checkpoint"]])
-            if genome_hash(g, 0) != r[key]["sha256"]:
-                raise SystemExit(f"run {run}'s {label} does not match its committed hash")
-            genomes[(run, label)] = g
+    genomes = check_genomes(records, spec, cfg)  # before any hold-out world is used
     tuned = json.loads(E1_FREEZE.read_text(encoding="utf-8"))["tuned"]
     curve = gain_curve_params(tuned)
     marker = reg.start_marker(EXP, "evaluate", prov)
@@ -490,50 +595,74 @@ def cmd_evaluate(args):
 
     counts, events = {}, {}
     result = {"registered": REGISTERED, "provenance_at_start": prov, "device": args.device,
-              "resolved_config_sha256": config_sha256(cfg), "worlds": id_record(ids), "start_marker": marker.name,
-              "training_records": {b: str(train_path(b).name) for b in trains},
+              "resolved_config_sha256": config_sha256(cfg), "e1_inputs_sha256": e1_input_hashes(),
+              "worlds": id_record(ids), "start_marker": marker.name,
+              "training_records": {b: train_path(b).name for b in trains},
               "composition": {"neural arms": [1, len(ids), 1], "scripted arms": [1, len(ids), 1]}}
-    partial = EXP / "evaluation_partial.npz"
     try:
         for label, kind, what, probe in arms:
             counts[label], events[label] = neural(genomes[what], probe) if kind == "neural" else scripted(*what, probe)
             _checkpoint(partial, counts, events, ids)
-        per_run = {run: run_rules(counts, run) for run in sorted(records)}
-        oracle = float(counts["oracle"].mean())
-        curve_means = {k: float(counts[f"gain k={k:g}"].mean()) for k in curve}
-        analysis = {
-            "outcome": outcome_of(per_run),
-            "passing_runs": {"shaped": [r for r in REGISTERED["runs"]["shaped"] if per_run[r]["passed"]],
-                             "unshaped": [r for r in REGISTERED["runs"]["unshaped"] if per_run[r]["passed"]]},
-            "rules": {str(r): v for r, v in per_run.items()},
-            "means": {k: float(v.mean()) for k, v in counts.items()},
-            "fraction_of_oracle": {k: (float(v.mean()) / oracle if oracle > 0 else None) for k, v in counts.items()},
-            "gain_curve": {f"{k:g}": {"params": curve[k], "mean": m} for k, m in curve_means.items()},
-            "equivalent_k": {str(r): equivalent_k(float(counts[f"run{r:02d} champion"].mean()), curve_means)
-                             for r in sorted(records)},
-            "secondary": {k: E1.secondary(events[k], cfg.world.max_ticks) for k in counts},
-            "decoy_capture": {str(r): decoy_capture(events[f"run{r:02d} mirrored"], arena_side(cfg, 1))
-                              for r in sorted(records)},
-            "replay": {str(r): replay_check(records, r, spec, cfg, iface, args.device, cap) for r in sorted(records)},
-            "per_world_counts": {k: v.astype(int).tolist() for k, v in counts.items()},
-            "events_file": events_path.name}
-        champ = {r: float(counts[f"run{r:02d} champion"].mean()) for r in per_run}
-        passing = [r for r in analysis["passing_runs"]["shaped"]]
-        analysis["module_for_E3"] = (max(passing, key=lambda r: champ[r]) if passing else None)
-        save_modules(records, genomes, cfg, analysis)
-        cap.check()
+        analysis = analyse(counts, events, records, curve, cfg)
+        cap.check()  # the final budget decision, before the verdict is written
     except reg.CapReached as e:
         _eval_not_completed(result_path, events_path, result, counts, events, ids, str(e), t0, "cap")
     except BaseException as e:  # noqa: BLE001
         _eval_not_completed(result_path, events_path, result, counts, events, ids, f"{type(e).__name__}: {e}", t0,
                             "stopped", reraise=e)
+    # the gating record first; the non-gating extras after it, so a failure there cannot void it
     result.update(analysis, seconds=time.perf_counter() - t0)
     write_atomic(result_path, result)
     _save_events(events_path, events, ids)
     partial.unlink(missing_ok=True)
-    print(result["outcome"])
+    print(result["outcome"], f"(shaped share lower bound {result['passing_share_lower_95']:.2f})")
     for r, v in result["rules"].items():
-        print(f"run {r}: {'pass' if v['passed'] else 'fail'} {v['failed']}  mean {result['means'][f'run{int(r):02d} champion']:.2f}")
+        print(f"run {r}: {'pass' if v['passed'] else 'fail'} {v['failed']}  "
+              f"mean {result['means'][f'run{int(r):02d} champion']:.2f}")
+    extras(records, genomes, events, cfg, spec, iface, args.device, cap, result)
+
+
+def analyse(counts, events, records, curve, cfg) -> dict:
+    per_run = {run: run_rules(counts, run) for run in sorted(records)}
+    shaped, unshaped = REGISTERED["runs"]["shaped"], REGISTERED["runs"]["unshaped"]
+    k = sum(per_run[r]["passed"] for r in shaped)
+    oracle = float(counts["oracle"].mean())
+    curve_means = {kk: float(counts[f"gain k={kk:g}"].mean()) for kk in curve}
+    return {
+        "outcome": outcome_of(per_run),
+        "passing_runs": {"shaped": [r for r in shaped if per_run[r]["passed"]],
+                         "unshaped": [r for r in unshaped if per_run[r]["passed"]]},
+        "passing_share": k / len(shaped), "passing_share_lower_95": share_lower_bound(k, len(shaped)),
+        "rules": {str(r): v for r, v in per_run.items()},
+        "means": {kk: float(v.mean()) for kk, v in counts.items()},
+        "fraction_of_oracle": {kk: (float(v.mean()) / oracle if oracle > 0 else None) for kk, v in counts.items()},
+        "gain_curve": {f"{kk:g}": {"params": curve[kk], "mean": m} for kk, m in curve_means.items()},
+        "equivalent_k": {str(r): equivalent_k(float(counts[f"run{r:02d} champion"].mean()), curve_means)
+                         for r in sorted(records)},
+        "secondary": {kk: E1.secondary(events[kk], cfg.world.max_ticks) for kk in counts},
+        "per_world_counts": {kk: v.astype(int).tolist() for kk, v in counts.items()},
+        "events_file": "evaluation_events.npz"}
+
+
+def extras(records, genomes, events, cfg, spec, iface, device, cap, result) -> None:
+    """Reported, not gating: the decoy capture, a replay check per champion, and the modules. Written
+    to their own file; an error here is recorded there and leaves the verdict untouched."""
+    doc, path = {"errors": {}}, EXP / "evaluation-extras.json"
+    side = arena_side(cfg, 1)
+    doc["decoy_capture"] = {str(r): decoy_capture(events[f"run{r:02d} mirrored"], side) for r in sorted(records)}
+    doc["replay"] = {}
+    for r in sorted(records):
+        try:
+            doc["replay"][str(r)] = replay_check(records, r, spec, cfg, iface, device, cap)
+        except (reg.CapReached, Exception) as e:  # noqa: BLE001
+            doc["errors"][f"replay {r}"] = f"{type(e).__name__}: {e}"
+    try:
+        doc["modules"] = save_modules(records, genomes, cfg, result)
+        champ = {r: result["means"][f"run{r:02d} champion"] for r in result["passing_runs"]["shaped"]}
+        doc["module_for_E3"] = max(champ, key=champ.get) if champ else None
+    except Exception as e:  # noqa: BLE001
+        doc["errors"]["modules"] = f"{type(e).__name__}: {e}"
+    write_atomic(path, doc)
 
 
 def _events(r) -> dict:
@@ -567,7 +696,7 @@ def _eval_not_completed(result_path, events_path, result, counts, events, ids, e
 
 def replay_check(records: dict, run: int, spec, cfg, iface, device, cap) -> dict:
     """Reload from disk the checkpoint batch that produced the run's champion (every run of its batch
-    at that generation) and replay it in the same composition on the validation worlds. Reported,
+    at that checkpoint) and replay it in the same composition on the validation worlds. Reported,
     not claimed exact."""
     batch = next(b for b, runs in REGISTERED["runs"]["batches"].items() if run in runs)
     ci = records[run]["champion"]["checkpoint"]
@@ -584,51 +713,60 @@ def replay_check(records: dict, run: int, spec, cfg, iface, device, cap) -> dict
             "recorded_mean": float(want.mean()), "replayed_mean": float(got.mean())}
 
 
-def save_modules(records, genomes, cfg, analysis) -> None:
-    """Each champion as a module: the genome, the world settings, the interface and the evidence."""
+def save_modules(records, genomes, cfg, result) -> dict:
+    """Each champion as a module, local (runs/e04a/modules/): the genome, the world settings, the
+    interface and the evidence. Their hashes go in the record."""
+    out = {}
     for run in records:
-        save_genome(EXP / "modules" / f"run{run:02d}-champion.npz", genomes[(run, "champion")], cfg=cfg,
-                    run=run, input_mapping="goal cue, left and right, at AWA, AWC and ASE (configs/interface.yaml)",
+        path = OUT / "modules" / f"run{run:02d}-champion.npz"
+        save_genome(path, genomes[(run, "champion")], cfg=cfg, run=run,
+                    input_mapping="goal cue, left and right, at AWA, AWC and ASE (configs/interface.yaml)",
                     interface="configs/interface.yaml", task="E1 Task N, sigma 6",
-                    evidence={"holdout_mean": analysis["means"][f"run{run:02d} champion"],
-                              "passed": analysis["rules"][str(run)]["passed"],
-                              "failed": analysis["rules"][str(run)]["failed"]})
+                    evidence={"holdout_mean": result["means"][f"run{run:02d} champion"],
+                              "passed": result["rules"][str(run)]["passed"],
+                              "failed": result["rules"][str(run)]["failed"]})
+        out[str(run)] = {"file": str(path.relative_to(ROOT)) if path.is_relative_to(ROOT) else str(path),
+                         "genome_sha256": genome_hash(genomes[(run, "champion")], 0)}
+    return out
 
 
 # ----------------------------------------------------------------------------- smoke
 
-def use_smoke(args) -> None:
-    """Tiny sizes, ids 0-9 999 (outside every E1 and 04a range), and a scratch folder. Never results."""
+def use_smoke(args, folder: Path | None = None) -> None:
+    """Tiny sizes, ids 0-9 999 (outside every E1 and 04a range) for every stage, and a scratch folder.
+    Never results. Only files inside that folder are removed."""
     global EXP, OUT, SMOKE
-    EXP = OUT = ROOT / "runs" / "e04a-smoke"
-    if args.command == "project":  # the projection keeps the full sizes; only its folder changes
-        return
+    EXP = OUT = Path(folder) if folder is not None else ROOT / "runs" / "e04a-smoke"
     SMOKE = True
     R = REGISTERED
+    R["train_ids"] = {"base": 0, "span": 5000}
     R["evolution"].update(generations=3, population=4, elites=1, truncation=2, worlds_per_strain=2)
     R["runs"]["batches"] = {"A": [0, 1], "B": [12, 13]}
     R["runs"]["shaped"], R["runs"]["unshaped"] = [0, 1], [12, 13]
     R["validation"].update(worlds=4, every=2)
-    R["holdout"].update(offset=0, worlds=16)
+    R["holdout"].update(worlds=16)
+    R["projection"].update(generations_timed=3)
     R["rules"]["interval"]["resamples"] = 200
     R["outcome"]["required_passing_runs"] = 1
-    stale = [EXP / "evaluation.json", EXP / "evaluation_events.npz", EXP / "evaluate-started.json"]
-    if args.command == "train":
-        stale += [train_path(args.batch), EXP / f"train-{args.batch}-started.json"]
-        if args.batch == "A":
-            stale += [train_path("B"), EXP / "train-B-started.json"]
-    for f in stale:
-        f.unlink(missing_ok=True)
+    later = {"project": ["project", "train-A", "train-B", "evaluate"], "train": [f"train-{args.batch}"]
+             + (["train-B", "evaluate"] if args.batch == "A" else ["evaluate"]), "evaluate": ["evaluate"]}
+    for stage in later[args.command]:
+        name = {"project": "projection", "evaluate": "evaluation"}.get(stage, stage)
+        for f in (EXP / f"{name}.json", EXP / f"{stage}-started.json", EXP / f"{name}-partial.json",
+                  EXP / "evaluation_events.npz", EXP / "evaluation-extras.json"):
+            if stage != "evaluate" and f.name.startswith("evaluation"):
+                continue
+            f.unlink(missing_ok=True)
 
 
 def main():
     ap = argparse.ArgumentParser(allow_abbrev=False)
-    ap.add_argument("command", choices=["train", "evaluate", "project"])
-    ap.add_argument("--generations", type=int, default=6, help="project: generations to time")
+    ap.add_argument("command", choices=["project", "train", "evaluate"])
     ap.add_argument("--batch", choices=["A", "B"])
     ap.add_argument("--device", default="cuda")
     ap.add_argument("--smoke", action="store_true", help="tiny sizes, ids outside E1 and 04a, scratch folder")
     ap.add_argument("--guarded", action="store_true", help="with --smoke: keep the formal guards")
+    ap.add_argument("--rerun", action="store_true", help="once, after a crash or an interrupt (never the cap)")
     args = ap.parse_args()
     if args.command == "train" and not args.batch:
         ap.error("train needs --batch A or B")

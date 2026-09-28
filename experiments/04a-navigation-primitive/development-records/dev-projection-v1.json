@@ -1,0 +1,31 @@
+{
+ "what": "the development projection behind draft v1's budget: batch A's shape at full size, 6 generations on smoke ids (training 0-4 999, validation 5 000-5 063), on the working tree before commit b38c7cc (dirty: the code was not yet committed). Copied from runs/e04a-smoke/projection.json.",
+ "provenance": {
+  "git_commit": "8e21cc7f8171f3be455ebc68ca05bfa424b44cff",
+  "branch": "roadmap",
+  "dirty": true,
+  "python": "3.13.3",
+  "numpy": "2.4.4",
+  "torch": "2.12.0+cu130",
+  "cuda": "13.0",
+  "gpu": "NVIDIA GeForce RTX 5080",
+  "connectome_cache_sha256": "43b87aa172a0042b9dce734b15bdf1c87efe3a33ac1cc0d9cd03255a60c96d4a",
+  "connectome_source_sha256": "1f4fdbf84746b69b49a8da0816f52787860ce349b638dce37924ba80f90c70c9"
+ },
+ "device": "cuda",
+ "generations_timed": 6,
+ "batch_seconds": [
+  7.56424680002965,
+  4.7367316000163555,
+  4.741343299858272,
+  4.751519099809229,
+  4.749316700035706,
+  7.231929000001401
+ ],
+ "median_seconds_per_generation_after_the_first": 4.749316700035706,
+ "projected_training_hours": 2.6385092777976147,
+ "limit_hours": 4.5,
+ "within_limit": true,
+ "seconds": 33.79282220010646,
+ "ids": "training 0-4 999 and validation 5 000 onward (smoke ids, outside every E1 and 04a range)"
+}

@@ -3186,3 +3186,45 @@ the list both reviewers gave in D101. It goes to Astra 6 and Fable 5.1 before an
 
 **New code:** `wormwars/registration.py` (E1's guards as shared functions; `scripts/e1.py` keeps its
 own copies as the published record), `wormwars/e04a/evolve.py` and `scripts/e04a.py`, with tests.
+
+## D104 — 04a review v1: both "revise"; v2 adopts every must-fix; a smoke run touched 24 training ids
+
+Astra 6 and Fable 5.1 reviewed draft v1 (`b38c7cc`; `docs/reviews/20260928-213057-04a-prereg/`).
+Both said "revise". Both found no coupling between batched runs and no way to game the shaping
+bound, and both advised against making S-const a gate.
+
+**Found by the reviewers, and what was done:**
+- **The smoke mode trained on the formal training range** (Astra). `use_smoke` did not rebind the
+  training ids, so v1's CPU smoke run drew 24 ids from 997 000 000 onward. They are reconstructed
+  exactly and recorded (`development-records/smoke-training-exposure.json`); **the training range
+  moves to 999 000 000 onward**; the smoke mode now rebinds every range, and a test checks every id
+  the simulator receives.
+- **A test fixture deleted real smoke records** (Astra), the same class of bug as in E1: it called
+  the cleanup before redirecting to a scratch folder. It removed v1's smoke train and evaluation
+  records; the attempt records and genome files survived. Fixed, with a test of where cleanup acts.
+- **Genome files would have redistributed connectome data** (Fable): generation-0 genomes are
+  proportional to the anatomical weights (D028), and v1 committed every checkpoint. Genome files now
+  stay local; records carry hashes, and generation-0 baselines are checked against their
+  regenerated populations.
+- **The projection was not a gate** (both): batch A now requires a completed projection within its
+  limit on the same code and environment; the projection runs once, under the cap.
+- **E1's freeze and gate records were unguarded** (both): now guarded and hashed.
+- **"At least as often as not" overclaimed** (both): withdrawn; the exact share bound (0.245 for 6 of
+  12) and the marginal-bound caveat are reported.
+- **A cue gap** (Astra, Fable): a new gating rule requires the real cue to beat the champion's own
+  constant probe by a lower bound above 0.5.
+- **No engine-equivalence check** (both, AGENTS.md rule 7): `scripts/e04a_equivalence.py` compared the
+  rollout at `5eaf339` with the new one on smoke ids. Every score and event entry was identical on the
+  CPU (the declared tolerance) and on CUDA.
+- Text that disagreed with the code, untested paths (`require_committed`, the projection), and the
+  development records not committed (Fable): fixed.
+
+**Suggestions adopted:** 256 validation worlds; a real-simulator independence test at a fixed
+composition; a rerun rule fixed in advance (once, after a crash or interrupt, never after the cap);
+the verdict written before the non-gating extras; a finite check at validation; more command tests.
+
+**A development pilot** (Fable's suggestion): 200 generations of batch A's shape on smoke ids. The
+best genome's validation mean rose from about 0.2 targets to about 1.7 by generation 25 and stayed
+between about 1.0 and 2.1 through generation 199. That suggests many runs may not meet the
+reliability rule within 1 000 generations. The generation count is unchanged; the question goes to
+review v2.

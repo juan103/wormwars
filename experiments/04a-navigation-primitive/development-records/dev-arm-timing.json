@@ -1,0 +1,12 @@
+{
+ "what": "a timing of one random N2 genome (4 repeats of 1 024 worlds, composition (1, 1 024, 1)) and E1's navigator (one scripted arm, 1 024 worlds) on smoke ids 0-1 023, CUDA, on the working tree before b38c7cc. The script was a scratch file; its printed output is transcribed here.",
+ "neural_arm_seconds": [
+  3.14,
+  2.76,
+  2.92
+ ],
+ "scripted_arm_seconds": [
+  2.16
+ ],
+ "script": "import sys, time, importlib.util\nimport numpy as np, torch\nsys.path.insert(0, \".\")\nspec_ = importlib.util.spec_from_file_location(\"e04a\", \"scripts/e04a.py\"); m = importlib.util.module_from_spec(spec_); spec_.loader.exec_module(m)\nfrom wormwars.brain import BrainSpec\ncon, iface = m.preflight(\"cuda\"); spec = BrainSpec.from_connectome(con); cfg = m.task_config()\ng = m.EV.initial_population(spec, cfg.brain, 999, 1, \"cuda\")\nids = m.SMOKE_IDS[:1024]\nfor rep in range(3):\n    torch.cuda.synchronize(); t = time.perf_counter()\n    r = m.rollout_mod.rollout(cfg, iface, g, ids, 1_100_001, \"cuda\", chunk_worlds=1024)\n    torch.cuda.synchronize(); print(\"neural arm\", round(time.perf_counter() - t, 2), \"s\")\ntuned = __import__(\"json\").load(open(m.E1_FREEZE))[\"tuned\"]\nbrain = m.E1.C.scripted(iface, m.E1.MAKERS[\"S-const\"](**tuned[\"S-const\"][\"params\"]), cfg, device=\"cuda\")\ntorch.cuda.synchronize(); t = time.perf_counter()\nm.rollout_brain(cfg, iface, brain, ids, 1_100_001, \"cuda\"); torch.cuda.synchronize(); print(\"scripted arm\", round(time.perf_counter() - t, 2), \"s\")\n"
+}

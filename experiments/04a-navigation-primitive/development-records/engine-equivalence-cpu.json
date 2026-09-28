@@ -1,0 +1,132 @@
+{
+ "tolerance": {
+  "cpu": "exact",
+  "cuda": "reported; exact expected, not required"
+ },
+ "a": "ref-cpu.npz",
+ "b": "new-cpu.npz",
+ "reference_commit": "5eaf339",
+ "all_identical": true,
+ "arrays": {
+  "navigator|activation_tick": {
+   "identical": true,
+   "max_abs_difference": 0.0
+  },
+  "navigator|end_x": {
+   "identical": true,
+   "max_abs_difference": 0.0
+  },
+  "navigator|end_y": {
+   "identical": true,
+   "max_abs_difference": 0.0
+  },
+  "navigator|path_length": {
+   "identical": true,
+   "max_abs_difference": 0.0
+  },
+  "navigator|reach_tick": {
+   "identical": true,
+   "max_abs_difference": 0.0
+  },
+  "navigator|score": {
+   "identical": true,
+   "max_abs_difference": 0.0
+  },
+  "navigator|start_x": {
+   "identical": true,
+   "max_abs_difference": 0.0
+  },
+  "navigator|start_y": {
+   "identical": true,
+   "max_abs_difference": 0.0
+  },
+  "navigator|target_x": {
+   "identical": true,
+   "max_abs_difference": 0.0
+  },
+  "navigator|target_y": {
+   "identical": true,
+   "max_abs_difference": 0.0
+  },
+  "neural|activation_tick": {
+   "identical": true,
+   "max_abs_difference": 0.0
+  },
+  "neural|end_x": {
+   "identical": true,
+   "max_abs_difference": 0.0
+  },
+  "neural|end_y": {
+   "identical": true,
+   "max_abs_difference": 0.0
+  },
+  "neural|path_length": {
+   "identical": true,
+   "max_abs_difference": 0.0
+  },
+  "neural|reach_tick": {
+   "identical": true,
+   "max_abs_difference": 0.0
+  },
+  "neural|score": {
+   "identical": true,
+   "max_abs_difference": 0.0
+  },
+  "neural|start_x": {
+   "identical": true,
+   "max_abs_difference": 0.0
+  },
+  "neural|start_y": {
+   "identical": true,
+   "max_abs_difference": 0.0
+  },
+  "neural|target_x": {
+   "identical": true,
+   "max_abs_difference": 0.0
+  },
+  "neural|target_y": {
+   "identical": true,
+   "max_abs_difference": 0.0
+  },
+  "oracle|activation_tick": {
+   "identical": true,
+   "max_abs_difference": 0.0
+  },
+  "oracle|end_x": {
+   "identical": true,
+   "max_abs_difference": 0.0
+  },
+  "oracle|end_y": {
+   "identical": true,
+   "max_abs_difference": 0.0
+  },
+  "oracle|path_length": {
+   "identical": true,
+   "max_abs_difference": 0.0
+  },
+  "oracle|reach_tick": {
+   "identical": true,
+   "max_abs_difference": 0.0
+  },
+  "oracle|score": {
+   "identical": true,
+   "max_abs_difference": 0.0
+  },
+  "oracle|start_x": {
+   "identical": true,
+   "max_abs_difference": 0.0
+  },
+  "oracle|start_y": {
+   "identical": true,
+   "max_abs_difference": 0.0
+  },
+  "oracle|target_x": {
+   "identical": true,
+   "max_abs_difference": 0.0
+  },
+  "oracle|target_y": {
+   "identical": true,
+   "max_abs_difference": 0.0
+  }
+ }
+}

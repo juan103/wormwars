@@ -1,0 +1,163 @@
+{
+ "what": "04a's CPU smoke run of 2026-09-28 (before review v1) drew its training worlds from the formal training range, because use_smoke did not rebind it (Astra, review v1). Reconstructed from the deterministic schedule train_ids(run seed, generation, 2, 997 000 000, 1 000 000), and matched against the attempt records' world counts (48 selection worlds per batch = 3 generations x 2 runs x 4 genomes x 2 worlds).",
+ "settings": {
+  "population": 4,
+  "worlds_per_strain": 2,
+  "generations": 3,
+  "horizon": 40,
+  "device": "cpu",
+  "runs": {
+   "A": [
+    0,
+    1
+   ],
+   "B": [
+    12,
+    13
+   ]
+  }
+ },
+ "attempt_records": [
+  "runs/e04a-smoke/compute/20260928T192259Z-628a050d.json",
+  "runs/e04a-smoke/compute/20260928T192302Z-d033f82d.json"
+ ],
+ "per_generation": [
+  {
+   "batch": "A",
+   "run": 0,
+   "generation": 0,
+   "ids": [
+    997737659,
+    997160422
+   ]
+  },
+  {
+   "batch": "A",
+   "run": 0,
+   "generation": 1,
+   "ids": [
+    997824703,
+    997954725
+   ]
+  },
+  {
+   "batch": "A",
+   "run": 0,
+   "generation": 2,
+   "ids": [
+    997000911,
+    997452093
+   ]
+  },
+  {
+   "batch": "A",
+   "run": 1,
+   "generation": 0,
+   "ids": [
+    997925663,
+    997776658
+   ]
+  },
+  {
+   "batch": "A",
+   "run": 1,
+   "generation": 1,
+   "ids": [
+    997357392,
+    997242747
+   ]
+  },
+  {
+   "batch": "A",
+   "run": 1,
+   "generation": 2,
+   "ids": [
+    997354984,
+    997108623
+   ]
+  },
+  {
+   "batch": "B",
+   "run": 12,
+   "generation": 0,
+   "ids": [
+    997654076,
+    997193312
+   ]
+  },
+  {
+   "batch": "B",
+   "run": 12,
+   "generation": 1,
+   "ids": [
+    997947903,
+    997451000
+   ]
+  },
+  {
+   "batch": "B",
+   "run": 12,
+   "generation": 2,
+   "ids": [
+    997397207,
+    997605055
+   ]
+  },
+  {
+   "batch": "B",
+   "run": 13,
+   "generation": 0,
+   "ids": [
+    997795686,
+    997380456
+   ]
+  },
+  {
+   "batch": "B",
+   "run": 13,
+   "generation": 1,
+   "ids": [
+    997376284,
+    997315451
+   ]
+  },
+  {
+   "batch": "B",
+   "run": 13,
+   "generation": 2,
+   "ids": [
+    997555475,
+    997606033
+   ]
+  }
+ ],
+ "distinct_ids": [
+  997000911,
+  997108623,
+  997160422,
+  997193312,
+  997242747,
+  997315451,
+  997354984,
+  997357392,
+  997376284,
+  997380456,
+  997397207,
+  997451000,
+  997452093,
+  997555475,
+  997605055,
+  997606033,
+  997654076,
+  997737659,
+  997776658,
+  997795686,
+  997824703,
+  997925663,
+  997947903,
+  997954725
+ ],
+ "count": 24,
+ "these_are_the_first_two_draws_of_the_formal_schedule_for_those_runs_and_generations": true,
+ "validation_and_holdout": "not touched: the smoke run used ids 5 000-5 003 for validation and 0-15 for the hold-out"
+}

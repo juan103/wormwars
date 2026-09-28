@@ -326,3 +326,50 @@ def test_per_strain_world_ids_give_each_strain_its_own_worlds(iface, spec):
     np.testing.assert_array_equal(own.events["target_x"][1], other.events["target_x"][0])
     with pytest.raises(ValueError):
         rollout(cfg, iface, g, np.zeros((3, 2), dtype=np.int64), 5, "cpu")
+
+
+def test_progress_is_the_closed_fraction_of_the_legs_starting_distance(iface, spec):
+    """The formula directly: the head placed at fractions of the way from the leg's start to the
+    target gives those fractions (D103; Astra, review v1)."""
+    cfg = _cfg(horizon=5)
+    w = _world(cfg, iface, spec, np.arange(3))
+    ar = torch.arange(3)
+    start = w._ev_start[ar, w.target_index].clone()
+    c = w.current_target()
+    for f in (0.0, 0.25, 0.5, 0.9):
+        w.pos[:, 0, 0] = start + f * (c - start)
+        np.testing.assert_allclose(w.final_progress().numpy(), f, atol=1e-5)
+    # sideways, at the starting distance: no progress
+    d = c - start
+    w.pos[:, 0, 0] = c + torch.stack((-d[:, 1], d[:, 0]), dim=-1)
+    np.testing.assert_allclose(w.final_progress().numpy(), 0.0, atol=1e-5)
+
+
+def test_progress_restarts_at_zero_when_a_target_is_reached(iface):
+    """After an arrival the new leg starts where the head is, so progress is 0 at that tick."""
+    cfg = _cfg(horizon=200)
+    brain = C.OracleBrain(iface, 302, cfg.world.forward_gain, cfg.world.turn_gain, k=2.0, speed=1.0)
+    w = World(cfg, iface, brain, torch.zeros(4, 1, dtype=torch.long), run_seed=5, world_ids=np.arange(4))
+    seen = torch.zeros(4, dtype=torch.bool)
+    for _ in range(200):
+        before = w.targets_reached.clone()
+        w.tick()
+        arrived = w.targets_reached > before
+        if arrived.any():
+            np.testing.assert_allclose(w.final_progress()[arrived].numpy(), 0.0, atol=1e-5)
+            seen |= arrived
+    assert seen.all()
+
+
+def test_a_strain_is_unaffected_by_its_batch_mates(iface, spec):
+    """04a's batching, in the real simulator on the CPU: with the composition held fixed, changing
+    the other strain's genome and worlds leaves a strain's counts, progress and events unchanged."""
+    cfg = _cfg(horizon=40)
+    g = Genome.random(spec, cfg.brain, 3, generator=torch.Generator().manual_seed(4))
+    a = rollout(cfg, iface, g.select([0, 1]), np.array([[3, 4, 5], [10, 11, 12]]), 5, "cpu")
+    b = rollout(cfg, iface, g.select([0, 2]), np.array([[3, 4, 5], [20, 21, 22]]), 5, "cpu")
+    np.testing.assert_array_equal(a.score[0], b.score[0])
+    np.testing.assert_array_equal(a.progress[0], b.progress[0])
+    np.testing.assert_array_equal(a.final_head[0], b.final_head[0])
+    for k in a.events:
+        np.testing.assert_array_equal(a.events[k][0], b.events[k][0])

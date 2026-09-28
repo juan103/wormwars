@@ -18,8 +18,9 @@ count.
 
 **Checkpoints:** at generation 0, every `checkpoint_every` generations and at the last, each run's
 best strain of that generation (by its own fitness) is scored on the validation worlds, raw count.
-The run's champion is the first checkpoint with the highest validation mean; its generation-0
-baseline is the generation-0 checkpoint.
+The run's champion is the first checkpoint with the highest validation mean (ties go to the
+earliest); its generation-0 baseline is the generation-0 checkpoint. Validation worlds select the
+champion but never breed.
 """
 
 from __future__ import annotations
@@ -155,6 +156,8 @@ def evolve_batch(cfg, iface, spec: BrainSpec, runs: list[RunSpec], *, generation
             with category("holdout"):  # the checkpoints, as `evolve` counts them
                 v = rollout_fn(cfg, iface, Genome.cat(cands), validation_ids, world_seed, device,
                                chunk_worlds=R * len(validation_ids))
+            if not np.isfinite(v.score).all():
+                raise FloatingPointError(f"generation {g}: non-finite validation count")
             for i, rec in enumerate(records):
                 rec.checkpoints.append({"generation": g, "validation_mean": float(v.score[i].mean()),
                                         "validation_counts": v.score[i].astype(int).tolist(),
