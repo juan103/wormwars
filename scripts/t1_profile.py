@@ -22,9 +22,10 @@ proxy: the same with one wey per world and 300 ticks. Task N itself is not built
 4. `short_run`: a 02-style single-island run of 5 generations with checkpoints and a final
    hold-out, by accounting category.
 5. `replay_mode_cost`: the same rollout in default mode and in `replay_mode(warn=False)`.
-6. `profiler`: kernel share of the top operations, CPU and kernel time, launches.
-7. `sparsity`, and `levers`: the brain step by each formulation of section 2, against the current
-   step, with the maximum difference and whether two identical calls agree.
+6. `sparsity`, and `levers`: the brain step by each formulation of section 2, against the current
+   step, with the maximum difference and whether two identical calls agree. The current step is
+   timed again at the end of each row.
+7. `profiler`, last: kernel share of the top operations, CPU and kernel time, launches.
 """
 
 from __future__ import annotations
@@ -437,6 +438,8 @@ def levers(cfg, spec, device, quick, reps) -> dict:
                     v = (v + cp * (dr + torch.bmm(torch.tanh(v), Mp) + torch.bmm(v, Gp))) / dp
                 return v[:, :, :n]
             record(f"pad_n_{P}", padded)
+        # the current step again, last, so a disturbed first timing shows up as a disagreement
+        row["current_retimed"] = {"ms": _timed(lambda: br.step(v0, cur), device, reps)["median_s"] * 1e3}
         out[f"S{S}_B{B}"] = row
     return out
 
@@ -472,10 +475,13 @@ def main():
         res["concurrency"] = concurrency(args.device, args.quick)
         res["world"] = world_share(cfgs, iface, spec, args.device, args.quick, reps)
         res["replay_mode_cost"] = replay_cost(cfgs["02-T1"], iface, spec, args.device, args.quick, reps)
-        res["profiler"] = profiler(cfgs["02-T1"], iface, spec, args.device, args.quick)
         res["sparsity"] = sparsity(cfgs["02-T1"], spec, args.device)
         res["levers"] = levers(cfgs["02-T1"], spec, args.device, args.quick, reps)
     res["short_run"] = {k: short_run(c, iface, spec, args.device, args.quick) for k, c in cfgs.items()}
+    # last: in the first full run (e8faf26) the brain-step timing taken right after the profiler
+    # was 4x slower than every other measurement of it, so nothing is timed after it now
+    with acct.category("measure"):
+        res["profiler"] = profiler(cfgs["02-T1"], iface, spec, args.device, args.quick)
     res["seconds"] = time.perf_counter() - t0
     Path(args.result).parent.mkdir(parents=True, exist_ok=True)
     Path(args.result).write_text(json.dumps(res, indent=1, default=str), encoding="utf-8")
