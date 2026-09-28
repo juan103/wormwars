@@ -10,7 +10,9 @@ file or on the equivalence results (`T1_equivalence_*.json`).
    strains inside the batch of 32, for S = 1, 2, 3, 4, 8, 16, at 1, 8, 16, 20, 32, 64, 160, 320 and
    1 280 rows per strain (random inputs; the connectome's size, 302).
 2. `world_reduction`: each world's food total, `fields[:, FOOD].sum(dim=(1, 2))`, computed over the
-   first n worlds of a batch of 64 real maps, against the same worlds inside the batch of 64.
+   first n worlds of a batch, against the same worlds inside a batch of 2 048: real starting maps,
+   and random fields. `eaten_cause`: whether a single strain's final food fields are bit-identical
+   to its fields in a 2 048-world batch, and whether their per-world sums differ.
 3. `remainder_chunk`: 256 random genomes x 8 worlds in chunks of 3 (a last chunk of one strain),
    with the switch off and on, against the same genomes in one chunk of 256.
 4. `cpu_single_strain`: on the CPU, a brain batch of one against the same strain in a batch of 2
@@ -82,14 +84,46 @@ def bmm_strain_count(device) -> dict:
 
 
 def world_reduction(con, iface, spec, device) -> dict:
+    """Each world's food total over the first n worlds of a batch, against the same worlds inside a
+    batch of 2 048 (the size in which the `eaten` differences appeared): real starting maps, and
+    random fields of the same shape."""
     cfg = grid.task_config(Config(), "T1")
     g = Genome.random(spec, cfg.brain, 1, generator=torch.Generator().manual_seed(2))
     g = Genome(g.spec.to(device), g.cfg, **{k: None if v is None else v.to(device) for k, v in g.params().items()})
-    world = World(cfg, iface, Brain(g), torch.zeros(64, 1, dtype=torch.long, device=device), run_seed=3,
-                  world_ids=np.arange(64), device=device)
-    food = world.fields[:, world.ch.FOOD].contiguous()
-    full = food.sum(dim=(1, 2))
-    return {str(n): _diff(food[:n].contiguous().sum(dim=(1, 2)), full[:n]) for n in (1, 2, 4, 8, 12, 15, 16, 20, 32)}
+    world = World(cfg, iface, Brain(g), torch.zeros(2048, 1, dtype=torch.long, device=device), run_seed=3,
+                  world_ids=np.arange(2048), device=device)
+    maps = world.fields[:, world.ch.FOOD].contiguous()
+    rand = torch.rand(maps.shape, generator=torch.Generator().manual_seed(5)).to(device)
+    out = {}
+    for name, food in (("starting_maps", maps), ("random_fields", rand)):
+        full = food.sum(dim=(1, 2))
+        out[name] = {str(n): _diff(food[:n].contiguous().sum(dim=(1, 2)), full[:n])
+                     for n in (1, 2, 4, 8, 12, 15, 16, 20, 32, 64)}
+    return out
+
+
+def eaten_cause(con, iface, spec, device, quick) -> dict:
+    """Where the single-strain `eaten` difference comes from (D091). 256 random genomes x 8 worlds,
+    switch on, as one batch (2 048 worlds) and strain 0 alone (8 worlds): are the final food fields
+    bit-identical (then only the per-world sum differs), and does each per-world sum depend on the
+    batch it is computed in?"""
+    t1 = grid.task_config(Config(), "T1")
+    n = 16 if quick else 256
+    g = Genome.random(spec, t1.brain, n, generator=torch.Generator().manual_seed(1))
+    g = _pad(Genome(g.spec.to(device), g.cfg, **{k: None if v is None else v.to(device) for k, v in g.params().items()}), True)
+    ids = np.arange(8)
+
+    def final_food(genome):
+        strain_of = torch.arange(genome.n_strains, device=device).repeat_interleave(len(ids)).reshape(-1, 1)
+        w = World(t1, iface, Brain(genome), strain_of, run_seed=3, world_ids=np.tile(ids, genome.n_strains),
+                  device=device)
+        w.run(20 if quick else None)
+        return w.fields[:, w.ch.FOOD].contiguous().clone()
+    batch = final_food(g)[:8]
+    alone = final_food(g.select([0]))
+    return {"strains_in_batch": n, "worlds_alone": 8,
+            "final_food_fields_bit_identical": _diff(alone, batch),
+            "sum_alone_vs_sum_in_batch": _diff(alone.sum(dim=(1, 2)), final_food(g).sum(dim=(1, 2))[:8])}
 
 
 def remainder_chunk(con, iface, spec, device, quick) -> dict:
@@ -178,6 +212,7 @@ def main():
     with acct.category("measure"):
         res["bmm_strain_count"] = bmm_strain_count(args.device)
         res["world_reduction"] = world_reduction(con, iface, spec, args.device)
+        res["eaten_cause"] = eaten_cause(con, iface, spec, args.device, args.quick)
         res["remainder_chunk"] = remainder_chunk(con, iface, spec, args.device, args.quick)
         res["cpu_single_strain"] = cpu_single_strain(spec)
         res["padding_cost"] = padding_cost(con, iface, spec, args.device, args.quick)

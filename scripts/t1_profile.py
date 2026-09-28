@@ -460,7 +460,8 @@ def main():
     ap.add_argument("--result", default=str(ROOT / "docs" / "foundations" / "T1_profile.json"))
     args = ap.parse_args()
     if args.worker:
-        return worker(args.device, args.quick)
+        with acct.category("measure"):  # the worker's counts under "measure" when merged (D091)
+            return worker(args.device, args.quick)
     prov = provenance()  # at the start
     if prov["dirty"] and not args.quick:
         raise SystemExit("uncommitted changes in wormwars/, scripts/ or configs/: commit before the real run")

@@ -425,7 +425,7 @@ def main():
     if sum((args.save_reference, args.compare, args.published)) != 1:
         raise SystemExit("choose one of --save-reference, --compare, --published")
     if args.in_replay:
-        with replay_mode(warn=False):
+        with replay_mode(warn=False), acct.category("measure"):  # the child's counts under "measure"
             run_mode(args, "replay_mode")
         return
     prov = provenance()
