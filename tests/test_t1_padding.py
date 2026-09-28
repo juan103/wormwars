@@ -2,10 +2,12 @@
 
 On CUDA a batch of one strain can take a different `bmm` path from the same strain inside a larger
 batch (D082). With `BrainConfig.pad_single_strain` on, `Brain.step` runs a single strain as two
-identical copies and keeps the first. These tests run on the CPU, where padding cannot change a
-result, so they check the mechanism directly: the batch that reaches `bmm`, the loading defaults
-that keep published results on the old path, the cache, and the accounting. The CUDA equivalence
-test is `scripts/t1_equivalence.py`.
+identical copies and keeps the first. These tests run on the CPU. They check the mechanism: the
+batch that reaches `bmm`, that a padded strain equals its member in a two-strain batch (the same
+kernel shape, so this holds on any BLAS), the loading defaults that keep published results on the
+old path, the cache, and the accounting. On the CPU, too, a batch of one can differ from its batch
+member (D090), so padding can change CPU single-strain results. The CUDA equivalence test is
+`scripts/t1_equivalence.py`.
 """
 
 from __future__ import annotations
@@ -92,11 +94,13 @@ def _prepare(brain, variant, spec):
 @pytest.mark.parametrize("variant", ["plain", "silenced", "gap_cut", "substeps8"])
 def test_a_padded_single_strain_equals_its_batch_member(spec, variant):
     """The contract, on the CPU. Before T1 a batch of one could differ here too (1.2e-7 after three
-    steps at 5 rows on the development machine; D087): the CPU's own single-strain path."""
+    steps at 5 rows on the development machine; D090): the CPU's own single-strain path. The batch
+    has two strains, the padded shape, so the comparison does not depend on how a BLAS treats
+    other batch sizes (Fable, D091)."""
     currents = _inputs(spec, 3, 5)
     sub = 8 if variant == "substeps8" else None
-    g = _genome(spec, 3, True)
-    batch = _run(_prepare(Brain(g), variant, spec), currents, substeps=sub)
+    g = _genome(spec, 2, True)
+    batch = _run(_prepare(Brain(g), variant, spec), [c[:2] for c in currents], substeps=sub)
     alone = _run(_prepare(Brain(g.select([0])), variant, spec), [c[:1] for c in currents], substeps=sub)
     assert alone.shape == (1, 5, spec.n)
     assert torch.equal(alone, batch[:1])
@@ -127,12 +131,12 @@ def test_cut_gap_after_a_padded_step_uses_the_cut_matrix(spec):
     """The padded copy of G is cached; cutting a junction afterwards must not leave it stale."""
     i, j = int(spec.gap_i[0]), int(spec.gap_j[0])
     currents = _inputs(spec, 3, 5)
-    g = _genome(spec, 3, True)
+    g = _genome(spec, 2, True)
     br = Brain(g.select([0]))
     _run(br, [c[:1] for c in currents])  # builds the padded cache
     br.cut_gap([[(i, j)]])
     after = _run(br, [c[:1] for c in currents])
-    batch = _run(Brain(g).cut_gap([[(i, j)]] * 3), currents)
+    batch = _run(Brain(g).cut_gap([[(i, j)]] * 2), [c[:2] for c in currents])
     assert torch.equal(after, batch[:1])
 
 
@@ -194,3 +198,50 @@ def test_a_bundle_without_the_switch_reads_it_off():
 def test_02s_config_builder_pins_it_off(task):
     """02's and 03's scripts build their configs here, so their published evaluations reproduce."""
     assert grid.task_config(Config(), task).brain.pad_single_strain is False
+
+
+def test_a_supplied_config_does_not_switch_padding_on_for_an_old_file(spec, tmp_path):
+    """A caller passing today's BrainConfig() must not silently pad a genome saved before T1: the
+    file's setting is kept (Astra, D091). Re-evaluating under the new policy is an explicit
+    with_params afterwards."""
+    p = save_genome(tmp_path / "g.npz", _genome(spec, 1, True))
+    _strip_switch(p)
+    g, _ = load_genome(p, spec, BrainConfig())
+    assert g.cfg.pad_single_strain is False
+
+
+def test_a_supplied_config_keeps_a_new_files_setting(spec, tmp_path):
+    p = save_genome(tmp_path / "g.npz", _genome(spec, 1, True))
+    g, _ = load_genome(p, spec, dataclasses.replace(BrainConfig(), pad_single_strain=False))
+    assert g.cfg.pad_single_strain is True
+
+
+def test_padding_under_the_legacy_direction_matches_a_two_strain_batch(spec, monkeypatch):
+    """Under post_to_pre the chemical matrix is a transposed view. The padded copy must keep that
+    layout, so the single strain takes the same bmm path as inside a batch (Fable, D091)."""
+    cfg = dataclasses.replace(BrainConfig(), pad_single_strain=True, chem_direction="post_to_pre")
+    g = Genome.random(spec, cfg, 2, generator=torch.Generator().manual_seed(3))
+    layouts = []
+    real = torch.bmm
+
+    def spy(a, b):
+        layouts.append(b.is_contiguous())
+        return real(a, b)
+    monkeypatch.setattr(torch, "bmm", spy)
+    currents = _inputs(spec, 2, 5)
+    pair = _run(Brain(g), currents)
+    batch_layouts = layouts[:2]
+    layouts.clear()
+    alone = _run(Brain(g.select([0])), [c[:1] for c in currents])
+    assert layouts[:2] == batch_layouts
+    assert torch.equal(alone, pair[:1])
+
+
+def test_rollout_returns_the_starting_food(spec):
+    """The equivalence test compares starting food; rollout must return it (Astra, D091)."""
+    from wormwars.evo import rollout
+    from wormwars.interface import load_interface
+    cfg = grid.task_config(Config(), "T1")
+    cfg.world.max_ticks = 3
+    r = rollout(cfg, load_interface(load_connectome()), Genome.random(spec, cfg.brain, 2), np.arange(3), 1)
+    assert r.food_start is not None and r.food_start.shape == (2, 3) and np.all(r.food_start > 0)

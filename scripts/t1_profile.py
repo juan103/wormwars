@@ -32,6 +32,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import statistics
 import subprocess
 import sys
@@ -149,8 +150,14 @@ def concurrency(device, quick) -> dict:
     out = {}
     for n in (1, 2, 3, 4):
         cmd = [sys.executable, str(Path(__file__)), "--worker", "--device", device] + (["--quick"] if quick else [])
-        procs = [subprocess.Popen(cmd, stdout=subprocess.PIPE, text=True) for _ in range(n)]
+        # each worker counts its own work; the parent merges the counts (D091)
+        ledgers = [ROOT / "runs" / "t1-profile" / f"worker-{n}-{i}-ledger.json" for i in range(n)]
+        ledgers[0].parent.mkdir(parents=True, exist_ok=True)
+        procs = [subprocess.Popen(cmd, stdout=subprocess.PIPE, text=True,
+                                  env={**os.environ, acct.CHILD_LEDGER_ENV: str(path)}) for path in ledgers]
         rates = [float(p.communicate()[0].strip().splitlines()[-1]) for p in procs]
+        for path in ledgers:
+            acct.merge_child_ledger(path)
         out[str(n)] = {"per_process": rates, "total": sum(rates)}
     return out
 
@@ -168,6 +175,7 @@ def worker(device, quick):
         rollout(cfg, iface, g, np.arange(8) + 8 * i, run_seed=1, device=device, ticks=ticks)
     _sync(device)
     print(32 * 8 * reps / (time.perf_counter() - t))
+    acct.write_child_ledger()
 
 
 def _scripted(cfg, iface, n, device):

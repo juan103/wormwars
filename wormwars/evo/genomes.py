@@ -220,6 +220,10 @@ def load_genome(
             "the other synapse direction is meaningless. Use genome_chem_direction(path) to "
             "configure the brain it needs."
         )
+    elif cfg.pad_single_strain != stored["pad_single_strain"]:
+        # the file's own setting wins, so today's defaults never silently pad a genome saved before
+        # T1; re-evaluating under the new policy is an explicit with_params afterwards (D091)
+        cfg = dataclasses.replace(cfg, pad_single_strain=stored["pad_single_strain"])
     dale = d["dale"]
     genome = Genome(
         spec.to(device),

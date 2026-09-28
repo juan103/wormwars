@@ -38,6 +38,7 @@ import argparse
 import dataclasses
 import hashlib
 import json
+import os
 import subprocess
 import sys
 import time
@@ -59,9 +60,10 @@ from wormwars.exp02 import grid  # noqa: E402
 from wormwars.interface import load_interface  # noqa: E402
 
 OUT = ROOT / "runs" / "t1-equivalence"
-FIELDS = ("score", "energy", "alive", "eaten", "pellet_eaten")
+PROXY_WORLDS = (8, 16, 20, 64)  # one wey: rows per strain = worlds (E1's shapes, D091)
+FIELDS = ("score", "energy", "alive", "eaten", "pellet_eaten", "food_start")
 CHUNKINGS = (2, 3, 4, 16, 32, 64, 128, 256)
-BRAIN_ROWS = (1, 16, 20, 160, 320, 1280)
+BRAIN_ROWS = (1, 8, 16, 20, 64, 160, 320, 1280)
 
 
 def provenance() -> dict:
@@ -140,7 +142,7 @@ def run_cases(con, device, pad, runs02: Path, quick: bool) -> tuple[dict, dict]:
             # a chunking whose last chunk holds one strain is a single-strain case (256 = 85 x 3 + 1);
             # the first full comparison counted chunk 3 as multi-strain (D090)
             put(f"T1/random{n_random}x8/chunk{k}", _roll(t1, iface, rnd, np.arange(8), device, k, ticks),
-                strains=n_random, worlds=8, per_chunk=k, remainder_of_one=(n_random % k == 1 and k > 1))
+                strains=n_random, worlds=8, per_chunk=k)
     put(f"T1/first{first.n_strains}x8/chunk1", _roll(t1, iface, first, np.arange(8), device, 1, ticks),
         strains=first.n_strains, worlds=8, per_chunk=1, batch_ref=f"T1/random{n_random}x8/chunk{n_random}")
 
@@ -152,7 +154,7 @@ def run_cases(con, device, pad, runs02: Path, quick: bool) -> tuple[dict, dict]:
                 strains=first.n_strains, worlds=w, per_chunk=k)
     put(f"T1/first{first.n_strains}x16/chunk{first.n_strains - 1}",
         _roll(t1, iface, first, np.arange(16), device, first.n_strains - 1, ticks),
-        strains=first.n_strains, worlds=16, per_chunk=first.n_strains - 1, remainder_of_one=True)
+        strains=first.n_strains, worlds=16, per_chunk=first.n_strains - 1)
     stress = t1.copy()
     stress.world.max_ticks = 30 if quick else 600
     for k in (1, first.n_strains):
@@ -172,7 +174,7 @@ def run_cases(con, device, pad, runs02: Path, quick: bool) -> tuple[dict, dict]:
     proxy = t1.copy()
     proxy.world.weys_per_swarm = 1
     proxy.world.max_ticks = 30 if quick else 300
-    for w in (16, 20):
+    for w in PROXY_WORLDS:
         for k in (1, 2, first.n_strains):
             put(f"proxy/first{first.n_strains}x{w}/chunk{k}", _roll(proxy, iface, first, np.arange(w), device, k),
                 strains=first.n_strains, worlds=w, per_chunk=k, weys=1, ticks=proxy.world.max_ticks)
@@ -190,13 +192,18 @@ def run_cases(con, device, pad, runs02: Path, quick: bool) -> tuple[dict, dict]:
 
 
 def _eq(a, b) -> dict:
+    """Bit equality, strictly: the same shape and dtype, every value finite, and the same bits (so
+    -0.0 and +0.0 differ, and matching NaNs do not pass). The numeric difference is reported beside
+    it (Astra, D091)."""
     a, b = np.asarray(a), np.asarray(b)
-    if a.shape != b.shape:
-        return {"equal": False, "shape": [list(a.shape), list(b.shape)]}
-    same = (a == b) | (np.isnan(a) & np.isnan(b)) if a.dtype.kind == "f" else (a == b)
+    if a.shape != b.shape or a.dtype != b.dtype:
+        return {"equal": False, "shape": [list(a.shape), list(b.shape)], "dtype": [str(a.dtype), str(b.dtype)]}
+    floating = a.dtype.kind == "f"
+    finite = bool(np.isfinite(a).all() and np.isfinite(b).all()) if floating else True
+    same = (a.view(f"u{a.itemsize}") == b.view(f"u{b.itemsize}")) if floating else (a == b)
     diff = np.abs(a.astype(np.float64) - b.astype(np.float64))
-    return {"equal": bool(same.all()), "unequal": int((~same).sum()), "values": int(a.size),
-            "max_abs_diff": float(np.nanmax(diff)) if diff.size else 0.0}
+    return {"equal": bool(same.all()) and finite, "finite": finite, "unequal": int((~same).sum()),
+            "values": int(a.size), "max_abs_diff": float(np.nanmax(diff)) if diff.size else 0.0}
 
 
 def _batch_rows(ref: dict, key: str, n: int) -> np.ndarray:
@@ -204,8 +211,17 @@ def _batch_rows(ref: dict, key: str, n: int) -> np.ndarray:
     return np.asarray(ref[key])[:n]
 
 
+def _single_strain(d: dict) -> bool:
+    """Whether any chunk of this case holds exactly one strain: one per chunk, or a last chunk of one
+    (256 strains in chunks of 3). Inferred from the counts, not from a stored flag, so an old
+    reference's descriptions classify correctly (Fable, Astra, D091)."""
+    k, n = d.get("per_chunk"), d.get("strains")
+    return k == 1 or (k is not None and n is not None and k > 1 and n % k == 1)
+
+
 def single_strain_pairs(keys, desc) -> list[tuple[str, str, int]]:
-    """(single-strain key, multi-strain reference key, strains) for every single-strain output."""
+    """(single-strain key, multi-strain reference key, strains) for every output of a case with a
+    single-strain chunk."""
     pairs = []
     for k in keys:
         if k.startswith("brain/"):  # brain keys carry no field: brain/B{rows}/{variant}/{alone|batch4}
@@ -214,15 +230,36 @@ def single_strain_pairs(keys, desc) -> list[tuple[str, str, int]]:
             continue
         case, field = k.rsplit("/", 1)
         d = desc.get(case, {})
-        if d.get("per_chunk") == 1 or d.get("remainder_of_one"):
+        if _single_strain(d):
             batch = d.get("batch_ref") or case.rsplit("/chunk", 1)[0] + f"/chunk{d['strains']}"
             pairs.append((k, f"{batch}/{field}", d["strains"]))
     # every single-strain output must be paired, or a leg would silently test the wrong thing
-    alone = [k for k in keys if k.endswith("/alone") or "/chunk1/" in k]
+    alone = [k for k in keys if k.endswith("/alone")
+             or (not k.startswith("brain/") and _single_strain(desc.get(k.rsplit("/", 1)[0], {})))]
     missing = set(alone) - {p[0] for p in pairs}
     if missing:
         raise AssertionError(f"single-strain outputs without a batch reference: {sorted(missing)[:5]}")
     return pairs
+
+
+def cross_composition(outputs: dict, desc: dict) -> dict:
+    """Every multi-strain chunking against the largest chunking of the same case, as a table of
+    tested pairs (the contract's amendment lists what was tested, D091)."""
+    groups = {}
+    for case, d in desc.items():
+        if "/chunk" in case and not _single_strain(d):
+            groups.setdefault(case.rsplit("/chunk", 1)[0], []).append((d["per_chunk"], case))
+    out = {}
+    for members in groups.values():
+        members.sort()
+        full_k, full = members[-1]
+        for k, case in members[:-1]:
+            for f in FIELDS:
+                key, full_key = f"{case}/{f}", f"{full}/{f}"
+                if key in outputs and full_key in outputs:
+                    n = outputs[key].shape[0]
+                    out[f"{case} vs chunk{full_k}/{f}"] = _eq(outputs[full_key][:n], outputs[key])
+    return out
 
 
 def compare(ref: dict, desc: dict, off: dict, on: dict) -> dict:
@@ -264,8 +301,10 @@ def one_mode(args, mode: str) -> dict:
         cmd = [sys.executable, str(Path(__file__)), "--in-replay", "--device", args.device, "--tag", args.tag,
                "--runs02", str(args.runs02)] + (["--quick"] if args.quick else [])
         cmd += ["--save-reference"] if args.save_reference else ["--compare"]
-        subprocess.run(cmd, check=True)
-        return json.loads((OUT / f"{args.tag}-replay_mode.json").read_text(encoding="utf-8"))
+        ledger = OUT / f"{args.tag}-{args.device}-replay_mode-ledger.json"
+        subprocess.run(cmd, check=True, env={**os.environ, acct.CHILD_LEDGER_ENV: str(ledger)})
+        acct.merge_child_ledger(ledger)  # the child's counts join this attempt's record (D091)
+        return json.loads((OUT / f"{args.tag}-{args.device}-replay_mode.json").read_text(encoding="utf-8"))
     return run_mode(args, mode)
 
 
@@ -276,39 +315,65 @@ def run_mode(args, mode: str) -> dict:
     if args.save_reference:
         a, desc = run_cases(con, args.device, None, runs02, args.quick)
         b, _ = run_cases(con, args.device, None, runs02, args.quick)
-        sha = _save(OUT / f"reference-{mode}.npz", a)
-        res = {"mode": mode, "reference_sha256": sha, "cases": desc,
+        sha = _save(OUT / f"reference-{args.device}-{mode}.npz", a)
+        res = {"mode": mode, "device": args.device, "reference_sha256": sha, "cases": desc,
                "reference_repeats": {k: _eq(a[k], b[k]) for k in a},
-               "sensitivity": sensitivity(a, desc)}
+               "sensitivity": sensitivity(a, desc), "cross_composition": cross_composition(a, desc)}
         res["reference_repeats_all_equal"] = all(v["equal"] for v in res["reference_repeats"].values())
     else:
         if not has_switch():
             raise SystemExit("--compare needs the changed engine (BrainConfig.pad_single_strain)")
-        path = OUT / f"reference-{mode}.npz"
+        path = OUT / f"reference-{args.device}-{mode}.npz"
         ref = _load(path)
-        desc = json.loads((OUT / "reference.json").read_text(encoding="utf-8"))["modes"][mode]["cases"]
-        off, _ = run_cases(con, args.device, False, runs02, args.quick)
+        # the case descriptions come from this run, not the saved reference, so a classification
+        # fix reaches the comparison (Fable, D091)
+        off, desc = run_cases(con, args.device, False, runs02, args.quick)
         on, _ = run_cases(con, args.device, True, runs02, args.quick)
-        res = {"mode": mode, "reference_sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
-               **compare(ref, desc, off, on)}
+        res = {"mode": mode, "device": args.device,
+               "reference_sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+               **compare(ref, desc, off, on), "cross_composition_on": cross_composition(on, desc)}
     res["seconds"] = time.perf_counter() - t
     if args.in_replay:
-        (OUT / f"{args.tag}-replay_mode.json").write_text(json.dumps(res, indent=1), encoding="utf-8")
+        (OUT / f"{args.tag}-{args.device}-replay_mode.json").write_text(json.dumps(res, indent=1), encoding="utf-8")
+        acct.write_child_ledger()
     return res
 
 
+PROBE_VARIANTS = {"food_constant": {"food_probe": "constant"}, "food_mean": {"food_probe": "mean"}}
+
+
+def _replay(cfg, iface, champ, ids, seed, device, stored) -> dict:
+    """One stored per-world score list replayed with the switch off and on. Stored scores were
+    float32 written as JSON floats, so float32 recovers their exact bits."""
+    stored = np.asarray(stored, dtype=np.float32)
+    row = {}
+    for label, pad in (("off", False), ("on", True)):
+        score = rollout(cfg, iface, with_pad(champ, pad), ids, seed, device).score[0]
+        row[label] = _eq(stored, score)
+        # in a common dtype, so bit-identical arrays report exactly zero (Fable, Astra, D091)
+        row[label]["mean_change"] = float(score.astype(np.float64).mean() - stored.astype(np.float64).mean())
+    return row
+
+
 def published(args) -> dict:
-    """02's final hold-outs (one champion on 64 worlds) replayed with the switch off and on, against
-    the per-world scores stored in records.jsonl. Off must reproduce them; on shows the change."""
+    """02's single-strain evaluations replayed with the switch off and on, against what 02 stored:
+    - every final hold-out (one champion on 64 worlds; `records.jsonl`);
+    - the capability probes of every generation-39 champion (one champion on 64 probe worlds;
+      `probes.json`): the real signal, the constant-food probe, and the bilateral mean (the primary
+      probe; stereo tasks only). The jitter probes are left out: current code cannot regenerate
+      02's jitter draws (D066, D067).
+    Off must reproduce them; on shows the change."""
+    from wormwars.exp02.probes import _variant
     con = load_connectome()
     exp02 = ROOT / "runs" / "exp02-screening"
     runs02 = Path(args.runs02)
     remaps = json.loads((grid.EXP02_DIR / "remaps.json").read_text(encoding="utf-8"))["sets"]
     calib = json.loads((grid.EXP02_DIR / "calibration.json").read_text(encoding="utf-8"))
+    probes = json.loads((exp02 / "probes.json").read_text(encoding="utf-8"))["champions"]
     recs = grid.read_records(exp02 / "records.jsonl")
     if args.quick:
         recs = recs[:3]
-    rows, t = {}, time.perf_counter()
+    holdouts, probe_rows, t = {}, {}, time.perf_counter()
     for r in recs:
         cfg = grid.brain_config_for_graph(grid.task_config(Config(), r["task"]), r["graph"])
         cfg.world.forward_gain, cfg.world.turn_gain = calib[r["graph"]]["forward_gain"], calib[r["graph"]]["turn_gain"]
@@ -318,20 +383,30 @@ def published(args) -> dict:
         for tag in sorted(k[len("holdout_"):] for k in r if k.startswith("holdout_")):
             champ, _ = load_genome(runs02 / f"{r['key']}-{tag}.npz", spec)
             champ = _to(champ, args.device)
-            stored = np.asarray(r[f"holdout_{tag}"])
-            row = {"loaded_switch": getattr(champ.cfg, "pad_single_strain", None)}
-            for label, pad in (("off", False), ("on", True)):
-                score = rollout(cfg, iface, with_pad(champ, pad), pool.holdout, r["run_seed"], args.device).score[0]
-                row[label] = _eq(stored, score)
-                row[label]["mean_change"] = float(score.mean() - stored.mean())
-            rows[f"{r['key']}-{tag}"] = row
-    return {"hold-outs": len(rows), "seconds": time.perf_counter() - t,
-            "off_reproduces_all": all(v["off"]["equal"] for v in rows.values()),
-            "on_changed": sum(not v["on"]["equal"] for v in rows.values()),
-            "on_max_abs_diff": max(v["on"]["max_abs_diff"] for v in rows.values()),
-            "on_max_abs_mean_change": max(abs(v["on"]["mean_change"]) for v in rows.values()),
-            "loaded_switch_values": sorted({str(v["loaded_switch"]) for v in rows.values()}),
-            "per_record": rows}
+            row = _replay(cfg, iface, champ, pool.holdout, r["run_seed"], args.device, r[f"holdout_{tag}"])
+            row["loaded_switch"] = getattr(champ.cfg, "pad_single_strain", None)
+            holdouts[f"{r['key']}-{tag}"] = row
+            stored = probes.get(r["key"], {}).get(tag, {}).get("channels")
+            if tag != "g39" or stored is None:
+                continue
+            ids = np.asarray(stored["world_ids"])
+            variants = {"real": cfg, "food_constant": _variant(cfg, **PROBE_VARIANTS["food_constant"])}
+            if cfg.world.food_sensing == "stereo":
+                variants["food_mean"] = _variant(cfg, **PROBE_VARIANTS["food_mean"])
+            for name, vcfg in variants.items():
+                probe_rows[f"{r['key']}-{tag}/{name}"] = _replay(vcfg, iface, champ, ids, stored["probe_seed"],
+                                                                 args.device, stored["scores"][name])
+
+    def summary(rows):
+        return {"evaluations": len(rows),
+                "off_reproduces_all": all(v["off"]["equal"] for v in rows.values()),
+                "off_unequal": sorted(k for k, v in rows.items() if not v["off"]["equal"]),
+                "on_changed": sum(not v["on"]["equal"] for v in rows.values()),
+                "on_max_abs_diff": max(v["on"]["max_abs_diff"] for v in rows.values()),
+                "on_max_abs_mean_change": max(abs(v["on"]["mean_change"]) for v in rows.values())}
+    return {"seconds": time.perf_counter() - t, "holdouts": summary(holdouts), "probes": summary(probe_rows),
+            "loaded_switch_values": sorted({str(v["loaded_switch"]) for v in holdouts.values()}),
+            "per_holdout": holdouts, "per_probe": probe_rows}
 
 
 def main():
@@ -367,12 +442,12 @@ def main():
         path = Path(args.result) if args.result else OUT / "published.json"
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(json.dumps(res, indent=1), encoding="utf-8")
-        print(json.dumps({k: v for k, v in res["published"].items() if k != "per_record"}, indent=1))
+        print(json.dumps({k: v for k, v in res["published"].items() if not k.startswith("per_")}, indent=1))
         return
     with acct.category("measure"):
         for mode in ("default", "replay_mode"):
             res["modes"][mode] = one_mode(args, mode)
-    name = "reference.json" if args.save_reference else "compare.json"
+    name = f"reference-{args.device}.json" if args.save_reference else f"compare-{args.device}.json"
     path = Path(args.result) if args.result else OUT / name
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(res, indent=1), encoding="utf-8")

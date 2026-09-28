@@ -395,7 +395,11 @@ class Brain:
             # inside a population (D082, T1). Per-strain terms broadcast over the copy; only the
             # matrices and the state are doubled, and the first copy is returned.
             if self._padded is None:
-                self._padded = (M.repeat(2, 1, 1), G.repeat(2, 1, 1))
+                # doubled in W's stored orientation, then oriented as W_drive is, so the legacy
+                # direction keeps its transposed layout and hence its bmm path (D091)
+                W2 = self.W.repeat(2, 1, 1)
+                M2 = W2 if self.cfg.chem_direction == "pre_to_post" else W2.transpose(1, 2)
+                self._padded = (M2, G.repeat(2, 1, 1))
             M, G = self._padded
             v = v.repeat(2, 1, 1)
         for _ in range(k):

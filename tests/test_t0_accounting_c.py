@@ -142,3 +142,33 @@ def test_an_attempt_records_the_commit_and_dirty_state_at_its_start(tmp_path, mo
     d = json.loads(next(tmp_path.glob("*.json")).read_text(encoding="utf-8"))
     assert (d["git_commit"], d["code_dirty"]) == ("start-sha", False)
     assert d["git_commit_at_end"] == "end-sha"
+
+
+def test_a_child_process_ledger_merges_its_counts_but_not_its_seconds(tmp_path, monkeypatch):
+    """Subprocesses (the profile's workers, the equivalence script's replay leg) count their own
+    work; the parent merges the counts. Seconds are not merged: the parent's own wall clock already
+    covers the time it waited (Astra, D091)."""
+    from wormwars import accounting as A
+    path = tmp_path / "child.json"
+    monkeypatch.setenv(A.CHILD_LEDGER_ENV, str(path))
+    A.LEDGER.reset()
+    with A.category("measure"):
+        A.LEDGER.worlds(3)
+        A.LEDGER.ticks(3)
+        A.LEDGER.neural(10, padding=4)
+    A.write_child_ledger()
+    A.LEDGER.reset()
+    with A.category("measure"):
+        A.LEDGER.worlds(1)
+    before = A.LEDGER.counts["measure"].seconds
+    A.merge_child_ledger(path)
+    c = A.LEDGER.counts["measure"]
+    assert (c.worlds_built, c.world_ticks, c.neural_updates, c.neural_padding) == (4, 3, 10, 4)
+    assert c.seconds == before
+    A.LEDGER.reset()
+
+
+def test_writing_a_child_ledger_without_the_variable_does_nothing(tmp_path, monkeypatch):
+    from wormwars import accounting as A
+    monkeypatch.delenv(A.CHILD_LEDGER_ENV, raising=False)
+    assert A.write_child_ledger() is None

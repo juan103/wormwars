@@ -178,6 +178,30 @@ def counted(name: str):
     return wrap
 
 
+# ---- subprocesses (D091): a child counts its own work; the parent merges the counts, not the
+# seconds, because the parent's own wall clock already covers the time it waited
+CHILD_LEDGER_ENV = "WORMWARS_CHILD_LEDGER"
+
+
+def write_child_ledger() -> Path | None:
+    """In a child process, write this ledger's counts where the parent asked (an environment
+    variable); a no-op when the variable is not set."""
+    path = os.environ.get(CHILD_LEDGER_ENV)
+    if not path:
+        return None
+    out = Path(path)
+    out.write_text(json.dumps(LEDGER.snapshot()), encoding="utf-8")
+    return out
+
+
+def merge_child_ledger(path) -> None:
+    """In the parent, add a child's counts to this ledger, category by category."""
+    for name, row in json.loads(Path(path).read_text(encoding="utf-8")).items():
+        c = LEDGER.counts.setdefault(name, Counts())
+        for f in COUNT_FIELDS:
+            setattr(c, f, getattr(c, f) + int(row.get(f, 0)))
+
+
 def totals(categories: dict) -> dict:
     out = {f: sum(c[f] for c in categories.values()) for f in COUNT_FIELDS}
     secs = [c["seconds"] for c in categories.values() if c["seconds"] is not None]
