@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import sys
 from pathlib import Path
 
 import numpy as np
@@ -86,13 +87,45 @@ def test_binary_graph_files_are_hashed_raw_while_text_inputs_ignore_line_endings
 
 
 def test_rebuild_graphs_reproduces_the_committed_files(exp, tmp_path):
-    """An outsider can regenerate 03's graph files from the committed record and have every file
-    match the committed manifest byte for byte (numpy writes a fixed zip timestamp)."""
+    """An outsider can regenerate 03's graph files from the committed record: the arrays match the
+    committed content manifest on any operating system, and the raw bytes match the raw manifest on
+    Windows, where the files were written (numpy's zip headers record the OS; D106)."""
     exp.use_instance("03")
     report = exp.rebuild_graphs(tmp_path, only=["SH-10000", "SH-route-20000"], workers=1)
-    assert report == {"rebuilt": 2, "matching": 2, "mismatched": []}
-    assert exp._sha_raw(tmp_path / "SH-10000.npz") == json.loads(
-        (exp.EXP / "graphs_manifest.json").read_text(encoding="utf-8"))["SH-10000"]
+    assert report["rebuilt"] == 2 and report["content_matching"] == 2 and report["content_mismatched"] == []
+    print("raw matching:", report["matching"], "with the Windows OS byte:", report["matching_with_the_windows_os_byte"])
+    if sys.platform == "win32":
+        assert report["matching"] == 2 and report["mismatched"] == []
+        assert exp._sha_raw(tmp_path / "SH-10000.npz") == json.loads(
+            (exp.EXP / "graphs_manifest.json").read_text(encoding="utf-8"))["SH-10000"]
+
+
+def test_the_windows_os_byte_is_the_only_change(exp, tmp_path):
+    import zipfile
+    a = tmp_path / "a.npz"
+    np.savez_compressed(a, chem=np.eye(3, dtype=np.float32), gap=np.zeros((3, 3), np.float32))
+    raw = a.read_bytes()
+    patched = exp._windows_zip_bytes(raw)
+    assert len(patched) == len(raw) and sum(x != y for x, y in zip(raw, patched)) <= 2
+    b = tmp_path / "b.npz"
+    b.write_bytes(patched)
+    assert all(zi.create_system == 0 for zi in zipfile.ZipFile(b).infolist())
+    assert exp._sha_content(a) == exp._sha_content(b)
+    assert exp._windows_zip_bytes(patched) == patched
+
+
+def test_the_content_hash_ignores_the_zip_container(exp, tmp_path):
+    import zipfile
+    a, b = tmp_path / "a.npz", tmp_path / "b.npz"
+    np.savez_compressed(a, chem=np.eye(3, dtype=np.float32), gap=np.zeros((3, 3), np.float32))
+    with zipfile.ZipFile(a) as src, zipfile.ZipFile(b, "w", zipfile.ZIP_STORED) as dst:
+        for zi in src.infolist():
+            zi2 = zipfile.ZipInfo(zi.filename, zi.date_time)
+            zi2.create_system = 3  # as written on Unix
+            dst.writestr(zi2, src.read(zi.filename))
+    assert exp._sha_raw(a) != exp._sha_raw(b) and exp._sha_content(a) == exp._sha_content(b)
+    np.savez_compressed(b, chem=np.eye(3, dtype=np.float32) * 2, gap=np.zeros((3, 3), np.float32))
+    assert exp._sha_content(a) != exp._sha_content(b)
 
 
 def test_rebuild_graphs_reports_a_mismatch(exp, tmp_path, monkeypatch):
@@ -106,6 +139,7 @@ def test_rebuild_graphs_reports_a_mismatch(exp, tmp_path, monkeypatch):
     monkeypatch.setattr(exp, "_manifest", tampered)
     report = exp.rebuild_graphs(tmp_path, only=["SH-10000"], workers=1)
     assert report["mismatched"] == ["SH-10000"] and report["matching"] == 0
+    assert report["content_mismatched"] == []  # the raw manifest alone was tampered with
 
 
 def test_rebuild_graphs_refuses_names_not_in_the_record(exp, tmp_path):

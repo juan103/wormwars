@@ -195,6 +195,12 @@ python experiments/03-generation0/supplement.py --instance 03r
   **Checked on 2026-09-28: all 768 rebuilt files matched the manifest byte for byte.** The runner
   checks every file against the manifest again when it loads it. The files carry permuted
   anatomical weights derived from the connectome, so do not commit or share them.
+  - *Added 2026-09-28 (D106): "byte for byte" holds on Windows, where the files were written. The
+    first CI run, on Linux, rebuilt two files whose bytes differed: numpy's zip headers record the
+    writing operating system, and zlib builds can compress differently. `rebuild-graphs` now also
+    checks each file's arrays against `graphs_content_manifest.json`, which must match on any
+    system. `--windows-bytes` rewrites the one OS byte, so the raw hashes the runner checks at load
+    time also match wherever zlib compressed identically; the command reports how many do.*
 - **`--max-hours`:** any value other than the registered 32 is refused. The `pilot`, `variance`
   and `power` subcommands belong to 03 only; 03r reuses 03's pilot.
 - **From the current checkout,** a resumed 03r run would be refused, because HEAD is past

@@ -3228,3 +3228,53 @@ best genome's validation mean rose from about 0.2 targets to about 1.7 by genera
 between about 1.0 and 2.1 through generation 199. That suggests many runs may not meet the
 reliability rule within 1 000 generations. The generation count is unchanged; the question goes to
 review v2.
+
+## D105 — 04a review v2: both "revise"; v3 moves the formal seeds and closes the rerun and padding gaps
+
+Astra 6 and Fable 5.1 reviewed draft v2 (`68f8aa3`; `docs/reviews/20260928-221414-04a-prereg-v2/`).
+Both found the v1 must-fixes fixed in the code, both said "revise", and **both advised keeping 1 000
+generations, 02's optimizer and every threshold** despite the pilot's plateau: a change now would be
+an untested guess on 8 runs, and comparing optimizers is E2's job (consensus; it informs the owner).
+
+**Found, and done in v3:**
+- **The pilot and projection used the formal run seeds** (Fable): formal runs 0-7 would have started
+  from the populations the pilot evolved. The formal seeds move to 1 105 000 onward; the projection
+  (1 109 000) and smoke runs (1 108 000) get their own; a test checks they are disjoint.
+- **A genome file's metadata could override single-strain padding** without changing any hash
+  (Astra). The evaluation now requires each file's effective brain configuration to equal the
+  registered one; tested, and sabotage-checked.
+- **The rerun rule in the text was wider than the code** (both): kills (marker, no record), the
+  projection, archiving the stopped attempt's genomes, a recorded reason, a tested second-stop
+  refusal. Amendments get an unguarded `AMENDMENTS.md`.
+- **Failure records** (Astra): the not-completed record is written before any genome save; the decoy
+  measure has its own error record.
+- **Wording** (both): the exposed ids are "reconstructed, consistent with the ledgers", not
+  "reconstructed exactly"; the ledgers are preserved.
+
+§6 now states the expectation: "not passed" or "some runs passed" would not surprise us; either leads
+to E2, and a new 04a attempt would be a new registration on fresh hold-out ids.
+
+**Also this round:** CI (`.github/workflows/tests.yml`) runs the CPU suite on every push, with the
+connectome fetched and hash-checked at run time, after an outside review noted outsiders could not
+check the suite (the owner shared that review, 2026-09-28).
+
+## D106 — CI's first run: 03's graph files are byte-identical only on Windows
+
+The first CI run (Linux, 2026-09-28) passed 639 tests and failed one:
+`test_rebuild_graphs_reproduces_the_committed_files`. The two rebuilt graph files differed from the
+raw hashes in `graphs_manifest.json`. The committed files record `create_system = 0` (Windows) in
+their zip headers; Linux writes 3, and zlib builds can also compress differently. D087's "byte for
+byte" was true only on the platform that wrote the files, and the README said so without that
+qualification.
+
+**Done:**
+- `graphs_content_manifest.json` for 03 and 03r: a hash of each file's arrays, computed from the
+  original files after each was checked against its raw hash (all 640 and 768 verified);
+- `rebuild-graphs` checks the content hash (required on any system) and the raw hash (reported), and
+  `--windows-bytes` rewrites only the OS byte, so the raw hashes that the binding commits' code checks
+  at load time also match wherever zlib compressed identically. The command reports how many do;
+- the test requires content equality everywhere and raw equality on Windows;
+- dated notes in 03's and 03r's READMEs.
+
+The published results are unaffected: the measurements ran on the committed files, checked by raw
+hash on the machine that wrote them.

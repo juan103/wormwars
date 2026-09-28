@@ -283,6 +283,12 @@ worktree **after** `run`: before it, the untracked file would make `run` refuse 
   fixed timestamp into the `.npz`, so the bytes are reproducible in the pinned environment. The
   runner checks every file against the manifest again when it loads it. The files carry permuted
   anatomical weights derived from the connectome, so do not commit or share them.
+  - *Added 2026-09-28 (D106): "byte for byte" holds on Windows, where the files were written. The
+    first CI run, on Linux, rebuilt two files whose bytes differed: numpy's zip headers record the
+    writing operating system, and zlib builds can compress differently. `rebuild-graphs` now also
+    checks each file's arrays against `graphs_content_manifest.json`, which must match on any
+    system. `--windows-bytes` rewrites the one OS byte, so the raw hashes the runner checks at load
+    time also match wherever zlib compressed identically; the command reports how many do.*
 - **Wall time:** 19.75 GPU-hours on one GPU; the pilot measured about 111 s per graph.
 - **Compare against:** `report.json` (verdicts, ranks, per-graph values) and `supplement.json`.
 - **Exactness:** see [`docs/REPRODUCIBILITY.md`](../../docs/REPRODUCIBILITY.md). On CUDA, exact

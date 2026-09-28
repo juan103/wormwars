@@ -146,6 +146,23 @@ def _sha_raw(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def _sha_content(path: Path) -> str:
+    """SHA-256 of a graph file's arrays (name, dtype, shape and bytes, in name order), independent of
+    the zip container. The raw bytes differ between operating systems even for identical arrays:
+    numpy's zip headers record the writing OS (Windows 0, Unix 3), and zlib builds can compress
+    differently. Found by the first CI run on Linux (D106)."""
+    import hashlib
+    h = hashlib.sha256()
+    with np.load(path, allow_pickle=False) as z:
+        for k in sorted(z.files):
+            a = np.ascontiguousarray(z[k])
+            h.update(k.encode())
+            h.update(str(a.dtype).encode())
+            h.update(str(a.shape).encode())
+            h.update(a.tobytes())
+    return h.hexdigest()
+
+
 def _input_sha(path: Path) -> str:
     """Binary inputs (.npz) are hashed raw (D056); text inputs with line endings normalised."""
     return _sha_raw(path) if path.suffix == ".npz" else _sha(path)
@@ -273,19 +290,49 @@ def _manifest() -> dict:
     return json.loads((EXP / "graphs_manifest.json").read_text(encoding="utf-8"))
 
 
+def _windows_zip_bytes(data: bytes) -> bytes:
+    """The same zip with every central-directory entry's "made by" OS set to 0 (MS-DOS/Windows),
+    which is what numpy wrote on the machine that made 03's files. Only that byte changes; the
+    compressed data is untouched, so the result equals the original file wherever zlib compressed
+    identically (D106)."""
+    import struct
+    b = bytearray(data)
+    eocd = b.rfind(b"PK\x05\x06")
+    if eocd < 0:
+        raise ValueError("not a zip file")
+    n_entries, cd_size, cd_offset = struct.unpack_from("<HII", b, eocd + 10)
+    pos = cd_offset
+    for _ in range(n_entries):
+        if b[pos:pos + 4] != b"PK\x01\x02":
+            raise ValueError("unexpected central directory layout")
+        b[pos + 5] = 0  # the high byte of "version made by": the OS
+        name_len, extra_len, comment_len = struct.unpack_from("<HHH", b, pos + 28)
+        pos += 46 + name_len + extra_len + comment_len
+    return bytes(b)
+
+
+def _content_manifest() -> dict:
+    return json.loads((EXP / "graphs_content_manifest.json").read_text(encoding="utf-8"))["graphs"]
+
+
 def _rebuild_one(args):
-    kind, seed, passes, name, into = args
+    kind, seed, passes, name, into, windows_bytes = args
     g, _ = S.build(load_connectome(), kind, seed=seed, passes=passes)
     path = Path(into) / f"{name}.npz"
     np.savez_compressed(path, chem=g.chem, gap=g.gap)
-    return name, _sha_raw(path)
+    import hashlib
+    windows = hashlib.sha256(_windows_zip_bytes(path.read_bytes())).hexdigest()
+    if windows_bytes:
+        path.write_bytes(_windows_zip_bytes(path.read_bytes()))
+    return name, _sha_raw(path), _sha_content(path), windows
 
 
-def rebuild_graphs(into: Path, only=None, workers: int = 8) -> dict:
+def rebuild_graphs(into: Path, only=None, workers: int = 8, windows_bytes: bool = False) -> dict:
     """Regenerate this instance's graph files from the committed record (`ensembles.json`: kind,
-    final seed and passes of every graph) and check each against the committed manifest's raw hash.
-    For reproducing from a fresh clone, where the graph files are not committed. Never touches the
-    record itself, unlike `build` (D087)."""
+    final seed and passes of every graph)     and check each against the committed manifests: the arrays' content hash, which must match on
+    any operating system, and the raw file hash, which matches only where the files were written
+    (Windows; D106). For reproducing from a fresh clone, where the graph files are not committed.
+    Never touches the record itself, unlike `build` (D087)."""
     record = json.loads((EXP / "ensembles.json").read_text(encoding="utf-8"))["graphs"]
     by_name = {r["name"]: r for r in record}
     names = list(by_name) if only is None else list(only)
@@ -293,22 +340,31 @@ def rebuild_graphs(into: Path, only=None, workers: int = 8) -> dict:
     if unknown:
         raise ProvenanceError(f"not in {EXP / 'ensembles.json'}: {unknown[:5]}")
     Path(into).mkdir(parents=True, exist_ok=True)
-    jobs = [(by_name[n]["kind"], by_name[n]["seed"], by_name[n]["passes"], n, str(into)) for n in names]
+    jobs = [(by_name[n]["kind"], by_name[n]["seed"], by_name[n]["passes"], n, str(into), windows_bytes)
+            for n in names]
     if workers > 1:
         with Pool(workers) as pool:
             done = pool.map(_rebuild_one, jobs, chunksize=1)
     else:
         done = [_rebuild_one(j) for j in jobs]
-    manifest = _manifest()
-    mismatched = sorted(n for n, sha in done if manifest.get(n) != sha)
-    return {"rebuilt": len(done), "matching": len(done) - len(mismatched), "mismatched": mismatched}
+    manifest, content = _manifest(), _content_manifest()
+    mismatched = sorted(n for n, raw, _, _ in done if manifest.get(n) != raw)
+    content_mismatched = sorted(n for n, _, c, _ in done if content.get(n) != c)
+    windows_matching = sum(manifest.get(n) == w for n, _, _, w in done)
+    return {"rebuilt": len(done), "matching": len(done) - len(mismatched), "mismatched": mismatched,
+            "content_matching": len(done) - len(content_mismatched), "content_mismatched": content_mismatched,
+            "matching_with_the_windows_os_byte": windows_matching}
 
 
 def cmd_rebuild_graphs(args):
-    report = rebuild_graphs(Path(args.into) if args.into else GRAPHS, workers=args.workers)
+    report = rebuild_graphs(Path(args.into) if args.into else GRAPHS, workers=args.workers,
+                            windows_bytes=args.windows_bytes)
     print(json.dumps(report))
+    if report["content_mismatched"]:
+        raise SystemExit(f"{len(report['content_mismatched'])} rebuilt graphs do not match "
+                         "graphs_content_manifest.json")
     if report["mismatched"]:
-        raise SystemExit(f"{len(report['mismatched'])} rebuilt graph files do not match graphs_manifest.json")
+        print("the arrays match; the raw file bytes differ, as expected on another operating system or zlib (D106)")
 
 
 # ----------------------------------------------------------------------------- measures
@@ -722,6 +778,8 @@ def main():
     ap.add_argument("--max-hours", type=float, default=None, help="must equal the instance's registered cap")
     ap.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
     ap.add_argument("--workers", type=int, default=8)
+    ap.add_argument("--windows-bytes", action="store_true",
+                    help="rebuild-graphs: write the zip OS byte as Windows did, so the raw hashes match (D106)")
     ap.add_argument("--instance", choices=sorted(INSTANCES), default="03")
     args = ap.parse_args()
     use_instance(args.instance)
