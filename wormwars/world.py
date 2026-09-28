@@ -271,8 +271,6 @@ class World:
                 raise ValueError("target_radius must not exceed target_wall_clearance")
             if wcfg.target_separation <= 2 * wcfg.target_radius:
                 raise ValueError("target_separation must exceed 2 x target_radius: consecutive goal discs are disjoint")
-            if not 0.0 <= wcfg.target_shaping < 1.0:
-                raise ValueError("target_shaping must be in [0, 1): the bonus stays below one arrival")
         self.assigns = [
             StrainAssignment(strain_of[:, s], self.brains[s].n_strains)
             for s in range(self.n_swarms)

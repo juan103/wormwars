@@ -3152,3 +3152,37 @@ Now on main:
 - decisions D094-D101.
 
 The roadmap branch continues from main, with its banner. Next: 04a's pre-registration.
+
+## D103 — 04a's pre-registration drafted; batched runs with per-run streams
+
+After E1 (D100-D102), 04a's pre-registration is drafted
+(`experiments/04a-navigation-primitive/PREREGISTRATION.md`, v1), from the design's 04a section and
+the list both reviewers gave in D101. It goes to Astra 6 and Fable 5.1 before anything is bound.
+
+**The draft's main choices:**
+- Task N exactly as E1's gate ran it: built by E1's own config function, and refused if its resolved
+  configuration's hash differs from E1's gate record. The world seed is E1's.
+- 02's optimizer (32 genomes, 3 elites, top 8 parents, 02's mutation, one island), 8 worlds per
+  genome per generation, 1 000 generations.
+- 16 runs: 12 shaped (c = 0.5) as the primary arm, 4 unshaped as a secondary. Fitness is
+  count + c × progress, where progress is the unfinished leg's closed fraction at the last tick,
+  clipped to [0, 1]: at most c per episode, below one arrival. Training only.
+- **Runs are batched 8 at a time in one rollout, each with its own streams** (initialisation,
+  mutation, training worlds), seeded by run number. This needed two engine changes:
+  - the rollout accepts one row of world ids per strain, and returns each episode's progress and
+    final head position. A test checks that identical rows reproduce the shared-ids rollout exactly;
+  - the shaping moved out of the world configuration (a first version, `WorldConfig.target_shaping`
+    in 8e21cc7, could not give runs in one batch different coefficients).
+- The champion is the first checkpoint with the best mean on 64 validation worlds (41 checkpoints);
+  the generation-0 baseline is the generation-0 checkpoint. Both are fixed before the hold-out.
+- Per-run rules on 1 024 hold-out worlds: E1's reliability, baseline and cue rules, plus beating
+  generation 0 by a lower bound above 0.5. "04a: passed" needs 6 of the 12 shaped runs.
+- Reported only: a performance-equivalent gain on a hold-out re-run of E1's gain curve, E1's
+  secondary measures, the decoy capture (Fable, D101), and a replay check of each champion's
+  checkpoint batch.
+- The budget: a development projection on smoke ids measured 4.749 s per generation, against E1's
+  4.676 s per rollout; the total estimate is about 2.75 GPU-hours, and the cap 6. A guarded
+  projection on the binding commit must stay within 4.5 hours of training before any formal stage.
+
+**New code:** `wormwars/registration.py` (E1's guards as shared functions; `scripts/e1.py` keeps its
+own copies as the published record), `wormwars/e04a/evolve.py` and `scripts/e04a.py`, with tests.

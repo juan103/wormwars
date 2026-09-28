@@ -286,18 +286,15 @@ def test_the_random_walk_is_reproducible_and_persistent():
 
 # ------------------------------------------------------------------ 04a's shaping (training only)
 
-def test_shaping_adds_a_bounded_progress_term_to_the_count(iface):
-    """04a's training fitness: count + c x progress on the unfinished leg, progress in [0, 1], so the
-    bonus stays below one arrival for c < 1. With c = 0 the score is the count (D103)."""
+def test_the_rollout_reports_progress_and_the_final_head_beside_the_count(iface):
+    """04a's shaping reads the unfinished leg's progress from the rollout; the score stays the count
+    (D103)."""
     cfg = _cfg(horizon=60)
-    plain = _oracle_run(cfg, iface, np.arange(6))
-    shaped_cfg = _cfg(horizon=60)
-    shaped_cfg.world.target_shaping = 0.5
-    shaped = _oracle_run(shaped_cfg, iface, np.arange(6))
-    bonus = shaped.score - plain.score
-    assert np.all(bonus >= 0) and np.all(bonus <= 0.5 + 1e-6)
-    assert np.any(bonus > 0)
-    np.testing.assert_array_equal(np.floor(shaped.score + 1e-6), plain.score)  # never a whole arrival
+    r = _oracle_run(cfg, iface, np.arange(6))
+    assert r.progress.shape == (1, 6) and r.final_head.shape == (1, 6, 2)
+    assert r.progress.min() >= 0.0 and r.progress.max() <= 1.0 and r.progress.max() > 0.0
+    np.testing.assert_array_equal(r.score, np.floor(r.score))
+    assert not hasattr(cfg.world, "target_shaping")
 
 
 def test_progress_is_clipped_to_the_unit_interval(iface, spec):
@@ -311,8 +308,21 @@ def test_progress_is_clipped_to_the_unit_interval(iface, spec):
     assert float(w.final_progress().min()) >= 0.0
 
 
-def test_shaping_is_refused_outside_the_unit_interval(iface, spec):
-    cfg = _cfg(horizon=5)
-    cfg.world.target_shaping = 1.0
+def _genome(spec, cfg, n):
+    return Genome.random(spec, cfg.brain, n, generator=torch.Generator().manual_seed(3))
+
+
+def test_per_strain_world_ids_give_each_strain_its_own_worlds(iface, spec):
+    """04a's batched runs: [strains, worlds] ids. Identical rows reproduce the shared-ids rollout
+    exactly (the same composition); different rows give each strain its own targets."""
+    cfg = _cfg(horizon=20)
+    g = _genome(spec, cfg, 2)
+    shared = rollout(cfg, iface, g, np.arange(3), 5, "cpu")
+    rows = rollout(cfg, iface, g, np.tile(np.arange(3), (2, 1)), 5, "cpu")
+    np.testing.assert_array_equal(shared.score, rows.score)
+    np.testing.assert_array_equal(shared.progress, rows.progress)
+    own = rollout(cfg, iface, g, np.array([[0, 1, 2], [7, 8, 9]]), 5, "cpu")
+    other = rollout(cfg, iface, g.select([1]), np.array([7, 8, 9]), 5, "cpu")
+    np.testing.assert_array_equal(own.events["target_x"][1], other.events["target_x"][0])
     with pytest.raises(ValueError):
-        _world(cfg, iface, spec, np.arange(2))
+        rollout(cfg, iface, g, np.zeros((3, 2), dtype=np.int64), 5, "cpu")

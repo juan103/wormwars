@@ -42,6 +42,10 @@ class RolloutResult:
     ledger_rel_error: float = float("nan")
     # the navigate task's event table (E1): each entry [strains, worlds, targets]
     events: dict | None = None
+    # the navigate task: the unfinished leg's progress, [strains, worlds] in [0, 1], and the head's
+    # final position, [strains, worlds, 2]; 04a's shaping reads the first (D103)
+    progress: np.ndarray | None = None
+    final_head: np.ndarray | None = None
 
     def per_strain(self) -> np.ndarray:
         return self.score.mean(axis=1)
@@ -58,10 +62,17 @@ def foraging_score(world: World, swarm: int = 0) -> torch.Tensor:
 
 
 def _play(cfg, iface, brain, world_ids, run_seed, device, combat_stage=0, ticks=None, recorder=None):
-    """Every strain of `brain` on every world id. `brain` is a Brain or anything World accepts."""
-    n_sub, n_ids = brain.n_strains, len(world_ids)
+    """Every strain of `brain` on every world id. `brain` is a Brain or anything World accepts.
+    `world_ids` is [worlds], the same for every strain, or [strains, worlds], each strain its own
+    (04a's batched runs, D103)."""
+    n_sub, n_ids = brain.n_strains, world_ids.shape[-1]
     strain_of = torch.arange(n_sub, device=device).repeat_interleave(n_ids).reshape(-1, 1)
-    ids = np.tile(world_ids, n_sub)
+    if world_ids.ndim == 2:
+        if world_ids.shape[0] != n_sub:
+            raise ValueError(f"{world_ids.shape[0]} rows of world ids for {n_sub} strains")
+        ids = world_ids.reshape(-1)
+    else:
+        ids = np.tile(world_ids, n_sub)
     world = World(
         cfg, iface, brain, strain_of, run_seed=run_seed, world_ids=ids,
         device=device, combat_stage=combat_stage,
@@ -73,16 +84,13 @@ def _play(cfg, iface, brain, world_ids, run_seed, device, combat_stage=0, ticks=
     food1 = world.fields[:, world.ch.FOOD].sum(dim=(1, 2))
     shape = (n_sub, n_ids)
     # the score selector (E1): the energy score, or the number of targets reached
-    if world.navigate:  # the count, plus 04a's bounded training shaping when it is on (D103)
-        score = world.targets_reached.to(torch.float32)
-        if cfg.world.target_shaping > 0:
-            score = score + cfg.world.target_shaping * world.final_progress().to(torch.float32)
-    else:
-        score = foraging_score(world)
+    score = (world.targets_reached.to(torch.float32) if world.navigate else foraging_score(world))
     events = ({k: v.reshape(n_sub, n_ids, -1) for k, v in world.target_events().items()}
               if world.navigate else None)
     return {
         "events": events,
+        "progress": world.final_progress().reshape(shape).cpu().numpy() if world.navigate else None,
+        "final_head": world.pos[:, 0, 0].reshape(n_sub, n_ids, 2).cpu().numpy() if world.navigate else None,
         "score": score.reshape(shape).cpu().numpy(),
         "energy": world.swarm_energy()[:, 0].reshape(shape).cpu().numpy(),
         "alive": world.n_alive()[:, 0].reshape(shape).cpu().numpy(),
@@ -106,7 +114,7 @@ def rollout_brain(cfg, iface, brain, world_ids, run_seed, device="cpu", ticks=No
     r = _play(cfg, iface, brain, world_ids, run_seed, device, ticks=ticks)
     return RolloutResult(r["score"], r["energy"], r["alive"], r["eaten"], r["ticks"], r["err"],
                          pellet_eaten=r["pellet"], food_start=r["food0"], ledger_rel_error=r["err_rel"],
-                         events=r["events"])
+                         events=r["events"], progress=r["progress"], final_head=r["final_head"])
 
 
 def rollout(
@@ -124,15 +132,18 @@ def rollout(
 ) -> RolloutResult:
     """Play every strain on every world id, single swarm.
 
-    Returns scores shaped [strains, len(world_ids)].
+    Returns scores shaped [strains, worlds]. `world_ids` is [worlds], shared by every strain, or
+    [strains, worlds], each strain its own.
     """
     world_ids = np.asarray(world_ids, dtype=np.int64)
-    n_ids = len(world_ids)
+    n_ids = world_ids.shape[-1]
     S = genome.n_strains
+    if world_ids.ndim == 2 and world_ids.shape[0] != S:
+        raise ValueError(f"{world_ids.shape[0]} rows of world ids for {S} strains")
     chunk_worlds = chunk_worlds or cfg.evo.chunk_worlds
     strains_per_chunk = max(1, chunk_worlds // max(n_ids, 1))
 
-    scores, energies, alives, eatens, pellets, foods, events = [], [], [], [], [], [], []
+    scores, energies, alives, eatens, pellets, foods, events, progs, heads = [], [], [], [], [], [], [], [], []
     worst_err = worst_rel = 0.0
     used_ticks = 0
 
@@ -143,7 +154,8 @@ def rollout(
         if brain_hook is not None:
             # lets callers modify the brain per chunk (e.g. apply a different ablation per strain)
             brain_hook(brain, lo, hi)
-        r = _play(cfg, iface, brain, world_ids, run_seed, device, combat_stage, ticks,
+        chunk_ids = world_ids[lo:hi] if world_ids.ndim == 2 else world_ids
+        r = _play(cfg, iface, brain, chunk_ids, run_seed, device, combat_stage, ticks,
                   recorder if lo == 0 else None)
         scores.append(r["score"])
         energies.append(r["energy"])
@@ -152,6 +164,8 @@ def rollout(
         pellets.append(r["pellet"])
         foods.append(r["food0"])
         events.append(r["events"])
+        progs.append(r["progress"])
+        heads.append(r["final_head"])
         # NaN must not be swallowed: max(0.0, nan) is 0.0 in Python (T0, D073)
         worst_err = _nanmax(worst_err, r["err"])
         worst_rel = _nanmax(worst_rel, r["err_rel"])
@@ -168,6 +182,8 @@ def rollout(
         pellet_eaten=np.concatenate(pellets),
         food_start=np.concatenate(foods),
         events=None if events[0] is None else {k: np.concatenate([e[k] for e in events]) for k in events[0]},
+        progress=None if progs[0] is None else np.concatenate(progs),
+        final_head=None if heads[0] is None else np.concatenate(heads),
     )
 
 

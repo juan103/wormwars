@@ -159,11 +159,6 @@ class WorldConfig:
     target_max_separation: float = 0.0  # a maximum for consecutive centres; 0 means none
     target_wall_clearance: float = 3.0  # centres at least this far from the wall ring's inner edge
     target_sequence_length: int = 64  # centres drawn per world; running out is an error
-    # 04a's training shaping (D103): the score becomes count + target_shaping x progress, where
-    # progress is the fraction of the unfinished leg's starting distance closed by the episode's end,
-    # clipped to [0, 1]. It must be below 1, so the bonus is always worth less than one arrival.
-    # Training only: every benchmark and gate score uses the raw count (target_shaping = 0).
-    target_shaping: float = 0.0
 
 
 @dataclass
