@@ -187,14 +187,37 @@ def test_weights_keep_every_finished_condition_on_a_stop(p, smoke):
     assert "independent|N2perm100|final" in np.load(d / "weights-per-genome.npz").files
 
 
-def test_decay_keeps_the_long_history_when_the_gaps_off_check_stops(p, smoke):
+def test_decay_keeps_the_long_history_when_the_gaps_off_check_stops(p, smoke, monkeypatch):
     args, calls, d = smoke
+    monkeypatch.setattr(p, "ensure_graphs", lambda names: {"rebuilt": 0})  # never writes outside tmp_path
     calls["stop_at"] = 3  # the command's check, N2's long history, then N2's gaps-off
     with pytest.raises(p.reg.CapReached):
         p.cmd_decay(args)
     part = json.loads((d / "decay-partial.json").read_text())
     assert list(part["graphs"]) == ["N2"] and "gaps_off" not in part["graphs"]["N2"]
     assert "N2|diff" in np.load(d / "decay-per-genome.npz").files
+
+
+def test_the_lesion_follow_up_keeps_its_finished_deletions_on_a_stop(p, smoke, tmp_path, monkeypatch):
+    """Review v4 (both): the follow-up by synapse type, stopped at its very last check (inside the gap
+    pass), keeps the finished chemical pass: its partial summary and its per-genome arrays."""
+    args, calls, d = smoke
+    p.cmd_lesions(args)  # a full smoke run, to count the checks
+    full = json.loads((d / "lesions.json").read_text())
+    top = [r["deleted"] for r in full["follow_up_by_synapse_type"]["chemical"]]
+    assert top, "the smoke run must reach the follow-up"
+    total = calls["n"]
+    run2 = tmp_path / "second"
+    monkeypatch.setattr(p, "EXP", run2)
+    monkeypatch.setattr(p, "OUT", run2)
+    calls["n"], calls["stop_at"] = 0, total  # the last check: the last gap-pass deletion
+    with pytest.raises(p.reg.CapReached):
+        p.cmd_lesions(args)
+    part = json.loads((run2 / "lesions-partial.json").read_text())
+    assert [r["deleted"] for r in part["follow_up_by_synapse_type"]["chemical"]] == top
+    assert len(part["follow_up_by_synapse_type"].get("gap", [])) == len(top) - 1
+    arr = np.load(run2 / "lesions-follow-up-per-genome.npz").files
+    assert all(f"chemical|{lbl}|final" in arr for lbl in top)
 
 
 def test_lesions_flush_every_finished_deletion_on_a_stop(p, smoke):

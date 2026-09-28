@@ -691,8 +691,8 @@ def cmd_lesions(args):
     turn = set(iface.turn_plus) | set(iface.turn_minus)  # only the turn read-out: P4 reads turn alone
     names = list(con.names)
     entries = lesion_entries(names, turn)
-    if SMOKE:
-        entries = entries[:6]
+    if SMOKE:  # the empty deletion, two pre-named pairs, and three singles, so the follow-up runs too
+        entries = entries[:3] + [e for e in entries if len(e[1]) == 1][:3]
     pg = supplement("03")
     th = thresholds(pg)
     p4_all, den_all = pooled(pg)
