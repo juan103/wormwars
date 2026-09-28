@@ -2867,3 +2867,59 @@ deleted.
 - if the design does not fit, searches or null arms are cut, not the six neurons;
 - 03a comes after E1, whose pilot measures a one-wey task's throughput;
 - the P4 mechanism follow-up stays ahead of 03a in Track B unless the owner reorders them.
+
+## D095 — E1's pre-registration, v2 after review (the owner asked that E1 be pre-registered)
+
+The owner asked: "if there is something to preregister for E1 do so".
+
+**Built first (`de57ce4`):** Task N, test-first, within the design's tripwire:
+- the `navigate` world: a sensing-only relocating target, with a per-world sequence from its own
+  random stream;
+- the count score and the event table in rollouts;
+- collision inputs for scripted controls;
+- `wormwars/e1/`: E1's own config builder (padding on, as T1 required), id ranges, S-const, M-avg,
+  three blind baselines and the privileged oracle.
+
+**Then `scripts/e1.py` and the pre-registration v1 (`f83bd19`).** Astra 6 and Fable 5.1 reviewed
+them (`docs/reviews/20260928-181005-E1-prereg/`). **Both answered "revise",** and both confirmed:
+- the Task N mechanics match the design;
+- the σ rule stays as registered. Fable showed its outcome is forced by geometry: σ ≤ 3 cannot
+  reach D = 8, so σ = 6 is selected either way;
+- fixing the gate's numbers before the pilot is a legitimate tightening of the design.
+
+**v2 adopts every change:**
+- **The cue test (Astra).** v1 compared a bootstrap bound with a fixed half of the observed mean.
+  v2 bootstraps the per-world contrast 0.5 × real − mirrored and requires a lower bound ≥ 0. Astra's
+  counter-example is a test.
+- **The freeze file (Fable)** is written with LF and hashed normalised, which avoids D056's class
+  of bug.
+- **The guards** are functions, and each has a test:
+  - formal stages need CUDA, a clean tree including the pre-registration, and a pushed HEAD;
+  - exclusive start markers, so an interrupted stage is not silently rerun;
+  - the gate re-derives σ, every tuned winner, the grids, the oracle and the navigator from the
+    freeze's own rows;
+  - the gate refuses code or pre-registration changes since the pilot;
+  - the cap is checked before every rollout and before any result is written, with fixed wording
+    if it is hit.
+- **Evidence:**
+  - the gate's full event tables are committed;
+  - the head's start and end of every leg are recorded, and path efficiency is displacement over
+    path, at most 1. v1 used target centres and could exceed 1 (both);
+  - every grid point's mean is kept;
+  - the design's shares of episodes with at least 1 and 2 arrivals are recorded;
+  - the constant probe runs for every controller (Astra);
+  - the own-body level refuses zero samples (Fable);
+  - throughput is measured in 04a's shape, off E1's worlds (Fable).
+- **The binding rule:** the binding commit is the one the pilot records. It must be clean and
+  pushed, and the gate refuses anything that changed since.
+- **Disclosure (§7), completed after Fable's question:**
+  - the first smoke run used E1's ranges at tiny sizes: 8 pilot and 8 tuning worlds, at a 40-tick
+    horizon;
+  - a debug run computed the σ measure on 32 pilot worlds, outside the accounting;
+  - no gate world was evaluated;
+  - every stage now starts at index 1 000 of its range, and smoke runs use ids 0-9 999.
+- **Disclosed rather than changed:** the random walk's noise follows batch shape, not world id.
+- **Wording:** the registration precedes the *formal* pilot and gate, with the earlier exposure
+  disclosed. The reliability criterion is a sample criterion (at least 820 of 1 024).
+
+**Next:** confirmation by both reviewers. Then the binding commit is pushed, and the pilot runs.

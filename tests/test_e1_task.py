@@ -180,6 +180,25 @@ def test_events_are_consistent(iface):
     assert ev["target_x"].shape == ev["target_y"].shape == act.shape
 
 
+def test_legs_record_where_the_head_started_and_ended(iface):
+    """Path efficiency needs the head's actual endpoints, not the target centres (Fable, Astra,
+    D095): each leg starts where the previous one ended, the end is within R of the centre, and
+    the straight-line displacement never exceeds the path."""
+    cfg = _cfg(horizon=200)
+    ev = _oracle_run(cfg, iface, np.arange(4)).events
+    reach = ev["reach_tick"][0]
+    for w in range(reach.shape[0]):
+        done = int((reach[w] >= 0).sum())
+        for k in range(done):
+            end = np.array([ev["end_x"][0, w, k], ev["end_y"][0, w, k]])
+            centre = np.array([ev["target_x"][0, w, k], ev["target_y"][0, w, k]])
+            start = np.array([ev["start_x"][0, w, k], ev["start_y"][0, w, k]])
+            assert np.hypot(*(end - centre)) <= cfg.world.target_radius + 1e-5
+            assert np.hypot(*(end - start)) <= ev["path_length"][0, w, k] + 1e-5
+            np.testing.assert_array_equal(end, [ev["start_x"][0, w, k + 1], ev["start_y"][0, w, k + 1]])
+        assert np.isnan(ev["end_x"][0, w, done])
+
+
 def test_energy_is_off_and_the_ledger_stays_balanced_across_relocations(iface):
     cfg = _cfg(horizon=200)
     cfg.world.check_ledger_every_tick = True

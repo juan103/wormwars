@@ -510,6 +510,11 @@ class World:
         self._ev_activation[:, 0] = 0
         self._ev_reach = torch.full((self.n_worlds, K), -1, dtype=torch.long, device=dev)
         self._ev_path = torch.zeros(self.n_worlds, K, dtype=torch.float64, device=dev)
+        # the head's position where each leg started (the spawn, then each reach point) and where
+        # it ended; NaN where a leg never started or never ended (D095)
+        self._ev_start = torch.full((self.n_worlds, K, 2), float("nan"), dtype=self.dtype, device=dev)
+        self._ev_start[:, 0] = self.pos[:, 0, 0]
+        self._ev_end = torch.full((self.n_worlds, K, 2), float("nan"), dtype=self.dtype, device=dev)
         self._target_overflow = torch.zeros((), dtype=torch.bool, device=dev)
         yy, xx = torch.meshgrid(torch.arange(self.H, device=dev, dtype=self.dtype) + 0.5,
                                 torch.arange(self.W, device=dev, dtype=self.dtype) + 0.5, indexing="ij")
@@ -542,11 +547,13 @@ class World:
         head = self.pos[:, 0, 0]
         reached = (head - self.current_target()).norm(dim=-1) <= wcfg.target_radius
         self._ev_reach[ar, idx] = torch.where(reached, torch.full_like(idx, self.tick_count), self._ev_reach[ar, idx])
+        self._ev_end[ar, idx] = torch.where(reached.unsqueeze(-1), head, self._ev_end[ar, idx])
         nxt = idx + reached.long()
         self._target_overflow |= (nxt >= K).any()
         nxt = nxt.clamp_max(K - 1)
         self._ev_activation[ar, nxt] = torch.where(reached, torch.full_like(idx, self.tick_count + 1),
                                                    self._ev_activation[ar, nxt])
+        self._ev_start[ar, nxt] = torch.where(reached.unsqueeze(-1), head, self._ev_start[ar, nxt])
         self.targets_reached += reached.long()
         self.target_index = nxt
 
@@ -557,8 +564,10 @@ class World:
         if bool(self._target_overflow):
             raise RuntimeError("a world reached every target in its sequence: raise target_sequence_length")
         c = self.target_centres.cpu().numpy()
+        s, e = self._ev_start.cpu().numpy(), self._ev_end.cpu().numpy()
         return {"activation_tick": self._ev_activation.cpu().numpy(), "reach_tick": self._ev_reach.cpu().numpy(),
-                "path_length": self._ev_path.cpu().numpy(), "target_x": c[..., 0], "target_y": c[..., 1]}
+                "path_length": self._ev_path.cpu().numpy(), "target_x": c[..., 0], "target_y": c[..., 1],
+                "start_x": s[..., 0], "start_y": s[..., 1], "end_x": e[..., 0], "end_y": e[..., 1]}
 
     # ------------------------------------------------------------- geometry
 

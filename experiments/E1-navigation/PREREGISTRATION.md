@@ -1,73 +1,113 @@
-# E1: the positive control for navigation. Pre-registration
+# E1: the positive control for navigation. Pre-registration (v2)
 
-**Status:** written 2026-09-28, before the pilot. It is pushed to GitHub before the pilot runs, so
-for the first time in this series the registration is public before any registered measurement.
-The binding commit is the one that first contains this file together with `scripts/e1.py`; the
-pilot records its commit.
+**Status:**
+- Written 2026-09-28. v1 (`f83bd19`) was reviewed by Astra 6 and Fable 5.1
+  (`docs/reviews/20260928-181005-E1-prereg/`). Both answered "revise", and v2 adopts every change
+  (D095).
+- **The formal pilot and gate come after this registration, and after its public push,** with the
+  earlier exposure disclosed in §7. It is the first time in this series that a registration is
+  public before its formal measurements.
+- **The binding commit** is the commit the pilot records in the freeze. The pilot refuses to run
+  unless:
+  - the tree is clean, this file included;
+  - the commit is already pushed.
+
+  The gate refuses to run if the code or this file differ from the pilot's commit.
 
 **Design:** [`docs/E1/DESIGN.md`](../../docs/E1/DESIGN.md) v2.1, agreed by Astra 6 and Fable 5.1
-(D077, D078). This file fixes what the design left open. Where they differ, this file holds for the
-positive control. 04a, the evolved navigator, gets its own pre-registration after the gate.
+(D077, D078). This file fixes what the design left open, and for the positive control it holds
+where the two differ.
+- **This registration fixes more than the design did.** The design let the pilot set the gate's
+  margins, shares and sample sizes. They are fixed now, before any formal data, and the pilot sets
+  only σ, the own-body level, the tuned controls and the navigator, each by a rule stated here.
+- 04a, the evolved navigator, gets its own pre-registration after the gate.
 
-**Code:** Task N in `wormwars/world.py` (the `navigate` task) and `wormwars/e1/`. The runner is
-[`scripts/e1.py`](../../scripts/e1.py), whose `REGISTERED` constant holds every number below. The
-runner applies every rule mechanically, so nothing is chosen by hand after data are seen.
+**Code:**
+- Task N lives in `wormwars/world.py` (the `navigate` task) and `wormwars/e1/`.
+- The runner is [`scripts/e1.py`](../../scripts/e1.py). Its `REGISTERED` constant holds every number
+  below.
+- The runner applies every rule mechanically, and its guards are tested (`tests/test_e1_script.py`).
 
 ## 1. The question
 
 Can a scripted navigator, with the declared body and sensors, reach **moved targets** on **unseen
-layouts**, better than **simple movement baselines**, and **because of the cue**? Arrivals alone
-are not enough: good search also collects hits. The gate asks whether target information improves
-arrival. One valid passing navigator is enough to establish that the task can be done, and to start
-04a.
+layouts**, better than **simple movement baselines**, and **because of the cue**?
+- Arrivals alone are not enough: good search also collects hits. The gate asks whether target
+  information improves arrival.
+- One valid passing navigator is enough to establish that the task can be done, and to start 04a.
 
-## 2. Task N (the design's §"Task N", made concrete)
+## 2. Task N
 
-- **The world:** one swarm of one wey per world, and the boundary wall only. There is no food,
-  hazard, pheromone or combat, so the arena side is 24.
-- **Energy is off:** no metabolic drain, movement cost or eating, so the wey lives for the whole
+**The world:**
+- one swarm of one wey per world, and the boundary wall only;
+- no food, hazard, pheromone or combat, so the arena side is 24;
+- **energy is off:** no metabolic drain, movement cost or eating, so the wey lives for the whole
   horizon of **300 ticks**.
-- **The target is a sensing-only scent source:** A exp(-d² / 2σ²), truncated at ceil(3σ) cells
-  along each axis. It is added to what the wey senses, never to the food field, so the energy
-  ledger stays exactly balanced.
-- **Fixed now:**
-  - amplitude **A = 1.0**, with the sensing scale **0.35** (peak input current 0.35, against a
-    clamp of 5);
-  - radius **R = 1.5**: a target is reached when the head is within R of its centre;
-  - separation **D = 8**: consecutive centres, and the first from the spawn, at least D apart;
-  - no maximum separation, and centres at least **3** cells from the wall ring.
-- **The target sequence:** a function of (run seed, world id, k) only, from a random stream of its
-  own. Every controller faces the same destinations. Controller state persists across
-  relocations.
-- **The score:** targets reached in 300 ticks, an integer.
-- **The run seed:** 1 100 001.
-- **World ids:** pilot 996 000 000+, tuning 996 100 000+, gate 996 200 000+, and 04a's hold-out
-  996 300 000+. The ranges are disjoint from each other and from earlier experiments.
-- **Execution:** CUDA default mode, on one RTX 5080, in the pinned environment. Each controller is
-  one strain on all of a stage's worlds, in one rollout; scripted controllers have no neural
-  batch. Counts are exact integers.
+
+**The target** is a sensing-only scent source: A exp(-d² / 2σ²), truncated at ceil(3σ) cells along
+each axis. It is added to what the wey senses, never to the food field, so the energy ledger stays
+exactly balanced. Fixed now:
+- **amplitude A = 1.0, with the sensing scale 0.35.** The peak input current is 0.35, against a
+  clamp of 5. 0.35 is 02's food sensing scale, so a brain's food neurons see currents of the order
+  they saw in 02, far from the clamp;
+- **radius R = 1.5:** a target is reached when the head is within R of its centre;
+- **separation D = 8:** consecutive centres, and the first from the spawn, at least D apart;
+- **no maximum separation,** and centres at least **3** cells from the wall ring.
+
+**The target sequence** is a function of (run seed, world id, k) only, from a random stream of its
+own. Every controller faces the same destinations, and controller state persists across
+relocations.
+
+**The score** is the number of targets reached in 300 ticks, an integer. **The run seed** is
+1 100 001.
+
+**World ids:**
+- pilot 996 000 000+, tuning 996 100 000+, gate 996 200 000+, 04a's hold-out 996 300 000+;
+- the ranges are disjoint from each other and from earlier experiments;
+- **every stage starts at index 1 000 of its range,** past every world that development touched
+  (§7);
+- the freeze and the gate record the exact ids used.
+
+**Execution:**
+- **CUDA only,** on one RTX 5080, in the pinned environment. The runner refuses the CPU for formal
+  stages.
+- Each controller is one strain on all of a stage's worlds, in one rollout. Scripted controllers
+  have no neural batch.
+- **Reproducibility:** the counts are exact integers, but CUDA default mode does not guarantee
+  repeatable trajectories (`docs/REPRODUCIBILITY.md`), so no exact replay of the gate is claimed.
+  The gate runs once, and its per-world counts and full event tables are committed.
 
 ## 3. The pilot (`e1.py pilot`), on pilot and tuning worlds only
 
-It runs once, and writes `experiments/E1-navigation/freeze.json`.
+It writes `experiments/E1-navigation/freeze.json`, with LF line endings, and the gate hashes it
+normalised to LF.
 
-1. **σ (the scent's width):**
+1. **σ, the scent's width:**
    - candidates **2, 3, 4 and 6**;
    - on **256 pilot worlds**, at each world's first **5** leg starts (the spawn, then each previous
      centre), it measures the next target's scent from the actual sampled field;
    - **the rule:** the smallest σ at which at least **90%** of leg starts read at least **5% of
      A**;
-   - **if none qualifies:** σ = 6 (the largest), flagged. The flag is reported as a limitation,
-     and it changes no other number.
-2. **The own-body collision level:** on 64 pilot worlds, 100 ticks at speed 0.5 and turn 0.2, the
-   largest front or front-right collision current the wey's own body produces, while its head is
-   at least 3 cells from the wall.
-3. **Generation 0:** 256 random N2 genomes on 64 pilot worlds: the share scoring zero on every
-   world, the mean count, and throughput. These are descriptive, for 04a's pre-registration.
-4. **Clamp saturation:** peak input current against the clamp. It is expected to be zero by
-   construction.
-5. **Tuning,** on **256 tuning worlds.** Each grid point is one strain, in chunks of 64; the first
-   maximum of the mean count in grid order wins.
+   - **if none qualifies:** σ = 6, flagged. The flag is reported as a limitation, and it changes no
+     other number.
+2. **The own-body collision level:**
+   - on 64 pilot worlds, 100 ticks at speed 0.5 and turn 0.2;
+   - the largest front or front-right collision current the wey's own body produces, while its
+     head is at least 3 cells from the wall;
+   - the number of samples is recorded, and the pilot refuses to continue if there is none.
+3. **Generation 0:**
+   - 256 random N2 genomes on 64 pilot worlds, in one chunk (256 strains × 64 worlds × 1 wey);
+   - the share scoring zero on every world, and the mean count.
+   - These are descriptive, for 04a's pre-registration, and apply to this composition only.
+4. **Throughput** in 04a's evolution shape: 32 strains × 8 worlds × 1 wey, and 4 and 8 such
+   batches together, 3 repeats each, on world ids 0-7, outside every E1 range.
+5. **Clamp saturation:** peak input current against the clamp. It is zero by construction.
+6. **Tuning, on 256 tuning worlds.**
+   - Each grid point is one strain, in chunks of 64. The last chunk may be smaller, and it is
+     recorded.
+   - The first maximum of the mean count, in grid order, wins.
+   - Every grid point's mean is kept in the freeze, with the winner's share of episodes with at
+     least 1 and at least 2 arrivals.
 
    | Control | Grid |
    |---|---|
@@ -78,82 +118,144 @@ It runs once, and writes `experiments/E1-navigation/freeze.json`.
    | random walk (persistent turn) | speed ∈ {0.4, 0.7, 1.0} × rate ∈ {0.2, 0.4, 0.8, 1.0} × persistence ∈ {0.5, 0.8, 0.9, 0.95, 0.99}; noise seed 0 |
    | wall-follower (collision inputs, wall on the right) | speed ∈ {0.4, 0.7, 1.0} × seek turn ∈ {-0.1, -0.2, -0.4} × avoid turn ∈ {0.4, 0.8, 1.0} × threshold = own-body level + {0.05, 0.1, 0.2, 0.4, 0.8, 1.6} |
 
-   - S-const is also tuned with k ≤ 32 and reported. That version is non-gating.
+   - **S-const is also tuned with k ≤ 32** and reported. That version is non-gating.
    - **The oracle** steers at the true target (k = 2, speed 1). It is the ceiling, not a control,
      and it is not tuned.
-6. **The navigator:** of the tuned S-const and M-avg, the one with the higher tuned mean. On a
+   - **The random walk's noise** follows the batch's shape, not world identity. So each grid point
+     meets different noise, and the tuned walk is specific to this chunking. It is disclosed, not
+     changed: a blind baseline needs no common noise.
+7. **The navigator:** of the tuned S-const and M-avg, the one with the higher tuned mean. On a
    tie, S-const.
 
-The pilot may not use gate worlds, and nothing in it is chosen by hand. **The freeze is committed
-before the gate,** and the gate records its sha256.
+**The pilot may not:**
+- use gate worlds;
+- choose anything by hand;
+- run twice. Its start marker is exclusive.
+
+**The freeze** is committed and pushed before the gate. The gate re-derives from the freeze's own
+rows:
+- σ;
+- every tuned winner, with its grid and the first-maximum rule;
+- the small-gain grid;
+- the oracle;
+- the navigator.
+
+It refuses any mismatch.
 
 ## 4. The gate (`e1.py gate`): 1 024 gate worlds, used once
 
 Each rule compares per-world counts on the same worlds. **The interval** is a one-sided 95% lower
-bound: the 5th percentile of 10 000 bootstrap resamples of worlds (seed 0) of the mean paired
-difference.
+bound: the 5th percentile of 10 000 bootstrap resamples of worlds (seed 0) of the mean of a
+per-world quantity.
 
-1. **Absolute reliability:** at least **80%** of gate episodes reach at least **2** targets. The
-   second arrival tests relocation.
+1. **Absolute reliability:** at least **820 of the 1 024** gate episodes (80%) reach at least **2**
+   targets. The second arrival tests relocation. This is a criterion on this sample, not a
+   confidence statement about a population.
 2. **Beats the baselines:** for each of the tuned **constant**, **random walk**, **wall-follower**
-   and **K**, the lower bound of (navigator − baseline) exceeds **0.5 targets per episode**. No
-   ratio is taken against a near-zero baseline.
-3. **Uses the cue:** the navigator is also run under the `mirrored` probe, where the scored target
-   is unchanged but its scent is read at the point reflection, a consistent decoy. The lower bound
-   of (real − mirrored) must be at least **50% of the navigator's real mean**. The count may fall
-   below the blind level: a navigator parks at the decoy.
+   and **K**, the lower bound of the per-world difference (navigator − baseline) exceeds **0.5
+   targets per episode**. No ratio is taken against a near-zero baseline.
+3. **Uses the cue:**
+   - the navigator is also run under the `mirrored` probe: the scored target is unchanged, but its
+     scent is read at the point reflection, a consistent decoy;
+   - the per-world contrast **0.5 × real − mirrored** must have a lower bound **≥ 0**. That is, the
+     count falls by at least half, with its uncertainty counted (Astra, D095);
+   - the count may fall below the blind level, because a navigator parks at the decoy.
 
 **The outcome** is all three together (an intersection, so no multiplicity correction). The
 wording is fixed:
 - *"E1 positive control: passed"*;
-- *"E1 positive control: not passed"*, followed by the failed rules.
+- *"E1 positive control: not passed"*, followed by the failed rules;
+- *"E1 positive control: not completed (the registered cap was reached)"*.
 
 **Reported, non-gating:**
-- the `constant` probe for every controller, as its own blind level;
+- **for every tuned controller:** its real count and its `constant` probe count, as its own blind
+  level. That includes the navigator, the unselected navigator, and S-const at k ≤ 32;
 - every mean as a fraction of the oracle's;
-- S-const at k ≤ 32;
 - first-arrival success;
 - latency, as the mean of min(first-arrival tick, horizon), so failures count;
-- median leg time;
-- path efficiency (straight line over path, for legs after the first).
+- the median time of **finished** legs;
+- **path efficiency:** the head's straight-line displacement from where a leg began to where it
+  reached the target, over the path it took, for finished legs. It is at most 1 by construction.
 
-## 5. Budget and rules
+**Committed with the result:**
+- every arm's per-world counts;
+- the full event tables (`gate_events.npz`): per world and target, the activation and reach ticks,
+  the path length, the target's position, and the head's start and end;
+- the gate world ids.
 
-- **The cap: 8 GPU-hours** for the pilot, tuning and gate together, counted with T0's accounting
-  (synchronised wall clock). It is registered in code and never extended.
-- **A clean tree is required** for both stages. Provenance is recorded at the start.
-- **The gate refuses to run** if its result already exists, if the freeze is not committed and
-  unchanged, or if the freeze's registered numbers differ from the script's.
-- **Deviations** are reported in the results, and none is made silently.
+## 5. Budget, interruption and deviations
+
+**The cap: 8 GPU-hours** for the pilot, tuning and gate together.
+- It is counted with T0's accounting (synchronised wall clock), registered in code, and never
+  extended.
+- It is checked before every rollout, and once more before a result is written. One rollout in
+  flight can overrun it; the overrun is recorded.
+- The compute record is committed with each stage's output.
+
+**Interruption.** Each stage writes an exclusive start marker before touching its worlds, and a
+started stage is never silently rerun.
+- **A pilot that stops without a freeze:** it is rerun only under a dated amendment, on the next
+  unused offset of the pilot and tuning ranges. The failed attempt is disclosed.
+- **A gate that stops without a result, or hits the cap:** it is reported as not completed. Any new
+  attempt needs a new registration, on unused gate worlds.
+
+**Deviations** are reported in the results, and none is made silently.
 
 ## 6. If no navigator passes
 
-The design's rule applies. The implementation, the signal availability, constant-speed steering
-and the search behaviour are diagnosed first. The body or sensors change only if that diagnosis
-points there: head oscillation, or a stronger or wider cue. Any change gets a new pre-registration.
-It never retunes on the gate worlds.
+The design's rule applies:
+- the implementation, the signal availability, constant-speed steering and the search behaviour
+  are diagnosed first;
+- the body or sensors change only if that diagnosis points there: head oscillation, or a stronger
+  or wider cue;
+- any change gets a new pre-registration;
+- nothing is ever retuned on the gate worlds.
 
 ## 7. What was seen before this registration (disclosure)
 
-- **The development runs:** the task's tests, and a smoke run of the whole pipeline at tiny sizes.
-  From now on the smoke run uses world ids 0-9 999, outside every E1 range.
-- **One debug run touched pilot worlds.** Before the smoke run was moved off the E1 ranges, a
-  debug run computed the σ measure on the **first 32 pilot worlds**:
-  - share of leg starts at or above 5% of A: σ = 2: 0.00; σ = 3: 0.00; σ = 4: 0.33; σ = 6: 0.875;
-  - no controller, count or gate quantity was computed on E1 worlds.
-- **What predates it:** the rule's numbers (the candidates, the 5% floor, the 90% share and the
-  fallback) were already in `REGISTERED` before that run, and are unchanged.
-- **The likely consequence:** the pilot will probably select σ = 6, flagged. About an eighth of leg
-  starts would then begin with the scent below the floor, and a controller must search before it
-  can steer.
-- **What was not done:** no candidate was added (for example σ = 8), and no share was lowered after
-  this was seen.
-- Smoke runs outside the E1 ranges also exercised every controller at a 40-tick horizon. No
-  quantity from them enters this registration.
+**Development used E1's worlds twice, before the smoke runs were moved off them.** No gate world
+was ever evaluated.
+1. **The first smoke run** of the pipeline used E1's ranges at tiny sizes. It ran on uncommitted
+   code at a 40-tick horizon, with each grid cut to its first two values:
+   - coverage on the first 8 pilot worlds;
+   - the own-body level on the first 4;
+   - generation 0 with 4 genomes on the first 4;
+   - tuning on the first 8 tuning worlds.
+
+   It printed every tuned mean as 0.0, and the oracle's as 0.5. Its gate stopped before any
+   rollout: it could not find the freeze, which the smoke run had deleted.
+2. **A debug run** computed the σ measure on the **first 32 pilot worlds,** outside the accounting,
+   so it has no compute record. The share of leg starts at or above 5% of A was:
+   - σ = 2: 0.00;
+   - σ = 3: 0.00;
+   - σ = 4: 0.33;
+   - σ = 6: 0.875.
+
+**Handling:**
+- **Every stage now starts at index 1 000** of its range, past every touched world.
+- **Smoke runs now use world ids 0-9 999,** outside every E1 range. They exercised every stage, and
+  no quantity from them enters this registration.
+- **The σ rule is unchanged,** and it was fixed before either run: the candidates, the 5% floor,
+  the 90% share and the fallback were in `REGISTERED` before the debug run. That ordering is a
+  development-history statement: `REGISTERED` and this file first appear together in `f83bd19`.
+
+**The σ outcome follows from geometry, not from those data** (Fable):
+- the scent reaches 5% of A at a distance of about 2.45 σ, so at 4.9, 7.3, 9.8 and 14.7 cells for
+  the four candidates;
+- consecutive targets are at least D = 8 apart, so σ = 2 and 3 can never qualify. The expected
+  shares are about 0.29 at σ = 4 and 0.88 at σ = 6;
+- so σ = 6 is selected either way, and the pilot decides only the flag. No candidate was added and
+  no share was lowered after the debug run.
+- **If σ = 6 is flagged,** about an eighth of leg starts begin with the scent below the floor, and a
+  controller must search before it can steer.
 
 ## 8. What E1 establishes, and what it does not
 
-**It establishes,** if passed, that the declared body and sensors support navigation to a
-localised, relocating source on unseen layouts. It does not validate trails, junctions, walls that
-occlude the scent, or colonies (the design's §"What E1 does and does not establish"). The input
-mapping is a commitment: the goal cue enters at the food neurons AWA, AWC and ASE, left and right.
+**If passed,** E1 establishes that the declared body and sensors support navigation to a localised,
+relocating source on unseen layouts.
+
+**It does not validate** trails, junctions, walls that occlude the scent, or colonies (the design's
+§"What E1 does and does not establish").
+
+**The input mapping is a commitment:** the goal cue enters at the food neurons AWA, AWC and ASE, left
+and right.
