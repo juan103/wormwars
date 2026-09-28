@@ -217,7 +217,8 @@ def test_the_lesion_follow_up_keeps_its_finished_deletions_on_a_stop(p, smoke, t
     assert [r["deleted"] for r in part["follow_up_by_synapse_type"]["chemical"]] == top
     assert len(part["follow_up_by_synapse_type"].get("gap", [])) == len(top) - 1
     arr = np.load(run2 / "lesions-follow-up-per-genome.npz").files
-    assert all(f"chemical|{lbl}|final" in arr for lbl in top)
+    assert all(f"chemical|{lbl}|{k}" in arr for lbl in top for k in ("final", "steady"))
+    assert all(f"gap|{lbl}|{k}" in arr for lbl in top[:-1] for k in ("final", "steady"))
 
 
 def test_lesions_flush_every_finished_deletion_on_a_stop(p, smoke):

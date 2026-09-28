@@ -1,4 +1,4 @@
-# 03m: what drives P4? An exploratory look (plan v4)
+# 03m: what drives P4? An exploratory look (plan v4.1, ready to run)
 
 **Status:** exploratory, declared before the simulations run. Written 2026-09-29 for review by Astra 6
 and Fable 5.1.
@@ -9,6 +9,13 @@ and Fable 5.1.
 - v3 (`fecf8d4`, `docs/reviews/20260929-003735-03m-plan-v3/`): both said "revise", narrowly (a misread
   rank; results still losable at a few cap boundaries; the graph rebuild outside the cap). Fable
   asked for no further round if the fixes are made as described. v4 makes them (§Changes).
+- v4 (`e818ff0`, `docs/reviews/20260929-012031-03m-plan-v4/`): both said "revise", for one gap: the
+  lesions' follow-up had never run, in a test or a smoke run, so "each boundary has a test" was not yet
+  true. v4.1 (`f71f6f9`) exercises it: the smoke includes single deletions, and a test stops inside the
+  follow-up.
+- v4.1 (`f71f6f9`, `d7447ac`; `docs/reviews/20260929-012845-03m-plan-v41/`): **both "ready to run"**.
+- **Run order:** after 04a's evaluation, this branch is merged into `roadmap` and pushed, and the
+  formal commands run from there (the formal guards need a pushed branch).
 - Nothing here is confirmatory. A confirmatory mechanism study, if one follows, gets its own
   pre-registration, and its label is assigned there (ROADMAP.md, Track B).
 
