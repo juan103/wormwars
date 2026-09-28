@@ -1,0 +1,52 @@
+{
+ "what": "exploratory (PLAN.md Q1b); no simulation; from 03's local per-genome measures",
+ "stamp": {
+  "git_commit": "4c8848e56ffbe2bf753a98381953803ff0e92013",
+  "branch": "p4-mechanism",
+  "dirty": true,
+  "python": "3.13.3",
+  "numpy": "2.4.4",
+  "torch": "2.12.0+cu130",
+  "cuda": "13.0",
+  "gpu": "NVIDIA GeForce RTX 5080",
+  "connectome_cache_sha256": "43b87aa172a0042b9dce734b15bdf1c87efe3a33ac1cc0d9cd03255a60c96d4a"
+ },
+ "N2": {
+  "P4_even": 0.9423102460245405,
+  "P4_odd": 0.9210160935137403,
+  "top5pct_share_of_numerator": 0.39960274534347745,
+  "top5pct_share_of_denominator": 0.380436235195668
+ },
+ "ensembles": {
+  "SH": {
+   "graphs": 640,
+   "split_half_correlation": 0.984591440715523,
+   "top5pct_share_median": 0.1916007875925184,
+   "top5pct_share_max": 0.4354685236322073
+  },
+  "SH-route": {
+   "graphs": 128,
+   "split_half_correlation": 0.9568084027022955,
+   "top5pct_share_median": 0.1916279676850715,
+   "top5pct_share_max": 0.31101845065831124
+  },
+  "SH-class": {
+   "graphs": 128,
+   "split_half_correlation": 0.9718162625605979,
+   "top5pct_share_median": 0.19305396926821472,
+   "top5pct_share_max": 0.3733352696896692
+  },
+  "SH-mirror": {
+   "graphs": 128,
+   "split_half_correlation": 0.9426369322705613,
+   "top5pct_share_median": 0.19828064252131766,
+   "top5pct_share_max": 0.3587697634710201
+  },
+  "SH-recip": {
+   "graphs": 128,
+   "split_half_correlation": 0.9830572915552361,
+   "top5pct_share_median": 0.19300547542265822,
+   "top5pct_share_max": 0.4354685236322073
+  }
+ }
+}
