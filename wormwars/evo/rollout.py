@@ -40,6 +40,8 @@ class RolloutResult:
     # relative to each world's starting energy: the per-tick maximum when
     # cfg.world.check_ledger_every_tick is on, else the final residual (T0, D073)
     ledger_rel_error: float = float("nan")
+    # the navigate task's event table (E1): each entry [strains, worlds, targets]
+    events: dict | None = None
 
     def per_strain(self) -> np.ndarray:
         return self.score.mean(axis=1)
@@ -70,8 +72,13 @@ def _play(cfg, iface, brain, world_ids, run_seed, device, combat_stage=0, ticks=
     world.run(ticks)
     food1 = world.fields[:, world.ch.FOOD].sum(dim=(1, 2))
     shape = (n_sub, n_ids)
+    # the score selector (E1): the energy score, or the number of targets reached
+    score = (world.targets_reached.to(torch.float32) if world.navigate else foraging_score(world))
+    events = ({k: v.reshape(n_sub, n_ids, -1) for k, v in world.target_events().items()}
+              if world.navigate else None)
     return {
-        "score": foraging_score(world).reshape(shape).cpu().numpy(),
+        "events": events,
+        "score": score.reshape(shape).cpu().numpy(),
         "energy": world.swarm_energy()[:, 0].reshape(shape).cpu().numpy(),
         "alive": world.n_alive()[:, 0].reshape(shape).cpu().numpy(),
         "eaten": (food0 - food1).reshape(shape).cpu().numpy(),
@@ -93,7 +100,8 @@ def rollout_brain(cfg, iface, brain, world_ids, run_seed, device="cpu", ticks=No
     world_ids = np.asarray(world_ids, dtype=np.int64)
     r = _play(cfg, iface, brain, world_ids, run_seed, device, ticks=ticks)
     return RolloutResult(r["score"], r["energy"], r["alive"], r["eaten"], r["ticks"], r["err"],
-                         pellet_eaten=r["pellet"], food_start=r["food0"], ledger_rel_error=r["err_rel"])
+                         pellet_eaten=r["pellet"], food_start=r["food0"], ledger_rel_error=r["err_rel"],
+                         events=r["events"])
 
 
 def rollout(
@@ -119,7 +127,7 @@ def rollout(
     chunk_worlds = chunk_worlds or cfg.evo.chunk_worlds
     strains_per_chunk = max(1, chunk_worlds // max(n_ids, 1))
 
-    scores, energies, alives, eatens, pellets, foods = [], [], [], [], [], []
+    scores, energies, alives, eatens, pellets, foods, events = [], [], [], [], [], [], []
     worst_err = worst_rel = 0.0
     used_ticks = 0
 
@@ -138,6 +146,7 @@ def rollout(
         eatens.append(r["eaten"])
         pellets.append(r["pellet"])
         foods.append(r["food0"])
+        events.append(r["events"])
         # NaN must not be swallowed: max(0.0, nan) is 0.0 in Python (T0, D073)
         worst_err = _nanmax(worst_err, r["err"])
         worst_rel = _nanmax(worst_rel, r["err_rel"])
@@ -153,6 +162,7 @@ def rollout(
         ledger_rel_error=worst_rel,
         pellet_eaten=np.concatenate(pellets),
         food_start=np.concatenate(foods),
+        events=None if events[0] is None else {k: np.concatenate([e[k] for e in events]) for k in events[0]},
     )
 
 

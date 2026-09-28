@@ -29,6 +29,10 @@ class ScriptedBrain:
         t = lambda a: torch.as_tensor(np.asarray(a), dtype=torch.long, device=self.device)  # noqa: E731
         self.fp, self.fm = t(iface.forward_plus), t(iface.forward_minus)
         self.tp, self.tm = t(iface.turn_plus), t(iface.turn_minus)
+        # the declared collision inputs, for controls that use them (E1): the same current a brain
+        # receives at each signal's first sensor neuron
+        self.collision = {short: int(iface.sensor_neuron[names.index(f"collision_{short}")])
+                          for short in ("front", "front_left", "front_right", "rear_left", "rear_right")}
         self.state = None
 
     def initial_state(self, n_weys: int) -> torch.Tensor:
@@ -37,7 +41,15 @@ class ScriptedBrain:
 
     def step(self, v: torch.Tensor, current: torch.Tensor) -> torch.Tensor:
         left, right = current[..., self.left], current[..., self.right]
-        fwd, turn, self.state = self.policy(left, right, self.state)
+        if getattr(self.policy, "needs_collision", False):
+            collision = {k: current[..., i] for k, i in self.collision.items()}
+            fwd, turn, self.state = self.policy(left, right, self.state, collision=collision)
+        else:
+            fwd, turn, self.state = self.policy(left, right, self.state)
+        return self.command(current, fwd, turn)
+
+    def command(self, current: torch.Tensor, fwd: torch.Tensor, turn: torch.Tensor) -> torch.Tensor:
+        """The read-out neurons' states that make the world's own read-out reproduce (fwd, turn)."""
         out = torch.zeros_like(current)
         a_f = torch.atanh((fwd / self.forward_gain).clamp(-0.999999, 0.999999))
         a_t = torch.atanh((turn / self.turn_gain).clamp(-0.999999, 0.999999))

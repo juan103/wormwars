@@ -147,6 +147,19 @@ class WorldConfig:
     check_ledger_every_tick: bool = False
     food_probe_hold: int = 1
 
+    # --- E1's Task N (docs/E1/DESIGN.md); the defaults leave every earlier task unchanged ---
+    # "forage": the energy score. "navigate": one wey, one swarm; a sensing-only scent source that
+    # moves to the next position in a fixed per-world sequence whenever the head comes within
+    # target_radius of it. The score is the number of targets reached.
+    task: str = "forage"
+    target_sigma: float = 3.0  # the scent: A * exp(-d^2 / 2 sigma^2), truncated at ceil(3 sigma) per axis
+    target_amplitude: float = 1.0  # A: the scent's peak, in field units (then x sense_scale_food)
+    target_radius: float = 1.5  # R: reached when the head is within R of the centre
+    target_separation: float = 8.0  # D: consecutive centres, and the first from the spawn, at least D apart
+    target_max_separation: float = 0.0  # a maximum for consecutive centres; 0 means none
+    target_wall_clearance: float = 3.0  # centres at least this far from the wall ring's inner edge
+    target_sequence_length: int = 64  # centres drawn per world; running out is an error
+
 
 @dataclass
 class MapConfig:

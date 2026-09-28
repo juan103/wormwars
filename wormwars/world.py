@@ -51,6 +51,8 @@ P_BODY_L, P_BODY_R = 8, 9
 N_POINTS = 10
 FOOD_SENSING = ("stereo", "mono")
 FOOD_PROBES = ("real", "constant", "mirrored", "jitter", "hold", "mean", "swapped")
+TASKS = ("forage", "navigate")
+_TARGET_STREAM = 0x5CE27  # the target sequence's own random stream, apart from the map's
 
 
 def gaussian_blur(field: Tensor, sigma: float) -> Tensor:
@@ -241,6 +243,8 @@ class World:
             )
         if wcfg.food_probe not in FOOD_PROBES:
             raise ValueError(f"world.food_probe must be one of {FOOD_PROBES}, got {wcfg.food_probe!r}")
+        if wcfg.task not in TASKS:
+            raise ValueError(f"world.task must be one of {TASKS}, got {wcfg.task!r}")
 
         strain_of = strain_of.to(self.device)
         self.n_worlds, self.n_swarms = int(strain_of.shape[0]), int(strain_of.shape[1])
@@ -259,6 +263,14 @@ class World:
             if swap_sides is None
             else torch.as_tensor(swap_sides, dtype=torch.bool, device=self.device)
         )
+        self.navigate = wcfg.task == "navigate"
+        if self.navigate:
+            if self.n_swarms != 1 or bool((self.swarm_sizes != 1).any()):
+                raise ValueError("the navigate task has one swarm of one wey per world")
+            if wcfg.target_radius > wcfg.target_wall_clearance:
+                raise ValueError("target_radius must not exceed target_wall_clearance")
+            if wcfg.target_separation <= 2 * wcfg.target_radius:
+                raise ValueError("target_separation must exceed 2 x target_radius: consecutive goal discs are disjoint")
         self.assigns = [
             StrainAssignment(strain_of[:, s], self.brains[s].n_strains)
             for s in range(self.n_swarms)
@@ -347,8 +359,16 @@ class World:
         self._points = None  # recomputed whenever pos/heading change
 
         self._build_maps()
-        # the "constant" probe's value: each world's mean food level at tick 0
+        if self.navigate:
+            self._build_targets()
+        # the "constant" probe's value: each world's mean food level at tick 0 (with the starting
+        # scent, in the navigate task)
         self._food_constant = self.fields[:, self.ch.FOOD].mean(dim=(1, 2))
+        if self.navigate:
+            self._food_constant = self._food_constant + self.target_field().mean(dim=(1, 2))
+        for b in self.brains:  # privileged controllers (E1's oracle) see the world; nothing else does
+            if hasattr(b, "attach_world"):
+                b.attach_world(self)
         self._update_body_field()
         self.start_energy_total = self.total_energy().clone()
         LEDGER.worlds(self.n_worlds)  # compute accounting (T0, D068)
@@ -456,6 +476,90 @@ class World:
         # nothing may start inside a wall
         self.pos.clamp_(1.05, self.side - 1.05)
 
+    def _build_targets(self) -> None:
+        """Task N's target sequence: centre k of world w is a function of (run seed, world id, k)
+        only, from a random stream of its own, so the map's draws are unchanged and every strain
+        playing the same world faces the same destinations. Consecutive centres are at least D
+        apart (and at most the declared maximum), the first at least D from the spawn, and every
+        centre keeps the declared clearance from the wall ring."""
+        wcfg = self.cfg.world
+        K, D, dmax = wcfg.target_sequence_length, wcfg.target_separation, wcfg.target_max_separation
+        lo, hi = 1.0 + wcfg.target_wall_clearance, self.side - 1.0 - wcfg.target_wall_clearance
+        if hi <= lo:
+            raise ValueError("the arena is too small for the target wall clearance")
+        spawn = self.pos[:, 0, 0].cpu().numpy().astype(np.float64)
+        centres = np.zeros((self.n_worlds, K, 2), dtype=np.float32)
+        for w in range(self.n_worlds):
+            rng = np.random.default_rng([world_seed(self.run_seed, int(self.world_ids[w])), _TARGET_STREAM])
+            prev = spawn[w]
+            for k in range(K):
+                for _try in range(10_000):
+                    c = rng.uniform(lo, hi, 2)
+                    d = float(np.hypot(*(c - prev)))
+                    if d >= D and (dmax <= 0 or k == 0 or d <= dmax):
+                        break
+                else:
+                    raise ValueError(f"no target position satisfies the geometry (world {self.world_ids[w]}, k={k})")
+                centres[w, k] = c
+                prev = c
+        dev = self.device
+        self.target_centres = torch.from_numpy(centres).to(dev, self.dtype)
+        self.target_index = torch.zeros(self.n_worlds, dtype=torch.long, device=dev)
+        self.targets_reached = torch.zeros(self.n_worlds, dtype=torch.long, device=dev)
+        self._ev_activation = torch.full((self.n_worlds, K), -1, dtype=torch.long, device=dev)
+        self._ev_activation[:, 0] = 0
+        self._ev_reach = torch.full((self.n_worlds, K), -1, dtype=torch.long, device=dev)
+        self._ev_path = torch.zeros(self.n_worlds, K, dtype=torch.float64, device=dev)
+        self._target_overflow = torch.zeros((), dtype=torch.bool, device=dev)
+        yy, xx = torch.meshgrid(torch.arange(self.H, device=dev, dtype=self.dtype) + 0.5,
+                                torch.arange(self.W, device=dev, dtype=self.dtype) + 0.5, indexing="ij")
+        self._grid_x, self._grid_y = xx, yy
+
+    def current_target(self) -> Tensor:
+        """[worlds, 2]: the centre of each world's current target."""
+        return self.target_centres[torch.arange(self.n_worlds, device=self.device), self.target_index]
+
+    def target_field(self) -> Tensor:
+        """[worlds, H, W]: the current target's scent, A exp(-d^2 / 2 sigma^2) at cell centres,
+        zero beyond ceil(3 sigma) cells along either axis (the support of a truncated separable blur,
+        so a square). Sensing-only: it is never written into the food field."""
+        wcfg = self.cfg.world
+        c = self.current_target()
+        dx = self._grid_x.unsqueeze(0) - c[:, 0].view(-1, 1, 1)
+        dy = self._grid_y.unsqueeze(0) - c[:, 1].view(-1, 1, 1)
+        reach = math.ceil(3 * wcfg.target_sigma)
+        inside = (dx.abs() <= reach) & (dy.abs() <= reach)
+        g = wcfg.target_amplitude * torch.exp(-(dx * dx + dy * dy) / (2 * wcfg.target_sigma ** 2))
+        return torch.where(inside, g, torch.zeros_like(g))
+
+    def _advance_targets(self, moved: Tensor) -> None:
+        """After the tick's movement: add the step to the current leg's path, and move every
+        target whose world's head is within R. No host sync: everything stays a tensor."""
+        wcfg, K = self.cfg.world, self.target_centres.shape[1]
+        ar = torch.arange(self.n_worlds, device=self.device)
+        idx = self.target_index
+        self._ev_path[ar, idx] += moved[:, 0, 0].double()
+        head = self.pos[:, 0, 0]
+        reached = (head - self.current_target()).norm(dim=-1) <= wcfg.target_radius
+        self._ev_reach[ar, idx] = torch.where(reached, torch.full_like(idx, self.tick_count), self._ev_reach[ar, idx])
+        nxt = idx + reached.long()
+        self._target_overflow |= (nxt >= K).any()
+        nxt = nxt.clamp_max(K - 1)
+        self._ev_activation[ar, nxt] = torch.where(reached, torch.full_like(idx, self.tick_count + 1),
+                                                   self._ev_activation[ar, nxt])
+        self.targets_reached += reached.long()
+        self.target_index = nxt
+
+    def target_events(self) -> dict[str, np.ndarray]:
+        """The fixed-shape event table, [worlds, targets] each: the tick a target became current
+        (-1: never), the tick it was reached (-1: not reached, the unfinished leg included), the
+        head's path length during the leg, and the target's position."""
+        if bool(self._target_overflow):
+            raise RuntimeError("a world reached every target in its sequence: raise target_sequence_length")
+        c = self.target_centres.cpu().numpy()
+        return {"activation_tick": self._ev_activation.cpu().numpy(), "reach_tick": self._ev_reach.cpu().numpy(),
+                "path_length": self._ev_path.cpu().numpy(), "target_x": c[..., 0], "target_y": c[..., 1]}
+
     # ------------------------------------------------------------- geometry
 
     def sample_points(self) -> Tensor:
@@ -535,6 +639,8 @@ class World:
         field = self.fields[:, ch.FOOD] + self.fields[:, ch.PELLET]
         if wcfg.food_odour_sigma > 0:
             field = gaussian_blur(field, wcfg.food_odour_sigma)
+        if self.navigate:  # the target's scent enters sensing only
+            field = field + self.target_field()
         if wcfg.food_probe == "mirrored":
             x, y = pts[..., 0], pts[..., 1]
             pts = torch.stack((self.W - 1 - x, self.H - 1 - y), dim=-1)
@@ -644,7 +750,7 @@ class World:
             self._food_sample = self._held_food
         else:
             needs_field = wcfg.food_probe in ("mirrored", "jitter") or (
-                wcfg.food_odour_sigma > 0 and wcfg.food_probe != "constant")
+                (wcfg.food_odour_sigma > 0 or self.navigate) and wcfg.food_probe != "constant")
             self._food_sample = self._sensed_food(pts) if needs_field else None
         signals = self._sensor_signals(sampled)
         self.last_signals = signals
@@ -705,6 +811,8 @@ class World:
         moved = (new_pos - self.pos).norm(dim=-1)
         self.pos = new_pos
         self._points = None
+        if self.navigate:
+            self._advance_targets(moved)
 
         # 4. pay for living and moving (capped at remaining energy, so energy never goes negative)
         cost = (wcfg.metabolic_drain + wcfg.move_cost * moved) * alive_f
