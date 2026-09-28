@@ -50,12 +50,12 @@ of the recent past?**
 
 **The test.** It is a scripted stimulus played into each brain, not a game:
 
-| | Ticks 1-100 | Ticks 101-110 | Final tick |
-|---|---|---|---|
-| **Rising** | food held at ¼ of the final level | ramps up | the final level |
-| **Falling** | food held at 1.75 × the final level | ramps down | the same final level |
+| | Ticks 1-100 | Ticks 101-110 |
+|---|---|---|
+| **Rising** | food held at ¼ of the final level | ramps up, reaching the final level on tick 110 |
+| **Falling** | food held at 1.75 × the final level | ramps down, reaching the same final level on tick 110 |
 
-On the last tick the input is exactly the same in both runs. Every other sense is held at the same
+On tick 110, the last step of the ramp, the input is exactly the same in both runs. Every other sense is held at the same
 fixed value throughout. A memoryless brain would give the same turning output at that tick, so any
 difference can only come from the past: the brain "remembers" whether food was recently low or
 high.
@@ -68,10 +68,12 @@ final tick) ÷ (the mean of |steady-state contrast|).
   more strongly to food overall, and N2 does, so a raw difference would partly measure that.
 
 **How to read the values:**
-- **0** means no memory: once the inputs match, the outputs match.
-- **N2's 0.931 (03; 0.924 in 03r)** means the leftover difference is about 93% as large as the
-  difference between being steadily in the two food conditions. The brain is still mostly "in" its
-  past state.
+- **0** means no difference in this read-out, for these two histories, on that tick. It does not
+  rule out history held elsewhere in the network, or shown by other histories.
+- **N2's 0.931 (03; 0.924 in 03r)** means: averaged over genomes, the absolute difference in the
+  final turn output is about 93% of the average absolute contrast after holding the two starting
+  levels for 100 ticks. It is a ratio of averages. It does not say that each brain keeps 93% of
+  its state, and the 100 ticks are not shown to reach equilibrium (Astra, Fable, D092).
 - The ratio is not capped at 1 (D058).
 - N2's high value is not a small denominator: its numerator and its denominator are both larger
   than any ensemble graph's (exploratory, §11).
@@ -93,9 +95,10 @@ rest. The signed turn toward the stronger side is compared with a yardstick: how
 changes when both sides go from no food to the same food, (0, 0) to (b, b), the "common-mode"
 response.
 
-**The number.** P1 = the mean signed directional turn ÷ the mean absolute common-mode turn. High
-means the brain steers by the left-right difference more than it simply reacts to food being
-there.
+**The number.** The signed directional response is half the difference in turn between the two
+mirrored conditions. P1 = that response, averaged over genomes and all 40 ticks, ÷ the mean
+absolute common-mode turn, averaged the same way. A high P1 means the brain steers by the
+left-right difference strongly, relative to how much it simply reacts to food being there.
 
 **What was found:** *not distinctive* in either 03 or 03r. N2's random brains react to food much
 more strongly overall, but their steering by side, relative to that, is not unusual.
@@ -114,7 +117,7 @@ the food information helps even without evolution.
 
 **What was found:**
 - **03:** the registered criterion was not met, with little power.
-- **03r:** the registered label is *reversed*: N2's random brains scored slightly worse with the
+- **03r:** the registered secondary label is *reversed*: N2's random brains scored slightly worse with the
   real signal than with the constant one. It is small and unpredicted. N2's measurement is much
   noisier than the ensembles', and an exploratory noise-aware check gives about p = 0.072 after
   correction. No claim is made about its cause ([03r's README](../03r-replication/README.md)).
@@ -125,15 +128,18 @@ the food information helps even without evolution.
   behaviours the worm, or an evolved wey, is shown to use.
 - **P1 and P4 are read from the raw turn output under scripted inputs,** not from movement in a
   world. Nothing shows the memory is useful.
-- **The mechanism behind P4 is unknown:** slow time constants reinforced by recurrent loops,
-  gap-junction coupling, or particular hub neurons are all open. Finding out is the next Track B
-  experiment: delete neurons and connections, compare gap junctions with chemical synapses, and
-  try inputs other than food ([`ROADMAP.md`](../../ROADMAP.md#03-and-03r)).
+- **What produces P4 is not known.** The readings 03 cannot yet tell apart ([`RESULTS.md`](RESULTS.md)):
+  slow relaxation; hysteresis or multistability; nonlinear saturation; and a steady-state contrast
+  measured after a finite 100-tick warm-up rather than at a verified equilibrium. Finding out is
+  the next Track B experiment: delete neurons and connections, compare gap junctions with chemical
+  synapses, and try inputs other than food ([`ROADMAP.md`](../../ROADMAP.md#03-and-03r)).
 - **The null ensembles move weights as well as wiring,** so the result is not a pure wiring
   effect.
-- **The link to 02b:** 02's evolved champions had developed a slow memory of the recent food level
-  ([02b](../02b-champion-analysis/README.md)). 03 finds N2's random brains already lean that way
-  before any evolution.
+- **02b is related, but not the same measurement.** Selection made 02's champions' turning
+  history-dependent ([02b](../02b-champion-analysis/README.md)). That does not show that N2's random
+  brains start where selection took the champions: the aggregations and stimulus banks differ, and
+  the unselected shuffles here already sit at 0.75-0.84 ([`RESULTS.md`](RESULTS.md), "Compared
+  with 02b's evolved champions").
 
 ## Design
 

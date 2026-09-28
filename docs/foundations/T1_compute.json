@@ -1,0 +1,239 @@
+{
+ "note": "Aggregated from the local compute records (runs/*/compute.json, not committed). Seconds are synchronised wall-clock seconds per attempt; CPU attempts are included in the totals and listed. In the reported runs the replay-mode children and profile workers counted under 'other'; code from dde6dd9 counts them under 'measure'. Missing: the first-round reference (1598d56), whose record was deleted when its folder was cleared (its log gives 4 882 s: 2 244 s default, 2 638 s replay mode). Scratch exploration before the committed scripts was not counted.",
+ "sources": {
+  "profile (both runs), main tree": {
+   "path": "runs/t1-profile/compute.json",
+   "totals": {
+    "worlds_built": 437216,
+    "world_ticks": 82596160,
+    "neural_updates": 23125534720,
+    "seconds_timed": 2131.0822247997858
+   },
+   "attempts": [
+    {
+     "script": "t1_profile",
+     "argv": [
+      "--quick",
+      "--result",
+      "C:/Users/gonza/AppData/Local/Temp/claude/D--Claude-random-wormWars/92bd8bc0-b178-40a2-a7e8-aba53629684d/scratchpad/t1_quick.json"
+     ],
+     "status": "completed",
+     "git_commit": "98dc4f75b123ba68a1b185ecdd5cd093725ea4a5"
+    },
+    {
+     "script": "t1_profile",
+     "argv": [
+      "--quick",
+      "--result",
+      "t1_quick.json"
+     ],
+     "status": "completed",
+     "git_commit": "98dc4f75b123ba68a1b185ecdd5cd093725ea4a5"
+    },
+    {
+     "script": "t1_profile",
+     "argv": [
+      "--quick",
+      "--result",
+      "t1_quick.json"
+     ],
+     "status": "completed",
+     "git_commit": "af64b690f615aa2c1302d0f17e388590e683c506"
+    },
+    {
+     "script": "t1_profile",
+     "argv": [],
+     "status": "completed",
+     "git_commit": "e8faf2677574a2d4ae035c888b5c6ae5070aff60"
+    },
+    {
+     "script": "t1_profile",
+     "argv": [],
+     "status": "completed",
+     "git_commit": "101499cce70d3e6dbeabfe2e14be1d250be276e8"
+    }
+   ]
+  },
+  "equivalence round 1: compare and published, t1-padding worktree": {
+   "path": "sibling worktree: wormWars-t1/runs/t1-equivalence/compute.json",
+   "totals": {
+    "worlds_built": 105856,
+    "world_ticks": 23500800,
+    "neural_updates": 17914984000,
+    "neural_padding": 4105318720,
+    "seconds_timed": 6718.995695699938
+   },
+   "attempts": [
+    {
+     "script": "t1_equivalence",
+     "argv": [
+      "--compare",
+      "--runs02",
+      "D:/Claude/random/wormWars/runs/exp02-screening"
+     ],
+     "status": "completed",
+     "git_commit": "e3694a0f6d7640dd624d181d8892b5d8582c6aae"
+    },
+    {
+     "script": "t1_equivalence",
+     "argv": [
+      "--published",
+      "--runs02",
+      "D:/Claude/random/wormWars/runs/exp02-screening"
+     ],
+     "status": "completed",
+     "git_commit": "e3694a0f6d7640dd624d181d8892b5d8582c6aae"
+    }
+   ]
+  },
+  "equivalence round 2: references (CUDA and CPU), t1-ref2 worktree": {
+   "path": "sibling worktree: wormWars-t1-ref/runs/t1-equivalence/compute.json",
+   "totals": {
+    "worlds_built": 158944,
+    "world_ticks": 34227200,
+    "neural_updates": 14370759680,
+    "neural_padding": 0,
+    "seconds_timed": 6064.199762000004
+   },
+   "attempts": [
+    {
+     "script": "t1_equivalence",
+     "argv": [
+      "--save-reference",
+      "--runs02",
+      "D:/Claude/random/wormWars/runs/exp02-screening"
+     ],
+     "status": "completed",
+     "git_commit": "ffeb541422f1012735f02bc032e88c081aa175f3"
+    },
+    {
+     "script": "t1_equivalence",
+     "argv": [
+      "--save-reference",
+      "--device",
+      "cpu",
+      "--quick",
+      "--runs02",
+      "D:/Claude/random/wormWars/runs/exp02-screening"
+     ],
+     "status": "completed",
+     "git_commit": "ffeb541422f1012735f02bc032e88c081aa175f3"
+    }
+   ]
+  },
+  "equivalence round 2: compare (CUDA and CPU) and published, main tree": {
+   "path": "runs/t1-equivalence/compute.json",
+   "totals": {
+    "worlds_built": 268512,
+    "world_ticks": 58188800,
+    "neural_updates": 38792833280,
+    "neural_padding": 9086649600,
+    "seconds_timed": 8721.094898099778
+   },
+   "attempts": [
+    {
+     "script": "t1_equivalence",
+     "argv": [
+      "--compare",
+      "--runs02",
+      "D:/Claude/random/wormWars/runs/exp02-screening"
+     ],
+     "status": "completed",
+     "git_commit": "3c12e7c8a0e291bd65b23b0d36367c28916b64e8"
+    },
+    {
+     "script": "t1_equivalence",
+     "argv": [
+      "--compare",
+      "--device",
+      "cpu",
+      "--quick",
+      "--runs02",
+      "D:/Claude/random/wormWars/runs/exp02-screening"
+     ],
+     "status": "completed",
+     "git_commit": "3c12e7c8a0e291bd65b23b0d36367c28916b64e8"
+    },
+    {
+     "script": "t1_equivalence",
+     "argv": [
+      "--published",
+      "--runs02",
+      "D:/Claude/random/wormWars/runs/exp02-screening"
+     ],
+     "status": "completed",
+     "git_commit": "3c12e7c8a0e291bd65b23b0d36367c28916b64e8"
+    }
+   ]
+  },
+  "diagnostics (all runs), main tree": {
+   "path": "runs/t1-diagnostics/compute.json",
+   "totals": {
+    "worlds_built": 64784,
+    "world_ticks": 10044960,
+    "neural_updates": 6136662720,
+    "neural_padding": 305574208,
+    "seconds_timed": 1857.3070439000148
+   },
+   "attempts": [
+    {
+     "script": "t1_diagnostics",
+     "argv": [
+      "--quick",
+      "--result",
+      "C:/Users/gonza/AppData/Local/Temp/claude/D--Claude-random-wormWars/92bd8bc0-b178-40a2-a7e8-aba53629684d/scratchpad/diag_quick.json"
+     ],
+     "status": "completed",
+     "git_commit": "c25ffb4d19479e23d1f035e43eca475e83c828f7"
+    },
+    {
+     "script": "t1_diagnostics",
+     "argv": [],
+     "status": "completed",
+     "git_commit": "3c12e7c8a0e291bd65b23b0d36367c28916b64e8"
+    },
+    {
+     "script": "t1_diagnostics",
+     "argv": [
+      "--quick",
+      "--result",
+      "C:/Users/gonza/AppData/Local/Temp/claude/D--Claude-random-wormWars/92bd8bc0-b178-40a2-a7e8-aba53629684d/scratchpad/diag_q2.json"
+     ],
+     "status": "completed",
+     "git_commit": "3c12e7c8a0e291bd65b23b0d36367c28916b64e8"
+    },
+    {
+     "script": "t1_diagnostics",
+     "argv": [],
+     "status": "completed",
+     "git_commit": "2c68d4444817e37a71fdcd104a48adf0682fdb7a"
+    },
+    {
+     "script": "t1_diagnostics",
+     "argv": [],
+     "status": "completed",
+     "git_commit": "27cb0d1db768d56d0addc51d107deb8f472a532e"
+    },
+    {
+     "script": "t1_diagnostics",
+     "argv": [
+      "--quick",
+      "--result",
+      "C:/Users/gonza/AppData/Local/Temp/claude/D--Claude-random-wormWars/92bd8bc0-b178-40a2-a7e8-aba53629684d/scratchpad/dq3.json"
+     ],
+     "status": "completed",
+     "git_commit": "f939ad20b11b40584f01094faa03b33eaa10b3c8"
+    },
+    {
+     "script": "t1_diagnostics",
+     "argv": [],
+     "status": "completed",
+     "git_commit": "dde6dd92c8a2fef08f354888f558bedf0d99ef9c"
+    }
+   ]
+  }
+ },
+ "recorded_seconds": 25492.67962449952,
+ "recorded_hours": 7.081299895694311,
+ "with_deleted_first_reference_hours": 8.437411006805423
+}

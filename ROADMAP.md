@@ -18,9 +18,10 @@
     tick's wall time. On a Task N-like shape (one wey per world) the world's share is about 70%,
     so batching more worlds together pays much more there;
   - **single-strain padding** is implemented. Its declared equivalence test failed at 16 rows per
-    strain and at 1 row. It is kept as a mitigation of the batch-of-one path, with no measurable
-    cost, and changes no published evaluation. T1 closes by a dated amendment, not by passing its
-    gate (D091, under review);
+    strain and at 1 row. It is kept as a mitigation of the batch-of-one path, with little measured
+    overhead, and it changes no published evaluation;
+  - **T1's engineering is closed by a dated amendment,** not by passing its gate (D092). This
+    authorises a bounded E1 pilot;
   - **T1's budget gate moves to E1's pilot** (D086): E1 measures Task N's own throughput, and
     04a's and E2's budgets are fitted to it.
 - **Documentation for outsiders:** every experiment folder now has a README with its question,

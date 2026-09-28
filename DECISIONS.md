@@ -2757,3 +2757,65 @@ wall-clock hours.
 - nine topics were added (c-elegans, connectome, neuroevolution, computational-neuroscience,
   artificial-life, pytorch, open-science, preregistration, reproducibility);
 - main's README links the roadmap under its intro (`8e125b2`).
+
+## D092 — T1 closed by amendment, after the confirmation review; 03's signals text corrected
+
+D091 went to Astra 6 and Fable 5.1 (`docs/reviews/20260928-170335-T1-confirm/`).
+- **Both answered "T1: not yet".**
+  - Fable: documentation only. "No rerun or further review round is needed if these are applied."
+  - Astra: closure by dated amendment "is appropriate after the corrections above".
+- **Both confirmed the substance:**
+  - padding kept as a default-on mitigation;
+  - the composition tuple;
+  - composition-specific results for E1;
+  - the reference engine `ffeb541` as an honest pre-change reference. Astra verified that it
+    differs from `1598d56` only in the three disclosed files.
+
+**Fixed:**
+- **The account of the 8 failures (both)** had put them all at 16 rows and 1 row. The partition
+  is:
+  - 2 score and energy outputs at 16 rows;
+  - 4 brain-state outputs at 1 row;
+  - 2 `eaten` outputs at 160 and 20 rows (02-T1 on 8 worlds and on 1 world).
+  The amendment's text now says so.
+- **Explanations now rest on committed diagnostics** (`T1_diagnostics.json`, clean at `dde6dd9`):
+  - **at 1 row,** a batch of 2 differs from a batch of 4, the brain test's own comparison (Astra);
+  - **on 1 world,** the final food fields are bit-identical for all 32 strains, and the sums
+    differ for 2 (both). On 8 worlds: identical fields, and different sums for 22.
+  - **"2-15 worlds" becomes the tested counts:** random-field sums differ over 2, 4, 8, 12 and 15
+    worlds, and not over 1, 16, 20, 32 and 64 (both).
+- **The checker** now requires matching, non-empty output inventories. Its pairing guard can fail,
+  and tests go through `compare()` itself (Astra, Fable). The v2 run predates the check; Astra
+  inspected its inventories and found them complete.
+- **A failed child process** still hands over its partial counts (`accounting.child_ledger`,
+  `run_counted_child`, with a test) (Astra).
+- **Compute:** `T1_compute.json` commits the aggregation: 7.08 h recorded, or 8.44 h with the
+  deleted first-round reference. The reported runs' child counts sat under "other" (both).
+- **Wording:**
+  - the CPU leg ran in quick mode, with 20-30 tick rollouts (both);
+  - brain states at 16 rows were already equal against a batch of 4 before padding (Fable);
+  - padding's cost is "little measured overhead", 0.95-1.00 timed interleaved (Astra);
+  - the implementation comments in `brain.py`, `config.py` and `rollout.py` match the amended
+    contract (Astra);
+  - `REPRODUCIBILITY.md`'s old "none at 16" is qualified (against a batch of 4) (Fable);
+  - a dated pointer to the amendment sits under T1.md §3 (Fable).
+- **E1 guidance:** probes run at 1 row, so fix and record strains per probe batch, and never treat
+  probe results from different batch sizes as exactly comparable (Fable).
+- **Declined:** a warning when a file's padding setting overrides a supplied config's. It would
+  fire on every published-genome load, and the behaviour is documented.
+
+**T1 is closed by the amendment in T1.md §7.** Its gate was not met, and it closes by dated
+amendment, as both reviewers required. The bounded E1 pilot is authorised; the measured budget
+gate stays with E1 (D086).
+
+**03's plain-words signals section (the owner's request) is corrected** (both reviewers).
+- **P4's reading.** "The brain is still mostly in its past state" over-read a ratio of averages.
+  It now says what the ratio is, and that 0 is scoped to this read-out, these histories and that
+  tick.
+- **P1's averaging:** half the mirrored difference, over genomes and all 40 ticks. "Strongly,
+  relative to" replaces "more than".
+- **The stimulus table's final step is tick 110.**
+- **Mechanisms:** RESULTS.md's own list of open readings replaces candidates the record did not
+  contain.
+- **The 02b link** no longer suggests N2 "starts where selection took the champions". RESULTS.md
+  says the comparison does not show this.

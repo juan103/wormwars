@@ -30,7 +30,7 @@ close the result comes depends on where you run it.
     only while every chunk holds more than one strain.** A chunk of a *single* strain behaves
     consistently with a different GPU kernel path: a direct `torch.bmm` test shows a batch of one
     strain differing by about 5e-5 from the same strain in a larger batch (at 64 and 320 rows per
-    strain; none at 16). In the clean rerun (`docs/foundations/T0_gpu.json`, `bcee5a8`),
+    strain; none at 16, against a batch of 4. Against a batch of 32, 16 rows differ too: see below). In the clean rerun (`docs/foundations/T0_gpu.json`, `bcee5a8`),
     single-strain chunks gave these per-world differences, amplified by the chaotic dynamics:
     - at 200 ticks: 3 of 512 worlds (random genomes) and 2-8 of 128 (02's champions) exceeded
       1e-4, with a maximum of 0.027;
@@ -51,18 +51,21 @@ close the result comes depends on where you run it.
     - **`bmm` at 1 and 16 rows per strain** (worlds × weys): batches of 1-16 strains differ from a
       batch of 32. At 8 and 1 280 rows none differs. At 20, 32, 64, 160 and 320 only a batch of one
       differs. (D090's version said "only a batch of one" at 8 and 1 280 rows; that was wrong.)
-    - **Per-world sums over a few worlds.** A world's food total, summed in a batch of 2-15 worlds,
-      can differ in the last bits from the same sum in a batch of 2 048. This was seen on random
-      fields and on the final food fields of the `eaten` report, not on the sparse starting maps.
-      The fields themselves were bit-identical: it is a reporting effect.
+    - **Per-world sums over a few worlds.** A world's food total can differ in the last bits
+      depending on the batch it is summed in. On random fields, sums over 2, 4, 8, 12 and 15 worlds
+      differed from the same sums inside 2 048 worlds, while 1, 16, 20, 32 and 64 did not. The
+      final food sums behind the `eaten` report differed on 8 worlds and on 1 world. The fields
+      themselves were bit-identical, so it is a reporting effect. The sparse starting maps showed
+      none.
     - **The CPU:** among the shapes tested, a brain batch of one differed from its batch member only
       at 5 rows. The CPU rollouts tested matched exactly.
   - **Single-strain padding (T1).** `BrainConfig.pad_single_strain` makes `Brain.step` compute a
     single strain as two identical copies. It mitigates the batch-of-one path; it does not make
     results independent of composition:
     - with it on, a single strain's score and energy equalled its in-batch values in every tested
-      rollout shape except 16 rows per strain. Its brain states did at every tested row count
-      except 1 (`docs/foundations/T1.md` §7);
+      rollout shape except 16 rows per strain. Its brain states equalled a batch of 4 at every
+      tested row count except 1 (at 16 rows they already did before padding;
+      `docs/foundations/T1.md` §7);
     - it is on by default for new configs;
     - it is off for anything saved before T1: genome files and bundles without the field, and 02's
       config builder. A supplied config does not override a file's setting. So published results

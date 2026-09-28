@@ -57,10 +57,11 @@ Only unselected random brains were measured, before any evolution.
 earlier difference is still in the turning output.
 - **In plain words:** each brain gets food held low for 100 ticks and then ramped up, or held high
   and ramped down, to the same final level. On the last tick the input is identical, so a brain
-  with no memory would turn the same way in both runs. P4 is the leftover difference, divided by
-  how differently the brain turns while it is actually held low or high.
-- **Reading the value:** 0 means no memory. N2's 0.93 means the brain is still mostly "in" its
-  past state.
+  with no memory of the two histories would turn the same way in both runs. P4 is the leftover
+  difference, divided by how differently the brain turns while it is held low or high.
+- **Reading the value:** 0 means no leftover difference in this read-out. N2's 0.93 means that,
+  averaged over genomes, the leftover difference is about 93% of that yardstick. It is a ratio of
+  averages, not the share of each brain's state that is kept.
 - A fuller explanation of all three signals, and of what they do not show:
   [03's README](experiments/03-generation0/README.md#what-the-three-signals-measure-in-plain-words).
 - **03:** N2 is above all 128 graphs in four ensembles and 127 of 128 in SH-route, with a
