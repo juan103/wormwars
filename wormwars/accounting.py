@@ -47,7 +47,9 @@ import torch
 
 CATEGORIES = ("selection", "holdout", "snapshot", "final", "calibration", "probe", "measure",
               "tuning", "other")
-COUNT_FIELDS = ("worlds_built", "world_ticks", "neural_updates")
+# neural_updates counts computed work, padding included (T0.md); neural_padding is the padded
+# share (T1, D086), so neural_updates - neural_padding is comparable with records before T1
+COUNT_FIELDS = ("worlds_built", "world_ticks", "neural_updates", "neural_padding")
 TIME_UNIT = "synchronised wall-clock seconds per category (not GPU kernel time)"
 NEURAL_UNIT = "strains x batch x substeps network updates (network size not included)"
 
@@ -57,6 +59,7 @@ class Counts:
     worlds_built: int = 0
     world_ticks: int = 0
     neural_updates: int = 0
+    neural_padding: int = 0
     seconds: float = 0.0
 
 
@@ -91,9 +94,11 @@ class Ledger:
         if self.enabled:
             self._bucket().world_ticks += int(n_worlds)
 
-    def neural(self, n: int) -> None:
+    def neural(self, n: int, padding: int = 0) -> None:
         if self.enabled:
-            self._bucket().neural_updates += int(n)
+            b = self._bucket()
+            b.neural_updates += int(n)
+            b.neural_padding += int(padding)
 
     # ---- categories
     def _close_segment(self, now: float) -> None:
@@ -171,6 +176,30 @@ def counted(name: str):
                 return fn(*a, **k)
         return inner
     return wrap
+
+
+# ---- subprocesses (D091): a child counts its own work; the parent merges the counts, not the
+# seconds, because the parent's own wall clock already covers the time it waited
+CHILD_LEDGER_ENV = "WORMWARS_CHILD_LEDGER"
+
+
+def write_child_ledger() -> Path | None:
+    """In a child process, write this ledger's counts where the parent asked (an environment
+    variable); a no-op when the variable is not set."""
+    path = os.environ.get(CHILD_LEDGER_ENV)
+    if not path:
+        return None
+    out = Path(path)
+    out.write_text(json.dumps(LEDGER.snapshot()), encoding="utf-8")
+    return out
+
+
+def merge_child_ledger(path) -> None:
+    """In the parent, add a child's counts to this ledger, category by category."""
+    for name, row in json.loads(Path(path).read_text(encoding="utf-8")).items():
+        c = LEDGER.counts.setdefault(name, Counts())
+        for f in COUNT_FIELDS:
+            setattr(c, f, getattr(c, f) + int(row.get(f, 0)))
 
 
 def totals(categories: dict) -> dict:

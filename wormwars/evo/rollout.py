@@ -116,7 +116,7 @@ def rollout(
     chunk_worlds = chunk_worlds or cfg.evo.chunk_worlds
     strains_per_chunk = max(1, chunk_worlds // max(n_ids, 1))
 
-    scores, energies, alives, eatens, pellets = [], [], [], [], []
+    scores, energies, alives, eatens, pellets, foods = [], [], [], [], [], []
     worst_err = worst_rel = 0.0
     used_ticks = 0
 
@@ -134,6 +134,7 @@ def rollout(
         alives.append(r["alive"])
         eatens.append(r["eaten"])
         pellets.append(r["pellet"])
+        foods.append(r["food0"])
         # NaN must not be swallowed: max(0.0, nan) is 0.0 in Python (T0, D073)
         worst_err = _nanmax(worst_err, r["err"])
         worst_rel = _nanmax(worst_rel, r["err_rel"])
@@ -148,6 +149,7 @@ def rollout(
         ledger_error=worst_err,
         ledger_rel_error=worst_rel,
         pellet_eaten=np.concatenate(pellets),
+        food_start=np.concatenate(foods),
     )
 
 
