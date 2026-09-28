@@ -1,4 +1,4 @@
-# E1: the positive control for navigation. Pre-registration (v5)
+# E1: the positive control for navigation. Pre-registration (v6)
 
 **Status:**
 - Written 2026-09-28. Astra 6 and Fable 5.1 reviewed each version below, and every change they
@@ -6,7 +6,9 @@
   - v1 (`f83bd19`, `docs/reviews/20260928-181005-E1-prereg/`): "revise" (D095);
   - v2 (`a6437be`, `docs/reviews/20260928-183315-E1-prereg-confirm/`): "revise" (D096);
   - v3 (`f63cdaa`, `docs/reviews/20260928-185310-E1-prereg-final/`): "revise" (D097);
-  - v4 (`a84d30f`, `docs/reviews/20260928-191032-E1-prereg-v4/`): "revise" (D098).
+  - v4 (`a84d30f`, `docs/reviews/20260928-191032-E1-prereg-v4/`): "revise" (D098);
+  - v5 (`0e13e49`, `docs/reviews/20260928-192725-E1-prereg-v5/`): Astra "ready to bind"; Fable
+    "revise" on text only, needing no further round (D099).
 - **The formal pilot and gate come after this registration, and after its public push,** with the
   earlier exposure disclosed in §7. It is the first time in this series that a registration is
   public before its formal measurements.
@@ -38,12 +40,13 @@ where the two differ.
     - a stage that does not start because the cap is already spent;
     - the once-only refusals, and the committed-freeze check when the freeze is untracked;
     - the pilot's refusal to run over a freeze;
-    - the atomic checkpoint;
-    - the same-code check in a real git repository, accepting an output-only commit and refusing a
-      code change;
+  - as functions, in the same file: the atomic checkpoint; the same-code check in a real git
+    repository, accepting an output-only commit and refusing a code change; and the pin refusals.
+    No command test runs with the formal guards on; their wiring in `cmd_gate` is exercised by the
+    guarded smoke run, on the passing path only;
   - as functions (`tests/test_e1_script.py`): the freeze re-derivation, including malformed
-    supporting measurements; the code and environment comparisons; the CPU, GPU, dirty, unpushed
-    and pin refusals; the cap clock; markers, LF writing and smoke rebinding.
+    supporting measurements; the code and environment comparisons; the CPU, GPU, dirty and unpushed
+    refusals; the cap clock; markers, LF writing and smoke rebinding.
 - **Not exercised by any test:**
   - the live `git fetch` and push check, and the GPU preflight. These run in the guarded smoke run
     on the binding commit (§5);

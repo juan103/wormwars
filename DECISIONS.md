@@ -3039,3 +3039,33 @@ Astra 6 and Fable 5.1 checked v4 (`a84d30f`; `docs/reviews/20260928-191032-E1-pr
 
 **Before binding** (Fable): the committed-freeze check's two git commands are run by hand on a
 tracked file, with an absolute path, and the full suite runs on the binding commit.
+
+## D099 — E1's pre-registration v6: bound after the fifth review
+
+Astra 6 and Fable 5.1 checked v5 (`0e13e49`; `docs/reviews/20260928-192725-E1-prereg-v5/`).
+- **Astra: "E1 pre-registration: ready to bind".** All four of its v4 points were resolved. Its own
+  injections into `gate_rules`, `secondary` and a last-arm overrun kept all 16 arms, with the
+  correct incomplete outcome.
+- **Fable: "revise", on one text point,** and "I do not need another round for the must-fix item if
+  the text is changed as described." It is applied, so both agree.
+
+**Correction to D098, dated 2026-09-28** (D098 is kept as written). Its "New command-level tests"
+listed two tests that call functions directly: the atomic checkpoint and the same-code check in a
+real git repository. The pre-registration also attributed the pin refusals to the wrong file. v6
+lists all three as function-level tests in `tests/test_e1_commands.py`, and states that no command
+test runs with the formal guards on. Their wiring in `cmd_gate` is exercised by the guarded smoke
+run, on the passing path only.
+
+**Also, from Fable's non-blocking points:**
+- the cap-after-analysis test now asserts that no rule result is in the record;
+- the not-completed record is written atomically;
+- the test file's docstring is current.
+
+**The binding sequence:**
+1. the full suite and the hygiene and identity checks on this commit;
+2. the push;
+3. one guarded smoke run on the pushed commit. It must complete all 16 gate arms, which checks the
+   atomic replace on this disk (Fable);
+4. the pilot.
+
+`experiments/E1-navigation/` is on a local drive and not under a sync tool.

@@ -1,7 +1,11 @@
-"""E1's stage commands end to end, with a fake rollout (D097): the gate's outcome paths (completed,
-the cap reached during the arms or after the analysis, a crash), the once-only refusals, the
-committed-freeze check, and the pilot's refusal to run twice. Both reviewers asked for tests through
-`cmd_gate` itself, not its helpers."""
+"""E1's stage commands end to end, with a fake rollout and ids outside E1's ranges (D097-D099).
+
+Through `cmd_gate` and `cmd_pilot` themselves: the gate completed, the cap reached during the arms or
+after the analysis, a crash in the arms or in the analysis, an interrupt, a stage that does not start
+because the cap is spent, the once-only refusals, the committed-freeze check, and the pilot's refusal
+to run over a freeze. As functions, in this file: the atomic checkpoint, the same-code check in a
+real git repository, and the pin refusals. Both reviewers asked for tests through the commands, not
+only their helpers."""
 
 from __future__ import annotations
 
@@ -145,6 +149,7 @@ def test_the_cap_reached_during_the_analysis_is_not_a_pass(tmp_path, monkeypatch
     doc = _read(m)
     assert doc["outcome"] == "E1 positive control: not completed (the registered cap was reached)"
     assert "navigator" in doc["per_world_counts"]
+    assert "rules" not in doc and "failed_rules" not in doc  # never a rule's result (Fable, D099)
 
 
 def test_a_gate_with_a_result_or_a_marker_does_not_run_again(tmp_path, monkeypatch):

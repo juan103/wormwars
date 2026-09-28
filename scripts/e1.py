@@ -588,10 +588,13 @@ def not_completed(result: dict, counts: dict, events: dict, ids, error: str, t0:
     """The gate did not complete: the cap was reached, or the run stopped (an exception or an
     interrupt). Every completed arm's counts and events are kept (Astra, Fable, D096, D097). The gate
     worlds are spent either way."""
+    import os
     result.update(outcome=OUTCOME_NOT_COMPLETED[reason], error=error,
                   arms_completed=list(counts), per_world_counts={k: v.astype(int).tolist() for k, v in counts.items()},
                   events_file=GATE_EVENTS.name, seconds=time.perf_counter() - t0)
-    write_json(GATE_RESULT, result)
+    tmp = GATE_RESULT.with_name(GATE_RESULT.stem + ".tmp.json")  # atomic: a second interrupt cannot truncate it
+    write_json(tmp, result)
+    os.replace(tmp, GATE_RESULT)
     save_events(events, ids)
     if reraise is not None:
         raise reraise
