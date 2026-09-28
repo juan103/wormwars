@@ -2646,3 +2646,46 @@ Confirmation pass on D088's fixes (`docs/reviews/20260928-105220-docs-confirm/`)
 
 **Consensus:** Astra approves. Fable's three conditions are two fixes, done here, and the profile
 rerun, which comes before the push to main.
+
+## D090 — T1's results: the profile committed; padding's claim fails as made, and holds narrowed
+
+`docs/foundations/T1.md` §6 has the detail.
+
+**T1.1: the profile.** `T1_profile.json` is a clean run at `101499c`, with 5 repeats, the
+profiler last and the current step re-timed.
+- It agrees with the exploratory numbers.
+- **On the Task N proxy (one wey), the world's fixed per-tick cost dominates** (a share of 0.70).
+  Batching 8 runs gives ×4.2 there, against ×1.36 at best on 02's task T1.
+- **Single-strain checkpoints** take about a quarter of a short run.
+
+**T1.2: the class E test, as declared.** The reference comes from the pre-change commit
+`1598d56`; the comparison is at `e3694a0`.
+- **Switch off:** 188 of 188 outputs equal the pre-change engine, in default and `replay_mode`.
+  All 388 of 02's stored hold-outs reproduce exactly (`T1_equivalence_published.json`).
+- **Switch on, multi-strain:** 112 of 114 equal. The 2 failures are the test's own error: a
+  chunking of 3 leaves a single-strain remainder. Rerun, it equals the batch. The script now
+  classifies such remainders.
+- **Switch on, single strain equal to its batch:** 66 of 74. The 8 failures are diagnosed:
+  - **`bmm` at 1 and 16 rows per strain depends on the strain count,** not only on one against
+    many. The pre-change reference shows it too: 2 strains per chunk against 32, at 16 rows,
+    differ in 153 of 512 values. This contradicts D082's "two or more agree", which holds as
+    tested only at 8 rows and at 20 or more.
+  - **Reductions over fewer than 16 worlds** differ in the last bits (`eaten`). Score and energy
+    were equal there.
+- **By the rule declared in advance, the general claim fails, and it is not reclassified.** What
+  holds, as tested: with the switch on, a single strain's score and energy equal its in-batch
+  values at 20 or more rows per strain. That covers 02's checkpoints and hold-outs.
+- **The CPU** also has a single-strain path (1.2e-7), and padding closes it. §4's premise that
+  the CPU is unaffected was wrong.
+- The suite passes on the merged branch (see the commit).
+
+**Documents updated:** `REPRODUCIBILITY.md` (the chunking section) and T0.md's amendment (a
+follow-up note).
+
+**For review (Astra 6, Fable 5.1):**
+1. adopt padding, on by default for new work, with the narrowed claim;
+2. amend the contract: a composition is strains per chunk × rows per strain × worlds per chunk,
+   and equality across compositions is claimed only as tested;
+3. E1 and 04a checkpoints use at least 20 rows per strain, or accept composition-specific
+   results. Row padding is not proposed;
+4. whether T1's engineering closes.

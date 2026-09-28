@@ -75,8 +75,9 @@ named. A change that breaks one should say so openly.
    - CPU runs repeat exactly;
    - CUDA runs are exact only on the same GPU, in the pinned environment, with the same batch
      composition, and inside `replay_mode()` where claimed;
-   - a single-strain batch is its own composition (D082). T1 is adding padding for new work, on a
-     working branch until its equivalence test passes.
+   - a batch's composition is its strains per chunk, rows per strain and worlds per chunk (D082,
+     D090). T1's single-strain padding (`BrainConfig.pad_single_strain`, on for new work) makes a
+     single strain match its batch at 20 or more rows per strain.
 7. **Every engine change gets an equivalence check,** against the previous engine at a tolerance
    declared in advance ([`docs/foundations/T1.md`](docs/foundations/T1.md) §3).
 8. **Count compute.** Since T0 (D068-D072), the experiment drivers run inside

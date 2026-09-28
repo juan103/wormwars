@@ -43,6 +43,23 @@ close the result comes depends on where you run it.
   - So a genome evaluated alone (a champion's hold-out) can differ slightly from the same genome
     evaluated inside a population batch. Historical replays match exactly because they repeat the
     original single-strain evaluation.
+  - **Extended 2026-09-28 (T1, D090):**
+    - **Small row counts.** At 1 and 16 rows per strain (worlds × weys), `bmm` results depend on
+      the number of strains in the batch, not only on one strain against many: batches of 2-16
+      differ from a batch of 32. At 8, 20, 64, 160, 320 and 1 280 rows, only a batch of one
+      differed.
+    - **Reductions over fewer than 16 worlds** (a world's food total, for example) can differ in
+      the last bits from the same worlds summed inside a larger batch.
+    - **The CPU has a single-strain path too:** a brain batch of one differed from its batch
+      member by 1.2e-7 after three steps at 5 rows. The rollouts tested matched exactly.
+  - **Single-strain padding (T1).** `BrainConfig.pad_single_strain` makes `Brain.step` compute a
+    single strain as two identical copies:
+    - with it on, a single strain's score and energy equal its in-batch values at 20 or more rows
+      per strain;
+    - it is on by default for new configs;
+    - it is off for anything saved before T1: genome files and bundles without the field, and
+      02's config builder. So published results replay unchanged; all 388 of 02's hold-outs were
+      checked with it off. With it on, none of them changed.
 - **Everything on the CPU.** CPU rollouts with the same seeds reproduce bit for bit.
 
 ## What is not exactly reproducible by default, and why
