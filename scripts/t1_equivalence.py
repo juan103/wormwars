@@ -206,15 +206,20 @@ def single_strain_pairs(keys, desc) -> list[tuple[str, str, int]]:
     """(single-strain key, multi-strain reference key, strains) for every single-strain output."""
     pairs = []
     for k in keys:
-        case, field = k.rsplit("/", 1)
-        if case.startswith("brain/"):
-            if case.endswith("/alone"):
-                pairs.append((k, case[: -len("alone")] + "batch4", 4))
+        if k.startswith("brain/"):  # brain keys carry no field: brain/B{rows}/{variant}/{alone|batch4}
+            if k.endswith("/alone"):
+                pairs.append((k, k[: -len("alone")] + "batch4", 4))
             continue
+        case, field = k.rsplit("/", 1)
         d = desc.get(case, {})
         if d.get("per_chunk") == 1 or d.get("remainder_of_one"):
             batch = d.get("batch_ref") or case.rsplit("/chunk", 1)[0] + f"/chunk{d['strains']}"
             pairs.append((k, f"{batch}/{field}", d["strains"]))
+    # every single-strain output must be paired, or a leg would silently test the wrong thing
+    alone = [k for k in keys if k.endswith("/alone") or "/chunk1/" in k]
+    missing = set(alone) - {p[0] for p in pairs}
+    if missing:
+        raise AssertionError(f"single-strain outputs without a batch reference: {sorted(missing)[:5]}")
     return pairs
 
 
