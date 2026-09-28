@@ -6,6 +6,9 @@ and fight. Every wey's brain is a small continuous-time recurrent network whose 
 mask. Weights, time constants and biases are evolved. All weys in a swarm share one genome, and
 selection acts on team results.
 
+**What comes next:** [`ROADMAP.md`](ROADMAP.md), the public plan for the next experiments, and
+the open questions anyone is welcome to take on.
+
 ## Newest: experiment 03 and its full replication, 03r
 
 **At generation 0, before any evolution, the real wiring's random brains showed unusually high
@@ -284,9 +287,10 @@ The data terms are also stated in `NOTICE`; `LICENSE` (MIT) covers the code and 
 
 ## Status
 
-See `PLAN.md` for milestones and what has actually been measured. `DECISIONS.md` records modelling
-choices the spec left open, and `docs/REPRODUCIBILITY.md` says exactly what is and is not
-reproducible.
+[`ROADMAP.md`](ROADMAP.md) says where the project stands and what comes next. `DECISIONS.md`
+records every non-trivial decision, and `docs/REPRODUCIBILITY.md` says exactly what is and is not
+reproducible. `PLAN.md` is the original build plan (milestones 0-11 done, 12 deferred), kept for
+its measurements.
 
 ## How this was made
 
