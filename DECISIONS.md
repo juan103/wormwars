@@ -3095,3 +3095,45 @@ The freeze was committed and pushed at `a73a67d`.
 - 04a gets its own pre-registration, reviewed and pushed before its run, as E1's was.
 
 Results: `experiments/E1-navigation/RESULTS.md`, which goes to Astra 6 and Fable 5.1 for review.
+
+## D101 — E1 results review: text fixes; the outcome stands
+
+Astra 6 and Fable 5.1 reviewed E1's results (`docs/reviews/20260928-194709-E1-results/`).
+- **Both: "E1 results: fix",** on text only.
+- **Both confirmed the run followed the registration.** From the local reflogs, the binding push
+  came before the pilot's marker, and the freeze push before the gate's.
+- **Astra independently recomputed** every count, secondary measure and all five bootstrap bounds
+  from `gate_events.npz` and the per-world counts. All match.
+- Fable re-derived every tuned winner as the first maximum of its grid.
+
+**Corrected in RESULTS.md, with a dated Corrections section:**
+- the compute timing, now from the accounting throughout (316.2 s + 37.6 s = 353.8 s);
+- K labelled as reading the scent, not blind;
+- the k ≤ 32 bound labelled an assumption, with the full gain curve. The k ≤ 32 winner uses turn
+  0.2, and turn 0 gives 4.23;
+- "because it steers to the decoy" softened to "consistent with";
+- "selection will need shaping" replaced by "meets the design's condition". **This also corrects
+  D100's "the bounded shaping term will be needed", dated 2026-09-28.**
+- the gate-world statement hedged as §7 is.
+
+**Added:**
+- M-avg's full winner, and 0.35 labelled as the goal cue's peak current;
+- the σ = 6 counts (1 124 of 1 280 leg starts);
+- grid-edge winners flagged, so the blind baselines may be under-tuned;
+- the one failed world (996 201 898: navigator 0, oracle 8);
+- the oracle as a reference: the navigator beat it on 15 worlds;
+- the mirrored arm's statistics rest on 29 arrivals;
+- the guarded smoke run's records committed (Fable).
+
+AGENTS.md now says E1 is the first registration to meet the push-before-run rule.
+
+**For 04a's pre-registration,** both reviewers listed:
+- Task N frozen and hashed;
+- baselines re-run paired on 04a's hold-out;
+- an exact shaping formula, bounded below one arrival, used in training only, and removed from every
+  gate score. An unshaped arm as a secondary (Fable);
+- a budget from the aggregate measured rates with a margin, and a committed calculation with a cap;
+- compositions declared for training, validation, generation 0 and the final evaluation;
+- per-run random streams;
+- the champions' effective gain measured against the curve, with no threshold relative to k ≤ 32;
+- runs as the unit, with a declared share of runs that must pass.

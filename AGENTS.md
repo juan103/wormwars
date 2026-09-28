@@ -60,9 +60,10 @@ named. A change that breaks one should say so openly.
      - 01 had no pre-registration document;
      - 02b is exploratory by design;
      - 02's pre-registration was amended after evolution began, openly (D041);
-     - **the push-before-run rule dates from 27 September, and no run so far met it.** 01b's, 02's,
-       03's and 03r's pre-registrations were committed locally before their runs but first
-       reached GitHub after the runs started, as GitHub's push log shows (D062, D063, D089).
+     - **the push-before-run rule dates from 27 September.** 01b's, 02's, 03's and 03r's
+       pre-registrations were committed locally before their runs, but first reached GitHub after
+       the runs started, as GitHub's push log shows (D062, D063, D089). E1 is the first to meet
+       it: bound at `eb0b781`, pushed before its pilot and gate (D099, D100).
 3. **Report whatever comes out.** Null and failed predictions are published, in the wording fixed
    in advance.
 4. **Correct in the open.** Wrong statements are corrected by adding a dated correction that

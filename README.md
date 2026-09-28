@@ -30,10 +30,11 @@ selection acts on team results.
 | [02b](experiments/02b-champion-analysis/README.md) | What did 02's champions actually learn? | Published; exploratory re-analysis | They circle and slow down on food. Selection built a slow memory of recent food. It does not revise 02 |
 | [03](experiments/03-generation0/README.md) | Before any evolution, do N2's random brains differ from five null ensembles? | Published; pre-registered | History dependence (P4) is distinctive, but borderline: one more routing-matched graph at or above N2 would have failed the test (Holm p 0.047, then 0.070) |
 | [03r](experiments/03r-replication/README.md) | A full, separately pre-registered replication of 03 | Published; pre-registered | "Replicated under the registered single-signal test and under 03's original three-signal rule." |
-| [03a](experiments/03a-self-consistency/README.md) | Can a missing neuron's wiring be predicted from the rest of the brain plus a task? | Draft, not run, not scheduled | None yet. As drafted, its searches alone need about 785 GPU-hours at 02's throughput, plus about 37 for whole-brain evolution |
+| [03a](experiments/03a-self-consistency/README.md) | Can a missing neuron's wiring be predicted from the rest of the brain plus a task? | Draft; now a six-neuron proof of concept capped at 72 GPU-hours, after E1 (D094) | None yet. As drafted, its searches alone need about 785 GPU-hours at 02's throughput, plus about 37 for whole-brain evolution |
+| [E1](experiments/E1-navigation/README.md) | Can a scripted navigator reach moved targets on unseen layouts, beat blind search, and use the cue? The positive control before evolving a navigator | Pre-registered and public before its run | "E1 positive control: passed": 8.68 targets per episode (98.7% of an oracle); 0.03 with a mirrored decoy |
 
-Next on the roadmap: throughput work (T1), then a navigation task (E1), and in the biology track
-the mechanism behind 03's history dependence.
+Next on the roadmap: 04a, an evolved N2 navigator on E1's task, with its own pre-registration;
+and, in the biology track, the mechanism behind 03's history dependence.
 
 ## Newest: experiment 03 and its full replication, 03r
 

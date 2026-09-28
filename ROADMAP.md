@@ -24,6 +24,16 @@
     authorises a bounded E1 pilot;
   - **T1's budget gate moves to E1's pilot** (D086): E1 measures Task N's own throughput, and
     04a's and E2's budgets are fitted to it.
+- **E1's positive control passed** (D100, D101). It is the first registration public before its
+  run.
+  - A scripted stereo navigator reached 8.68 targets per 300-tick episode on 1 024 unseen worlds,
+    98.7% of an oracle, and 0.03 with a mirrored decoy. Blind search reached at most 0.65.
+  - For 04a:
+    - 74% of random N2 brains score zero on every pilot world, which meets the design's condition
+      for shaping;
+    - throughput in 04a's shape is 110, 336 and 438 strain-worlds/s at 1, 4 and 8 runs batched;
+    - a gain curve for stereo steering is measured (RESULTS.md).
+  - **Next: 04a's pre-registration.**
 - **Documentation for outsiders:** every experiment folder now has a README with its question,
   result, caveats and exact commands to rerun it, and [`AGENTS.md`](AGENTS.md) describes the
   repository and its rules. Others are welcome to take any open question here, and to get there

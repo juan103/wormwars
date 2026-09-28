@@ -1,0 +1,25 @@
+{
+ "note": "the guarded smoke run on the binding commit eb0b781: smoke sizes and ids, every formal guard on",
+ "pilot_commit": "eb0b78128689195e8528745b3b4b4b0555e77a99",
+ "gate_commit": "eb0b78128689195e8528745b3b4b4b0555e77a99",
+ "gpu": "NVIDIA GeForce RTX 5080",
+ "freeze_worlds": {
+  "coverage": {
+   "first": 0,
+   "last": 7,
+   "count": 8
+  },
+  "tuning": {
+   "first": 0,
+   "last": 7,
+   "count": 8
+  }
+ },
+ "gate_worlds": {
+  "first": 0,
+  "last": 15,
+  "count": 16
+ },
+ "gate_arms": 16,
+ "gate_outcome_on_smoke_worlds": "E1 positive control: not passed"
+}
