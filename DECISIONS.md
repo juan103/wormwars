@@ -2417,3 +2417,27 @@ Running the full suite in a fresh worktree of the main candidate failed one test
 - **The test** now reads committed files only (`git ls-files`) and expects 135.
 - **Lesson:** the suite is now also run in a fresh worktree before a push to main. That is how
   this was caught.
+
+## D085 — 03 and 03r published on main (the owner's go)
+
+On the owner's "Go main" (2026-09-28), `main` was fast-forwarded from `76c613a` to `e856b7d` at
+07:33:30 +02:00. That is the whole `roadmap` branch at `86994c0` (78 commits), plus one commit
+removing the working-branch banner.
+
+**Now on main:**
+- 03 and 03r together, reported by 03r's pre-registered rule, with §10's README text (D063, D059);
+- 02b, reconciled with 02;
+- roadmap v3;
+- the 03a draft, not scheduled;
+- T0's code and checks;
+- the E1 design;
+- D038-D084, and every review.
+
+**Checks before the push:**
+- the full suite in a fresh worktree of the candidate;
+- the identity check: all 78 commits use the noreply address, with no session trailers or personal
+  email;
+- the hygiene tests;
+- no connectome files.
+
+`roadmap` continues as the working branch from `main`, with a short banner.
