@@ -573,9 +573,14 @@ OUTCOME_NOT_COMPLETED = {"cap": "E1 positive control: not completed (the registe
 
 
 def checkpoint(counts: dict, events: dict, ids) -> None:
-    np.savez_compressed(GATE_PARTIAL, world_ids=ids,
+    """Every completed arm, written to a temporary file and then atomically moved over the previous
+    checkpoint, so a kill during the write leaves the previous checkpoint intact (Astra, Fable, D098)."""
+    import os
+    tmp = GATE_PARTIAL.with_name(GATE_PARTIAL.stem + ".tmp.npz")
+    np.savez_compressed(tmp, world_ids=ids,
                         **{f"{label}|count": v for label, v in counts.items()},
                         **{f"{label}|{k}": v[0] for label, ev in events.items() for k, v in ev.items()})
+    os.replace(tmp, GATE_PARTIAL)
 
 
 def not_completed(result: dict, counts: dict, events: dict, ids, error: str, t0: float, reason: str,
@@ -644,30 +649,33 @@ def cmd_gate(args):
     counts, events = {}, {}
     result = {"freeze_sha256_lf": file_sha256(FREEZE), "provenance_at_start": prov, "device": args.device,
               "resolved_config": cfg.to_dict(), "worlds": id_record(ids), "start_marker": marker.name}
+    # everything from the first arm to the final budget decision is inside the handler: a cap hit
+    # or any stop, in the arms or in the analysis, ends as "not completed" with every completed arm
+    # kept (Astra, Fable, D098)
     try:
         for label, name, params, probe in arms:
             counts[label], events[label] = run(name, params, probe)
             checkpoint(counts, events, ids)  # on disk after every arm, so even a killed process keeps them
+        rules = gate_rules(counts)
+        oracle_mean = float(counts["oracle"].mean())
+        analysis = {
+            "outcome": "E1 positive control: passed" if rules["passed"] else "E1 positive control: not passed",
+            "failed_rules": rules["failed"], "rules": rules, "navigator": nav,
+            "means": {k: float(v.mean()) for k, v in counts.items()},
+            "fraction_of_oracle": {k: (float(v.mean()) / oracle_mean if oracle_mean > 0 else None)
+                                   for k, v in counts.items()},
+            "secondary": {k: secondary(events[k], REGISTERED["task"]["horizon"]) for k in counts},
+            "per_world_counts": {k: v.astype(int).tolist() for k, v in counts.items()},
+            "events_file": GATE_EVENTS.name}
+        check_cap()  # the final budget decision, after all analysis, just before the result is written
     except CapReached as e:
         not_completed(result, counts, events, ids, str(e), t0, "cap")
     except BaseException as e:  # noqa: BLE001  (recorded as not completed, then re-raised)
         not_completed(result, counts, events, ids, f"{type(e).__name__}: {e}", t0, "stopped", reraise=e)
+    # only a completed gate carries the analysis; a "not completed" record reports its outcome only
+    result.update(analysis, seconds=time.perf_counter() - t0)
     counts[nav], events[nav] = counts["navigator"], events["navigator"]
-    rules = gate_rules(counts)
-    oracle_mean = float(counts["oracle"].mean())
-    result.update({
-        "outcome": "E1 positive control: passed" if rules["passed"] else "E1 positive control: not passed",
-        "failed_rules": rules["failed"], "rules": rules, "navigator": nav,
-        "means": {k: float(v.mean()) for k, v in counts.items()},
-        "fraction_of_oracle": {k: (float(v.mean()) / oracle_mean if oracle_mean > 0 else None) for k, v in counts.items()},
-        "secondary": {k: secondary(events[k], REGISTERED["task"]["horizon"]) for k in counts},
-        "per_world_counts": {k: v.astype(int).tolist() for k, v in counts.items()},
-        "events_file": GATE_EVENTS.name, "seconds": time.perf_counter() - t0})
-    try:
-        check_cap()  # the final budget decision, after all analysis, just before the result is written
-    except CapReached as e:
-        not_completed(result, {k: v for k, v in counts.items() if k != nav},
-                      {k: v for k, v in events.items() if k != nav}, ids, str(e), t0, "cap")
+    result["means"][nav] = result["means"]["navigator"]
     write_json(GATE_RESULT, result)  # the outcome first, then the event tables (Fable, D096)
     save_events(events, ids, skip=nav)
     GATE_PARTIAL.unlink(missing_ok=True)

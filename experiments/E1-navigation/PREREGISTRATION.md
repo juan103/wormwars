@@ -1,11 +1,12 @@
-# E1: the positive control for navigation. Pre-registration (v4)
+# E1: the positive control for navigation. Pre-registration (v5)
 
 **Status:**
-- Written 2026-09-28. Astra 6 and Fable 5.1 reviewed it twice, and every change they asked for is
-  adopted:
+- Written 2026-09-28. Astra 6 and Fable 5.1 reviewed each version below, and every change they
+  asked for is adopted:
   - v1 (`f83bd19`, `docs/reviews/20260928-181005-E1-prereg/`): "revise" (D095);
   - v2 (`a6437be`, `docs/reviews/20260928-183315-E1-prereg-confirm/`): "revise" (D096);
-  - v3 (`f63cdaa`, `docs/reviews/20260928-185310-E1-prereg-final/`): "revise" (D097).
+  - v3 (`f63cdaa`, `docs/reviews/20260928-185310-E1-prereg-final/`): "revise" (D097);
+  - v4 (`a84d30f`, `docs/reviews/20260928-191032-E1-prereg-v4/`): "revise" (D098).
 - **The formal pilot and gate come after this registration, and after its public push,** with the
   earlier exposure disclosed in §7. It is the first time in this series that a registration is
   public before its formal measurements.
@@ -30,10 +31,16 @@ where the two differ.
   below.
 - The runner applies every rule mechanically.
 - **How the guards are tested:**
-  - through the stage commands themselves, with a fake rollout (`tests/test_e1_commands.py`): the
-    gate's completed, cap-during-arms, cap-after-analysis and crash paths; the once-only refusals;
-    the committed-freeze check when the freeze is untracked; and the pilot's refusal to run over a
-    freeze;
+  - through the stage commands themselves, with a fake rollout and ids outside E1's ranges
+    (`tests/test_e1_commands.py`):
+    - the gate's paths: completed, cap during the arms, cap after the analysis, a crash in the arms
+      or in the analysis, and an interrupt;
+    - a stage that does not start because the cap is already spent;
+    - the once-only refusals, and the committed-freeze check when the freeze is untracked;
+    - the pilot's refusal to run over a freeze;
+    - the atomic checkpoint;
+    - the same-code check in a real git repository, accepting an output-only commit and refusing a
+      code change;
   - as functions (`tests/test_e1_script.py`): the freeze re-derivation, including malformed
     supporting measurements; the code and environment comparisons; the CPU, GPU, dirty, unpushed
     and pin refusals; the cap clock; markers, LF writing and smoke rebinding.
@@ -41,7 +48,8 @@ where the two differ.
   - the live `git fetch` and push check, and the GPU preflight. These run in the guarded smoke run
     on the binding commit (§5);
   - the committed-freeze check's modified-freeze branch. It first runs at the formal gate;
-  - the pilot's own-body zero-sample refusal.
+  - the pilot's own-body zero-sample refusal. It comes after the pilot's start marker, so it
+    would spend the pilot. The risk is negligible, since every smoke run recorded samples.
 
 ## 1. The question
 
@@ -215,9 +223,11 @@ wording is fixed:
   more than the accounting does.
 - **When it is checked:** before every rollout and every measurement loop, and once more after all
   analysis, just before a result is written.
-- **Outside the decision:** one rollout in flight can overrun it, and writing the outputs (the JSON
-  and the compressed event tables) comes after the final check. Both are seconds against a cap of
-  hours; they are recorded in the compute record but cannot change the decision.
+- **A rollout in flight can run past the cap;** the final check then catches it, and the stage ends
+  as not completed.
+- **Outside the decision:** only writing the outputs (the JSON and the compressed event tables),
+  which comes after the final check. That takes seconds against a cap of hours. It is recorded in
+  the compute record but cannot change the decision.
 - **The compute record** is copied to `experiments/E1-navigation/compute-record.json` (a name git
   does not ignore) and committed with each stage's output, with the stage's start marker.
 
@@ -236,8 +246,14 @@ started stage is never silently rerun.
   unused offset of the pilot and tuning ranges. The failed attempt is disclosed.
 - **A gate that stops without a result, or hits the cap:** it is reported as not completed, with the
   matching fixed wording.
-  - **Every completed arm's counts and events are kept:** in memory for an exception, an interrupt
-    or the cap, and on disk after every arm (`gate_partial.npz`), for a process that is killed.
+  - **Every completed arm's counts and events are kept:**
+    - for an exception, an interrupt or the cap, in the arms or in the analysis, they are written
+      with the result;
+    - they are also on disk after every arm (`gate_partial.npz`), for a process that is killed. The
+      checkpoint is written to a temporary file and moved over the previous one atomically, so a
+      kill during its write leaves the previous checkpoint intact.
+  - A "not completed" record reports its outcome and the completed arms only, never a rule's
+    result.
   - Any new attempt needs a new registration, on unused gate worlds.
 - **The order of the gate's outputs:** the outcome (`gate.json`) is written before the event tables,
   so a failed events write cannot lose it.
@@ -283,10 +299,10 @@ statement is given.
      change. So its gate used smoke ids, not gate worlds.
    - **The basis is the session's command order.** No record holds that pair's world ids. A later
      smoke run records its ids: 0-7 for the pilot and tuning, and 0-15 for the gate.
-4. **The development records are committed:** `development-records/` holds every smoke attempt's
-   compute record, and the later smoke run's recorded ids (`smoke-ids.json`).
    - If it had used E1's ranges, it would have touched the first 16 gate worlds, which the index
      1 000 offset also skips.
+4. **The development records are committed:** `development-records/` holds every smoke attempt's
+   compute record, and the later smoke run's recorded ids (`smoke-ids.json`).
 
 **Handling:**
 - **Every stage now starts at index 1 000** of its range, past every touched world.

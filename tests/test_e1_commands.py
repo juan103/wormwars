@@ -26,6 +26,7 @@ def _module(tmp_path):
     m.FREEZE, m.GATE_RESULT = tmp_path / "freeze.json", tmp_path / "gate.json"
     m.GATE_EVENTS, m.GATE_PARTIAL = tmp_path / "gate_events.npz", tmp_path / "gate_partial.npz"
     m.OUT = tmp_path / "out"
+    m.PILOT_IDS = m.TUNING_IDS = m.GATE_IDS = m.SMOKE_IDS  # never E1's worlds, even faked (Fable, D098)
     m.provenance = lambda: {"git_commit": "abc", "branch": "roadmap", "dirty": False}
     return m
 
@@ -191,3 +192,99 @@ def test_the_pins_are_read_from_requirements_and_enforced(tmp_path):
     for k, v in (("python", "3.12.1"), ("torch", "2.11.0"), ("numpy", "1.0.0")):
         with pytest.raises(SystemExit):
             m.require_pins({**good, k: v})
+
+
+
+def test_a_crash_in_the_analysis_is_not_completed_and_keeps_the_arms(tmp_path, monkeypatch):
+    """Astra's injection (D098): an error in gate_rules after every arm has run."""
+    m = _module(tmp_path)
+    _freeze(m)
+    monkeypatch.setattr(m, "rollout_brain", FakeRollout())
+
+    def boom(counts):
+        raise RuntimeError("analysis failed")
+    monkeypatch.setattr(m, "gate_rules", boom)
+    with pytest.raises(RuntimeError):
+        m.cmd_gate(_args())
+    doc = _read(m)
+    assert doc["outcome"] == "E1 positive control: not completed (the run stopped)"
+    assert "rules" not in doc and "navigator" in doc["per_world_counts"]
+
+
+def test_an_interrupt_is_not_completed_and_keeps_the_arms(tmp_path, monkeypatch):
+    m = _module(tmp_path)
+    _freeze(m)
+    fake = FakeRollout()
+
+    def interrupting(*a):
+        if fake.calls == 2:
+            raise KeyboardInterrupt
+        return fake(*a)
+    monkeypatch.setattr(m, "rollout_brain", interrupting)
+    with pytest.raises(KeyboardInterrupt):
+        m.cmd_gate(_args())
+    doc = _read(m)
+    assert doc["outcome"] == "E1 positive control: not completed (the run stopped)"
+    assert doc["arms_completed"] == ["navigator", "navigator mirrored"]
+
+
+@pytest.mark.parametrize("stage", ["pilot", "gate"])
+def test_a_cap_spent_before_a_stage_starts_spends_nothing(tmp_path, monkeypatch, stage):
+    m = _module(tmp_path)
+    if stage == "gate":
+        _freeze(m)
+    fake = FakeRollout()
+    monkeypatch.setattr(m, "rollout_brain", fake)
+
+    def spent(*a):
+        raise m.CapReached("cap")
+    monkeypatch.setattr(m, "check_cap", spent)
+    with pytest.raises(SystemExit, match="did not start"):
+        (m.cmd_gate if stage == "gate" else m.cmd_pilot)(_args())
+    assert fake.calls == 0 and not (tmp_path / f"{stage}-started.json").exists()
+
+
+def test_a_failed_checkpoint_write_leaves_the_previous_checkpoint(tmp_path, monkeypatch):
+    m = _module(tmp_path)
+    ids = np.array([1, 2])
+    m.checkpoint({"a": np.array([3.0, 4.0])}, {}, ids)
+
+    def dies(path, *a, **k):  # a kill mid-write: a truncated file where it was writing, then death
+        Path(path).write_bytes(b"PK truncated")
+        raise OSError("killed during the write")
+    monkeypatch.setattr(m.np, "savez_compressed", dies)
+    with pytest.raises(OSError):
+        m.checkpoint({"a": np.array([3.0, 4.0]), "b": np.array([5.0, 6.0])}, {}, ids)
+    with np.load(m.GATE_PARTIAL, allow_pickle=False) as z:
+        assert list(z["a|count"]) == [3.0, 4.0] and "b|count" not in z.files
+
+
+def _git(repo, *a):
+    return subprocess.check_output(["git", "-c", "user.name=test", "-c", "user.email=test@example.invalid", *a],
+                                   cwd=repo, text=True).strip()
+
+
+def test_the_same_code_check_accepts_output_only_commits_and_refuses_code(tmp_path):
+    """A real repository (Astra, D098): a commit changing only the freeze passes; one changing a
+    guarded file does not."""
+    repo = tmp_path / "repo"
+    (repo / "wormwars").mkdir(parents=True)
+    (repo / "experiments" / "E1-navigation").mkdir(parents=True)
+    (repo / "wormwars" / "a.py").write_text("x = 1\n", encoding="utf-8")
+    (repo / "experiments" / "E1-navigation" / "PREREGISTRATION.md").write_text("v1\n", encoding="utf-8")
+    _git(repo, "init", "-q")
+    _git(repo, "add", "-A")
+    _git(repo, "commit", "-q", "-m", "pilot")
+    pilot = _git(repo, "rev-parse", "HEAD")
+    (repo / "experiments" / "E1-navigation" / "freeze.json").write_text("{}\n", encoding="utf-8")
+    (repo / "experiments" / "E1-navigation" / "pilot-started.json").write_text("{}\n", encoding="utf-8")
+    _git(repo, "add", "-A")
+    _git(repo, "commit", "-q", "-m", "freeze")
+    m = _module(tmp_path / "exp")
+    m.ROOT = repo
+    freeze = {"provenance_at_start": {"git_commit": pilot}}
+    m.require_same_code_as_pilot(freeze)  # outputs only: accepted
+    (repo / "wormwars" / "a.py").write_text("x = 2\n", encoding="utf-8")
+    _git(repo, "commit", "-q", "-am", "code")
+    with pytest.raises(SystemExit):
+        m.require_same_code_as_pilot(freeze)

@@ -3005,3 +3005,37 @@ Astra 6 and Fable 5.1 checked v3 (`f63cdaa`; `docs/reviews/20260928-185310-E1-pr
 
 The pilot's own-body zero-sample refusal still has no test. It is disclosed, and it can only
 refuse, before any stage output.
+
+## D098 — E1's pre-registration v5, after the fourth review round
+
+Astra 6 and Fable 5.1 checked v4 (`a84d30f`; `docs/reviews/20260928-191032-E1-prereg-v4/`).
+- **Both answered "revise".** Neither found a defect that would invalidate a result.
+- Fable: its two points are text and test changes, and "I do not need another round if they are
+  applied as described."
+- Astra's points are fixed and tested.
+
+**Fixed in v5:**
+- **The handler covers the analysis too** (both). Astra showed that an error in `gate_rules` or
+  `secondary`, after every arm had run, wrote no result.
+  - Everything from the first arm to the final budget decision is now inside the handler.
+  - A "not completed" record carries its outcome and the completed arms, never a rule's result.
+    Fable noted that a cap hit after the analysis had left `passed: true` in the record.
+- **The checkpoint is atomic** (both): a temporary file, then `os.replace`. The test simulates a
+  kill that leaves a truncated file mid-write; it fails on an in-place write (sabotage-checked).
+- **The budget wording** (Astra): an overrunning rollout is caught by the final check and ends as not
+  completed. Only writing the outputs is outside the decision.
+- **New command-level tests:**
+  - a crash in the analysis, and an interrupt (Fable: `RuntimeError` alone would not catch a
+    handler narrowed to `Exception`; that sabotage is now caught);
+  - both "did not start" cap refusals (Fable);
+  - the same-code check in a real temporary git repository: an output-only commit passes, a code
+    change is refused (Astra);
+  - the command tests use ids outside E1's ranges, even with the rollout faked (Fable).
+- **Wording** (Fable):
+  - the header lists every review instead of "twice";
+  - the zero-sample refusal is noted as coming after the pilot's marker, correcting Fable's third
+    review, which it flagged itself;
+  - a §7 bullet moved to the item it belongs to.
+
+**Before binding** (Fable): the committed-freeze check's two git commands are run by hand on a
+tracked file, with an absolute path, and the full suite runs on the binding commit.
