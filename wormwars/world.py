@@ -271,6 +271,8 @@ class World:
                 raise ValueError("target_radius must not exceed target_wall_clearance")
             if wcfg.target_separation <= 2 * wcfg.target_radius:
                 raise ValueError("target_separation must exceed 2 x target_radius: consecutive goal discs are disjoint")
+            if not 0.0 <= wcfg.target_shaping < 1.0:
+                raise ValueError("target_shaping must be in [0, 1): the bonus stays below one arrival")
         self.assigns = [
             StrainAssignment(strain_of[:, s], self.brains[s].n_strains)
             for s in range(self.n_swarms)
@@ -556,6 +558,16 @@ class World:
         self._ev_start[ar, nxt] = torch.where(reached.unsqueeze(-1), head, self._ev_start[ar, nxt])
         self.targets_reached += reached.long()
         self.target_index = nxt
+
+    def final_progress(self) -> Tensor:
+        """[worlds]: the fraction of the current (unfinished) leg's starting distance that the head
+        has closed, clipped to [0, 1]. Moving away counts as zero, not negative (D103)."""
+        ar = torch.arange(self.n_worlds, device=self.device)
+        start = self._ev_start[ar, self.target_index]
+        c = self.current_target()
+        d0 = (start - c).norm(dim=-1)
+        d1 = (self.pos[:, 0, 0] - c).norm(dim=-1)
+        return ((d0 - d1) / d0.clamp_min(1e-6)).clamp(0.0, 1.0)
 
     def target_events(self) -> dict[str, np.ndarray]:
         """The fixed-shape event table, [worlds, targets] each: the tick a target became current

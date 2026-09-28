@@ -282,3 +282,37 @@ def test_the_random_walk_is_reproducible_and_persistent():
         _, ta, sa = a(z, z, sa)
         _, tb, sb = b(z, z, sb)
         assert torch.equal(ta, tb)
+
+
+# ------------------------------------------------------------------ 04a's shaping (training only)
+
+def test_shaping_adds_a_bounded_progress_term_to_the_count(iface):
+    """04a's training fitness: count + c x progress on the unfinished leg, progress in [0, 1], so the
+    bonus stays below one arrival for c < 1. With c = 0 the score is the count (D103)."""
+    cfg = _cfg(horizon=60)
+    plain = _oracle_run(cfg, iface, np.arange(6))
+    shaped_cfg = _cfg(horizon=60)
+    shaped_cfg.world.target_shaping = 0.5
+    shaped = _oracle_run(shaped_cfg, iface, np.arange(6))
+    bonus = shaped.score - plain.score
+    assert np.all(bonus >= 0) and np.all(bonus <= 0.5 + 1e-6)
+    assert np.any(bonus > 0)
+    np.testing.assert_array_equal(np.floor(shaped.score + 1e-6), plain.score)  # never a whole arrival
+
+
+def test_progress_is_clipped_to_the_unit_interval(iface, spec):
+    cfg = _cfg(horizon=5)
+    w = _world(cfg, iface, spec, np.arange(4))
+    p = w.final_progress()
+    assert p.shape == (4,) and float(p.min()) >= 0.0 and float(p.max()) <= 1.0
+    # moving the head away from the target cannot make progress negative
+    w.pos[:, 0, 0] = w.pos[:, 0, 0] + (w.pos[:, 0, 0] - w.current_target()) * 0.5
+    w.pos.clamp_(1.05, w.side - 1.05)
+    assert float(w.final_progress().min()) >= 0.0
+
+
+def test_shaping_is_refused_outside_the_unit_interval(iface, spec):
+    cfg = _cfg(horizon=5)
+    cfg.world.target_shaping = 1.0
+    with pytest.raises(ValueError):
+        _world(cfg, iface, spec, np.arange(2))

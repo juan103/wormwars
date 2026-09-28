@@ -73,7 +73,12 @@ def _play(cfg, iface, brain, world_ids, run_seed, device, combat_stage=0, ticks=
     food1 = world.fields[:, world.ch.FOOD].sum(dim=(1, 2))
     shape = (n_sub, n_ids)
     # the score selector (E1): the energy score, or the number of targets reached
-    score = (world.targets_reached.to(torch.float32) if world.navigate else foraging_score(world))
+    if world.navigate:  # the count, plus 04a's bounded training shaping when it is on (D103)
+        score = world.targets_reached.to(torch.float32)
+        if cfg.world.target_shaping > 0:
+            score = score + cfg.world.target_shaping * world.final_progress().to(torch.float32)
+    else:
+        score = foraging_score(world)
     events = ({k: v.reshape(n_sub, n_ids, -1) for k, v in world.target_events().items()}
               if world.navigate else None)
     return {
