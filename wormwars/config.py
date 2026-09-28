@@ -19,6 +19,8 @@ DEFAULT_CONFIG = ROOT / "configs" / "default.yaml"
 CHEM_DIRECTIONS = ("pre_to_post", "post_to_pre")
 # What anything saved without an explicit direction actually ran with (DECISIONS.md D031).
 LEGACY_CHEM_DIRECTION = "post_to_pre"
+# what a genome or bundle written before T1 did with a single strain (D086)
+LEGACY_PAD_SINGLE_STRAIN = False
 
 
 @dataclass
@@ -56,6 +58,12 @@ class BrainConfig:
     # "post_to_pre": the reversed update experiment 01 actually ran (DECISIONS.md D031). It exists
     # only so that experiment 01 reproduces exactly; never choose it for anything new.
     chem_direction: str = "pre_to_post"
+    # On CUDA a batch of one strain can take a different matmul path from the same strain inside
+    # a larger batch, so its scores can differ (D082). On: `Brain.step` runs a single strain as two
+    # identical copies and keeps the first, so it matches its in-population evaluation (T1, D086).
+    # Results computed before T1 ran without it: a saved genome or bundle without the field reads
+    # it as off, and 02's config builder pins it off.
+    pad_single_strain: bool = True
 
     @property
     def dt(self) -> float:
@@ -266,6 +274,7 @@ class Config:
         raw = dict(raw)
         brain = dict(raw.get("brain") or {})
         brain.setdefault("chem_direction", LEGACY_CHEM_DIRECTION)
+        brain.setdefault("pad_single_strain", LEGACY_PAD_SINGLE_STRAIN)  # T1, D086
         raw["brain"] = brain
         return cls.from_dict(raw)
 
