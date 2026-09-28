@@ -269,6 +269,48 @@ def cmd_build(args):
               f"Jaccard chem median {v['jaccard_chem'][1]:.3f}, over ceiling {len(v['over_ceiling'])}")
 
 
+def _manifest() -> dict:
+    return json.loads((EXP / "graphs_manifest.json").read_text(encoding="utf-8"))
+
+
+def _rebuild_one(args):
+    kind, seed, passes, name, into = args
+    g, _ = S.build(load_connectome(), kind, seed=seed, passes=passes)
+    path = Path(into) / f"{name}.npz"
+    np.savez_compressed(path, chem=g.chem, gap=g.gap)
+    return name, _sha_raw(path)
+
+
+def rebuild_graphs(into: Path, only=None, workers: int = 8) -> dict:
+    """Regenerate this instance's graph files from the committed record (`ensembles.json`: kind,
+    final seed and passes of every graph) and check each against the committed manifest's raw hash.
+    For reproducing from a fresh clone, where the graph files are not committed. Never touches the
+    record itself, unlike `build` (D087)."""
+    record = json.loads((EXP / "ensembles.json").read_text(encoding="utf-8"))["graphs"]
+    by_name = {r["name"]: r for r in record}
+    names = list(by_name) if only is None else list(only)
+    unknown = [n for n in names if n not in by_name]
+    if unknown:
+        raise ProvenanceError(f"not in {EXP / 'ensembles.json'}: {unknown[:5]}")
+    Path(into).mkdir(parents=True, exist_ok=True)
+    jobs = [(by_name[n]["kind"], by_name[n]["seed"], by_name[n]["passes"], n, str(into)) for n in names]
+    if workers > 1:
+        with Pool(workers) as pool:
+            done = pool.map(_rebuild_one, jobs, chunksize=1)
+    else:
+        done = [_rebuild_one(j) for j in jobs]
+    manifest = _manifest()
+    mismatched = sorted(n for n, sha in done if manifest.get(n) != sha)
+    return {"rebuilt": len(done), "matching": len(done) - len(mismatched), "mismatched": mismatched}
+
+
+def cmd_rebuild_graphs(args):
+    report = rebuild_graphs(Path(args.into) if args.into else GRAPHS, workers=args.workers)
+    print(json.dumps(report))
+    if report["mismatched"]:
+        raise SystemExit(f"{len(report['mismatched'])} rebuilt graph files do not match graphs_manifest.json")
+
+
 # ----------------------------------------------------------------------------- measures
 
 def _validated(name: str) -> bool:
@@ -287,7 +329,7 @@ def _load_graph(con, name):
     if name.startswith("pilotSH"):
         return S.build(con, "SH", seed=int(name[7:]), passes=20)[0]
     path = GRAPHS / f"{name}.npz"
-    manifest = json.loads((EXP / "graphs_manifest.json").read_text(encoding="utf-8"))
+    manifest = _manifest()
     if manifest.get(name) != _sha_raw(path):  # the committed manifest pins every graph (D054); raw bytes (D056)
         raise ProvenanceError(f"{name}: graph file does not match graphs_manifest.json")
     z = np.load(path, allow_pickle=False)
@@ -674,7 +716,8 @@ def cmd_report(args):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("command", choices=["build", "pilot", "variance", "power", "run", "report"])
+    ap.add_argument("command", choices=["build", "rebuild-graphs", "pilot", "variance", "power", "run", "report"])
+    ap.add_argument("--into", default=None, help="rebuild-graphs: where to write (default: this checkout's graph folder)")
     ap.add_argument("--sims", type=int, default=2000)
     ap.add_argument("--max-hours", type=float, default=None, help="must equal the instance's registered cap")
     ap.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
@@ -686,7 +729,7 @@ def main():
         raise SystemExit("the pilot, variance and power stages belong to 03 only; 03r reuses 03's pilot")
     from wormwars.accounting import attempt  # compute accounting (T0, D069)
     with attempt(OUT / "compute", default="measure", experiment=INSTANCE, command=args.command):
-        {"build": cmd_build, "pilot": cmd_pilot, "variance": cmd_variance, "power": cmd_power,
+        {"build": cmd_build, "rebuild-graphs": cmd_rebuild_graphs, "pilot": cmd_pilot, "variance": cmd_variance, "power": cmd_power,
          "run": cmd_run, "report": cmd_report}[args.command](args)
 
 

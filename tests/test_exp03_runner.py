@@ -83,3 +83,32 @@ def test_binary_graph_files_are_hashed_raw_while_text_inputs_ignore_line_endings
     b.write_bytes(b"PK\x03\x04\r\n\x00binary")
     assert exp._sha_raw(b) == hashlib.sha256(b.read_bytes()).hexdigest()
     assert exp._sha(b) != exp._sha_raw(b)  # the text hash would have changed it: never use it on graphs
+
+
+def test_rebuild_graphs_reproduces_the_committed_files(exp, tmp_path):
+    """An outsider can regenerate 03's graph files from the committed record and have every file
+    match the committed manifest byte for byte (numpy writes a fixed zip timestamp)."""
+    exp.use_instance("03")
+    report = exp.rebuild_graphs(tmp_path, only=["SH-10000", "SH-route-20000"], workers=1)
+    assert report == {"rebuilt": 2, "matching": 2, "mismatched": []}
+    assert exp._sha_raw(tmp_path / "SH-10000.npz") == json.loads(
+        (exp.EXP / "graphs_manifest.json").read_text(encoding="utf-8"))["SH-10000"]
+
+
+def test_rebuild_graphs_reports_a_mismatch(exp, tmp_path, monkeypatch):
+    exp.use_instance("03")
+    real = exp._manifest
+
+    def tampered():
+        m = dict(real())
+        m["SH-10000"] = "0" * 64
+        return m
+    monkeypatch.setattr(exp, "_manifest", tampered)
+    report = exp.rebuild_graphs(tmp_path, only=["SH-10000"], workers=1)
+    assert report["mismatched"] == ["SH-10000"] and report["matching"] == 0
+
+
+def test_rebuild_graphs_refuses_names_not_in_the_record(exp, tmp_path):
+    exp.use_instance("03")
+    with pytest.raises(exp.ProvenanceError):
+        exp.rebuild_graphs(tmp_path, only=["SH-99999999"], workers=1)
