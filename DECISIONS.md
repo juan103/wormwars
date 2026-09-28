@@ -2494,3 +2494,45 @@ Both answered **"T1 plan: approve with changes"**, and the changes largely overl
 
 **Consensus:** both approve with changes, and v2 adopts every change. Under the owner's standing
 rule, T1 proceeds and the owner is informed.
+
+## D087 — Documentation for outsiders; 03's graph files can be rebuilt byte for byte
+
+**The owner's request (2026-09-28).** Document the work so that others, people and AI agents, can
+reproduce, extend or overtake it, since compute is the bottleneck:
+- a README for each experiment, linked from the main README;
+- the newest roadmap published and linked.
+In the owner's words: "If we are transparent, other people can catch up or outpace us, and that is
+a good thing."
+
+**Done:**
+- **A README in every experiment folder** (01, 01b, 02, 02b, 03, 03r, 03a), from one template:
+  - status, commit and compute;
+  - the question, and the answer in brief (registered wordings quoted);
+  - the design, and the caveats and corrections;
+  - a map of the files, and how to reproduce it;
+  - how to extend it, and the record.
+  The drafts were written by three Claude subagents from the sources, then edited.
+- **`AGENTS.md`:** the repository's layout, setup, and ten rules the work follows.
+- **The main README:**
+  - a "Start here" list and an "Experiments at a glance" table;
+  - a "How to help, or get ahead of us" section;
+  - links to each experiment's README;
+  - the Status section now points to `ROADMAP.md`, not `PLAN.md`.
+- **`ROADMAP.md`** was already on main (v3) but not linked. It gains a dated status block and
+  T1's gate amendment (D086).
+
+**Found while writing 03's README.** The drafting agent flagged that 03's graph files are not
+committed, and that nothing showed a rebuild reproduces the manifest's raw-byte hashes. The
+existing `build` also refuses to run over the committed record.
+- **Checked:** a rebuild reproduces both the contents and the raw bytes. numpy writes a fixed zip
+  timestamp (1980-01-01).
+- **Added `scripts/exp03.py rebuild-graphs [--instance 03r] [--into DIR]`.** It regenerates every
+  graph from the kind, final seed and passes recorded in the committed `ensembles.json`, and
+  checks each file against `graphs_manifest.json`. Tests cover a match, a tampered manifest, and
+  an unknown name; they were seen failing first.
+- **Full rebuild on 2026-09-28:** all 640 of 03's and all 768 of 03r's files matched their
+  manifest hashes byte for byte.
+- The graph files stay uncommitted, because they carry permuted anatomical weights.
+
+**Review:** the documentation goes to Astra 6 and Fable 5.1 for an accuracy check before it goes
+to main, which needs the owner's go.

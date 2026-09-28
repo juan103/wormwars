@@ -9,6 +9,32 @@ and fight. Every wey's brain is a small continuous-time recurrent network whose 
 mask. Weights, time constants and biases are evolved. All weys in a swarm share one genome, and
 selection acts on team results.
 
+**Start here:**
+- **[Experiments at a glance](#experiments-at-a-glance):** one folder per experiment, each with a
+  README giving its question, design, result, caveats and exact commands to rerun it.
+- **[`ROADMAP.md`](ROADMAP.md):** what comes next and why.
+- **[How to help, or get ahead of us](#how-to-help-or-get-ahead-of-us):** compute is our
+  bottleneck, and others are welcome to overtake us.
+- **[`AGENTS.md`](AGENTS.md):** for people and AI agents working with the code. It covers the
+  repository layout and the rules the work follows.
+- **[`docs/REPRODUCIBILITY.md`](docs/REPRODUCIBILITY.md):** what is exactly reproducible, and what
+  is not.
+
+## Experiments at a glance
+
+| Experiment | Question | Status | Result, in one line |
+|---|---|---|---|
+| [01](experiments/01-foraging-n2-vs-controls/README.md) | Does the real wiring (N2) evolve better foragers than shuffled (SH) and random (RD) graphs? | Superseded: its chemical synapses ran backwards (D031) | Reported N2 improving more slowly; that does not hold for the real wiring |
+| [01b](experiments/01b-direction-corrected/README.md) | 01's question with the synapses the right way round | Published; pre-registered | N2 reaches higher mean best-of-generation fitness than SH and RD, and a higher final score than RD. It is not shown to improve faster |
+| [02](experiments/02-screening/README.md) | Does evolution find stereo foraging, and does N2 use it more? A 12 GPU-hour screening across tasks and food mappings | Published; pre-registered | "Challenged: no meaningful N2 use" |
+| [02b](experiments/02b-champion-analysis/README.md) | What did 02's champions actually learn? | Published; exploratory re-analysis | They circle and slow down on food. Selection built a slow memory of recent food. It does not revise 02 |
+| [03](experiments/03-generation0/README.md) | Before any evolution, do N2's random brains differ from five null ensembles? | Published; pre-registered | History dependence (P4) is distinctive, but borderline: one more graph would have reversed the verdict (Holm p 0.047) |
+| [03r](experiments/03r-replication/README.md) | A full, separately pre-registered replication of 03 | Published; pre-registered | "Replicated under the registered single-signal test and under 03's original three-signal rule." |
+| [03a](experiments/03a-self-consistency/README.md) | Can a missing neuron's wiring be predicted from the rest of the brain plus a task? | Draft, not run, not scheduled | None yet. As drafted, it needs about 785 GPU-hours at 02's throughput |
+
+Next on the roadmap: throughput work (T1), then a navigation task (E1), and in the biology track
+the mechanism behind 03's history dependence.
+
 ## Newest: experiment 03 and its full replication, 03r
 
 **At generation 0, before any evolution, the real wiring's random brains showed unusually high
@@ -73,7 +99,34 @@ while 03r ran; its pre-registration was pushed there mid-run, as its
 
 Details: [`experiments/03-generation0/RESULTS.md`](experiments/03-generation0/RESULTS.md),
 [`experiments/03r-replication/RESULTS.md`](experiments/03r-replication/RESULTS.md), and
-decisions D050-D063 and D080-D083.
+decisions D050-D063 and D080-D083. Summaries and how to rerun:
+[03's README](experiments/03-generation0/README.md) and
+[03r's README](experiments/03r-replication/README.md).
+
+## How to help, or get ahead of us
+
+**Everything here is public:** the pre-registrations, the reviews verbatim, the decisions with
+their reasons, and the roadmap. Our bottleneck is compute: everything so far ran on one consumer
+GPU. If you have more, you can get to the next answers first, and we would count that as a good
+outcome. Useful things anyone can do:
+
+- **Replicate on other hardware.** 03 took 19.75 GPU-hours and 03r 23.95, on one RTX 5080,
+  and their READMEs give the commands. CUDA results are exact only on the same GPU, so an independent
+  replication is a real test.
+- **Re-analyse without a GPU.** Every verdict is computed from committed files (`report.json`,
+  `analysis.json`, `records.jsonl`).
+- **Take an open question from [`ROADMAP.md`](ROADMAP.md):**
+  - [the mechanism behind 03's history dependence](ROADMAP.md#03-and-03r): where it lives, gap
+    junctions or chemical synapses, and inputs other than food;
+  - [03a's redesign](ROADMAP.md#03a-redesign-after-03r-before-any-confirmatory-run), which does
+    not fit our compute;
+  - [the later biology questions](ROADMAP.md#later-biology-questions-unscheduled).
+- **Try the variants** listed under "Extend it" in each experiment's README.
+- **Check us.** Open an issue with the file, the line and what you expected. Most errors so far were
+  caught by review ([`docs/REVIEW_TRAIL.md`](docs/REVIEW_TRAIL.md)).
+
+If you build on this, please cite it (`CITATION.cff`) and Cook et al. 2019, and tell us, so we can
+link your work here.
 
 ## Experiment 02, a screening
 
@@ -99,7 +152,9 @@ runs. It was pre-registered, and reviewed by Astra 6 and Fable 5.1 at every stag
   - shuffles give the food neurons direct routes to the motor neurons, which N2's nearly lack.
 
 Everything is in [`experiments/02-screening/RESULTS.md`](experiments/02-screening/RESULTS.md),
-with the pre-registration, every review verbatim, and the decisions D034-D043.
+with the pre-registration, every review verbatim, and the decisions D034-D043. Summary and how to
+rerun: [02's README](experiments/02-screening/README.md). The follow-up re-analysis of its
+champions: [02b](experiments/02b-champion-analysis/README.md).
 
 ## Experiment 01b: the main confirmatory result
 
@@ -136,7 +191,8 @@ Everything, including the exploratory analyses and a side-by-side with experimen
 [`experiments/01b-direction-corrected/RESULTS.md`](experiments/01b-direction-corrected/RESULTS.md).
 It was pre-registered in
 [`experiments/01b-direction-corrected/PREREGISTRATION.md`](experiments/01b-direction-corrected/PREREGISTRATION.md)
-and reviewed before publication by Astra 6 and Fable 5.1 (`DECISIONS.md` D033).
+and reviewed before publication by Astra 6 and Fable 5.1 (`DECISIONS.md` D033). Summary and how
+to rerun: [01b's README](experiments/01b-direction-corrected/README.md).
 
 ## Limitations
 
@@ -197,7 +253,8 @@ Experiment 01's other results also describe the reversed graph:
   opponents;
 - the retracted claim that swarms "learned to flank", an artifact of the damage rule (C1).
 
-Frozen record: [`experiments/01-foraging-n2-vs-controls/`](experiments/01-foraging-n2-vs-controls/).
+Frozen record: [`experiments/01-foraging-n2-vs-controls/`](experiments/01-foraging-n2-vs-controls/)
+(start at its [README](experiments/01-foraging-n2-vs-controls/README.md)).
 Every number, and the correction, is C5 in [`docs/RESULTS.md`](docs/RESULTS.md).
 
 ## How to reproduce
@@ -208,6 +265,9 @@ python scripts/check_env.py              # runs a real CUDA kernel, not just is_
 python scripts/fetch_connectome.py       # downloads + hashes + caches the connectome
 python -m pytest
 ```
+
+Each experiment's README gives the exact commands to rerun it, the commit it ran at, its compute
+cost, and the committed files to compare against.
 
 ## Things to run
 
@@ -287,9 +347,9 @@ The data terms are also stated in `NOTICE`; `LICENSE` (MIT) covers the code and 
 
 ## Status
 
-See `PLAN.md` for milestones and what has actually been measured. `DECISIONS.md` records modelling
-choices the spec left open, and `docs/REPRODUCIBILITY.md` says exactly what is and is not
-reproducible.
+[`ROADMAP.md`](ROADMAP.md) says where the project stands and what comes next. `DECISIONS.md`
+records every non-trivial decision, and `docs/REPRODUCIBILITY.md` says exactly what is and is not
+reproducible. `PLAN.md` is the original build plan (milestones 0-9), kept for its measurements.
 
 ## How this was made
 

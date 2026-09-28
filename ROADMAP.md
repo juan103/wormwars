@@ -2,6 +2,29 @@
 
 *27 September 2026. Replaces v2. Written from roadmap v2, Astra 6's review of v2, and Claude Code's status report of the same day. A local v2.2 exists on the `roadmap` branch and was not seen when this version was written, so merge anything it adds. (Merged: see "Carried over from v2.2" below. Four factual corrections were made on installation; they are listed in D062.) This is a living document, not a pre-registration. When a result changes it, the change is recorded here with the reason.*
 
+## Status, 28 September 2026 (updates the section below, which is kept as written on 27 September)
+
+- **Published on main** (D085):
+  - 03 and 03r together, reported by the pre-registered rule;
+  - 02b;
+  - 02's D050 correction, as a Corrections entry.
+- **T0 (correctness) is closed** (D083). On CUDA, results are exact for the same batch
+  composition. A chunk holding a single strain can differ (D082).
+- **T1 (throughput) is in progress** (plan v2: [`docs/foundations/T1.md`](docs/foundations/T1.md),
+  D086):
+  - the profile is measured (`docs/foundations/T1_profile.json`). On 02's task the brain's matrix
+    products dominate. On a Task N-like shape (one wey per world), the world's fixed per-tick
+    cost dominates, so batching more worlds together pays much more there;
+  - single-strain padding is implemented and under its equivalence test;
+  - **T1's budget gate moves to E1's pilot** (D086): E1 measures Task N's own throughput, and
+    04a's and E2's budgets are fitted to it.
+- **Documentation for outsiders:** every experiment folder now has a README with its question,
+  result, caveats and exact commands to rerun it, and [`AGENTS.md`](AGENTS.md) describes the
+  repository and its rules. Others are welcome to take any open question here, and to get there
+  first.
+- **03a stays unscheduled,** as decided on 27 September. No exact speed-up found in T1 closes its
+  gap: it needs about 2.5 times more than the best found, which is ×1.36 on 02's task.
+
 ## Where the project stands
 
 - **Experiment 01 / 01b.** Real C. elegans wiring (N2) against shuffled (SH) and random (RD) graphs on a foraging game. 01b is the rerun after a chemical-synapse direction bug was fixed. The README states exactly what it establishes; in particular, it does not establish faster improvement.
@@ -76,6 +99,7 @@ Track B continues in parallel: 03r, then the mechanism follow-up or closure, the
 - The repository already batches evaluations in chunks. Profile to find the actual bottleneck, then tune chunk size, memory use and batching.
 - Any implementation change gets an equivalence check against the previous engine within a declared tolerance, recorded in DECISIONS.md.
 - **Gate:** the next scheduled experiment fits its budget at the measured speed, which is currently about 2 times experiment 02's.
+  - *Amended 28 September (D086, both reviewers): staged.* T1's engineering closes on its profile and the single-strain padding test. A bounded E1 pilot then measures Task N's throughput, and a committed budget calculation for 04a and E2 is made against an explicit cap. If it does not fit: shrink the experiment first, then batch several runs together (T1.3), then reopen T1.
 - A port to another framework, such as a JAX toolkit, is considered only if profiling points at the framework itself and the next experiments cannot fit otherwise.
 
 ### Module save/load now, assembly later
