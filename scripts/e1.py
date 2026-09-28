@@ -49,7 +49,9 @@ FREEZE = EXP / "freeze.json"
 GATE_RESULT = EXP / "gate.json"
 GATE_EVENTS = EXP / "gate_events.npz"
 SMOKE_IDS = np.arange(10_000)  # outside every E1 range: smoke runs and throughput never see E1 worlds
-GUARDED = ["wormwars", "scripts", "configs", "experiments/E1-navigation/PREREGISTRATION.md"]
+GUARDED = ["wormwars", "scripts", "configs", "requirements.txt", "experiments/E1-navigation/PREREGISTRATION.md"]
+CACHE = ROOT / "data" / "cache" / "cook2019_herm.npz"
+T_START = time.perf_counter()  # the cap counts this process from its start, as the accounting does
 
 REGISTERED = {
     "run_seed": 1_100_001,
@@ -112,17 +114,25 @@ def git(*a) -> str:
     return subprocess.check_output(["git", *a], cwd=ROOT, text=True).strip()
 
 
+ENV_KEYS = ("python", "numpy", "torch", "cuda", "gpu", "connectome_cache_sha256")
+
+
 def provenance() -> dict:
+    import platform
     return {"git_commit": git("rev-parse", "HEAD"), "branch": git("rev-parse", "--abbrev-ref", "HEAD"),
             "dirty": bool(git("status", "--porcelain", "--", *GUARDED)),
+            "python": platform.python_version(), "numpy": np.__version__,
             "torch": torch.__version__, "cuda": torch.version.cuda,
-            "gpu": torch.cuda.get_device_name(0) if torch.cuda.is_available() else None}
+            "gpu": torch.cuda.get_device_name(0) if torch.cuda.is_available() else None,
+            "connectome_cache_sha256": hashlib.sha256(CACHE.read_bytes()).hexdigest() if CACHE.exists() else None}
 
 
 def require_formal(device: str, prov: dict) -> None:
     """A formal stage: CUDA, a clean tree (code and the pre-registration), and HEAD pushed."""
     if not (str(device).startswith("cuda") and torch.cuda.is_available()):
         raise SystemExit("formal E1 stages run on CUDA only (PREREGISTRATION.md §2)")
+    if "RTX 5080" not in str(prov.get("gpu")):
+        raise SystemExit(f"formal E1 stages run on the registered GPU (an RTX 5080), not {prov.get('gpu')}")
     if prov["dirty"]:
         raise SystemExit(f"uncommitted changes in {GUARDED}: commit first")
     subprocess.run(["git", "fetch", "-q", "origin"], cwd=ROOT, check=True)
@@ -130,6 +140,25 @@ def require_formal(device: str, prov: dict) -> None:
                             cwd=ROOT).returncode == 0
     if not pushed:
         raise SystemExit("HEAD is not pushed: the registration and the freeze are public before the run")
+
+
+def preflight(device: str):
+    """Everything a stage needs before it may spend its start marker: the connectome, the interface,
+    and one real operation on the device (Fable, D096)."""
+    con = load_connectome()
+    iface = load_interface(con)
+    if float(torch.ones(4, device=device).sum().item()) != 4.0:
+        raise SystemExit(f"the device {device} failed a trivial operation")
+    return con, iface
+
+
+def require_same_env_as_pilot(freeze: dict, prov: dict) -> None:
+    """The gate runs in the pilot's environment: the same Python, NumPy, Torch, CUDA, GPU and
+    connectome cache (Astra, D096)."""
+    was = freeze["provenance_at_start"]
+    diff = {k: (was.get(k), prov.get(k)) for k in ENV_KEYS if was.get(k) != prov.get(k)}
+    if diff:
+        raise SystemExit(f"the environment differs from the pilot's: {diff}")
 
 
 def start_marker(stage: str, prov: dict) -> Path:
@@ -167,8 +196,10 @@ def spent_hours() -> float:
     return float(json.loads(path.read_text(encoding="utf-8"))["totals"]["seconds_timed"]) / 3600
 
 
-def check_cap(t0: float) -> None:
-    if spent_hours() + (time.perf_counter() - t0) / 3600 > REGISTERED["cap_gpu_hours"]:
+def check_cap(t0: float | None = None) -> None:
+    """Earlier attempts' recorded time plus this process's time since it started (the accounting's
+    own boundary). `t0` is accepted for call sites and ignored."""
+    if spent_hours() + (time.perf_counter() - T_START) / 3600 > REGISTERED["cap_gpu_hours"]:
         raise CapReached(f"the registered cap of {REGISTERED['cap_gpu_hours']} GPU-hours is reached")
 
 
@@ -210,6 +241,7 @@ def coverage(iface, sigma: float, device, ids) -> dict:
               world_ids=ids, device=device)
     starts = [w.pos[:, 0, 0]] + [w.target_centres[:, k] for k in range(r["legs_per_world"] - 1)]
     vals = []
+    check_cap()
     for k, p in enumerate(starts):
         w.target_index = torch.full((len(ids),), k, dtype=torch.long, device=w.device)
         f = w.target_field()
@@ -244,6 +276,7 @@ def own_body_level(iface, sigma, device, ids) -> dict:
     gain = {s: float(iface.sensor_gain[names.index(f"collision_{s}")]) * cfg.brain.input_gain
             for s in ("front", "front_right")}
     best, samples = 0.0, 0
+    check_cap()
     for _ in range(o["ticks"]):
         w.tick()
         head = w.pos[:, 0, 0]
@@ -263,6 +296,7 @@ def generation0(iface, spec, sigma, device, ids) -> dict:
     cfg = config(sigma)
     g = Genome.random(spec, cfg.brain, g0["genomes"], generator=torch.Generator().manual_seed(g0["genome_seed"]))
     g = Genome(g.spec.to(device), g.cfg, **{k: None if v is None else v.to(device) for k, v in g.params().items()})
+    check_cap()
     r = rollout(cfg, iface, g, ids, REGISTERED["run_seed"], device, chunk_worlds=g0["genomes"] * len(ids))
     per_genome = r.score.mean(axis=1)
     return {"worlds": id_record(ids), "genomes": g0["genomes"],
@@ -280,9 +314,11 @@ def throughput(iface, spec, sigma, device) -> dict:
         g = Genome.random(spec, cfg.brain, 32 * runs, generator=torch.Generator().manual_seed(1))
         g = Genome(g.spec.to(device), g.cfg, **{k: None if v is None else v.to(device) for k, v in g.params().items()})
         ids = SMOKE_IDS[:8]
+        check_cap()
         rollout(cfg, iface, g, ids, 1, device, chunk_worlds=256 * runs, ticks=5)
         ts = []
         for _ in range(reps):
+            check_cap()
             _sync(device)
             t = time.perf_counter()
             rollout(cfg, iface, g, ids, 1, device, chunk_worlds=256 * runs)
@@ -353,16 +389,15 @@ def navigator_of(tuned: dict) -> str:
 
 def cmd_pilot(args):
     prov = provenance()
-    if not args.smoke:
+    if not args.smoke or args.guarded:
         require_formal(args.device, prov)
     if FREEZE.exists():
         raise SystemExit(f"{FREEZE} exists: the pilot runs once")
+    check_cap()
+    con, iface = preflight(args.device)
+    spec = BrainSpec.from_connectome(con)
     marker = start_marker("pilot", prov)
     t0 = time.perf_counter()
-    check_cap(t0)
-    con = load_connectome()
-    iface = load_interface(con)
-    spec = BrainSpec.from_connectome(con)
     r = REGISTERED
     with acct.category("measure"):
         cov_ids = ids_for("pilot", r["sigma_rule"]["pilot_worlds"])
@@ -384,12 +419,13 @@ def cmd_pilot(args):
         o = rollout_brain(cfg, iface, oracle, ids, r["run_seed"], args.device).score[0]
     tuned["oracle"] = {"params": r["oracle"], "tuned_mean": float(o.mean()),
                        "share_at_least_1": float((o >= 1).mean()), "share_at_least_2": float((o >= 2).mean())}
-    check_cap(t0)  # the final budget decision, before anything is written
     freeze = {"registered": r, "provenance_at_start": prov, "device": args.device,
+              "resolved_config": cfg.to_dict(),
               "worlds": {"coverage": id_record(cov_ids), "tuning": id_record(ids)},
               "sigma": sigma, "sigma_flagged": flagged, "coverage": cov, "own_body": body, "generation0": gen0,
               "throughput_04a_shape": speed, "tuned": tuned, "navigator": navigator_of(tuned),
               "seconds": time.perf_counter() - t0, "start_marker": marker.name}
+    check_cap()  # the final budget decision, after all analysis, just before the freeze is written
     write_json(FREEZE, freeze)
     print(json.dumps({k: freeze[k] for k in ("sigma", "sigma_flagged", "navigator")}, indent=1))
     print({k: round(v["tuned_mean"], 3) for k, v in tuned.items()})
@@ -403,6 +439,19 @@ def validate_freeze(freeze: dict) -> None:
     with its parameters in the grid), the small-gain grid, the oracle, and the navigator rule."""
     if freeze["registered"] != json.loads(json.dumps(REGISTERED)):
         raise SystemExit("the freeze's registered numbers differ from this script's")
+    sr = REGISTERED["sigma_rule"]
+    cov = freeze["coverage"]
+    if [row.get("sigma") for row in cov] != sr["candidates"]:
+        raise SystemExit("the freeze's coverage rows are not exactly the registered candidates")
+    for row in cov:
+        share = row.get("share_above_floor")
+        if not (isinstance(share, (int, float)) and np.isfinite(share) and 0.0 <= share <= 1.0) \
+                or row.get("leg_starts") != sr["pilot_worlds"] * sr["legs_per_world"]:
+            raise SystemExit(f"the freeze's coverage row for sigma={row.get('sigma')} is malformed")
+    body = freeze["own_body"]
+    if not (body.get("samples", 0) > 0 and np.isfinite(body.get("own_body_max_current", np.nan))
+            and body["own_body_max_current"] >= 0):
+        raise SystemExit("the freeze's own-body measurement is missing its evidence")
     if list(choose_sigma(freeze["coverage"])) != [freeze["sigma"], freeze["sigma_flagged"]]:
         raise SystemExit("the freeze's σ does not follow from its coverage rows")
     own = freeze["own_body"]["own_body_max_current"]
@@ -414,6 +463,8 @@ def validate_freeze(freeze: dict) -> None:
         if t["keys"] != keys or json.loads(json.dumps(t["grid"])) != json.loads(json.dumps(grid)) \
                 or len(t["means"]) != len(combos):
             raise SystemExit(f"{name}: the freeze's grid is not the registered grid")
+        if not all(isinstance(m, (int, float)) and np.isfinite(m) for m in t["means"]):
+            raise SystemExit(f"{name}: the freeze's tuning scores are not all finite")
         i = int(np.argmax(t["means"]))
         if i != t["winner_index"] or t["params"] != dict(zip(keys, [float(x) for x in combos[i]])) \
                 or t["tuned_mean"] != float(t["means"][i]):
@@ -481,9 +532,25 @@ def gate_rules(counts: dict) -> dict:
     return rules
 
 
+def save_events(events: dict, ids, skip: str | None = None) -> None:
+    np.savez_compressed(GATE_EVENTS, world_ids=ids, **{f"{label}|{k}": v[0] for label, ev in events.items()
+                                                       for k, v in ev.items() if label != skip})
+
+
+def not_completed(result: dict, counts: dict, events: dict, ids, error: str, t0: float) -> None:
+    """A cap hit: the outcome is "not completed", and every completed arm's counts and events are
+    kept (Astra, D096). The gate worlds are spent either way."""
+    result.update(outcome="E1 positive control: not completed (the registered cap was reached)", error=error,
+                  arms_completed=list(counts), per_world_counts={k: v.astype(int).tolist() for k, v in counts.items()},
+                  events_file=GATE_EVENTS.name, seconds=time.perf_counter() - t0)
+    write_json(GATE_RESULT, result)
+    save_events(events, ids)
+    raise SystemExit(result["outcome"])
+
+
 def cmd_gate(args):
     prov = provenance()
-    if not args.smoke:
+    if not args.smoke or args.guarded:
         require_formal(args.device, prov)
     if GATE_RESULT.exists():
         raise SystemExit(f"{GATE_RESULT} exists: the gate worlds are used once")
@@ -494,13 +561,14 @@ def cmd_gate(args):
             raise SystemExit("the freeze must be committed, unchanged and pushed before the gate")
     freeze = json.loads(FREEZE.read_text(encoding="utf-8"))
     validate_freeze(freeze)
-    if not args.smoke:
+    if not args.smoke or args.guarded:
         require_same_code_as_pilot(freeze)
+        require_same_env_as_pilot(freeze, prov)
+    check_cap()
+    con, iface = preflight(args.device)
+    cfg = config(freeze["sigma"])
     marker = start_marker("gate", prov)
     t0 = time.perf_counter()
-    con = load_connectome()
-    iface = load_interface(con)
-    cfg = config(freeze["sigma"])
     G = REGISTERED["gate"]
     ids = ids_for("gate", G["worlds"])
     tuned = freeze["tuned"]
@@ -527,16 +595,12 @@ def cmd_gate(args):
         arms.append((f"{name} constant", base, tuned[name]["params"], "constant"))
     counts, events = {}, {}
     result = {"freeze_sha256_lf": file_sha256(FREEZE), "provenance_at_start": prov, "device": args.device,
-              "worlds": id_record(ids), "start_marker": marker.name}
+              "resolved_config": cfg.to_dict(), "worlds": id_record(ids), "start_marker": marker.name}
     try:
         for label, name, params, probe in arms:
             counts[label], events[label] = run(name, params, probe)
-        check_cap(t0)  # the final budget decision, before the result is written
     except CapReached as e:
-        result.update(outcome="E1 positive control: not completed (the registered cap was reached)", error=str(e),
-                      arms_completed=list(counts))
-        write_json(GATE_RESULT, result)
-        raise SystemExit(result["outcome"]) from None
+        not_completed(result, counts, events, ids, str(e), t0)
     counts[nav], events[nav] = counts["navigator"], events["navigator"]
     rules = gate_rules(counts)
     oracle_mean = float(counts["oracle"].mean())
@@ -548,9 +612,13 @@ def cmd_gate(args):
         "secondary": {k: secondary(events[k], REGISTERED["task"]["horizon"]) for k in counts},
         "per_world_counts": {k: v.astype(int).tolist() for k, v in counts.items()},
         "events_file": GATE_EVENTS.name, "seconds": time.perf_counter() - t0})
-    np.savez_compressed(GATE_EVENTS, world_ids=ids, **{f"{label}|{k}": v[0] for label, ev in events.items()
-                                                       for k, v in ev.items() if label != nav})
-    write_json(GATE_RESULT, result)
+    try:
+        check_cap()  # the final budget decision, after all analysis, just before the result is written
+    except CapReached as e:
+        not_completed(result, {k: v for k, v in counts.items() if k != nav},
+                      {k: v for k, v in events.items() if k != nav}, ids, str(e), t0)
+    write_json(GATE_RESULT, result)  # the outcome first, then the event tables (Fable, D096)
+    save_events(events, ids, skip=nav)
     print(result["outcome"], result["failed_rules"])
     print({k: round(v, 3) for k, v in result["means"].items()})
 
@@ -564,8 +632,8 @@ def use_smoke(command: str) -> None:
     EXP = OUT = ROOT / "runs" / "e1-smoke"
     FREEZE, GATE_RESULT, GATE_EVENTS = EXP / "freeze.json", EXP / "gate.json", EXP / "gate_events.npz"
     PILOT_IDS = TUNING_IDS = GATE_IDS = SMOKE_IDS
-    stale = (FREEZE, GATE_RESULT, EXP / "pilot-started.json", EXP / "gate-started.json") if command == "pilot" \
-        else (GATE_RESULT, EXP / "gate-started.json")
+    stale = (FREEZE, GATE_RESULT, GATE_EVENTS, EXP / "pilot-started.json", EXP / "gate-started.json") \
+        if command == "pilot" else (GATE_RESULT, GATE_EVENTS, EXP / "gate-started.json")
     for f in stale:
         f.unlink(missing_ok=True)
     R = REGISTERED
@@ -586,6 +654,8 @@ def main():
     ap.add_argument("command", choices=["pilot", "gate"])
     ap.add_argument("--device", default="cuda")
     ap.add_argument("--smoke", action="store_true", help="tiny sizes, ids outside E1, scratch folder, no git checks")
+    ap.add_argument("--guarded", action="store_true",
+                    help="with --smoke: keep the formal guards (CUDA, GPU, clean and pushed, same code and environment)")
     args = ap.parse_args()
     if args.smoke:
         use_smoke(args.command)
@@ -594,5 +664,11 @@ def main():
 
 if __name__ == "__main__":
     from wormwars.accounting import run_script
-    run_script(main, out_default=str(ROOT / "runs" / ("e1-smoke" if "--smoke" in sys.argv else "e1")),
-               default="measure", name="e1")
+    smoke = "--smoke" in sys.argv
+    try:
+        run_script(main, out_default=str(ROOT / "runs" / ("e1-smoke" if smoke else "e1")), default="measure", name="e1")
+    finally:
+        # the aggregate compute record, beside the stage's output, under a name git does not ignore
+        agg = ROOT / "runs" / ("e1-smoke" if smoke else "e1") / "compute.json"
+        if agg.exists() and not smoke:
+            (EXP / "compute-record.json").write_text(agg.read_text(encoding="utf-8"), encoding="utf-8", newline="\n")

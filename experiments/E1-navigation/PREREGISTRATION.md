@@ -1,9 +1,10 @@
-# E1: the positive control for navigation. Pre-registration (v2)
+# E1: the positive control for navigation. Pre-registration (v3)
 
 **Status:**
-- Written 2026-09-28. v1 (`f83bd19`) was reviewed by Astra 6 and Fable 5.1
-  (`docs/reviews/20260928-181005-E1-prereg/`). Both answered "revise", and v2 adopts every change
-  (D095).
+- Written 2026-09-28. Astra 6 and Fable 5.1 reviewed it twice, and every change they asked for is
+  adopted:
+  - v1 (`f83bd19`, `docs/reviews/20260928-181005-E1-prereg/`): "revise" (D095);
+  - v2 (`a6437be`, `docs/reviews/20260928-183315-E1-prereg-confirm/`): "revise" (D096).
 - **The formal pilot and gate come after this registration, and after its public push,** with the
   earlier exposure disclosed in §7. It is the first time in this series that a registration is
   public before its formal measurements.
@@ -26,7 +27,9 @@ where the two differ.
 - Task N lives in `wormwars/world.py` (the `navigate` task) and `wormwars/e1/`.
 - The runner is [`scripts/e1.py`](../../scripts/e1.py). Its `REGISTERED` constant holds every number
   below.
-- The runner applies every rule mechanically, and its guards are tested (`tests/test_e1_script.py`).
+- The runner applies every rule mechanically. Its guards have refusal tests
+  (`tests/test_e1_script.py`), except the live git fetch and the CUDA preflight. Those are
+  exercised by one guarded smoke run on the binding commit before the pilot (§5).
 
 ## 1. The question
 
@@ -69,8 +72,11 @@ relocations.
 - the freeze and the gate record the exact ids used.
 
 **Execution:**
-- **CUDA only,** on one RTX 5080, in the pinned environment. The runner refuses the CPU for formal
-  stages.
+- **CUDA only,** on one RTX 5080, in the pinned environment. The runner refuses the CPU and any other
+  GPU for formal stages.
+- **The environment is recorded at the pilot and must match at the gate:** Python, NumPy, Torch,
+  CUDA, the GPU, and the connectome cache's sha256. `requirements.txt` is in the guarded files. The
+  freeze and the gate also record the resolved task configuration.
 - Each controller is one strain on all of a stage's worlds, in one rollout. Scripted controllers
   have no neural batch.
 - **Reproducibility:** the counts are exact integers, but CUDA default mode does not guarantee
@@ -188,16 +194,31 @@ wording is fixed:
 **The cap: 8 GPU-hours** for the pilot, tuning and gate together.
 - It is counted with T0's accounting (synchronised wall clock), registered in code, and never
   extended.
-- It is checked before every rollout, and once more before a result is written. One rollout in
-  flight can overrun it; the overrun is recorded.
-- The compute record is committed with each stage's output.
+- **The clock:** earlier attempts' recorded time plus the current process's time since it started,
+  the accounting's own boundary.
+- **When it is checked:** before every rollout and every measurement loop, and once more after all
+  analysis, just before a result is written. One rollout in flight can overrun it; the overrun is
+  recorded.
+- **The compute record** is copied to `experiments/E1-navigation/compute-record.json` (a name git
+  does not ignore) and committed with each stage's output, with the stage's start marker.
+
+**Before the pilot:** one guarded smoke run, on the pushed binding commit. It uses smoke sizes and ids
+0-9 999, keeps every formal guard (CUDA, the GPU, clean and pushed, the same code and environment),
+and writes only to `runs/e1-smoke/`. It checks the guards that have no unit test. Its result is not
+data.
+
+**A stage's start marker is written only after a preflight:** the connectome, the interface, and one
+real operation on the GPU. So a trivial failure does not spend the stage.
 
 **Interruption.** Each stage writes an exclusive start marker before touching its worlds, and a
 started stage is never silently rerun.
 - **A pilot that stops without a freeze:** it is rerun only under a dated amendment, on the next
   unused offset of the pilot and tuning ranges. The failed attempt is disclosed.
-- **A gate that stops without a result, or hits the cap:** it is reported as not completed. Any new
-  attempt needs a new registration, on unused gate worlds.
+- **A gate that stops without a result, or hits the cap:** it is reported as not completed, and every
+  completed arm's counts and events are kept. Any new attempt needs a new registration, on unused
+  gate worlds.
+- **The order of the gate's outputs:** the outcome (`gate.json`) is written before the event tables,
+  so a failed events write cannot lose it.
 
 **Deviations** are reported in the results, and none is made silently.
 
@@ -213,8 +234,9 @@ The design's rule applies:
 
 ## 7. What was seen before this registration (disclosure)
 
-**Development used E1's worlds twice, before the smoke runs were moved off them.** No gate world
-was ever evaluated.
+**Development used E1's worlds twice, before the smoke runs were moved off them.** As far as the
+records and the session's command order show, no gate world was ever evaluated. The basis for each
+statement is given.
 1. **The first smoke run** of the pipeline used E1's ranges at tiny sizes. It ran on uncommitted
    code at a 40-tick horizon, with each grid cut to its first two values:
    - coverage on the first 8 pilot worlds;
@@ -223,13 +245,24 @@ was ever evaluated.
    - tuning on the first 8 tuning worlds.
 
    It printed every tuned mean as 0.0, and the oracle's as 0.5. Its gate stopped before any
-   rollout: it could not find the freeze, which the smoke run had deleted.
+   rollout: it could not find the freeze, which the smoke run had deleted. The compute records
+   confirm it: the gate attempt at 16:07:29 UTC built no world.
 2. **A debug run** computed the σ measure on the **first 32 pilot worlds,** outside the accounting,
    so it has no compute record. The share of leg starts at or above 5% of A was:
    - σ = 2: 0.00;
    - σ = 3: 0.00;
    - σ = 4: 0.33;
    - σ = 6: 0.875.
+
+3. **The second smoke pair (16:08:22 and 16:08:27 UTC),** found in the compute records by Fable. The
+   pilot built 52 + 1 000 worlds, and the gate completed with 208 worlds under `final` (13 arms ×
+   16).
+   - It ran in the same command that first switched smoke runs to ids 0-9 999, right after that
+     change. So its gate used smoke ids, not gate worlds.
+   - **The basis is the session's command order.** No record holds that pair's world ids; later
+     smoke runs record ids 0-15.
+   - If it had used E1's ranges, it would have touched the first 16 gate worlds, which the index
+     1 000 offset also skips.
 
 **Handling:**
 - **Every stage now starts at index 1 000** of its range, past every touched world.
@@ -239,15 +272,17 @@ was ever evaluated.
   the 90% share and the fallback were in `REGISTERED` before the debug run. That ordering is a
   development-history statement: `REGISTERED` and this file first appear together in `f83bd19`.
 
-**The σ outcome follows from geometry, not from those data** (Fable):
+**What geometry says about σ** (Fable; corrected by Astra, D096):
 - the scent reaches 5% of A at a distance of about 2.45 σ, so at 4.9, 7.3, 9.8 and 14.7 cells for
   the four candidates;
-- consecutive targets are at least D = 8 apart, so σ = 2 and 3 can never qualify. The expected
-  shares are about 0.29 at σ = 4 and 0.88 at σ = 6;
-- so σ = 6 is selected either way, and the pilot decides only the flag. No candidate was added and
-  no share was lowered after the debug run.
-- **If σ = 6 is flagged,** about an eighth of leg starts begin with the scent below the floor, and a
-  controller must search before it can steer.
+- consecutive targets are at least D = 8 apart, so σ = 2 and 3 can never qualify;
+- σ = 4 can qualify only if nearly every leg is between 8 and about 9.8 cells, which is possible
+  but improbable. Its expected share is about 0.29;
+- **so σ = 6 is strongly expected, not certain.** The rule is applied as registered. No candidate
+  was added and no share was lowered after the debug run.
+- **If σ = 6 is flagged,** fewer than 90% of leg starts read at least 5% of A. The floor is a
+  reporting criterion, not a cutoff for any controller, so it does not say how often a controller
+  can steer.
 
 ## 8. What E1 establishes, and what it does not
 

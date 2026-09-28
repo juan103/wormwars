@@ -79,7 +79,9 @@ def test_secondary_measures_count_failures_at_the_horizon(e1):
 def _freeze(e1, own=0.3):
     """A freeze consistent with the registered rules, with made-up measurements."""
     R = e1.REGISTERED
-    cov = [{"sigma": s, "share_above_floor": v} for s, v in zip(R["sigma_rule"]["candidates"], (0.0, 0.0, 0.3, 0.88))]
+    n_legs = R["sigma_rule"]["pilot_worlds"] * R["sigma_rule"]["legs_per_world"]
+    cov = [{"sigma": s, "share_above_floor": v, "leg_starts": n_legs}
+           for s, v in zip(R["sigma_rule"]["candidates"], (0.0, 0.0, 0.3, 0.88))]
     tuned = {}
     for name in (*e1.CONTROLS, "S-const k<=32"):
         base = "S-const" if name == "S-const k<=32" else name
@@ -92,7 +94,7 @@ def _freeze(e1, own=0.3):
     tuned["oracle"] = {"params": dict(R["oracle"]), "tuned_mean": 5.0}
     import json as _json
     return _json.loads(_json.dumps({"registered": R, "coverage": cov, "sigma": 6.0, "sigma_flagged": True,
-                                    "own_body": {"own_body_max_current": own}, "tuned": tuned,
+                                    "own_body": {"own_body_max_current": own, "samples": 100}, "tuned": tuned,
                                     "navigator": e1.navigator_of(tuned)}))
 
 
@@ -174,3 +176,106 @@ def test_reliability_counts_episodes_with_two_arrivals(e1):
     assert r["episodes_with_at_least_2"] == 820 and r["passed"]
     counts["navigator"] = np.array([2.0] * 819 + [1.0] * 205)
     assert not e1.gate_rules(counts)["reliability"]["passed"]
+
+
+
+# ------------------------------------------------------------------ the guards, confirmation round (D096)
+
+@pytest.mark.parametrize("bad", ["invented_sigma", "empty", "share_above_one", "legs", "nonfinite_mean", "no_samples"])
+def test_malformed_supporting_measurements_are_refused(e1, bad):
+    """Astra's cases: a coverage table that is not the registered experiment must not decide σ."""
+    f = _freeze(e1)
+    if bad == "invented_sigma":
+        f["coverage"] = [{"sigma": 5.0, "share_above_floor": 0.95, "leg_starts": f["coverage"][0]["leg_starts"]}]
+        f["sigma"], f["sigma_flagged"] = 5.0, False
+    elif bad == "empty":
+        f["coverage"] = []
+    elif bad == "share_above_one":
+        f["coverage"][3]["share_above_floor"] = 1.5
+    elif bad == "legs":
+        f["coverage"][0]["leg_starts"] = 7
+    elif bad == "nonfinite_mean":
+        f["tuned"]["K"]["means"][0] = float("nan")
+    elif bad == "no_samples":
+        f["own_body"]["samples"] = 0
+    with pytest.raises(SystemExit):
+        e1.validate_freeze(f)
+
+
+def test_the_gate_refuses_code_changed_since_the_pilot(e1, monkeypatch):
+    freeze = {"provenance_at_start": {"git_commit": "abc"}}
+    monkeypatch.setattr(e1, "git", lambda *a: "wormwars/world.py")
+    with pytest.raises(SystemExit):
+        e1.require_same_code_as_pilot(freeze)
+    monkeypatch.setattr(e1, "git", lambda *a: "")  # only outputs changed: accepted
+    e1.require_same_code_as_pilot(freeze)
+
+
+def test_the_gate_refuses_another_environment(e1):
+    was = {k: "x" for k in e1.ENV_KEYS}
+    e1.require_same_env_as_pilot({"provenance_at_start": was}, dict(was))
+    for k in e1.ENV_KEYS:
+        now = dict(was)
+        now[k] = "y"
+        with pytest.raises(SystemExit):
+            e1.require_same_env_as_pilot({"provenance_at_start": was}, now)
+
+
+def _formal_ok(e1, monkeypatch, pushed=True):
+    import subprocess as sp
+    monkeypatch.setattr(e1.torch.cuda, "is_available", lambda: True)
+
+    def fake_run(cmd, *a, **k):
+        rc = 0 if ("merge-base" not in cmd or pushed) else 1
+        return sp.CompletedProcess(cmd, rc)
+    monkeypatch.setattr(e1.subprocess, "run", fake_run)
+
+
+def test_formal_stages_refuse_a_dirty_tree_an_unpushed_head_and_another_gpu(e1, monkeypatch):
+    good = {"dirty": False, "branch": "roadmap", "gpu": "NVIDIA GeForce RTX 5080"}
+    _formal_ok(e1, monkeypatch)
+    e1.require_formal("cuda", good)
+    with pytest.raises(SystemExit):
+        e1.require_formal("cuda", {**good, "dirty": True})
+    with pytest.raises(SystemExit):
+        e1.require_formal("cuda", {**good, "gpu": "NVIDIA GeForce RTX 4090"})
+    _formal_ok(e1, monkeypatch, pushed=False)
+    with pytest.raises(SystemExit):
+        e1.require_formal("cuda", good)
+
+
+def test_the_cap_counts_this_process_from_its_start(e1, monkeypatch):
+    """Crossing the cap during work, not only an already-exceeded record (Astra, D096)."""
+    monkeypatch.setattr(e1, "spent_hours", lambda: 0.0)
+    monkeypatch.setattr(e1, "T_START", __import__("time").perf_counter() - e1.REGISTERED["cap_gpu_hours"] * 3600 - 1)
+    with pytest.raises(e1.CapReached):
+        e1.check_cap()
+
+
+def test_a_cap_hit_keeps_the_completed_arms(e1, tmp_path, monkeypatch):
+    monkeypatch.setattr(e1, "GATE_RESULT", tmp_path / "gate.json")
+    monkeypatch.setattr(e1, "GATE_EVENTS", tmp_path / "gate_events.npz")
+    counts = {"navigator": np.array([2.0, 3.0])}
+    events = {"navigator": {"reach_tick": np.array([[[1, -1], [2, -1]]])}}
+    with pytest.raises(SystemExit):
+        e1.not_completed({}, counts, events, np.array([7, 8]), "cap", 0.0)
+    import json as _json
+    doc = _json.loads((tmp_path / "gate.json").read_text(encoding="utf-8"))
+    assert doc["outcome"].startswith("E1 positive control: not completed")
+    assert doc["per_world_counts"] == {"navigator": [2, 3]}
+    with np.load(tmp_path / "gate_events.npz", allow_pickle=False) as z:
+        assert "navigator|reach_tick" in z.files and list(z["world_ids"]) == [7, 8]
+
+
+def test_smoke_mode_rebinds_every_path_and_id():
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("e1_smoke_instance", ROOT / "scripts" / "e1.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    mod.use_smoke("gate")
+    smoke = ROOT / "runs" / "e1-smoke"
+    assert mod.EXP == smoke and mod.FREEZE.parent == smoke and mod.GATE_RESULT.parent == smoke
+    assert mod.GATE_EVENTS.parent == smoke
+    for ids in (mod.PILOT_IDS, mod.TUNING_IDS, mod.GATE_IDS):
+        assert ids is mod.SMOKE_IDS
+    assert mod.REGISTERED["id_offset"] == 0

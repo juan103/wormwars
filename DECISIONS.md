@@ -2923,3 +2923,51 @@ them (`docs/reviews/20260928-181005-E1-prereg/`). **Both answered "revise",** an
   disclosed. The reliability criterion is a sample criterion (at least 820 of 1 024).
 
 **Next:** confirmation by both reviewers. Then the binding commit is pushed, and the pilot runs.
+
+## D096 — E1's pre-registration v3, after the confirmation review
+
+Astra 6 and Fable 5.1 checked v2 (`a6437be`; `docs/reviews/20260928-183315-E1-prereg-confirm/`).
+**Both answered "revise".** Both confirmed that v1's cue test, LF freeze, markers, endpoints and
+event retention were fixed correctly. v3 adopts every remaining point.
+
+**Corrections to D095, dated 2026-09-28** (D095 is kept as written):
+- **"The guards ... each has a test" was false** (both). The same-code check, the dirty and
+  unpushed refusals, and the gate's cap path had no test. They do now. The live git fetch and the
+  CUDA preflight are exercised by one guarded smoke run on the binding commit.
+- **"σ = 6 is selected either way" was false** (Astra). Geometry excludes σ = 2 and 3, not σ = 4.
+  σ = 6 is strongly expected, not certain. The "about an eighth" and "must search" readings of
+  the flag are withdrawn: the 5% floor is a reporting criterion, not a controller cutoff.
+
+**Fixed in v3:**
+- **The cap** (both):
+  - it is checked before every rollout and measurement loop, including generation 0 and
+    throughput;
+  - the final decision comes after all analysis, just before any write. Astra's mocked clock had
+    produced "passed" at 28 801 s;
+  - the clock is the process's time since it started, the accounting's own boundary.
+- **A cap hit keeps every completed arm's counts and events** (Astra).
+- **The freeze validation checks the supporting measurements** (Astra):
+  - the coverage rows must be exactly the registered candidates, with finite shares in [0, 1] and
+    the registered number of leg starts;
+  - the tuning scores must be finite;
+  - the own-body level needs samples.
+
+  Astra's malformed freezes are tests.
+- **Environment:**
+  - formal stages require the RTX 5080;
+  - the pilot records Python, NumPy, Torch, CUDA, the GPU and the connectome cache's sha256, and
+    the gate refuses any difference;
+  - `requirements.txt` is guarded;
+  - the resolved configuration is recorded.
+- **Order and robustness** (Fable):
+  - a preflight (connectome, interface, one GPU operation) runs before each start marker;
+  - the gate writes its outcome before the event tables;
+  - the compute record goes to `compute-record.json`, which git does not ignore;
+  - the smoke mode removes stale event files.
+- **§7:** the second smoke pair found by Fable (16:08 UTC) is accounted for. It ran in the command
+  that switched smoke runs to ids 0-9 999, so its gate used smoke ids. The basis, the session's
+  command order, is stated, because no record holds those ids. The index 1 000 offset would cover
+  it either way.
+
+Tests were added for each; the malformed-coverage and cap-clock tests were sabotage-checked. They
+were written after the code, not seen failing first, which is disclosed here.
