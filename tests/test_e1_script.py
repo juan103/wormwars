@@ -232,7 +232,9 @@ def _formal_ok(e1, monkeypatch, pushed=True):
 
 
 def test_formal_stages_refuse_a_dirty_tree_an_unpushed_head_and_another_gpu(e1, monkeypatch):
-    good = {"dirty": False, "branch": "roadmap", "gpu": "NVIDIA GeForce RTX 5080"}
+    pins = e1.pinned()
+    good = {"dirty": False, "branch": "roadmap", "gpu": "NVIDIA GeForce RTX 5080",
+            "python": pins["python"] + ".3", "torch": pins["torch"], "numpy": pins["numpy"]}
     _formal_ok(e1, monkeypatch)
     e1.require_formal("cuda", good)
     with pytest.raises(SystemExit):
@@ -258,7 +260,7 @@ def test_a_cap_hit_keeps_the_completed_arms(e1, tmp_path, monkeypatch):
     counts = {"navigator": np.array([2.0, 3.0])}
     events = {"navigator": {"reach_tick": np.array([[[1, -1], [2, -1]]])}}
     with pytest.raises(SystemExit):
-        e1.not_completed({}, counts, events, np.array([7, 8]), "cap", 0.0)
+        e1.not_completed({}, counts, events, np.array([7, 8]), "cap", 0.0, "cap")
     import json as _json
     doc = _json.loads((tmp_path / "gate.json").read_text(encoding="utf-8"))
     assert doc["outcome"].startswith("E1 positive control: not completed")
@@ -267,7 +269,9 @@ def test_a_cap_hit_keeps_the_completed_arms(e1, tmp_path, monkeypatch):
         assert "navigator|reach_tick" in z.files and list(z["world_ids"]) == [7, 8]
 
 
-def test_smoke_mode_rebinds_every_path_and_id():
+def test_smoke_mode_rebinds_every_path_and_id(monkeypatch):
+    """Without deleting anything: the real smoke records are evidence (Fable, D097)."""
+    monkeypatch.setattr(Path, "unlink", lambda self, missing_ok=False: None)
     import importlib.util
     spec = importlib.util.spec_from_file_location("e1_smoke_instance", ROOT / "scripts" / "e1.py")
     mod = importlib.util.module_from_spec(spec)

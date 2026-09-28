@@ -2971,3 +2971,37 @@ event retention were fixed correctly. v3 adopts every remaining point.
 
 Tests were added for each; the malformed-coverage and cap-clock tests were sabotage-checked. They
 were written after the code, not seen failing first, which is disclosed here.
+
+## D097 — E1's pre-registration v4, after the final confirmation round
+
+Astra 6 and Fable 5.1 checked v3 (`f63cdaa`; `docs/reviews/20260928-185310-E1-prereg-final/`).
+- **Both answered "revise".** Neither found a defect that would invalidate a result.
+- Both confirmed as resolved:
+  - Fable: the 16:08 smoke pair's disclosure, the cap checks and the compute record's path;
+  - Astra: the retention on a cap hit, the supporting-measurement validation and the σ wording.
+
+**Fixed in v4:**
+- **Crash retention** (both). v3 promised that completed arms were kept after any interruption,
+  but kept them only on a cap hit.
+  - Now every arm is checkpointed to disk (`gate_partial.npz`) as it completes.
+  - Any exception or interrupt writes the result with its own fixed wording, *"E1 positive control:
+    not completed (the run stopped)"*, keeping every completed arm, then re-raises.
+- **Tests through the commands themselves** (both). `tests/test_e1_commands.py` drives `cmd_gate`
+  and `cmd_pilot` with a fake rollout: completed, cap during the arms, cap after the analysis
+  (Astra's mocked clock), crash, once-only, committed freeze, and the pilot over a freeze. The crash
+  and final-cap paths were sabotage-checked.
+- **The guard-test claim** now lists exactly what no test exercises (Fable): the live fetch and
+  push check, the GPU preflight, the modified-freeze branch, and the zero-sample refusal.
+- **The pinned environment is enforced** against `requirements.txt`: Python 3.13, torch and numpy.
+  The connectome source spreadsheet's sha256 is recorded and compared too (Astra).
+- **The budget boundary is stated** (Astra):
+  - the clock starts at script load, counting slightly more than the accounting;
+  - writing the outputs after the final check is outside the decision, and is recorded.
+- **A cap already spent** before a stage starts spends nothing: the stage does not start (Fable).
+- **A test deleted real smoke records** (Fable); it no longer does.
+- **The development records §7 cites are committed** (`experiments/E1-navigation/development-records/`).
+- **If the guarded smoke run fails,** the fix is committed with a dated note, and the later commit
+  binds (Fable).
+
+The pilot's own-body zero-sample refusal still has no test. It is disclosed, and it can only
+refuse, before any stage output.

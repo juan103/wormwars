@@ -48,9 +48,11 @@ OUT = ROOT / "runs" / "e1"
 FREEZE = EXP / "freeze.json"
 GATE_RESULT = EXP / "gate.json"
 GATE_EVENTS = EXP / "gate_events.npz"
+GATE_PARTIAL = EXP / "gate_partial.npz"  # every completed arm, rewritten after each arm
 SMOKE_IDS = np.arange(10_000)  # outside every E1 range: smoke runs and throughput never see E1 worlds
 GUARDED = ["wormwars", "scripts", "configs", "requirements.txt", "experiments/E1-navigation/PREREGISTRATION.md"]
 CACHE = ROOT / "data" / "cache" / "cook2019_herm.npz"
+SOURCE = ROOT / "data" / "raw" / "SI5_Connectome_adjacency_matrices_corrected_July_2020.xlsx"
 T_START = time.perf_counter()  # the cap counts this process from its start, as the accounting does
 
 REGISTERED = {
@@ -114,7 +116,7 @@ def git(*a) -> str:
     return subprocess.check_output(["git", *a], cwd=ROOT, text=True).strip()
 
 
-ENV_KEYS = ("python", "numpy", "torch", "cuda", "gpu", "connectome_cache_sha256")
+ENV_KEYS = ("python", "numpy", "torch", "cuda", "gpu", "connectome_cache_sha256", "connectome_source_sha256")
 
 
 def provenance() -> dict:
@@ -124,7 +126,31 @@ def provenance() -> dict:
             "python": platform.python_version(), "numpy": np.__version__,
             "torch": torch.__version__, "cuda": torch.version.cuda,
             "gpu": torch.cuda.get_device_name(0) if torch.cuda.is_available() else None,
-            "connectome_cache_sha256": hashlib.sha256(CACHE.read_bytes()).hexdigest() if CACHE.exists() else None}
+            "connectome_cache_sha256": hashlib.sha256(CACHE.read_bytes()).hexdigest() if CACHE.exists() else None,
+            "connectome_source_sha256": hashlib.sha256(SOURCE.read_bytes()).hexdigest() if SOURCE.exists() else None}
+
+
+def pinned() -> dict:
+    """The registered environment: Python 3.13, and the torch and numpy pins in requirements.txt."""
+    pins = {"python": "3.13"}
+    for line in (ROOT / "requirements.txt").read_text(encoding="utf-8").splitlines():
+        name, _, rest = line.partition("==")
+        if name.strip() in ("torch", "numpy") and rest:
+            pins[name.strip()] = rest.split()[0]
+    return pins
+
+
+def require_pins(prov: dict) -> None:
+    """Formal stages run in the pinned environment, checked against requirements.txt (Astra, D097)."""
+    pins = pinned()
+    bad = {}
+    if not str(prov.get("python", "")).startswith(pins["python"] + "."):
+        bad["python"] = (pins["python"], prov.get("python"))
+    for k in ("torch", "numpy"):
+        if prov.get(k) != pins.get(k):
+            bad[k] = (pins.get(k), prov.get(k))
+    if bad:
+        raise SystemExit(f"not the pinned environment (registered, found): {bad}")
 
 
 def require_formal(device: str, prov: dict) -> None:
@@ -133,6 +159,7 @@ def require_formal(device: str, prov: dict) -> None:
         raise SystemExit("formal E1 stages run on CUDA only (PREREGISTRATION.md §2)")
     if "RTX 5080" not in str(prov.get("gpu")):
         raise SystemExit(f"formal E1 stages run on the registered GPU (an RTX 5080), not {prov.get('gpu')}")
+    require_pins(prov)
     if prov["dirty"]:
         raise SystemExit(f"uncommitted changes in {GUARDED}: commit first")
     subprocess.run(["git", "fetch", "-q", "origin"], cwd=ROOT, check=True)
@@ -197,8 +224,9 @@ def spent_hours() -> float:
 
 
 def check_cap(t0: float | None = None) -> None:
-    """Earlier attempts' recorded time plus this process's time since it started (the accounting's
-    own boundary). `t0` is accepted for call sites and ignored."""
+    """Earlier attempts' recorded time plus this process's time since the script was loaded, which
+    is slightly earlier than the accounting's timed category starts, so it counts slightly more.
+    `t0` is accepted for call sites and ignored."""
     if spent_hours() + (time.perf_counter() - T_START) / 3600 > REGISTERED["cap_gpu_hours"]:
         raise CapReached(f"the registered cap of {REGISTERED['cap_gpu_hours']} GPU-hours is reached")
 
@@ -393,7 +421,10 @@ def cmd_pilot(args):
         require_formal(args.device, prov)
     if FREEZE.exists():
         raise SystemExit(f"{FREEZE} exists: the pilot runs once")
-    check_cap()
+    try:
+        check_cap()
+    except CapReached as e:
+        raise SystemExit(f"the pilot did not start: {e}") from None
     con, iface = preflight(args.device)
     spec = BrainSpec.from_connectome(con)
     marker = start_marker("pilot", prov)
@@ -537,14 +568,28 @@ def save_events(events: dict, ids, skip: str | None = None) -> None:
                                                        for k, v in ev.items() if label != skip})
 
 
-def not_completed(result: dict, counts: dict, events: dict, ids, error: str, t0: float) -> None:
-    """A cap hit: the outcome is "not completed", and every completed arm's counts and events are
-    kept (Astra, D096). The gate worlds are spent either way."""
-    result.update(outcome="E1 positive control: not completed (the registered cap was reached)", error=error,
+OUTCOME_NOT_COMPLETED = {"cap": "E1 positive control: not completed (the registered cap was reached)",
+                         "stopped": "E1 positive control: not completed (the run stopped)"}
+
+
+def checkpoint(counts: dict, events: dict, ids) -> None:
+    np.savez_compressed(GATE_PARTIAL, world_ids=ids,
+                        **{f"{label}|count": v for label, v in counts.items()},
+                        **{f"{label}|{k}": v[0] for label, ev in events.items() for k, v in ev.items()})
+
+
+def not_completed(result: dict, counts: dict, events: dict, ids, error: str, t0: float, reason: str,
+                  reraise: BaseException | None = None) -> None:
+    """The gate did not complete: the cap was reached, or the run stopped (an exception or an
+    interrupt). Every completed arm's counts and events are kept (Astra, Fable, D096, D097). The gate
+    worlds are spent either way."""
+    result.update(outcome=OUTCOME_NOT_COMPLETED[reason], error=error,
                   arms_completed=list(counts), per_world_counts={k: v.astype(int).tolist() for k, v in counts.items()},
                   events_file=GATE_EVENTS.name, seconds=time.perf_counter() - t0)
     write_json(GATE_RESULT, result)
     save_events(events, ids)
+    if reraise is not None:
+        raise reraise
     raise SystemExit(result["outcome"])
 
 
@@ -564,7 +609,10 @@ def cmd_gate(args):
     if not args.smoke or args.guarded:
         require_same_code_as_pilot(freeze)
         require_same_env_as_pilot(freeze, prov)
-    check_cap()
+    try:
+        check_cap()
+    except CapReached as e:
+        raise SystemExit(f"the gate did not start: {e}") from None
     con, iface = preflight(args.device)
     cfg = config(freeze["sigma"])
     marker = start_marker("gate", prov)
@@ -599,8 +647,11 @@ def cmd_gate(args):
     try:
         for label, name, params, probe in arms:
             counts[label], events[label] = run(name, params, probe)
+            checkpoint(counts, events, ids)  # on disk after every arm, so even a killed process keeps them
     except CapReached as e:
-        not_completed(result, counts, events, ids, str(e), t0)
+        not_completed(result, counts, events, ids, str(e), t0, "cap")
+    except BaseException as e:  # noqa: BLE001  (recorded as not completed, then re-raised)
+        not_completed(result, counts, events, ids, f"{type(e).__name__}: {e}", t0, "stopped", reraise=e)
     counts[nav], events[nav] = counts["navigator"], events["navigator"]
     rules = gate_rules(counts)
     oracle_mean = float(counts["oracle"].mean())
@@ -616,9 +667,10 @@ def cmd_gate(args):
         check_cap()  # the final budget decision, after all analysis, just before the result is written
     except CapReached as e:
         not_completed(result, {k: v for k, v in counts.items() if k != nav},
-                      {k: v for k, v in events.items() if k != nav}, ids, str(e), t0)
+                      {k: v for k, v in events.items() if k != nav}, ids, str(e), t0, "cap")
     write_json(GATE_RESULT, result)  # the outcome first, then the event tables (Fable, D096)
     save_events(events, ids, skip=nav)
+    GATE_PARTIAL.unlink(missing_ok=True)
     print(result["outcome"], result["failed_rules"])
     print({k: round(v, 3) for k, v in result["means"].items()})
 
@@ -628,12 +680,13 @@ def cmd_gate(args):
 def use_smoke(command: str) -> None:
     """Tiny sizes, world ids outside every E1 range, and a scratch folder: exercises the pipeline
     without touching E1's worlds or its real freeze and gate files. Never used for results."""
-    global EXP, OUT, FREEZE, GATE_RESULT, GATE_EVENTS, PILOT_IDS, TUNING_IDS, GATE_IDS
+    global EXP, OUT, FREEZE, GATE_RESULT, GATE_EVENTS, GATE_PARTIAL, PILOT_IDS, TUNING_IDS, GATE_IDS
     EXP = OUT = ROOT / "runs" / "e1-smoke"
     FREEZE, GATE_RESULT, GATE_EVENTS = EXP / "freeze.json", EXP / "gate.json", EXP / "gate_events.npz"
+    GATE_PARTIAL = EXP / "gate_partial.npz"
     PILOT_IDS = TUNING_IDS = GATE_IDS = SMOKE_IDS
-    stale = (FREEZE, GATE_RESULT, GATE_EVENTS, EXP / "pilot-started.json", EXP / "gate-started.json") \
-        if command == "pilot" else (GATE_RESULT, GATE_EVENTS, EXP / "gate-started.json")
+    stale = (FREEZE, GATE_RESULT, GATE_EVENTS, GATE_PARTIAL, EXP / "pilot-started.json", EXP / "gate-started.json") \
+        if command == "pilot" else (GATE_RESULT, GATE_EVENTS, GATE_PARTIAL, EXP / "gate-started.json")
     for f in stale:
         f.unlink(missing_ok=True)
     R = REGISTERED

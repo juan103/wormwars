@@ -1,0 +1,38 @@
+{
+ "script": "e1",
+ "argv": [
+  "gate",
+  "--smoke"
+ ],
+ "default_category": "measure",
+ "status": "failed",
+ "error": "FileNotFoundError: [Errno 2] No such file or directory: 'D:\\\\Claude\\\\random\\\\wormWars\\\\runs\\\\e1-smoke\\\\freeze.json'",
+ "started_utc": "2026-09-28T16:07:29+00:00",
+ "ended_utc": "2026-09-28T16:07:29+00:00",
+ "pid": 42596,
+ "git_commit": "de57ce4fc9c468a522caa0e2554b4cb4711a5877",
+ "code_dirty": true,
+ "git_commit_at_end": "de57ce4fc9c468a522caa0e2554b4cb4711a5877",
+ "cuda_devices": [
+  "NVIDIA GeForce RTX 5080"
+ ],
+ "time_unit": "synchronised wall-clock seconds per category (not GPU kernel time)",
+ "neural_update_unit": "strains x batch x substeps network updates (network size not included)",
+ "uncategorised": false,
+ "categories": {
+  "measure": {
+   "worlds_built": 0,
+   "world_ticks": 0,
+   "neural_updates": 0,
+   "neural_padding": 0,
+   "seconds": 0.09978579985909164
+  }
+ },
+ "totals": {
+  "worlds_built": 0,
+  "world_ticks": 0,
+  "neural_updates": 0,
+  "neural_padding": 0,
+  "seconds_timed": 0.09978579985909164
+ }
+}

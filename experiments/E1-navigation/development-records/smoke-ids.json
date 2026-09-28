@@ -1,0 +1,21 @@
+{
+ "note": "smoke run on the v4 code (uncommitted tree), ids outside every E1 range",
+ "freeze_worlds": {
+  "coverage": {
+   "first": 0,
+   "last": 7,
+   "count": 8
+  },
+  "tuning": {
+   "first": 0,
+   "last": 7,
+   "count": 8
+  }
+ },
+ "gate_worlds": {
+  "first": 0,
+  "last": 15,
+  "count": 16
+ },
+ "gate_outcome": "E1 positive control: not passed"
+}
