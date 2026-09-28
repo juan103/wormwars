@@ -137,8 +137,10 @@ def run_cases(con, device, pad, runs02: Path, quick: bool) -> tuple[dict, dict]:
     # 1. strains per chunk, B = 160
     for k in CHUNKINGS:
         if k <= n_random:
+            # a chunking whose last chunk holds one strain is a single-strain case (256 = 85 x 3 + 1);
+            # the first full comparison counted chunk 3 as multi-strain (D090)
             put(f"T1/random{n_random}x8/chunk{k}", _roll(t1, iface, rnd, np.arange(8), device, k, ticks),
-                strains=n_random, worlds=8, per_chunk=k)
+                strains=n_random, worlds=8, per_chunk=k, remainder_of_one=(n_random % k == 1 and k > 1))
     put(f"T1/first{first.n_strains}x8/chunk1", _roll(t1, iface, first, np.arange(8), device, 1, ticks),
         strains=first.n_strains, worlds=8, per_chunk=1, batch_ref=f"T1/random{n_random}x8/chunk{n_random}")
 
