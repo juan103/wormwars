@@ -1,0 +1,860 @@
+{
+ "provenance_at_start": {
+  "git_commit": "101499cce70d3e6dbeabfe2e14be1d250be276e8",
+  "dirty": false
+ },
+ "device": "cuda",
+ "gpu": "NVIDIA GeForce RTX 5080",
+ "torch": "2.12.0+cu130",
+ "cuda": "13.0",
+ "quick": false,
+ "repeats": 5,
+ "settings": {
+  "allow_tf32_matmul": false,
+  "allow_tf32_cudnn": true,
+  "deterministic_algorithms": false
+ },
+ "workloads": {
+  "02-T1": {
+   "weys": 20,
+   "ticks": 200,
+   "substeps": 32
+  },
+  "task-N proxy": {
+   "weys": 1,
+   "ticks": 300,
+   "substeps": 32
+  }
+ },
+ "throughput": {
+  "02-T1": {
+   "ticks": 200,
+   "substeps": 32,
+   "weys": 20,
+   "chunk": {
+    "256": {
+     "strain_worlds_per_s": 142.30791728288736,
+     "range": [
+      141.0357851245861,
+      142.73355925219857
+     ],
+     "ticks_executed": 200,
+     "strains": 32,
+     "worlds_per_strain": 64,
+     "chunk_worlds": 256,
+     "median_s": 14.391328600002453,
+     "min_s": 14.348412599880248,
+     "max_s": 14.52113729994744,
+     "reps": 5
+    },
+    "512": {
+     "strain_worlds_per_s": 178.91338701687715,
+     "range": [
+      178.85550484930158,
+      179.20343913680722
+     ],
+     "ticks_executed": 200,
+     "strains": 32,
+     "worlds_per_strain": 64,
+     "chunk_worlds": 512,
+     "median_s": 11.446879599941894,
+     "min_s": 11.428352100076154,
+     "max_s": 11.450584099860862,
+     "reps": 5
+    },
+    "1024": {
+     "strain_worlds_per_s": 194.53064367200562,
+     "range": [
+      194.001834605264,
+      194.67899159712027
+     ],
+     "ticks_executed": 200,
+     "strains": 32,
+     "worlds_per_strain": 64,
+     "chunk_worlds": 1024,
+     "median_s": 10.527904300019145,
+     "min_s": 10.519881899934262,
+     "max_s": 10.55660120001994,
+     "reps": 5
+    },
+    "2048": {
+     "strain_worlds_per_s": 171.51921148558733,
+     "range": [
+      167.70909167893745,
+      171.78388319357353
+     ],
+     "ticks_executed": 200,
+     "strains": 32,
+     "worlds_per_strain": 64,
+     "chunk_worlds": 2048,
+     "median_s": 11.940353399841115,
+     "min_s": 11.92195659992285,
+     "max_s": 12.211621799971908,
+     "reps": 5
+    }
+   },
+   "runs_batched": {
+    "1": {
+     "strain_worlds_per_s": 140.75244607498365,
+     "range": [
+      135.0082014811258,
+      141.76331075327388
+     ],
+     "ticks_executed": 200,
+     "strains": 32,
+     "worlds_per_strain": 8,
+     "chunk_worlds": 256,
+     "median_s": 1.8187961000949144,
+     "min_s": 1.80582690006122,
+     "max_s": 1.8961811000481248,
+     "reps": 5,
+     "memory": {
+      "peak_allocated_gib": 0.11648225784301758,
+      "peak_reserved_gib": 0.873046875
+     }
+    },
+    "2": {
+     "strain_worlds_per_s": 170.6089439846167,
+     "range": [
+      170.4361290745042,
+      170.78881482928196
+     ],
+     "ticks_executed": 200,
+     "strains": 64,
+     "worlds_per_strain": 8,
+     "chunk_worlds": 512,
+     "median_s": 3.001014999812469,
+     "min_s": 2.997854399960488,
+     "max_s": 3.0040579000487924,
+     "reps": 5,
+     "memory": {
+      "peak_allocated_gib": 0.1957073211669922,
+      "peak_reserved_gib": 0.873046875
+     }
+    },
+    "4": {
+     "strain_worlds_per_s": 190.87601110056235,
+     "range": [
+      190.00043306783965,
+      191.1543296574746
+     ],
+     "ticks_executed": 200,
+     "strains": 128,
+     "worlds_per_strain": 8,
+     "chunk_worlds": 1024,
+     "median_s": 5.364739099983126,
+     "min_s": 5.356928100110963,
+     "max_s": 5.38946139998734,
+     "reps": 5,
+     "memory": {
+      "peak_allocated_gib": 0.3608560562133789,
+      "peak_reserved_gib": 0.873046875
+     }
+    },
+    "8": {
+     "strain_worlds_per_s": 170.90481397923074,
+     "range": [
+      165.08370497306788,
+      171.31245179331782
+     ],
+     "ticks_executed": 200,
+     "strains": 256,
+     "worlds_per_strain": 8,
+     "chunk_worlds": 2048,
+     "median_s": 11.983278600033373,
+     "min_s": 11.954764400143176,
+     "max_s": 12.405827700160444,
+     "reps": 5,
+     "memory": {
+      "peak_allocated_gib": 0.6916155815124512,
+      "peak_reserved_gib": 1.05078125
+     }
+    }
+   },
+   "single_strain": {
+    "checkpoint 1 x 16": {
+     "strain_worlds_per_s": 10.818259329241599,
+     "range": [
+      10.682928934407354,
+      10.867248545206396
+     ],
+     "ticks_executed": 200,
+     "strains": 1,
+     "worlds_per_strain": 16,
+     "chunk_worlds": 512,
+     "median_s": 1.478980999905616,
+     "min_s": 1.4723137998953462,
+     "max_s": 1.4977165998425335,
+     "reps": 5
+    },
+    "hold-out 1 x 64": {
+     "strain_worlds_per_s": 45.962872628047336,
+     "range": [
+      45.679882244223975,
+      46.32245655532007
+     ],
+     "ticks_executed": 200,
+     "strains": 1,
+     "worlds_per_strain": 64,
+     "chunk_worlds": 512,
+     "median_s": 1.3924281999934465,
+     "min_s": 1.3816192999947816,
+     "max_s": 1.401054399786517,
+     "reps": 5
+    }
+   }
+  },
+  "task-N proxy": {
+   "ticks": 300,
+   "substeps": 32,
+   "weys": 1,
+   "chunk": {
+    "256": {
+     "strain_worlds_per_s": 120.14263488464243,
+     "range": [
+      119.69582951807342,
+      120.6823267973735
+     ],
+     "ticks_executed": 300,
+     "strains": 32,
+     "worlds_per_strain": 64,
+     "chunk_worlds": 256,
+     "median_s": 17.0464049000293,
+     "min_s": 16.970173300011083,
+     "max_s": 17.110036400146782,
+     "reps": 5
+    },
+    "512": {
+     "strain_worlds_per_s": 231.98537033144163,
+     "range": [
+      172.73265429243247,
+      234.52426964051654
+     ],
+     "ticks_executed": 300,
+     "strains": 32,
+     "worlds_per_strain": 64,
+     "chunk_worlds": 512,
+     "median_s": 8.828142900019884,
+     "min_s": 8.732571699889377,
+     "max_s": 11.856472699902952,
+     "reps": 5
+    },
+    "1024": {
+     "strain_worlds_per_s": 457.3546490953831,
+     "range": [
+      453.17083500235947,
+      459.8226893942484
+     ],
+     "ticks_executed": 300,
+     "strains": 32,
+     "worlds_per_strain": 64,
+     "chunk_worlds": 1024,
+     "median_s": 4.477925400016829,
+     "min_s": 4.453890700126067,
+     "max_s": 4.519267000025138,
+     "reps": 5
+    },
+    "2048": {
+     "strain_worlds_per_s": 862.1221296228916,
+     "range": [
+      850.9555861089646,
+      867.0964665346079
+     ],
+     "ticks_executed": 300,
+     "strains": 32,
+     "worlds_per_strain": 64,
+     "chunk_worlds": 2048,
+     "median_s": 2.375533499987796,
+     "min_s": 2.3619055999442935,
+     "max_s": 2.406706100096926,
+     "reps": 5
+    }
+   },
+   "runs_batched": {
+    "1": {
+     "strain_worlds_per_s": 118.78782040647025,
+     "range": [
+      115.62497671202728,
+      119.89977503059819
+     ],
+     "ticks_executed": 300,
+     "strains": 32,
+     "worlds_per_strain": 8,
+     "chunk_worlds": 256,
+     "median_s": 2.1551030999980867,
+     "min_s": 2.1351165999658406,
+     "max_s": 2.21405449998565,
+     "reps": 5,
+     "memory": {
+      "peak_allocated_gib": 0.06711721420288086,
+      "peak_reserved_gib": 1.05078125
+     }
+    },
+    "2": {
+     "strain_worlds_per_s": 232.50695124221244,
+     "range": [
+      228.599187042608,
+      234.19516544737283
+     ],
+     "ticks_executed": 300,
+     "strains": 64,
+     "worlds_per_strain": 8,
+     "chunk_worlds": 512,
+     "median_s": 2.2020847001112998,
+     "min_s": 2.186210799962282,
+     "max_s": 2.2397280000150204,
+     "reps": 5,
+     "memory": {
+      "peak_allocated_gib": 0.10075187683105469,
+      "peak_reserved_gib": 1.05078125
+     }
+    },
+    "4": {
+     "strain_worlds_per_s": 375.6110052132336,
+     "range": [
+      374.86680605467245,
+      376.9026822054769
+     ],
+     "ticks_executed": 300,
+     "strains": 128,
+     "worlds_per_strain": 8,
+     "chunk_worlds": 1024,
+     "median_s": 2.726224699988961,
+     "min_s": 2.7168817000929266,
+     "max_s": 2.7316368999890983,
+     "reps": 5,
+     "memory": {
+      "peak_allocated_gib": 0.1677999496459961,
+      "peak_reserved_gib": 1.05078125
+     }
+    },
+    "8": {
+     "strain_worlds_per_s": 493.4153861216397,
+     "range": [
+      492.53848686114935,
+      495.37955762990657
+     ],
+     "ticks_executed": 300,
+     "strains": 256,
+     "worlds_per_strain": 8,
+     "chunk_worlds": 2048,
+     "median_s": 4.150661000050604,
+     "min_s": 4.134203699883074,
+     "max_s": 4.158050699857995,
+     "reps": 5,
+     "memory": {
+      "peak_allocated_gib": 0.30306291580200195,
+      "peak_reserved_gib": 1.05078125
+     }
+    }
+   },
+   "single_strain": {
+    "checkpoint 1 x 16": {
+     "strain_worlds_per_s": 7.582350846869709,
+     "range": [
+      7.523246951083249,
+      7.654829207422362
+     ],
+     "ticks_executed": 300,
+     "strains": 1,
+     "worlds_per_strain": 16,
+     "chunk_worlds": 512,
+     "median_s": 2.110163499834016,
+     "min_s": 2.0901837998535484,
+     "max_s": 2.1267412998713553,
+     "reps": 5
+    },
+    "hold-out 1 x 64": {
+     "strain_worlds_per_s": 28.636077073476958,
+     "range": [
+      28.388813725962436,
+      28.818328313215982
+     ],
+     "ticks_executed": 300,
+     "strains": 1,
+     "worlds_per_strain": 64,
+     "chunk_worlds": 512,
+     "median_s": 2.23494299990125,
+     "min_s": 2.220808899961412,
+     "max_s": 2.2544090999290347,
+     "reps": 5
+    }
+   }
+  }
+ },
+ "concurrency": {
+  "1": {
+   "per_process": [
+    140.65720375000595
+   ],
+   "total": 140.65720375000595
+  },
+  "2": {
+   "per_process": [
+    70.40424305814666,
+    70.40292450839148
+   ],
+   "total": 140.80716756653814
+  },
+  "3": {
+   "per_process": [
+    47.958668619931075,
+    48.27471192477462,
+    47.98033720786495
+   ],
+   "total": 144.21371775257063
+  },
+  "4": {
+   "per_process": [
+    36.27984846600975,
+    36.23762440003251,
+    36.25672828446766,
+    36.24235771427729
+   ],
+   "total": 145.0165588647872
+  }
+ },
+ "world": {
+  "02-T1": {
+   "batch": "32 strains x 8 worlds",
+   "ticks": 200,
+   "tick_ms_with_brain": 9.268857499118894,
+   "tick_ms_scripted": 5.072962499689311,
+   "world_share_estimate": 0.5473126003039265,
+   "tick_ms_without_host_syncs (diagnostic)": 8.953623999841511,
+   "parts_ms_per_tick (synchronised; diagnostic)": {
+    "sample_points": 0.321520488942042,
+    "done": 0.13298750622197986,
+    "_sensed_food": 0.26064249221235514,
+    "_sensor_signals": 0.24832600844092667,
+    "_build_current": 0.11602249694988132,
+    "_read_motors": 0.2781385031994432,
+    "_eat": 0.8101595146581531,
+    "_reap": 0.17926500528119504,
+    "pheromone diffuse_decay (inside _update_fields)": 0.10679900646209717,
+    "_update_fields": 1.14577800151892
+   },
+   "world_construction_ms": 43.013100046664476,
+   "timings": {
+    "with_brain": {
+     "median_s": 1.8537714998237789,
+     "min_s": 1.8481934000737965,
+     "max_s": 1.8550368999131024,
+     "reps": 5
+    },
+    "scripted": {
+     "median_s": 1.0145924999378622,
+     "min_s": 1.0091888001188636,
+     "max_s": 1.0370792001485825,
+     "reps": 5
+    },
+    "without_host_syncs": {
+     "median_s": 1.7907247999683022,
+     "min_s": 1.7821233000140637,
+     "max_s": 1.7968129999935627,
+     "reps": 5
+    }
+   }
+  },
+  "task-N proxy": {
+   "batch": "32 strains x 8 worlds",
+   "ticks": 300,
+   "tick_ms_with_brain": 7.147670666842411,
+   "tick_ms_scripted": 5.01229799973468,
+   "world_share_estimate": 0.7012491528165128,
+   "tick_ms_without_host_syncs (diagnostic)": 7.221258333108077,
+   "parts_ms_per_tick (synchronised; diagnostic)": {
+    "sample_points": 0.32845667252937955,
+    "done": 0.12857466703280807,
+    "_sensed_food": 0.2580619921597342,
+    "_sensor_signals": 0.2491603372618556,
+    "_build_current": 0.11307599333425364,
+    "_read_motors": 0.2238146619250377,
+    "_eat": 0.814517333637923,
+    "_reap": 0.12635899785285193,
+    "pheromone diffuse_decay (inside _update_fields)": 0.10401633568108082,
+    "_update_fields": 1.1437950050458312
+   },
+   "world_construction_ms": 41.25110013410449,
+   "timings": {
+    "with_brain": {
+     "median_s": 2.1443012000527233,
+     "min_s": 2.1367974998429418,
+     "max_s": 2.1843673000112176,
+     "reps": 5
+    },
+    "scripted": {
+     "median_s": 1.503689399920404,
+     "min_s": 1.480305999983102,
+     "max_s": 1.5213514000643045,
+     "reps": 5
+    },
+    "without_host_syncs": {
+     "median_s": 2.1663774999324232,
+     "min_s": 2.159233700018376,
+     "max_s": 2.180572699988261,
+     "reps": 5
+    }
+   }
+  }
+ },
+ "replay_mode_cost": {
+  "default": {
+   "strain_worlds_per_s": 140.7751475497627,
+   "range": [
+    139.79216072845475,
+    141.36699899465918
+   ],
+   "ticks_executed": 200,
+   "strains": 32,
+   "worlds_per_strain": 8,
+   "chunk_worlds": 512,
+   "median_s": 1.8185028000734746,
+   "min_s": 1.810889400076121,
+   "max_s": 1.8312901000026613,
+   "reps": 5
+  },
+  "replay_mode(warn=False)": {
+   "strain_worlds_per_s": 121.43395090962198,
+   "range": [
+    120.98634877344216,
+    121.5864485796835
+   ],
+   "ticks_executed": 200,
+   "strains": 32,
+   "worlds_per_strain": 8,
+   "chunk_worlds": 512,
+   "median_s": 2.1081419000402093,
+   "min_s": 2.105497800046578,
+   "max_s": 2.115941199939698,
+   "reps": 5
+  },
+  "slowdown": 1.159273386851553
+ },
+ "sparsity": {
+  "n": 302,
+  "chem_synapses": 3709,
+  "chem_density": 0.04066707566380501,
+  "gap_density": 0.023924389854073524,
+  "chem_max_in_degree": 65,
+  "gap_max_in_degree": 50
+ },
+ "levers": {
+  "S32_B160": {
+   "current": {
+    "ms": 5.25550008751452,
+    "speedup": 1.0,
+    "max_diff": 0.0,
+    "repeat_identical": true
+   },
+   "fused_gemm": {
+    "ms": 5.126599920913577,
+    "speedup": 1.0251434027600055,
+    "max_diff": 9.5367431640625e-07,
+    "repeat_identical": true
+   },
+   "transposed_storage": {
+    "ms": 7.804600056260824,
+    "speedup": 0.6733849331970029,
+    "max_diff": 0.0,
+    "repeat_identical": true
+   },
+   "cuda_graph": {
+    "ms": 4.771299893036485,
+    "speedup": 1.1014818194900524,
+    "max_diff": 0.0,
+    "repeat_identical": true
+   },
+   "tf32": {
+    "ms": 4.321499960497022,
+    "speedup": 1.216128690398062,
+    "max_diff": 0.0012462139129638672,
+    "repeat_identical": true
+   },
+   "cusparse_csr": {
+    "ms": 3.861099947243929,
+    "speedup": 1.361140648862488,
+    "max_diff": 1.430511474609375e-06,
+    "repeat_identical": false,
+    "replay_mode(warn=False)": {
+     "raised": false,
+     "repeat_identical": false
+    }
+   },
+   "pad_n_304": {
+    "ms": 5.243099993094802,
+    "speedup": 1.002365031076281,
+    "max_diff": 0.0,
+    "repeat_identical": true
+   },
+   "pad_n_320": {
+    "ms": 5.680800182744861,
+    "speedup": 0.9251337696189054,
+    "max_diff": 0.0,
+    "repeat_identical": true
+   },
+   "pad_n_384": {
+    "ms": 6.853400031104684,
+    "speedup": 0.7668456625415163,
+    "max_diff": 0.0,
+    "repeat_identical": true
+   },
+   "current_retimed": {
+    "ms": 5.234099924564362
+   }
+  },
+  "S8_B1280": {
+   "current": {
+    "ms": 10.041899979114532,
+    "speedup": 1.0,
+    "max_diff": 0.0,
+    "repeat_identical": true
+   },
+   "fused_gemm": {
+    "ms": 10.125899920240045,
+    "speedup": 0.991704446835623,
+    "max_diff": 9.5367431640625e-07,
+    "repeat_identical": true
+   },
+   "transposed_storage": {
+    "ms": 13.962100027129054,
+    "speedup": 0.7192256150294456,
+    "max_diff": 0.0,
+    "repeat_identical": true
+   },
+   "cuda_graph": {
+    "ms": 9.606000036001205,
+    "speedup": 1.0453778827274276,
+    "max_diff": 0.0,
+    "repeat_identical": true
+   },
+   "tf32": {
+    "ms": 6.411900045350194,
+    "speedup": 1.5661348286919656,
+    "max_diff": 0.0011093616485595703,
+    "repeat_identical": true
+   },
+   "cusparse_csr": {
+    "ms": 5.8910001534968615,
+    "speedup": 1.704617164736233,
+    "max_diff": 9.5367431640625e-07,
+    "repeat_identical": false,
+    "replay_mode(warn=False)": {
+     "raised": false,
+     "repeat_identical": false
+    }
+   },
+   "pad_n_304": {
+    "ms": 9.711100021377206,
+    "speedup": 1.034064107774519,
+    "max_diff": 0.0,
+    "repeat_identical": true
+   },
+   "pad_n_320": {
+    "ms": 10.569400154054165,
+    "speedup": 0.9500917585434311,
+    "max_diff": 0.0,
+    "repeat_identical": true
+   },
+   "pad_n_384": {
+    "ms": 12.665000045672059,
+    "speedup": 0.7928859015319227,
+    "max_diff": 0.0,
+    "repeat_identical": true
+   },
+   "current_retimed": {
+    "ms": 10.06320002488792
+   }
+  },
+  "S64_B160": {
+   "current": {
+    "ms": 10.657900013029575,
+    "speedup": 1.0,
+    "max_diff": 0.0,
+    "repeat_identical": true
+   },
+   "fused_gemm": {
+    "ms": 10.296300053596497,
+    "speedup": 1.0351194077047874,
+    "max_diff": 1.1920928955078125e-06,
+    "repeat_identical": true
+   },
+   "transposed_storage": {
+    "ms": 14.632100006565452,
+    "speedup": 0.7283916873345149,
+    "max_diff": 0.0,
+    "repeat_identical": true
+   },
+   "cuda_graph": {
+    "ms": 10.148100089281797,
+    "speedup": 1.0502359968134545,
+    "max_diff": 0.0,
+    "repeat_identical": true
+   },
+   "tf32": {
+    "ms": 8.404899854213,
+    "speedup": 1.2680579421404108,
+    "max_diff": 0.0012270212173461914,
+    "repeat_identical": true
+   },
+   "cusparse_csr": {
+    "ms": 6.123899947851896,
+    "speedup": 1.7403778807274746,
+    "max_diff": 9.5367431640625e-07,
+    "repeat_identical": false,
+    "replay_mode(warn=False)": {
+     "raised": false,
+     "repeat_identical": false
+    }
+   },
+   "pad_n_304": {
+    "ms": 10.31159982085228,
+    "speedup": 1.033583556207932,
+    "max_diff": 0.0,
+    "repeat_identical": true
+   },
+   "pad_n_320": {
+    "ms": 11.12379995174706,
+    "speedup": 0.958116835906932,
+    "max_diff": 0.0,
+    "repeat_identical": true
+   },
+   "pad_n_384": {
+    "ms": 13.461800059303641,
+    "speedup": 0.7917143298873874,
+    "max_diff": 0.0,
+    "repeat_identical": true
+   },
+   "current_retimed": {
+    "ms": 10.601000161841512
+   }
+  }
+ },
+ "short_run": {
+  "02-T1": {
+   "generations": 5,
+   "population": 32,
+   "worlds_per_strain": 8,
+   "wall_s": 13.620250900043175,
+   "by_category": {
+    "measure": {
+     "worlds_built": 0,
+     "world_ticks": 0,
+     "neural_updates": 0,
+     "seconds": 0.014497999800369143
+    },
+    "selection": {
+     "worlds_built": 1280,
+     "world_ticks": 256000,
+     "neural_updates": 163840000,
+     "seconds": 9.187374100089073
+    },
+    "holdout": {
+     "worlds_built": 32,
+     "world_ticks": 6400,
+     "neural_updates": 4096000,
+     "seconds": 3.0067080000881106
+    },
+    "final": {
+     "worlds_built": 64,
+     "world_ticks": 12800,
+     "neural_updates": 8192000,
+     "seconds": 1.4117000000551343
+    }
+   }
+  },
+  "task-N proxy": {
+   "generations": 5,
+   "population": 32,
+   "worlds_per_strain": 8,
+   "wall_s": 17.15118750021793,
+   "by_category": {
+    "measure": {
+     "worlds_built": 0,
+     "world_ticks": 0,
+     "neural_updates": 0,
+     "seconds": 0.005207199836149812
+    },
+    "selection": {
+     "worlds_built": 1280,
+     "world_ticks": 384000,
+     "neural_updates": 12288000,
+     "seconds": 10.693427999969572
+    },
+    "holdout": {
+     "worlds_built": 32,
+     "world_ticks": 9600,
+     "neural_updates": 307200,
+     "seconds": 4.215319199953228
+    },
+    "final": {
+     "worlds_built": 64,
+     "world_ticks": 19200,
+     "neural_updates": 614400,
+     "seconds": 2.237259300192818
+    }
+   }
+  }
+ },
+ "profiler": {
+  "ticks": 100,
+  "batch": "32 strains x 8 worlds",
+  "cpu_self_ms": 870.4699939999994,
+  "kernel_ms": 542.7996880000019,
+  "kernel_launches": 59255,
+  "top_ops": [
+   {
+    "op": "aten::bmm",
+    "kernel_share": 0.6892237380947095,
+    "calls": 6400
+   },
+   {
+    "op": "aten::add",
+    "kernel_share": 0.09926498889218312,
+    "calls": 12434
+   },
+   {
+    "op": "aten::mul",
+    "kernel_share": 0.06458327588425952,
+    "calls": 11937
+   },
+   {
+    "op": "aten::div",
+    "kernel_share": 0.04576953994121955,
+    "calls": 4102
+   },
+   {
+    "op": "aten::tanh",
+    "kernel_share": 0.024367396099168853,
+    "calls": 3500
+   },
+   {
+    "op": "aten::copy_",
+    "kernel_share": 0.011310708417352518,
+    "calls": 3766
+   },
+   {
+    "op": "aten::cudnn_convolution",
+    "kernel_share": 0.006954473415243324,
+    "calls": 401
+   },
+   {
+    "op": "aten::bitwise_and",
+    "kernel_share": 0.004774792722435358,
+    "calls": 2909
+   },
+   {
+    "op": "aten::index",
+    "kernel_share": 0.004765345406756856,
+    "calls": 808
+   },
+   {
+    "op": "aten::gather",
+    "kernel_share": 0.004601404634559217,
+    "calls": 500
+   }
+  ],
+  "note": "CPU time includes dispatch and waiting; it is not by itself evidence of a CPU limit (D086)"
+ },
+ "seconds": 995.8698285000864
+}
