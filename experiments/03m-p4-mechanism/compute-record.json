@@ -55,6 +55,28 @@
    ],
    "default_category": "probe",
    "git_commit": "0916f4117c0080a66d36fb79d125e05b640b355e"
+  },
+  {
+   "file": "20260928T232759Z-8b288878.json",
+   "status": "completed",
+   "script": "p4m",
+   "argv": [
+    "tradeoff"
+   ],
+   "default_category": "probe",
+   "git_commit": "f71f6f9acfc047065456d245cbf9e805e730515f"
+  },
+  {
+   "file": "20260928T232801Z-e538a14e.json",
+   "status": "completed",
+   "script": "p4m",
+   "argv": [
+    "tails",
+    "--measures",
+    "D:/Claude/random/wormWars/runs/exp03/measures"
+   ],
+   "default_category": "probe",
+   "git_commit": "f71f6f9acfc047065456d245cbf9e805e730515f"
   }
  ],
  "failed_attempts": 0,
@@ -65,7 +87,7 @@
    "world_ticks": 0,
    "neural_updates": 0,
    "neural_padding": 0,
-   "seconds": 12.116462499834597
+   "seconds": 17.981414299923927
   }
  },
  "totals": {
@@ -73,6 +95,6 @@
   "world_ticks": 0,
   "neural_updates": 0,
   "neural_padding": 0,
-  "seconds_timed": 12.116462499834597
+  "seconds_timed": 17.981414299923927
  }
 }

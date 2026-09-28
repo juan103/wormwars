@@ -1,9 +1,9 @@
 {
  "what": "exploratory (PLAN.md Q1b); no simulation; from 03's local per-genome measures",
  "stamp": {
-  "git_commit": "0916f4117c0080a66d36fb79d125e05b640b355e",
+  "git_commit": "f71f6f9acfc047065456d245cbf9e805e730515f",
   "branch": "p4-mechanism",
-  "dirty": true,
+  "dirty": false,
   "python": "3.13.3",
   "numpy": "2.4.4",
   "torch": "2.12.0+cu130",
@@ -12,7 +12,7 @@
   "connectome_cache_sha256": "43b87aa172a0042b9dce734b15bdf1c87efe3a33ac1cc0d9cd03255a60c96d4a"
  },
  "inputs": {
-  "directory": "runs/exp03/measures (local)",
+  "directory": "D:\\Claude\\random\\wormWars\\runs\\exp03\\measures",
   "files": 641,
   "sha256_of_name_and_file_hashes": "bca43cbecf01469a18bbd43708cdba86cc5f595ab0b889441ba5d974f7a93054"
  },
