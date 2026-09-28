@@ -1,0 +1,68 @@
+{
+ "registered": {
+  "generations_timed": 6,
+  "seed_base": 1109000,
+  "max_training_hours": 4.5
+ },
+ "provenance_at_start": {
+  "git_commit": "e3d68be548d05b39fe2e4152b0c88d65675111a3",
+  "branch": "roadmap",
+  "dirty": false,
+  "python": "3.13.3",
+  "numpy": "2.4.4",
+  "torch": "2.12.0+cu130",
+  "cuda": "13.0",
+  "gpu": "NVIDIA GeForce RTX 5080",
+  "connectome_cache_sha256": "43b87aa172a0042b9dce734b15bdf1c87efe3a33ac1cc0d9cd03255a60c96d4a",
+  "connectome_source_sha256": "1f4fdbf84746b69b49a8da0816f52787860ce349b638dce37924ba80f90c70c9"
+ },
+ "device": "cuda",
+ "resolved_config_sha256": "6f884526e5dd58661325732304f5bee89c9627563f7c6dfbd88242d83dc90b24",
+ "e1_inputs_sha256": {
+  "experiments/E1-navigation/freeze.json": "c5c48f83079a6bd0dd48bdeb13d02ab211a08eb64433fdc8372cbd6e74bcaae9",
+  "experiments/E1-navigation/gate.json": "a18b5a53845360107448527b2af038b9c613e4bf11fdfe843c328b7c2a01afa0"
+ },
+ "start_marker": "project-started.json",
+ "generations_timed": 6,
+ "rerun": null,
+ "seeds": [
+  1109000,
+  1109001,
+  1109002,
+  1109003,
+  1109004,
+  1109005,
+  1109006,
+  1109007
+ ],
+ "ids": {
+  "training": [
+   0,
+   4999
+  ],
+  "validation": {
+   "first": 5000,
+   "last": 5255,
+   "count": 256
+  }
+ },
+ "outcome": "completed",
+ "batch_seconds": [
+  9.00838110013865,
+  5.253648099955171,
+  5.2487251998391,
+  5.281607599928975,
+  5.255481799831614,
+  8.544302900088951
+ ],
+ "plan": {
+  "generations": 2000,
+  "checkpoints": 82
+ },
+ "median_seconds_per_generation": 5.254564949893393,
+ "seconds_per_checkpoint": 3.2897379501955584,
+ "projected_training_hours": 2.9941356699174504,
+ "limit_hours": 4.5,
+ "within_limit": true,
+ "seconds": 38.60409020003863
+}
