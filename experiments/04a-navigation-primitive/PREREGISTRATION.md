@@ -1,4 +1,4 @@
-# 04a: an evolved N2 navigation primitive. Pre-registration (draft v4)
+# 04a: an evolved N2 navigation primitive. Pre-registration (v5)
 
 **Status:**
 - Written 2026-09-28 for review by Astra 6 and Fable 5.1. Nothing below has run on 04a's
@@ -10,6 +10,9 @@
     §12 lists them.
   - v3 (`082210e`, `docs/reviews/20260928-224400-04a-prereg-v3/`): both said "revise", narrowly
     (D107). Every must-fix is adopted in v4; §13 lists them.
+  - v4 (`1653809`, `docs/reviews/20260928-230307-04a-prereg-v4/`): Fable "ready to bind", with two
+    text slips; Astra "revise" for one gap in the kill accounting (D108). Both are fixed in v5; §14
+    lists them.
 - **The order:** review until both agree; bind (a commit); push; the guarded projection and a
   guarded smoke run on the binding commit; then the formal stages, each on a clean tree whose HEAD
   is pushed, with each stage's record committed and pushed before the next stage starts.
@@ -357,16 +360,22 @@ about 10 s per checkpoint beyond 4.749 s per generation, a conservative figure.
 - **the rerun rule, fixed now:** a stage stopped by a crash, an interrupt, or a kill that left a
   start marker and no record, **is rerun once**, from scratch with the same seeds
   (`--rerun --reason "..."`): the rerun is obligatory, not a choice made after seeing partial
-  curves or arms (Fable, review v3). **A kill's compute is charged first:** the accounting writes its
-  record only when a process ends normally, so before a rerun the killed attempt is charged from its
-  start marker to its last file write, plus a registered tail of 900 s, as an attempt record in the
-  accounting; the cap check that follows includes it, and a rerun the cap refuses is not used up
-  (Astra, Fable, review v3). The rerun is applied only after every other check has passed. The reason is written to `<stage>-rerun.json` before the rerun
+  curves or arms (Fable, review v3). A crash caused by the guarded code itself is the exception: a
+  rerun would repeat it, so the amendment route below applies directly. **A kill's compute is charged
+  first:** the accounting writes its record only when its cleanup handlers run, which a kill skips,
+  so before a rerun the killed attempt is charged from its start marker to its last file write, plus
+  a registered tail of 900 s, as an attempt record written once and atomically; the accounting's
+  total is rebuilt before every cap check, the cap check follows, and a rerun the cap refuses is not
+  used up (Astra, Fable, reviews v3 and v4). A killed rerun is charged the same way, although it
+  cannot be rerun. A hang longer than 900 s before a kill is undercounted by the difference; the
+  rerun's reason names the kill time when it is known. The rerun is applied only after every other
+  check has passed. The reason is written to `<stage>-rerun.json` before the rerun
   starts; an interrupt must name its external cause. The stopped attempt's record, marker, partial
   files and local genome files are kept beside it, renamed `-attempt1`, and disclosed. A stage
   stopped by the cap is not rerun, and a second stop is final. The projection may also be rerun
-  after an over-limit result, only once an amendment has reduced the registered generations below the
-  ones it projected (the runner checks this); one projection rerun in total. Its scratch genome files
+  after an over-limit result, only once an amendment has reduced the registered generations enough
+  that training fits the limit at that projection's own measured rates (the runner checks this); one
+  projection rerun in total. Its scratch genome files
   are archived with it. A crash caused by the guarded code itself cannot be fixed inside this
   registration: fixing it changes the binding commit, so it needs a dated amendment and a new
   projection on the new commit, all disclosed. Anything else needs a dated amendment;
@@ -416,6 +425,9 @@ about 10 s per checkpoint beyond 4.749 s per generation, a conservative figure.
   not `runs/e04a/`): the pilot 1 044 s (0.29 GPU-hours), v1's projection 33.8 s (`dev-projection-v1.json`), the CPU smoke run
   and the arm timing a few seconds each; the equivalence runs were not accounted, and took about
   two minutes.
+- **v5's CPU smoke run,** before binding: all four stages, unguarded, with real rollouts at smoke
+  sizes on smoke ids and smoke seeds. Every stage completed, the extras recorded no errors, and the
+  outcome was "not passed", as tiny sizes must give. Local only (`runs/e04a-smoke/`), a few seconds.
 - **The design saw E1's results,** including the gain curve and the generation-0 zero share, before
   this registration. Those shaped the choices of shaping, budget and references.
 
@@ -521,7 +533,21 @@ is obligatory after a crash or kill (Fable); one projection rerun in total, with
 archived (both); what happens after a crash caused by the guarded code (Fable); tests of a stopped
 projection's and a stopped evaluation's rerun (both).
 
-**Not adopted:** running all four stages unguarded on smoke ids before binding (Fable). The GPU is
-paused by its owner; the guarded smoke run on the binding commit exercises the same path with real
-rollouts before any formal stage. Wrapping the secondary measures and the gain placement so an error
+**Not adopted in v4, then done:** running all four stages unguarded on smoke ids before binding
+(Fable). v4 gave the paused GPU as the reason, which was stale (the GPU had been freed) and beside the
+point (the unguarded smoke mode runs on the CPU). It was run for v5 (§9, §14). Wrapping the secondary measures and the gain placement so an error
 there cannot void a finished hold-out (Fable): they stay inside the verdict, as §7 registers.
+
+## 14. Changes from v4 (review v4, D108)
+
+- **The kill reconciliation** is written atomically, under a name the accounting's aggregate does not
+  read until complete; an existing one is reused with its stored charge; and the aggregate is rebuilt
+  before every cap check, so a kill between the two writes cannot leave a stale total. Tested with the
+  aggregate missing and stale, and sabotage-checked (Astra, the one must-fix).
+- **A killed rerun is charged** before its refusal (Fable).
+- **An over-limit projection's rerun** needs the amended plan to fit the limit at that projection's
+  own rates, not a token reduction (Fable).
+- **Text:** "when its cleanup handlers run", not "ends normally" (Astra); the decision labels in the
+  runner (D107, not D105); §13's stale reason; a crash in the guarded code goes straight to the
+  amendment route (Fable).
+- **The CPU smoke run of all four stages** (§9; Fable).

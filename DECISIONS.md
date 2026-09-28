@@ -3303,3 +3303,20 @@ stated; tests of stopped-projection and stopped-evaluation reruns.
 
 **The GPU was paused** at the owner's request during this round (2026-09-28), and freed again the
 same evening. No GPU work ran while it was paused.
+
+## D108 — 04a review v4: Fable "ready to bind", Astra one kill-accounting gap; v5
+
+Astra 6 and Fable 5.1 checked v4 (`1653809`; `docs/reviews/20260928-230307-04a-prereg-v4/`).
+- **Fable: "ready to bind"**, with two text slips to fix in the binding commit (the runner's decision
+  labels, and §13's stale reason for not running the unguarded smoke run), plus non-blocking
+  residuals.
+- **Astra: "revise"** for one gap: the kill reconciliation rebuilt `compute.json` only when it first
+  wrote its record, so a kill between the two writes would leave the next cap check reading a stale
+  total.
+
+**Done in v5:** the reconciliation record is written atomically and reused with its stored charge,
+and the aggregate is rebuilt before every cap check (tested with a missing and a stale aggregate,
+sabotage-checked); a killed rerun is charged before its refusal; an over-limit projection's rerun
+must fit the limit at its own measured rates; the text slips; and D107's "ends normally" is better
+said "when its cleanup handlers run" (Astra). Fable's suggested CPU smoke run of all four stages with
+real rollouts was run and completed without errors.

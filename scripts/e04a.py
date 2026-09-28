@@ -98,7 +98,7 @@ REGISTERED = {
     "rerun": ("once per stage, from scratch with the same seeds, after a crash, an interrupt or a kill, with the "
               "reason written first; never after the cap. The projection may also be rerun after an over-limit "
               "result, once the generations are reduced by an amendment in AMENDMENTS.md (not guarded)"),
-    "rerun_kill_tail_seconds": 900,  # charged beyond a killed attempt's last file write (D105)
+    "rerun_kill_tail_seconds": 900,  # charged beyond a killed attempt's last file write (D107)
 }
 SMOKE_SEED_BASE = 1_108_000  # smoke runs' own seeds
 OUTCOMES = {"passed": "04a: passed", "some": "04a: some runs passed ({k} of {n})", "none": "04a: not passed",
@@ -232,11 +232,14 @@ def rerun_plan(stage: str, files: list[Path], reason: str | None, over_limit_ok:
     a kill (never the cap), with a reason. `files[0]` is the record and `files[1]` the start marker. A
     kill leaves a marker and no record; its compute is reconciled into the accounting first
     (`reconcile_kill`), so the cap check that follows includes it. With `over_limit_ok` (the
-    projection), a completed projection over its limit may be rerun only once the registered
-    generations are below the ones it projected (an amendment, D105)."""
+    projection), a completed projection over its limit may be rerun only once an amendment has
+    reduced the registered generations so that, at the archived projection's own rates, training
+    fits the limit (D107, D108). A killed attempt is charged before any refusal, so even a final,
+    refused one is counted."""
     if not reason or not reason.strip():
         raise SystemExit("a rerun needs --reason, written before it runs")
     record, marker = files[0], files[1]
+    reconciled = reconcile_kill(stage, files) if (marker.exists() and not record.exists()) else None
     if any(attempt1(f).exists() for f in files[:2]):
         raise SystemExit(f"{stage} has been rerun once already")
     if record.exists():
@@ -244,20 +247,35 @@ def rerun_plan(stage: str, files: list[Path], reason: str | None, over_limit_ok:
         over = over_limit_ok and rec.get("outcome") == "completed" and rec.get("within_limit") is False
         if rec.get("outcome") != OUTCOMES["stopped"] and not over:
             raise SystemExit(f"only a stage stopped by a crash, an interrupt or a kill is rerun, not: {rec.get('outcome')}")
-        if over and not training_plan()["generations"] < rec.get("plan", {}).get("generations", 0):
-            raise SystemExit("an over-limit projection is rerun only after an amendment reduces the generations")
-        how, reconciled = ("over its limit" if over else "stopped"), None
+        if over and not amended_plan_fits(rec):
+            raise SystemExit("an over-limit projection is rerun only after an amendment reduces the generations "
+                             "enough to fit the limit at the projection's own rates")
+        how = "over its limit" if over else "stopped"
     elif marker.exists():
-        how, reconciled = "killed: a start marker and no record", reconcile_kill(stage, files)
+        how = "killed: a start marker and no record"
     else:
         raise SystemExit(f"{stage} has not run: nothing to rerun")
     return {"stage": stage, "files": files, "reason": reason.strip(), "how": how, "reconciled": reconciled}
 
 
+def amended_plan_fits(rec: dict) -> bool:
+    """For an over-limit projection's rerun: fewer registered generations than it projected, and
+    training within the limit at its own measured rates (Fable, review v4)."""
+    plan = training_plan()
+    if not plan["generations"] < rec.get("plan", {}).get("generations", 0):
+        return False
+    hours = (plan["generations"] * rec["median_seconds_per_generation"]
+             + plan["checkpoints"] * rec["seconds_per_checkpoint"]) / 3600
+    return hours <= REGISTERED["projection"]["max_training_hours"]
+
+
 def reconcile_kill(stage: str, files: list[Path]) -> dict:
-    """A kill skips the accounting's `finally`, so the attempt's time is missing from compute.json. It
-    is charged here, once: from the marker's start to the attempt's last file write, plus the
-    registered tail for the unrecorded end. Written as an attempt record and re-aggregated."""
+    """A kill skips the accounting's cleanup (`finally`), so the attempt's time is missing from
+    compute.json. It is charged here, once: from the marker's start to the attempt's last file
+    write, plus the registered tail for the unrecorded end. The record is written atomically, under
+    a name the aggregate does not read until it is complete; an existing record is reused with its
+    stored charge; and the aggregate is rebuilt every time, so a kill between the two writes cannot
+    leave a stale total for the cap check (Astra, review v4)."""
     marker = files[1]
     started = json.loads(marker.read_text(encoding="utf-8"))["started_utc"]
     t_start = calendar.timegm(time.strptime(started, "%Y-%m-%dT%H:%M:%SZ"))
@@ -269,11 +287,16 @@ def reconcile_kill(stage: str, files: list[Path]) -> dict:
     doc = {"status": "killed (reconciled)", "stage": stage, "marker": marker.name, "started_utc": started,
            "last_write_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(last)), "tail_seconds": tail,
            "categories": {"killed attempt": {**{f: 0 for f in acct.COUNT_FIELDS}, "seconds": seconds}},
-           "note": "counts unknown; seconds estimated from the marker and the last file write (D105)"}
+           "note": "counts unknown; seconds estimated from the marker and the last file write (D107)"}
     compute.mkdir(parents=True, exist_ok=True)
-    if not (compute / name).exists():  # once, however often the rerun is refused and retried
-        reg.write_json(compute / name, doc)
-        acct.write_aggregate(compute, OUT / "compute.json")
+    path = compute / name
+    if path.exists():  # once, however often the rerun is refused and retried: reuse the stored charge
+        seconds = float(json.loads(path.read_text(encoding="utf-8"))["categories"]["killed attempt"]["seconds"])
+    else:
+        tmp = path.with_name(path.name + ".partial")  # not *.json, so the aggregate never reads it half-written
+        reg.write_json(tmp, doc)
+        os.replace(tmp, path)
+    acct.write_aggregate(compute, OUT / "compute.json")
     return {"file": name, "seconds": seconds}
 
 

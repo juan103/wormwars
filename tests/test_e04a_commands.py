@@ -325,6 +325,45 @@ def test_a_killed_attempt_that_exhausts_the_cap_is_not_rerun_and_keeps_its_rerun
     assert _spent(m) == before
 
 
+@pytest.mark.parametrize("aggregate", ["missing", "stale"])
+def test_a_reconciled_kill_is_charged_even_if_the_aggregate_was_lost(m, aggregate):
+    """Astra, review v4: a kill between writing the reconciliation and rebuilding compute.json must
+    not leave the cap check reading a stale total."""
+    _killed_batch_a(m, hours_ago=3.0, last_write_hours_ago=0.5)
+    m.REGISTERED["cap_gpu_hours"] = 2.0
+    with pytest.raises(SystemExit, match="did not start"):
+        m.cmd_train(_args("train", "A", rerun=True, reason="test: killed"))
+    charged = _spent(m)
+    if aggregate == "missing":
+        (m.OUT / "compute.json").unlink()
+    else:
+        (m.OUT / "compute.json").write_text(json.dumps({"totals": {"seconds_timed": 0.0}}))
+    with pytest.raises(SystemExit, match="did not start"):
+        m.cmd_train(_args("train", "A", rerun=True, reason="test: killed"))
+    assert _spent(m) == charged and not (m.EXP / "train-A-started-attempt1.json").exists()
+
+
+def test_an_over_limit_projection_needs_a_reduction_that_fits_at_its_own_rates(m):
+    m.cmd_project(_args("project"))
+    p = json.loads((m.EXP / "projection.json").read_text())
+    p.update(within_limit=False, median_seconds_per_generation=100.0, seconds_per_checkpoint=0.0)
+    (m.EXP / "projection.json").write_text(json.dumps(p))
+    m.REGISTERED["projection"]["max_training_hours"] = 0.1
+    m.REGISTERED["evolution"]["generations"] -= 1  # a token reduction: still over at 100 s a generation
+    with pytest.raises(SystemExit, match="fit the limit"):
+        m.cmd_project(_args("project", rerun=True, reason="x"))
+
+
+def test_a_killed_rerun_is_charged_even_though_it_cannot_be_rerun(m):
+    _killed_batch_a(m)
+    m.cmd_train(_args("train", "A", rerun=True, reason="test: killed"))
+    m.train_path("A").unlink()  # as if the rerun were killed in turn: its marker, no record
+    after_first = _spent(m)
+    with pytest.raises(SystemExit, match="rerun once already"):
+        m.cmd_train(_args("train", "A", rerun=True, reason="again"))
+    assert _spent(m) > after_first
+
+
 def test_a_killed_stage_with_a_marker_and_no_record_can_be_rerun(m):
     m.cmd_project(_args("project"))
     m.reg.start_marker(m.EXP, "train-A", {"stage": "killed"})  # what a hard kill leaves
