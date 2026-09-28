@@ -118,12 +118,17 @@ def eaten_cause(con, iface, spec, device, quick) -> dict:
         w = World(t1, iface, Brain(genome), strain_of, run_seed=3, world_ids=np.tile(ids, genome.n_strains),
                   device=device)
         w.run(20 if quick else None)
-        return w.fields[:, w.ch.FOOD].contiguous().clone()
-    batch = final_food(g)[:8]
-    alone = final_food(g.select([0]))
-    return {"strains_in_batch": n, "worlds_alone": 8,
-            "final_food_fields_bit_identical": _diff(alone, batch),
-            "sum_alone_vs_sum_in_batch": _diff(alone.sum(dim=(1, 2)), final_food(g).sum(dim=(1, 2))[:8])}
+        food = w.fields[:, w.ch.FOOD].contiguous().clone()
+        return food, w.fields[:, w.ch.FOOD].sum(dim=(1, 2))  # the per-world sum as _play computes it
+    batch_fields, batch_sums = final_food(g)
+    rows = {}
+    for i in range(min(32, n)):  # every strain the equivalence test evaluated alone
+        fields, sums = final_food(g.select([i]))
+        rows[str(i)] = {"final_food_fields_bit_identical": bool(torch.equal(fields, batch_fields[i * 8:(i + 1) * 8])),
+                        "final_sums_equal": bool(torch.equal(sums, batch_sums[i * 8:(i + 1) * 8]))}
+    return {"strains_in_batch": n, "worlds_alone": 8, "per_strain": rows,
+            "strains_with_different_fields": sum(not r["final_food_fields_bit_identical"] for r in rows.values()),
+            "strains_with_different_sums": sum(not r["final_sums_equal"] for r in rows.values())}
 
 
 def remainder_chunk(con, iface, spec, device, quick) -> dict:
