@@ -2836,3 +2836,34 @@ The roadmap branch continues from main, with its banner restored. Next: E1.
 
 **Disclosed:** the roadmap-branch push of `01e2204` went out before its identity check. The check,
 run immediately afterwards, was clean. The checks run strictly before every push from now on.
+
+## D094 — 03a: a six-neuron proof of concept, capped at 72 GPU-hours (the owner's decision)
+
+The owner asked whether 03a could be made faster. The answer gave six levers:
+1. batch the independent searches;
+2. use a one-wey memory task;
+3. stage the design;
+4. a leaner search;
+5. fewer brain substeps;
+6. a dynamics-based sister experiment, which asks a different question.
+
+The owner then decided (2026-09-28):
+- **"Let's keep the proof of concept with 6 neurons (3 with high foreseeable relevance, 2 with
+  medium 1 with low)."**
+- **"If there is an imprinting effect we try other neurons if we find a reason for that."**
+- **"Proof of concept limited to 72 gpu hours."**
+
+`ROADMAP.md`'s 03a section records this, with the levers and the size of the gap:
+- the draft's design at six neurons is about 196 GPU-hours of searches at 02's throughput, plus
+  about 10 for whole-brain evolution;
+- fitting 72 hours needs about 2.9 times the speed, or a leaner design.
+
+The old rule to shrink the panel 24 → 16 → 12 is struck through and marked superseded, not
+deleted.
+
+**Implementation choices made here, for review at 03a's pre-registration:**
+- relevance tiers come from a rule fixed before any N2 search;
+- the 72 hours include the pilot and are registered in code;
+- if the design does not fit, searches or null arms are cut, not the six neurons;
+- 03a comes after E1, whose pilot measures a one-wey task's throughput;
+- the P4 mechanism follow-up stays ahead of 03a in Track B unless the owner reorders them.

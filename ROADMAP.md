@@ -227,9 +227,50 @@ The first social experiments use colonies of clones: one genome for every wey, e
   - **Task.** If P4 replicates, use a task that requires memory. In any case, the feasibility pilot must show that solutions to the task use interneurons.
   - **The 02b risk.** The connections that make neurons critical (to sensor and motor neurons) are ones v3.2 keeps fixed. Either search the targets' interface connections, or pick targets whose criticality does not come only from interface adjacency.
   - **Nulls.** Use experiment 03's validated ensembles, with several graphs each, instead of unconstrained SH.
-  - **Budget.** Fit the design to the measured throughput. Shrink the panel (24, then 16, then 12) or the searches before extending the cap, and say which was cut.
+  - **Budget.** Fit the design to the measured throughput. ~~Shrink the panel (24, then 16, then 12) or the searches before extending the cap, and say which was cut.~~ *Superseded 28 September by the owner's proof-of-concept decision below.*
   - **Wording.** Animal-to-animal variability is not a ceiling on recovery from one fixed graph.
 - **The full map** (label assigned at pre-registration) runs only if 03a separates the three outcomes.
+
+**The owner's decision (28 September 2026, D094): a six-neuron proof of concept, capped at 72 GPU-hours.**
+- **The panel: 6 neurons,** by foreseeable relevance to the task: **3 high, 2 medium, 1 low.**
+  - "Relevance" is defined by a rule fixed in the pre-registration, before any N2 search. One
+    candidate is the draft's own rule: deletion criticality measured on target-selection worlds,
+    which are never used for final evaluation.
+  - Each tier's members are chosen by that rule, not by hand.
+- **Expanding the panel:** only if the proof of concept shows an imprinting effect (anatomical
+  recovery separated from functional substitution and search failure), and only for a stated
+  reason. The expansion gets its own pre-registration.
+- **The cap: 72 GPU-hours** for the proof of concept, pilot included, counted with T0's
+  accounting. It is registered in code and never extended. If the design does not fit, the
+  searches or the null arms are cut, not the six neurons, and the cut is stated.
+- **The size of the gap.** At 02's throughput (about 11 genome evaluations per second), the
+  draft's design cut to six neurons comes to about 196 GPU-hours of searches: 144
+  target-arm-brain combinations, 15 searches each, of 100 generations × 4 replicas × 9 states.
+  Whole-brain evolution adds about 10 more. Fitting 72 hours needs about 2.9 times the speed, or a
+  leaner design. These are estimates from the draft's arithmetic, not measurements.
+- **Where the speed can come from** (from T1's profile, D090-D092; each is measured before it is
+  relied on):
+  1. **Batch the searches.** The searches are independent, and each generation is a tiny batch
+     (36 genomes × 8 worlds). Stepping many searches in lockstep is T1.3's batching of runs.
+     Measured gain: about ×1.36 on 02's 20-wey task, where the brain is GPU-bound; ×3-4 on a
+     one-wey task at 4-8 runs per batch, where the world's fixed per-tick cost dominates.
+  2. **Use a one-wey memory task.** The redesign already calls for a memory task. Built with one
+     wey per world, like E1's Task N, it also unlocks lever 1's larger gain, and it cuts brain work
+     per world about twentyfold.
+  3. **Stage the design.** Run the cheap original-partner refits first. Buy the free searches
+     only for targets whose refits are reliable, and stop a search early once it has clearly
+     failed. The rules are fixed before the run.
+  4. **A leaner search.** Fewer replicas or generations, if the pilot (on shuffles only, never N2)
+     shows the search still converges.
+  5. **Fewer brain substeps.** The brain's cost scales with them. 32 was chosen for accuracy in 02,
+     so a lower count needs the timestep-accuracy check first.
+  6. **A sister experiment, not a faster 03a:** score the reinserted neuron by how well the whole
+     network reproduces the intact brain's activity on recorded inputs, with no world simulated.
+     It could be one to two orders of magnitude cheaper. But it asks whether wiring can be recovered
+     from dynamics, not from a task, so it would be a separate, separately registered question.
+- **When:** after E1. E1's pilot measures a one-wey task's actual throughput, and the proof of
+  concept is sized to that, not to these estimates. Track B's mechanism follow-up for P4 stays
+  ahead of it in the queue unless the owner reorders them.
 
 ### Later biology questions (unscheduled)
 
