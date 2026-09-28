@@ -28,9 +28,11 @@
   result, caveats and exact commands to rerun it, and [`AGENTS.md`](AGENTS.md) describes the
   repository and its rules. Others are welcome to take any open question here, and to get there
   first.
-- **03a stays unscheduled,** as decided on 27 September. It needs about 2.5 times the measured
-  throughput. The largest candidate found in T1, batching several runs together, gives about
-  1.35 times on 02's task, and its exactness is not yet tested.
+- **03a becomes a six-neuron proof of concept capped at 72 GPU-hours** (the owner, D094). It comes
+  after E1, sized to E1's measured one-wey throughput. The full 24-neuron draft needed about 2.5
+  times the measured throughput. The largest candidate found in T1, batching several runs
+  together, gives about 1.35 times on 02's task and 3.2-4.2 times on a one-wey task; its
+  exactness is not yet tested.
 
 ## Where the project stands
 
@@ -252,8 +254,8 @@ The first social experiments use colonies of clones: one genome for every wey, e
   relied on):
   1. **Batch the searches.** The searches are independent, and each generation is a tiny batch
      (36 genomes × 8 worlds). Stepping many searches in lockstep is T1.3's batching of runs.
-     Measured gain: about ×1.36 on 02's 20-wey task, where the brain is GPU-bound; ×3-4 on a
-     one-wey task at 4-8 runs per batch, where the world's fixed per-tick cost dominates.
+     Measured gain: about ×1.36 on 02's 20-wey task, where the brain is GPU-bound; ×3.2 and ×4.2 on a
+     one-wey task at 4 and 8 runs per batch, where the world's fixed per-tick cost dominates.
   2. **Use a one-wey memory task.** The redesign already calls for a memory task. Built with one
      wey per world, like E1's Task N, it also unlocks lever 1's larger gain, and it cuts brain work
      per world about twentyfold.
