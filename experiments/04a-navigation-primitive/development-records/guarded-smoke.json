@@ -1,0 +1,61 @@
+{
+ "what": "04a's guarded smoke run on the binding commit (formal guards on: CUDA, the registered GPU, pinned environment, clean tree, pushed HEAD, same code and environment across stages), smoke sizes, smoke ids and smoke seeds. Never results.",
+ "stages": {
+  "project": {
+   "outcome": "completed",
+   "git_commit": "9531aafe042b95029b4b6ee99dd8d79f16faaa58",
+   "dirty": false,
+   "gpu": "NVIDIA GeForce RTX 5080",
+   "device": "cuda"
+  },
+  "train A": {
+   "outcome": "completed",
+   "git_commit": "9531aafe042b95029b4b6ee99dd8d79f16faaa58",
+   "dirty": false,
+   "gpu": "NVIDIA GeForce RTX 5080",
+   "device": "cuda"
+  },
+  "train B": {
+   "outcome": "completed",
+   "git_commit": "9531aafe042b95029b4b6ee99dd8d79f16faaa58",
+   "dirty": false,
+   "gpu": "NVIDIA GeForce RTX 5080",
+   "device": "cuda"
+  },
+  "evaluate": {
+   "outcome": "04a: not passed",
+   "git_commit": "9531aafe042b95029b4b6ee99dd8d79f16faaa58",
+   "dirty": false,
+   "gpu": "NVIDIA GeForce RTX 5080",
+   "device": "cuda"
+  }
+ },
+ "evaluation_arms": 34,
+ "extras_errors": {},
+ "replay": {
+  "0": {
+   "worlds": 4,
+   "identical_worlds": 4,
+   "recorded_mean": 0.0,
+   "replayed_mean": 0.0
+  },
+  "1": {
+   "worlds": 4,
+   "identical_worlds": 4,
+   "recorded_mean": 0.0,
+   "replayed_mean": 0.0
+  },
+  "12": {
+   "worlds": 4,
+   "identical_worlds": 4,
+   "recorded_mean": 0.0,
+   "replayed_mean": 0.0
+  },
+  "13": {
+   "worlds": 4,
+   "identical_worlds": 4,
+   "recorded_mean": 0.0,
+   "replayed_mean": 0.0
+  }
+ }
+}
