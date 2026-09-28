@@ -1,0 +1,153 @@
+{
+ "what": "exploratory (PLAN.md Q1); no simulation",
+ "03": {
+  "N2": {
+   "P4": 0.9308563306443094,
+   "denominator": 0.12858509155194042
+  },
+  "ensembles": {
+   "SH": {
+    "graphs": 128,
+    "spearman_denominator_P4": -0.599546786302875,
+    "N2_denominator_over_median": 5.20650663206772,
+    "N2_denominator_over_max": 1.8225192442564064,
+    "trend_at_N2": 0.5538713758514692,
+    "N2_residual_in_sd": 6.730106608669292,
+    "N2_denominator_beyond_range": true
+   },
+   "SH-route": {
+    "graphs": 128,
+    "spearman_denominator_P4": -0.29285501739608133,
+    "N2_denominator_over_median": 7.087446864396097,
+    "N2_denominator_over_max": 2.6900688015818153,
+    "trend_at_N2": 0.7716970892513534,
+    "N2_residual_in_sd": 4.692822379455736,
+    "N2_denominator_beyond_range": true
+   },
+   "SH-class": {
+    "graphs": 128,
+    "spearman_denominator_P4": -0.3950627174510163,
+    "N2_denominator_over_median": 5.8184002372568155,
+    "N2_denominator_over_max": 1.7572649044444546,
+    "trend_at_N2": 0.7103407681207708,
+    "N2_residual_in_sd": 5.1236277110418476,
+    "N2_denominator_beyond_range": true
+   },
+   "SH-mirror": {
+    "graphs": 128,
+    "spearman_denominator_P4": -0.2671500183116645,
+    "N2_denominator_over_median": 5.8334269350184815,
+    "N2_denominator_over_max": 2.398486392369173,
+    "trend_at_N2": 0.7769666918981191,
+    "N2_residual_in_sd": 4.437979461979722,
+    "N2_denominator_beyond_range": true
+   },
+   "SH-recip": {
+    "graphs": 128,
+    "spearman_denominator_P4": -0.41362616736861374,
+    "N2_denominator_over_median": 5.008503786125794,
+    "N2_denominator_over_max": 1.7826460115398193,
+    "trend_at_N2": 0.6203117685463209,
+    "N2_residual_in_sd": 4.720361089615022,
+    "N2_denominator_beyond_range": true
+   }
+  },
+  "N2_variants": {
+   "N2-rev": {
+    "P4": 0.8976248473854422,
+    "denominator": 0.0003970100542574073,
+    "denominator_over_SH_median": 0.01607523434902873
+   },
+   "N2perm1": {
+    "P4": 0.7967303838392762,
+    "denominator": 0.09582767743086151,
+    "denominator_over_SH_median": 3.880134407944881
+   },
+   "N2perm2": {
+    "P4": 0.9194027142132237,
+    "denominator": 0.03171513332108589,
+    "denominator_over_SH_median": 1.284169494147347
+   },
+   "N2perm3": {
+    "P4": 0.8691853956268089,
+    "denominator": 0.017746896501193987,
+    "denominator_over_SH_median": 0.718585126913895
+   }
+  }
+ },
+ "03r": {
+  "N2": {
+   "P4": 0.9243248478203684,
+   "denominator": 0.11918066936959804
+  },
+  "ensembles": {
+   "SH": {
+    "graphs": 128,
+    "spearman_denominator_P4": -0.5654527559055118,
+    "N2_denominator_over_median": 4.868177124713634,
+    "N2_denominator_over_max": 1.55257661499435,
+    "trend_at_N2": 0.5725862759605664,
+    "N2_residual_in_sd": 6.250302535697385,
+    "N2_denominator_beyond_range": true
+   },
+   "SH-route": {
+    "graphs": 256,
+    "spearman_denominator_P4": -0.34703092813000685,
+    "N2_denominator_over_median": 6.49720760126048,
+    "N2_denominator_over_max": 2.520580935562921,
+    "trend_at_N2": 0.7726422002682308,
+    "N2_residual_in_sd": 4.72739108828109,
+    "N2_denominator_beyond_range": true
+   },
+   "SH-class": {
+    "graphs": 128,
+    "spearman_denominator_P4": -0.36477407983885735,
+    "N2_denominator_over_median": 5.117563000472984,
+    "N2_denominator_over_max": 2.399697051043019,
+    "trend_at_N2": 0.7514059425793379,
+    "N2_residual_in_sd": 4.250230113633299,
+    "N2_denominator_beyond_range": true
+   },
+   "SH-mirror": {
+    "graphs": 128,
+    "spearman_denominator_P4": -0.4470850119025819,
+    "N2_denominator_over_median": 5.626128998933651,
+    "N2_denominator_over_max": 2.277942279493409,
+    "trend_at_N2": 0.7630213403796623,
+    "N2_residual_in_sd": 5.5751965181357335,
+    "N2_denominator_beyond_range": true
+   },
+   "SH-recip": {
+    "graphs": 128,
+    "spearman_denominator_P4": -0.5336591283647684,
+    "N2_denominator_over_median": 4.69908620935606,
+    "N2_denominator_over_max": 1.600568167602293,
+    "trend_at_N2": 0.5882218637626814,
+    "N2_residual_in_sd": 5.192342886413305,
+    "N2_denominator_beyond_range": true
+   }
+  },
+  "N2_variants": {
+   "N2-rev": {
+    "P4": 0.9106790723505933,
+    "denominator": 0.00043083689160994254,
+    "denominator_over_SH_median": 0.01759841013909657
+   },
+   "N2perm4": {
+    "P4": 0.856098554338186,
+    "denominator": 0.02172109317052673,
+    "denominator_over_SH_median": 0.8872422806135513
+   },
+   "N2perm5": {
+    "P4": 0.8586925875599478,
+    "denominator": 0.03317894476458605,
+    "denominator_over_SH_median": 1.3552615602803253
+   },
+   "N2perm6": {
+    "P4": 0.9216512886122659,
+    "denominator": 0.020751885474055598,
+    "denominator_over_SH_median": 0.8476530186802671
+   }
+  }
+ }
+}
