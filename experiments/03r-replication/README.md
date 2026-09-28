@@ -48,6 +48,9 @@ every graph, N2's included, is N2 again distinctive relative to every ensemble o
 
 Numbers and tables: [`RESULTS.md`](RESULTS.md).
 
+**What the signals measure, in plain words** (the history test's two food histories, what the
+ratio means, and what it does not show): [03's README](../03-generation0/README.md#what-the-three-signals-measure-in-plain-words).
+
 ## Design
 
 The design is the pre-registration itself: [`PREREGISTRATION.md`](PREREGISTRATION.md) (v3, bound

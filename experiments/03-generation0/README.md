@@ -36,6 +36,105 @@ tied to food information? ([`DESIGN.md`](DESIGN.md), "The question".)
 
 Numbers and tables: [`RESULTS.md`](RESULTS.md).
 
+## What the three signals measure, in plain words
+
+All three are measured on **random, unevolved brains**: 2 048 random genomes per graph for the
+probes, and 256 for the task scores. Nothing has been selected, so each signal describes what a
+wiring does "out of the box", with random weights. Exact definitions:
+[`PREREGISTRATION.md`](PREREGISTRATION.md) §4-§5.
+
+### P4, history dependence: does the brain remember where the input came from?
+
+The question: **once the input has become identical, does the brain's output still carry a trace
+of the recent past?**
+
+**The test.** It is a scripted stimulus played into each brain, not a game:
+
+| | Ticks 1-100 | Ticks 101-110 | Final tick |
+|---|---|---|---|
+| **Rising** | food held at ¼ of the final level | ramps up | the final level |
+| **Falling** | food held at 1.75 × the final level | ramps down | the same final level |
+
+On the last tick the input is exactly the same in both runs. Every other sense is held at the same
+fixed value throughout. A memoryless brain would give the same turning output at that tick, so any
+difference can only come from the past: the brain "remembers" whether food was recently low or
+high.
+
+**The number.** P4 = (the mean over genomes of |rising − falling| in the raw turn read-out on the
+final tick) ÷ (the mean of |steady-state contrast|).
+- **The numerator** is the leftover difference: the memory.
+- **The denominator** is a yardstick: how differently the brain turns while it is actually held at
+  the low level and at the high level. Dividing by it makes graphs comparable. Some wirings respond
+  more strongly to food overall, and N2 does, so a raw difference would partly measure that.
+
+**How to read the values:**
+- **0** means no memory: once the inputs match, the outputs match.
+- **N2's 0.931 (03; 0.924 in 03r)** means the leftover difference is about 93% as large as the
+  difference between being steadily in the two food conditions. The brain is still mostly "in" its
+  past state.
+- The ratio is not capped at 1 (D058).
+- N2's high value is not a small denominator: its numerator and its denominator are both larger
+  than any ensemble graph's (exploratory, §11).
+
+**What was found:**
+- **03:** N2 is above every graph in four of the five ensembles, and above all but one of 128 in
+  the routing-matched one (SH-route).
+- **03r:** with 768 fresh graphs and fresh random brains for N2 too, N2 is above every graph in four
+  ensembles, all 256 routing-matched graphs included. It is above all but one of 128 in SH-class.
+- So the real wiring's random brains hold on to recent food history more than wirings matched to
+  it on the generic properties each ensemble keeps: degrees, and then food-to-motor routing,
+  neuron classes, mirror symmetry, or two-way connections.
+
+### P1, directional selectivity: does the brain turn toward the side with more food?
+
+**The test.** Food is fed to the left and right sensors unequally: (b + d, b − d), then mirrored,
+(b − d, b + d). The total is identical, and only the side differs. The brain runs 40 ticks from
+rest. The signed turn toward the stronger side is compared with a yardstick: how much the turn
+changes when both sides go from no food to the same food, (0, 0) to (b, b), the "common-mode"
+response.
+
+**The number.** P1 = the mean signed directional turn ÷ the mean absolute common-mode turn. High
+means the brain steers by the left-right difference more than it simply reacts to food being
+there.
+
+**What was found:** *not distinctive* in either 03 or 03r. N2's random brains react to food much
+more strongly overall, but their steering by side, relative to that, is not unusual.
+
+### P3, food-information dependence: does using the real food signal help?
+
+**The test.** Each random brain plays the single-nose foraging task (02's T1) twice on the same 16
+worlds:
+- with the real food signal;
+- with the food signal replaced by each world's constant tick-0 average, so the brain feels food
+  but cannot follow it.
+
+**The number.** P3 = the mean score with the real signal minus the mean score with the constant
+one. The score is the energy the swarm keeps, as a fraction of what it started with. Above 0 means
+the food information helps even without evolution.
+
+**What was found:**
+- **03:** the registered criterion was not met, with little power.
+- **03r:** the registered label is *reversed*: N2's random brains scored slightly worse with the
+  real signal than with the constant one. It is small and unpredicted. N2's measurement is much
+  noisier than the ensembles', and an exploratory noise-aware check gives about p = 0.072 after
+  correction. No claim is made about its cause ([03r's README](../03r-replication/README.md)).
+
+### What none of this means (yet)
+
+- **These are properties of wiring plus random weights, before any selection.** They are not
+  behaviours the worm, or an evolved wey, is shown to use.
+- **P1 and P4 are read from the raw turn output under scripted inputs,** not from movement in a
+  world. Nothing shows the memory is useful.
+- **The mechanism behind P4 is unknown:** slow time constants reinforced by recurrent loops,
+  gap-junction coupling, or particular hub neurons are all open. Finding out is the next Track B
+  experiment: delete neurons and connections, compare gap junctions with chemical synapses, and
+  try inputs other than food ([`ROADMAP.md`](../../ROADMAP.md#03-and-03r)).
+- **The null ensembles move weights as well as wiring,** so the result is not a pure wiring
+  effect.
+- **The link to 02b:** 02's evolved champions had developed a slow memory of the recent food level
+  ([02b](../02b-champion-analysis/README.md)). 03 finds N2's random brains already lean that way
+  before any evolution.
+
 ## Design
 
 Binding version: [`PREREGISTRATION.md`](PREREGISTRATION.md), fixed on 2026-09-25 before any N2

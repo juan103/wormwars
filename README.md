@@ -55,6 +55,14 @@ Only unselected random brains were measured, before any evolution.
 
 **History dependence (P4):** after two food histories converge to the same input, how much of the
 earlier difference is still in the turning output.
+- **In plain words:** each brain gets food held low for 100 ticks and then ramped up, or held high
+  and ramped down, to the same final level. On the last tick the input is identical, so a brain
+  with no memory would turn the same way in both runs. P4 is the leftover difference, divided by
+  how differently the brain turns while it is actually held low or high.
+- **Reading the value:** 0 means no memory. N2's 0.93 means the brain is still mostly "in" its
+  past state.
+- A fuller explanation of all three signals, and of what they do not show:
+  [03's README](experiments/03-generation0/README.md#what-the-three-signals-measure-in-plain-words).
 - **03:** N2 is above all 128 graphs in four ensembles and 127 of 128 in SH-route, with a
   Holm-adjusted p of 0.047 under 03's registered three-signal rule. One more SH-route graph would
   have made it 0.070.
