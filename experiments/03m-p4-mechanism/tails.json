@@ -1,7 +1,7 @@
 {
  "what": "exploratory (PLAN.md Q1b); no simulation; from 03's local per-genome measures",
  "stamp": {
-  "git_commit": "4c8848e56ffbe2bf753a98381953803ff0e92013",
+  "git_commit": "0916f4117c0080a66d36fb79d125e05b640b355e",
   "branch": "p4-mechanism",
   "dirty": true,
   "python": "3.13.3",
@@ -11,42 +11,107 @@
   "gpu": "NVIDIA GeForce RTX 5080",
   "connectome_cache_sha256": "43b87aa172a0042b9dce734b15bdf1c87efe3a33ac1cc0d9cd03255a60c96d4a"
  },
+ "inputs": {
+  "directory": "runs/exp03/measures (local)",
+  "files": 641,
+  "sha256_of_name_and_file_hashes": "bca43cbecf01469a18bbd43708cdba86cc5f595ab0b889441ba5d974f7a93054"
+ },
  "N2": {
   "P4_even": 0.9423102460245405,
   "P4_odd": 0.9210160935137403,
+  "response_even": 0.11884086879581446,
+  "response_odd": 0.1383293143080664,
   "top5pct_share_of_numerator": 0.39960274534347745,
-  "top5pct_share_of_denominator": 0.380436235195668
+  "top5pct_share_of_denominator": 0.380436235195668,
+  "top5pct_sets_overlap": 0.9215686274509803,
+  "P4": 0.9308563306443094,
+  "P4_without_top5pct_by_numerator": 0.8946506815274714
  },
  "ensembles": {
   "SH": {
-   "graphs": 640,
-   "split_half_correlation": 0.984591440715523,
-   "top5pct_share_median": 0.1916007875925184,
-   "top5pct_share_max": 0.4354685236322073
+   "graphs": 128,
+   "split_half_correlation": 0.9856037528661922,
+   "cross_half_spearman_P4even_response_odd": -0.6081189342611243,
+   "top5pct_share_of_numerator_median": 0.18265467310973393,
+   "top5pct_share_of_denominator_median": 0.1688306383953604,
+   "top5pct_sets_overlap_median": 0.7549019607843137,
+   "P4_without_top5pct_by_numerator_median": 0.7416815272887005,
+   "top5pct_share_of_numerator_max": 0.27705901507947855,
+   "top5pct_share_of_denominator_max": 0.2389748852307395,
+   "top5pct_sets_overlap_max": 0.9019607843137255,
+   "P4_without_top5pct_by_numerator_max": 0.8766978593965511,
+   "N2_top5pct_share_of_numerator_share_of_graphs_below": 1.0,
+   "N2_top5pct_share_of_denominator_share_of_graphs_below": 1.0,
+   "N2_top5pct_sets_overlap_share_of_graphs_below": 1.0,
+   "N2_P4_without_top5pct_by_numerator_share_of_graphs_below": 1.0
   },
   "SH-route": {
    "graphs": 128,
    "split_half_correlation": 0.9568084027022955,
-   "top5pct_share_median": 0.1916279676850715,
-   "top5pct_share_max": 0.31101845065831124
+   "cross_half_spearman_P4even_response_odd": -0.25333043398644933,
+   "top5pct_share_of_numerator_median": 0.1916279676850715,
+   "top5pct_share_of_denominator_median": 0.18214612128738877,
+   "top5pct_sets_overlap_median": 0.8333333333333334,
+   "P4_without_top5pct_by_numerator_median": 0.8344084785245185,
+   "top5pct_share_of_numerator_max": 0.31101845065831124,
+   "top5pct_share_of_denominator_max": 0.28565572911603876,
+   "top5pct_sets_overlap_max": 0.9215686274509803,
+   "P4_without_top5pct_by_numerator_max": 0.9235243869206912,
+   "N2_top5pct_share_of_numerator_share_of_graphs_below": 1.0,
+   "N2_top5pct_share_of_denominator_share_of_graphs_below": 1.0,
+   "N2_top5pct_sets_overlap_share_of_graphs_below": 0.984375,
+   "N2_P4_without_top5pct_by_numerator_share_of_graphs_below": 0.96875
   },
   "SH-class": {
    "graphs": 128,
    "split_half_correlation": 0.9718162625605979,
-   "top5pct_share_median": 0.19305396926821472,
-   "top5pct_share_max": 0.3733352696896692
+   "cross_half_spearman_P4even_response_odd": -0.36856230543856433,
+   "top5pct_share_of_numerator_median": 0.19305396926821472,
+   "top5pct_share_of_denominator_median": 0.183829564421213,
+   "top5pct_sets_overlap_median": 0.8284313725490196,
+   "P4_without_top5pct_by_numerator_median": 0.8144339541214192,
+   "top5pct_share_of_numerator_max": 0.3733352696896692,
+   "top5pct_share_of_denominator_max": 0.32995885310602796,
+   "top5pct_sets_overlap_max": 0.9509803921568627,
+   "P4_without_top5pct_by_numerator_max": 0.8880988006474116,
+   "N2_top5pct_share_of_numerator_share_of_graphs_below": 1.0,
+   "N2_top5pct_share_of_denominator_share_of_graphs_below": 1.0,
+   "N2_top5pct_sets_overlap_share_of_graphs_below": 0.984375,
+   "N2_P4_without_top5pct_by_numerator_share_of_graphs_below": 1.0
   },
   "SH-mirror": {
    "graphs": 128,
    "split_half_correlation": 0.9426369322705613,
-   "top5pct_share_median": 0.19828064252131766,
-   "top5pct_share_max": 0.3587697634710201
+   "cross_half_spearman_P4even_response_odd": -0.2773816608679729,
+   "top5pct_share_of_numerator_median": 0.19828064252131766,
+   "top5pct_share_of_denominator_median": 0.18767785797422537,
+   "top5pct_sets_overlap_median": 0.8431372549019608,
+   "P4_without_top5pct_by_numerator_median": 0.8272730376516466,
+   "top5pct_share_of_numerator_max": 0.3587697634710201,
+   "top5pct_share_of_denominator_max": 0.326284273130077,
+   "top5pct_sets_overlap_max": 0.9705882352941176,
+   "P4_without_top5pct_by_numerator_max": 0.9070057645444826,
+   "N2_top5pct_share_of_numerator_share_of_graphs_below": 1.0,
+   "N2_top5pct_share_of_denominator_share_of_graphs_below": 1.0,
+   "N2_top5pct_sets_overlap_share_of_graphs_below": 0.9765625,
+   "N2_P4_without_top5pct_by_numerator_share_of_graphs_below": 0.984375
   },
   "SH-recip": {
    "graphs": 128,
    "split_half_correlation": 0.9830572915552361,
-   "top5pct_share_median": 0.19300547542265822,
-   "top5pct_share_max": 0.4354685236322073
+   "cross_half_spearman_P4even_response_odd": -0.4219865867057315,
+   "top5pct_share_of_numerator_median": 0.19300547542265822,
+   "top5pct_share_of_denominator_median": 0.1744245526969796,
+   "top5pct_sets_overlap_median": 0.7794117647058824,
+   "P4_without_top5pct_by_numerator_median": 0.7327719811268532,
+   "top5pct_share_of_numerator_max": 0.4354685236322073,
+   "top5pct_share_of_denominator_max": 0.3887125620309461,
+   "top5pct_sets_overlap_max": 0.9705882352941176,
+   "P4_without_top5pct_by_numerator_max": 0.8820688957716488,
+   "N2_top5pct_share_of_numerator_share_of_graphs_below": 0.96875,
+   "N2_top5pct_share_of_denominator_share_of_graphs_below": 0.9921875,
+   "N2_top5pct_sets_overlap_share_of_graphs_below": 0.96875,
+   "N2_P4_without_top5pct_by_numerator_share_of_graphs_below": 1.0
   }
  }
 }

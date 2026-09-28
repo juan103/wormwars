@@ -1,7 +1,7 @@
 {
  "what": "exploratory (PLAN.md Q1); no simulation",
  "stamp": {
-  "git_commit": "4c8848e56ffbe2bf753a98381953803ff0e92013",
+  "git_commit": "0916f4117c0080a66d36fb79d125e05b640b355e",
   "branch": "p4-mechanism",
   "dirty": true,
   "python": "3.13.3",

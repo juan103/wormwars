@@ -1,0 +1,78 @@
+{
+ "time_unit": "synchronised wall-clock seconds per category (not GPU kernel time)",
+ "neural_update_unit": "strains x batch x substeps network updates (network size not included)",
+ "attempts": [
+  {
+   "file": "20260928T215411Z-d460662e.json",
+   "status": "completed",
+   "script": "p4m",
+   "argv": [
+    "tradeoff"
+   ],
+   "default_category": "probe",
+   "git_commit": "7ec22bb859e597c5d8163e3e762d9933646f969a"
+  },
+  {
+   "file": "20260928T222147Z-03985830.json",
+   "status": "completed",
+   "script": "p4m",
+   "argv": [
+    "tradeoff"
+   ],
+   "default_category": "probe",
+   "git_commit": "4c8848e56ffbe2bf753a98381953803ff0e92013"
+  },
+  {
+   "file": "20260928T222150Z-77d23ca5.json",
+   "status": "completed",
+   "script": "p4m",
+   "argv": [
+    "tails",
+    "--measures",
+    "D:/Claude/random/wormWars/runs/exp03/measures"
+   ],
+   "default_category": "probe",
+   "git_commit": "4c8848e56ffbe2bf753a98381953803ff0e92013"
+  },
+  {
+   "file": "20260928T223555Z-9af970ba.json",
+   "status": "completed",
+   "script": "p4m",
+   "argv": [
+    "tradeoff"
+   ],
+   "default_category": "probe",
+   "git_commit": "0916f4117c0080a66d36fb79d125e05b640b355e"
+  },
+  {
+   "file": "20260928T223557Z-324e3e75.json",
+   "status": "completed",
+   "script": "p4m",
+   "argv": [
+    "tails",
+    "--measures",
+    "D:/Claude/random/wormWars/runs/exp03/measures"
+   ],
+   "default_category": "probe",
+   "git_commit": "0916f4117c0080a66d36fb79d125e05b640b355e"
+  }
+ ],
+ "failed_attempts": 0,
+ "uncategorised": false,
+ "categories": {
+  "probe": {
+   "worlds_built": 0,
+   "world_ticks": 0,
+   "neural_updates": 0,
+   "neural_padding": 0,
+   "seconds": 12.116462499834597
+  }
+ },
+ "totals": {
+  "worlds_built": 0,
+  "world_ticks": 0,
+  "neural_updates": 0,
+  "neural_padding": 0,
+  "seconds_timed": 12.116462499834597
+ }
+}

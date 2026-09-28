@@ -2,10 +2,11 @@
 
     python scripts/p4m.py tradeoff                  # no simulation: 03's and 03r's committed supplements
     python scripts/p4m.py tails --measures DIR      # no simulation: 03's local per-genome measures
-    python scripts/p4m.py lesions --device cuda     # N2 with each neuron, and each bilateral pair, deleted
+    python scripts/p4m.py graphs                    # rebuild Q4's null panel from 03's record (CPU)
     python scripts/p4m.py synapses --device cuda    # N2 with gaps or chemical synapses off, or weights permuted by type
-    python scripts/p4m.py decay --device cuda       # 300 ticks after the ramp: N2 and 16 graphs per ensemble
     python scripts/p4m.py weights --device cuda     # N2's wiring with 64 permutations of its weights, two designs
+    python scripts/p4m.py decay --device cuda       # 300 ticks after the ramp: N2 and 16 graphs per ensemble
+    python scripts/p4m.py lesions --device cuda     # N2 with each neuron, and each bilateral pair, deleted
     python scripts/p4m.py <command> --smoke         # tiny sizes, the CPU, runs/p4m-smoke/
 
 Exploratory: the analyses are declared in PLAN.md before they run, but nothing here is confirmatory.
@@ -13,16 +14,19 @@ Every measurement reuses 03's own code and inputs (`scripts/exp03.py`, instance 
 bank, its probe genomes (2 048, seeded per graph as 03 seeded them) and its P4 definition, the mean
 |rising - falling| raw turn at the ramp's end over the mean |steady contrast|. Each simulating
 command first reproduces 03's committed N2 numerator and denominator, in 03's batch composition
-(2 048 strains, one row each), and every later batch keeps that composition. A cap is checked
-before every batch; results are written as they complete.
+(2 048 strains, one row each), and every later batch keeps that composition. Formal runs need a
+clean, pushed tree; a cap is checked before every batch; summaries and per-genome arrays are written
+as each unit completes.
 """
 
 from __future__ import annotations
 
 import argparse
+import hashlib
 import importlib.util
 import json
 import math
+import os
 import sys
 import time
 from pathlib import Path
@@ -47,18 +51,20 @@ X.use_instance("03")
 
 EXP = ROOT / "experiments" / "03m-p4-mechanism"
 OUT = ROOT / "runs" / "p4m"
+GUARDED = ["wormwars", "scripts", "configs", "requirements.txt", "experiments/03m-p4-mechanism/PLAN.md"]
 ENSEMBLES = ("SH", "SH-route", "SH-class", "SH-mirror", "SH-recip")
 SUPPLEMENTS = {"03": ROOT / "experiments" / "03-generation0" / "supplement.json",
                "03r": ROOT / "experiments" / "03r-replication" / "supplement.json"}
 DEN_FLOOR = 1e-4  # 03's exclusion floor for a P4 denominator
+PRE_NAMED = ["RIA", "AIZ", "AIY", "AIB", "RIB", "RIM"]
 PLAN = {
     "genomes": 2048,  # 03's P4 probe set
     "per_chunk": 2048,  # strains per batch: one probe set at a time, 03's composition (T1, D091)
-    "reproduce_tolerance": 1e-6,  # relative, on N2's numerator and denominator against 03's supplement
-    "cap_gpu_hours": 4.0,  # every command together, counted by the accounting across attempts
+    "reproduce_tolerance": 1e-6,  # relative, on 03's numerators and denominators
+    "cap_gpu_hours": 5.0,  # every command together, counted by the accounting across attempts
     "lead": {"p4_below": "the pooled 95th percentile of 03's five ensembles",
              "response_below": "the pooled maximum of 03's five ensembles"},
-    "follow_up_top": 5,  # single deletions with the largest P4 drop: chemical-only and gap-only edge deletions
+    "follow_up_top": 5,  # valid single deletions with the lowest P4 and a response at least the pooled null median
     "decay": {"after": 300, "every": 10, "extra_ticks": [5], "graphs_per_ensemble": 16,
               "remaining_fraction": 0.10, "start_floor": 1e-3, "settle_tolerance": 1e-4, "settle_window": 10},
     "weights": {"permutations": 64, "seed_base": 100},
@@ -69,14 +75,44 @@ SMOKE = False
 
 # ----------------------------------------------------------------------------- shared
 
+def fin(x):
+    """A finite float, or None: JSON without NaN."""
+    return float(x) if x is not None and math.isfinite(float(x)) else None
+
+
 def write(path: Path, doc) -> None:
-    reg.write_json(path, doc, atomic=True)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = path.with_name(path.name + ".partial")
+    with open(tmp, "w", encoding="utf-8", newline="\n") as f:
+        f.write(json.dumps(doc, indent=1, allow_nan=False))
+        f.write("\n")
+    os.replace(tmp, path)
 
 
-def stamp() -> dict:
-    p = reg.provenance(["wormwars", "scripts", "configs", "experiments/03m-p4-mechanism/PLAN.md"])
-    return {k: p[k] for k in ("git_commit", "branch", "dirty", "python", "numpy", "torch", "cuda", "gpu",
-                              "connectome_cache_sha256")}
+def save_arrays(path: Path, arrays: dict) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = path.with_name(path.stem + ".tmp.npz")
+    np.savez_compressed(tmp, **arrays)
+    os.replace(tmp, path)
+
+
+def stamp(args=None) -> dict:
+    p = reg.provenance(GUARDED)
+    out = {k: p[k] for k in ("git_commit", "branch", "dirty", "python", "numpy", "torch", "cuda", "gpu",
+                             "connectome_cache_sha256")}
+    if args is not None:
+        out.update(device=args.device, genomes=args.genomes or PLAN["genomes"], smoke=SMOKE)
+    return out
+
+
+def formal_guard(args) -> None:
+    """Formal runs: a clean tree, pushed, on the registered GPU and environment (the shared guards),
+    and 03's genome count."""
+    if SMOKE:
+        return
+    if args.genomes not in (None, PLAN["genomes"]):
+        raise SystemExit(f"formal outputs use 03's {PLAN['genomes']} probe genomes, not {args.genomes}")
+    reg.require_formal(args.device, reg.provenance(GUARDED))
 
 
 def clock() -> reg.CapClock:
@@ -89,13 +125,24 @@ def supplement(instance="03") -> dict:
     return json.loads(SUPPLEMENTS[instance].read_text(encoding="utf-8"))["per_graph"]
 
 
+def in_ensemble(name: str, ens: str) -> bool:
+    """Exact membership: `SH-10000` is in SH, `SH-route-20000` is not."""
+    return name.startswith(ens + "-") and name[len(ens) + 1:].isdigit()
+
+
 def ensemble_rows(pg: dict, ens: str) -> list[dict]:
-    return [v for k, v in pg.items() if k.startswith(ens + "-") and k[len(ens) + 1:].isdigit()]
+    return [v for k, v in pg.items() if in_ensemble(k, ens)]
 
 
 def pooled(pg: dict) -> tuple[np.ndarray, np.ndarray]:
     rows = [r for e in ENSEMBLES for r in ensemble_rows(pg, e)]
     return np.array([r["P4_turn"] for r in rows]), np.array([r["P4_turn_denominator"] for r in rows])
+
+
+def thresholds(pg: dict) -> dict:
+    p4, den = pooled(pg)
+    return {"P4_pooled_95th": float(np.quantile(p4, 0.95)), "response_pooled_max": float(den.max()),
+            "response_pooled_median": float(np.median(den))}
 
 
 def null_position(r: dict, pg: dict) -> dict | None:
@@ -113,12 +160,12 @@ def null_position(r: dict, pg: dict) -> dict | None:
 
 
 def lead_class(r: dict, pg: dict) -> str | None:
-    """Relative to 03's pooled ensembles: whether the deletion brings P4 below the pooled 95th
-    percentile, the response below the pooled maximum, both, or neither. None if invalid."""
+    """Against 03's pooled ensembles: P4 below the pooled 95th percentile, the response below the
+    pooled maximum, both, or neither. None if invalid."""
     if not r["valid"]:
         return None
-    p4, den = pooled(pg)
-    lo_p4, lo_den = r["P4"] < np.quantile(p4, 0.95), r["denominator"] < den.max()
+    t = thresholds(pg)
+    lo_p4, lo_den = r["P4"] < t["P4_pooled_95th"], r["denominator"] < t["response_pooled_max"]
     return {(True, True): "both", (True, False): "P4 only", (False, True): "response only",
             (False, False): "neither"}[(bool(lo_p4), bool(lo_den))]
 
@@ -144,47 +191,48 @@ def probe_genomes(con, name: str, device, graph=None, n=None, cfg_name=None, see
 
 
 def p4_of(h: dict) -> dict:
-    num = float(np.abs(h["raw_turn"]["final"]).mean())
-    den = float(np.abs(h["raw_turn"]["steady_contrast"]).mean())
+    """P4's terms, averaged in float64 as 03's supplement was; invalid below 03's floor or if not
+    finite, and then never a ratio."""
+    num = float(np.abs(np.asarray(h["raw_turn"]["final"], dtype=np.float64)).mean())
+    den = float(np.abs(np.asarray(h["raw_turn"]["steady_contrast"], dtype=np.float64)).mean())
     valid = bool(math.isfinite(num) and math.isfinite(den) and den >= DEN_FLOOR)
-    return {"numerator": num, "denominator": den, "P4": num / den if valid else None, "valid": valid}
+    return {"numerator": fin(num), "denominator": fin(den), "P4": num / den if valid else None, "valid": valid}
+
+
+def reproduce(name: str, got: dict) -> dict:
+    """Relative differences from 03's committed numerator and denominator for `name`."""
+    want = supplement("03")[name]
+    rel = {k: (abs(got[k] - want[f"P4_turn_{k}"]) / abs(want[f"P4_turn_{k}"]) if got[k] is not None else None)
+           for k in ("numerator", "denominator")}
+    ok = all(v is not None and v <= PLAN["reproduce_tolerance"] for v in rel.values())
+    return {"got": {k: got[k] for k in ("numerator", "denominator")},
+            "03": {k: want[f"P4_turn_{k}"] for k in ("numerator", "denominator")}, "relative_difference": rel,
+            "reproduced": ok}
 
 
 def reproduce_n2(con, bank, iface, device) -> dict:
     """03's N2 numerator and denominator, recomputed in 03's composition; refuses to go on if they
     differ. Smoke runs a token check only."""
     g, cfg = probe_genomes(con, "N2", device, n=8 if SMOKE else None)
-    got = p4_of(M.history(g, cfg, iface, bank))
-    want = supplement("03")["N2"]
-    rel = {k: abs(got[k] - want[f"P4_turn_{k}"]) / abs(want[f"P4_turn_{k}"]) for k in ("numerator", "denominator")}
-    ok = all(v <= PLAN["reproduce_tolerance"] for v in rel.values())
-    if not ok and not SMOKE:
-        raise SystemExit(f"N2's P4 terms do not reproduce 03's (relative differences {rel}); stopping")
-    return {"got": got, "03": {k: want[f"P4_turn_{k}"] for k in ("numerator", "denominator")},
-            "relative_difference": rel, "reproduced": ok}
+    r = reproduce("N2", p4_of(M.history(g, cfg, iface, bank)))
+    if not r["reproduced"] and not SMOKE:
+        raise SystemExit(f"N2's P4 terms do not reproduce 03's ({r['relative_difference']}); stopping")
+    return r
 
 
-def require_formal_size(args) -> None:
-    if not SMOKE and args.genomes not in (None, PLAN["genomes"]):
-        raise SystemExit(f"formal outputs use 03's {PLAN['genomes']} probe genomes, not {args.genomes}")
-
-
-def finish(name: str, doc: dict) -> None:
-    write(EXP / f"{name}.json", doc)
-    agg = OUT / "compute.json"
-    if (OUT / "compute").exists():
-        acct.write_aggregate(OUT / "compute", agg)
-    if agg.exists() and not SMOKE:
-        write(EXP / "compute-record.json", json.loads(agg.read_text(encoding="utf-8")))
+def per_genome(h: dict) -> dict:
+    return {"final": np.asarray(h["raw_turn"]["final"], dtype=np.float32),
+            "steady": np.asarray(h["raw_turn"]["steady_contrast"], dtype=np.float32)}
 
 
 # ----------------------------------------------------------------------------- Q1, no simulation
 
 def cmd_tradeoff(args):
-    """Within each ensemble: Spearman(denominator, P4); the scaling of the numerator with the
-    denominator (a log-log slope below 1 lowers the ratio mechanically); P4 against the separately
-    measured common turn response; N2's position; and N2's residual from a linear fit of P4 on
-    log(denominator), a model-dependent description, not a significance score."""
+    """Within each ensemble: Spearman(denominator, P4); the log-log slope of the numerator on the
+    denominator (P4's own log-log slope on the denominator is that slope minus 1: a restatement, not a
+    separate component); P4 against the separately measured common turn response (the same 2 048
+    genomes); N2's position; and N2's residual from a linear fit of P4 on log(denominator), a
+    model-dependent description, not a significance score."""
     out = {}
     for inst in SUPPLEMENTS:
         pg = supplement(inst)
@@ -216,42 +264,334 @@ def cmd_tradeoff(args):
                             "denominator": n2["P4_turn_denominator"]}, "ensembles": rows_out, "N2_variants": variants}
     write(EXP / "tradeoff.json", {"what": "exploratory (PLAN.md Q1); no simulation", "stamp": stamp(), **out})
     for inst, d in out.items():
-        print(inst, {e: (round(r["spearman_denominator_P4"], 2), round(r["loglog_slope_numerator_on_denominator"], 2),
+        print(inst, {e: (round(r["spearman_denominator_P4"], 2), round(r["spearman_common_turn_M0_P4"], 2),
                          r["graphs_with_P4_at_or_above_N2"]) for e, r in d["ensembles"].items()})
 
 
+def tail_stats(f: np.ndarray, s: np.ndarray) -> dict:
+    """Per graph, from per-genome |final| (f) and |steady contrast| (s): split halves; each term's
+    top-5% share; the overlap of the two top-5% sets; P4 with the top 5% by numerator removed; and a
+    cross-half pair (P4 from even genomes, response from odd)."""
+    k = max(1, len(f) // 20)
+    top_f, top_s = np.argsort(-f)[:k], np.argsort(-s)[:k]
+    rest = np.setdiff1d(np.arange(len(f)), top_f)
+    return {"P4_even": float(f[0::2].mean() / s[0::2].mean()), "P4_odd": float(f[1::2].mean() / s[1::2].mean()),
+            "response_even": float(s[0::2].mean()), "response_odd": float(s[1::2].mean()),
+            "top5pct_share_of_numerator": float(f[top_f].sum() / max(f.sum(), 1e-30)),
+            "top5pct_share_of_denominator": float(s[top_s].sum() / max(s.sum(), 1e-30)),
+            "top5pct_sets_overlap": float(len(np.intersect1d(top_f, top_s)) / k),
+            "P4": float(f.mean() / s.mean()),
+            "P4_without_top5pct_by_numerator": float(f[rest].mean() / max(s[rest].mean(), 1e-30))}
+
+
 def cmd_tails(args):
-    """From 03's local per-genome measures (not committed): the split-half reliability of P4 over
-    graphs (even against odd genomes), and how concentrated each graph's numerator is in its top 5%
-    of genomes, for N2 against each ensemble (Fable, review v1)."""
+    """From 03's local per-genome measures (not committed; their hashes are recorded): per ensemble,
+    the split-half reliability of P4, a cross-half correlation of P4 with the response, the tail
+    shares, and N2's rank on each (Fable, Astra, reviews v1-v2)."""
     d = Path(args.measures)
     names = ["N2"] + [f"{e}-{X.SEED_BASE[e] + i}" for e in ENSEMBLES for i in range(X.N_PER[e])]
-    rows = {}
+    rows, hashes = {}, hashlib.sha256()
     for n in names:
         path = d / f"{n}.json"
         if not path.exists():
             continue
-        m = json.loads(path.read_text(encoding="utf-8"))
-        h = m["history"]["raw_turn"]
-        f, s = np.abs(np.asarray(h["final"])), np.abs(np.asarray(h["steady_contrast"]))
-        top = np.sort(f)[::-1]
-        k = max(1, len(f) // 20)
-        rows[n] = {"P4_even": float(f[0::2].mean() / s[0::2].mean()), "P4_odd": float(f[1::2].mean() / s[1::2].mean()),
-                   "top5pct_share_of_numerator": float(top[:k].sum() / max(f.sum(), 1e-30)),
-                   "top5pct_share_of_denominator": float(np.sort(s)[::-1][:k].sum() / max(s.sum(), 1e-30))}
-    out = {"N2": rows.get("N2"), "ensembles": {}}
+        raw = path.read_bytes()
+        hashes.update(n.encode() + hashlib.sha256(raw).digest())
+        h = json.loads(raw)["history"]["raw_turn"]
+        rows[n] = tail_stats(np.abs(np.asarray(h["final"], dtype=np.float64)),
+                             np.abs(np.asarray(h["steady_contrast"], dtype=np.float64)))
+    n2 = rows.get("N2")
+    out = {"N2": n2, "ensembles": {}}
+    keys = ("top5pct_share_of_numerator", "top5pct_share_of_denominator", "top5pct_sets_overlap",
+            "P4_without_top5pct_by_numerator")
     for e in ENSEMBLES:
-        r = [v for k, v in rows.items() if k.startswith(e + "-")]
+        r = [v for k, v in rows.items() if in_ensemble(k, e)]
         if not r:
             continue
-        ev, od = np.array([x["P4_even"] for x in r]), np.array([x["P4_odd"] for x in r])
-        t = np.array([x["top5pct_share_of_numerator"] for x in r])
-        out["ensembles"][e] = {"graphs": len(r), "split_half_correlation": float(np.corrcoef(ev, od)[0, 1]),
-                               "top5pct_share_median": float(np.median(t)), "top5pct_share_max": float(t.max())}
+        col = lambda key: np.array([x[key] for x in r])  # noqa: E731
+        out["ensembles"][e] = {
+            "graphs": len(r), "split_half_correlation": float(np.corrcoef(col("P4_even"), col("P4_odd"))[0, 1]),
+            "cross_half_spearman_P4even_response_odd": float(spearmanr(col("P4_even"), col("response_odd")).statistic),
+            **{f"{key}_median": float(np.median(col(key))) for key in keys},
+            **{f"{key}_max": float(col(key).max()) for key in keys},
+            **({f"N2_{key}_share_of_graphs_below": float((col(key) < n2[key]).mean()) for key in keys} if n2 else {})}
     write(EXP / "tails.json", {"what": "exploratory (PLAN.md Q1b); no simulation; from 03's local per-genome measures",
-                               "stamp": stamp(), **out})
-    print(out["N2"], {e: (round(v["split_half_correlation"], 3), round(v["top5pct_share_median"], 3))
-                      for e, v in out["ensembles"].items()})
+                               "stamp": stamp(), "inputs": {"directory": "runs/exp03/measures (local)",
+                                                            "files": len(rows), "sha256_of_name_and_file_hashes": hashes.hexdigest()},
+                               **out})
+    print({k: round(v, 3) for k, v in (n2 or {}).items()})
+    print({e: (v["graphs"], round(v["split_half_correlation"], 3), round(v["top5pct_share_of_numerator_median"], 3),
+               round(v.get("N2_top5pct_share_of_numerator_share_of_graphs_below", float("nan")), 3))
+           for e, v in out["ensembles"].items()})
+
+
+# ----------------------------------------------------------------------------- Q4's null panel
+
+def panel_names(k: int) -> list[str]:
+    return ["N2"] + [f"{e}-{X.SEED_BASE[e] + i}" for e in ENSEMBLES for i in range(k)]
+
+
+def ensure_graphs(names: list[str]) -> dict:
+    """03's graph files are not committed: rebuild any missing one from 03's record, and require its
+    arrays to match 03's content manifest (D106). The runner's own load check then verifies it."""
+    missing = [n for n in names if n != "N2" and not (X.GRAPHS / f"{n}.npz").exists()]
+    if not missing:
+        return {"rebuilt": 0}
+    rep = X.rebuild_graphs(X.GRAPHS, only=missing, workers=1, windows_bytes=True)  # a pool cannot pickle this module
+    if rep["content_mismatched"] or rep["mismatched"]:
+        raise SystemExit(f"rebuilt graphs do not match 03's manifests: {rep}")
+    return rep
+
+
+def cmd_graphs(args):
+    """Rebuild Q4's null panel before the GPU commands, so the rebuild does not run inside them."""
+    rep = ensure_graphs(panel_names(2 if SMOKE else PLAN["decay"]["graphs_per_ensemble"]))
+    print(rep)
+
+
+# ----------------------------------------------------------------------------- Q3 synapse types
+
+def cmd_synapses(args):
+    """N2 with gap junctions off, chemical synapses off, and both off; and with only the chemical, or
+    only the gap, weight magnitudes permuted among existing edges, over 8 seeds, paired with N2's
+    genome draws (signs, biases and time constants unchanged)."""
+    formal_guard(args)
+    cap = clock()
+    cap.check()
+    con, bank, iface = setup(args.device)
+    repro = reproduce_n2(con, bank, iface, args.device)
+    g, cfg = probe_genomes(con, "N2", args.device, n=args.genomes)
+    pg = supplement("03")
+    base = {"what": "exploratory (PLAN.md Q3)", "plan": PLAN, "stamp": stamp(args), "reproduce_N2": repro,
+            "thresholds": thresholds(pg)}
+    conds = [("intact", lambda: (g, cfg)),
+             ("gap junctions off", lambda: (g.with_params(g=torch.zeros_like(g.g)), cfg)),
+             ("chemical off", lambda: (g.with_params(w=torch.zeros_like(g.w)), cfg)),
+             ("both off", lambda: (g.with_params(w=torch.zeros_like(g.w), g=torch.zeros_like(g.g)), cfg))]
+    for which, field in (("chemical permuted", "init_chem_magnitude"), ("gaps permuted", "init_gap_magnitude")):
+        for sd in PLAN["by_type_seeds"][:2 if SMOKE else None]:
+            def make(field=field, sd=sd):
+                c = cfg.copy()
+                setattr(c.brain, field, "permuted")
+                c.brain.init_permutation_seed = sd
+                pgen = torch.Generator(device=args.device).manual_seed(X._gseed("N2") + 1)
+                return Genome.random(g.spec, c.brain, g.n_strains, generator=pgen, device=args.device), c
+            conds.append((f"{which}, seed {sd}", make))
+    rows, arrays = {}, {}
+    with acct.category("probe"):
+        for label, make in conds:
+            cap.check()
+            gg, cc = make()
+            h = M.history(gg, cc, iface, bank)
+            r = p4_of(h)
+            rows[label] = {**r, "null_position": null_position(r, pg), "class": lead_class(r, pg)}
+            for k, v in per_genome(h).items():
+                arrays[f"{label}|{k}"] = v
+            write(EXP / "synapses-partial.json", {**base, "conditions": rows})
+            save_arrays(OUT / "synapses-per-genome.npz", arrays)
+    intact = rows["intact"]
+    for r in rows.values():
+        r["change_from_intact"] = ({"P4": r["P4"] - intact["P4"], "denominator": r["denominator"] - intact["denominator"]}
+                                   if r["valid"] and intact["valid"] else None)
+    write(EXP / "synapses.json", {**base, "conditions": rows})
+    (EXP / "synapses-partial.json").unlink(missing_ok=True)
+    print({k: (v["P4"] and round(v["P4"], 3), v["denominator"] and round(v["denominator"], 4)) for k, v in rows.items()})
+
+
+# ----------------------------------------------------------------------------- Q5 weights
+
+def cmd_weights(args):
+    """N2's wiring with its anatomical weight magnitudes permuted among its edges, 64 seeds, in two
+    designs: independent genome draws per permutation, as 03 drew its N2perm graphs; and paired,
+    N2's own genome draws with only the magnitudes permuted (Astra, Fable, review v1)."""
+    formal_guard(args)
+    cap = clock()
+    cap.check()
+    con, bank, iface = setup(args.device)
+    repro = reproduce_n2(con, bank, iface, args.device)
+    W = PLAN["weights"]
+    seeds = [W["seed_base"] + i for i in range(2 if SMOKE else W["permutations"])]
+    pg = supplement("03")
+    base = {"what": "exploratory (PLAN.md Q5)", "plan": PLAN, "stamp": stamp(args), "reproduce_N2": repro,
+            "thresholds": thresholds(pg)}
+    rows, arrays = {"independent": {}, "paired": {}}, {}
+    t0 = time.perf_counter()
+    with acct.category("probe"):
+        for sd in seeds:
+            name = f"N2perm{sd}"
+            for design, seed_name in (("independent", name), ("paired", "N2")):
+                cap.check()
+                g, cfg = probe_genomes(con, name, args.device, graph=con, n=args.genomes, seed_name=seed_name)
+                h = M.history(g, cfg, iface, bank)
+                r = p4_of(h)
+                rows[design][name] = {**r, "null_position": null_position(r, pg), "class": lead_class(r, pg)}
+                for k, v in per_genome(h).items():
+                    arrays[f"{design}|{name}|{k}"] = v
+            write(EXP / "weights-partial.json", {**base, "permutations": rows})
+            save_arrays(OUT / "weights-per-genome.npz", arrays)
+    n2 = pg["N2"]
+    p4_null, den_null = pooled(pg)
+    summary = {}
+    for design, rr in rows.items():
+        v = [r for r in rr.values() if r["valid"]]
+        p4 = np.array([r["P4"] for r in v])
+        den = np.array([r["denominator"] for r in v])
+        has = len(v) > 0
+        summary[design] = {
+            "valid": len(v), "invalid": len(rr) - len(v),
+            "P4_median": float(np.median(p4)) if has else None,
+            "P4_share_below_N2": float((p4 < n2["P4_turn"]).mean()) if has else None,
+            "P4_share_above_pooled_null_95th": float((p4 > np.quantile(p4_null, 0.95)).mean()) if has else None,
+            "denominator_median": float(np.median(den)) if has else None,
+            "denominator_share_below_N2": float((den < n2["P4_turn_denominator"]).mean()) if has else None,
+            "denominator_share_above_pooled_null_max": float((den > den_null.max()).mean()) if has else None,
+            "per_ensemble": {e: {"P4_share_above_ensemble_95th": float((p4 > np.quantile(
+                [x["P4_turn"] for x in ensemble_rows(pg, e)], 0.95)).mean()) if has else None} for e in ENSEMBLES}}
+    write(EXP / "weights.json", {**base, "summary": summary, "permutations": rows, "seconds": time.perf_counter() - t0})
+    (EXP / "weights-partial.json").unlink(missing_ok=True)
+    print(json.dumps({d: {k: v for k, v in s.items() if k != "per_ensemble"} for d, s in summary.items()}, indent=1))
+
+
+# ----------------------------------------------------------------------------- Q4 decay
+
+class WindowRange:
+    """The largest range (max minus min over the window's ticks, per unit, then the largest over
+    units) of a quantity sampled at every tick of a window: an oscillation that returns to its start
+    still shows its swing (Astra, review v2)."""
+
+    def __init__(self):
+        self.lo = self.hi = None
+
+    def add(self, x: torch.Tensor) -> None:
+        self.lo = x.clone() if self.lo is None else torch.minimum(self.lo, x)
+        self.hi = x.clone() if self.hi is None else torch.maximum(self.hi, x)
+
+    def value(self) -> np.ndarray:
+        r = self.hi - self.lo
+        return r.reshape(r.shape[0], -1).amax(dim=1).cpu().numpy()
+
+
+def history_full(genome: Genome, cfg, iface, bank, after: int, every: int, extra=(5,), window=10) -> dict:
+    """The same stimulus as `measures.history`, followed for `after` ticks of the final input.
+    Returns the signed rising-minus-falling raw turn [ticks, genomes] at tick 0 (the ramp's end), the
+    `extra` ticks and every `every` ticks; the steady contrast; over the last `window` ticks of each
+    hold and of each trajectory's end, the range of the full state and of the turn read-out (settling);
+    and the mean tanh slope of the turn read-out neurons at the holds' and the ramp's end
+    (saturation)."""
+    brain = Brain(genome)
+    s, n, dev = genome.n_strains, genome.spec.n, genome.device
+    food = (bank["food_left"] + bank["food_right"]) / 2
+    at = lambda lvl: M._current(iface, cfg, dict(bank, food_left=lvl, food_right=lvl), n, s, dev)  # noqa: E731
+    turn_idx = list(iface.turn_plus) + list(iface.turn_minus)
+    ticks = sorted({0, *extra, *range(every, after + 1, every)})
+    res = {}
+    for name, start in (("rising", 0.25 * food), ("falling", 1.75 * food)):
+        v = brain.initial_state(1)
+        hold_state, hold_turn = WindowRange(), WindowRange()
+        for t in range(1, 101):
+            v = brain.step(v, at(start))
+            if t > 100 - window:  # the last `window` ticks of the hold, every tick
+                hold_state.add(v)
+                hold_turn.add(M._readout(iface, cfg, v)[:, 1:2])
+        steady = M._readout(iface, cfg, v)[:, 1]
+        slope_hold = (1 - torch.tanh(v[:, 0, turn_idx]) ** 2).mean(-1)
+        for t in range(10):
+            v = brain.step(v, at(start + (food - start) * (t + 1) / 10))
+        slope_ramp = (1 - torch.tanh(v[:, 0, turn_idx]) ** 2).mean(-1)
+        rows = {0: M._readout(iface, cfg, v)[:, 1]}
+        end_state, end_turn = WindowRange(), WindowRange()
+        for t in range(1, after + 1):
+            v = brain.step(v, at(food))
+            if t in ticks:
+                rows[t] = M._readout(iface, cfg, v)[:, 1]
+            if t > after - window:  # the last `window` ticks, every tick
+                end_state.add(v)
+                end_turn.add(M._readout(iface, cfg, v)[:, 1:2])
+        res[name] = {"curve": torch.stack([rows[t] for t in ticks]).cpu().numpy(), "steady": steady.cpu().numpy(),
+                     "hold_state": hold_state.value(), "hold_turn": hold_turn.value(),
+                     "end_state": end_state.value(), "end_turn": end_turn.value(),
+                     "slope_hold": slope_hold.cpu().numpy(), "slope_ramp": slope_ramp.cpu().numpy()}
+    both = lambda k: np.maximum(res["rising"][k], res["falling"][k])  # noqa: E731
+    return {"ticks": ticks, "diff": res["rising"]["curve"] - res["falling"]["curve"],
+            "steady_contrast": res["falling"]["steady"] - res["rising"]["steady"],
+            "hold_state_range": both("hold_state"), "hold_turn_range": both("hold_turn"),
+            "end_state_range": both("end_state"), "end_turn_range": both("end_turn"),
+            "slope_hold": (res["rising"]["slope_hold"] + res["falling"]["slope_hold"]) / 2,
+            "slope_ramp": (res["rising"]["slope_ramp"] + res["falling"]["slope_ramp"]) / 2}
+
+
+def share(mask: np.ndarray, of: np.ndarray) -> dict:
+    """A conditional share with its counts; None when nothing is eligible."""
+    n = int(of.sum())
+    return {"share": float((mask & of).sum() / n) if n else None, "count": int((mask & of).sum()), "of": n}
+
+
+def decay_summary(h: dict) -> dict:
+    D = PLAN["decay"]
+    a = np.abs(h["diff"]).astype(np.float64)
+    start, end = a[0], a[-1]
+    eligible = start >= D["start_floor"]
+    settled = h["end_state_range"] < D["settle_tolerance"]
+    remaining = eligible & (end > D["remaining_fraction"] * start)
+    everyone = np.ones_like(eligible)
+    k = max(1, len(start) // 20)
+    return {"ticks": h["ticks"], "mean_abs_difference": a.mean(axis=1).tolist(),
+            "ratio_of_means_at_end": fin(a[-1].mean() / a[0].mean()) if a[0].mean() > 0 else None,
+            "eligible": share(eligible, everyone),
+            "separation_remaining_among_eligible": share(remaining, eligible),
+            "settled_at_end": share(settled, everyone),
+            "settled_among_remaining": share(settled, remaining),
+            "holds_settled": share(h["hold_state_range"] < D["settle_tolerance"], everyone),
+            "hold_turn_range_median": float(np.median(h["hold_turn_range"])),
+            "top5pct_share_of_numerator": float(np.sort(start)[::-1][:k].sum() / max(start.sum(), 1e-30)),
+            "mean_turn_readout_tanh_slope_hold": float(h["slope_hold"].mean()),
+            "mean_turn_readout_tanh_slope_ramp": float(h["slope_ramp"].mean()),
+            "numerator": float(start.mean()), "denominator": float(np.abs(h["steady_contrast"].astype(np.float64)).mean())}
+
+
+def cmd_decay(args):
+    """Q4 on N2 and the first 16 graphs of each ensemble; also each panel graph's P4 with gap junctions
+    off (Fable, review v1), so Q3's gaps-off N2 has a matched null panel. Every panel graph's tick 0
+    and steady contrast must reproduce 03's numerator and denominator."""
+    formal_guard(args)
+    cap = clock()
+    cap.check()
+    con, bank, iface = setup(args.device)
+    repro = reproduce_n2(con, bank, iface, args.device)
+    D = PLAN["decay"]
+    names = panel_names(2 if SMOKE else D["graphs_per_ensemble"])
+    missing = [n for n in names if n != "N2" and not (X.GRAPHS / f"{n}.npz").exists()]
+    if missing and not SMOKE:
+        raise SystemExit(f"{len(missing)} panel graphs are missing: run `p4m.py graphs` first")
+    ensure_graphs(names)
+    base = {"what": "exploratory (PLAN.md Q4)", "plan": PLAN, "stamp": stamp(args), "reproduce_N2": repro}
+    out, arrays = {}, {}
+    t0 = time.perf_counter()
+    with acct.category("probe"):
+        for name in names:
+            cap.check()
+            g, cfg = probe_genomes(con, name, args.device, n=args.genomes)
+            h = history_full(g, cfg, iface, bank, D["after"], D["every"], D["extra_ticks"], D["settle_window"])
+            s = decay_summary(h)
+            s["reproduce_03"] = reproduce(name, {"numerator": s["numerator"], "denominator": s["denominator"]})
+            if not s["reproduce_03"]["reproduced"] and not SMOKE:
+                raise SystemExit(f"{name}: tick 0 does not reproduce 03 ({s['reproduce_03']['relative_difference']})")
+            cap.check()
+            s["gaps_off"] = p4_of(M.history(g.with_params(g=torch.zeros_like(g.g)), cfg, iface, bank))
+            out[name] = s
+            key = name.replace("-", "_")
+            for k in ("diff", "steady_contrast", "hold_state_range", "hold_turn_range", "end_state_range",
+                      "end_turn_range", "slope_hold", "slope_ramp"):
+                arrays[f"{key}|{k}"] = np.asarray(h[k], dtype=np.float32)
+            arrays["ticks"] = np.array(h["ticks"])
+            write(EXP / "decay-partial.json", {**base, "graphs": out})
+            save_arrays(OUT / "decay-per-genome.npz", arrays)
+    write(EXP / "decay.json", {**base, "graphs": out, "seconds": time.perf_counter() - t0})
+    (EXP / "decay-partial.json").unlink(missing_ok=True)
+    for n in names:
+        o = out[n]
+        print(n, o["ratio_of_means_at_end"] and round(o["ratio_of_means_at_end"], 3),
+              o["separation_remaining_among_eligible"]["share"], o["settled_at_end"]["share"])
 
 
 # ----------------------------------------------------------------------------- Q2 lesions
@@ -315,8 +655,24 @@ def public(r: dict) -> dict:
     return {k: v for k, v in r.items() if not k.startswith("_")}
 
 
+def lesion_entries(names: list[str], turn: set[int]) -> list[tuple[str, list[int]]]:
+    """The empty deletion first; then the pre-named targets (pairs, then their singles), so a cap hit
+    loses them last; then every other single; then every other pair."""
+    idx = {n: i for i, n in enumerate(names)}
+    prs = {k: v for k, v in pairs(names).items() if not set(v) & turn}
+    first = [(f"pair {k}", prs[k]) for k in PRE_NAMED if k in prs]
+    first += [(names[i], [i]) for k in PRE_NAMED if k in prs for i in prs[k]]
+    for k in PRE_NAMED:  # an unpaired pre-named neuron, if any
+        if k not in prs and k in idx and idx[k] not in turn:
+            first.append((k, [idx[k]]))
+    done = {tuple(d) for _, d in first}
+    singles = [(names[i], [i]) for i in range(len(names)) if i not in turn and (i,) not in done]
+    rest_pairs = [(f"pair {k}", v) for k, v in prs.items() if k not in PRE_NAMED]
+    return [("intact", [])] + first + singles + rest_pairs
+
+
 def cmd_lesions(args):
-    require_formal_size(args)
+    formal_guard(args)
     cap = clock()
     cap.check()
     con, bank, iface = setup(args.device)
@@ -324,260 +680,66 @@ def cmd_lesions(args):
     g, cfg = probe_genomes(con, "N2", args.device, n=args.genomes)
     turn = set(iface.turn_plus) | set(iface.turn_minus)  # only the turn read-out: P4 reads turn alone
     names = list(con.names)
-    singles = [[i] for i in range(len(names)) if i not in turn]
-    prs = {k: v for k, v in pairs(names).items() if not set(v) & turn}
+    entries = lesion_entries(names, turn)
     if SMOKE:
-        singles, prs = singles[:3], dict(list(prs.items())[:2])
-    entries = [("intact", [])] + [(names[d[0]], d) for d in singles] + [(f"pair {k}", v) for k, v in prs.items()]
+        entries = entries[:6]
     pg = supplement("03")
+    th = thresholds(pg)
     p4_all, den_all = pooled(pg)
     b = np.polyfit(np.log(den_all), p4_all, 1)
     t0 = time.perf_counter()
-    base = {"what": "exploratory (PLAN.md Q2)", "plan": PLAN, "stamp": stamp(), "reproduce_N2": repro,
-            "genomes": g.n_strains, "per_chunk": args.per_chunk,
-            "composition": [args.per_chunk, 1, "direct brain steps, one row per strain"],
-            "excluded_turn_readout_neurons": sorted(names[i] for i in turn)}
+    base = {"what": "exploratory (PLAN.md Q2)", "plan": PLAN, "stamp": stamp(args), "reproduce_N2": repro,
+            "per_chunk": args.per_chunk, "composition": [args.per_chunk, 1, "direct brain steps, one row per strain"],
+            "thresholds": th, "excluded_turn_readout_neurons": sorted(names[i] for i in turn)}
+    state = {"intact": None}
 
     def row(label, dl, r):
         out = {"deleted": label, **public(r), "null_position": null_position(r, pg), "class": lead_class(r, pg)}
         if r["valid"]:
             out["residual_from_pooled_trend"] = float(r["P4"] - np.polyval(b, np.log(r["denominator"])))
+            it = state["intact"]
+            if it is not None and it["valid"]:
+                out["change_from_intact"] = {"P4": r["P4"] - it["P4"], "denominator": r["denominator"] - it["denominator"]}
         if len(dl) == 1:
             out["degree"] = degrees(con, dl[0])
         return out
 
-    def partial(results):
-        write(EXP / "lesions-partial.json", {**base, "rows": [row(lbl, dl, r) for (lbl, dl), r in zip(entries, results)]})
+    def checkpoint(results, extra=None):
+        if state["intact"] is None and results:
+            state["intact"] = results[0]
+            if not SMOKE and (results[0]["numerator"], results[0]["denominator"]) != (repro["got"]["numerator"],
+                                                                                      repro["got"]["denominator"]):
+                raise SystemExit("the empty deletion does not reproduce the intact brain in the same composition")
+        write(EXP / "lesions-partial.json", {**base, "rows": [row(lbl, dl, r) for (lbl, dl), r in zip(entries, results)],
+                                             **(extra or {})})
+        if len(results) % 20 == 0 or len(results) == len(entries):
+            save_arrays(OUT / "lesions-per-genome.npz", {"labels": np.array([lbl for lbl, _ in entries[:len(results)]]),
+                                                         "final": np.stack([r["_final"] for r in results]),
+                                                         "steady": np.stack([r["_steady"] for r in results])})
 
     with acct.category("probe"):
-        res = history_in_chunks(g, cfg, iface, bank, [d for _, d in entries], args.per_chunk, cap.check, partial)
-    intact = res[0]
-    if not SMOKE and (intact["numerator"], intact["denominator"]) != (repro["got"]["numerator"], repro["got"]["denominator"]):
-        raise SystemExit("the empty deletion does not reproduce the intact brain in the same composition")
+        res = history_in_chunks(g, cfg, iface, bank, [d for _, d in entries], args.per_chunk, cap.check, checkpoint)
     rows = [row(lbl, dl, r) for (lbl, dl), r in zip(entries, res)]
-    # follow-up: the singles with the largest P4 drop, by synapse type
-    valid_singles = [(lbl, dl, r) for (lbl, dl), r in zip(entries[1:1 + len(singles)], res[1:1 + len(singles)]) if r["valid"]]
-    top = sorted(valid_singles, key=lambda x: x[2]["P4"])[:PLAN["follow_up_top"]]
-    follow = {}
+    # follow-up: the valid singles with the lowest P4 among those keeping at least the pooled null median response
+    singles = [(lbl, dl, r) for (lbl, dl), r in zip(entries, res) if len(dl) == 1 and r["valid"]
+               and r["denominator"] >= th["response_pooled_median"]]
+    top = sorted(singles, key=lambda x: x[2]["P4"])[:PLAN["follow_up_top"]]
+    follow, farr = {}, {}
     with acct.category("probe"):
         for kind in ("chemical", "gap"):
             rr = history_in_chunks(g, cfg, iface, bank, [dl for _, dl, _ in top], args.per_chunk, cap.check, kind=kind)
             follow[kind] = [row(lbl, dl, r) for (lbl, dl, _), r in zip(top, rr)]
-    OUT.mkdir(parents=True, exist_ok=True)
-    np.savez_compressed(OUT / "lesions-per-genome.npz", labels=np.array([lbl for lbl, _ in entries]),
-                        final=np.stack([r["_final"] for r in res]), steady=np.stack([r["_steady"] for r in res]))
-    finish("lesions", {**base, "rows": rows, "follow_up_by_synapse_type": follow,
-                       "classes": {c: [r["deleted"] for r in rows if r["class"] == c]
-                                   for c in ("both", "P4 only", "response only")},
-                       "seconds": time.perf_counter() - t0})
+            for (lbl, _, _), r in zip(top, rr):
+                farr[f"{kind}|{lbl}|final"], farr[f"{kind}|{lbl}|steady"] = r["_final"], r["_steady"]
+            save_arrays(OUT / "lesions-follow-up-per-genome.npz", farr)
+            write(EXP / "lesions-partial.json", {**base, "rows": rows, "follow_up_by_synapse_type": follow})
+    write(EXP / "lesions.json", {**base, "rows": rows, "follow_up_by_synapse_type": follow,
+                                 "classes": {c: [r["deleted"] for r in rows if r["class"] == c]
+                                             for c in ("both", "P4 only", "response only")},
+                                 "seconds": time.perf_counter() - t0})
     (EXP / "lesions-partial.json").unlink(missing_ok=True)
     for r in sorted([r for r in rows if r["valid"]], key=lambda r: r["P4"])[:8]:
         print(f"{r['deleted']:10s} P4 {r['P4']:.3f} den {r['denominator']:.4f} {r['class']}")
-
-
-# ----------------------------------------------------------------------------- Q3 synapse types
-
-def cmd_synapses(args):
-    """N2 with gap junctions off, chemical synapses off, and both off; and with only the chemical, or
-    only the gap, weight magnitudes permuted among existing edges, over 8 seeds, paired with N2's
-    genome draws (signs, biases and time constants unchanged)."""
-    require_formal_size(args)
-    cap = clock()
-    cap.check()
-    con, bank, iface = setup(args.device)
-    repro = reproduce_n2(con, bank, iface, args.device)
-    g, cfg = probe_genomes(con, "N2", args.device, n=args.genomes)
-    pg = supplement("03")
-    conds = {"intact": g, "gap junctions off": g.with_params(g=torch.zeros_like(g.g)),
-             "chemical off": g.with_params(w=torch.zeros_like(g.w)),
-             "both off": g.with_params(w=torch.zeros_like(g.w), g=torch.zeros_like(g.g))}
-    rows = {}
-    with acct.category("probe"):
-        for k, gg in conds.items():
-            cap.check()
-            rows[k] = p4_of(M.history(gg, cfg, iface, bank))
-        for which, field in (("chemical permuted", "init_chem_magnitude"), ("gaps permuted", "init_gap_magnitude")):
-            for sd in PLAN["by_type_seeds"][:2 if SMOKE else None]:
-                cap.check()
-                c = cfg.copy()
-                setattr(c.brain, field, "permuted")
-                c.brain.init_permutation_seed = sd
-                pgen = torch.Generator(device=args.device).manual_seed(X._gseed("N2") + 1)
-                gm = Genome.random(g.spec, c.brain, g.n_strains, generator=pgen, device=args.device)
-                rows[f"{which}, seed {sd}"] = p4_of(M.history(gm, c, iface, bank))
-    for r in rows.values():
-        r["null_position"] = null_position(r, pg)
-        r["class"] = lead_class(r, pg)
-    finish("synapses", {"what": "exploratory (PLAN.md Q3)", "plan": PLAN, "stamp": stamp(), "reproduce_N2": repro,
-                        "genomes": g.n_strains, "conditions": rows})
-    print({k: (None if v["P4"] is None else round(v["P4"], 3), round(v["denominator"], 4)) for k, v in rows.items()})
-
-
-# ----------------------------------------------------------------------------- Q4 decay
-
-def history_full(genome: Genome, cfg, iface, bank, after: int, every: int, extra=(5,), window=10) -> dict:
-    """The same stimulus as `measures.history`, followed for `after` ticks of the final input.
-    Returns the signed rising-minus-falling raw turn [ticks, genomes] at tick 0 (the ramp's end),
-    the `extra` ticks and every `every` ticks; the steady contrast; the largest state change over
-    the last `window` ticks of each hold and of each trajectory's end (settling); and the mean
-    tanh slope of the turn read-out neurons at the holds' and the ramp's end (saturation)."""
-    brain = Brain(genome)
-    s, n, dev = genome.n_strains, genome.spec.n, genome.device
-    food = (bank["food_left"] + bank["food_right"]) / 2
-    at = lambda lvl: M._current(iface, cfg, dict(bank, food_left=lvl, food_right=lvl), n, s, dev)  # noqa: E731
-    turn_idx = list(iface.turn_plus) + list(iface.turn_minus)
-    ticks = sorted({0, *extra, *range(every, after + 1, every)})
-    res = {}
-    for name, start in (("rising", 0.25 * food), ("falling", 1.75 * food)):
-        v = brain.initial_state(1)
-        for t in range(100):
-            if t == 100 - window:
-                v_hold = v.clone()
-            v = brain.step(v, at(start))
-        hold_change = (v - v_hold).abs().amax(dim=(1, 2))
-        steady = M._readout(iface, cfg, v)[:, 1]
-        slope_hold = (1 - torch.tanh(v[:, 0, turn_idx]) ** 2).mean(-1)
-        for t in range(10):
-            v = brain.step(v, at(start + (food - start) * (t + 1) / 10))
-        slope_ramp = (1 - torch.tanh(v[:, 0, turn_idx]) ** 2).mean(-1)
-        rows = {0: M._readout(iface, cfg, v)[:, 1]}
-        for t in range(1, after + 1):
-            if t == after - window:
-                v_end = v.clone()
-            v = brain.step(v, at(food))
-            if t in ticks:
-                rows[t] = M._readout(iface, cfg, v)[:, 1]
-        end_change = (v - v_end).abs().amax(dim=(1, 2))
-        res[name] = {"curve": torch.stack([rows[t] for t in ticks]).cpu().numpy(), "steady": steady.cpu().numpy(),
-                     "hold_change": hold_change.cpu().numpy(), "end_change": end_change.cpu().numpy(),
-                     "slope_hold": slope_hold.cpu().numpy(), "slope_ramp": slope_ramp.cpu().numpy()}
-    return {"ticks": ticks, "diff": res["rising"]["curve"] - res["falling"]["curve"],
-            "steady_contrast": res["falling"]["steady"] - res["rising"]["steady"],
-            "hold_change": np.maximum(res["rising"]["hold_change"], res["falling"]["hold_change"]),
-            "end_change": np.maximum(res["rising"]["end_change"], res["falling"]["end_change"]),
-            "slope_hold": (res["rising"]["slope_hold"] + res["falling"]["slope_hold"]) / 2,
-            "slope_ramp": (res["rising"]["slope_ramp"] + res["falling"]["slope_ramp"]) / 2}
-
-
-def decay_summary(h: dict) -> dict:
-    D = PLAN["decay"]
-    a = np.abs(h["diff"])
-    start, end = a[0], a[-1]
-    eligible = start >= D["start_floor"]
-    settled = h["end_change"] < D["settle_tolerance"]
-    remaining = eligible & (end > D["remaining_fraction"] * start)
-    f = np.abs(h["diff"][0])
-    k = max(1, len(f) // 20)
-    return {"ticks": h["ticks"], "mean_abs_difference": a.mean(axis=1).tolist(),
-            "ratio_of_means_at_end": float(a[-1].mean() / max(a[0].mean(), 1e-30)),
-            "share_eligible": float(eligible.mean()),
-            "share_of_eligible_with_separation_remaining": float(remaining.sum() / max(eligible.sum(), 1)),
-            "share_settled_at_end": float(settled.mean()),
-            "share_of_remaining_that_settled": float((remaining & settled).sum() / max(remaining.sum(), 1)),
-            "share_holds_settled": float((h["hold_change"] < D["settle_tolerance"]).mean()),
-            "top5pct_share_of_numerator": float(np.sort(f)[::-1][:k].sum() / max(f.sum(), 1e-30)),
-            "mean_turn_readout_tanh_slope_hold": float(h["slope_hold"].mean()),
-            "mean_turn_readout_tanh_slope_ramp": float(h["slope_ramp"].mean()),
-            "numerator": float(f.mean()), "denominator": float(np.abs(h["steady_contrast"]).mean())}
-
-
-def ensure_graphs(names: list[str]) -> dict:
-    """03's graph files are not committed: rebuild any missing one from 03's record, and require its
-    arrays to match 03's content manifest (D106). The runner's own load check then verifies it."""
-    missing = [n for n in names if n != "N2" and not (X.GRAPHS / f"{n}.npz").exists()]
-    if not missing:
-        return {"rebuilt": 0}
-    rep = X.rebuild_graphs(X.GRAPHS, only=missing, workers=1, windows_bytes=True)  # a pool cannot pickle this module
-    if rep["content_mismatched"] or rep["mismatched"]:
-        raise SystemExit(f"rebuilt graphs do not match 03's manifests: {rep}")
-    return rep
-
-
-def cmd_decay(args):
-    """Q4 on N2 and the first 16 graphs of each ensemble; also each panel graph's P4 with gap
-    junctions off (Fable, review v1), so Q3's gaps-off N2 has a matched null panel."""
-    require_formal_size(args)
-    cap = clock()
-    cap.check()
-    con, bank, iface = setup(args.device)
-    repro = reproduce_n2(con, bank, iface, args.device)
-    D = PLAN["decay"]
-    k = 2 if SMOKE else D["graphs_per_ensemble"]
-    names = ["N2"] + [f"{e}-{X.SEED_BASE[e] + i}" for e in ENSEMBLES for i in range(k)]
-    rebuilt = ensure_graphs(names)
-    pg = supplement("03")
-    out, curves = {}, {}
-    base = {"what": "exploratory (PLAN.md Q4)", "plan": PLAN, "stamp": stamp(), "reproduce_N2": repro,
-            "graphs_rebuilt": rebuilt}
-    t0 = time.perf_counter()
-    with acct.category("probe"):
-        for name in names:
-            cap.check()
-            g, cfg = probe_genomes(con, name, args.device, n=args.genomes)
-            h = history_full(g, cfg, iface, bank, D["after"], D["every"], D["extra_ticks"], D["settle_window"])
-            s = decay_summary(h)
-            ref = pg.get(name, {})
-            if "P4_turn_numerator" in ref:  # tick 0 is 03's numerator: a per-graph reproduction check
-                s["relative_difference_from_03_numerator"] = abs(s["numerator"] - ref["P4_turn_numerator"]) / ref["P4_turn_numerator"]
-            s["gaps_off"] = p4_of(M.history(g.with_params(g=torch.zeros_like(g.g)), cfg, iface, bank))
-            out[name] = s
-            curves[name] = h["diff"].astype(np.float32)
-            write(EXP / "decay-partial.json", {**base, "graphs": out})
-    OUT.mkdir(parents=True, exist_ok=True)
-    np.savez_compressed(OUT / "decay-per-genome.npz", **{k.replace("-", "_"): v for k, v in curves.items()},
-                        ticks=np.array(out[names[0]]["ticks"]))
-    finish("decay", {**base, "graphs": out, "seconds": time.perf_counter() - t0})
-    (EXP / "decay-partial.json").unlink(missing_ok=True)
-    for n in names[:1] + names[1::k]:
-        o = out[n]
-        print(n, round(o["ratio_of_means_at_end"], 3), round(o["share_of_eligible_with_separation_remaining"], 3),
-              round(o["share_settled_at_end"], 3))
-
-
-# ----------------------------------------------------------------------------- Q5 weights
-
-def cmd_weights(args):
-    """N2's wiring with its anatomical weight magnitudes permuted among its edges, 64 seeds, in two
-    designs: independent genome draws per permutation, as 03 drew its N2perm graphs; and paired,
-    N2's own genome draws with only the magnitudes permuted (Astra, Fable, review v1)."""
-    require_formal_size(args)
-    cap = clock()
-    cap.check()
-    con, bank, iface = setup(args.device)
-    repro = reproduce_n2(con, bank, iface, args.device)
-    W = PLAN["weights"]
-    seeds = [W["seed_base"] + i for i in range(2 if SMOKE else W["permutations"])]
-    pg = supplement("03")
-    rows = {"independent": {}, "paired": {}}
-    t0 = time.perf_counter()
-    with acct.category("probe"):
-        for sd in seeds:
-            name = f"N2perm{sd}"
-            for design, seed_name in (("independent", name), ("paired", "N2")):
-                cap.check()
-                g, cfg = probe_genomes(con, name, args.device, graph=con, n=args.genomes, seed_name=seed_name)
-                r = p4_of(M.history(g, cfg, iface, bank))
-                rows[design][name] = {**r, "null_position": null_position(r, pg), "class": lead_class(r, pg)}
-    n2 = pg["N2"]
-    p4_null, den_null = pooled(pg)
-    summary = {}
-    for design, rr in rows.items():
-        v = [r for r in rr.values() if r["valid"]]
-        p4 = np.array([r["P4"] for r in v])
-        den = np.array([r["denominator"] for r in v])
-        summary[design] = {"valid": len(v), "invalid": len(rr) - len(v),
-                           "P4_median": float(np.median(p4)) if len(v) else None,
-                           "P4_share_below_N2": float((p4 < n2["P4_turn"]).mean()) if len(v) else None,
-                           "P4_share_above_pooled_null_95th": float((p4 > np.quantile(p4_null, 0.95)).mean()) if len(v) else None,
-                           "denominator_median": float(np.median(den)) if len(v) else None,
-                           "denominator_share_below_N2": float((den < n2["P4_turn_denominator"]).mean()) if len(v) else None,
-                           "denominator_share_above_pooled_null_max": float((den > den_null.max()).mean()) if len(v) else None,
-                           "per_ensemble": {e: {"P4_share_above_ensemble_95th": float((p4 > np.quantile(
-                               [x["P4_turn"] for x in ensemble_rows(pg, e)], 0.95)).mean()) if len(v) else None}
-                               for e in ENSEMBLES}}
-    finish("weights", {"what": "exploratory (PLAN.md Q5)", "plan": PLAN, "stamp": stamp(), "reproduce_N2": repro,
-                       "summary": summary, "permutations": rows, "seconds": time.perf_counter() - t0})
-    print(json.dumps({d: {k: v for k, v in s.items() if k != "per_ensemble"} for d, s in summary.items()}, indent=1))
 
 
 # ----------------------------------------------------------------------------- main
@@ -585,7 +747,7 @@ def cmd_weights(args):
 def main():
     global EXP, OUT, SMOKE
     ap = argparse.ArgumentParser(allow_abbrev=False)
-    ap.add_argument("command", choices=["tradeoff", "tails", "lesions", "synapses", "decay", "weights"])
+    ap.add_argument("command", choices=["tradeoff", "tails", "graphs", "lesions", "synapses", "decay", "weights"])
     ap.add_argument("--device", default="cuda")
     ap.add_argument("--genomes", type=int, default=None, help="probe genomes (formal: 03's 2 048 only)")
     ap.add_argument("--per-chunk", type=int, default=PLAN["per_chunk"], help="lesions: strains per batch")
@@ -600,11 +762,26 @@ def main():
         args.per_chunk = args.genomes
     elif args.per_chunk != PLAN["per_chunk"]:
         raise SystemExit(f"formal lesions keep 03's composition: --per-chunk {PLAN['per_chunk']}")
-    {"tradeoff": cmd_tradeoff, "tails": cmd_tails, "lesions": cmd_lesions, "synapses": cmd_synapses,
-     "decay": cmd_decay, "weights": cmd_weights}[args.command](args)
+    {"tradeoff": cmd_tradeoff, "tails": cmd_tails, "graphs": cmd_graphs, "lesions": cmd_lesions,
+     "synapses": cmd_synapses, "decay": cmd_decay, "weights": cmd_weights}[args.command](args)
+
+
+def export_compute_record(out: Path, exp: Path) -> None:
+    """After the accounting has written this attempt (whether it succeeded or stopped), copy the
+    aggregate beside the results (Astra, Fable, review v2)."""
+    agg = out / "compute.json"
+    if (out / "compute").exists():
+        acct.write_aggregate(out / "compute", agg)
+    if agg.exists():
+        write(exp / "compute-record.json", json.loads(agg.read_text(encoding="utf-8")))
 
 
 if __name__ == "__main__":
     from wormwars.accounting import run_script
     smoke = "--smoke" in sys.argv
-    run_script(main, out_default=str(ROOT / "runs" / ("p4m-smoke" if smoke else "p4m")), default="probe", name="p4m")
+    out_dir = ROOT / "runs" / ("p4m-smoke" if smoke else "p4m")
+    try:
+        run_script(main, out_default=str(out_dir), default="probe", name="p4m")
+    finally:
+        if not smoke:
+            export_compute_record(out_dir, EXP)
