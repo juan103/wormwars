@@ -3338,3 +3338,29 @@ they asked:
 
 **The binding commit** is the commit the formal projection records; the projection, the guarded smoke
 run and the stages follow, each record committed and pushed before the next stage.
+
+## D110 — 04a: "04a: passed"; results written, review pending
+
+04a ran as registered (v5, bound at `e3d68be`): the projection (9531aaf), batch A (7ec22bb, 1.44 h),
+batch B (75307a3, 1.36 h) and the evaluation (2b9ed94, 304 s), 2.91 GPU-hours of a 6-hour cap, one
+attempt per stage.
+
+**Outcome, in the fixed wording: "04a: passed".** 8 of 12 shaped runs passed all five rules on 1 024
+hold-out worlds (exact one-sided 95% lower bound on the share, 0.39); 4 of 4 unshaped runs passed.
+The four failures missed only reliability (70-77% of episodes with at least 2 targets, against 80%).
+Every run beat every baseline by a lower bound of at least 1.03, was misled by the mirrored cue (97-100%
+of episodes ending nearer the decoy), was helped by the real cue over a constant one, and beat its
+generation 0.
+
+**Read with it:** the champions are slow, cue-following navigators: 2.0-2.8 targets per episode,
+23-32% of the oracle, a performance-equivalent gain of k 3.5-6.9, and path efficiency 0.27-0.34
+(E1's navigator: 8.71, 0.83). The unshaped arm did as well as the shaped one and produced the best
+champion (run 12, 2.81), so shaping was not needed here (descriptive, 4 runs). Every champion's
+checkpoint batch replayed exactly on the validation worlds. The module for E3 is run 2's champion.
+
+RESULTS.md and a README are written; the results go to Astra 6 and Fable 5.1. Main needs the owner's
+go.
+
+**Also:** the 03m exploratory plan (v4.1) was agreed by both reviewers ("ready to run") and merged
+from its branch after 04a's evaluation (`69286d9`); its GPU commands run next, under their own
+5-hour cap.
