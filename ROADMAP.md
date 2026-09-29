@@ -47,9 +47,12 @@
   - The results review asked for text fixes only, made as dated corrections.
   - **Next in Track E:** E2, the optimizer screen, from this measured baseline; E3 must not assume a
     left-right cue follower.
-- **03m, what drives P4** (exploratory; plan v4.1 agreed by both reviewers): Q1 from committed data
-  is done; the simulations are running under their own 5 GPU-hour cap. First signs: N2's large food
-  response comes from where its chemical weights sit, and survives without gap junctions.
+- **03m, what drives P4** (exploratory; D113, D114): ran on 2026-09-29, 3.32 GPU-hours. Reviewed; its
+  first summary overclaimed and is corrected. What stands: N2's history fades more slowly than the
+  shuffles'; its large food response depends on the placement of its weights and on RIA and AIY
+  (whose deletion cuts the history signal in proportion); N2's P4 lead over the shuffles narrows with
+  gap junctions off; no single or paired deletion removes it. A confirmatory study is possible, not
+  planned.
 - **Documentation for outsiders:** every experiment folder now has a README with its question,
   result, caveats and exact commands to rerun it, and [`AGENTS.md`](AGENTS.md) describes the
   repository and its rules. Others are welcome to take any open question here, and to get there

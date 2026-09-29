@@ -242,3 +242,28 @@ equivalence margin for P4, analysing numerator and denominator jointly; (3) N2's
 fresh weight permutations; (4) the retained separation at 300 ticks, by ensemble; (5) P4 on the
 read-out neurons' state before the tanh, against saturation. "No deletion removes P4" should be
 described, not registered.
+
+**Further corrections, from the confirmation round** (2026-09-29, D114;
+`docs/reviews/20260929-064250-03m-results-confirm/`). Both reviewers confirmed the corrections above
+in substance and asked for these:
+- *"the AIY pair 0.061, 2.7 times"*: 2.65 times (0.0606 / 0.0229, the pooled null median response).
+- *"the lowest are 0.733 and 0.730"*: 0.733 and 0.729.
+- *"the median drop from N2 (0.046)"*: 0.046 in the independent design and 0.047 in the paired one.
+- The 60% and 58% of N2's excess P4 are measured from the pooled null median P4, 0.8174, over 03's
+  640 null graphs (`experiments/03-generation0/supplement.json`).
+- *"Only the weight permutations reach the typical level"*: only the all-weight permutations'
+  **medians** do (0.023-0.024). Individual all-weight permutations range from 0.013 to 0.052, and
+  three of Q3's eight chemical-only seeds give 0.045-0.048, about the RIA pair's level (Fable).
+- *"The slower relaxation holds throughout the window"*: N2 keeps a larger share than all 80 null
+  graphs at every recorded tick from 5 to 50, with a thin margin at tick 50 (0.300 against SH-10007's
+  0.298); from tick 60 SH-10007 is above it (79 of 80), and from tick 150 SH-mirror-40014 too (78 of
+  80, through tick 300). These counts are exact at every recorded tick (Fable).
+- *"The single deletions give 0.089-0.104"* replaced the first write-up's *"RIAR, RIAL, AIYR and AIYL
+  lower the response less (0.088-0.104)"*: the lowest is RIAR's 0.0885, which rounds to 0.089 (Astra).
+  So the note at the top ("the numbers are right") holds with that one rounding.
+- *"The rest of the remaining separation is in trajectories still moving: a slow mode, an oscillation
+  or a long transient"*: the other 23 of N2's 49 qualifying genomes did not meet the settling
+  criterion. That splits the genomes, not the size of the remaining separation (Astra).
+- *"Chemical synapses off leaves no route from the food input to the read-out"*: it leaves a response
+  of 3.6 × 10⁻⁵, below the validity floor; it does not show that no path exists (Astra; as in
+  correction 4).

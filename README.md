@@ -1,7 +1,7 @@
 # WormWars: *C. elegans* wiring vs. shuffled and random graphs
 
 > **This is the `roadmap` working branch.** The published record is `main`. This branch holds work
-> in progress beyond it (roadmap v3's next steps: 03m's results, then E2), until it is merged.
+> in progress beyond it (roadmap v3's next step: E2), until it is merged.
 
 Many parallel 2D worlds on one GPU. In each world, swarms of small creatures called **weys** forage
 and fight. Every wey's brain is a small continuous-time recurrent network whose wiring is the real
@@ -33,10 +33,10 @@ selection acts on team results.
 | [03a](experiments/03a-self-consistency/README.md) | Can a missing neuron's wiring be predicted from the rest of the brain plus a task? | Draft; a six-neuron proof of concept capped at 72 GPU-hours is planned (D094), not yet scheduled | None yet. As drafted, its searches alone need about 785 GPU-hours at 02's throughput, plus about 37 for whole-brain evolution |
 | [E1](experiments/E1-navigation/README.md) | Can a scripted navigator reach moved targets on unseen layouts, beat blind search, and use the cue? The positive control before evolving a navigator | Published; pre-registered, public before its run | "E1 positive control: passed": 8.68 targets per episode (98.7% of an oracle); 0.03 with a mirrored decoy |
 | [04a](experiments/04a-navigation-primitive/README.md) | Can evolution, from random weights on the N2 wiring, produce a brain that reaches moved targets, beats blind search and uses the cue? | Published; pre-registered, public before its run | "04a: passed": 8 of 12 shaped runs (4 of 4 unshaped); the champions use the cue but are weak navigators (2.0-2.8 targets, 23-32% of an oracle) |
-| [03m](experiments/03m-p4-mechanism/README.md) | What drives 03's history dependence (P4)? | Exploratory; plan agreed by both reviewers, simulations running | Not yet; first signs in its README |
+| [03m](experiments/03m-p4-mechanism/README.md) | What drives 03's history dependence (P4)? | Exploratory; run, reviewed, corrected | N2's history fades more slowly than the shuffles'; its large food response depends on weight placement and on RIA and AIY; no single or paired deletion removes its high P4 |
 
 Next on the roadmap: E2, a short optimizer screen on E1's task, starting from 04a's baseline; and,
-in the biology track, 03m's results.
+in the biology track, whether 03m's leads deserve a confirmatory study.
 
 ## Newest: an evolved navigator on the real wiring (E1 and 04a)
 
@@ -130,7 +130,8 @@ earlier difference is still in the turning output.
 - **Not independent evidence.** 03 and 03r compare the same wiring with the same kind of null.
 - **Not a wiring-only result.** The nulls move weights as well as wiring.
 - **Not a mechanism, nor any advantage for the worm.** An exploratory mechanism study,
-  [03m](experiments/03m-p4-mechanism/README.md), is running.
+  [03m](experiments/03m-p4-mechanism/README.md), found leads (N2's history fades more slowly; its
+  large food response depends on weight placement and on RIA and AIY), not a mechanism.
 
 **Why a full replication, and who decided.** One graph decided 03's verdict. So a full,
 separately pre-registered replication was run before 03 was merged into main and presented as a
@@ -169,8 +170,9 @@ outcome. Useful things anyone can do:
   `analysis.json`, `records.jsonl`, and E1's `gate.json` and 04a's `evaluation.json` with their event
   tables).
 - **Take an open question from [`ROADMAP.md`](ROADMAP.md):**
-  - [the mechanism behind 03's history dependence](ROADMAP.md#03-and-03r): 03m is taking an
-    exploratory first look; a confirmatory study, and inputs other than food, are open;
+  - [the mechanism behind 03's history dependence](ROADMAP.md#03-and-03r): 03m took an
+    exploratory first look, and its RESULTS.md lists what a confirmatory study would register;
+    inputs other than food are open too;
   - [whether N2's wiring helps navigation](ROADMAP.md#e1--04a-navigation-primitive): 04a on shuffled
     graphs, which we have not run;
   - [which optimizer finds better navigators](ROADMAP.md#e2-short-optimizer-screen) (E2);
