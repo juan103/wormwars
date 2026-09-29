@@ -3484,3 +3484,24 @@ from `009bed1` to `1c0c978`: the roadmap branch at `d812e1b` plus one commit rem
 carries 03m (the plan and its four review rounds, the outputs, RESULTS.md with its dated corrections,
 the README), the replaced batching test, the REPRODUCIBILITY note, and D113-D115. Checks: the full
 suite locally, CI on `d812e1b`, the hygiene tests, the identity check.
+
+## D117 — E2's design: two review rounds; 8 runs per method (a roadmap amendment)
+
+E2's design (`docs/E2/DESIGN.md`) went to Astra 6 and Fable 5.1 twice.
+- **v1** (`docs/reviews/20260929-100947-E2-design/`): both "revise". The ES was under-specified in
+  ways that could make it lose for trivial reasons (learning-rate units, a start on the zero plateau,
+  tied integer fitness, clamping, weight decay); random sampling's champion rule discarded 96% of its
+  samples; the runtime figure contradicted E1's record; the tuning pilot selected on noise; 3 runs were
+  too few; the ENOMAD summary had two errors (signed initial weights; not a working controller).
+- **v2** (`docs/reviews/20260929-101958-E2-design-v2/`): Fable "proceed to pre-registration", Astra
+  "revise": the ES's formal length was miscounted (625, not 780), the allowance and the ES update not
+  complete, the decision rule inconsistent (only the ES can be chosen), and the roadmap amendment
+  claimed but missing.
+- **v2.1** takes all of it: the allowance defined (622 formal ES generations after the pilot and the
+  start screens), the ES update complete (a flat batch changes nothing, including Adam's momentum,
+  tested after real updates), the decision rule completed (an incomplete GA blocks a decision; random
+  sampling within 0.5 of the GA triggers the roadmap's diagnosis first), a descriptive extension of the
+  ES to 1 000 generations, and **the roadmap amended: 8 runs per method, no ARS.**
+
+The ES and random sampling are implemented test-first (`wormwars/e2/optimizers.py`, 13 tests; the tie
+rule and the flat-batch rule sabotage-checked).

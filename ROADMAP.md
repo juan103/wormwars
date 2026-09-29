@@ -164,6 +164,9 @@ Track B continues in parallel: 03r, then the mechanism follow-up or closure, the
   - one adaptive evolution strategy;
   - optionally, Augmented Random Search, labelled as an adaptive method.
 - **Its only job is to choose the optimizer for E3.** The full topology × optimizer study belongs to Track B, later.
+  - *Amended 2026-09-29 (D117, both reviewers of E2's design):* 8 runs per method, not 3, because 3
+    cannot separate close methods and E2 is cheap; no Augmented Random Search, so the spare budget goes
+    to replication. See `docs/E2/DESIGN.md`.
 - Read ENOMAD before this screen. An ENOMAD-inspired hybrid is a later option.
 
 ### E3 / 04b: minimal A/B organism

@@ -1,8 +1,10 @@
-# E2: a short optimizer screen (design v2)
+# E2: a short optimizer screen (design v2.1)
 
 Roadmap v3, Track E, step E2. This is a design, not a pre-registration. Nothing has been run.
 - v1 (`docs/reviews/20260929-100947-E2-design/`): both Astra 6 and Fable 5.1 said "revise", with
   largely the same must-changes. v2 adopts them; the last section lists how.
+- v2 (`docs/reviews/20260929-101958-E2-design-v2/`): Fable "proceed to pre-registration", Astra
+  "revise"; their remaining points overlap and are small. v2.1 takes them (D117).
 
 ## What E2 is for, and what it cannot show
 
@@ -79,17 +81,27 @@ All draw their initial genomes from 02's distribution (`Genome.random`).
    - **Start:** the best of 32 random genomes on one generation's worlds (its 256 episodes charged),
      because 78-97% of random genomes score zero everywhere (04a) and a single draw would usually start
      on a flat plateau (Fable).
-   - **Sampling:** 16 antithetic pairs (32 candidates) per generation, all on the same 8 worlds, so
-     each generation costs 256 episodes like the GA's.
-   - **Utilities:** average ranks of the fitness, centred to [−0.5, 0.5]; equal fitness gives equal
-     utility, and a generation with all fitnesses equal makes **no update** (both; OpenAI's reference
-     code breaks ties and would manufacture a gradient on a flat batch).
-   - **Update:** Adam (β 0.9, 0.999) on the estimated gradient, **no weight decay** (both), learning
-     rate set as a multiple of σ (Fable), both from the pilot.
+   - **Sampling:** 16 independent directions, each evaluated with both signs (32 candidates), all on
+     the same 8 worlds (the run's training worlds for that generation), so each generation costs 256
+     episodes like the GA's. Noise from a generator per run, seeded by the run's seed.
+   - **Utilities:** average ranks over all 32 candidates jointly, centred to [−0.5, 0.5]; equal
+     fitness gives equal utility (OpenAI's reference code breaks ties and would manufacture a gradient
+     on a flat batch). **A generation whose fitnesses are all equal changes nothing:** not the mean,
+     not Adam's moments, not its step counter (Astra: a zero gradient alone would not stop Adam's
+     momentum; tested after real updates, and sabotage-checked).
+   - **Update:** the gradient estimate g = Σᵢ (u⁺ᵢ − u⁻ᵢ) εᵢ / (2 × 16 × σ), for ascent; Adam with
+     β₁ 0.9, β₂ 0.999, ε 10⁻⁸ and bias correction; **no weight decay** (both); **σ and the learning
+     rate are constant** through a run (no schedules), the learning rate set as a multiple of σ, both
+     from the pilot.
+   - **The sequence:** generation 0 is the start screen (32 random genomes on that generation's
+     worlds; the best becomes the mean). Each later generation asks 32 candidates, evaluates them and
+     updates the mean. Checkpoints (generation 0, every 25th, and the last) validate the mean after
+     that generation's update, the same schedule as the GA's and random sampling's.
    - **Candidate at each checkpoint:** the current mean, declared now; the best sampled offspring is
      not used (Astra).
-   - **Limitation, stated:** 32 directions on 8 worlds is the GA's shape, chosen for equal composition
-     and batching; more directions on fewer worlds might suit an ES better (both).
+   - **Limitation, stated:** 16 directions on 8 worlds is the GA's evaluation shape, chosen for equal
+     composition and batching; more directions on fewer worlds might suit an ES better (both).
+   - **Recorded:** clipping rates and the number of all-tied generations, per run.
 
 No ARS and no sep-CMA-ES: spare budget goes to replication instead (both).
 
@@ -100,11 +112,25 @@ No ARS and no sep-CMA-ES: spare budget goes to replication instead (both).
   own worlds and seeds. The setting with the best mean validation count at generation 200 is chosen
   (ties: the smaller σ, then the smaller rate). One short run per setting would select on noise: 04a's
   runs with identical settings ranged 0.51-2.08 at generation 100 (Fable).
-- **The charge** (Astra's method-level allowance): the pilot's training episodes are subtracted from
-  the ES's total allowance of 8 × 256 000, and the remainder is divided equally among its 8 formal runs,
-  which therefore run fewer generations than the GA's (about 780 against 1 000, with the pilot above).
-  The pilot's episodes are reported as their own ledger line. *(Fable preferred charging by limiting
-  which checkpoints may supply the champion; the pre-registration will fix one rule.)*
+- **The pilot's runs:** stage 1 is 9 runs (3 σ × 3 runs, the learning rate 0.3 σ); stage 2 is 6 new
+  runs (the two other rates at the best σ, 3 runs each), and **reuses** stage 1's three runs at
+  (best σ, 0.3 σ). 15 pilot runs in all, paired across settings in their seeds and world schedules
+  where possible, disjoint from the formal ones. Their compositions (288 and 192 strains, 8 worlds, 1
+  wey) are declared and timed in the projection. The pilot screens; with 3 runs per setting,
+  differences under about 0.6 targets are noise (Fable).
+- **The allowance, per method:** 8 × 256 000 = **2 048 000 selection episodes**, the episodes whose
+  scores drive selection or updates. For the ES they include the pilot's training episodes (15 × 200
+  × 256 = 768 000), the pilot's selection validations (15 × 256), and its formal runs' start screens
+  (8 × 256). The remainder is divided equally among the 8 formal ES runs and rounded down to whole
+  generations: **(2 048 000 − 768 000 − 3 840 − 2 048) / 8 = 159 264 episodes, 622 generations** after
+  the start screen. The GA and random sampling run 1 000 generations (their generation 0 is their own
+  start). Checkpoint validations follow the same schedule for every method (every 25 generations and
+  the last), so a shorter run has fewer: evaluation overhead, reported in the ledger, not charged.
+  Astra's method-level allowance is the registered rule; Fable accepted it (review v2).
+- **A descriptive extension:** the same 8 formal ES runs continue to generation 1 000 on a separate,
+  labelled budget (about 0.5 GPU-hours). Their champion for the decision is locked at generation 622
+  first; the extension shows whether a "keep the GA" result is due to the charge (Fable). It does not
+  enter the decision.
 
 ## Runs and evaluation
 
@@ -114,8 +140,8 @@ No ARS and no sep-CMA-ES: spare budget goes to replication instead (both).
 - **Checkpoints** every 25 generations and at the last, on 256 validation worlds, raw count; the
   champion is the first checkpoint with the best validation mean. Validation composition (8, 256, 1).
 - **The hold-out:** 1 024 fresh worlds, used once. Each champion is one strain on all of them, padded
-  (1, 1 024, 1), with **the mirrored and constant probes** as in 04a (Fable), so "better" can be read
-  as better cue use and not only more arrivals. E1's scripted controls re-run there for scale.
+  (1, 1 024, 1), with **the mirrored and constant probes** as in 04a (Fable). The probes let cue
+  dependence be assessed; a higher count alone is not evidence of better cue use (Astra). E1's scripted controls re-run there for scale.
 - **Champion hashes and every hyperparameter are committed before the hold-out.**
 - **The ledger:** training, tuning, validation, the hold-out, probes and diagnostics, in episodes,
   ticks and neural updates (padding included), and wall time, per method.
@@ -123,31 +149,37 @@ No ARS and no sep-CMA-ES: spare budget goes to replication instead (both).
 ## The decision rule (to be fixed in the pre-registration)
 
 - **Primary:** each method's mean hold-out count over its 8 champions.
-- **A challenger replaces 02's GA as E3's default only if** its mean exceeds the GA's by at least **0.5
-  targets per episode**, **and** at least 6 of its 8 champions are above the GA's median champion. If
-  both challengers qualify, the one with the higher mean; random sampling cannot be chosen. Ties,
-  failures and incomplete runs: no replacement of runs; a method with an incomplete run cannot
-  qualify.
-- **With 8 runs and 04a's between-run spread (SD 0.17-0.30),** a false switch is unlikely and a true
-  gain of 0.75 targets would usually be found (Fable's estimate; the pre-registration will state its
-  own). This is a coarse switch-or-keep decision, not evidence of a population-level advantage (Astra).
-- **If random sampling's mean comes within 0.5 of the GA's,** the roadmap's rule applies: diagnose
-  saturation, noise and budget before building on the task (ROADMAP.md, "What would change this
-  roadmap"). The chosen default is then reported as provisional.
+- **Only the ES can replace 02's GA** as E3's default (random sampling is the floor). It does so only
+  if its mean exceeds the GA's by at least **0.5 targets per episode**, **and** at least 6 of its 8
+  champions are above the GA's median champion. No run is replaced; an ES with an incomplete run cannot
+  qualify, and **if the GA's own batch is incomplete, no replacement decision is made** (Astra).
+- **With 8 runs, if the ES's spread matched the GA's in 04a (SD 0.17-0.30),** a false switch would be
+  very unlikely and a true gain of 0.75 targets would usually be found (Fable's estimate). The ES's
+  spread is untested, so this is conditional. It is a coarse switch-or-keep decision, not evidence of a
+  population-level advantage (Astra).
+- **The wording of "keep the GA"** says what it means: the ES did not win by 0.5 after paying for its
+  tuning; not that it is no better at equal length (Fable).
+- **If random sampling's mean is at least the GA's mean minus 0.5** (which includes random sampling
+  beating the GA), the roadmap's rule applies and **takes precedence over proceeding to E3**, whatever
+  the ES does: diagnose saturation, noise and budget before building on the task (ROADMAP.md, "What
+  would change this roadmap").
 - **The winner's hold-out score is subject to selection optimism;** E3 evaluates on new worlds.
 
 ## Budget
 
 From E1's throughput record: 8 runs batched at (256, 8, 1) take 4.67 s per generation; 04a measured
 4.75-5.2 s with its optimizer and checkpoints. Per method, 8 runs of 1 000 generations: about 1.4
-GPU-hours. Three methods, the ES pilot (15 short runs, 3 000 generations, batched) and the evaluation:
-**about 4.5-5 GPU-hours.** The pre-registration will fix a cap (about 7) after a measured projection of
+GPU-hours; the ES's 622-generation formal runs about 0.9, its pilot (in batches of 9 and 6 runs, 200
+generations) about 0.4, the descriptive extension about 0.5. With the evaluation: **about 4.5-5
+GPU-hours.** The pre-registration will fix a cap (about 7) after a measured projection of
 each method's training shape, as 04a did.
 
 ## Tests and equivalence (AGENTS.md rules 7 and 9)
 
-- The GA runs through 04a's `evolve_batch` unchanged; a test checks that E2's call reproduces 04a's
-  genome hashes on the CPU for the same seeds.
+- The GA runs through 04a's `evolve_batch` unchanged. 04a's committed hashes come from CUDA and its
+  breeding uses a device generator, so the test compares E2's call with a direct `evolve_batch` call on
+  the CPU, same seeds, same hashes; since both call the same function, the test is sabotage-checked
+  (Fable).
 - The ES update is tested on known functions (a quadratic whose optimum it must approach; a flat
   function on which it must not move; the tie rule), each sabotage-checked.
 - Random sampling's best-since-checkpoint rule is tested with a fake simulator.

@@ -126,3 +126,19 @@ def test_random_sampling_breaks_ties_by_the_earliest():
     rs.offer(np.array([0.5, 0.5]), ["a", "b"])
     rs.offer(np.array([0.5]), ["c"])
     assert rs.take() == "a"
+
+
+def test_a_flat_batch_after_real_updates_moves_nothing():
+    """Review v2 (Astra): a zero gradient does not stop Adam's momentum, so a flat batch must leave the
+    mean, the moments and the step counter untouched."""
+    es = O.OpenAIES(np.zeros(4), sigma=0.5, lr=0.1, pairs=4, generator=np.random.default_rng(2))
+    for _ in range(5):
+        c = es.ask()
+        es.tell(np.array([float(x[0]) for x in c]))
+    mean, m, v, t = es.mean.copy(), es.m.copy(), es.v.copy(), es.t
+    es.ask()
+    es.tell(np.zeros(8))
+    np.testing.assert_array_equal(es.mean, mean)
+    np.testing.assert_array_equal(es.m, m)
+    np.testing.assert_array_equal(es.v, v)
+    assert es.t == t and es.flat_generations == 1
