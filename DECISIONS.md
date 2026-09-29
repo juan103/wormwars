@@ -4030,3 +4030,46 @@ carries:
 
 The GPU is paused at the owner's request (2026-09-29, about 21:50 UTC). The next step, E3's design,
 needs no GPU until its runs.
+
+## D139 — E4s: a hand-built stereo module, ahead of plan (the owner's decision); design v1
+
+**The owner, 2026-09-30:**
+- E4s ("E4-stereo") is a preliminary version of E4's hand-building, run now because E3 needs a
+  navigator that steers by the smell's side, and evolution has not found one (E2d's "non-stereo
+  plateau").
+- The design is two noses and a ring attractor borrowed from the fly, whose active region biases
+  turning left or right; then evolution optimises the whole brain.
+- Removing neurons one by one to the minimal circuit is later work (E3 or E4).
+- **The owner set a ceiling of 96 GPU-hours for E4s.**
+- The steps are:
+  1. a deep literature research by Claude Sonnet 5.5 through the CLI;
+  2. a design, taken to Astra 6 and Fable 5.1;
+  3. if both agree, a pre-registration and a roadmap amendment, open about the plateau and the
+     missing stereo smell.
+
+**Done:**
+- **Sonnet 5.5's research is archived in `docs/E4s/`.** The CLI was updated to 2.1.285 first; the
+  earlier version did not know the model. Its numbers taken from this repository were checked against
+  the code before use: the scent scale, the turn readout and mapping, E1's gain curve, signed sensor
+  gains, and the `hold` probe.
+- **An open-loop gain probe of the 47 distinct champions** (exploratory, design-informing):
+  - Method: `scripts/e4s_gain_probe.py`, output in
+    `experiments/E4s-stereo-module/development-records/`.
+  - Result: a median effective stereo gain |k| of about 0.1 (at most 0.68), against E1's scripted
+    k ≈ 4 at the champions' score and about 256 at 8.5.
+  - It supports the report's hypothesis that the plateau is a gain problem. It is open-loop, not a
+    registered measure.
+- **Design v1** (`docs/E4s/DESIGN.md`):
+  - the modules: the ring M2 (about 30 neurons) and a 4-neuron core M0;
+  - the graft as new code (the brain and world code already handle any neuron count);
+  - Stage A: a module-alone positive control, with a gate;
+  - Stage B: evolution with four arms, including an inert-module control and a graft onto 04a's
+    chosen module;
+  - a proposed cap of 24 GPU-hours within the owner's 96.
+
+It goes to Astra 6 and Fable 5.1.
+
+**Noted:**
+- The owner expected neurons could already be added but not removed. In the code it is the other way
+  round: deletion exists (`wormwars/deletion.py`) and addition did not. The graft functions add it.
+- The owner asked for "Sonnet 5.5"; the older CLI rejected it, and the updated one runs it.
