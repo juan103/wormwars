@@ -3766,3 +3766,28 @@ binding (D123), is fixed in `scripts/p4m.py` as it was in E2's runner (D120): a 
 (`replace`) in both atomic writes. It is file handling only; 03m's computations, records and
 results are unchanged. Test-first: `test_the_atomic_writes_survive_a_transient_permission_error`
 failed, then passed.
+
+## D129 — E2d plan v2: paired with E2's runs; readings narrowed; Part A committed
+
+The v1 review (`docs/reviews/20260929-175712-E2d-plan/`): **both "revise"**.
+- **Part C's comparisons were unpaired** (Fable: 04a's unshaped GA runs averaged 2.37 against E2's
+  1.96 with nothing changed). v2 reuses E2's run seeds, training range and validation ids, so each
+  arm's run r is paired with E2's run r. E2's runs are the controls, and no control arm is rerun.
+  Checked: a 32-world draw for a run and generation begins with that generation's 8-world draw.
+- **C3 changed two settings** (both); its learning rate is now kept at 0.15.
+- **C1's fewer checkpoints are now matched** (both): E2's champion is re-chosen among the 11
+  checkpoints at the same fractions of work, at equal selection episodes.
+- **Arms added:** C4, 32 worlds with halved mutation (Fable). C0, a probe of how reliably 8 worlds
+  rank siblings and antithetic pairs, the comparisons selection actually makes (Fable, Astra).
+- **Part B's reading is narrowed** (both): "non-stereo", not "temporal"; three classes with
+  intervals; per-set counts, with the genome shared by ES run 6 and extension run 6 counted once;
+  a low-gain stereo reference; check tolerances. **Budget gets a reading**, the paired formal
+  against extended ES (both). **"The optimizer is not the bottleneck" is removed** (both).
+- **Part A** is now `scripts/e2d_records.py` → `part-a.json`, with `tests/test_e2d_records.py`.
+  That test was written after the script: it is a pin, and it was sabotage-checked. One of its
+  checks at first missed a sabotage (scaled rates) and was strengthened to pin absolute values.
+  Counting the shared genome once gives 74, 113 and 106 pairs, not 80, 122 and 110. Ties are
+  stated: at k = 8, strictly correct 0.54, tied 0.16. Two wrong statements are corrected: "all eight
+  of the ES's", and "where most candidates sit".
+- The cap rises from 5 to 7 GPU-hours (C0 and C4), with a projection limit of 6.2 hours and a
+  reserve for the hold-out pass.
