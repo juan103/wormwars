@@ -1,6 +1,6 @@
 # 04a: an evolved N2 navigation primitive
 
-**Status:** "04a: passed" (the wording fixed in advance); results written, review pending · **Run:**
+**Status:** "04a: passed" (the wording fixed in advance); results reviewed, with dated corrections (D111); published on main on 2026-09-29 (D112) · **Run:**
 2026-09-28/29 · **Registration:** bound at `e3d68be` after five review rounds, public before the run ·
 **Compute:** 2.91 of a 6 GPU-hour cap, one RTX 5080
 

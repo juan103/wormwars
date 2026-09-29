@@ -1,6 +1,6 @@
 # E1: the positive control for navigation
 
-**Status:** passed; on the `roadmap` branch, awaiting the owner's go for main · **Run:** 2026-09-28 ·
+**Status:** passed; published on main on 2026-09-28 (`3765db0`, D102) · **Run:** 2026-09-28 ·
 **Commit:** bound at `eb0b781` (pilot), gate at `a73a67d` · **Compute:** 353.8 s of an 8 GPU-hour
 cap, one RTX 5080
 
