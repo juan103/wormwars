@@ -1,6 +1,14 @@
 # E2: a short optimizer screen
 
-**Status: pre-registration under review.** Nothing has run on E2's worlds or seeds.
+**Status: run, results under review (2026-09-29).** Pre-registered and bound at `60af3cf`, pushed
+before its runs; every stage ran once on the binding code, with no rerun or amendment.
+
+- **Outcome:** "E2: keep 02's GA (unshaped fitness; the ES did not satisfy both replacement criteria
+  after paying for its tuning)". The ES led the GA by 0.125 targets per episode (0.5 needed); 5 of
+  its 8 champions were above the GA's median (6 needed).
+- **The floor fired:** random sampling came within 0.36 targets of the GA, so the roadmap's rule
+  applies before building on Task N: diagnose saturation, noise and budget. See
+  [`RESULTS.md`](RESULTS.md).
 
 **The question.** Given the same additional simulator work, does OpenAI-ES find better Task N
 navigators than 02's genetic algorithm (GA), starting from random N2 genomes? The answer chooses the

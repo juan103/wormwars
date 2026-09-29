@@ -3671,3 +3671,20 @@ stages. Tests: 83 command, 17 loop, 14 optimizer.
 transient Windows `PermissionError` on `os.replace` that E2's writes now retry (D120). The rerun
 passed in full. `scripts/p4m.py` belongs to the published 03m and E2 does not use it; retrying its
 replaces is a separate change, left for later.
+
+## D124 — E2's results: keep 02's GA; the floor fires
+
+The formal chain ran from 10:38 to 15:20 UTC on the binding code (`60af3cf`), once, with no stop,
+rerun or amendment: 4.74 GPU-hours against a cap of 7. Outcome, in the registered wording: **"E2:
+keep 02's GA (unshaped fitness; the ES did not satisfy both replacement criteria after paying for its
+tuning)"**. The ES's mean was 2.086 against the GA's 1.961 (+0.125, 0.5 needed); 5 of its 8
+champions were above the GA's median (6 needed). **The floor fired:** random sampling's mean,
+1.605, is within 0.5 of the GA's (−0.356), so the roadmap's diagnose-first rule applies and takes
+precedence over proceeding to E3. The extension (descriptive) reached 2.331, rising, on about 38%
+more episodes than the GA.
+
+`RESULTS.md` was written after the chain finished, from the committed records. A check of every
+number against the records before committing found five slips in the draft (two ranges read from a
+subsample of checkpoints, ES run 2's flat generations, the last random-sampling candidate's pool,
+and the training hours); all were corrected before the first commit. The results go to both
+reviewers; the next step, the diagnosis, gets its own design and review.
