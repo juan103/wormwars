@@ -4073,3 +4073,29 @@ It goes to Astra 6 and Fable 5.1.
 - The owner expected neurons could already be added but not removed. In the code it is the other way
   round: deletion exists (`wormwars/deletion.py`) and addition did not. The graft functions add it.
 - The owner asked for "Sonnet 5.5"; the older CLI rejected it, and the updated one runs it.
+
+## D140 — The graft functions (E4s), test-first; an inert graft is equivalent only to rounding
+
+`wormwars/graft.py`, written while E4s's design v1 is under review, because every variant of the
+design needs it:
+- `Module`, a hand-designed circuit;
+- `graft_connectome`: the worm's 302 neurons keep their indices and masks, and the module's neurons
+  are appended;
+- `seeded_genome`: the background, random, a champion or silent, placed edge by edge, plus the
+  module's designed values;
+- `graft_interface`: the noses' entries, and the module-only probes "mean" and "swapped".
+
+Tests: six in `tests/test_graft.py`, seen failing first.
+
+**Sabotage:** four breaks. One, a misplaced background, was missed at first, because the toy
+module's edges did not interleave with the worm's. A worm-to-module synapse (a turn copy) now makes
+the placement matter, and the break is caught.
+
+**Found:** an inert graft, one with no synapse onto the worm, is **not bit-exact** on the CPU:
+- adding rows and columns regroups the floating-point sums;
+- the worm's states then differ by at most about 1.4 × 10⁻⁶ over 300 ticks (a 30-neuron module,
+  three seeds), which is rounding level, and the difference does not grow;
+- the declared tolerance is 10⁻⁵.
+
+**Design v1 said "exactly on the CPU"; that is wrong.** It goes into v2. The rule-7 check for E4s
+must therefore be stated at rounding level, with the effect on episode scores measured.
