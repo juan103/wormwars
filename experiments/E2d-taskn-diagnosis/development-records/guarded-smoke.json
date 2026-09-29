@@ -1,0 +1,75 @@
+{
+ "what": "the guarded smoke run of every E2d stage on the binding code, on CUDA, before the formal chain (D135); smoke sizes and ids, E2's and 04a's CUDA smoke records as sources; never results",
+ "command": "python scripts/e2d.py <stage> --smoke --guarded (every stage, in order)",
+ "stages": {
+  "projection": {
+   "outcome": "completed",
+   "device": "cuda",
+   "git_commit": "a337d4825788dae6ce50f522ac21f3a51997b576",
+   "attempt": 1
+  },
+  "part-b": {
+   "outcome": "completed",
+   "device": "cuda",
+   "git_commit": "a337d4825788dae6ce50f522ac21f3a51997b576",
+   "attempt": 1
+  },
+  "part-c0": {
+   "outcome": "completed",
+   "device": "cuda",
+   "git_commit": "a337d4825788dae6ce50f522ac21f3a51997b576",
+   "attempt": 1
+  },
+  "replay": {
+   "outcome": "completed",
+   "device": "cuda",
+   "git_commit": "a337d4825788dae6ce50f522ac21f3a51997b576",
+   "attempt": 1
+  },
+  "arm-c1": {
+   "outcome": "completed",
+   "device": "cuda",
+   "git_commit": "a337d4825788dae6ce50f522ac21f3a51997b576",
+   "attempt": 1
+  },
+  "arm-c2": {
+   "outcome": "completed",
+   "device": "cuda",
+   "git_commit": "a337d4825788dae6ce50f522ac21f3a51997b576",
+   "attempt": 1
+  },
+  "arm-c4": {
+   "outcome": "completed",
+   "device": "cuda",
+   "git_commit": "a337d4825788dae6ce50f522ac21f3a51997b576",
+   "attempt": 1
+  },
+  "arm-c3": {
+   "outcome": "completed",
+   "device": "cuda",
+   "git_commit": "a337d4825788dae6ce50f522ac21f3a51997b576",
+   "attempt": 1
+  },
+  "evaluation": {
+   "outcome": "completed",
+   "device": "cuda",
+   "git_commit": "a337d4825788dae6ce50f522ac21f3a51997b576",
+   "attempt": 1
+  }
+ },
+ "replay": "reproduces E2",
+ "pairing_passed": {
+  "c1": true,
+  "c2": true,
+  "c4": true,
+  "c3": true
+ },
+ "part_b_checks_passed": false,
+ "readings": {
+  "c1": "inconclusive",
+  "c2": "inconclusive",
+  "c4": "inconclusive",
+  "c3": "inconclusive"
+ },
+ "note": "at 40 ticks the stereo reference barely moves, so Part B's check fails by design and only the scores-only path is exercised; the full records stay local in runs/e2d-smoke/"
+}
