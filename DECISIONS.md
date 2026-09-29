@@ -3742,3 +3742,19 @@ tests; every stage record, the accounting's attempt files, RESULTS.md with its d
 README), D117-D125, and the front page, roadmap and review trail updated. Checks: the full suite
 locally at binding, CI green on every E2 commit through `3898460`, the publication hygiene tests, and
 the identity check. The next step in Track E is the diagnosis E2's floor rule requires, before E3.
+
+## D127 — E2d: a plan to diagnose Task N (for review)
+
+E2's floor fired, so the roadmap requires a diagnosis of saturation, noise and budget before E3.
+`experiments/E2d-taskn-diagnosis/PLAN.md` (v1, exploratory) sets it out in three parts:
+- **Part A** reads E2's committed records only. With 8 shared worlds, two genomes 0.05-0.15 targets
+  apart are ranked correctly 62% of the time. Nominees lose 0.19-0.33 from training to validation.
+  The GA's population averaged 0.54 against a best of 1.92. The champions cluster at M-avg's level
+  (2.20), E1's best temporal controller.
+- **Part B** asks whether the 48 champions of E2 and 04a use the left-right difference. It uses the
+  `mean` and `swapped` stereo ablations, with S-const and M-avg as checks.
+- **Part C** runs three one-change arms of 8 runs each, compared on a common hold-out: 32 worlds per
+  genome, halved mutation, and σ 0.25 for the ES.
+
+The readings are fixed in advance as descriptive thresholds, under a cap of 5 GPU-hours. The plan
+goes to Astra 6 and Fable 5.1 before any code or GPU work.
