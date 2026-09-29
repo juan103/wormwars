@@ -1,0 +1,451 @@
+{
+ "stage": "project",
+ "attempt": 1,
+ "registered": {
+  "world_seed": 1100001,
+  "task_sigma": 6.0,
+  "ga": {
+   "population": 32,
+   "elites": 3,
+   "truncation": 8,
+   "worlds_per_strain": 8,
+   "generations": 1000,
+   "islands": 1,
+   "mutation": {
+    "w_sigma": 0.08,
+    "g_sigma": 0.04,
+    "tau_sigma": 0.15,
+    "bias_sigma": 0.05,
+    "p_mutate": 1.0
+   }
+  },
+  "checkpoint_every": 25,
+  "rerun_kill_tail_seconds": 900,
+  "cap_gpu_hours": 7.0,
+  "training_cap_hours": 6.5,
+  "reserve_hours": 0.5,
+  "ids": {
+   "holdout": {
+    "first": 992700000,
+    "worlds": 1024
+   },
+   "probe": {
+    "first": 992800000,
+    "worlds": 256
+   }
+  },
+  "arms": {
+   "c1": {
+    "method": "ga",
+    "worlds": 32,
+    "mutation_scale": 1.0,
+    "generations": 250
+   },
+   "c2": {
+    "method": "ga",
+    "worlds": 8,
+    "mutation_scale": 0.5,
+    "generations": 1000
+   },
+   "c4": {
+    "method": "ga",
+    "worlds": 32,
+    "mutation_scale": 0.5,
+    "generations": 250
+   },
+   "c3": {
+    "method": "es",
+    "worlds": 8,
+    "sigma": 0.25,
+    "lr": 0.15,
+    "generations": 623
+   }
+  },
+  "arm_order": [
+   "c1",
+   "c2",
+   "c4",
+   "c3"
+  ],
+  "matched_generations": [
+   0,
+   100,
+   200,
+   300,
+   400,
+   500,
+   600,
+   700,
+   800,
+   900,
+   999
+  ],
+  "probes": [
+   "real",
+   "mean",
+   "swapped"
+  ],
+  "references": {
+   "S-const": "E1's frozen parameters",
+   "S-const k=4": {
+    "k": 4.0,
+    "speed": 1.0,
+    "turn": 0.1
+   },
+   "M-avg": "E1's frozen parameters"
+  },
+  "checks": {
+   "stereo_lower_bound": 0.5,
+   "m_avg_mean_tolerance": 0.05
+  },
+  "c0": {
+   "children": 64,
+   "scales": [
+    1.0,
+    0.5,
+    0.25
+   ],
+   "pairs": 32,
+   "sigmas": [
+    0.5,
+    0.25
+   ],
+   "seed_ga": 1131000,
+   "seed_es": 1131100,
+   "draws": 400,
+   "k": 8,
+   "top": 8
+  },
+  "analysis": {
+   "resamples": 10000,
+   "seed": 0,
+   "bins": [
+    [
+     0.05,
+     0.15
+    ],
+    [
+     0.15,
+     0.3
+    ],
+    [
+     0.3,
+     0.6
+    ]
+   ],
+   "min_pairs": 30
+  },
+  "readings": {
+   "uses": 0.5,
+   "negligible": 0.25,
+   "set_share": 0.75,
+   "set_uses_max": 2,
+   "band": [
+    1.9,
+    2.5
+   ],
+   "arm_gain": 0.3,
+   "plateau_score": 2.5,
+   "plateau_count": 4,
+   "budget_gain": 0.2,
+   "failure": 1.0,
+   "drop_run": 2,
+   "noise_material": 0.8
+  },
+  "replay": {
+   "repeats": 2
+  },
+  "projection": {
+   "seed_base": 1139100,
+   "limit_hours": 6.2,
+   "generations_timed": 6
+  }
+ },
+ "provenance_at_start": {
+  "git_commit": "8c0894e9e3b3ff26c76283baa7719a7292be0082",
+  "branch": "roadmap",
+  "dirty": false,
+  "python": "3.13.3",
+  "numpy": "2.4.4",
+  "torch": "2.12.0+cu130",
+  "cuda": "13.0",
+  "gpu": "NVIDIA GeForce RTX 5080",
+  "connectome_cache_sha256": "43b87aa172a0042b9dce734b15bdf1c87efe3a33ac1cc0d9cd03255a60c96d4a",
+  "connectome_source_sha256": "1f4fdbf84746b69b49a8da0816f52787860ce349b638dce37924ba80f90c70c9"
+ },
+ "device": "cuda",
+ "resolved_config": {
+  "brain": {
+   "substeps": 32,
+   "tau_min": 0.5,
+   "tau_max": 20.0,
+   "w_max": 3.0,
+   "g_max": 2.0,
+   "b_max": 2.0,
+   "init_w_scale": 0.2,
+   "init_g_scale": 0.05,
+   "init_bias_std": 0.5,
+   "init_tau_log_uniform": true,
+   "init_chem_magnitude": "anatomical",
+   "init_gap_magnitude": "anatomical",
+   "init_permutation_seed": 0,
+   "dale": false,
+   "input_gain": 1.0,
+   "input_max": 5.0,
+   "chem_direction": "pre_to_post",
+   "pad_single_strain": true
+  },
+  "world": {
+   "n_swarms": 1,
+   "weys_per_swarm": 1,
+   "max_ticks": 300,
+   "cells_per_wey": 24.0,
+   "min_side": 24,
+   "body_length": 2.4,
+   "max_speed": 0.35,
+   "reverse_fraction": 0.4,
+   "max_turn": 0.3,
+   "forward_gain": 4.0,
+   "turn_gain": 2.0,
+   "start_energy": 12.0,
+   "max_energy": 40.0,
+   "body_mass": 6.0,
+   "metabolic_drain": 0.0,
+   "move_cost": 0.0,
+   "hazard_damage": 0.0,
+   "eat_rate": 0.0,
+   "pheromone_deposit": 0.0,
+   "pheromone_decay": 0.93,
+   "pheromone_diffusion": 0.35,
+   "sense_scale_food": 0.35,
+   "sense_scale_pheromone": 0.0,
+   "sense_scale_hazard": 2.0,
+   "sense_scale_damage": 2.0,
+   "sense_scale_collision": 2.0,
+   "body_splat": 1.0,
+   "crowd_threshold": 0.8,
+   "crowd_resist": 0.6,
+   "crowd_push": 0.1,
+   "crowd_blur": 1,
+   "food_sensing": "stereo",
+   "food_probe": "real",
+   "food_odour_sigma": 0.0,
+   "food_probe_radius": 0.0,
+   "check_ledger_every_tick": false,
+   "food_probe_hold": 1,
+   "task": "navigate",
+   "target_sigma": 6.0,
+   "target_amplitude": 1.0,
+   "target_radius": 1.5,
+   "target_separation": 8.0,
+   "target_max_separation": 0.0,
+   "target_wall_clearance": 3.0,
+   "target_sequence_length": 64
+  },
+  "map": {
+   "food_patches": [
+    0,
+    0
+   ],
+   "food_patch_radius": [
+    2.5,
+    5.0
+   ],
+   "food_per_patch": [
+    70.0,
+    160.0
+   ],
+   "food_centre_bias": 0.62,
+   "hazard_patches": [
+    0,
+    0
+   ],
+   "hazard_radius": [
+    2.0,
+    4.0
+   ],
+   "hazard_strength": [
+    0.5,
+    1.0
+   ],
+   "hazard_spawn_clearance": 6.0,
+   "spawn_margin": 3.0,
+   "spawn_spread": 0.28,
+   "food_regen": 0.0,
+   "food_scales_with_headcount": true,
+   "food_reference_weys": 20
+  },
+  "combat": {
+   "attack_strength": 1.0,
+   "attack_offset": 0.9,
+   "attack_blur": 1,
+   "damage_k": 0.55,
+   "head_armor": 0.25,
+   "transfer_fraction": 0.5,
+   "max_flank_payback": 0.1,
+   "max_head_on_asymmetry": 1.5,
+   "pump_cost": 0.1
+  },
+  "mutation": {
+   "w_sigma": 0.08,
+   "g_sigma": 0.04,
+   "tau_sigma": 0.15,
+   "bias_sigma": 0.05,
+   "p_mutate": 1.0
+  },
+  "evo": {
+   "population": 32,
+   "generations": 1000,
+   "elites": 3,
+   "truncation": 8,
+   "worlds_per_strain": 8,
+   "holdout_worlds": 24,
+   "islands": 1,
+   "migrate_every": 10,
+   "migrants": 1,
+   "chunk_worlds": 512,
+   "train_seed_base": 0,
+   "train_seed_span": 1000000,
+   "holdout_seed_base": 900000000,
+   "eval_ticks": 0,
+   "opponents_self": 3,
+   "opponents_hof": 2,
+   "coevo_worlds": 2,
+   "coevo_sizes": [
+    40,
+    40
+   ],
+   "coevo_lopsided": false,
+   "coevo_vary_sizes": false,
+   "coevo_size_range": [
+    50,
+    200
+   ],
+   "coevo_size_pairs": 2,
+   "coevo_lopsided_fraction": 0.5,
+   "hof_capacity": 12,
+   "suite_every": 5,
+   "suite_sizes": [
+    100,
+    100
+   ],
+   "suite_size": 6,
+   "suite_worlds": 8
+  }
+ },
+ "resolved_config_sha256": "6f884526e5dd58661325732304f5bee89c9627563f7c6dfbd88242d83dc90b24",
+ "e1_inputs_sha256": {
+  "experiments/E1-navigation/freeze.json": "c5c48f83079a6bd0dd48bdeb13d02ab211a08eb64433fdc8372cbd6e74bcaae9",
+  "experiments/E1-navigation/gate.json": "a18b5a53845360107448527b2af038b9c613e4bf11fdfe843c328b7c2a01afa0"
+ },
+ "start_marker": "project-started.json",
+ "rerun": null,
+ "outcome": "completed",
+ "seeds_base": 1139100,
+ "source_records_sha256": {
+  "experiments/E2-optimizer-screen/train-ga.json": "88a3ed88de2f89042970c11fc8e4de49b8432e533a2e9e802de3e1333e538d7c",
+  "experiments/E2-optimizer-screen/train-random.json": "3879ca30d750fe94e8bf2518f8bbf67f568b848f23ffe75e35e80ca5d853de0d",
+  "experiments/E2-optimizer-screen/train-es.json": "58f21ec8770c9f1a59fa724d628fb031ca910132bf098cf48500ace36b921056",
+  "experiments/E2-optimizer-screen/extension.json": "9a9fc0bc93ade6dad3dcc9d6ebcd0776ba1feb8c43dca6b3b9b22ad5da5dfec7",
+  "experiments/E2-optimizer-screen/pilot-2.json": "8f681f4fe635bf3d56e4c90200ff452cc6e5bf31f51335e23b3cb564f8cdef8f",
+  "experiments/04a-navigation-primitive/train-A.json": "0a4750b51b9ac1ecb8a297265c0828e30fa008ec3bb7d4fc9fc8d24075eac41b",
+  "experiments/04a-navigation-primitive/train-B.json": "abfe4c2912bbebdc1712fea0d0f4416399076118e386483b0255819c791abd0e"
+ },
+ "plan": {
+  "replay": {
+   "parts": [
+    [
+     "ga8",
+     26,
+     2
+    ],
+    [
+     "es8",
+     26,
+     2
+    ]
+   ],
+   "repeats": 2
+  },
+  "arm-c1": {
+   "shape": "ga32",
+   "generations": 250,
+   "checkpoints": 11
+  },
+  "arm-c2": {
+   "shape": "ga8",
+   "generations": 1000,
+   "checkpoints": 41
+  },
+  "arm-c4": {
+   "shape": "ga32",
+   "generations": 250,
+   "checkpoints": 11
+  },
+  "arm-c3": {
+   "shape": "es8",
+   "generations": 623,
+   "checkpoints": 26
+  },
+  "siblings": {
+   "batches": 40
+  },
+  "probe": {
+   "arms": 153
+  },
+  "evaluate": {
+   "arms": 144
+  }
+ },
+ "rates": {
+  "ga8": {
+   "seconds_per_generation": 4.722312350058928,
+   "seconds_per_checkpoint": 3.3975389499682933,
+   "batch_seconds": [
+    8.105828600004315,
+    4.756435799878091,
+    4.6934750999789685,
+    4.66223489982076,
+    4.751149600138888,
+    8.119851300027221
+   ]
+  },
+  "ga32": {
+   "seconds_per_generation": 7.828935049939901,
+   "seconds_per_checkpoint": 3.0350681499112397,
+   "batch_seconds": [
+    11.163544100010768,
+    7.841596399899572,
+    7.816273699980229,
+    7.811220500152558,
+    7.852981900097802,
+    10.86400319985114
+   ]
+  },
+  "es8": {
+   "seconds_per_generation": 4.738703649956733,
+   "seconds_per_checkpoint": 2.9536714502610266,
+   "batch_seconds": [
+    7.75602010008879,
+    4.753365400014445,
+    4.7375602999236435,
+    4.710892200004309,
+    4.7398469999898225,
+    7.69237510021776
+   ]
+  },
+  "c0": {
+   "seconds_per_batch": 14.25550219998695
+  },
+  "b": {
+   "seconds_per_arm": 2.640847400063649
+  }
+ },
+ "projected_hours": 3.8177188173126586,
+ "limit_hours": 6.2,
+ "within_limit": true,
+ "spent_hours": 0.04358524691669219,
+ "projected_total_hours": 3.861304064229351,
+ "note": "the limit applies to the total: what is spent, this projection included, plus the rest",
+ "seconds": 156.82175990007818
+}
