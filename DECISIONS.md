@@ -3631,3 +3631,43 @@ passed at once, confirming Fable's reading of the code, and was strengthened aft
 (the killed record ignoring its partial record) at first went uncaught: with fake scores, the
 fallback champions equal the partial record's, so the test now also compares the carried
 extension checkpoints. Four deliberate breaks, each caught. Tests: 79 command, 17 loop, 14 optimizer.
+
+## D123 — E2's pre-registration bound (v4)
+
+The v4 review (`docs/reviews/20260929-120935-E2-prereg-v4/`): **both "ready to bind"**, no
+must-fix. Fable asked for two text corrections in the binding commit, and Astra suggested the same:
+- **"Each test was seen failing first" was false.** D121 and D122 each recorded an exception.
+  Checked again before binding, the exceptions were more than those two: **eight tests pinned
+  behaviour the code already had and passed when written**:
+  - D120: the ES's registered constants; the state file's plain sha256;
+  - D121: `replace` retrying and giving up; a rerun setup interrupted before anything moved;
+  - D122: the extension's rerun exempt from the skip rule; a killed extension's real partial
+    record;
+  - D123: the two binding-commit additions below.
+
+  Each now fails under a sabotage, checked before binding (a 15-pair ES; the text hash for the state
+  file; no retry; "used" without "applied"; no exemption; a killed record ignoring its partial
+  record; the skip record returned before the guards). **The sha256 pin was vacuous:** the state
+  file holds no CRLF pair, so the text hash gave the same value. The binding commit gives it bytes
+  that hold one. The pre-registration's claim now lists the eight.
+- **A comment in `scripts/e2.py` repeated v3's "never"** about the evaluation's budget; corrected to
+  §6's admission estimate.
+- **The fourth smoke run's start** was 10:07:59 by the marker and the accounting, not 10:07:57.
+
+Test-only additions both suggested:
+- an extension checkpoint forced to beat every formal one, killed twice after its partial record,
+  followed through finalisation and evaluation by hash and source;
+- the guards accepting a skip record from the same code and environment, and refusing one from
+  other code or another environment. The stubs target the skip record alone: at first they matched
+  every smoke record, which share one commit, and could not have told a bypass from a refusal
+  elsewhere.
+
+No rule changed. **The order after binding** (Fable): push; a guarded smoke run of every stage on the
+binding commit, before the formal projection, which runs once; then the projection and the formal
+stages. Tests: 83 command, 17 loop, 14 optimizer.
+
+*Noted at binding:* the first full-suite run on the binding tree failed once in 03m's
+`tests/test_p4m.py` (`test_the_lesion_follow_up_keeps_its_finished_deletions_on_a_stop`): the same
+transient Windows `PermissionError` on `os.replace` that E2's writes now retry (D120). The rerun
+passed in full. `scripts/p4m.py` belongs to the published 03m and E2 does not use it; retrying its
+replaces is a separate change, left for later.

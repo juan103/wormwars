@@ -118,8 +118,8 @@ REGISTERED = {
               "reason written first; never after the cap. A training stage whose rerun also stops is final and "
               "not completed"),
     "rerun_kill_tail_seconds": 900,  # charged beyond a killed attempt's last file write (04a, D107)
-    # the descriptive extension starts only if the cap's remainder covers its projected time and this
-    # reserve for the evaluation, so it can never use up the budget of the primary result (review v2)
+    # the descriptive extension's first attempt starts only if the cap's remainder covers its projected
+    # time and this reserve for the evaluation: an admission estimate, not a guarantee (§6; reviews v2-v3)
     "evaluation_reserve_hours": 0.5,
 }
 METHODS = ("ga", "random", "es")

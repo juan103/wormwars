@@ -510,6 +510,11 @@ def test_the_es_state_hash_is_a_plain_sha256(m):
     import hashlib
     _upto(m, 6)
     assert _rec(m, "train-es")["state_sha256"] == hashlib.sha256(m.state_path().read_bytes()).hexdigest()
+    # not vacuous: on bytes holding a CRLF pair the text hash differs, and the state hash must not
+    f = m.OUT / "crlf.bin"
+    crlf = bytes([97, 13, 10, 98])  # a, CR, LF, b
+    f.write_bytes(crlf)
+    assert m.sha256_bytes(f) == hashlib.sha256(crlf).hexdigest() != m.reg.file_sha256(f)
 
 
 def test_the_evaluation_reports_pairing_and_per_run_differences(m):
@@ -826,3 +831,80 @@ def test_a_killed_extension_rerun_keeps_the_champions_of_its_real_partial_record
     runs = _rec(m, "evaluate")["extension"]["runs"]
     assert len(runs) == len(m.run_specs())
     assert [v["source"] for v in runs.values()] == [c["source"] for c in part["champions_over_both"]]
+
+
+# ------------------------------------------------------------------ review v4 (D123), before binding
+
+def test_an_extension_sourced_champion_survives_finalisation_and_evaluation(m):
+    """Reviews v3-v4 (both): force an extension checkpoint to beat every formal one, kill the
+    extension twice after that checkpoint's partial record, and follow its champion's hash and source
+    through the finalised record and the evaluation."""
+    _upto(m, 6)
+    real = m.rollout_mod.rollout
+
+    def better(cfg, iface, genome, ids, *a, **k):  # the extension's worlds score higher
+        r = real(cfg, iface, genome, ids, *a, **k)
+        r.score = r.score + 5.0
+        return r
+    orig = m.write_atomic
+
+    def boom(path, doc, **kw):
+        orig(path, doc, **kw)
+        if path == m.partial_path("extend") and doc.get("records"):
+            raise RuntimeError("killed after the checkpoint")
+    m.rollout_mod.rollout = better
+    try:
+        for attempt in (1, 2):
+            m.write_atomic = boom
+            with pytest.raises(RuntimeError):
+                _run(m, "extend", rerun=attempt == 2, reason="killed" if attempt == 2 else None)
+            m.write_atomic = orig
+            m.record_path("extend").unlink()
+    finally:
+        m.rollout_mod.rollout = real
+        m.write_atomic = orig
+    part = json.loads(m.partial_path("extend").read_text())
+    assert all(c["source"] == "extension" for c in part["champions_over_both"])
+    with pytest.raises(SystemExit, match="recorded as final"):
+        _run(m, "extend", rerun=True, reason="the rerun was killed")
+    assert _rec(m, "extend")["champions_over_both"] == part["champions_over_both"]
+    _run(m, "evaluate")
+    ev = _rec(m, "evaluate")
+    for c in part["champions_over_both"]:
+        assert ev["champion_sha256"][f"extension run{c['run']:02d}"] == c["sha256"]
+        assert ev["extension"]["runs"][f"run{c['run']:02d}"]["source"] == "extension"
+
+
+@pytest.mark.parametrize("case", ["accepted", "other code", "other environment"])
+def test_a_skipped_extension_record_is_accepted_or_refused_by_the_guards(m, monkeypatch, case):
+    """Review v4 (Astra): the guards accept a committed skip record from the same code and
+    environment, and refuse one from other code or another environment."""
+    _upto(m, 6)
+    monkeypatch.setattr(m.reg.CapClock, "spent_hours", lambda self: m.REGISTERED["cap_gpu_hours"] - 0.01)
+    with pytest.raises(SystemExit, match="skipped"):
+        _run(m, "extend")
+    monkeypatch.setattr(m.reg.CapClock, "spent_hours", lambda self: 0.0)
+    rec = _rec(m, "extend")  # mark the skip record's provenance, so only its checks can refuse
+    rec["provenance_at_start"]["git_commit"] = "the-skip-records-commit"
+    m.record_path("extend").write_text(json.dumps(rec))
+
+    def same_code(commit, guarded):
+        if case == "other code" and commit == "the-skip-records-commit":
+            raise SystemExit("the guarded code differs from the earlier stage's")
+
+    def same_env(was, now):
+        if case == "other environment" and was.get("git_commit") == "the-skip-records-commit":
+            raise SystemExit("the environment differs from the earlier stage's")
+    monkeypatch.setattr(m, "require_committed", lambda path: None)
+    monkeypatch.setattr(m.reg, "require_formal", lambda device, prov: None)
+    monkeypatch.setattr(m.reg, "require_same_code", same_code)
+    monkeypatch.setattr(m.reg, "require_same_env", same_env)
+    args = _args("evaluate")
+    args.smoke = False
+    if case == "accepted":
+        m.cmd_evaluate(args)
+        assert _rec(m, "evaluate")["extension"]["outcome"] == m.OUTCOMES["skipped"]
+    else:
+        with pytest.raises(SystemExit, match="differs"):
+            m.cmd_evaluate(args)
+        assert not (m.EXP / "evaluate-started.json").exists()

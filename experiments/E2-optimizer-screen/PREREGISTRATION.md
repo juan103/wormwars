@@ -1,4 +1,4 @@
-# E2: a short optimizer screen. Pre-registration (v4, for review)
+# E2: a short optimizer screen. Pre-registration (v4, as bound)
 
 **Status:**
 - Written 2026-09-29 for review by Astra 6 and Fable 5.1. Nothing below has run on E2's training,
@@ -16,9 +16,17 @@
     obligatory rerun, the skip record escaped the guards, and a plain run after a kill could be
     recorded as skipped (D122). Fable: "ready to bind" once the text is corrected as in its option
     (a). v4 takes that option and fixes the other two in the code; §16 lists them.
-- **The order:** review until both agree; bind (a commit); push; the guarded projection and a
-  guarded smoke run on the binding commit; then the formal stages, each on a clean tree whose HEAD
-  is pushed, with each stage's record committed and pushed before the next stage starts.
+  - v4 (`1e4b7f5`, `docs/reviews/20260929-120935-E2-prereg-v4/`): **both "ready to bind"** (D123),
+    with two text corrections made in the binding commit (the fail-first claim below, which was
+    false and, checked again, understated the exceptions; and a comment in `scripts/e2.py` that
+    repeated v3's "never"), the plain-sha256 test made non-vacuous, the fourth smoke run's start time corrected from
+    the accounting (10:07:59), and two test-only additions both reviewers suggested (an
+    extension-sourced champion through finalisation and evaluation; the guards accepting or refusing
+    a skip record). No rule changed.
+- **The order:** review until both agree; bind (a commit); push; **a guarded smoke run of every
+  stage** on the binding commit (before the formal projection, which runs once, so a wiring fault is
+  found first; Fable, review v4); the formal projection; then the formal stages, each on a clean tree
+  whose HEAD is pushed, with each stage's record committed and pushed before the next stage starts.
 - **The binding commit** is the commit the projection records. Every later stage refuses to run if
   the code, the configuration, `requirements.txt`, this file, or E1's freeze and gate records differ
   from it.
@@ -39,8 +47,13 @@ design differ, this file governs, and the difference is listed in §13.
 - the shared guards are `wormwars/registration.py`; Task N and E1's controls come from
   `scripts/e1.py` and `wormwars/e1/`, unchanged.
 
-**How it is tested** (AGENTS.md rules 7 and 9; each test was seen failing first, and the checks that
-could pass vacuously were sabotage-checked):
+**How it is tested** (AGENTS.md rules 7 and 9; each test was seen failing first, except **eight pins**
+of behaviour the code already had, which passed when written: two in D120 (the ES's constants, the
+state file's plain sha256), two in D121 (`replace`, a setup interrupted before anything moved), two in
+D122 (the rerun's exemption, a killed extension's real partial record) and two in D123 (the
+binding-commit additions); D123 lists them. **Each pin fails under a sabotage**, checked before
+binding; the sha256 pin was vacuous until the binding commit gave it bytes holding a CRLF pair. The
+other checks that could pass vacuously were sabotage-checked too):
 - **no engine change:** E2 adds no simulator code. The rollout, the world and the brain are 04a's
   (its engine-equivalence check, D103);
 - **the GA** (`tests/test_e2_commands.py`): E2's call and a direct `evolve_batch` call with 04a's
@@ -64,7 +77,7 @@ could pass vacuously were sabotage-checked):
   worlds**; the flat count is current at every checkpoint. Sabotage: projecting on every generation,
   nominating without a reset, seeding by batch position (random sampling, and the ES's noise), and
   updating the flat count only at the end each fail their test;
-- **the stages** (`tests/test_e2_commands.py`, 79 tests, fake rollouts, smoke sizes, a scratch
+- **the stages** (`tests/test_e2_commands.py`, 83 tests, fake rollouts, smoke sizes, a scratch
   folder): every smoke id below 10 000; each stage needing the one before, running once, and not
   starting when the cap is spent; the projection gate, and an over-limit projection recording the
   experiment's outcome; the pilot's pairing, selection and tie order; the formal ES using the pilot's
@@ -98,7 +111,12 @@ could pass vacuously were sabotage-checked):
   formal guards on, git and CUDA stubbed); a killed extension rerun finalised from a real partial
   record with completed extension checkpoints, through the evaluation. Sabotage: no refusal after a
   kill, the skip record returned before the guards, the rerun not exempt, a killed record ignoring
-  its partial record: each fails its test;
+  its partial record: each fails its test. **The binding commit added** (review v4): an extension
+  checkpoint forced to beat every formal one, killed twice after its partial record, its champion's
+  hash and source followed through the finalised record and the evaluation; and the guards accepting
+  a skip record from the same code and environment and refusing one from other code or another
+  environment. Sabotage: a killed record ignoring its partial record, and the skip record returned
+  before the guards, each fail them;
 - **the command tests run with the formal guards off** (`smoke=True, guarded=False`). The guards are
   tested as functions in `tests/test_registration.py`; their wiring, the live push check and the GPU
   preflight run in the guarded projection and the guarded smoke run on the binding commit.
@@ -460,7 +478,9 @@ GA rerun (Fable).
   - 09:29-09:30 UTC, v2's code: HEAD `12725de` with the uncommitted v2 files (committed as
     `99f06a9`); its projection on the smoke projection seeds 1 128 900+, as in every later run;
   - 09:52 UTC, v3's code: HEAD `99f06a9` with the uncommitted v3 files (committed as `31beeda`);
-  - 10:07:57-10:08:29 UTC, v4's code: HEAD `31beeda` with the uncommitted v4 files.
+  - 10:07:59-10:08:29 UTC, v4's code: HEAD `31beeda` with the uncommitted v4 files (the start time
+    from the marker and the accounting; v4 as reviewed said 10:07:57, the shell's clock before the
+    first command).
 
   Every neural score was 0, as expected at that size; the scripted controls were not (the oracle and
   S-const 0.81 targets per episode on 16 worlds).
