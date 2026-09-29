@@ -3979,3 +3979,36 @@ corrected before the first commit:
 
 The results go to both reviewers. E3's design then faces the plan's question: make stereo steering
 reachable, or build on the non-stereo module knowingly.
+
+## D137 — E2d's results reviewed: "fix" (text only), corrections dated
+
+The results review (`docs/reviews/20260929-233515-E2d-results/`): **both "fix", text only**. Both
+recomputed every registered reading and confirmed it; no rerun. Corrections are in RESULTS.md,
+"Corrections (2026-09-29, D137)", quoting the original text, which stays. In brief:
+- **"Near its ceiling" is withdrawn** (Fable): the plan says no ceiling is established, and the ES is
+  budget-limited.
+- **"Basin" and "why random sampling came close"** were not measured (both).
+- **The scripted stereo steerer shows the probes' sensitivity,** not reachability (both).
+- **The mechanism wording** is narrowed to the plan's criterion (Astra).
+- **Added:**
+  - the sign-flip p-values, with two disagreements stated (C1, the interaction);
+  - the interaction without run 2;
+  - run 2's shares (C2 50%, so "most" was false);
+  - the narrow margins (C4 at 0.304, 04a's unshaped set at exactly three-quarters);
+  - C0's per-champion rates, and the pooled rate below 0.8 at the gentler scales;
+  - the ledger's total (14 036 s).
+
+**A correction to D136,** quoted: *"No champion of E2's or 04a's 47 uses the left-right difference."*
+Too absolute: no champion meets the plan's "uses the left-right difference" criterion (43 show no
+material benefit, 4 small ones).
+
+**Advice for E3 from both reviewers** (not decisions):
+- **Settle whether stereo steering is expressible first,** for example by building or imitating a
+  low-gain stereo N2 genome, confirming it with Part B's probes, and evolving from it (Fable).
+- **Keep the probes as a standing measure** along training (Fable).
+- **Do not adopt halved mutation or 32 worlds as defaults on this evidence.** Retest gentler mutation
+  with fresh paired seeds (both).
+- **Declare the handling of all-zero starts in advance;** they decided four readings here (Fable).
+
+**Publication:** both said the results are publishable once corrected. They go to main under the
+owner's consensus rule (D112).

@@ -1,8 +1,8 @@
 # WormWars: *C. elegans* wiring vs. shuffled and random graphs
 
 > **This is the `roadmap` working branch.** The published record is `main`. This branch holds work
-> in progress beyond it (roadmap v3's next step: diagnosing Task N, as E2's floor rule requires),
-> until it is merged.
+> in progress beyond it (roadmap v3's next step: E3's design, after E2d's diagnosis), until it is
+> merged.
 
 Many parallel 2D worlds on one GPU. In each world, swarms of small creatures called **weys** forage
 and fight. Every wey's brain is a small continuous-time recurrent network whose wiring is the real
@@ -36,10 +36,12 @@ selection acts on team results.
 | [04a](experiments/04a-navigation-primitive/README.md) | Can evolution, from random weights on the N2 wiring, produce a brain that reaches moved targets, beats blind search and uses the cue? | Published; pre-registered, public before its run | "04a: passed": 8 of 12 shaped runs (4 of 4 unshaped); the champions use the cue but are weak navigators (2.0-2.8 targets, 23-32% of an oracle) |
 | [03m](experiments/03m-p4-mechanism/README.md) | What drives 03's history dependence (P4)? | Exploratory; run, reviewed, corrected | N2's history fades more slowly than nearly all the shuffles'; its large food response depends on weight placement and on RIA and AIY; most weight permutations lower its P4, gap junctions narrow its lead, and no tested single or paired deletion removed it |
 | [E2](experiments/E2-optimizer-screen/README.md) | At equal simulator work, does OpenAI-ES find better Task N navigators than 02's GA, with random sampling as a floor? | Published; pre-registered, public before its run | "E2: keep 02's GA": the ES led by 0.12 targets per episode (0.5 needed). The floor fired: random sampling came within 0.36 of the GA, so Task N is diagnosed before E3 builds on it |
-| [E2d](experiments/E2d-taskn-diagnosis/README.md) | Why did random sampling come so close? Noise, the operators, budget and stereo use on Task N | Exploratory; plan and runner reviewed; running | None yet. From E2's records alone: 8 training worlds rank close genomes barely better than a coin, and the champions sit at the level of a controller that cannot use the left-right difference |
+| [E2d](experiments/E2d-taskn-diagnosis/README.md) | Why did random sampling come so close? Noise, the operators, budget and stereo use on Task N | Exploratory; plan and runner reviewed; run, reviewed, corrected | "A non-stereo plateau": no champion of 47 meets the "uses the left-right difference" criterion. No tested change (more worlds, gentler mutation, both, a smaller ES σ) leaves the plateau; gentler mutation improved all 8 paired runs but met the bar only with the failed run 2; the ES is budget-limited |
 
-Next on the roadmap: E2d's readings, then E3's design built on them. In the biology track, a
-confirmatory study of 03m's leads comes next, then 03a's six-neuron proof of concept.
+Next on the roadmap: E3's design, which starts from E2d's question: is stereo steering expressible and
+reachable (the sensing geometry, the interface, shaping, a seeded start), or does E3 build on the
+non-stereo module with its measured limitations? In the biology track, a confirmatory study of 03m's
+leads comes next, then 03a's six-neuron proof of concept.
 
 ## Newest: which optimizer for the next stage? (E2)
 

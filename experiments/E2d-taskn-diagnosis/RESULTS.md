@@ -219,3 +219,95 @@ This is the owner's and the reviewers' decision at E3's design, informed by thes
   - every arm passed its pairing check.
 - **This file was written after the chain finished.** Every number was taken from the committed
   records, and checked against them before committing.
+
+## Corrections (2026-09-29, D137)
+
+Both reviewers checked these results against the records (`docs/reviews/20260929-233515-E2d-results/`)
+and said "fix", for text only. Both recomputed every registered reading and confirmed it. The
+corrections below quote what was written above, which is left as it was; each figure was checked
+against the records before it was written here.
+
+1. **"Knowing that module is near its ceiling on this task."** (For E3.) **Withdrawn** (Fable). It
+   contradicts the plan, which says the diagnosis does not establish a ceiling, and the records:
+   - the ES is "budget-limited";
+   - non-stereo champions reach 2.64, 2.84 and 2.92.
+2. **"Why random sampling came close, as far as this shows: every method lands in the same non-stereo
+   basin, whose level is about 2.2."** Not measured (both).
+   - Nothing compared the champions' genomes or behaviour, so "basin" claims more than the probes
+     can.
+   - Random sampling's champions sit below the plateau: median 1.64, and only 35 of the 47 distinct
+     champions lie in the 1.90-2.50 band.
+   - On these worlds the GA averages 1.98 against random sampling's 1.62. Without run 2 the gap is
+     0.49.
+   - **Supportable:** random sampling's champions also meet no "uses" criterion (0 of 8), so all
+     three methods differ within one operational class, and none approaches 8.7.
+3. **"There is at least one stereo strategy at the plateau's level; evolution did not find even
+   that."** Too strong (both). The k = 4 reference is a scripted controller. It shows the probes are
+   sensitive at that score, not that an N2 genome can express stereo steering through this interface,
+   nor that selection would prefer it at equal score. The sensing geometry, the interface, shaping
+   and a seeded start are **hypotheses to test**, not established routes.
+4. **"No champion uses the left-right difference"**, **"None of the 47 evolved champions steers by
+   the left-right difference"**, and **"Part B shows only that they do not benefit from intact
+   bilateral input"**. Too absolute (Astra). What the records show:
+   - **no champion meets the plan's "uses the left-right difference" criterion.** "A non-stereo
+     plateau" is the plan's operational reading;
+   - 43 distinct champions show no material benefit;
+   - 4 are unclear, with small detectable benefits from intact bilateral input.
+5. **The sign-flip tests, required beside each interval, were omitted** (both). Two disagreements
+   were unstated.
+
+   | Contrast | 90% interval | Sign-flip p, 8 runs | Without run 2 |
+   |---|---|---|---|
+   | C1 | excludes 0 | **0.125 (disagreement)** | p 0.250 |
+   | C2 | excludes 0 | 0.008 | p 0.016 |
+   | C4 | excludes 0 | 0.023 | p 0.047 |
+   | C3 | includes 0 | 0.781 | p 0.453 |
+   | the interaction | excludes 0 (−0.659 to −0.044) | **0.148 (disagreement)** | −0.140 (−0.314, +0.007) |
+
+   The interval decides, as registered.
+6. **The interaction.** Without run 2 the estimate is −0.140 (−0.314 to +0.007). Run 2 supplies
+   −1.589 of the −2.570 total (62%): each single change rescued run 2, so the difference of
+   differences is mechanically negative there. "Not claimed" stands (both).
+7. **"Inconclusive" for C4 − C1 and C4 − C2′.** The plan fixes no reading for these two contrasts;
+   the label is the runner applying the arm rule (Fable). C4 − C1, the cleanest mutation contrast,
+   is small and positive both ways: 8 runs +0.083 (+0.039 to +0.122); 7 runs +0.076 (+0.029 to
+   +0.120).
+8. **"That one pair supplies most of each arm's mean."** False for C2 (both).
+   - **Run 2's share of the total paired gain:** C1 81%, C4 64%, C2 50%.
+   - **C1's and C4's 32 training worlds already score non-zero at generation 0,** so their run 2
+     changes the initial selection signal. C2's run 2 rescues the original all-zero start (Astra).
+   - **C2's other seven runs all improve;** its qualified reading reflects missing the +0.3 bar
+     without run 2 (+0.247), not a vanishing gain.
+   - **No control with fresh mutation draws at unchanged settings exists** (Fable). So the rescue of
+     run 2 cannot be attributed to either change.
+9. **Narrow margins, flagged for C0 only** (Fable):
+   - C4's mean gain is 0.3044 against the 0.3 bar. Against E2's registered champion it is 0.279,
+     which would read "inconclusive";
+   - 04a's unshaped set is exactly three-quarters (3 of 4). One more "unclear" would make it "mixed"
+     and remove the plateau reading.
+10. **C0's per-champion rates, promised by the plan, were omitted** (both).
+    - **Middle bin at 02's scale, by parent:** 0.87, 0.86, **0.75** (run 2), 0.83, 0.84, 0.85, 0.82
+      and 0.84.
+    - Run 2's parent supplies 601 of the 2 343 pairs. Without it, the pooled rate is 0.84.
+    - **At × 0.5 and × 0.25, the scales C2 and C4 use,** the pooled rates are 0.794 and 0.772,
+      below the 0.8 line. Selection noise matters more after mutation is made gentler.
+11. **The ledger's total** is 14 036 s (14 036.1 summed over the attempts), not "14 037 s", which
+    summed rounded rows (both). 3.90 hours stands.
+
+**Added from the reviews** (checked against the records):
+- **C2's mean, 2.41,** equals 04a's four unshaped runs at 02's unchanged mutation (2.39), whose
+  runs had different seeds and worlds (Fable).
+  - Two of C2's eight gains (+0.009, +0.051) are near the hold-out's error.
+  - Its arm-reference correlation is −0.17, so pairing removed little variation.
+  - Gentler mutation is a lead to retest with fresh paired seeds, separating the rescue of failed
+    starts from gains among successful ones (Astra).
+- **C3's run 2** never moved from its start genome. Its champion is the start genome, so its "no
+  material benefit" class is vacuous; the "31 of 32" above includes it (Fable). A conditional escape
+  problem at σ 0.25 from an all-zero start, not a general case for larger σ (Astra).
+- **Scores of 2.5 or more per arm:** C1 0, C2 2, C4 0, C3 1.
+- **Chance for the top-8 overlap** (8 of 64) is 0.125. Run 2's parent sits at 0.09-0.26 (Fable).
+- **C2′'s run 5** is "unclear" (real − swapped +0.19 to +0.49) at a matched checkpoint, while C2's
+  final run 5 shows no benefit. Partial dependence on bilateral input appears during a run and is
+  not kept (Fable).
+- **Arm C3's accounting attempt** ends at commit `937e8b9`, not `6ec1761`. Two documentation
+  commits (the READMEs and the roadmap) landed while it ran; no guarded file changed (Fable).

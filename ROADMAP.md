@@ -65,10 +65,21 @@
   - **Part A**, from E2's records alone, found training fitness noisy. With 8 worlds, two genomes
     0.05-0.15 targets apart are ranked strictly correctly 54% of the time, with 16% ties. Nearly
     every champion sits at the level of E1's best controller that cannot use the left-right difference.
-  - **Parts B, C0 and C** were agreed after four plan rounds and three code reviews: stereo probes of
-    the champions, a probe of how reliably 8 worlds rank siblings, and four one-change arms paired
-    with E2's own runs. They run on 2026-09-29, about 6 of a 7 GPU-hour cap.
-  - **E3's design waits for its readings.**
+  - **Parts B, C0 and C** were agreed after four plan versions and three code reviews: stereo probes
+    of the champions, a probe of how reliably 8 worlds rank siblings, and four one-change arms paired
+    with E2's own runs. They ran on 2026-09-29, 3.90 of a 7 GPU-hour cap (D136, corrected D137):
+    - **"a non-stereo plateau":** no champion of E2's and 04a's 47 meets the "uses the left-right
+      difference" criterion, although the probes detect a scripted low-gain stereo steerer at the
+      same score;
+    - **no tested change leaves it:**
+      - 32 worlds per genome: inconclusive;
+      - halved mutation: "supports, carried by run 2", every paired run improved;
+      - both together: "supports, carried by run 2";
+      - the ES at σ 0.25: inconclusive;
+    - the ES is budget-limited, and selection noise is "not material" only narrowly.
+  - **Next in Track E: E3's design.** It starts from E2d's question: is stereo steering expressible
+    and reachable (the sensing geometry, the interface, shaping, a seeded start), or does E3 build on
+    the non-stereo module with its measured limitations? A decision for the owner and both reviewers.
 - **03m, what drives P4** (exploratory; D113, D114): ran on 2026-09-29, 3.32 GPU-hours. Reviewed; its
   first summary overclaimed and is corrected. What stands: N2's history fades more slowly than the
   shuffles'; its large food response depends on the placement of its weights and on RIA and AIY
@@ -193,7 +204,7 @@ Track B continues in parallel: 03r, then the mechanism follow-up or closure, the
 - *Status 2026-09-29 (D124-D126):* run as pre-registered and published on main
   (`experiments/E2-optimizer-screen/`). Outcome: keep 02's GA as E3's provisional default. The floor
   fired, so Task N is diagnosed before E3 (below, "What would change this roadmap"). The diagnosis,
-  E2d, is running (D127-D135).
+  E2d, ran (D127-D137): a non-stereo plateau that no tested change leaves.
 
 ### E3 / 04b: minimal A/B organism
 
@@ -389,8 +400,8 @@ The first social experiments use colonies of clones: one genome for every wey, e
 - **The E1 positive control fails:** redesign the body or sensors before evolving anything.
 - **E2 finds random sampling matching the GA:** diagnose saturation, noise and budget before building on the task.
   - *Triggered 2026-09-29 (E2, D124):* random sampling came within 0.36 targets of the GA, inside
-    the registered 0.5. The diagnosis, E2d, was designed and reviewed and is running (D127-D135). The
-    reviewers'
+    the registered 0.5. The diagnosis, E2d, ran (D127-D137): a non-stereo plateau that no tested
+    change leaves; E3's design takes it from there. The reviewers'
     first suggestions are in D125.
 - **The minimal A/B organism fails:** diagnose sensing, objective, controller capacity and optimizer progress separately before adding capability.
 - **04c finds no useful transfer:** report it, and check whether the latch or the module interfaces block transfer before concluding anything about evolution.
