@@ -3604,3 +3604,30 @@ Each fix was test-first (12 new tests seen failing), except one regression pin, 
 before anything moved", written after the fix when a sabotage check ("used" without "applied") went
 uncaught; it fails under that sabotage. Nine deliberate breaks in all, each caught. Tests: 75
 command, 17 loop, 14 optimizer.
+
+## D122 — E2's pre-registration v4: the extension's skip rule, corrected
+
+The v3 review (`docs/reviews/20260929-115339-E2-prereg-v3/`): **both "revise", about v3's new skip
+rule only**; every v2 must-fix was confirmed resolved. Fable: "ready to bind" once its option (a) is
+taken as written.
+- **Both: "the extension never takes the evaluation's budget" was false.** The obligatory rerun is
+  exempt from the check, and an admitted extension can overrun its projection. Fable showed a
+  two-failure sequence at the planning figures that ends E2 at the cap. Taken as Fable's option (a):
+  §6 now registers the check as an admission estimate for the first attempt, with the exemption and
+  the remaining risk disclosed (Astra accepted this or a spending limit). The exemption is tested.
+- **Astra: the skip record bypassed the commit check,** and **a plain run after a killed extension
+  could be recorded as skipped**, dodging the obligatory rerun. Now the skip record carries its
+  provenance and goes through the normal checks (tested with the formal guards on and git and CUDA
+  stubbed), and a plain run refuses whenever a start marker exists, before any stage-specific rule.
+- §10's definition of "final" includes the skip, and states once when a rerun counts as used.
+- §11 names all four CPU smoke runs with their HEADs (the fourth at 10:07:57-10:08:29 UTC, with
+  v4's code on `31beeda` plus uncommitted files).
+- Suggestions taken: a killed extension rerun finalised from a real partial record, through the
+  evaluation (both); the budget total (17 870 s); the README's decision range; a note on reading a
+  flat ES run's hashes.
+
+Tests: three of the four new tests were seen failing first; the fourth (the real partial record)
+passed at once, confirming Fable's reading of the code, and was strengthened after its sabotage check
+(the killed record ignoring its partial record) at first went uncaught: with fake scores, the
+fallback champions equal the partial record's, so the test now also compares the carried
+extension checkpoints. Four deliberate breaks, each caught. Tests: 79 command, 17 loop, 14 optimizer.

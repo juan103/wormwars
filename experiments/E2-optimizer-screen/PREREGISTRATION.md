@@ -1,4 +1,4 @@
-# E2: a short optimizer screen. Pre-registration (v3, for review)
+# E2: a short optimizer screen. Pre-registration (v4, for review)
 
 **Status:**
 - Written 2026-09-29 for review by Astra 6 and Fable 5.1. Nothing below has run on E2's training,
@@ -11,6 +11,11 @@
     the rerun's own setup could be interrupted, a killed or early-stopped extension could lose its
     champions or drop them from the summary, the ES's generation-0 candidate was not the start
     genome, and §11 missed a second smoke chain (D121). All are fixed in v3; §15 lists them.
+  - v3 (`31beeda`, `docs/reviews/20260929-115339-E2-prereg-v3/`): both said "revise", about v3's own
+    new rule: the extension's skip. Its "never takes the evaluation's budget" was false for the
+    obligatory rerun, the skip record escaped the guards, and a plain run after a kill could be
+    recorded as skipped (D122). Fable: "ready to bind" once the text is corrected as in its option
+    (a). v4 takes that option and fixes the other two in the code; §16 lists them.
 - **The order:** review until both agree; bind (a commit); push; the guarded projection and a
   guarded smoke run on the binding commit; then the formal stages, each on a clean tree whose HEAD
   is pushed, with each stage's record committed and pushed before the next stage starts.
@@ -59,7 +64,7 @@ could pass vacuously were sabotage-checked):
   worlds**; the flat count is current at every checkpoint. Sabotage: projecting on every generation,
   nominating without a reset, seeding by batch position (random sampling, and the ES's noise), and
   updating the flat count only at the end each fail their test;
-- **the stages** (`tests/test_e2_commands.py`, 75 tests, fake rollouts, smoke sizes, a scratch
+- **the stages** (`tests/test_e2_commands.py`, 79 tests, fake rollouts, smoke sizes, a scratch
   folder): every smoke id below 10 000; each stage needing the one before, running once, and not
   starting when the cap is spent; the projection gate, and an over-limit projection recording the
   experiment's outcome; the pilot's pairing, selection and tie order; the formal ES using the pilot's
@@ -87,7 +92,13 @@ could pass vacuously were sabotage-checked):
   evaluation; the pairing check with a mismatch, no shared runs and known differences. Sabotage:
   "used" without the note's "applied" status, a resumed setup charged again, generation 0
   validating the decoded mean, no fallback in a killed extension's record, no first partial record,
-  no skip, a stopped rerun not final, the pairing ignoring the ES's checkpoint: each fails its test;
+  no skip, a stopped rerun not final, the pairing ignoring the ES's checkpoint: each fails its test.
+  **v4 added** (review v3): a plain run refusing after a kill even when the extension would be
+  skipped; the extension's rerun exempt from the skip rule; the skip record through the guards (the
+  formal guards on, git and CUDA stubbed); a killed extension rerun finalised from a real partial
+  record with completed extension checkpoints, through the evaluation. Sabotage: no refusal after a
+  kill, the skip record returned before the guards, the rerun not exempt, a killed record ignoring
+  its partial record: each fails its test;
 - **the command tests run with the formal guards off** (`smoke=True, guarded=False`). The guards are
   tested as functions in `tests/test_registration.py`; their wiring, the live push check and the GPU
   preflight run in the guarded projection and the guarded smoke run on the binding commit.
@@ -260,10 +271,17 @@ The fallback (every run's formal champion) is written in the extension's partial
 first generation, and a killed rerun with no partial record rebuilds it from the formal record, so no
 path loses the champions. An incomplete extension does not change E2's outcome.
 
-**The extension never takes the evaluation's budget:** it starts only if the cap's remainder covers
-its projected time (from the projection's ES rates) plus a registered 0.5-hour reserve for the
-evaluation. Otherwise it is **skipped**, recorded as "not run (the cap's remainder is kept for the
-evaluation)", and the evaluation goes ahead without extension arms (Fable, review v2).
+**The extension's admission check** (Fable, review v2): **its first attempt** starts only if the
+cap's remainder covers its projected time (from the projection's ES rates) plus a registered
+0.5-hour reserve for the evaluation. Otherwise it is **skipped**, recorded as "not run (the cap's
+remainder is kept for the evaluation)", with its provenance, committed and checked like any other
+record, and the evaluation goes ahead without extension arms. **The check is an estimate at
+admission, not a guarantee:** the extension's obligatory rerun is exempt from it (the rerun rule
+comes first), and an admitted extension can run longer than projected, so after a stopped or killed
+first attempt, or an overrun, the evaluation can still lose its budget and E2 end "not completed
+(the registered cap was reached)" (Fable, Astra, review v3; v3 said "never", which was false).
+A skip applies only to an extension that has never started: a plain run refuses whenever a start
+marker exists.
 
 ## 7. The evaluation (the hold-out, used once)
 
@@ -332,6 +350,10 @@ score is subject to selection optimism**; E3 evaluates on new worlds.
 - the extension's champions and their hold-out means;
 - **the pairing:** each run's ES-minus-GA hold-out difference, and a check that each method's
   generation-0 checkpoint candidate (and the ES's start genome) is the same genome, by hash;
+- **a note for reading the ES's hashes:** after generation 0 an ES checkpoint validates the decoded
+  mean, which differs from the start genome by rounding, so a run whose mean never moved (every
+  generation flat) shows a new hash from generation 25 on. Its validation scores can differ slightly;
+  a tie goes to generation 0, and the flat count says whether the mean moved (Fable, review v3);
 - the controls' means (for scale);
 - **the ledger:** per stage, episodes (from the records), and ticks, neural updates (padding
   included) and wall time (from the accounting), with the allowance of §4 beside it.
@@ -349,9 +371,10 @@ score is subject to selection optimism**; E3 evaluates on new worlds.
 7. `e2.py evaluate` → `evaluation.json` (needs the three training stages final, and the extension
    final if the ES completed; the hash checks of §7).
 
-**"Final"** means completed, or not completed after the registered rerun: the rerun is "used" once
-it has been applied (its note, `<record>-rerun.json`, is written), and it then either writes a
-stopped record, or is killed. **A killed rerun** leaves a marker and no record; the next stage
+**"Final"** means completed; or, for the extension, skipped (§6); or not completed after the
+registered rerun has been used, that is, once its note (`<record>-rerun.json`) is marked applied
+and its own marker or record exists (below); a used rerun either writes a stopped record, or is
+killed. **A killed rerun** leaves a marker and no record; the next stage
 refuses and names it, and one more `--rerun` charges its compute, writes its record (final, not
 completed, built from the marker and the last partial record), and refuses to run it again. So
 every combination (crash or kill, then crash or kill) ends final (Fable, Astra, review v1).
@@ -359,7 +382,8 @@ every combination (crash or kill, then crash or kill) ends final (Fable, Astra, 
 first file is archived, marked "archiving", and marked "applied" after the last move; each start
 marker records its attempt number (1, or 2 for the rerun). A setup interrupted at any point (before
 anything moved, while archiving, or after archiving but before the rerun's marker) is continued by the
-next `--rerun`, without charging the first attempt again; a plain run refuses meanwhile. A rerun is
+next `--rerun`, without charging the first attempt again; a plain run refuses meanwhile, and
+whenever any start marker exists (a killed attempt is rerun, never started afresh). A rerun is
 "used" only once its note is applied and its own marker or record exists, so a first attempt's
 leftover marker or record is never taken for the rerun's. A stopped rerun's record says `final: true`.
 File moves and atomic writes retry briefly on a transient refusal. A
@@ -387,7 +411,7 @@ projection 3.29 s; Fable, Astra, review v1). The pilot's generations are scaled 
 | extension | 377 × 4.75 s + 16 × 10 s | 1 950 s |
 | hold-out | 80 neural arms × 3 s + 8 scripted × 2.2 s | about 260 s |
 | projection | 5 shapes × 6 generations | about 170 s |
-| **total** | | **about 17 850 s, 5.0 GPU-hours** |
+| **total** | | **about 17 870 s, 5.0 GPU-hours** |
 
 This is an upper estimate: at 04a's measured checkpoint cost (about 3.3 s), the 142 checkpoints cost
 about 950 s less, **about 4.7 GPU-hours**. 04a's projection ran slower than its training (5.25 s per
@@ -427,17 +451,21 @@ GA rerun (Fable).
 
 - **Nothing has used E2's id ranges, or its formal or pilot seeds.** Development used smoke ids
   0-9 999 (inside 02's old training span, outside every range above): the loop and command tests
-  (fake simulators), and **two CPU smoke runs of the whole chain on 2026-09-29** (`runs/e2-smoke/`,
-  local, 40 ticks, 4 genomes, 2 worlds): at 08:54-08:55 UTC with v1's code (on `8966e5b` with the
-  uncommitted v1 files, committed as `12725de`; its projection on seeds 1 129 000-1 129 002), and at
-  09:29-09:30 UTC with v2's code (uncommitted, committed as `99f06a9`; its projection on the smoke
-  projection seeds 1 128 900+). The second overwrote the first's records; the accounting keeps both
-  runs' attempt files (`runs/e2-smoke/compute/`), and the evidence for the first projection's seeds
-  is Astra's v1 review, which read its record before it was overwritten. A third smoke run, with
-  v3's code, is recorded in D121. Every neural score was 0, as expected at that size; the scripted
-  controls were not (in the second run, the oracle and S-const 0.81 targets per episode on 16
-  worlds).
-  - **Correction (review v2, Fable):** v2 said "one CPU smoke run"; there were two, as above.
+  (fake simulators), and **four CPU smoke runs of the whole chain on 2026-09-29** (`runs/e2-smoke/`,
+  local, 40 ticks, 4 genomes, 2 worlds), each overwriting the previous one's records, while the
+  accounting keeps every run's attempt files (`runs/e2-smoke/compute/`):
+  - 08:54-08:55 UTC, v1's code: HEAD `8966e5b` with the uncommitted v1 files (committed as
+    `12725de`); its projection on seeds 1 129 000-1 129 002. The evidence for those seeds is Astra's
+    v1 review, which read the record before it was overwritten;
+  - 09:29-09:30 UTC, v2's code: HEAD `12725de` with the uncommitted v2 files (committed as
+    `99f06a9`); its projection on the smoke projection seeds 1 128 900+, as in every later run;
+  - 09:52 UTC, v3's code: HEAD `99f06a9` with the uncommitted v3 files (committed as `31beeda`);
+  - 10:07:57-10:08:29 UTC, v4's code: HEAD `31beeda` with the uncommitted v4 files.
+
+  Every neural score was 0, as expected at that size; the scripted controls were not (the oracle and
+  S-const 0.81 targets per episode on 16 worlds).
+  - **Correction (review v2, Fable):** v2 said "one CPU smoke run"; there were two at the time, as
+    above.
   - **Correction (review v1, Astra):** v1 said "every score 0", which was wrong for the controls;
     and v1 said smoke seeds only, but **that smoke run's projection used E2's projection seeds,
     1 129 000-1 129 002**, because the smoke setting changed the projection's length and not its
@@ -548,3 +576,23 @@ Both reviewers said "revise", narrowly; neither asked for a redesign.
   clean, pushed tree and CUDA, which the command tests do not have; a killed-and-finalised record
   keeps the provenance of its own attempt (its partial record, or its marker), which the guarded
   stages compare exactly like any other record's.
+
+## 16. Changes from v3 (review v3, D122)
+
+Both reviewers said "revise", about v3's new skip rule only; Fable: "ready to bind" with its option
+(a) taken as written.
+- **The skip rule's promise is corrected** (both): an admission estimate for the extension's first
+  attempt, the obligatory rerun exempt, and the ways the evaluation can still lose its budget
+  disclosed (§6). Fable's option (a); Astra accepted either this or a separate spending limit. The
+  exemption is tested.
+- **The skip record goes through the guards** (Astra, and Fable as a suggestion): it carries its
+  provenance and must be committed like any other record; tested with the formal guards on and the
+  git and CUDA boundaries stubbed.
+- **A plain run refuses whenever a start marker exists** (Astra), before the skip rule, so a killed
+  extension is rerun and never recorded as skipped; tested.
+- **"Final" in §10** now includes the skip, and the definition of a used rerun is stated once, as
+  the code applies it (Fable, Astra).
+- **§11 names all four smoke runs** with their HEADs (Fable).
+- Suggestions taken: a killed extension rerun finalised from a real partial record, through the
+  evaluation (both); the budget total corrected to 17 870 s (Fable); the README's decision range
+  (Fable); a flat ES run's hash note in §9 (Fable).

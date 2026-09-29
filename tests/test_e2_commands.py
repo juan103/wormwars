@@ -747,3 +747,82 @@ def test_a_rerun_interrupted_before_anything_moved_does_not_make_the_first_stop_
         _run(m, "train", method="random")
     _run(m, "train", method="ga", rerun=True, reason="resuming")
     assert _rec(m, "train-ga")["outcome"] == "completed"
+
+
+# ------------------------------------------------------------------ review v3 (D122)
+
+def test_a_plain_run_refuses_after_a_kill_even_when_the_extension_would_be_skipped(m, monkeypatch):
+    """Review v3 (Astra): a killed extension followed by a plain run with little budget left must not
+    be recorded as "skipped"; the obligatory rerun comes first."""
+    _upto(m, 6)
+    _kill(m, "extend")
+    monkeypatch.setattr(m.reg.CapClock, "spent_hours", lambda self: m.REGISTERED["cap_gpu_hours"] - 0.01)
+    with pytest.raises(SystemExit, match="killed"):
+        _run(m, "extend")
+    assert not m.record_path("extend").exists()
+
+
+def test_the_extensions_rerun_is_exempt_from_the_skip_rule(m, monkeypatch):
+    """Registered (§6): the admission check is for the first attempt; the obligatory rerun runs."""
+    _upto(m, 6)
+    m._fakes.crash_at = len(m._fakes.calls) + 1
+    with pytest.raises(RuntimeError):
+        _run(m, "extend")
+    m._fakes.crash_at = None
+    monkeypatch.setattr(m.reg.CapClock, "spent_hours", lambda self: m.REGISTERED["cap_gpu_hours"] - 0.3)
+    _run(m, "extend", rerun=True, reason="stopped")  # needs about 0.5 h with the reserve; 0.3 h left
+    assert _rec(m, "extend")["outcome"] == "completed"
+
+
+def test_a_skipped_extension_record_goes_through_the_guards(m, monkeypatch):
+    """Review v3 (both): the skip record carries its provenance and must be committed like any other."""
+    _upto(m, 6)
+    monkeypatch.setattr(m.reg.CapClock, "spent_hours", lambda self: m.REGISTERED["cap_gpu_hours"] - 0.01)
+    with pytest.raises(SystemExit, match="skipped"):
+        _run(m, "extend")
+    assert "git_commit" in _rec(m, "extend")["provenance_at_start"]
+    monkeypatch.setattr(m.reg.CapClock, "spent_hours", lambda self: 0.0)
+    checked = []
+
+    def committed(path):
+        checked.append(Path(path).name)
+        if Path(path).name == "extension.json":
+            raise SystemExit("extension.json must be committed, unchanged and pushed first")
+    monkeypatch.setattr(m, "require_committed", committed)
+    monkeypatch.setattr(m.reg, "require_formal", lambda device, prov: None)
+    monkeypatch.setattr(m.reg, "require_same_code", lambda commit, guarded: None)
+    monkeypatch.setattr(m.reg, "require_same_env", lambda was, now: None)
+    args = _args("evaluate")
+    args.smoke = False  # the formal guards on, with the git and CUDA boundaries stubbed
+    with pytest.raises(SystemExit, match="must be committed"):
+        m.cmd_evaluate(args)
+    assert "extension.json" in checked and not (m.EXP / "evaluate-started.json").exists()
+
+
+def test_a_killed_extension_rerun_keeps_the_champions_of_its_real_partial_record(m):
+    """Review v3 (both): a finalised record built from a real partial record (extension checkpoints
+    completed), through the evaluation."""
+    _upto(m, 6)
+    orig = m.write_atomic
+
+    def boom(path, doc, **kw):  # dies right after the partial record of the extension's checkpoint
+        orig(path, doc, **kw)
+        if path == m.partial_path("extend") and doc.get("records"):
+            raise RuntimeError("killed after the checkpoint")
+    for attempt in (1, 2):
+        m.write_atomic = boom
+        with pytest.raises(RuntimeError):
+            _run(m, "extend", rerun=attempt == 2, reason="killed" if attempt == 2 else None)
+        m.write_atomic = orig
+        m.record_path("extend").unlink()  # what a kill leaves: the marker and the partial record
+    part = json.loads(m.partial_path("extend").read_text())
+    assert part["records"] and all(r["checkpoints"] for r in part["records"])
+    with pytest.raises(SystemExit, match="recorded as final"):
+        _run(m, "extend", rerun=True, reason="the rerun was killed")
+    ext = _rec(m, "extend")
+    assert ext["final"] and ext["champions_over_both"] == part["champions_over_both"]
+    assert ext["records"] == part["records"]  # the completed extension checkpoints, carried over
+    _run(m, "evaluate")
+    runs = _rec(m, "evaluate")["extension"]["runs"]
+    assert len(runs) == len(m.run_specs())
+    assert [v["source"] for v in runs.values()] == [c["source"] for c in part["champions_over_both"]]

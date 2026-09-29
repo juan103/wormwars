@@ -423,9 +423,7 @@ def require_earlier(args, prov: dict, stage: str, final_ok: bool = False) -> dic
             raise SystemExit(f"{WHAT[stage]}'s rerun was set up but did not start: continue it with --rerun")
         raise SystemExit(f"{WHAT[stage]} has not run")
     rec = json.loads(path.read_text(encoding="utf-8"))
-    if rec.get("outcome") == OUTCOMES["skipped"] and final_ok:
-        return rec  # the extension, not run to keep the evaluation's budget (it has no provenance to check)
-    if rec.get("outcome") != "completed":
+    if rec.get("outcome") != "completed" and not (final_ok and rec.get("outcome") == OUTCOMES["skipped"]):
         stopped = rec.get("outcome") == OUTCOMES["stopped"]
         if not (final_ok and stopped and rerun_state(stage) == "used"):
             if final_ok and stopped:
@@ -590,6 +588,8 @@ def run_stage(args, stage: str, requires, body, local_files=()) -> dict:
         raise SystemExit(f"{path.name} exists: {WHAT[stage]} runs once")
     if plan is None and rerun_state(stage) != "none":
         raise SystemExit(f"{WHAT[stage]}'s rerun was set up: continue it with --rerun")
+    if plan is None and marker_path(stage).exists():  # before anything else, the skip rule included
+        raise SystemExit(f"{WHAT[stage]} started before and was killed: rerun it (--rerun --reason)")
     earlier = requires(args, prov)
     cap = clock()
     try:
@@ -904,7 +904,8 @@ def cmd_extend(args):
         left = REGISTERED["cap_gpu_hours"] - clock().spent_hours()
         if not a.rerun and need > left:  # a started extension is finished or finalised by the rerun rule
             write_atomic(record_path("extend"), {"stage": "extend", "outcome": OUTCOMES["skipped"], "final": True,
-                                                 "hours_needed": need, "hours_left": left})
+                                                 "hours_needed": need, "hours_left": left,
+                                                 "provenance_at_start": prov, "registered": REGISTERED})
             raise SystemExit(f"the extension is skipped: it needs {need:.2f} h with the evaluation's reserve, "
                              f"and {left:.2f} h of the cap remain")
         return {"train-es": es}

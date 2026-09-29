@@ -22,7 +22,7 @@ comes within 0.5 targets of the GA, the task or budget is diagnosed before E3 bu
 - [`PREREGISTRATION.md`](PREREGISTRATION.md): everything fixed before the run, and the outcome
   wording;
 - [`../../docs/E2/DESIGN.md`](../../docs/E2/DESIGN.md): the design and its three review rounds;
-- `DECISIONS.md` D117-D120: how the design and the pre-registration changed under review;
+- `DECISIONS.md` D117-D122: how the design and the pre-registration changed under review;
 - reviews: `docs/reviews/20260929-*-E2-*`.
 
 **Reproduce it** (after binding; CUDA, one RTX 5080, the pinned environment):
