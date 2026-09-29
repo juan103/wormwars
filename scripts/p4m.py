@@ -80,20 +80,32 @@ def fin(x):
     return float(x) if x is not None and math.isfinite(float(x)) else None
 
 
+def replace(src: Path, dst: Path, attempts: int = 10) -> None:
+    """`os.replace`, retried briefly: Windows can refuse a replace while another process (an indexer,
+    an antivirus) holds the file for a moment; the suite hit it once (D123, D128)."""
+    for k in range(attempts):
+        try:
+            return os.replace(src, dst)
+        except PermissionError:
+            if k == attempts - 1:
+                raise
+            time.sleep(0.05 * (k + 1))
+
+
 def write(path: Path, doc) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     tmp = path.with_name(path.name + ".partial")
     with open(tmp, "w", encoding="utf-8", newline="\n") as f:
         f.write(json.dumps(doc, indent=1, allow_nan=False))
         f.write("\n")
-    os.replace(tmp, path)
+    replace(tmp, path)
 
 
 def save_arrays(path: Path, arrays: dict) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     tmp = path.with_name(path.stem + ".tmp.npz")
     np.savez_compressed(tmp, **arrays)
-    os.replace(tmp, path)
+    replace(tmp, path)
 
 
 def stamp(args=None) -> dict:

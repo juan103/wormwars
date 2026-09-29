@@ -3758,3 +3758,11 @@ E2's floor fired, so the roadmap requires a diagnosis of saturation, noise and b
 
 The readings are fixed in advance as descriptive thresholds, under a cap of 5 GPU-hours. The plan
 goes to Astra 6 and Fable 5.1 before any code or GPU work.
+
+## D128 — 03m's script retries its file replaces
+
+The transient Windows `PermissionError` on `os.replace`, which failed one 03m test once at E2's
+binding (D123), is fixed in `scripts/p4m.py` as it was in E2's runner (D120): a bounded retry
+(`replace`) in both atomic writes. It is file handling only; 03m's computations, records and
+results are unchanged. Test-first: `test_the_atomic_writes_survive_a_transient_permission_error`
+failed, then passed.

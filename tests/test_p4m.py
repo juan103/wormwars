@@ -240,3 +240,25 @@ def test_graph_rebuilding_stops_at_the_cap(p, smoke, monkeypatch):
     with pytest.raises(p.reg.CapReached):
         p.cmd_graphs(args)
     assert len(built) == 2
+
+
+@pytest.mark.parametrize("which", ["write", "save_arrays"])
+def test_the_atomic_writes_survive_a_transient_permission_error(p, tmp_path, monkeypatch, which):
+    """Windows can refuse a replace for a moment while another process holds the file; this suite
+    hit it once (D123). The write retries briefly, as E2's do (D120)."""
+    import os
+    real, fails = os.replace, [2]
+
+    def flaky(a, b):
+        if fails[0]:
+            fails[0] -= 1
+            raise PermissionError(5, "Access is denied")
+        return real(a, b)
+    monkeypatch.setattr(os, "replace", flaky)
+    if which == "write":
+        p.write(tmp_path / "x.json", {"a": 1})
+        assert json.loads((tmp_path / "x.json").read_text()) == {"a": 1}
+    else:
+        p.save_arrays(tmp_path / "x.npz", {"a": np.arange(3)})
+        with np.load(tmp_path / "x.npz", allow_pickle=False) as z:
+            assert z["a"].tolist() == [0, 1, 2]
