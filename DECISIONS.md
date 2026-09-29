@@ -3936,3 +3936,21 @@ number now catches it.
 
 Four of the new tests passed on the unchanged code, so they are pins: the plateau behaviour, boot_se,
 C0's reading and the training clock. Each fails under its sabotage.
+
+## D135 — E2d's runner agreed; the guarded smoke next
+
+Astra's retried review (`docs/reviews/20260929-192702-E2d-code-v3-astra/`): **"fix", with one
+test-only must-fix, and "the guarded smoke can proceed"**. All eight original fixes were present
+and no new runner defect was found. The must-fix: Astra removed the comparison of the played ids
+with the 8-world draw, in memory, and the strengthened test still passed. A test now shifts every
+strain of one run identically, with the roster and generation 0 unchanged, and it catches that
+removal.
+
+Two suggestions are also taken:
+- the recorded last ids are compared with the fake's last training call;
+- a completed C2 with a missing matched checkpoint gets no C2′ and no interaction.
+
+The C2′ rule and the prefix comparison were each sabotage-checked.
+
+**With Fable's "run" (D134), both agree.** The plan is PLAN.md v4; the runner is at this commit.
+Next: the guarded smoke of every stage on CUDA, then the formal chain.

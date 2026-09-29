@@ -441,3 +441,42 @@ def test_c0_records_its_seeds(m):
     C = m.REGISTERED["c0"]
     for r in range(len(m.e2_runs())):
         assert seeds[f"ga run{r:02d}"] == C["seed_ga"] + 10 * r and seeds[f"es run{r:02d}"] == C["seed_es"] + 10 * r
+
+
+def test_the_pairing_check_needs_the_played_ids_to_begin_with_the_8_world_draw(m):
+    """Astra (confirmation): every strain of a run consistently playing other worlds, the roster and
+    generation 0 unchanged, must fail."""
+    _upto(m, 5)
+    train, _ = m.e2_ids()
+    recs, played = _as_recs(m, "c1"), _played(m, "c1")
+    P = m.REGISTERED["ga"]["population"]
+    bad = played.copy()
+    bad[P:2 * P, 0] += 1  # all of run 1's strains, the same shift
+    r = m.pairing_check("c1", recs, train, bad)
+    assert r["roster"] and all(r["per_run"]) and not r["passed"]
+
+
+def test_the_recorded_last_ids_are_the_last_training_call(m):
+    _upto(m, 4)
+    m._fakes.calls.clear()
+    _run(m, "arm", "c1")
+    training = [c for c in m._fakes.calls if len(c[2]) == 2]  # [strains, worlds]
+    last = training[-1][3]
+    P = m.REGISTERED["ga"]["population"]
+    rec = _rec(m, "arm-c1")["pairing"]["last_generation_ids"]
+    assert [row for row in rec] == [last[i * P].tolist() for i in range(len(rec))]
+
+
+def test_c2prime_needs_every_matched_checkpoint(m):
+    _upto(m, 6)
+    rec = _rec(m, "arm-c2")
+    for r in rec["records"]:
+        r["checkpoints"] = [c for c in r["checkpoints"] if c["generation"] != m.REGISTERED["matched_generations"][-1]]
+    m.E.record_path("arm-c2").write_text(json.dumps(rec))
+    for x in ("c4", "c3"):
+        _run(m, "arm", x)
+    _run(m, "evaluate")
+    ev = _rec(m, "evaluate")
+    assert "c2'" not in ev["matched_references"]
+    assert ev["contrasts"]["interaction"].startswith("not drawn")
+    assert "genomes" in ev["arms"]["c1"] and "beside_e2_registered_champion" in ev["arms"]["c1"]
