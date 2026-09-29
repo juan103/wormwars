@@ -30,15 +30,49 @@ selection acts on team results.
 | [02b](experiments/02b-champion-analysis/README.md) | What did 02's champions actually learn? | Published; exploratory re-analysis | They circle and slow down on food. Selection built a slow memory of recent food. It does not revise 02 |
 | [03](experiments/03-generation0/README.md) | Before any evolution, do N2's random brains differ from five null ensembles? | Published; pre-registered | History dependence (P4) is distinctive, but borderline: one more routing-matched graph at or above N2 would have failed the test (Holm p 0.047, then 0.070) |
 | [03r](experiments/03r-replication/README.md) | A full, separately pre-registered replication of 03 | Published; pre-registered | "Replicated under the registered single-signal test and under 03's original three-signal rule." |
-| [03a](experiments/03a-self-consistency/README.md) | Can a missing neuron's wiring be predicted from the rest of the brain plus a task? | Draft; now a six-neuron proof of concept capped at 72 GPU-hours, after E1 (D094) | None yet. As drafted, its searches alone need about 785 GPU-hours at 02's throughput, plus about 37 for whole-brain evolution |
-| [E1](experiments/E1-navigation/README.md) | Can a scripted navigator reach moved targets on unseen layouts, beat blind search, and use the cue? The positive control before evolving a navigator | Pre-registered and public before its run | "E1 positive control: passed": 8.68 targets per episode (98.7% of an oracle); 0.03 with a mirrored decoy |
-| [04a](experiments/04a-navigation-primitive/README.md) | Can evolution, from random weights on the N2 wiring, produce a brain that reaches moved targets, beats blind search and uses the cue? | Pre-registered and public before its run | "04a: passed": 8 of 12 shaped runs (4 of 4 unshaped); the champions use the cue but are weak navigators (2.0-2.8 targets, 23-32% of an oracle) |
-| [03m](experiments/03m-p4-mechanism/README.md) | What drives 03's history dependence (P4)? | Exploratory; plan agreed, running | Not yet |
+| [03a](experiments/03a-self-consistency/README.md) | Can a missing neuron's wiring be predicted from the rest of the brain plus a task? | Draft; a six-neuron proof of concept capped at 72 GPU-hours is planned (D094), not yet scheduled | None yet. As drafted, its searches alone need about 785 GPU-hours at 02's throughput, plus about 37 for whole-brain evolution |
+| [E1](experiments/E1-navigation/README.md) | Can a scripted navigator reach moved targets on unseen layouts, beat blind search, and use the cue? The positive control before evolving a navigator | Published; pre-registered, public before its run | "E1 positive control: passed": 8.68 targets per episode (98.7% of an oracle); 0.03 with a mirrored decoy |
+| [04a](experiments/04a-navigation-primitive/README.md) | Can evolution, from random weights on the N2 wiring, produce a brain that reaches moved targets, beats blind search and uses the cue? | Published; pre-registered, public before its run | "04a: passed": 8 of 12 shaped runs (4 of 4 unshaped); the champions use the cue but are weak navigators (2.0-2.8 targets, 23-32% of an oracle) |
+| [03m](experiments/03m-p4-mechanism/README.md) | What drives 03's history dependence (P4)? | Exploratory; plan agreed by both reviewers, simulations running | Not yet; first signs in its README |
 
 Next on the roadmap: E2, a short optimizer screen on E1's task, starting from 04a's baseline; and,
 in the biology track, 03m's results.
 
-## Newest: experiment 03 and its full replication, 03r
+## Newest: an evolved navigator on the real wiring (E1 and 04a)
+
+**Evolution, starting from random weights on the real *C. elegans* wiring, produced brains that
+find a moving scent by using it, reliably but slowly.** In the wording fixed in advance: *"04a:
+passed"*.
+
+**The task (E1's Task N):** one wey in an arena with a scent source that jumps somewhere else each
+time it is reached; the score is the number of sources reached in 300 ticks.
+
+- **E1, the positive control, first:** a hand-written steering controller reached 8.68 sources per
+  episode, 98.7% of an ideal navigator; with the scent read at a mirrored decoy it reached 0.03, and
+  blind search at most 0.65. So the task can be done with this body and these sensors.
+- **04a:** 16 evolutionary runs of N2 brains, 1 000 generations each, with experiment 02's optimizer.
+  12 had a small training bonus for closing in on the source, 4 had none. Each run's champion was
+  tested once on 1 024 unseen worlds against five rules.
+  - **8 of the 12 main runs passed** (6 were needed), and **all 4 runs without the bonus**. The
+    four failures missed only the reliability rule (at least 2 sources in 80% of episodes).
+  - **The champions use the cue:** with the scent mirrored, 97-100% of episodes end nearer the
+    decoy than the source, and they reach about 0.15 sources; with a constant scent, about 0.2.
+  - **But they are weak navigators:** 2.0-2.8 sources per episode, 23-32% of an ideal navigator,
+    on indirect paths. Their behaviour looks more like comparing the scent over time than steering
+    by left against right; how they use the cue is not shown.
+  - **The training bonus was not needed** here (descriptive, 4 runs).
+- **What it is not:** evidence that N2's wiring helps (no shuffled graphs were evolved on this task),
+  or a measure of how good evolved navigators can get (E2 compares optimizers next).
+- **How it was done:** Claude Opus 5.5 designed, pre-registered, ran and wrote up both. Astra 6 and
+  Fable 5.1 reviewed 04a's pre-registration in five rounds before it was bound and pushed, and its
+  results after: both asked for text corrections, now dated in its RESULTS.md, and found that the
+  run followed its registration.
+
+Details: [E1's README](experiments/E1-navigation/README.md) and
+[04a's README](experiments/04a-navigation-primitive/README.md), each with its RESULTS.md, and
+decisions D094-D101 and D103-D112.
+
+## Experiment 03 and its full replication, 03r
 
 **At generation 0, before any evolution, the real wiring's random brains showed unusually high
 normalised history dependence relative to all five null ensembles, and a full replication
@@ -95,7 +129,8 @@ earlier difference is still in the turning output.
 **What this is not:**
 - **Not independent evidence.** 03 and 03r compare the same wiring with the same kind of null.
 - **Not a wiring-only result.** The nulls move weights as well as wiring.
-- **Not a mechanism, nor any advantage for the worm.** The mechanism follow-up is next.
+- **Not a mechanism, nor any advantage for the worm.** An exploratory mechanism study,
+  [03m](experiments/03m-p4-mechanism/README.md), is running.
 
 **Why a full replication, and who decided.** One graph decided 03's verdict. So a full,
 separately pre-registered replication was run before 03 was merged into main and presented as a
@@ -127,20 +162,25 @@ archived verbatim. Our bottleneck is compute: everything so far ran on one consu
 GPU. If you have more, you can get to the next answers first, and we would count that as a good
 outcome. Useful things anyone can do:
 
-- **Replicate on other hardware.** 03 took 19.75 GPU-hours and 03r 23.95, on one RTX 5080,
-  and their READMEs give the commands. CUDA results are exact only on the same GPU, so an independent
+- **Replicate on other hardware.** 03 took 19.75 GPU-hours, 03r 23.95 and 04a 2.91, on one RTX
+  5080, and their READMEs give the commands. CUDA results are exact only on the same GPU, so an independent
   replication is a real test.
 - **Re-analyse without a GPU.** Every verdict can be checked from committed files (`report.json`,
-  `analysis.json`, `records.jsonl`).
+  `analysis.json`, `records.jsonl`, and E1's `gate.json` and 04a's `evaluation.json` with their event
+  tables).
 - **Take an open question from [`ROADMAP.md`](ROADMAP.md):**
-  - [the mechanism behind 03's history dependence](ROADMAP.md#03-and-03r): where it lives, gap
-    junctions or chemical synapses, and inputs other than food;
+  - [the mechanism behind 03's history dependence](ROADMAP.md#03-and-03r): 03m is taking an
+    exploratory first look; a confirmatory study, and inputs other than food, are open;
+  - [whether N2's wiring helps navigation](ROADMAP.md#e1--04a-navigation-primitive): 04a on shuffled
+    graphs, which we have not run;
+  - [which optimizer finds better navigators](ROADMAP.md#e2-short-optimizer-screen) (E2);
   - [03a's redesign](ROADMAP.md#03a-redesign-after-03r-before-any-confirmatory-run), which does
     not fit our compute;
   - [the later biology questions](ROADMAP.md#later-biology-questions-unscheduled).
 - **Try the variants** listed under "Extend it" in each experiment's README.
 - **Check us.** Open an issue with the file, the line and what you expected. Most errors so far were
-  caught by review ([`docs/REVIEW_TRAIL.md`](docs/REVIEW_TRAIL.md)).
+  caught by review ([`docs/REVIEW_TRAIL.md`](docs/REVIEW_TRAIL.md)). The CPU tests run on every push
+  (GitHub Actions), with the connectome downloaded and hash-checked at run time.
 
 If you build on this, please cite it (`CITATION.cff`) and Cook et al. 2019, and tell us, so we can
 link your work here.
@@ -219,15 +259,17 @@ to rerun: [01b's README](experiments/01b-direction-corrected/README.md).
 
 Stated here, by us, because they bound what the result means.
 
-**One task, one interface.** N2 against SH and RD has been measured only on single-swarm foraging
-with automatic eating. Combat, coevolution and pump-gated eating were run only in experiment 01,
+**Few tasks, one interface.** Evolved N2 against SH and RD has been compared only on single-swarm
+foraging with automatic eating (01b, 02); 03 and 03r compare unevolved brains in probes, and 04a
+evolved N2 alone, on navigation. Combat, coevolution and pump-gated eating were run only in experiment 01,
 with the synapses reversed, and only on N2. The condition where the pharynx should matter is
 untested. In N2, every route from a sensor to the pump neurons crosses the two-neuron `RIP↔I1`
 gap-junction bridge (`DECISIONS.md` D008).
 
-**A small evolutionary budget.** 25 generations, population 32, 5 404 parameters per genome. In
-experiment 01, with the same budget, nothing had demonstrably converged by generation 25. So a
-longer run could move the final-score contrasts in either direction.
+**A small evolutionary budget for the comparisons.** 01b ran 25 generations and 02 40, with
+population 32 and 5 404 parameters per genome. In experiment 01, with the same budget, nothing had
+demonstrably converged by generation 25, so a longer run could move the final-score contrasts in
+either direction. 04a ran 1 000 generations, but on N2 only.
 
 **Few control graphs, and one real one.** Five shuffles and five random graphs. N2's interval carries
 only run-to-run variation, while the controls' also carries graph-to-graph variation. More compute
@@ -288,7 +330,9 @@ python -m pytest
 ```
 
 Each experiment's README gives the exact commands to rerun it, the commit it ran at, its compute
-cost, and the committed files to compare against.
+cost, and the committed files to compare against. The CPU tests also run on every push
+([`.github/workflows/tests.yml`](.github/workflows/tests.yml)); the GPU tests need CUDA and are
+run locally.
 
 ## Things to run
 
@@ -301,6 +345,8 @@ python scripts/experiment.py --k 5 --runs 3 --calibrate   # the N2/SH/RD experim
 python scripts/ablate.py --champions 'runs/m4/champion-*.npz'
 python scripts/bench_scaling.py --showcase           # wey-ticks/s and peak VRAM
 python scripts/showcase.py --a A.npz --b B.npz --size 2000
+python scripts/e1.py pilot --smoke                   # E1's pipeline at tiny sizes, on smoke worlds
+python scripts/e04a.py project --smoke               # 04a's pipeline at tiny sizes (then train, evaluate)
 ```
 
 The evolution scripts (`evolve_forage`, `coevolve`, `experiment`, `exp02`) write a run bundle (config, dataset hashes, package versions, git commit, seed
@@ -322,7 +368,9 @@ quantities onto individual named neurons.
 
 That is a test of **wiring plus interface on one task**. It is not a test of whether biological
 wiring is better in general. A positive result would say that this graph suits this interface on
-this game; a negative result would say it does not. Neither generalises on its own.
+this game; a negative result would say it does not. Neither generalises on its own. Later
+experiments ask narrower questions (03: unevolved brains; E1 and 04a: navigation on N2 alone), and
+each README states its own.
 
 ## Conditions
 
@@ -378,22 +426,29 @@ This project was designed and built almost entirely by AI models, directed by a 
 
 - Juan H. González Estefan: the original ideas (connectome-tuned agents, swarm battles, parallel
   worlds, side bites, publishing the null result as a numbered series, and the hypotheses behind
-  experiment 02), direction, and final approval at each checkpoint. He publishes and answers for
-  this repository, but has not independently verified the code line by line.
+  experiment 02), direction, and the final say. Since 2026-09-27 the rest of the roadmap is
+  delegated; since 2026-09-29, work that Claude Code and both reviewers agree on goes to main without
+  waiting for his approval, and he is told afterwards. He publishes and answers for this repository,
+  but has not independently verified the code line by line.
 - Claude Fable 5.1 (Anthropic), in conversation: turned those ideas into the experimental design and
   specification, and reviewed the results. Later, consulted read-only, it reviewed experiment 01b
-  before publication (D033). It also reviewed experiment 02's design, plan, pre-registration and
-  results.
+  before publication (D033), and since then every design, pre-registration and write-up: 02, 03,
+  03r, T0, T1, E1, 04a and 03m.
 - Astra 6 (a GPT model from OpenAI): adversarial review of the specification, which produced the
   statistical design, the resource accounting rules and the numerical stability requirements.
   Reviewing the roadmap, it found that the chemical synapses of experiment 01 ran backwards (D031),
-  and it reviewed experiment 01b before publication (D033), and experiment 02 at every stage.
+  and it reviewed experiment 01b before publication (D033), and since then every design,
+  pre-registration and write-up alongside Fable 5.1.
 - Claude Code running Claude Opus 5 and, from 2026-09-24, Claude Opus 5.5 (Anthropic): every line
   of code, every measurement, and all implementation decisions recorded in DECISIONS.md. Opus 5
   built experiment 01 and found the motor-gain confound on its own. Opus 5.5 confirmed and fixed
   the reversed synapses, ran experiment 01b, and acted on its review. It also designed,
   pre-registered, ran and wrote up experiment 02, which the owner delegated to it end to end,
-  with the two reviewers standing in for approval at each stage.
+  with the two reviewers standing in for approval at each stage; then, with the roadmap delegated,
+  03, 03r, the engineering work (T0, T1), E1, 04a and 03m.
+- An outside review by a separate Claude Opus 5.5 instance, shared by the owner on 2026-09-28
+  ([archived](docs/reviews/20260928-outside-review/review.md)), suggested the automatic test runs
+  and the checks behind 03m.
 
 Errors and who caught them: the "learned to flank" claim was made by Claude Code and caught by
 Claude Fable 5.1 in review (D026). The "N2 is deeper" explanation was made by Claude Fable 5.1,
@@ -401,8 +456,12 @@ built on a path length mis-measured by Claude Code, and caught by Claude Code wh
 instead of writing the claim as dictated (C4). No single participant, human or AI, would have caught
 both. The largest error, chemical synapses running backwards in every run of experiment 01, was
 made by Claude Code and caught by Astra 6 (D031). Claude Code's first write-up of the corrected
-rerun then overclaimed, and Astra 6 and Fable 5.1 each caught that independently (D033). The full
-list, with commits: [`docs/REVIEW_TRAIL.md`](docs/REVIEW_TRAIL.md).
+rerun then overclaimed, and Astra 6 and Fable 5.1 each caught that independently (D033). More
+recently, the reviewers caught a smoke test that trained on 04a's real training worlds and a plan
+that would have published genomes carrying connectome weights (D104), and an overclaim that 04a's
+champions "steer" (D111). One error was caught by a machine: the first automatic test run on Linux
+showed that 03's graph files rebuild byte for byte only on Windows (D106). The full list, with
+commits: [`docs/REVIEW_TRAIL.md`](docs/REVIEW_TRAIL.md).
 
 The design and implementation came from Anthropic models and the specification review from an OpenAI
 model. Reviewers from different model families are less likely to share the same blind spots.
