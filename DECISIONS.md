@@ -3387,3 +3387,28 @@ checkpoint batch reproduced every recorded per-world count on the validation wor
 exact replay is not claimed (AGENTS.md rule 6).
 
 **Before main** (Fable): ROADMAP.md's 04a status and the root README's "next" line are out of date.
+
+## D112 — 04a published on main, under the owner's new rule; a flaky CPU test found by CI
+
+**A new standing rule.** Asked whether work approved by Claude, Astra 6 and Fable 5.1 still needs
+their go to reach main, the owner answered (2026-09-29): "Yes, if agreement, push." From now on, when
+the three agree and the publication checks pass, Claude pushes to main and informs the owner
+afterwards. Anything unusual (a deletion, repository settings, anything without review consensus)
+still goes to the owner first. No force-push or history rewriting, as before.
+
+**Published:** main was fast-forwarded from `3765db0` to `011d82b`: the roadmap branch at `f6971ec`
+plus one commit removing its banner. It carries 04a (the registration and its five reviews, the
+records, RESULTS.md with its dated corrections, the README; D103-D111), the shared registration guards,
+the CI workflow and D106's content-hash check, and 03m's agreed exploratory plan with its Q1
+outputs (its simulations are still running). Checks: CI passed on `f6971ec` (a clean Linux checkout,
+the CPU suite); the hygiene tests passed on the candidate; every commit has the noreply identity, no
+session line and no email.
+
+**A flaky test, found by CI.** `tests/test_world.py::test_batching_worlds_does_not_change_a_world`
+failed once on Linux (run 36505009495, at `5312475`) and passed on the next two runs with no code
+change: one of 40 positions differed by 0.0034 after 40 ticks, against a tolerance of 1e-5. The test
+asserts that a world evolves the same alone and beside three others on the CPU. T1 found that a CPU
+batch of one can differ in the last bits (D092), and chaotic dynamics amplify that over 40 ticks;
+GitHub's runners vary in CPU, which likely explains why it shows only sometimes. It predates 04a and
+touches none of its results. **To do:** make the test match what is claimed (the same composition, or
+padding, or a documented tolerance), with review, rather than loosen it silently.
