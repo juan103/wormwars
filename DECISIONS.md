@@ -3732,3 +3732,13 @@ separately):
 
 **Publication:** both said the results are publishable once corrected. They go to main under the
 owner's consensus rule (D112).
+
+## D126 — E2 published on main
+
+Under the owner's rule (D112), with both reviewers' fixes applied (D125), main was fast-forwarded
+from `1c0c978` to `8ad636b`: the roadmap branch at `3898460` plus one commit removing its banner. It
+carries E2 (the design and its three review rounds; the pre-registration and its four; the code and
+tests; every stage record, the accounting's attempt files, RESULTS.md with its dated corrections, the
+README), D117-D125, and the front page, roadmap and review trail updated. Checks: the full suite
+locally at binding, CI green on every E2 commit through `3898460`, the publication hygiene tests, and
+the identity check. The next step in Track E is the diagnosis E2's floor rule requires, before E3.
