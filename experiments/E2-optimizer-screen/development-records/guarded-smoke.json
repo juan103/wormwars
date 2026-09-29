@@ -1,0 +1,93 @@
+{
+ "what": "the guarded smoke run of every E2 stage on the binding commit, on CUDA, before the formal projection (D123): smoke sizes (40 ticks, 4 genomes, 2 worlds, 2 runs per method), smoke ids 0-9 999, smoke seeds; never results",
+ "command": "python scripts/e2.py <stage> --smoke --guarded  (every stage, in order)",
+ "stages": {
+  "projection": {
+   "outcome": "completed",
+   "device": "cuda",
+   "git_commit": "60af3cf426ad7179c9a477e6d7d8ab5183fbb597",
+   "attempt": 1,
+   "seconds": 10.44
+  },
+  "pilot-1": {
+   "outcome": "completed",
+   "device": "cuda",
+   "git_commit": "60af3cf426ad7179c9a477e6d7d8ab5183fbb597",
+   "attempt": 1,
+   "seconds": 2.39
+  },
+  "pilot-2": {
+   "outcome": "completed",
+   "device": "cuda",
+   "git_commit": "60af3cf426ad7179c9a477e6d7d8ab5183fbb597",
+   "attempt": 1,
+   "seconds": 2.36
+  },
+  "train-ga": {
+   "outcome": "completed",
+   "device": "cuda",
+   "git_commit": "60af3cf426ad7179c9a477e6d7d8ab5183fbb597",
+   "attempt": 1,
+   "seconds": 2.34
+  },
+  "train-random": {
+   "outcome": "completed",
+   "device": "cuda",
+   "git_commit": "60af3cf426ad7179c9a477e6d7d8ab5183fbb597",
+   "attempt": 1,
+   "seconds": 2.4
+  },
+  "train-es": {
+   "outcome": "completed",
+   "device": "cuda",
+   "git_commit": "60af3cf426ad7179c9a477e6d7d8ab5183fbb597",
+   "attempt": 1,
+   "seconds": 2.42
+  },
+  "extension": {
+   "outcome": "completed",
+   "device": "cuda",
+   "git_commit": "60af3cf426ad7179c9a477e6d7d8ab5183fbb597",
+   "attempt": 1,
+   "seconds": 1.55
+  },
+  "evaluation": {
+   "outcome": "E2: keep 02's GA (unshaped fitness; the ES did not satisfy both replacement criteria after paying for its tuning)",
+   "device": "cuda",
+   "git_commit": "60af3cf426ad7179c9a477e6d7d8ab5183fbb597",
+   "attempt": 1,
+   "seconds": 10.86
+  }
+ },
+ "smoke_projection_seeds_base": 1128900,
+ "evaluation": {
+  "outcome": "E2: keep 02's GA (unshaped fitness; the ES did not satisfy both replacement criteria after paying for its tuning)",
+  "floor": "diagnose first: random sampling's mean is at least the GA's minus 0.5; saturation, noise and budget are diagnosed before building on the task, whatever the ES did",
+  "pairing": {
+   "runs_compared": [
+    0,
+    1
+   ],
+   "mismatched_runs": [],
+   "generation0_candidates_match": true,
+   "note": "each method's generation-0 checkpoint candidate and the ES's start genome, by hash"
+  },
+  "neural_means": {
+   "ga": 0.0,
+   "random": 0.0,
+   "es": 0.0
+  },
+  "controls": {
+   "constant": 0.0625,
+   "random-walk": 0.0625,
+   "wall-follower": 0.0,
+   "K": 0.0,
+   "S-const": 0.8125,
+   "S-const k<=32": 0.625,
+   "M-avg": 0.0,
+   "oracle": 0.8125
+  }
+ },
+ "note": "at smoke sizes every neural score is 0, so the outcome and floor wording only exercise the code paths; the full records stay local in runs/e2-smoke/",
+ "accounting_attempt_files": 40
+}
