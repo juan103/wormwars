@@ -1,4 +1,4 @@
-# E2d: diagnosing Task N after E2's floor fired. Plan (v3, for review)
+# E2d: diagnosing Task N after E2's floor fired. Plan (v4, agreed)
 
 **Status:** written 2026-09-29, for review by Astra 6 and Fable 5.1. Nothing below has run except
 Part A, which reads committed records only.
@@ -17,6 +17,12 @@ Part A, which reads committed records only.
 
   C0 was also underspecified, and three table cells were misrounded. v3 takes all of it; "Changes
   from v2" lists it.
+- v3 (`3dad1c7`, `docs/reviews/20260929-182751-E2d-plan-v3/`): both said "revise", text only, for
+  two contradictions in C0: the seed table, and a tie rule claimed to match E2's sort (D131).
+  Fable: no further round if taken as written. Astra: the last corrections before implementation.
+  v4 takes them and the suggestions; "Changes from v3" lists them. **This is the agreed plan:** the
+  runner is written and tested against it, and the runner goes to both reviewers before any GPU
+  work.
 
 **Why:** E2's registered floor fired (`experiments/E2-optimizer-screen/`, D124-D126). Random
 sampling's champions came within 0.36 targets per episode of 02's GA. The roadmap's rule is: *"E2
@@ -124,7 +130,8 @@ Computed by `scripts/e2d_records.py` from E2's committed records and written to 
   - **"mixed"** otherwise.
 
   **"A non-stereo plateau"** is read only if every read set is "non-stereo" and each such set's
-  median champion (real probe) lies within 0.3 of M-avg's level (1.90-2.50).
+  median champion (real probe) lies within 1.90-2.50 (fixed numbers; about M-avg ± 0.3 on E2's
+  hold-out, not re-measured).
 - **The budget reading, on the same worlds.** The formal ES's champions against the extension's,
   paired by run, all 8 (run 6 is the same genome, a difference of 0), beside selection episodes per
   run: 166 144 formal (plus a share of the pilot's 802 560), and 100 608 more in the extension. The
@@ -135,7 +142,9 @@ Computed by `scripts/e2d_records.py` from E2's committed records and written to 
     +0.42 (mean 0.28, all positive, 4 of 7 at 0.2 or more; over all 8, with run 6's 0, mean 0.25). v2's "6 of 7 at 0.2" rule would not
     have fired on them, which is why v3 replaces it.
   - **Reading, fixed now:** "budget-limited" if the mean paired gain over the 8 runs is at least 0.2,
-    with Part C's intervals (below) above 0. It speaks for more generations of this ES, with more
+    with Part C's intervals (below) above 0. **On E2's hold-out this rule already fires** (mean 0.25
+    over 8, none negative, with about 0.01 of world-sampling error), so "budget-limited" is the
+    expected result, and the new worlds test whether it holds (Fable). It speaks for more generations of this ES, with more
     checkpoint opportunities; it does not establish a ceiling.
 
 ## Part C0: how reliably do 8 worlds rank the comparisons selection makes? (GPU, about 0.45 h)
@@ -144,8 +153,10 @@ Computed by `scripts/e2d_records.py` from E2's committed records and written to 
 mixed parents and elites. It measures the noise of the comparisons, not the GA's dynamics.
 - **The GA's siblings:** for each of E2's 8 GA champions, 64 children at 02's mutation scales × 1,
   × 0.5 and × 0.25, each child on 256 probe worlds. **The same noise draws at every scale:** the
-  children's generator is seeded per champion (1 131 000 + 10 × champion), so a child at × 0.5 is
-  the same direction as at × 1, half as far. **The parent is evaluated too**, on the same 256
+  children's generator is reset to the same per-champion seed (1 131 000 + 10 × champion) for each
+  scale, so a child at × 0.5 takes the same draws as at × 1, halved. That holds in the mutation's
+  coordinates before clamping; τ is perturbed multiplicatively and the bounds clamp, so the decoded
+  genomes are not exactly halfway (Astra). A test checks the draws are equal. **The parent is evaluated too**, on the same 256
   worlds. Composition per champion and scale: (65, 256, 1).
 - **The ES's pairs:** for each of E2's 8 formal ES champions, taken as a mean, 32 antithetic pairs
   at σ 0.5 and at σ 0.25, with the same noise draws at both σ (seed 1 131 100 + 10 × champion), each
@@ -153,28 +164,38 @@ mixed parents and elites. It measures the noise of the comparisons, not the GA's
 - **Measures:**
   - the children's mean counts: their mean, the share scoring under half the parent's, and the share
     scoring 0, per scale;
-  - for sibling pairs, pooled over the 8 champions, in bins by the difference of their reference
-    means (0.05-0.15, 0.15-0.30, 0.30-0.60): how often 8 worlds rank them like the reference
-    (correct, tied). The 8 worlds are drawn 400 times without replacement (seed 0), and **the
-    reference is the mean over the other 248 worlds**, so the two never share a world;
+  - for sibling pairs, pooled over the 8 champions and also per champion: how often 8 worlds rank
+    them like the reference (correct, tied). **Each pair is binned once, by its 256-world difference**
+    (0.05-0.15, 0.15-0.30, 0.30-0.60). The same 400 draws of 8 worlds, without replacement (seed 0),
+    serve every measure. **Each draw is scored against its complement, the other 248 worlds**, so the
+    two never share a world. A draw whose complement shows no difference is excluded from that
+    pair's rate and counted apart; a draw whose complement reverses the 256-world order is scored
+    against the complement, as it stands. The minimum below counts distinct pairs (Fable, Astra);
   - truncation's agreement: the overlap of the top 8 of 64 children by 8 worlds with the top 8 by the
-    other 248 (ties in a ranking go to the lower child index, as in E2's sort);
+    other 248. Ties in a ranking go to the lower child index, a convention of this measure, tested.
+    E2's own sort (`np.argsort` of the negated fitness, not stable) does not guarantee it (Astra);
   - for the ES's pairs: how often an 8-world pair difference has the sign of the 248-world
-    difference, and how often it ties. Pairs whose 248-world difference is 0 are reported apart and
-    excluded. This is a proxy: the ES's update uses ranks over all 32 candidates, not pair signs;
+    difference, and how often it ties. A draw whose 248-world difference is 0 is excluded, per draw,
+    and counted apart. This is a proxy: the ES's update uses ranks over all 32 candidates, not pair
+    signs;
   - the reference's own uncertainty, as the bootstrap standard error of the 248-world means over
     these candidates (not assumed).
 - **Reading (descriptive):** "selection noise is material" if, at 02's mutation scale, 8 worlds rank
-  siblings 0.15-0.30 apart correctly (ties counted half) less than 0.8 of the time. **The reading is
-  not drawn for a bin with fewer than 30 pairs.**
+  siblings 0.15-0.30 apart correctly (ties counted half) less than 0.8 of the time, pooled. **The
+  reading is not drawn for a bin with fewer than 30 distinct pairs.** Per-champion rates are reported
+  beside it, because the pooled pairs come from only 8 parents.
 
 ## Part C: one-change arms, paired with E2's own runs (GPU, about 4.9 h)
 
 **The controls, replayed first.** "No control arm" holds only if today's code and environment
 reproduce E2's runs. Before C1, E2's GA and ES are replayed for generations 0-25, with E2's seeds,
 ids and composition (256, 8, 1), and **their generation-0 and generation-25 checkpoint hashes must
-equal E2's committed ones** (about 5 GPU-minutes; Fable). If any differ, Part C does not start,
-and the difference is reported and reviewed.
+equal E2's committed ones** (about 5 GPU-minutes; Fable). They run, like E2 and like the arms, in
+the default CUDA mode, not `replay_mode`. **The replay runs twice.** If the two replays agree with
+each other and with E2, Part C starts. If they agree with each other but not with E2, that is drift
+in the engine or environment. If they disagree with each other, that is nondeterminism in the
+default mode, which `docs/REPRODUCIBILITY.md` does not rule out. In either case Part C does not
+start, and the difference is reported and reviewed (Fable).
 
 **Pairing.** Every arm reuses E2's run seeds (1 120 000 + r, for r = 0-7), E2's training range and
 E2's validation ids. Run r of an arm therefore starts from the same generation-0 population, and
@@ -188,7 +209,9 @@ draws its training worlds from the same per-run schedule, as E2's run r.
   This follows from numpy drawing in sequence, not from a guarantee of its interface, so a test
   pins it.
 - **A pairing check per arm, recorded:** for C2 and C3, each run's generation-0 checkpoint hash
-  equals E2's; for C1 and C4, each run's first 8 training ids at generations 0 and 249 equal E2's.
+  equals E2's; for C1 and C4, each run's first 8 training ids at generation 0 equal E2's recorded
+  ones, and at generation 249 equal `train_ids` regenerated at 8 worlds (E2 recorded generation 0's
+  only).
 - **What pairing removes, and what it does not:** it shares the start and the world schedule. The
   trajectories diverge within a generation or two, so it removes start-to-start variation, not
   all seed luck. The arm-reference correlation across runs is reported.
@@ -202,7 +225,8 @@ draws its training worlds from the same per-run schedule, as E2's run r.
 
 - **Matched checkpoints for C1 and C4.** Their 250 generations are checkpointed at 0, 25, …, 225 and
   249. E2's GA covers about the same fractions of training work at generations 0, 100, …, 900 and
-  999 (the last differs by 768 episodes).
+  999 (they differ by one generation's work at most, depending on whether the checkpointed
+  generation is counted).
   E2's GA champion is re-chosen among those 11 of its saved checkpoint candidates (the first with the
   best validation mean) and evaluated on the diagnosis hold-out. Its selection episodes match C1's:
   258 816. E2's registered champion (41 checkpoints) is reported beside it.
@@ -215,27 +239,32 @@ draws its training worlds from the same per-run schedule, as E2's run r.
 - **Reported per arm:** each run's paired difference; their mean and median; runs improved, of 8;
   failures (champions below 1.0); a paired percentile bootstrap over runs (10 000 resamples, seed 0)
   with a 90% interval; and an exact sign-flip test over the 8 runs (all 256 sign patterns), because
-  a percentile bootstrap over 8 runs is narrow.
+  a percentile bootstrap over 8 runs is narrow. **The bootstrap interval decides the readings**; the
+  sign-flip p-value is reported beside it, and a disagreement between them is stated (Fable).
 - **Every reading over all 8 runs and over the 7 without run 2** (Fable). E2's GA run 2 started from
   a generation-0 population that scored 0 everywhere and ended at 0.75. An arm's run 2 alone can move
   the mean by about 0.17, and in C1 and C4 the 32 training worlds change that start itself.
 - **The readings, fixed now:**
   - **supports:** a mean paired gain of at least 0.3, with the 90% interval above 0, over all 8 runs
     **and** over the 7 without run 2. If it holds over the 8 only: **"supports, carried by run 2"**;
-  - **harmful:** a mean paired loss of at least 0.3, with the interval below 0;
+  - **harmful:** a mean paired loss of at least 0.3, with the interval below 0, over all 8 runs and
+    over the 7 without run 2 ("harmful, carried by run 2" if over the 8 only);
   - **inconclusive:** anything else, including a gain of 0.3 or more whose interval crosses 0;
   - **leaves the plateau,** reported separately from gains: at least 4 of the arm's 8 champions
-    either use the left-right difference (Part B's class) or score at least 2.5 (M-avg + 0.3). A
+    either use the left-right difference (Part B's class) or score at least 2.5 (fixed; about
+    M-avg + 0.3 on E2's hold-out). A
     gain can come from avoiding a failed run without exceeding the successful runs' level, and
     that is shown per run.
 - **The combined arm, contrasted directly** (both), paired by run, all at 11 matched checkpoints:
   - C4 − C1: only the mutation scale differs, at 32 worlds;
-  - C4 − C2′: only the worlds differ, at halved mutation. C2′ is C2's champion re-chosen at its 11
-    matched checkpoints, as for E2's GA;
+  - C4 − C2′: a work-allocation contrast at halved mutation, since more worlds per genome also
+    means fewer generations (Astra). C2′ is C2's champion re-chosen at its 11 matched checkpoints,
+    as for E2's GA;
   - **(C4 − C1) − (C2′ − E2's GA′)**, the interaction estimate, with the same intervals.
 
-  **An interaction is claimed only if that estimate's 90% interval excludes 0.** Otherwise, a
-  supporting C4 says only that the combined setting is promising.
+  **An interaction is claimed only if that estimate's 90% interval excludes 0,** over all 8 runs and
+  over the 7 without run 2. Otherwise, a supporting C4 says only that the combined setting is
+  promising. **A contrast that needs an incomplete arm is not drawn** (Fable).
 
 ## What the diagnosis can suggest for E3
 
@@ -267,8 +296,9 @@ draws its training worlds from the same per-run schedule, as E2's run r.
   Part C reuses E2's training range and validation ids, as above.
 - **Seeds:**
   - Part C: E2's (1 120 000-1 120 007), as above.
-  - Part C0: the children's and the pairs' noise streams, 1 131 000 + 10 × champion + scale index,
-    for GA champions 0-7 and ES champions 0-7 (ES offset by 100).
+  - Part C0: the children's noise, 1 131 000 + 10 × champion, reset for each scale; the ES's pairs'
+    noise, 1 131 100 + 10 × champion, reset for each σ (champions 0-7). The same draws at every scale
+    or σ, as above. (v3 added a scale index here, contradicting C0; Fable, Astra.)
   - Smoke: 1 138 000 and up. The projection: 1 139 100 and up, on smoke ids 0-9 999.
 - **The projection first:** it times every new composition at full size on smoke ids:
   - C1 and C4: (256, 32, 1), 8 192 worlds per rollout;
@@ -289,7 +319,7 @@ draws its training worlds from the same per-run schedule, as E2's run r.
   | C3 | about 0.85 h |
   | the controls' replay | about 5 minutes |
   | Part C's hold-out pass | about 15 minutes (32 champions and 16 matched references: E2's GA′ and C2′, 3 probes) |
-  | **total** | **about 5.9 GPU-hours** |
+  | **total** | **about 6.0 GPU-hours** (the parts sum to 5.95) |
 
   **Cap: 7 GPU-hours,** counted by the accounting across attempts.
 - **Order:** projection → Part B → C0 → the controls' replay → C1 → C2 → C4 → C3 → Part C's hold-out
@@ -330,8 +360,8 @@ draws its training worlds from the same per-run schedule, as E2's run r.
 ## Changes from v1 (review v1, D129)
 
 - **Part C is paired with E2's own runs** (Fable; Astra asked for a declared pairing policy): the same
-  seeds and world schedules, with paired per-run differences. No unpaired seed luck, and no control
-  arm to rerun.
+  seeds and world schedules, with paired per-run differences, and no control arm to rerun. (v2 said
+  "no unpaired seed luck"; pairing removes start-to-start variation, not all seed luck, as v3 says.)
 - **C3 changes only σ**; the learning rate is kept at 0.15 (both).
 - **C1's checkpoints are matched,** not only disclosed (Fable, Astra): E2's champion is re-chosen
   among the 11 matching checkpoints, at equal selection episodes.
@@ -392,3 +422,27 @@ draws its training worlds from the same per-run schedule, as E2's run r.
   - the 32-world prefix pinned by a test (Fable);
   - 04a's records bound (Astra);
   - the budget recomputed to 5.9 hours with the replay and the larger pass (both noted 5.8 for v2).
+
+## Changes from v3 (review v3, D131)
+
+- **C0's seeds** (both): one seed per champion, reset for each scale or σ, so the draws are equal (as C0
+  says); the contradicting scale index removed; "half as far" qualified to the mutation's
+  coordinates before clamping (Astra).
+- **C0's tie rule** (Astra): lower child index, as this measure's own convention; the claim that E2's
+  sort does the same removed (it uses an unstable `argsort`).
+- **C0's bins** (Fable, Astra): each pair binned once by its 256-world difference; each draw scored
+  against its 248-world complement; zero and reversed complements handled; the minimum counts distinct
+  pairs; per-champion rates reported; the same 400 draws for every measure.
+- **The replay** (Fable): run twice, in the default CUDA mode like E2, to tell drift from
+  nondeterminism.
+- **Also:**
+  - the budget rule's expected result stated (Fable);
+  - C1's and C4's generation-249 ids checked against regenerated `train_ids` (Fable);
+  - contrasts that need an incomplete arm not drawn (Fable);
+  - the bootstrap decides and the sign-flip test is reported beside it (Fable);
+  - run 2's two-way rule applied to "harmful" and the interaction too (Fable);
+  - C4 − C2′ called a work-allocation contrast (Astra);
+  - the plateau band and 2.5 fixed as numbers (Fable);
+  - the matched-fraction wording (Fable);
+  - "no unpaired seed luck" corrected in "Changes from v1" (Fable);
+  - the budget total 6.0 hours (both).

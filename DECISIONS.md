@@ -3812,3 +3812,22 @@ point:
   GPU-hours.
 - **C0** (both): specified in full.
 - Three of Part A's table cells are corrected (both).
+
+## D131 — E2d plan v4, agreed
+
+The v3 review (`docs/reviews/20260929-182751-E2d-plan-v3/`): **both "revise", text only**. Both
+confirmed every v2 must-fix resolved. Both found the same two contradictions in C0: the seed table
+added a scale index that C0 itself ruled out, and C0 claimed its tie rule matched E2's sort, which
+is an unstable `argsort` (Astra reproduced a tie on which they differ). Fable: "If both are taken
+as written below, I need no further round." Astra: "Two small C0 corrections remain before
+implementation."
+
+v4 takes both corrections as written, and the suggestions:
+- C0's bins and complements defined;
+- the replay run twice, to tell engine drift from default-mode nondeterminism;
+- the budget rule's expected result stated;
+- the incomplete-contrast rule, the deciding interval, run 2's two-way rule everywhere, and the
+  fixed band.
+
+**The plan is agreed.** The runner (`scripts/e2d.py`) is written test-first against it and goes to
+both reviewers, as code, before any GPU work.
