@@ -149,17 +149,17 @@ def test_the_formal_es_uses_the_selected_setting_and_saves_its_state(m):
     es = _rec(m, "train-es")
     assert all((r["sigma"], r["lr"]) == (sel["sigma"], sel["lr"]) for r in es["records"])
     assert all(r["generations_completed"] == m.REGISTERED["generations"]["es"] for r in es["records"])
-    assert es["state_sha256"] == m.reg.file_sha256(m.state_path())
+    assert len(es["state_sha256"]) == 64
 
 
 def test_the_extension_continues_the_formal_runs_and_takes_the_best_over_both(m):
     _upto(m, 7)
     es, ext = _rec(m, "train-es"), _rec(m, "extend")
     g = m.REGISTERED["generations"]
-    for a, b in zip(es["records"], ext["records"]):
+    for a, b, c in zip(es["records"], ext["records"], ext["champions_over_both"]):
         assert b["log"][0]["generation"] == g["es"] and b["log"][-1]["generation"] == g["extension"] - 1
-        allv = [c["validation_mean"] for c in a["checkpoints"] + b["checkpoints"]]
-        assert b["champion_over_both"]["validation_mean"] == max(allv)
+        allv = [x["validation_mean"] for x in a["checkpoints"] + b["checkpoints"]]
+        assert c["run"] == a["spec"]["run"] and c["validation_mean"] == max(allv)
 
 
 def test_the_extension_refuses_a_changed_state_file(m):
@@ -273,7 +273,7 @@ def _totals(means, worlds=1024):
     ([6.0] * 3 + [2.0] * 5, [2.0] * 8, [0.5] * 8, {}, "keep", "clears"),  # mean up by 1.5, only 3 of 8 above
     ([3.0] * 6 + [2.0] * 2, [2.0] * 4 + [2.1] * 4, [0.5] * 8, {}, "replace", "clears"),  # 6 of 8 above ~2.05
     ([3.0] * 5 + [2.0] * 3, [2.0] * 4 + [2.1] * 4, [0.0] * 8, {}, "keep", "clears"),  # 5 of 8 above it
-    ([3.0] * 8, [2.0] * 8, [0.5] * 8, {"es": False}, "keep", "clears"),
+    ([3.0] * 8, [2.0] * 8, [0.5] * 8, {"es": False}, "es incomplete", "clears"),
     ([3.0] * 8, [2.0] * 8, [0.5] * 8, {"ga": False}, "no decision", "not made"),
     ([3.0] * 8, [2.0] * 8, [1.5] * 8, {}, "replace", "diagnose"),  # within 0.5 of the GA
     ([3.0] * 8, [2.0] * 8, [2.5] * 8, {}, "replace", "diagnose"),  # above the GA
@@ -290,10 +290,10 @@ def test_the_decision_rule(es, ga, rnd, complete, outcome, floor):
 
 def test_the_pilot_selection_breaks_ties_by_the_smaller_value():
     mod = _load()
-    rows = [{"sigma": s, "lr_multiple": 0.3, "total": t} for s, t in ((0.5, 10), (1.0, 12), (2.0, 12))]
-    assert mod.select_sigma(rows) == 1.0
-    rows = [{"sigma": 1.0, "lr_multiple": r, "total": t} for r, t in ((0.1, 7), (0.3, 7), (1.0, 5))]
-    assert mod.select_rate(rows, 1.0) == 0.1
+    rows = [{"sigma": s, "lr_multiple": 0.3, "total": t} for s, t in ((0.5, 12), (1.0, 10), (2.0, 12))]
+    assert mod.select_sigma(rows) == 0.5  # a tie between 0.5 and 2: the registered order is 1, 0.5, 2
+    rows = [{"sigma": 1.0, "lr_multiple": r, "total": t} for r, t in ((0.1, 7), (0.3, 5), (1.0, 7))]
+    assert mod.select_rate(rows, 1.0) == 0.1  # the registered order is 0.3, 0.1, 1
 
 
 def test_the_ga_call_is_04as_evolve_batch_with_04as_settings():
@@ -333,7 +333,7 @@ def test_the_registered_id_ranges_are_disjoint_from_earlier_ones_and_each_other(
     mod = _load()
     spans = mod.id_spans()
     earlier = [(0, 10_000), (900_000_000, 901_000_000), (950_000_000, 951_000_000), (980_000_000, 981_000_000),
-               (993_000_000, 995_000_000), (996_000_000, 1_000_000_000)]
+               (990_000_000, 991_000_000), (993_000_000, 995_000_000), (996_000_000, 1_000_000_000)]
     allspans = sorted(list(spans.values()) + earlier)
     for (a0, a1), (b0, b1) in zip(allspans, allspans[1:]):
         assert a1 <= b0, (a0, a1, b0, b1)
@@ -348,3 +348,187 @@ def test_seeds_are_disjoint_across_formal_pilot_projection_and_smoke_and_from_04
             assert not groups[a] & groups[b], (a, b)
     used = set(range(1_104_000, 1_110_000))  # 04a's development, formal, smoke and projection seeds
     assert not set().union(*groups.values()) & used
+
+
+# ------------------------------------------------------------------ review v1 (D120)
+
+def _kill(m, stage, hours_ago=2.0, last_write_hours_ago=1.0, partial=True):
+    """What a hard kill leaves: a marker, perhaps a partial record, no record, no accounting."""
+    import os
+    import time
+    started = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(time.time() - hours_ago * 3600))
+    marker = m.EXP / f"{stage}-started.json"
+    marker.write_text(json.dumps({"stage": stage, "started_utc": started, "provenance": {"git_commit": "x"}}))
+    files = [marker]
+    if partial:
+        m.partial_path(stage).write_text("{}")
+        files.append(m.partial_path(stage))
+    t = time.time() - last_write_hours_ago * 3600
+    for f in files:
+        os.utime(f, (t, t))
+
+
+def test_a_killed_attempt_then_a_crashed_rerun_is_final(m):
+    _upto(m, 3)
+    _kill(m, "train-ga")
+    m._fakes.crash_at = len(m._fakes.calls) + 2
+    with pytest.raises(RuntimeError):
+        _run(m, "train", method="ga", rerun=True, reason="killed")
+    m._fakes.crash_at = None
+    _run(m, "train", method="random")  # the GA's stage is final, not completed
+
+
+def test_a_crash_then_a_killed_rerun_is_charged_recorded_as_final_and_opens_the_next_stage(m):
+    _upto(m, 3)
+    m._fakes.crash_at = len(m._fakes.calls) + 2
+    with pytest.raises(RuntimeError):
+        _run(m, "train", method="ga")
+    m._fakes.crash_at = None
+    plan = m.rerun_plan("train-ga", [m.record_path("train-ga"), m.EXP / "train-ga-started.json",
+                                     m.partial_path("train-ga")], "crashed")
+    m.apply_rerun(plan)  # the rerun starts ...
+    _kill(m, "train-ga")  # ... and is killed
+    with pytest.raises(SystemExit, match="killed"):
+        _run(m, "train", method="random")
+    with pytest.raises(SystemExit, match="recorded as final"):
+        _run(m, "train", method="ga", rerun=True, reason="the rerun was killed")
+    rec = _rec(m, "train-ga")
+    assert rec["outcome"] == m.OUTCOMES["stopped"] and rec["final"] and rec["reconciled_compute"]["seconds"] > 3600
+    _run(m, "train", method="random")
+
+
+def test_a_killed_attempt_and_a_killed_rerun_are_final(m):
+    _upto(m, 3)
+    _kill(m, "train-ga")
+    plan = m.rerun_plan("train-ga", [m.record_path("train-ga"), m.EXP / "train-ga-started.json",
+                                     m.partial_path("train-ga")], "killed")
+    m.apply_rerun(plan)
+    _kill(m, "train-ga")
+    with pytest.raises(SystemExit, match="recorded as final"):
+        _run(m, "train", method="ga", rerun=True, reason="the rerun was killed")
+    assert _rec(m, "train-ga")["final"]
+    _run(m, "train", method="random")
+
+
+def test_an_incomplete_es_is_not_reported_as_failing_the_criteria():
+    mod = _load()
+    d = mod.decide({"es": _totals([9.0] * 8), "ga": _totals([2.0] * 8), "random": _totals([0.0] * 8)},
+                   {"ga": True, "random": True, "es": False}, 1024)
+    assert d["outcome"] == mod.OUTCOMES["es incomplete"] and "did not complete" in d["outcome"]
+
+
+def test_every_decision_outcome_names_unshaped_fitness():
+    mod = _load()
+    for k in ("replace", "keep", "es incomplete"):
+        assert "unshaped" in mod.OUTCOMES[k]
+
+
+@pytest.mark.parametrize("after", [False, True])
+def test_a_stopped_extension_keeps_champions_over_what_completed(m, after):
+    """In smoke the extension runs generations 3-4 with one checkpoint, at 4: stop at its first
+    training call, or after that checkpoint (on the save that follows it)."""
+    _upto(m, 6)
+    if after:
+        orig = m.save_genomes
+
+        def boom(records, cfg, prefix):
+            if prefix == "extension" and any(r.checkpoints for r in records):
+                orig(records, cfg, prefix)
+                raise RuntimeError("after the checkpoint")
+            return orig(records, cfg, prefix)
+        m.save_genomes = boom
+    else:
+        m._fakes.crash_at = len(m._fakes.calls) + 1
+    with pytest.raises(RuntimeError):
+        _run(m, "extend")
+    ext = _rec(m, "extend")
+    assert ext["outcome"] == m.OUTCOMES["stopped"]
+    champs = ext["champions_over_both"]
+    assert len(champs) == len(m.run_specs())
+    if not after:
+        assert all(c["source"] == "formal" for c in champs)
+
+
+def test_the_extensions_champion_tie_goes_to_the_formal_checkpoint():
+    mod = _load()
+    formal = {"checkpoints": [{"generation": 0, "validation_mean": 1.0, "sha256": "a"},
+                              {"generation": 2, "validation_mean": 2.0, "sha256": "b"}]}
+    c = mod.champion_over_both(formal, [{"generation": 4, "validation_mean": 2.0, "sha256": "c"}])
+    assert (c["source"], c["sha256"]) == ("formal", "b")
+    c = mod.champion_over_both(formal, [{"generation": 4, "validation_mean": 2.5, "sha256": "c"}])
+    assert (c["source"], c["checkpoint"]) == ("extension", 0)
+
+
+def test_a_stopped_evaluation_keeps_its_completed_arms_in_a_partial_record(m):
+    _upto(m, 7)
+    m._fakes.crash_at = len(m._fakes.calls) + 5
+    with pytest.raises(RuntimeError):
+        _run(m, "evaluate")
+    # the partial record is written after each arm, so a kill (no handler) would keep them too
+    part = json.loads(m.partial_path("evaluate").read_text())
+    assert len(part["arms_completed"]) == 4
+
+
+def test_an_over_limit_projection_records_the_experiment_outcome(m, monkeypatch):
+    monkeypatch.setitem(m.REGISTERED["projection"], "max_training_hours", 0.0)
+    _run(m, "project")
+    p = _rec(m, "project")
+    assert not p["within_limit"] and p["experiment_outcome"] == m.OUTCOMES["over limit"]
+
+
+def test_the_pilot_ties_go_to_the_middle_setting_and_an_all_tied_stage_is_uninformative():
+    mod = _load()
+    rows = [{"sigma": s, "lr_multiple": 0.3, "total": 0} for s in (0.5, 1.0, 2.0)]
+    assert mod.select_sigma(rows) == 1.0 and mod.uninformative(rows)
+    rows = [{"sigma": s, "lr_multiple": 0.3, "total": t} for s, t in ((0.5, 5), (1.0, 3), (2.0, 5))]
+    assert mod.select_sigma(rows) == 0.5 and not mod.uninformative(rows)
+    rows = [{"sigma": 1.0, "lr_multiple": r, "total": 4} for r in (0.1, 0.3, 1.0)]
+    assert mod.select_rate(rows, 1.0) == 0.3
+
+
+def test_the_registered_es_constants_are_the_ones_the_code_uses():
+    import inspect
+
+    from wormwars.e2.optimizers import SCALES, OpenAIES
+    mod = _load()
+    es = mod.REGISTERED["es"]
+    assert es["pairs"] == mod.REGISTERED["ga"]["population"] // 2  # the loop asks population / 2 pairs
+    p = inspect.signature(OpenAIES).parameters
+    assert (p["beta1"].default, p["beta2"].default, p["eps"].default) == (es["beta1"], es["beta2"], es["eps"])
+    assert es["encoding_scales"] == SCALES
+
+
+def test_smoke_projections_have_their_own_seeds(m):
+    _run(m, "project")
+    base = _rec(m, "project")["seeds_base"]
+    assert base == m.SMOKE_PROJECTION_SEED_BASE and base not in m.seed_groups()["projection"]
+
+
+def test_the_es_state_hash_is_a_plain_sha256(m):
+    import hashlib
+    _upto(m, 6)
+    assert _rec(m, "train-es")["state_sha256"] == hashlib.sha256(m.state_path().read_bytes()).hexdigest()
+
+
+def test_the_evaluation_reports_pairing_and_per_run_differences(m):
+    _upto(m, len(CHAIN))
+    ev = _rec(m, "evaluate")
+    assert ev["pairing"]["generation0_candidates_match"] is True
+    assert set(ev["es_minus_ga_per_run"]) == {f"run{r:02d}" for r in range(len(m.run_specs()))}
+
+
+def test_an_atomic_write_survives_a_transient_permission_error(tmp_path, monkeypatch):
+    """Windows can refuse a replace for a moment while another process (an indexer, an antivirus)
+    holds the file; the per-arm partial record makes that likely (seen in this suite)."""
+    import os
+    mod = _load()
+    real, fails = os.replace, [2]
+
+    def flaky(a, b):
+        if fails[0]:
+            fails[0] -= 1
+            raise PermissionError(5, "Access is denied")
+        return real(a, b)
+    monkeypatch.setattr(os, "replace", flaky)
+    mod.write_atomic(tmp_path / "x.json", {"a": 1})
+    assert json.loads((tmp_path / "x.json").read_text()) == {"a": 1}

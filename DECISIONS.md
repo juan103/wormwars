@@ -3540,3 +3540,35 @@ Three choices go beyond design v2.2; the pre-registration lists them (§13) for 
 
 Id block 995 000 000-995 999 999, unused by any earlier experiment (a test checks). The
 pre-registration goes to Astra 6 and Fable 5.1 before binding.
+
+## D120 — E2's pre-registration v2: failure handling, outcome wording, and exposure corrections
+
+The v1 review (`docs/reviews/20260929-105911-E2-prereg/`): **both "revise"**, no redesign; both
+accepted the three choices beyond the design (D119).
+- **Both found that a kill broke "final"** (`scripts/e2.py`, `require_earlier`): finality needed an
+  archived record, which a killed first attempt does not leave, and a killed rerun left no record at
+  all. Now a rerun counts as used once applied, and one more `--rerun` after a killed rerun charges
+  it and writes a final, not-completed record from the marker and the last partial record. All four
+  crash/kill combinations are tested.
+- **Both asked for a distinct outcome for an incomplete ES,** instead of "did not satisfy both
+  criteria". Added, with "unshaped fitness" in every decision sentence (the design had promised it).
+- **Astra:** a stopped extension lost its champions; the hold-out's arms were not durable across a
+  kill; §8 lacked outcomes for an over-limit projection, a stopped pilot or evaluation. All fixed and
+  tested.
+- **Astra corrected §11:** the development smoke projection used E2's projection seeds (1 129 000-
+  1 129 002), and the smoke controls did not score 0. Verified in `runs/e2-smoke/`. The formal
+  projection seeds move to 1 129 100, smoke projections get their own (1 128 900).
+- **Fable:** the budget's 10 s per checkpoint is 04a's planning figure, not a measurement (04a
+  measured about 3.3 s); relabelled, with about 4.7 GPU-hours at the measured rate beside the 5.0
+  upper estimate. The ES's registered constants were not read by the code; a test now pins them.
+- Suggestions taken (Fable, Astra): the pilot's ties go to the middle setting (σ 1, rate 0.3 σ) and
+  an all-tied stage is flagged uninformative; the flat count is current at every checkpoint; a plain
+  sha256 for the binary state file; the extension's 42 checkpoints disclosed; incomplete batches'
+  champions evaluated and labelled; the procedure-level caveat; a pairing check and per-run
+  differences; 03's timing ids (990 million) in the disjointness test; a README.
+- **Found while fixing:** Windows refused an atomic replace when the new per-arm partial record was
+  rewritten in quick succession (a `PermissionError` in the suite, intermittent). Atomic writes and
+  file replaces now retry briefly; tested.
+
+Each fix was test-first (14 new tests seen failing), and each new rule was sabotage-checked
+(8 deliberate breaks, each caught). Tests: 62 command, 16 loop, 14 optimizer.

@@ -199,6 +199,7 @@ def es_batch(cfg, iface, spec: BrainSpec, runs: list[RunSpec], *, generations: i
                 raise ValueError("a resumed run keeps its σ and learning rate")
             ess.append(es)
             rec.start, rec.first_non_flat = dict(s["start"]), s["first_non_flat"]
+            rec.flat_generations = es.flat_generations
 
     for g in range(g0 + 1, generations):
         t_gen = time.perf_counter()
@@ -215,6 +216,7 @@ def es_batch(cfg, iface, spec: BrainSpec, runs: list[RunSpec], *, generations: i
             fit = count[i * P:(i + 1) * P].mean(axis=1)
             t_before = es.t
             es.tell(fit)
+            rec.flat_generations = es.flat_generations  # current at every checkpoint (a stopped run's record)
             updated = es.t > t_before
             if updated:
                 es.mean = project(torch.as_tensor(es.mean, dtype=templates[i].w.dtype, device=templates[i].device),

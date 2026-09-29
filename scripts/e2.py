@@ -78,9 +78,11 @@ SMOKE = False
 # 1 104 000-1 109 999.
 FORMAL_SEED_BASE = 1_120_000
 PILOT_SEED_BASE = 1_121_000
-PROJECTION_SEED_BASE = 1_129_000
+# moved from 1 129 000 after the development smoke projection used 1 129 000-1 129 002 (review v1, D120)
+PROJECTION_SEED_BASE = 1_129_100
 SMOKE_SEED_BASE = 1_128_000
 SMOKE_PILOT_SEED_BASE = 1_128_500
+SMOKE_PROJECTION_SEED_BASE = 1_128_900
 
 REGISTERED = {
     "world_seed": 1_100_001,  # E1's run seed: with the world id it generates each world and its targets
@@ -100,7 +102,8 @@ REGISTERED = {
     "pilot": {"sigmas": [0.5, 1.0, 2.0], "stage1_lr_multiple": 0.3, "lr_multiples": [0.1, 0.3, 1.0],
               "replicates": 3, "seed_base": PILOT_SEED_BASE, "generations": 200,
               "select": "the highest total validation count at the last checkpoint over the setting's runs; "
-                        "ties to the smaller σ, then the smaller learning rate"},
+                        "ties in the order of `tie_order` (the middle setting first)",
+              "tie_order": {"sigma": [1.0, 0.5, 2.0], "lr_multiple": [0.3, 0.1, 1.0]}},
     "ids": {"pilot_train": {"base": 995_000_000, "span": 200_000},
             "pilot_validation": {"first": 995_200_000, "worlds": 256},
             "train": {"base": 995_300_000, "span": 500_000},
@@ -123,9 +126,13 @@ RECORD = {"project": "projection", "pilot-1": "pilot-1", "pilot-2": "pilot-2", "
 WHAT = {"project": "the projection", "pilot-1": "pilot stage 1", "pilot-2": "pilot stage 2",
         "train-ga": "the GA's batch", "train-random": "random sampling's batch", "train-es": "the ES's batch",
         "extend": "the extension", "evaluate": "the evaluation"}
-OUTCOMES = {"replace": "E2: the ES replaces 02's GA as E3's provisional default",
-            "keep": "E2: keep 02's GA (the ES did not satisfy both replacement criteria after paying for its tuning)",
+OUTCOMES = {"replace": "E2: the ES replaces 02's GA as E3's provisional default (unshaped fitness)",
+            "keep": ("E2: keep 02's GA (unshaped fitness; the ES did not satisfy both replacement criteria after "
+                     "paying for its tuning)"),
+            "es incomplete": ("E2: keep 02's GA (unshaped fitness; the ES's batch did not complete, so no comparison "
+                              "was made)"),
             "no decision": "E2: no decision (02's GA did not complete)",
+            "over limit": "E2: not started (the projection exceeds its limit)",
             "cap": "E2: not completed (the registered cap was reached)",
             "stopped": "E2: not completed (the run stopped)"}
 FLOOR = {"clears": "the GA clears the random-sampling floor (random sampling's mean is more than 0.5 below it)",
@@ -183,27 +190,40 @@ def seed_groups() -> dict:
             "pilot": [PILOT_SEED_BASE + k for k in range(3)],
             "projection": [PROJECTION_SEED_BASE + i for i in range(max(8, len(p["sigmas"]) * 3))],
             "smoke": [SMOKE_SEED_BASE + i for i in range(8)],
-            "smoke pilot": [SMOKE_PILOT_SEED_BASE + k for k in range(3)]}
+            "smoke pilot": [SMOKE_PILOT_SEED_BASE + k for k in range(3)],
+            "smoke projection": [SMOKE_PROJECTION_SEED_BASE + i for i in range(9)]}
+
+
+def _totals_by(rows: list[dict], key: str) -> dict:
+    tot = {}
+    for r in rows:
+        tot[r[key]] = tot.get(r[key], 0) + r["total"]
+    return tot
 
 
 def select_sigma(rows: list[dict]) -> float:
     """Stage 1: the σ whose runs at the stage-1 learning rate have the highest total validation count
-    at the last checkpoint; ties to the smaller σ. Every setting has the same number of runs."""
+    at the last checkpoint; ties in the registered order (σ 1, then 0.5, then 2: review v1, so an
+    all-zero pilot does not pick the setting least able to leave a plateau). Every setting has the
+    same number of runs."""
     m = REGISTERED["pilot"]["stage1_lr_multiple"]
-    tot = {}
-    for r in rows:
-        if r["lr_multiple"] == m:
-            tot[r["sigma"]] = tot.get(r["sigma"], 0) + r["total"]
-    return min(tot, key=lambda s: (-tot[s], s))
+    tot = _totals_by([r for r in rows if r["lr_multiple"] == m], "sigma")
+    order = REGISTERED["pilot"]["tie_order"]["sigma"]
+    return min(tot, key=lambda s: (-tot[s], order.index(s)))
 
 
 def select_rate(rows: list[dict], sigma: float) -> float:
-    """Stage 2: at the chosen σ, the learning-rate multiple with the highest total; ties to the smaller."""
-    tot = {}
-    for r in rows:
-        if r["sigma"] == sigma:
-            tot[r["lr_multiple"]] = tot.get(r["lr_multiple"], 0) + r["total"]
-    return min(tot, key=lambda m: (-tot[m], m))
+    """Stage 2: at the chosen σ, the learning-rate multiple with the highest total; ties in the
+    registered order (0.3, then 0.1, then 1)."""
+    tot = _totals_by([r for r in rows if r["sigma"] == sigma], "lr_multiple")
+    order = REGISTERED["pilot"]["tie_order"]["lr_multiple"]
+    return min(tot, key=lambda m: (-tot[m], order.index(m)))
+
+
+def uninformative(rows: list[dict]) -> bool:
+    """Every setting compared in a stage has the same total: the selection is the tie order alone."""
+    key = "sigma" if len({r["sigma"] for r in rows}) > 1 else "lr_multiple"
+    return len(set(_totals_by(rows, key).values())) == 1
 
 
 def decide(totals: dict, complete: dict, worlds: int) -> dict:
@@ -216,14 +236,18 @@ def decide(totals: dict, complete: dict, worlds: int) -> dict:
         return {**out, "outcome": OUTCOMES["no decision"], "floor": FLOOR["not made"], "provisional": False}
     ga_median = statistics.median(Fraction(t, worlds) for t in totals["ga"])
     es_ok = complete["es"] and means["es"] is not None
+    if not complete["es"]:
+        verdict = "es incomplete"
     above = sum(Fraction(t, worlds) > ga_median for t in totals["es"]) if es_ok else 0
     margin_ok = es_ok and means["es"] - means["ga"] >= Fraction(D["margin"])
     replace = bool(margin_ok and above >= D["above_ga_median"])
+    if complete["es"]:
+        verdict = "replace" if replace else "keep"
     if not complete["random"] or means["random"] is None:
         floor = "not made"
     else:
         floor = "diagnose" if means["random"] >= means["ga"] - Fraction(D["floor_margin"]) else "clears"
-    return {**out, "outcome": OUTCOMES["replace" if replace else "keep"], "floor": FLOOR[floor],
+    return {**out, "outcome": OUTCOMES[verdict], "floor": FLOOR[floor],
             "provisional": floor == "not made", "ga_median": float(ga_median), "es_above_ga_median": int(above),
             "es_minus_ga": float(means["es"] - means["ga"]) if es_ok else None,
             "random_minus_ga": float(means["random"] - means["ga"]) if means["random"] is not None else None}
@@ -245,6 +269,20 @@ def genomes_path(prefix: str, run: int) -> Path:
 
 def state_path() -> Path:
     return OUT / "es-state.npz"
+
+
+def sha256_bytes(path: Path) -> str:
+    """A plain sha256 of a binary file (`registration.file_sha256` normalises line endings, for text)."""
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+
+def rerun_note(path: Path) -> Path:
+    return path.with_name(path.stem + "-rerun.json")
+
+
+def rerun_used(path: Path) -> bool:
+    """The stage's one rerun has started: its note is written when the rerun is applied."""
+    return rerun_note(path).exists() or attempt1(path).exists()
 
 
 def clock() -> reg.CapClock:
@@ -335,11 +373,16 @@ def require_earlier(args, prov: dict, stage: str, final_ok: bool = False) -> dic
     (formal), on the same code and environment (guarded)."""
     path = record_path(stage)
     if not path.exists():
+        if (EXP / f"{stage}-started.json").exists():
+            if rerun_used(path):
+                raise SystemExit(f"{WHAT[stage]}'s rerun was killed: run it with --rerun once more, which charges it "
+                                 "and records it as final")
+            raise SystemExit(f"{WHAT[stage]} was killed: rerun it once first (--rerun --reason)")
         raise SystemExit(f"{WHAT[stage]} has not run")
     rec = json.loads(path.read_text(encoding="utf-8"))
     if rec.get("outcome") != "completed":
         stopped = rec.get("outcome") == OUTCOMES["stopped"]
-        if not (final_ok and stopped and attempt1(path).exists()):
+        if not (final_ok and stopped and rerun_used(path)):
             if final_ok and stopped:
                 raise SystemExit(f"{WHAT[stage]} stopped: rerun it once first (--rerun --reason)")
             raise SystemExit(f"{WHAT[stage]} did not complete")
@@ -358,8 +401,27 @@ def require_projection(args, prov) -> dict:
     return p
 
 
-def write_atomic(path: Path, doc) -> None:
-    reg.write_json(path, doc, atomic=True)
+def write_atomic(path: Path, doc, attempts: int = 10) -> None:
+    """Atomic, retried briefly: Windows can refuse a replace while another process (an indexer, an
+    antivirus) holds the file for a moment (seen in this suite, review v1)."""
+    for k in range(attempts):
+        try:
+            return reg.write_json(path, doc, atomic=True)
+        except PermissionError:
+            if k == attempts - 1:
+                raise
+            time.sleep(0.05 * (k + 1))
+
+
+def replace(src: Path, dst: Path, attempts: int = 10) -> None:
+    """`os.replace`, retried briefly on the same transient Windows refusal."""
+    for k in range(attempts):
+        try:
+            return os.replace(src, dst)
+        except PermissionError:
+            if k == attempts - 1:
+                raise
+            time.sleep(0.05 * (k + 1))
 
 
 def rerun_plan(stage: str, files: list[Path], reason: str | None) -> dict:
@@ -370,7 +432,11 @@ def rerun_plan(stage: str, files: list[Path], reason: str | None) -> dict:
         raise SystemExit("a rerun needs --reason, written before it runs")
     record, marker = files[0], files[1]
     reconciled = reconcile_kill(stage, files) if (marker.exists() and not record.exists()) else None
-    if any(attempt1(f).exists() for f in files[:2]):
+    if rerun_used(record) or any(attempt1(f).exists() for f in files[:2]):
+        if reconciled is not None:  # the rerun itself was killed: charged above, and now final
+            final_killed_record(stage, record, marker, reconciled)
+            raise SystemExit(f"{WHAT[stage]} has been rerun once already; its killed rerun is charged and "
+                             "recorded as final (not completed)")
         raise SystemExit(f"{WHAT[stage]} has been rerun once already")
     if record.exists():
         rec = json.loads(record.read_text(encoding="utf-8"))
@@ -382,6 +448,20 @@ def rerun_plan(stage: str, files: list[Path], reason: str | None) -> dict:
     else:
         raise SystemExit(f"{WHAT[stage]} has not run: nothing to rerun")
     return {"stage": stage, "files": files, "reason": reason.strip(), "how": how, "reconciled": reconciled}
+
+
+def final_killed_record(stage: str, record: Path, marker: Path, reconciled: dict) -> None:
+    """A killed rerun leaves a marker and no record. Its record is written here, final and not
+    completed, from the marker and the last partial record (the checkpoints or arms that completed)."""
+    part = partial_path(stage)
+    doc = json.loads(part.read_text(encoding="utf-8")) if part.exists() else {}
+    doc = doc if isinstance(doc, dict) else {}
+    m = json.loads(marker.read_text(encoding="utf-8"))
+    doc.update(stage=stage, outcome=OUTCOMES["stopped"], final=True, reconciled_compute=reconciled,
+               error="killed during the rerun: no record was written; this record is built from the marker and "
+                     "the last partial record",
+               provenance_at_start=doc.get("provenance_at_start", m.get("provenance")), start_marker=marker.name)
+    write_atomic(record, doc)
 
 
 def reconcile_kill(stage: str, files: list[Path]) -> dict:
@@ -515,7 +595,7 @@ def save_genomes(records, cfg, prefix: str) -> None:
         tmp = path.with_name(path.stem + ".tmp.npz")
         save_population(tmp, Genome.cat(rec.candidates), cfg=cfg, run=rec.spec.run, run_seed=rec.spec.run_seed,
                         stage=prefix, checkpoint_generations=[c["generation"] for c in rec.checkpoints])
-        os.replace(tmp, path)
+        replace(tmp, path)
 
 
 def save_state(states: list[dict], path: Path) -> None:
@@ -531,7 +611,7 @@ def save_state(states: list[dict], path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     tmp = path.with_name(path.stem + ".tmp.npz")
     np.savez(tmp, **arrays)
-    os.replace(tmp, path)
+    replace(tmp, path)
 
 
 def load_state(path: Path) -> list[dict]:
@@ -567,11 +647,12 @@ def _episodes(runs: int, generations: int, checkpoints: int, cfg, validation_wor
 
 
 def train_batch(ctx, stage, method, runs, *, generations, ids, val, prefix, sigma=None, lr=None, resume=None,
-                extra=None):
+                extra=None, summary=None):
     """A training body: the batch, partial records and local genomes at every checkpoint, and what a
     not-completed record keeps."""
     cfg, records = ctx.cfg, []
     extra = extra or (lambda i: {})
+    summary = summary or (lambda recs: {})
     ctx.doc.update(runs=[asdict(r) for r in runs], training_ids=[ids["base"], ids["base"] + ids["span"] - 1],
                    validation_worlds=id_record(val),
                    composition={"training": [len(runs) * cfg.evo.population, cfg.evo.worlds_per_strain, 1],
@@ -581,10 +662,10 @@ def train_batch(ctx, stage, method, runs, *, generations, ids, val, prefix, sigm
     def partial(recs, g):
         records[:] = recs
         save_genomes(recs, cfg, prefix)
-        write_atomic(partial_path(stage), {**ctx.doc, "generation": g,
+        write_atomic(partial_path(stage), {**ctx.doc, "generation": g, **summary(recs),
                                            "records": [run_record(r, **extra(i)) for i, r in enumerate(recs)]})
 
-    ctx.salvage = lambda: {"records": [run_record(r, **extra(i)) for i, r in enumerate(records)]}
+    ctx.salvage = lambda: {"records": [run_record(r, **extra(i)) for i, r in enumerate(records)], **summary(records)}
     ctx.after_fail = lambda: save_genomes(records, cfg, prefix)
     recs, states = run_method(method, cfg, ctx.iface, ctx.spec, runs, generations=generations,
                               checkpoint_every=REGISTERED["checkpoint_every"], validation_ids=val,
@@ -633,9 +714,12 @@ def cmd_project(args):
                                      device=ctx.args.device, check=ctx.cap.check, sigma=1.0, lr=0.3,
                                      on_checkpoint=lambda rs, g: save_genomes(rs, ctx.cfg, f"projection-{shape}"))
             secs[shape] = [x["batch_seconds"] for x in recs[0].log]
+        verdict = projection_verdict(secs)
+        if not verdict["within_limit"]:
+            verdict["experiment_outcome"] = OUTCOMES["over limit"]
         return {"shapes": {k: {"method": m, "runs": r} for k, (m, r) in shapes.items()}, "generations_timed": n,
                 "seeds_base": REGISTERED["projection"]["seed_base"], "ids": {"training": [0, 4999], "validation": id_record(val)},
-                "batch_seconds": secs, **projection_verdict(secs)}
+                "batch_seconds": secs, **verdict}
 
     doc = run_stage(args, "project", lambda a, p: {}, body)
     print(f"training projected at {doc['projected_training_hours']:.2f} h (limit {doc['limit_hours']} h): "
@@ -682,11 +766,13 @@ def cmd_pilot(args):
         if args.stage == 1:
             out["selected_sigma"] = select_sigma(pilot_rows(records))
             out["table"] = pilot_rows(records)
+            out["uninformative"] = uninformative(pilot_rows(records))
         else:
             s = ctx.earlier["pilot-1"]["selected_sigma"]
             rows = pilot_rows(records) + [r for r in pilot_rows(ctx.earlier["pilot-1"]["records"]) if r["sigma"] == s]
             m = select_rate(rows, s)
-            out.update(table=rows, selected={"sigma": s, "lr_multiple": m, "lr": m * s})
+            out.update(table=rows, selected={"sigma": s, "lr_multiple": m, "lr": m * s},
+                       uninformative=uninformative(rows))
         return out
 
     local = [genomes_path(stage, i) for i in range(sum(pilot_runs()))]
@@ -717,7 +803,7 @@ def cmd_train(args):
             extra = lambda i: {"sigma": sel["sigma"], "lr": sel["lr"]}  # noqa: E731
             recs, states = train_batch(ctx, stage, "es", runs, sigma=sel["sigma"], lr=sel["lr"], extra=extra, **kw)
             save_state(states, state_path())
-            out["state_sha256"] = reg.file_sha256(state_path())
+            out["state_sha256"] = sha256_bytes(state_path())
             out["state_file"] = f"local, {OUT.name}/{state_path().name} (not published; D028)"
         else:
             recs, _ = train_batch(ctx, stage, method, runs, **kw)
@@ -739,7 +825,7 @@ def cmd_extend(args):
 
     def requires(a, prov):
         es = require_earlier(a, prov, "train-es")
-        if not state_path().exists() or reg.file_sha256(state_path()) != es["state_sha256"]:
+        if not state_path().exists() or sha256_bytes(state_path()) != es["state_sha256"]:
             raise SystemExit("the ES's saved state is missing or differs from its record")
         return {"train-es": es}
 
@@ -749,23 +835,32 @@ def cmd_extend(args):
         sig, lr = es["records"][0]["sigma"], es["records"][0]["lr"]
         g0, g1 = REGISTERED["generations"]["es"], REGISTERED["generations"]["extension"]
         extra = lambda i: {"sigma": sig, "lr": lr}  # noqa: E731
+
+        def summary(recs):  # over the formal checkpoints and whatever extension checkpoints completed
+            done = {r.spec.run: r.checkpoints for r in recs}
+            return {"champions_over_both": [{"run": f["spec"]["run"],
+                                             **champion_over_both(f, done.get(f["spec"]["run"], []))}
+                                            for f in es["records"]]}
+
         recs, _ = train_batch(ctx, "extend", "es", runs, generations=g1, ids=REGISTERED["ids"]["train"],
                               val=validation_ids(), prefix="extension", sigma=sig, lr=lr, resume=load_state(state_path()),
-                              extra=extra)
-        records = []
-        for i, (formal_rec, r) in enumerate(zip(es["records"], recs)):
-            both = [("formal", k, c) for k, c in enumerate(formal_rec["checkpoints"])] + \
-                   [("extension", k, c) for k, c in enumerate(r.checkpoints)]
-            best = int(np.argmax([c["validation_mean"] for _, _, c in both]))
-            src, k, c = both[best]
-            records.append({**run_record(r, **extra(i)),
-                            "champion_over_both": {"source": src, "checkpoint": k, "generation": c["generation"],
-                                                   "validation_mean": c["validation_mean"], "sha256": c["sha256"]}})
-        return {"records": records, "resumed_from_state_sha256": es["state_sha256"],
+                              extra=extra, summary=summary)
+        return {"records": [run_record(r, **extra(i)) for i, r in enumerate(recs)], **summary(recs),
+                "resumed_from_state_sha256": es["state_sha256"],
                 "episodes": _episodes(len(runs), g1 - g0, n_checkpoints(g0, g1, REGISTERED["checkpoint_every"]),
                                       ctx.cfg, len(validation_ids()))}
 
     run_stage(args, "extend", requires, body, [genomes_path("extension", r.run) for r in run_specs()])
+
+
+def champion_over_both(formal_rec: dict, extension_checkpoints: list[dict]) -> dict:
+    """The first best checkpoint over the formal run's checkpoints, then the extension's (so a tie goes
+    to the formal one)."""
+    both = [("formal", k, c) for k, c in enumerate(formal_rec["checkpoints"])] + \
+           [("extension", k, c) for k, c in enumerate(extension_checkpoints)]
+    src, k, c = both[int(np.argmax([c["validation_mean"] for _, _, c in both]))]
+    return {"source": src, "checkpoint": k, "generation": c["generation"], "validation_mean": c["validation_mean"],
+            "sha256": c["sha256"]}
 
 
 # ----------------------------------------------------------------------------- the evaluation
@@ -793,10 +888,8 @@ def champions(trains: dict, ext: dict | None, spec, cfg) -> dict:
                 raise SystemExit(f"{m} run {run}'s champion does not match its committed hash")
             out[(m, run)] = g
     if ext is not None:
-        for r in ext.get("records", []):
-            if "champion_over_both" not in r:
-                continue
-            run, c = r["spec"]["run"], r["champion_over_both"]
+        for c in ext.get("champions_over_both", []):
+            run = c["run"]
             g = load_candidates("es" if c["source"] == "formal" else "extension", run, spec, cfg).select([c["checkpoint"]])
             if genome_hash(g, 0) != c["sha256"]:
                 raise SystemExit(f"the extension's run {run} champion does not match its committed hash")
@@ -808,8 +901,9 @@ def cmd_evaluate(args):
     def requires(a, prov):
         trains = {m: require_earlier(a, prov, f"train-{m}", final_ok=True) for m in METHODS}
         ext = require_earlier(a, prov, "extend", final_ok=True) if trains["es"]["outcome"] == "completed" else None
-        if trains["ga"]["e1_inputs_sha256"] != e1_input_hashes():
-            raise SystemExit("E1's freeze or gate record differs from what the GA's batch recorded")
+        recorded = [t["e1_inputs_sha256"] for t in trains.values() if "e1_inputs_sha256" in t]
+        if any(r != e1_input_hashes() for r in recorded):
+            raise SystemExit("E1's freeze or gate record differs from what a training stage recorded")
         return {"trains": trains, "extension": ext}
 
     def body(ctx):
@@ -840,11 +934,16 @@ def cmd_evaluate(args):
                 r = rollout_brain(c, ctx.iface, brain, ids, ws, device)
             return np.asarray(r.score[0])
 
+        def keep():  # after every arm, so a kill (which skips every handler) keeps the completed arms
+            write_atomic(partial_path("evaluate"), {**ctx.doc, **ctx.salvage()})
+
         for (label, run), g in ctx.genomes.items():
             for probe in (REGISTERED["probes"] if label != "extension" else ["real"]):
                 counts[f"{label} run{run:02d} {probe}"] = neural(g, probe)
+                keep()
         for name in REGISTERED["controls"]:
             counts[name] = scripted(name, tuned[name]["params"])
+            keep()
         return analyse(counts, trains, ext, len(ids))
 
     trains_seen = {}
@@ -889,7 +988,18 @@ def analyse(counts: dict, trains: dict, ext: dict | None, worlds: int) -> dict:
         extension = {"complete": ext["outcome"] == "completed", "runs": er,
                      "mean": float(np.mean(list(er.values()))) if er else None,
                      "note": "descriptive: never enters the decision"}
+    g0 = {m: {r["spec"]["run"]: r["checkpoints"][0]["sha256"] for r in trains[m].get("records", []) if r["checkpoints"]}
+          for m in ("ga", "random")}
+    starts = {r["spec"]["run"]: r["start"]["sha256"] for r in trains["es"].get("records", []) if r.get("start")}
+    shared = set(g0["ga"]) & set(g0["random"]) & set(starts)
+    pairing = {"runs_compared": sorted(shared),
+               "generation0_candidates_match": (all(g0["ga"][r] == g0["random"][r] == starts[r] for r in shared)
+                                                if shared else None),
+               "note": "the GA's and random sampling's generation-0 candidates and the ES's start genome, by hash"}
+    diffs = {f"run{r:02d}": float(counts[f"es run{r:02d} real"].mean() - counts[f"ga run{r:02d} real"].mean())
+             for r in sorted(set(runs["es"]) & set(runs["ga"]))}
     return {"outcome": d["outcome"], "floor": d["floor"], "provisional": d["provisional"], "decision": d,
+            "pairing": pairing, "es_minus_ga_per_run": diffs,
             "methods": methods, "extension": extension,
             "controls": {k: float(counts[k].mean()) for k in REGISTERED["controls"]},
             "per_world_counts": {k: v.astype(int).tolist() for k, v in counts.items()}}
@@ -913,7 +1023,7 @@ def use_smoke(args, folder: Path | None = None) -> None:
                 "train": {"base": 2500, "span": 2500}, "validation": {"first": 5000, "worlds": 4},
                 "holdout": {"first": 6000, "worlds": 16}}
     R["checkpoint_every"] = 2
-    R["projection"].update(generations_timed=3)
+    R["projection"].update(generations_timed=3, seed_base=SMOKE_PROJECTION_SEED_BASE)
     name = {"project": "project", "pilot": f"pilot-{getattr(args, 'stage', None) or 1}",
             "train": f"train-{getattr(args, 'method', None) or 'ga'}", "extend": "extend",
             "evaluate": "evaluate"}[args.command]

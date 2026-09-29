@@ -187,3 +187,11 @@ def test_a_repeated_seed_needs_a_different_setting(spec):
         L.es_batch(_cfg(), None, spec, runs, generations=2, sigma=1.0, lr=0.3, rollout_fn=Fake(), **KW)
     with pytest.raises(ValueError):
         L.random_batch(_cfg(), None, spec, runs, generations=1, rollout_fn=Fake(), **KW)
+
+
+def test_the_flat_count_is_current_at_every_checkpoint(spec):
+    """Review v1 (Astra): a stopped run's record is salvaged from the last checkpoint, so its flat
+    count must be up to date there, not only on a successful return."""
+    seen = []
+    _es(spec, Fake(flat=True), generations=5, on_checkpoint=lambda recs, g: seen.append((g, recs[0].flat_generations)))
+    assert seen == [(0, 0), (2, 2), (4, 4)]

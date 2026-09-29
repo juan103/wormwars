@@ -1,8 +1,12 @@
-# E2: a short optimizer screen. Pre-registration (v1, for review)
+# E2: a short optimizer screen. Pre-registration (v2, for review)
 
 **Status:**
 - Written 2026-09-29 for review by Astra 6 and Fable 5.1. Nothing below has run on E2's training,
   validation or hold-out worlds, or with its formal or pilot seeds (§11).
+  - v1 (`12725de`, `docs/reviews/20260929-105911-E2-prereg/`): both said "revise": failure handling
+    (a kill broke "final"), outcome wording, a stopped extension losing its champions, hold-out arms
+    not durable across a kill, and two wrong exposure statements (D120). Every must-fix is adopted
+    in v2, and most suggestions; §14 lists them.
 - **The order:** review until both agree; bind (a commit); push; the guarded projection and a
   guarded smoke run on the binding commit; then the formal stages, each on a clean tree whose HEAD
   is pushed, with each stage's record committed and pushed before the next stage starts.
@@ -19,7 +23,8 @@ design differ, this file governs, and the difference is listed in §13.
   below, and it applies every rule mechanically, the projection limit and the decision included;
 - the ES and random sampling are `wormwars/e2/optimizers.py` (the encoding, the utilities, the ES
   update, the best-since-checkpoint rule) and `wormwars/e2/loops.py` (the batched loops, mirroring
-  04a's `evolve_batch`);
+  04a's `evolve_batch`). The ES's registered constants (16 pairs, Adam's β₁, β₂ and ε, the encoding
+  scales) are the code's defaults and the loop's population / 2; a test pins the equality;
 - 02's GA is 04a's `wormwars/e04a/evolve.py`, `evolve_batch`, **unchanged**, with 04a's registered
   settings;
 - the shared guards are `wormwars/registration.py`; Task N and E1's controls come from
@@ -40,25 +45,35 @@ could pass vacuously were sabotage-checked):
   updates changes nothing, not the mean, Adam's moments or its counter, and neither does a batch in
   which every pair ties within itself**; best-since-checkpoint and its ties. Sabotage: ordinal
   instead of average ranks fails 3 tests; removing the flat guard fails 2;
-- **the loops** (`tests/test_e2_loops.py`, 15 tests, a fake simulator): each run's strains play that
+- **the loops** (`tests/test_e2_loops.py`, 16 tests, a fake simulator): each run's strains play that
   run's own worlds in one batch; random sampling nominates the best since the last checkpoint; the
   ES starts from the best of its start screen; it climbs on the fake score; **a flat run leaves the
   mean exactly at the start** (no projection without an update); resuming from a saved state
   reproduces the uninterrupted run; the checkpoint schedule; a run gives the same result alone and in
   a batch, for both methods; the pilot's paired settings on one seed; a non-finite score stops the
   batch; **all three methods start from the GA's generation-0 population on the GA's generation-0
-  worlds.** Sabotage: projecting on every generation, nominating without a reset, seeding by batch
-  position (random sampling, and the ES's noise) each fail their test;
-- **the stages** (`tests/test_e2_commands.py`, 46 tests, fake rollouts, smoke sizes, a scratch
+  worlds**; the flat count is current at every checkpoint. Sabotage: projecting on every generation,
+  nominating without a reset, seeding by batch position (random sampling, and the ES's noise), and
+  updating the flat count only at the end each fail their test;
+- **the stages** (`tests/test_e2_commands.py`, 62 tests, fake rollouts, smoke sizes, a scratch
   folder): every smoke id below 10 000; each stage needing the one before, running once, and not
-  starting when the cap is spent; the projection gate; the pilot's pairing and selection; the formal
-  ES using the pilot's setting and saving its state; the extension continuing the formal runs and
-  refusing a changed state file; one strain on all 1 024 hold-out worlds, with the three probes; the
-  champion-hash check before any hold-out world; the rerun rule, and a training stage that stops
-  twice being final and not completed; the allowance, the checkpoint counts, the pilot's tie rules
-  and the decision rule as functions (11 cases). Sabotage: `>` for "at least" in the margin or the
-  floor, ties at the GA's median counted as above, no rerun required before a stage is final, no
-  state-hash check, no champion-hash check, unpaired pilot seeds: each fails its test;
+  starting when the cap is spent; the projection gate, and an over-limit projection recording the
+  experiment's outcome; the pilot's pairing, selection and tie order; the formal ES using the pilot's
+  setting and saving its state (a plain sha256); the extension continuing the formal runs, refusing a
+  changed state file, and keeping champions over what completed when it stops (before and after its
+  first checkpoint); the extension's ties going to the formal checkpoint; one strain on all 1 024
+  hold-out worlds, with the three probes; the champion-hash check before any hold-out world; a
+  partial hold-out record after every arm; **the rerun rule under every combination of crash and
+  kill** (crash then crash, kill then crash, crash then kill, kill then kill: each ends final, a
+  killed rerun charged and recorded as final by one more `--rerun`); smoke projections on their own
+  seeds; a transient permission error on an atomic write retried; the pairing check; the allowance,
+  the checkpoint counts and the decision rule as functions (11 cases, and an incomplete ES's
+  distinct outcome). Sabotage: `>` for "at least" in the margin or the floor, ties at the GA's
+  median counted as above, no rerun required before a stage is final, a rerun counted as used only
+  by an archived record, no final record for a killed rerun, an incomplete ES read as "keep", a
+  stopped extension's champions dropped, no per-arm partial record, ties to the smaller σ, smoke
+  projections on the formal seeds, no state-hash check, no champion-hash check, unpaired pilot
+  seeds: each fails its test;
 - **the command tests run with the formal guards off** (`smoke=True, guarded=False`). The guards are
   tested as functions in `tests/test_registration.py`; their wiring, the live push check and the GPU
   preflight run in the guarded projection and the guarded smoke run on the binding commit.
@@ -149,9 +164,13 @@ No other method (no ARS, no sep-CMA-ES): the spare budget went to replication (D
 - **Each pilot run is generations 0-199**, with checkpoints at 0, 25, …, 175 and 199 on the pilot's
   256 validation worlds.
 - **Selection, at the generation-199 checkpoint:** stage 1 chooses the σ whose three runs have the
-  highest total validation count (ties to the smaller σ); stage 2 chooses the learning-rate multiple
-  with the highest total at that σ among {0.1, 0.3, 1} (ties to the smaller). With 3 runs per
-  setting, differences under about 0.6 targets are noise; the pilot screens, it does not estimate.
+  highest total validation count; stage 2 chooses the learning-rate multiple with the highest total
+  at that σ among {0.1, 0.3, 1}. **Ties go to the middle setting first:** σ in the order 1, 0.5, 2,
+  and the rate in the order 0.3, 0.1, 1 (Fable, review v1: "the smaller" would send an all-zero pilot
+  to the setting least able to leave a plateau). A stage in which every setting has the same total is
+  recorded as **uninformative**: its choice is the tie order alone, and the results say so. With 3
+  runs per setting, differences under about 0.6 targets are noise; the pilot screens, it does not
+  estimate.
 
 **The allowance: selection episodes, training plus the checkpoint validations that select champions**
 (design v2.2). Checkpoints are at generation 0, every 25th, and the last.
@@ -179,8 +198,9 @@ from `REGISTERED`, and a test pins it.
   composition (D082, D091); no exact replay is claimed. A non-finite score stops one method's batch
   only.
 - **World ids,** all new, in a block no earlier experiment used (02: 0 + span and 900 million; 02's
-  checkpoints and probes: 950 and 980 million; 03: 993-994 million; E1 and 04a: 996-999 million;
-  a test checks the disjointness):
+  checkpoints and probes: 950 and 980 million; 03's timing: 990 million; 03: 993-994 million; E1
+  and 04a: 996-999 million; a test checks the disjointness, and a search of the repository found no
+  id in the 995 million block):
 
 | Use | Ids |
 |---|---|
@@ -191,7 +211,8 @@ from `REGISTERED`, and a test pins it.
 | hold-out | 995 900 000 - 995 901 023 (1 024) |
 
 - **Seeds,** disjoint from each other and from 04a's (1 104 000-1 109 999): formal 1 120 000-1 120 007,
-  pilot 1 121 000-1 121 002, projection 1 129 000-1 129 008, smoke 1 128 000+ and 1 128 500+.
+  pilot 1 121 000-1 121 002, projection 1 129 100-1 129 108 (moved from 1 129 000, §11), smoke
+  1 128 000+, smoke pilot 1 128 500+, smoke projection 1 128 900+.
 - **Checkpoints** at generation 0, every 25th and the last, on the 256 validation worlds, raw count,
   in the composition (runs, 256, 1). **A run's champion is its first checkpoint with the highest
   validation mean.** Validation worlds select champions and never drive selection or updates.
@@ -208,10 +229,17 @@ After the formal ES record is committed (its champions locked at generations 0-6
 run resumes from its saved state at generation 622 (the mean, Adam's moments and counter, the noise
 stream, the start genome) and runs **generations 623-999** on the continuing training schedule, with
 checkpoints at 625, 650, …, 975 and 999. The extension refuses to start if the state file's hash
-differs from the formal record's. **Its champion per run is the first best checkpoint over
-generations 0-999** (formal checkpoints first). It is evaluated in the same hold-out pass,
-**never enters the decision**, and shows whether a "keep the GA" result reflects the tuning charge.
-Its episodes are a separate ledger line (8 × (377 × 256 + 16 × 256) = 804 864).
+differs from the formal record's (a plain sha256 of the file). **Its champion per run is the first
+best checkpoint over generations 0-999** (formal checkpoints first, so a tie goes to the formal
+one). That choice is over 42 checkpoints (the formal 26, generation 622 included, and the
+extension's 16) against the GA's 41: one more chance at a lucky validation score, disclosed. It is
+evaluated in the same hold-out pass, **never enters the decision**, and shows whether a "keep the
+GA" result reflects the tuning charge. Its episodes are a separate ledger line (8 × (377 × 256 + 16
+× 256) = 804 864).
+
+**If the extension does not complete** (it stops, and its rerun stops too), its champions are chosen
+over the formal checkpoints and the extension checkpoints that completed, labelled incomplete, and
+evaluated the same way. An incomplete extension does not change E2's outcome.
 
 ## 7. The evaluation (the hold-out, used once)
 
@@ -223,20 +251,28 @@ Its episodes are a separate ledger line (8 × (377 × 256 + 16 × 256) = 804 864
   champions, real only; **E1's scripted controls** at their frozen parameters: constant, random-walk,
   wall-follower, K, S-const, S-const k≤32, M-avg and the oracle. 80 neural arms and 8 scripted ones.
 - **The primary measure:** each method's mean hold-out count over its champions (real probe).
+- **Champions from a batch that did not complete** (its checkpoints so far) are evaluated and
+  reported the same way, labelled incomplete; the decision rule says what they can decide (§8).
+- **Durability:** a partial record is written atomically after every arm, so even a kill keeps the
+  completed arms.
 
 ## 8. The decision, and the outcome wording (fixed now)
 
-In exact arithmetic on the per-world counts (the runner's `decide`):
-1. **If the GA's batch is incomplete** (§10): **"E2: no decision (02's GA did not complete)"**; the
-   floor check is not made.
-2. Otherwise **the ES replaces the GA** only if **both**: its mean is at least the GA's mean + **0.5
+In exact arithmetic on the per-world counts (the runner's `decide`). Every comparison is under
+unshaped fitness only, and the outcome sentences say so. "Incomplete" means final and not completed
+(§10); a first stop awaiting its obligatory rerun is not an outcome.
+1. **If the GA's batch is incomplete:** **"E2: no decision (02's GA did not complete)"**; the floor
+   check is not made.
+2. **If the ES's batch is incomplete:** **"E2: keep 02's GA (unshaped fitness; the ES's batch did not
+   complete, so no comparison was made)"**, whatever its champions scored (Fable, Astra, review v1).
+3. Otherwise **the ES replaces the GA** only if **both**: its mean is at least the GA's mean + **0.5
    targets per episode**, **and** at least **6 of its 8** champions are strictly above the GA's median
-   champion. An ES with an incomplete batch cannot qualify.
-   - Yes: **"E2: the ES replaces 02's GA as E3's provisional default"**.
-   - No: **"E2: keep 02's GA (the ES did not satisfy both replacement criteria after paying for its
-     tuning)"**. This does not say the ES is no better at equal length (the extension speaks to
-     that, descriptively).
-3. **The floor, reported beside the outcome:**
+   champion.
+   - Yes: **"E2: the ES replaces 02's GA as E3's provisional default (unshaped fitness)"**.
+   - No: **"E2: keep 02's GA (unshaped fitness; the ES did not satisfy both replacement criteria after
+     paying for its tuning)"**. This does not say the ES is no better at equal length (the extension
+     speaks to that, descriptively).
+4. **The floor, reported beside the outcome:**
    - random sampling's mean ≥ the GA's mean − 0.5 (which includes random sampling beating the GA):
      **"diagnose first: random sampling's mean is at least the GA's minus 0.5; saturation, noise and
      budget are diagnosed before building on the task, whatever the ES did"**. This takes precedence
@@ -245,9 +281,13 @@ In exact arithmetic on the per-world counts (the runner's `decide`):
      below it)"**;
    - random sampling's batch incomplete: **"the floor check is not made (a batch did not
      complete)"**, and the ES-GA outcome is reported as **provisional**.
-4. **A stage that cannot finish** (the cap, or a projection or pilot that does not complete) gives
-   **"E2: not completed (the registered cap was reached)"** or **"E2: not completed (the run
-   stopped)"**.
+5. **When E2 cannot reach a decision:**
+   - the projection completes over its limit: **"E2: not started (the projection exceeds its
+     limit)"** (recorded in `projection.json`);
+   - the cap is reached at any stage: **"E2: not completed (the registered cap was reached)"**;
+   - the projection, a pilot stage or the evaluation is final and not completed (stopped, and its
+     rerun stopped or was killed): **"E2: not completed (the run stopped)"**.
+   - An incomplete extension changes none of these (§6).
 
 **What the decision can carry:** with 8 runs, if the ES's between-run spread matched the GA's in 04a
 (SD 0.17-0.30), a false switch would be very unlikely and a true gain of 0.75 targets would usually be
@@ -263,6 +303,8 @@ score is subject to selection optimism**; E3 evaluates on new worlds.
 - the training and validation curves; the ES's start scores, first non-flat generations, flat
   generations and clipping; the pilot's table;
 - the extension's champions and their hold-out means;
+- **the pairing:** each run's ES-minus-GA hold-out difference, and a check that the GA's and random
+  sampling's generation-0 candidates and the ES's start genome are the same genome (by hash);
 - the controls' means (for scale);
 - **the ledger:** per stage, episodes (from the records), and ticks, neural updates (padding
   included) and wall time (from the accounting), with the allowance of §4 beside it.
@@ -280,17 +322,25 @@ score is subject to selection optimism**; E3 evaluates on new worlds.
 7. `e2.py evaluate` → `evaluation.json` (needs the three training stages final, and the extension
    final if the ES completed; the hash checks of §7).
 
-**"Final"** means completed, or stopped twice (the registered rerun used and stopped too). A
-training stage that is final and not completed does not block the later stages; the decision rule
-says what it means (§8). The projection and both pilot stages must complete.
+**"Final"** means completed, or not completed after the registered rerun: the rerun is "used" once
+it has been applied (its note, `<record>-rerun.json`, is written), and it then either writes a
+stopped record, or is killed. **A killed rerun** leaves a marker and no record; the next stage
+refuses and names it, and one more `--rerun` charges its compute, writes its record (final, not
+completed, built from the marker and the last partial record), and refuses to run it again. So
+every combination (crash or kill, then crash or kill) ends final (Fable, Astra, review v1). A
+training stage or the extension that is final and not completed does not block the later stages;
+the decision rule says what it means (§8). The projection and both pilot stages must complete;
+otherwise E2 ends with §8.5's wording.
 
 **Execution:** CUDA only, on one RTX 5080, Python 3.13 with the pinned torch and numpy; a clean tree
 (code, configuration, requirements, this file and E1's two records) and a pushed HEAD. The
 environment and the connectome's hashes are recorded at every stage and must match the earlier
 stages'.
 
-**The budget,** from 04a's measured rates (4.75 s per training generation at (256, 8, 1), about 10 s
-per (8, 256, 1) checkpoint; the pilot's compositions scaled by strain count):
+**The budget,** from 04a's rates: 4.75 s per training generation at (256, 8, 1), measured in 04a's
+training (medians 4.741 and 4.716 s); and a **conservative planning figure of 10 s** per (8, 256, 1)
+checkpoint, 04a's own planning figure, **not a measurement**: 04a measured about 3.3 s (its
+projection 3.29 s; Fable, Astra, review v1). The pilot's compositions are scaled by strain count.
 
 | Part | Calculation | Estimate |
 |---|---|---|
@@ -303,6 +353,12 @@ per (8, 256, 1) checkpoint; the pilot's compositions scaled by strain count):
 | hold-out | 80 neural arms × 3 s + 8 scripted × 2.2 s | about 260 s |
 | projection | 5 shapes × 6 generations | about 170 s |
 | **total** | | **about 17 900 s, 5.0 GPU-hours** |
+
+This is an upper estimate: at 04a's measured checkpoint cost (about 3.3 s), the 142 checkpoints cost
+about 950 s less, **about 4.7 GPU-hours**. 04a's projection ran slower than its training (5.25 s per
+generation against 4.75 s); at that rate E2's training would project at about 5.1 hours, inside the
+5.5-hour limit, and a projection at the limit would leave about 1.4 hours of the cap, less than one
+GA rerun (Fable).
 
 - **The cap is 7 GPU-hours** for every stage together, counted by the accounting across all
   attempts, the projection included. It is checked before every rollout and after each stage.
@@ -319,23 +375,32 @@ per (8, 256, 1) checkpoint; the pilot's compositions scaled by strain count):
   touches its worlds; a preflight (the connectome, the interface, one device operation); a stage that
   would start with the cap spent does not start; a stage that stops writes its record as **not
   completed**, keeping every completed checkpoint (records and local genomes, written atomically) or
-  every completed hold-out arm.
+  every completed hold-out arm (a partial record after every checkpoint and every arm, so a kill,
+  which skips every handler, keeps them too). Atomic writes retry briefly when Windows refuses a
+  replace for a moment (another process holding the file), which the test suite hit.
 - **The rerun rule (04a's, D107):** a stage stopped by a crash, an interrupt, or a kill that left a
   start marker and no record, **is rerun once**, from scratch with the same seeds (`--rerun --reason
   "..."`), obligatorily; a killed attempt's compute is charged first (from its start marker to its
   last file write, plus 900 s), and the cap check follows. The stopped attempt's files are kept
   beside, renamed `-attempt1`, and disclosed. A stage stopped by the cap is not rerun; a second stop
-  is final. A crash caused by the guarded code itself cannot be fixed inside this registration:
+  or a killed rerun is final (above). A crash caused by the guarded code itself cannot be fixed inside this registration:
   fixing it changes the binding commit, so it needs a dated amendment and a new projection.
 - **Amendments** go in `AMENDMENTS.md`, which is not guarded. This file is guarded: editing it after
   binding would stop the next stage.
 
 ## 11. Development exposure
 
-- **Nothing has used E2's id ranges or seeds.** Development used smoke ids 0-9 999 (inside 02's old
-  training span, outside every range above) with smoke seeds: the loop and command tests (fake
-  simulators), and one CPU smoke run of the whole chain on 2026-09-29 (`runs/e2-smoke/`, local, 40
-  ticks, 4 genomes, 2 worlds; every score 0, as expected at that size).
+- **Nothing has used E2's id ranges, or its formal or pilot seeds.** Development used smoke ids
+  0-9 999 (inside 02's old training span, outside every range above): the loop and command tests
+  (fake simulators), and one CPU smoke run of the whole chain on 2026-09-29 (`runs/e2-smoke/`, local,
+  40 ticks, 4 genomes, 2 worlds). Every neural score in it was 0, as expected at that size; the
+  scripted controls were not (the oracle and S-const 0.81 targets per episode on 16 worlds).
+  - **Correction (review v1, Astra):** v1 said "every score 0", which was wrong for the controls;
+    and v1 said smoke seeds only, but **that smoke run's projection used E2's projection seeds,
+    1 129 000-1 129 002**, because the smoke setting changed the projection's length and not its
+    seeds. A projection only times generations on smoke ids, so nothing about E2's results was
+    exposed; still, the formal projection seeds are moved to 1 129 100+, and smoke projections now
+    use their own seeds, 1 128 900+ (tested).
 - **The pilot's settings, σ grid and learning-rate grid were fixed in the design before any ES ran
   on Task N.** No ES has been run on Task N at full size.
 - **What is known from 04a:** its GA's curves, champions and hold-out results on 04a's worlds, and
@@ -348,7 +413,10 @@ per (8, 256, 1) checkpoint; the pilot's compositions scaled by strain count):
 - whether the ES would win with shaped fitness, more directions, fewer worlds, a σ schedule, or a
   larger tuning budget;
 - anything about topology (Track B);
-- a population-level advantage: 8 runs per method support a coarse switch-or-keep decision.
+- a population-level advantage: 8 runs per method support a coarse switch-or-keep decision;
+- a comparison of search distributions alone: E2 compares **procedures**, including how each
+  nominates its candidate (the GA and random sampling a best-of-32 genome by training score, the ES
+  its mean, never scored in training). Some of any difference may come from that choice (Fable).
 
 **ENOMAD** (Churchland and Garcia-Ojalvo, *iScience* 2025, PMC12803941), the closest prior work,
 differs from E2 in ways that stop its result transferring directly. Each point is from the journal
@@ -384,5 +452,35 @@ version:
 - **The projection gate has no mechanical reduction:** 04a reduced generations by amendment if over
   its limit; here the generations are tied to the allowance, so an over-limit projection needs a
   reviewed amendment.
-- **The budget** is recomputed from 04a's measured rates: about 5.0 GPU-hours with the extension,
-  under a cap of 7.
+- **The budget** is recomputed from 04a's rates: about 5.0 GPU-hours with the extension (an upper
+  estimate; about 4.7 at 04a's measured checkpoint cost), under a cap of 7.
+- **The pilot's ties** go to the middle setting first, not to the smaller value (v2, §4).
+- **An incomplete ES** has its own outcome (v2, §8).
+
+## 14. Changes from v1 (review v1, D120)
+
+Both reviewers said "revise"; neither asked for a redesign, and both accepted §13's departures.
+- **"Final" survives kills** (both): a rerun counts as used once applied; a killed rerun is charged,
+  recorded as final and not completed by one more `--rerun`; the four crash/kill combinations are
+  tested (§10).
+- **A stopped extension keeps its champions** (Astra): chosen over the formal checkpoints and the
+  extension checkpoints that completed, in the partial record and the stopped record alike; tested
+  before and after the first extension checkpoint (§6).
+- **The hold-out's arms survive a kill** (Astra): a partial record after every arm (§7).
+- **The outcomes are complete** (both): an incomplete ES's own wording; "not started" after an
+  over-limit projection; the evaluation and pilot stopping; "unshaped fitness" in every decision
+  sentence; a first stop awaiting its rerun is not an outcome (§8).
+- **The exposure account is corrected** (Astra): the smoke projection's seeds and the controls'
+  scores; the projection seeds moved (§11).
+- **The budget's checkpoint figure is labelled** a planning figure, with the measured one beside it
+  (both, §10).
+- **The ES's registered constants** are pinned to the code by a test (Fable).
+- Suggestions taken: the pilot's tie order and "uninformative" flag (Fable); the flat count current
+  at every checkpoint (Astra); a plain sha256 for the binary state file (Fable); the extension's 42
+  checkpoints disclosed (Fable); incomplete batches' champions evaluated and labelled (Fable); the
+  procedure-level caveat (Fable); the pairing check and per-run differences reported (Fable); 03's
+  timing ids added to the disjointness test (Fable); a README for the folder (Fable).
+- **Found while fixing:** Windows refused an atomic replace in the test suite when the per-arm
+  partial record was written in quick succession. Atomic writes and the genome and state files'
+  replaces now retry briefly (tested). In the formal run arms take seconds, but a transient refusal
+  there would otherwise stop a stage.
