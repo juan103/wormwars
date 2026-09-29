@@ -3791,3 +3791,24 @@ The v1 review (`docs/reviews/20260929-175712-E2d-plan/`): **both "revise"**.
   of the ES's", and "where most candidates sit".
 - The cap rises from 5 to 7 GPU-hours (C0 and C4), with a projection limit of 6.2 hours and a
   reserve for the hold-out pass.
+
+## D130 — E2d plan v3: the controls replayed, run 2 isolated, the reserve enforced
+
+The v2 review (`docs/reviews/20260929-181658-E2d-plan-v2/`): **both "revise", narrowly**. Both
+found the pairing with E2's runs sound; Astra regenerated Part A's output exactly. v3 takes every
+point:
+- **Run 2** (Fable): E2's GA run 2 started from an all-zero population and ended at 0.75, so it
+  alone can carry an arm's mean. Readings are drawn over 8 runs and over the 7 without it.
+- **The controls are replayed** (Fable): E2's GA and ES, generations 0-25, must reproduce E2's
+  committed hashes before Part C starts. Each arm also records a pairing check.
+- **Part B** (both): the classes and set rules are completed; the k = 4 stereo steerer is pinned
+  (speed 1.0, turn 0.1; it scored 2.18 in 04a, at the champions' level).
+- **Budget** (both): E2's hold-out already shows the extension ahead in all 7 distinct pairs
+  (mean 0.28), yet v2's "6 of 7 at 0.2" rule would not have fired; a mean-gain rule with
+  intervals replaces it, and the prior figures are disclosed.
+- **The combined arm** (both): an interaction only from the difference-of-differences, at matched
+  checkpoints.
+- **The reserve** (both): admission applies to reruns too, and training stops hard at 6.5 of the 7
+  GPU-hours.
+- **C0** (both): specified in full.
+- Three of Part A's table cells are corrected (both).

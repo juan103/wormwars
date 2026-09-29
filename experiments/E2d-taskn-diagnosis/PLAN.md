@@ -1,11 +1,22 @@
-# E2d: diagnosing Task N after E2's floor fired. Plan (v2, for review)
+# E2d: diagnosing Task N after E2's floor fired. Plan (v3, for review)
 
 **Status:** written 2026-09-29, for review by Astra 6 and Fable 5.1. Nothing below has run except
 Part A, which reads committed records only.
 - v1 (`35e0140`, `docs/reviews/20260929-175712-E2d-plan/`): both said "revise" (D129). Part C's
   comparisons were unpaired and C3 changed two settings. The readings claimed more than the probes
   measure. Part A's numbers had no committed script, and two statements in it were wrong. v2 takes
-  every must-fix and most suggestions; the last section lists them.
+  every must-fix and most suggestions; "Changes from v1" lists them.
+- v2 (`213c79e`, `docs/reviews/20260929-181658-E2d-plan-v2/`): both said "revise", narrowly; both
+  found the pairing sound (D130). Six gaps remained:
+  - GA run 2 could carry an arm's reading by itself;
+  - the controls were never replayed;
+  - Part B's reading had gaps;
+  - the budget reading was already decided by E2's data;
+  - C4 could not show an interaction as framed;
+  - reruns bypassed the reserve.
+
+  C0 was also underspecified, and three table cells were misrounded. v3 takes all of it; "Changes
+  from v2" lists it.
 
 **Why:** E2's registered floor fired (`experiments/E2-optimizer-screen/`, D124-D126). Random
 sampling's champions came within 0.36 targets per episode of 02's GA. The roadmap's rule is: *"E2
@@ -29,13 +40,13 @@ Computed by `scripts/e2d_records.py` from E2's committed records and written to 
   not recorded.
 - **Ranking two champions by k shared worlds.** For pairs of distinct champions (31: ES run 6 and
   extension run 6 are the same genome), resampling k of their 1 024 hold-out worlds 400 times per
-  pair (seed 0), and comparing with the 1 024-world means:
+  pair with replacement (seed 0), and comparing with the 1 024-world means:
 
   | Gap | Pairs | k = 8: correct, tied (ties half) | k = 32 | k = 128 |
   |---|---|---|---|---|
-  | 0.05-0.15 | 74 | 0.54, 0.16 (0.62) | 0.70, 0.07 (0.73) | 0.87, 0.02 (0.87) |
+  | 0.05-0.15 | 74 | 0.54, 0.16 (0.62) | 0.70, 0.06 (0.73) | 0.86, 0.02 (0.87) |
   | 0.15-0.30 | 113 | 0.69, 0.12 (0.75) | 0.89, 0.03 (0.91) | 0.99, 0.00 (0.99) |
-  | 0.30-0.60 | 106 | 0.87, 0.06 (0.90) | 0.99, 0.01 (0.99) | 1.00, 0.00 (1.00) |
+  | 0.30-0.60 | 106 | 0.87, 0.06 (0.90) | 0.99, 0.00 (0.99) | 1.00, 0.00 (1.00) |
 
   **What this does not model:** selection compares a parent's children (the GA), antithetic pairs
   (the ES) or draws since a checkpoint (random sampling), not unrelated champions. Part C0 measures
@@ -51,14 +62,14 @@ Computed by `scripts/e2d_records.py` from E2's committed records and written to 
   generation's best averaged 1.09-2.26 in training, its mean 0.44-0.63, and 11-31% of its genomes
   scored 0. The ES's candidates, over generations 300-622, averaged 0.96-1.41, with 1-7% zeros.
 - **A plateau at a reference level, not a ceiling.** Seven of the GA's champions and seven of the
-  formal ES's are within 0.25 of **M-avg's 2.20** on the hold-out. M-avg is E1's best tuned
+  formal ES's are within 0.25 of **M-avg's 2.20** on the hold-out (ES run 0 by 0.001). M-avg is E1's best tuned
   controller that reads the mean of the two sensors, so it cannot steer by their difference. The
   stereo controller S-const reached 8.65. Six of the extension's eight champions are above M-avg,
   one at 2.91, so M-avg's level is not a ceiling for these optimizers. (v1 said "all eight of the
   ES's", which was wrong: run 7 is 0.27 below; and "where most candidates sit", which contradicted
   the population figures.)
 - **Budget.** The ES was still rising at its end (validation 2.02 at generation 622, 2.31 at 999 in
-  the extension). The GA's validation mean stayed about level from generation 100 on, apart from one
+  the extension; E2's RESULTS.md §5, not produced by the Part A script). The GA's validation mean stayed about level from generation 100 on, apart from one
   run's late jump (D125).
 
 ## Part B: do the champions use the left-right difference? (GPU, minutes)
@@ -74,8 +85,9 @@ Computed by `scripts/e2d_records.py` from E2's committed records and written to 
   - `swapped`: the difference is reversed.
 - **References** at E1's frozen parameters, under the same probes:
   - **S-const**, the stereo controller (8.65);
-  - **S-const at k = 4**, a low-gain stereo steerer from E1's gain curve, near the champions' level.
-    It checks that the rule detects stereo use at low performance;
+  - **S-const at k = 4** (speed 1.0, turn 0.1, the gain curve's first maximum at k = 4 among E1's
+    tuned means), a low-gain stereo steerer. It scored 2.18 on 04a's hold-out, the champions' level,
+    so it checks that the rule detects stereo use at the plateau's performance;
   - **M-avg**, which reads only the mean.
 - **Checks, fixed now:**
   - both S-const references lose under `mean` and `swapped` (95% lower bound of real − probe above
@@ -95,45 +107,74 @@ Computed by `scripts/e2d_records.py` from E2's committed records and written to 
   for E3), 04a's run 12 and the extension's run 3 are named individually.
 - **Classes, fixed now:**
   - **uses the left-right difference:** both contrasts have 95% lower bounds above 0.5;
-  - **no detectable use:** both contrasts have 95% upper bounds below 0.25;
+  - **no material benefit detected:** both contrasts' 95% intervals lie inside (−0.25, 0.25),
+    two-sided, so a large negative contrast does not count here. It does not show that the sensors
+    are unused;
   - **unclear:** otherwise.
 
   These classes measure a benefit from intact bilateral input, not a mechanism.
-- **The reading:**
-  - **"a non-stereo plateau"** if, in every set, at most 2 champions use the difference, and most
-    champions sit within 0.3 of M-avg's level (1.90-2.50);
-  - **"stereo use present"** if any set has 3 or more that use it. The plateau is then not simply
-    non-stereo.
-- **The budget reading, on the same worlds.** The formal ES's champions against the extension's,
-  paired by run (run 6 is the same genome), beside cumulative selection episodes:
-  - formal: 2 131 712 with the pilot;
-  - extended: 804 864 more.
+- **The reading, per set.** Sets: E2's GA, formal ES and extension (8 genomes each), and 04a's 12
+  shaped and 4 unshaped runs (counted apart, with their own denominators). The
+  extension's run 6 is the same genome as the formal ES's run 6; it is counted in both sets, and
+  the pooled count of distinct genomes is given beside. Random sampling's champions are classified
+  and reported but not read: they sit below the plateau.
+  - **"non-stereo"** for a set if at least three-quarters of its genomes have "no material benefit
+    detected" and at most 2 "use the left-right difference";
+  - **"stereo use present"** for a set if 3 or more use it;
+  - **"mixed"** otherwise.
 
-  Reported: per-run differences, their mean and median, and runs improved. **Reading, fixed now:**
-  "budget-limited" if the extension beats the formal champion by at least 0.2 in at least 6 of the 7
-  distinct pairs. This speaks for more generations of this ES; it does not establish a ceiling.
+  **"A non-stereo plateau"** is read only if every read set is "non-stereo" and each such set's
+  median champion (real probe) lies within 0.3 of M-avg's level (1.90-2.50).
+- **The budget reading, on the same worlds.** The formal ES's champions against the extension's,
+  paired by run, all 8 (run 6 is the same genome, a difference of 0), beside selection episodes per
+  run: 166 144 formal (plus a share of the pilot's 802 560), and 100 608 more in the extension. The
+  extension's champion is chosen over 42 checkpoints, which include the formal ones. Validation
+  curves against cumulative episodes are reported.
+  - **Already known from E2's hold-out** (disclosed, so this reading is largely a replication on
+    fresh worlds): the seven distinct pairs differ by +0.38, +0.11, +0.04, +0.69, +0.24, +0.08 and
+    +0.42 (mean 0.28, all positive, 4 of 7 at 0.2 or more; over all 8, with run 6's 0, mean 0.25). v2's "6 of 7 at 0.2" rule would not
+    have fired on them, which is why v3 replaces it.
+  - **Reading, fixed now:** "budget-limited" if the mean paired gain over the 8 runs is at least 0.2,
+    with Part C's intervals (below) above 0. It speaks for more generations of this ES, with more
+    checkpoint opportunities; it does not establish a ceiling.
 
 ## Part C0: how reliably do 8 worlds rank the comparisons selection makes? (GPU, about 0.45 h)
 
+**A local selection surrogate:** one parent's 64 children, not E2's population of 32 with its
+mixed parents and elites. It measures the noise of the comparisons, not the GA's dynamics.
 - **The GA's siblings:** for each of E2's 8 GA champions, 64 children at 02's mutation scales × 1,
-  × 0.5 and × 0.25, each child on 256 probe worlds.
+  × 0.5 and × 0.25, each child on 256 probe worlds. **The same noise draws at every scale:** the
+  children's generator is seeded per champion (1 131 000 + 10 × champion), so a child at × 0.5 is
+  the same direction as at × 1, half as far. **The parent is evaluated too**, on the same 256
+  worlds. Composition per champion and scale: (65, 256, 1).
 - **The ES's pairs:** for each of E2's 8 formal ES champions, taken as a mean, 32 antithetic pairs
-  at σ 0.5 and at σ 0.25, each candidate on the same 256 probe worlds.
+  at σ 0.5 and at σ 0.25, with the same noise draws at both σ (seed 1 131 100 + 10 × champion), each
+  candidate and the mean on the same 256 probe worlds. Composition per champion and σ: (65, 256, 1).
 - **Measures:**
   - the children's mean counts: their mean, the share scoring under half the parent's, and the share
     scoring 0, per scale;
-  - for sibling pairs whose 256-world means differ by 0.05-0.15, 0.15-0.30 and 0.30-0.60: how often 8
-    of the 256 worlds, resampled 400 times with seed 0, rank them like the 256 (correct, tied);
-  - truncation's agreement: the overlap of the top 8 of 64 children by 8 resampled worlds with the top
-    8 by 256;
-  - for the ES's pairs: how often an 8-world pair difference has the sign of the 256-world
-    difference, and how often it ties.
-
-  The 256-world means are references with their own error, about 0.05, which is stated.
-- **Reading (descriptive):** "selection noise is material" if 8 worlds rank siblings 0.15-0.30
-  apart correctly, ties counted half, less than 0.8 of the time at 02's mutation scale.
+  - for sibling pairs, pooled over the 8 champions, in bins by the difference of their reference
+    means (0.05-0.15, 0.15-0.30, 0.30-0.60): how often 8 worlds rank them like the reference
+    (correct, tied). The 8 worlds are drawn 400 times without replacement (seed 0), and **the
+    reference is the mean over the other 248 worlds**, so the two never share a world;
+  - truncation's agreement: the overlap of the top 8 of 64 children by 8 worlds with the top 8 by the
+    other 248 (ties in a ranking go to the lower child index, as in E2's sort);
+  - for the ES's pairs: how often an 8-world pair difference has the sign of the 248-world
+    difference, and how often it ties. Pairs whose 248-world difference is 0 are reported apart and
+    excluded. This is a proxy: the ES's update uses ranks over all 32 candidates, not pair signs;
+  - the reference's own uncertainty, as the bootstrap standard error of the 248-world means over
+    these candidates (not assumed).
+- **Reading (descriptive):** "selection noise is material" if, at 02's mutation scale, 8 worlds rank
+  siblings 0.15-0.30 apart correctly (ties counted half) less than 0.8 of the time. **The reading is
+  not drawn for a bin with fewer than 30 pairs.**
 
 ## Part C: one-change arms, paired with E2's own runs (GPU, about 4.9 h)
+
+**The controls, replayed first.** "No control arm" holds only if today's code and environment
+reproduce E2's runs. Before C1, E2's GA and ES are replayed for generations 0-25, with E2's seeds,
+ids and composition (256, 8, 1), and **their generation-0 and generation-25 checkpoint hashes must
+equal E2's committed ones** (about 5 GPU-minutes; Fable). If any differ, Part C does not start,
+and the difference is reported and reviewed.
 
 **Pairing.** Every arm reuses E2's run seeds (1 120 000 + r, for r = 0-7), E2's training range and
 E2's validation ids. Run r of an arm therefore starts from the same generation-0 population, and
@@ -144,6 +185,13 @@ draws its training worlds from the same per-run schedule, as E2's run r.
 - E2's training and validation worlds are reused, which is disclosed; the diagnosis hold-out is
   fresh.
 - A 32-world draw begins with the 8 worlds of the 8-world draw for the same run and generation.
+  This follows from numpy drawing in sequence, not from a guarantee of its interface, so a test
+  pins it.
+- **A pairing check per arm, recorded:** for C2 and C3, each run's generation-0 checkpoint hash
+  equals E2's; for C1 and C4, each run's first 8 training ids at generations 0 and 249 equal E2's.
+- **What pairing removes, and what it does not:** it shares the start and the world schedule. The
+  trajectories diverge within a generation or two, so it removes start-to-start variation, not
+  all seed luck. The arm-reference correlation across runs is reported.
 
 | Arm | What changes | Reference (paired) | Generations | Checkpoints | Selection episodes per run |
 |---|---|---|---|---|---|
@@ -153,7 +201,8 @@ draws its training worlds from the same per-run schedule, as E2's run r.
 | C3, the ES at σ 0.25 | σ 0.5 → 0.25; the learning rate kept at 0.15 | E2's formal ES, its registered champion | 0-622 | 26 | 166 144 |
 
 - **Matched checkpoints for C1 and C4.** Their 250 generations are checkpointed at 0, 25, …, 225 and
-  249. E2's GA covers the same fractions of training work at generations 0, 100, …, 900 and 999.
+  249. E2's GA covers about the same fractions of training work at generations 0, 100, …, 900 and
+  999 (the last differs by 768 episodes).
   E2's GA champion is re-chosen among those 11 of its saved checkpoint candidates (the first with the
   best validation mean) and evaluated on the diagnosis hold-out. Its selection episodes match C1's:
   258 816. E2's registered champion (41 checkpoints) is reported beside it.
@@ -164,24 +213,40 @@ draws its training worlds from the same per-run schedule, as E2's run r.
 - **Each arm's champions** go to the diagnosis hold-out under `real`, `mean` and `swapped`, so
   Part B's classes cover them. So do the re-chosen matched references.
 - **Reported per arm:** each run's paired difference; their mean and median; runs improved, of 8;
-  failures (champions below 1.0); and a paired percentile bootstrap over runs (10 000 resamples,
-  seed 0) with a 90% interval.
+  failures (champions below 1.0); a paired percentile bootstrap over runs (10 000 resamples, seed 0)
+  with a 90% interval; and an exact sign-flip test over the 8 runs (all 256 sign patterns), because
+  a percentile bootstrap over 8 runs is narrow.
+- **Every reading over all 8 runs and over the 7 without run 2** (Fable). E2's GA run 2 started from
+  a generation-0 population that scored 0 everywhere and ended at 0.75. An arm's run 2 alone can move
+  the mean by about 0.17, and in C1 and C4 the 32 training worlds change that start itself.
 - **The readings, fixed now:**
-  - **supports:** a mean paired gain of at least 0.3, with the 90% interval above 0;
+  - **supports:** a mean paired gain of at least 0.3, with the 90% interval above 0, over all 8 runs
+    **and** over the 7 without run 2. If it holds over the 8 only: **"supports, carried by run 2"**;
   - **harmful:** a mean paired loss of at least 0.3, with the interval below 0;
   - **inconclusive:** anything else, including a gain of 0.3 or more whose interval crosses 0;
   - **leaves the plateau,** reported separately from gains: at least 4 of the arm's 8 champions
     either use the left-right difference (Part B's class) or score at least 2.5 (M-avg + 0.3). A
     gain can come from avoiding a failed run without exceeding the successful runs' level, and
     that is shown per run.
+- **The combined arm, contrasted directly** (both), paired by run, all at 11 matched checkpoints:
+  - C4 − C1: only the mutation scale differs, at 32 worlds;
+  - C4 − C2′: only the worlds differ, at halved mutation. C2′ is C2's champion re-chosen at its 11
+    matched checkpoints, as for E2's GA;
+  - **(C4 − C1) − (C2′ − E2's GA′)**, the interaction estimate, with the same intervals.
+
+  **An interaction is claimed only if that estimate's 90% interval excludes 0.** Otherwise, a
+  supporting C4 says only that the combined setting is promising.
 
 ## What the diagnosis can suggest for E3
 
 **Leads for E3's design, not conclusions.** E3's own design and review make the choices.
-- **Noise (C1, or C0's reading):** E3 should spend more work per evaluation (more worlds, or
-  re-evaluation of the best). How much is E3's design question.
+- **Noise:**
+  - **C1 supports:** spending more work per evaluation helped here. How much, and in what form (more
+    worlds, or re-evaluating the best), is E3's design question;
+  - **C0's reading alone:** test increased evaluation effort in E3's design. Noisy rankings do not
+    show that more worlds improve the search.
 - **Mutation (C2):** gentler mutation is a promising setting for the GA.
-- **Only together (C4 supports, C1 and C2 do not):** the two changes interact, and E3 uses both.
+- **C4:** the combined setting is promising; an interaction only under the rule above.
 - **The ES's σ (C3):** a smaller σ is promising for the ES. This does not reopen E2's decision.
 - **Budget (Part B's budget reading):** longer runs are promising for the ES.
 - **Harmful arms** are reported as such; E3 avoids those settings.
@@ -208,7 +273,7 @@ draws its training worlds from the same per-run schedule, as E2's run r.
 - **The projection first:** it times every new composition at full size on smoke ids:
   - C1 and C4: (256, 32, 1), 8 192 worlds per rollout;
   - C2: (256, 8, 1);
-  - C3: 8 runs at (256, 8, 1);
+  - C3: one eight-run batch at (256, 8, 1);
   - C0: its batches;
   - Part B: (1, 1 024, 1).
 
@@ -222,22 +287,33 @@ draws its training worlds from the same per-run schedule, as E2's run r.
   | C0 | about 0.45 h |
   | C1, C2, C4 | about 1.35 h each |
   | C3 | about 0.85 h |
-  | Part C's hold-out pass | about 10 minutes (32 champions and 8 matched references, 3 probes) |
-  | **total** | **about 5.7 GPU-hours** |
+  | the controls' replay | about 5 minutes |
+  | Part C's hold-out pass | about 15 minutes (32 champions and 16 matched references: E2's GA′ and C2′, 3 probes) |
+  | **total** | **about 5.9 GPU-hours** |
 
   **Cap: 7 GPU-hours,** counted by the accounting across attempts.
-- **Order:** projection → Part B → C0 → C1 → C2 → C4 → C3 → Part C's hold-out pass. Each record is
+- **Order:** projection → Part B → C0 → the controls' replay → C1 → C2 → C4 → C3 → Part C's hold-out
+  pass. Each record is
   committed and pushed before the next stage.
-- **The hold-out pass is protected:** an arm starts only if the cap's remainder covers its projected
-  time plus a 0.5-hour reserve. Otherwise it is skipped, and recorded as skipped. The order puts the
-  least central arm (C3) last.
-- **Incomplete arms:** an arm that stops is rerun once, as in E2, and is otherwise final and not
-  completed. Its reading is not drawn, and the other arms' are unaffected.
+- **The hold-out pass is protected, in two ways** (both reviewers; E2's own rule exempted reruns):
+  - **admission:** any training stage, a rerun included, starts only if the cap's remainder covers its
+    projected time plus a 0.5-hour reserve. Otherwise it is skipped (a first attempt) or final and not
+    completed (a rerun), recorded as such, and the later stages go on;
+  - **a hard stop:** training stages run under a clock whose cap is 7 − 0.5 = 6.5 hours, so an overrun
+    stops the stage as "cap reached" before it can spend the reserve. Only the hold-out pass uses the
+    full 7 hours. At most one rollout (seconds) can be in flight past the stop.
+
+  The order puts the least central arm (C3) last.
+- **Incomplete arms:** an arm that stops is rerun once, as in E2, if admitted; otherwise it is final
+  and not completed. Its reading is not drawn, and the other arms' are unaffected. **The hold-out pass
+  runs with whatever arms completed**, and records the missing ones.
 - **Guards,** E2's:
   - start markers with attempt numbers, the cap clock, not-completed records, and the rerun rule;
   - atomic, retried writes;
   - binding inputs: the code, the configuration, `requirements.txt`, this plan, E1's freeze and gate
-    records, and E2's training records (the pairing and the checkpoint candidates' hashes).
+    records, E2's training records (the pairing and the checkpoint candidates' hashes), and 04a's
+    training records (Part B's genome hashes). The replay above checks, separately, that today's
+    engine reproduces E2's runs.
 - **The runner,** `scripts/e2d.py`, reuses `scripts/e2.py`'s stage frame and loops. It is written and
   tested (test-first, sabotage-checked) after this plan is agreed. Tests pin the arm table, the seed
   and id mappings, and that `mean` and `swapped` act on Task N's sensors.
@@ -280,3 +356,39 @@ draws its training worlds from the same per-run schedule, as E2's run r.
   C0 and C4.
 - **Not taken:** the `hold` probe with M-avg and K (Fable offered it as an alternative to renaming the
   reading; the rename was taken). An ES arm with more worlds (both advised against it for now).
+
+## Changes from v2 (review v2, D130)
+
+- **Run 2** (Fable): every Part C reading over all 8 runs and over the 7 without run 2; "supports,
+  carried by run 2" otherwise.
+- **The controls are replayed** (Fable): E2's GA and ES, generations 0-25, must reproduce E2's
+  hashes before Part C starts; plus a recorded pairing check per arm. What pairing does not remove
+  is stated, and the arm-reference correlation reported.
+- **Part B's reading** (both):
+  - "no material benefit detected", two-sided;
+  - three-quarters of a set required for "non-stereo", and "mixed" otherwise;
+  - the read sets named, with random sampling's excluded;
+  - denominators given for the shared genome;
+  - the k = 4 reference pinned (speed 1.0, turn 0.1).
+- **The budget reading** (Fable, Astra): E2's hold-out figures disclosed; all 8 runs; a mean-gain rule
+  with Part C's intervals in place of the count; per-run episodes; the 42 checkpoints; curves against
+  cumulative work.
+- **The combined arm** (both): explicit paired contrasts, and an interaction only from the
+  difference-of-differences, all at 11 matched checkpoints; C0 alone suggests testing evaluation
+  effort, not spending it.
+- **The reserve** (both): admission for reruns too, and a hard stop at 6.5 hours for training; the
+  hold-out pass runs with the arms that completed.
+- **C0** (both):
+  - labelled a local surrogate;
+  - the parents evaluated;
+  - the same noise at every scale;
+  - disjoint reference worlds, sampled without replacement;
+  - pooling, a minimum of 30 pairs, tie rules, zero differences, compositions and seeds;
+  - the reference's uncertainty estimated.
+- **Part A:** three cells corrected (both); the resampling's replacement stated, and the budget
+  figures' source cited (Fable).
+- **Also:**
+  - a sign-flip test beside the bootstrap (Fable);
+  - the 32-world prefix pinned by a test (Fable);
+  - 04a's records bound (Astra);
+  - the budget recomputed to 5.9 hours with the replay and the larger pass (both noted 5.8 for v2).
