@@ -29,6 +29,14 @@ led to several of the findings.
 | 9 | Unnamed alternative explanations in the same pre-registration: a degree-preserving shuffle destroys mirror symmetry (N2 keeps 64% of chemical edges mirrored, shuffles 13-16%), and on the stereo task the "history" jitter also scrambles the left-right difference | Claude Opus 5.5 | **Fable 5.1**, reviewing after the evolution had started and before any probe ran | Symmetry measured on every graph; jitter re-validated on scripted stereo controllers (costs a memoryless one 0.029 at radius 1) | D041 |
 | 10 | The first write-up of experiment 02 said evolution "erodes" N2's generation-0 advantage; in fact N2's own mapping preference is unchanged and the shuffles catch up. It also claimed champions do not use history (jitter cannot show that), that stereo steering is "real but worth little", that N2 "reads food more strongly" (an intervention effect), and "topology, not strengths" | Claude Opus 5.5 (`6dc7d71`) | **Astra 6 and Fable 5.1, independently**, before publication; Astra found the catch-up | Recomputed by Claude from the records before rewriting | D042 |
 | 11 | The first write-up of experiment 03 explained why P4 passed at low registered power by "smaller latent SDs" (the rank test does not depend on scale; the ensembles' compressed, left-skewed upper tails are the relevant fact), called the rank p exact without its exchangeability caveat, gave the wrong rule for P1's "inconclusive", called P4 bounded by 1, named "mirror symmetry together with routing" as untested (SH-mirror includes the routing cap), and leaned on N2-rev's ratio of two numbers near 4 × 10⁻⁴ | Claude Opus 5.5 (`f5ab9d9`) | **Astra 6 and Fable 5.1, independently**, before publication | Each claim re-checked by Claude against the code, `report.json` and the raw measurements; per-graph quantities published as `supplement.json` | D058 |
+| 12 | Main's README led 01b with "better than or level with shuffles of itself". "Level with" is a non-inferiority claim that was never registered and that D033 had already withdrawn; 02's new README repeated it | Claude Opus 5.5 (`44cdf75`, 2026-09-25) | **Astra 6**, in the documentation review | Corrected with a dated note quoting the old line | D088 |
+| 13 | T1's write-up claimed more equivalence than it had: padding a single strain was said not to change CPU results (a CPU batch of one differs by about 10⁻⁷), "each guard has a test" was false, the checker counted a remainder chunk as multi-strain and had a pairing guard that could not fail, and the account of the eight remaining differences was wrong | Claude Opus 5.5 | **Astra 6 and Fable 5.1**, over two rounds | Rerun against a committed pre-change engine; every explanation backed by committed diagnostics; T1 closed by a dated amendment, not a pass | D091, D092 |
+| 14 | E1's pre-registration, as first written: a cue test that compared a bootstrap bound with half the observed mean; a path efficiency that could exceed 1; "each guard has a test" (false again); "σ = 6 is selected either way" (not forced); crash retention promised but not implemented; a freeze file that would have been written with Windows line endings | Claude Opus 5.5 | **Astra 6 and Fable 5.1**, in five rounds before binding (the cue test and σ: Astra; the line endings: Fable) | Each counter-example became a test; nothing formal had run | D095-D099 |
+| 15 | E1's results mixed two clocks in the compute figure, called level kinesis blind, and overclaimed that a gain of 32 was "realistic" for a brain and that evolution "will need" shaping | Claude Opus 5.5 | **Astra 6 and Fable 5.1**, before main | Dated corrections; 04a later passed without shaping | D101 |
+| 16 | "03's graph files rebuild byte for byte" held only on Windows: the zip headers record the writing system | Claude Opus 5.5 (D087) | **A machine:** the first automatic test run on Linux | A content-hash manifest, computed from the original files; dated notes | D106 |
+| 17 | 04a's pre-registration, as first written: the smoke mode trained on the formal training range, and a test fixture deleted the real smoke records (Astra); genome files would have been published with the connectome's weights, and the development pilot used the formal run seeds (Fable); a genome file's metadata could switch off padding unseen (Astra); a killed attempt's compute was never counted (both) | Claude Opus 5.5 | **Astra 6 and Fable 5.1**, in five rounds before binding | The exposed ids reconstructed and the range moved; the seeds moved; each fix with a test, several sabotage-checked | D104-D108 |
+| 18 | 04a's results said the champions "steer" and behave "like a stereo steerer"; the records show cue use, with behaviour closer to a controller that compares the scent over time. The training-curve and timing sentences were wrong, reliability was claimed for all 16 champions, and "no deviation" missed one | Claude Opus 5.5 | **Fable 5.1** (the steering reading, from the records) and **Astra 6** (reliability); the rest both | Dated corrections; the verdict unchanged | D111 |
+| 19 | 03m's exploratory plan: a filter pooled all five ensembles under "SH" in a committed output, and a settling check compared only the two ends of its window | Claude Opus 5.5 | **Astra 6 and Fable 5.1** (the filter); **Astra 6** (the settling check) | Fixed with tests before any simulation; the output regenerated | 03m's PLAN.md, v3 |
 
 Episode 6 went unnoticed for a week, through a passing test suite, every milestone report, a
 publication audit, the first public release and Claude's own review of the roadmap on the day it
@@ -47,7 +55,10 @@ controls and 0.22-0.23 for N2. Astra 6 found 8 of 1440 weys with an integrator e
 same check with different inputs found 0. Both are reported as measured. No reviewer finding was
 adopted without being re-measured or re-read first, and the corrections above say who measured what.
 One exception came to light later: the mirror-symmetry rationale of episode 9 was adopted after
-checking the symmetry index, not the argument itself (see the note above).
+checking the symmetry index, not the argument itself (see the note above). An outside review by a
+separate Claude Opus 5.5 instance (2026-09-28) was checked the same way: two of its figures did not
+survive (N2's history dependence is above every null graph but one in each run, not the highest; its
+food response is 1.55-2.7 times the most responsive graph's, not 1.5-1.8).
 
 ## What this does and does not show
 
@@ -58,7 +69,9 @@ checking the symmetry index, not the argument itself (see the note above).
   Confirming each one took execution.
 - Reviewers make errors too. Checking before adopting a finding was part of what made the reviews
   useful.
-- This is one project and eleven episodes: an anecdote about multi-agent review, not a measurement
+- One error (episode 16) was caught by neither a person nor a reviewer but by running the tests on
+  another operating system.
+- This is one project and nineteen episodes: an anecdote about multi-agent review, not a measurement
   of it.
 
 ## In the history
