@@ -1,10 +1,13 @@
-# E2: a short optimizer screen (design v2.1)
+# E2: a short optimizer screen (design v2.2)
 
 Roadmap v3, Track E, step E2. This is a design, not a pre-registration. Nothing has been run.
 - v1 (`docs/reviews/20260929-100947-E2-design/`): both Astra 6 and Fable 5.1 said "revise", with
   largely the same must-changes. v2 adopts them; the last section lists how.
 - v2 (`docs/reviews/20260929-101958-E2-design-v2/`): Fable "proceed to pre-registration", Astra
   "revise"; their remaining points overlap and are small. v2.1 takes them (D117).
+- v2.1 (`docs/reviews/20260929-102907-E2-design-v21/`): Fable "proceed to pre-registration", Astra
+  "revise" for specification corrections only, "not a request to redesign". v2.2 makes them (D118);
+  the pre-registration, which both review, carries them.
 
 ## What E2 is for, and what it cannot show
 
@@ -201,3 +204,38 @@ each method's training shape, as 04a did.
 - **ENOMAD's summary** corrected: signed initial weights, not all positive; a nearby parameterisation,
   not a working controller; shaped rewards; the journal version cited (Astra).
 - **Tests and equivalence** declared (Fable).
+
+## v2.2: the specification corrections (review v2.1, D118)
+
+These replace the corresponding statements above where they differ.
+
+- **Generations are counted from 0, and generation 0 is each run's start:** the GA's random population,
+  random sampling's first draw, the ES's start screen. **The pilot's ES runs are generations 0-199**
+  (the start and 199 updates), and a setting is selected at the generation-199 checkpoint. **The formal
+  ES runs are generations 0-622** (the start and 622 updates). The GA and random sampling run
+  generations 0-999. **The descriptive extension** resumes each formal ES run from its saved state at
+  generation 622 (the mean, Adam's moments and counter, the noise generator) and runs generations
+  623-999 (Astra, Fable).
+- **The allowance is training plus checkpoint validation episodes** (Astra): checkpoint validations
+  select champions, so they count. With checkpoints at generation 0, every 25th and the last:
+  - the GA and random sampling: 8 × (1 000 × 256 + 41 × 256) = **2 131 968** episodes per method;
+  - the ES: its pilot, 15 × (200 × 256 + 9 × 256) = 802 560, plus its formal runs, 8 × (623 × 256 +
+    26 × 256) = 1 329 152, **2 131 712** in all: 256 episodes (one generation of one run) below the
+    others, from rounding to whole generations.
+  The hold-out and the scripted controls are common to every method and counted separately.
+- **"Keep the GA"** is worded: the ES did not satisfy both replacement criteria after paying for its
+  tuning (Astra).
+- **The extension's champions** (the best checkpoint over generations 0-999) are evaluated in the same
+  single hold-out pass, with their hashes committed beforehand; they are descriptive and never enter
+  the decision. Its training worlds continue each run's schedule in E2's training range (Fable).
+- **The loop** (Fable): the mean is projected into the bounds only after a real update; every training
+  and validation score must be finite, as in `evolve_batch`, or the method's batch stops; a generation
+  in which every antithetic pair ties within itself is treated as flat, like an all-tied one (no change
+  to the mean, the moments or the counter; tested). The flat-batch behaviour is tested again on the
+  loop itself.
+- **The start screen's ties** go to the earliest genome. Each ES run's start score and first non-flat
+  generation are reported: with 04a's zero share, all 32 start genomes can score zero (Fable estimates
+  a chance of about 0.38), and the ES then waits on the plateau until a perturbation scores.
+- **An incomplete random-sampling batch:** the floor check is reported as not made, and the ES-GA
+  decision stands as provisional (Fable).
+- **Budget:** the pilot is nearer 0.5 GPU-hours (Fable); the total still fits under a cap of about 7.

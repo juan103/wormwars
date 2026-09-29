@@ -142,3 +142,17 @@ def test_a_flat_batch_after_real_updates_moves_nothing():
     np.testing.assert_array_equal(es.m, m)
     np.testing.assert_array_equal(es.v, v)
     assert es.t == t and es.flat_generations == 1
+
+
+def test_a_batch_tied_within_every_pair_moves_nothing():
+    """Review v2.1 (Fable): if every antithetic pair ties within itself, the gradient is zero although
+    the batch is not flat; it is treated as flat, so Adam's momentum does not move the mean."""
+    es = O.OpenAIES(np.zeros(4), sigma=0.5, lr=0.1, pairs=4, generator=np.random.default_rng(3))
+    for _ in range(5):
+        c = es.ask()
+        es.tell(np.array([float(x[0]) for x in c]))
+    mean, t = es.mean.copy(), es.t
+    es.ask()
+    es.tell(np.array([1.0, 1.0, 2.0, 2.0, 3.0, 3.0, 0.0, 0.0]))  # pairs tie within, not across
+    np.testing.assert_array_equal(es.mean, mean)
+    assert es.t == t and es.flat_generations == 1

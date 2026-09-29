@@ -6,7 +6,8 @@ coordinate. `decode` maps z back and clamps to the genome's bounds; `project` pu
 inside them.
 
 **OpenAI-ES**, as the design fixes it: antithetic pairs, utilities from centred average ranks (equal
-fitness, equal utility; a generation with every fitness equal makes no update), Adam on the estimated
+fitness, equal utility; a generation with every fitness equal, or with every antithetic pair tied
+within itself, makes no update), Adam on the estimated
 gradient, no weight decay. The gradient uses the unclamped perturbations.
 
 **Random sampling** keeps the best genome seen since the last checkpoint (ties to the earliest).
@@ -84,10 +85,11 @@ class OpenAIES:
 
     def tell(self, fitness: np.ndarray) -> None:
         u = utilities(fitness)
-        if not np.any(u):  # a flat batch: no information, no update
+        diff = u[0::2] - u[1::2]
+        if not np.any(diff):  # a flat batch, or every pair tied within itself: no information, no update
             self.flat_generations += 1
             return
-        grad = (u[0::2] - u[1::2]) @ self._noise / (2 * self.pairs * self.sigma)
+        grad = diff @ self._noise / (2 * self.pairs * self.sigma)
         self.t += 1
         self.m = self.b1 * self.m + (1 - self.b1) * grad
         self.v = self.b2 * self.v + (1 - self.b2) * grad ** 2

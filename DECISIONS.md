@@ -3505,3 +3505,18 @@ E2's design (`docs/E2/DESIGN.md`) went to Astra 6 and Fable 5.1 twice.
 
 The ES and random sampling are implemented test-first (`wormwars/e2/optimizers.py`, 13 tests; the tie
 rule and the flat-batch rule sabotage-checked).
+
+## D118 — E2 design v2.2; on to the pre-registration
+
+The v2.1 confirmation (`docs/reviews/20260929-102907-E2-design-v21/`): **Fable "proceed to
+pre-registration"; Astra "revise", for specification corrections only** ("not a request to
+redesign"): generation labels consistent with the arithmetic, checkpoint validations inside the
+allowance (which still gives 622 formal ES generations: 2 131 712 episodes against the GA's 2 131 968),
+and the "keep the GA" wording. Fable added loop-level points (project only after a real update, finite
+scores, within-pair ties, start-screen ties, an incomplete random batch, the extension's state and
+scoring).
+
+All are taken in design v2.2's last section. The one code gap, a batch tied within every antithetic
+pair moving the mean through Adam's momentum, is fixed test-first (the test failed, then passed; 14
+tests). Since both reviewers review the pre-registration, which carries these specifications, the next
+step is the pre-registration rather than another design round.
