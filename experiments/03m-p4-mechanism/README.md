@@ -1,6 +1,6 @@
 # 03m: what drives P4? An exploratory look
 
-**Status:** exploratory. The plan (v4.1) was agreed by Astra 6 and Fable 5.1 after four rounds; all
+**Status:** exploratory; published on main on 2026-09-29 (`1c0c978`, D116). The plan (v4.1) was agreed by Astra 6 and Fable 5.1 after four rounds; all
 five parts ran on 2026-09-29 (3.32 GPU-hours). The results were reviewed, and their summary is
 corrected (D114): read [`RESULTS.md`](RESULTS.md) with its Corrections. Nothing here is confirmatory.
 *(Corrected 2026-09-29, D114. The status line before this one said: "N2's large food response

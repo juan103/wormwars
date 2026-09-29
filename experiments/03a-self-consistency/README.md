@@ -6,7 +6,7 @@
 > hoped-for 5 times. Until then, no code specific to 03a, no feasibility pilot and no
 > pre-registration tag exist.
 
-**Status:** draft v3.2 (2026-09-25), not run, not scheduled (D062) · **Run:** none · **Commit:**
+**Status:** draft v3.2 (2026-09-25), not run, not scheduled (D062). *Updated 2026-09-29:* it becomes a six-neuron proof of concept capped at 72 GPU-hours (the owner, D094), planned in the biology track after a confirmatory study of 03m's leads · **Run:** none · **Commit:**
 none · **Compute:** none spent. The draft as written is estimated at about 31 million genome
 evaluations for its searches, about 785 GPU-hours at 02's batch-32 throughput, plus about 37
 GPU-hours of whole-brain evolution
