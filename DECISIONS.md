@@ -3412,3 +3412,16 @@ batch of one can differ in the last bits (D092), and chaotic dynamics amplify th
 GitHub's runners vary in CPU, which likely explains why it shows only sometimes. It predates 04a and
 touches none of its results. **To do:** make the test match what is claimed (the same composition, or
 padding, or a documented tolerance), with review, rather than loosen it silently.
+
+## D113 — 03m ran (exploratory); results written, for review
+
+03m's plan (v4.1, agreed by both reviewers after four rounds) ran on 2026-09-29: synapses, weights,
+decay and lesions, 3.32 GPU-hours of a 5-hour cap, one attempt each, every reproduction check exact.
+Exploratory findings (RESULTS.md):
+- N2's large food response depends on the placement of its chemical weights (permuting them, or all
+  weights, brings it to the shuffles' level) and on RIA and AIY (deleting either pair does too);
+- its high P4 survives all of these, every single and paired deletion tested (lowest 0.907, AIZ), and
+  gap junctions switched off; with its weights permuted, N2's wiring keeps a median P4 of 0.885;
+- the history mostly relaxes, more slowly in N2 (9.4% left at 300 ticks, above 78 of 80 null
+  graphs); about 1% of N2's random brains settle with the difference intact.
+The results go to Astra 6 and Fable 5.1.

@@ -1,0 +1,3849 @@
+{
+ "what": "exploratory (PLAN.md Q5)",
+ "plan": {
+  "genomes": 2048,
+  "per_chunk": 2048,
+  "reproduce_tolerance": 1e-06,
+  "cap_gpu_hours": 5.0,
+  "lead": {
+   "p4_below": "the pooled 95th percentile of 03's five ensembles",
+   "response_below": "the pooled maximum of 03's five ensembles"
+  },
+  "follow_up_top": 5,
+  "decay": {
+   "after": 300,
+   "every": 10,
+   "extra_ticks": [
+    5
+   ],
+   "graphs_per_ensemble": 16,
+   "remaining_fraction": 0.1,
+   "start_floor": 0.001,
+   "settle_tolerance": 0.0001,
+   "settle_window": 10
+  },
+  "weights": {
+   "permutations": 64,
+   "seed_base": 100
+  },
+  "by_type_seeds": [
+   100,
+   101,
+   102,
+   103,
+   104,
+   105,
+   106,
+   107
+  ]
+ },
+ "stamp": {
+  "git_commit": "53124757ba0b8ebd6b23d98aea68bb9ed86e4924",
+  "branch": "roadmap",
+  "dirty": false,
+  "python": "3.13.3",
+  "numpy": "2.4.4",
+  "torch": "2.12.0+cu130",
+  "cuda": "13.0",
+  "gpu": "NVIDIA GeForce RTX 5080",
+  "connectome_cache_sha256": "43b87aa172a0042b9dce734b15bdf1c87efe3a33ac1cc0d9cd03255a60c96d4a",
+  "device": "cuda",
+  "genomes": 2048,
+  "smoke": false
+ },
+ "reproduce_N2": {
+  "got": {
+   "numerator": 0.11969424649760185,
+   "denominator": 0.12858509155194042
+  },
+  "03": {
+   "numerator": 0.11969424649760185,
+   "denominator": 0.12858509155194042
+  },
+  "relative_difference": {
+   "numerator": 0.0,
+   "denominator": 0.0
+  },
+  "reproduced": true
+ },
+ "thresholds": {
+  "P4_pooled_95th": 0.8885995336105148,
+  "response_pooled_max": 0.07317342492115131,
+  "response_pooled_median": 0.022893334492437134
+ },
+ "summary": {
+  "independent": {
+   "valid": 64,
+   "invalid": 0,
+   "P4_median": 0.8851350866033614,
+   "P4_share_below_N2": 0.921875,
+   "P4_share_above_pooled_null_95th": 0.421875,
+   "denominator_median": 0.023458631271751074,
+   "denominator_share_below_N2": 1.0,
+   "denominator_share_above_pooled_null_max": 0.0,
+   "per_ensemble": {
+    "SH": {
+     "P4_share_above_ensemble_95th": 0.75
+    },
+    "SH-route": {
+     "P4_share_above_ensemble_95th": 0.28125
+    },
+    "SH-class": {
+     "P4_share_above_ensemble_95th": 0.453125
+    },
+    "SH-mirror": {
+     "P4_share_above_ensemble_95th": 0.359375
+    },
+    "SH-recip": {
+     "P4_share_above_ensemble_95th": 0.65625
+    }
+   }
+  },
+  "paired": {
+   "valid": 64,
+   "invalid": 0,
+   "P4_median": 0.8835710635430303,
+   "P4_share_below_N2": 0.921875,
+   "P4_share_above_pooled_null_95th": 0.453125,
+   "denominator_median": 0.023692467625551217,
+   "denominator_share_below_N2": 1.0,
+   "denominator_share_above_pooled_null_max": 0.0,
+   "per_ensemble": {
+    "SH": {
+     "P4_share_above_ensemble_95th": 0.75
+    },
+    "SH-route": {
+     "P4_share_above_ensemble_95th": 0.296875
+    },
+    "SH-class": {
+     "P4_share_above_ensemble_95th": 0.484375
+    },
+    "SH-mirror": {
+     "P4_share_above_ensemble_95th": 0.375
+    },
+    "SH-recip": {
+     "P4_share_above_ensemble_95th": 0.671875
+    }
+   }
+  }
+ },
+ "permutations": {
+  "independent": {
+   "N2perm100": {
+    "numerator": 0.03576515814711456,
+    "denominator": 0.04348297223896225,
+    "P4": 0.8225095090226547,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 0.859375,
+      "denominator_share_below": 0.9140625
+     },
+     "SH-route": {
+      "P4_share_below": 0.3046875,
+      "denominator_share_below": 0.9921875
+     },
+     "SH-class": {
+      "P4_share_below": 0.453125,
+      "denominator_share_below": 0.9375
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.28125,
+      "denominator_share_below": 0.9765625
+     },
+     "SH-recip": {
+      "P4_share_below": 0.78125,
+      "denominator_share_below": 0.8984375
+     }
+    },
+    "class": "both"
+   },
+   "N2perm101": {
+    "numerator": 0.034073945909767644,
+    "denominator": 0.038132665407829336,
+    "P4": 0.8935631838306178,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.8828125
+     },
+     "SH-route": {
+      "P4_share_below": 0.9296875,
+      "denominator_share_below": 0.984375
+     },
+     "SH-class": {
+      "P4_share_below": 0.96875,
+      "denominator_share_below": 0.9140625
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.9296875,
+      "denominator_share_below": 0.953125
+     },
+     "SH-recip": {
+      "P4_share_below": 0.984375,
+      "denominator_share_below": 0.84375
+     }
+    },
+    "class": "response only"
+   },
+   "N2perm102": {
+    "numerator": 0.021123218367392838,
+    "denominator": 0.023393445435431204,
+    "P4": 0.9029545658716894,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.421875
+     },
+     "SH-route": {
+      "P4_share_below": 0.9453125,
+      "denominator_share_below": 0.7109375
+     },
+     "SH-class": {
+      "P4_share_below": 0.9921875,
+      "denominator_share_below": 0.53125
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.96875,
+      "denominator_share_below": 0.6015625
+     },
+     "SH-recip": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.3828125
+     }
+    },
+    "class": "response only"
+   },
+   "N2perm103": {
+    "numerator": 0.03853574013646721,
+    "denominator": 0.04308963832772861,
+    "P4": 0.8943157016862006,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.9140625
+     },
+     "SH-route": {
+      "P4_share_below": 0.9296875,
+      "denominator_share_below": 0.9921875
+     },
+     "SH-class": {
+      "P4_share_below": 0.96875,
+      "denominator_share_below": 0.9375
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.9375,
+      "denominator_share_below": 0.9765625
+     },
+     "SH-recip": {
+      "P4_share_below": 0.984375,
+      "denominator_share_below": 0.8984375
+     }
+    },
+    "class": "response only"
+   },
+   "N2perm104": {
+    "numerator": 0.017757299572622287,
+    "denominator": 0.0207711551979628,
+    "P4": 0.8549018773093513,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 0.953125,
+      "denominator_share_below": 0.3046875
+     },
+     "SH-route": {
+      "P4_share_below": 0.59375,
+      "denominator_share_below": 0.65625
+     },
+     "SH-class": {
+      "P4_share_below": 0.734375,
+      "denominator_share_below": 0.4296875
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.6796875,
+      "denominator_share_below": 0.40625
+     },
+     "SH-recip": {
+      "P4_share_below": 0.90625,
+      "denominator_share_below": 0.2578125
+     }
+    },
+    "class": "both"
+   },
+   "N2perm105": {
+    "numerator": 0.02648619852243428,
+    "denominator": 0.030025364102584717,
+    "P4": 0.8821274716916498,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 0.9921875,
+      "denominator_share_below": 0.703125
+     },
+     "SH-route": {
+      "P4_share_below": 0.875,
+      "denominator_share_below": 0.9296875
+     },
+     "SH-class": {
+      "P4_share_below": 0.921875,
+      "denominator_share_below": 0.78125
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.8671875,
+      "denominator_share_below": 0.8203125
+     },
+     "SH-recip": {
+      "P4_share_below": 0.9765625,
+      "denominator_share_below": 0.703125
+     }
+    },
+    "class": "both"
+   },
+   "N2perm106": {
+    "numerator": 0.020215588194332668,
+    "denominator": 0.022917210242667352,
+    "P4": 0.8821138341129849,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 0.9921875,
+      "denominator_share_below": 0.3984375
+     },
+     "SH-route": {
+      "P4_share_below": 0.875,
+      "denominator_share_below": 0.703125
+     },
+     "SH-class": {
+      "P4_share_below": 0.921875,
+      "denominator_share_below": 0.515625
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.8671875,
+      "denominator_share_below": 0.5390625
+     },
+     "SH-recip": {
+      "P4_share_below": 0.9765625,
+      "denominator_share_below": 0.3671875
+     }
+    },
+    "class": "both"
+   },
+   "N2perm107": {
+    "numerator": 0.02075668703946576,
+    "denominator": 0.021919116515164205,
+    "P4": 0.9469673207451474,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.3359375
+     },
+     "SH-route": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.671875
+     },
+     "SH-class": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.4921875
+     },
+     "SH-mirror": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.5
+     },
+     "SH-recip": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.328125
+     }
+    },
+    "class": "response only"
+   },
+   "N2perm108": {
+    "numerator": 0.023451853775441123,
+    "denominator": 0.02606851279415423,
+    "P4": 0.8996237706625181,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.5625
+     },
+     "SH-route": {
+      "P4_share_below": 0.9375,
+      "denominator_share_below": 0.8203125
+     },
+     "SH-class": {
+      "P4_share_below": 0.984375,
+      "denominator_share_below": 0.6484375
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.96875,
+      "denominator_share_below": 0.703125
+     },
+     "SH-recip": {
+      "P4_share_below": 0.9921875,
+      "denominator_share_below": 0.5078125
+     }
+    },
+    "class": "response only"
+   },
+   "N2perm109": {
+    "numerator": 0.01265999335282686,
+    "denominator": 0.014474804656856577,
+    "P4": 0.8746227429625408,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 0.9921875,
+      "denominator_share_below": 0.0625
+     },
+     "SH-route": {
+      "P4_share_below": 0.828125,
+      "denominator_share_below": 0.2109375
+     },
+     "SH-class": {
+      "P4_share_below": 0.875,
+      "denominator_share_below": 0.0546875
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.8359375,
+      "denominator_share_below": 0.0859375
+     },
+     "SH-recip": {
+      "P4_share_below": 0.9609375,
+      "denominator_share_below": 0.0625
+     }
+    },
+    "class": "both"
+   },
+   "N2perm110": {
+    "numerator": 0.01848776629412896,
+    "denominator": 0.02044491326705611,
+    "P4": 0.9042721802062719,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.296875
+     },
+     "SH-route": {
+      "P4_share_below": 0.9453125,
+      "denominator_share_below": 0.6328125
+     },
+     "SH-class": {
+      "P4_share_below": 0.9921875,
+      "denominator_share_below": 0.4140625
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.9765625,
+      "denominator_share_below": 0.3828125
+     },
+     "SH-recip": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.25
+     }
+    },
+    "class": "response only"
+   },
+   "N2perm111": {
+    "numerator": 0.02151351443353633,
+    "denominator": 0.0265661528428609,
+    "P4": 0.8098091794016624,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 0.8125,
+      "denominator_share_below": 0.578125
+     },
+     "SH-route": {
+      "P4_share_below": 0.1875,
+      "denominator_share_below": 0.8203125
+     },
+     "SH-class": {
+      "P4_share_below": 0.265625,
+      "denominator_share_below": 0.6640625
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.1796875,
+      "denominator_share_below": 0.734375
+     },
+     "SH-recip": {
+      "P4_share_below": 0.7109375,
+      "denominator_share_below": 0.546875
+     }
+    },
+    "class": "both"
+   },
+   "N2perm112": {
+    "numerator": 0.0192114531473635,
+    "denominator": 0.023019549696982722,
+    "P4": 0.8345711971021584,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 0.8984375,
+      "denominator_share_below": 0.3984375
+     },
+     "SH-route": {
+      "P4_share_below": 0.40625,
+      "denominator_share_below": 0.7109375
+     },
+     "SH-class": {
+      "P4_share_below": 0.5625,
+      "denominator_share_below": 0.515625
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.421875,
+      "denominator_share_below": 0.5703125
+     },
+     "SH-recip": {
+      "P4_share_below": 0.8359375,
+      "denominator_share_below": 0.3671875
+     }
+    },
+    "class": "both"
+   },
+   "N2perm113": {
+    "numerator": 0.013590730595751666,
+    "denominator": 0.01507704251071118,
+    "P4": 0.9014188681962265,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.0703125
+     },
+     "SH-route": {
+      "P4_share_below": 0.9375,
+      "denominator_share_below": 0.2578125
+     },
+     "SH-class": {
+      "P4_share_below": 0.984375,
+      "denominator_share_below": 0.078125
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.96875,
+      "denominator_share_below": 0.1171875
+     },
+     "SH-recip": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.0859375
+     }
+    },
+    "class": "response only"
+   },
+   "N2perm114": {
+    "numerator": 0.031127818464483425,
+    "denominator": 0.03528624734826735,
+    "P4": 0.8821515690591532,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 0.9921875,
+      "denominator_share_below": 0.8203125
+     },
+     "SH-route": {
+      "P4_share_below": 0.875,
+      "denominator_share_below": 0.953125
+     },
+     "SH-class": {
+      "P4_share_below": 0.921875,
+      "denominator_share_below": 0.8828125
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.8671875,
+      "denominator_share_below": 0.9296875
+     },
+     "SH-recip": {
+      "P4_share_below": 0.9765625,
+      "denominator_share_below": 0.8203125
+     }
+    },
+    "class": "both"
+   },
+   "N2perm115": {
+    "numerator": 0.015696411066528526,
+    "denominator": 0.01724391618699883,
+    "P4": 0.9102579075606354,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.140625
+     },
+     "SH-route": {
+      "P4_share_below": 0.96875,
+      "denominator_share_below": 0.40625
+     },
+     "SH-class": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.171875
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.9921875,
+      "denominator_share_below": 0.21875
+     },
+     "SH-recip": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.15625
+     }
+    },
+    "class": "response only"
+   },
+   "N2perm116": {
+    "numerator": 0.020489965563683654,
+    "denominator": 0.023000605048764555,
+    "P4": 0.8908446330103931,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.3984375
+     },
+     "SH-route": {
+      "P4_share_below": 0.921875,
+      "denominator_share_below": 0.7109375
+     },
+     "SH-class": {
+      "P4_share_below": 0.96875,
+      "denominator_share_below": 0.515625
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.90625,
+      "denominator_share_below": 0.5703125
+     },
+     "SH-recip": {
+      "P4_share_below": 0.984375,
+      "denominator_share_below": 0.3671875
+     }
+    },
+    "class": "response only"
+   },
+   "N2perm117": {
+    "numerator": 0.02787626099507179,
+    "denominator": 0.030581240001993137,
+    "P4": 0.9115477656646672,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.703125
+     },
+     "SH-route": {
+      "P4_share_below": 0.96875,
+      "denominator_share_below": 0.9296875
+     },
+     "SH-class": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.8203125
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.9921875,
+      "denominator_share_below": 0.84375
+     },
+     "SH-recip": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.7265625
+     }
+    },
+    "class": "response only"
+   },
+   "N2perm118": {
+    "numerator": 0.019796105789282592,
+    "denominator": 0.021870827902603196,
+    "P4": 0.9051374679294304,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.3359375
+     },
+     "SH-route": {
+      "P4_share_below": 0.953125,
+      "denominator_share_below": 0.671875
+     },
+     "SH-class": {
+      "P4_share_below": 0.9921875,
+      "denominator_share_below": 0.4921875
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.9765625,
+      "denominator_share_below": 0.5
+     },
+     "SH-recip": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.328125
+     }
+    },
+    "class": "response only"
+   },
+   "N2perm119": {
+    "numerator": 0.01861487827318342,
+    "denominator": 0.02011190132907359,
+    "P4": 0.9255653142188957,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.28125
+     },
+     "SH-route": {
+      "P4_share_below": 0.9921875,
+      "denominator_share_below": 0.625
+     },
+     "SH-class": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.359375
+     },
+     "SH-mirror": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.3828125
+     },
+     "SH-recip": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.234375
+     }
+    },
+    "class": "response only"
+   },
+   "N2perm120": {
+    "numerator": 0.026128359641006682,
+    "denominator": 0.031507326906648814,
+    "P4": 0.8292788442009329,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 0.8828125,
+      "denominator_share_below": 0.7421875
+     },
+     "SH-route": {
+      "P4_share_below": 0.3671875,
+      "denominator_share_below": 0.9296875
+     },
+     "SH-class": {
+      "P4_share_below": 0.5078125,
+      "denominator_share_below": 0.8359375
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.390625,
+      "denominator_share_below": 0.875
+     },
+     "SH-recip": {
+      "P4_share_below": 0.8203125,
+      "denominator_share_below": 0.75
+     }
+    },
+    "class": "both"
+   },
+   "N2perm121": {
+    "numerator": 0.021544915947742993,
+    "denominator": 0.024724606291783857,
+    "P4": 0.871395713787463,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 0.9921875,
+      "denominator_share_below": 0.5
+     },
+     "SH-route": {
+      "P4_share_below": 0.796875,
+      "denominator_share_below": 0.7890625
+     },
+     "SH-class": {
+      "P4_share_below": 0.859375,
+      "denominator_share_below": 0.6171875
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.7890625,
+      "denominator_share_below": 0.65625
+     },
+     "SH-recip": {
+      "P4_share_below": 0.9609375,
+      "denominator_share_below": 0.4375
+     }
+    },
+    "class": "both"
+   },
+   "N2perm122": {
+    "numerator": 0.03587219044857193,
+    "denominator": 0.048249049998048577,
+    "P4": 0.7434797255080208,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 0.40625,
+      "denominator_share_below": 0.9375
+     },
+     "SH-route": {
+      "P4_share_below": 0.0,
+      "denominator_share_below": 1.0
+     },
+     "SH-class": {
+      "P4_share_below": 0.0546875,
+      "denominator_share_below": 0.96875
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.0078125,
+      "denominator_share_below": 0.9765625
+     },
+     "SH-recip": {
+      "P4_share_below": 0.3984375,
+      "denominator_share_below": 0.9296875
+     }
+    },
+    "class": "both"
+   },
+   "N2perm123": {
+    "numerator": 0.020919467471685493,
+    "denominator": 0.02358646753054927,
+    "P4": 0.8869266855916652,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 0.9921875,
+      "denominator_share_below": 0.4296875
+     },
+     "SH-route": {
+      "P4_share_below": 0.90625,
+      "denominator_share_below": 0.7265625
+     },
+     "SH-class": {
+      "P4_share_below": 0.953125,
+      "denominator_share_below": 0.5546875
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.8828125,
+      "denominator_share_below": 0.6171875
+     },
+     "SH-recip": {
+      "P4_share_below": 0.9765625,
+      "denominator_share_below": 0.3828125
+     }
+    },
+    "class": "both"
+   },
+   "N2perm124": {
+    "numerator": 0.01629820188645681,
+    "denominator": 0.017592209567737882,
+    "P4": 0.9264442777185797,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.1640625
+     },
+     "SH-route": {
+      "P4_share_below": 0.9921875,
+      "denominator_share_below": 0.4375
+     },
+     "SH-class": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.1875
+     },
+     "SH-mirror": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.21875
+     },
+     "SH-recip": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.15625
+     }
+    },
+    "class": "response only"
+   },
+   "N2perm125": {
+    "numerator": 0.02364246271099546,
+    "denominator": 0.026619168492288736,
+    "P4": 0.8881743514206466,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 0.9921875,
+      "denominator_share_below": 0.578125
+     },
+     "SH-route": {
+      "P4_share_below": 0.9140625,
+      "denominator_share_below": 0.8203125
+     },
+     "SH-class": {
+      "P4_share_below": 0.953125,
+      "denominator_share_below": 0.6640625
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.8984375,
+      "denominator_share_below": 0.7421875
+     },
+     "SH-recip": {
+      "P4_share_below": 0.984375,
+      "denominator_share_below": 0.546875
+     }
+    },
+    "class": "both"
+   },
+   "N2perm126": {
+    "numerator": 0.014867065788166656,
+    "denominator": 0.019377948020974145,
+    "P4": 0.7672156913660292,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 0.546875,
+      "denominator_share_below": 0.265625
+     },
+     "SH-route": {
+      "P4_share_below": 0.015625,
+      "denominator_share_below": 0.5859375
+     },
+     "SH-class": {
+      "P4_share_below": 0.0625,
+      "denominator_share_below": 0.3046875
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.03125,
+      "denominator_share_below": 0.328125
+     },
+     "SH-recip": {
+      "P4_share_below": 0.5234375,
+      "denominator_share_below": 0.203125
+     }
+    },
+    "class": "both"
+   },
+   "N2perm127": {
+    "numerator": 0.018180574295911356,
+    "denominator": 0.021217396197243943,
+    "P4": 0.8568711319192381,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 0.953125,
+      "denominator_share_below": 0.3203125
+     },
+     "SH-route": {
+      "P4_share_below": 0.609375,
+      "denominator_share_below": 0.671875
+     },
+     "SH-class": {
+      "P4_share_below": 0.7421875,
+      "denominator_share_below": 0.4453125
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.6796875,
+      "denominator_share_below": 0.4609375
+     },
+     "SH-recip": {
+      "P4_share_below": 0.9140625,
+      "denominator_share_below": 0.296875
+     }
+    },
+    "class": "both"
+   },
+   "N2perm128": {
+    "numerator": 0.025344902339384134,
+    "denominator": 0.02793457570442115,
+    "P4": 0.9072950528249064,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.640625
+     },
+     "SH-route": {
+      "P4_share_below": 0.9609375,
+      "denominator_share_below": 0.8828125
+     },
+     "SH-class": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.71875
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.984375,
+      "denominator_share_below": 0.7734375
+     },
+     "SH-recip": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.6171875
+     }
+    },
+    "class": "response only"
+   },
+   "N2perm129": {
+    "numerator": 0.02639529377393046,
+    "denominator": 0.02978995459716316,
+    "P4": 0.8860467943258978,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 0.9921875,
+      "denominator_share_below": 0.6953125
+     },
+     "SH-route": {
+      "P4_share_below": 0.8984375,
+      "denominator_share_below": 0.921875
+     },
+     "SH-class": {
+      "P4_share_below": 0.9453125,
+      "denominator_share_below": 0.7734375
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.8828125,
+      "denominator_share_below": 0.8203125
+     },
+     "SH-recip": {
+      "P4_share_below": 0.9765625,
+      "denominator_share_below": 0.6875
+     }
+    },
+    "class": "both"
+   },
+   "N2perm130": {
+    "numerator": 0.018938651755888714,
+    "denominator": 0.024398548686804133,
+    "P4": 0.7762204219192601,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 0.609375,
+      "denominator_share_below": 0.484375
+     },
+     "SH-route": {
+      "P4_share_below": 0.03125,
+      "denominator_share_below": 0.7734375
+     },
+     "SH-class": {
+      "P4_share_below": 0.0859375,
+      "denominator_share_below": 0.6015625
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.03125,
+      "denominator_share_below": 0.65625
+     },
+     "SH-recip": {
+      "P4_share_below": 0.5703125,
+      "denominator_share_below": 0.4296875
+     }
+    },
+    "class": "both"
+   },
+   "N2perm131": {
+    "numerator": 0.019044655320612947,
+    "denominator": 0.022056505416003347,
+    "P4": 0.8634484457721431,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 0.9609375,
+      "denominator_share_below": 0.3515625
+     },
+     "SH-route": {
+      "P4_share_below": 0.7109375,
+      "denominator_share_below": 0.671875
+     },
+     "SH-class": {
+      "P4_share_below": 0.8046875,
+      "denominator_share_below": 0.5
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.7421875,
+      "denominator_share_below": 0.5
+     },
+     "SH-recip": {
+      "P4_share_below": 0.9296875,
+      "denominator_share_below": 0.3359375
+     }
+    },
+    "class": "both"
+   },
+   "N2perm132": {
+    "numerator": 0.03094975827207236,
+    "denominator": 0.033664792234048946,
+    "P4": 0.9193509366372808,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.796875
+     },
+     "SH-route": {
+      "P4_share_below": 0.9921875,
+      "denominator_share_below": 0.9453125
+     },
+     "SH-class": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.8671875
+     },
+     "SH-mirror": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.90625
+     },
+     "SH-recip": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.78125
+     }
+    },
+    "class": "response only"
+   },
+   "N2perm133": {
+    "numerator": 0.019306949078782054,
+    "denominator": 0.02190883623643458,
+    "P4": 0.8812402845329791,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 0.9921875,
+      "denominator_share_below": 0.3359375
+     },
+     "SH-route": {
+      "P4_share_below": 0.8671875,
+      "denominator_share_below": 0.671875
+     },
+     "SH-class": {
+      "P4_share_below": 0.921875,
+      "denominator_share_below": 0.4921875
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.8671875,
+      "denominator_share_below": 0.5
+     },
+     "SH-recip": {
+      "P4_share_below": 0.9765625,
+      "denominator_share_below": 0.328125
+     }
+    },
+    "class": "both"
+   },
+   "N2perm134": {
+    "numerator": 0.0292441183628398,
+    "denominator": 0.03231566477825254,
+    "P4": 0.9049517799961894,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.75
+     },
+     "SH-route": {
+      "P4_share_below": 0.9453125,
+      "denominator_share_below": 0.9375
+     },
+     "SH-class": {
+      "P4_share_below": 0.9921875,
+      "denominator_share_below": 0.84375
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.9765625,
+      "denominator_share_below": 0.8984375
+     },
+     "SH-recip": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.765625
+     }
+    },
+    "class": "response only"
+   },
+   "N2perm135": {
+    "numerator": 0.028481743027441553,
+    "denominator": 0.03217479079103214,
+    "P4": 0.8852192143975052,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 0.9921875,
+      "denominator_share_below": 0.75
+     },
+     "SH-route": {
+      "P4_share_below": 0.8984375,
+      "denominator_share_below": 0.9296875
+     },
+     "SH-class": {
+      "P4_share_below": 0.9375,
+      "denominator_share_below": 0.84375
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.8828125,
+      "denominator_share_below": 0.8984375
+     },
+     "SH-recip": {
+      "P4_share_below": 0.9765625,
+      "denominator_share_below": 0.7578125
+     }
+    },
+    "class": "both"
+   },
+   "N2perm136": {
+    "numerator": 0.0172425760410988,
+    "denominator": 0.01881618310653721,
+    "P4": 0.916369485961704,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.2265625
+     },
+     "SH-route": {
+      "P4_share_below": 0.9921875,
+      "denominator_share_below": 0.5546875
+     },
+     "SH-class": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.28125
+     },
+     "SH-mirror": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.296875
+     },
+     "SH-recip": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.171875
+     }
+    },
+    "class": "response only"
+   },
+   "N2perm137": {
+    "numerator": 0.01702654032396822,
+    "denominator": 0.018960527916533465,
+    "P4": 0.8979992750687696,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.2421875
+     },
+     "SH-route": {
+      "P4_share_below": 0.9375,
+      "denominator_share_below": 0.5546875
+     },
+     "SH-class": {
+      "P4_share_below": 0.984375,
+      "denominator_share_below": 0.296875
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.953125,
+      "denominator_share_below": 0.3046875
+     },
+     "SH-recip": {
+      "P4_share_below": 0.984375,
+      "denominator_share_below": 0.1796875
+     }
+    },
+    "class": "response only"
+   },
+   "N2perm138": {
+    "numerator": 0.023876000646396278,
+    "denominator": 0.029611129840304784,
+    "P4": 0.8063184611719134,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 0.78125,
+      "denominator_share_below": 0.6875
+     },
+     "SH-route": {
+      "P4_share_below": 0.171875,
+      "denominator_share_below": 0.9140625
+     },
+     "SH-class": {
+      "P4_share_below": 0.234375,
+      "denominator_share_below": 0.765625
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.1640625,
+      "denominator_share_below": 0.8125
+     },
+     "SH-recip": {
+      "P4_share_below": 0.6875,
+      "denominator_share_below": 0.6796875
+     }
+    },
+    "class": "both"
+   },
+   "N2perm139": {
+    "numerator": 0.01816251420586923,
+    "denominator": 0.02053891003743047,
+    "P4": 0.8842978606347438,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 0.9921875,
+      "denominator_share_below": 0.296875
+     },
+     "SH-route": {
+      "P4_share_below": 0.8984375,
+      "denominator_share_below": 0.6484375
+     },
+     "SH-class": {
+      "P4_share_below": 0.9375,
+      "denominator_share_below": 0.421875
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.8828125,
+      "denominator_share_below": 0.390625
+     },
+     "SH-recip": {
+      "P4_share_below": 0.9765625,
+      "denominator_share_below": 0.25
+     }
+    },
+    "class": "both"
+   },
+   "N2perm140": {
+    "numerator": 0.025242071937100263,
+    "denominator": 0.028963188896341308,
+    "P4": 0.8715225394358732,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 0.9921875,
+      "denominator_share_below": 0.671875
+     },
+     "SH-route": {
+      "P4_share_below": 0.796875,
+      "denominator_share_below": 0.8984375
+     },
+     "SH-class": {
+      "P4_share_below": 0.859375,
+      "denominator_share_below": 0.75
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.796875,
+      "denominator_share_below": 0.796875
+     },
+     "SH-recip": {
+      "P4_share_below": 0.9609375,
+      "denominator_share_below": 0.6484375
+     }
+    },
+    "class": "both"
+   },
+   "N2perm141": {
+    "numerator": 0.023351681142230518,
+    "denominator": 0.027007182156921772,
+    "P4": 0.864647078193814,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 0.96875,
+      "denominator_share_below": 0.609375
+     },
+     "SH-route": {
+      "P4_share_below": 0.7265625,
+      "denominator_share_below": 0.8359375
+     },
+     "SH-class": {
+      "P4_share_below": 0.8125,
+      "denominator_share_below": 0.6796875
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.7421875,
+      "denominator_share_below": 0.75
+     },
+     "SH-recip": {
+      "P4_share_below": 0.9296875,
+      "denominator_share_below": 0.5703125
+     }
+    },
+    "class": "both"
+   },
+   "N2perm142": {
+    "numerator": 0.018379752883902256,
+    "denominator": 0.020649327191677003,
+    "P4": 0.8900896728156097,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.296875
+     },
+     "SH-route": {
+      "P4_share_below": 0.921875,
+      "denominator_share_below": 0.6484375
+     },
+     "SH-class": {
+      "P4_share_below": 0.96875,
+      "denominator_share_below": 0.421875
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.90625,
+      "denominator_share_below": 0.390625
+     },
+     "SH-recip": {
+      "P4_share_below": 0.984375,
+      "denominator_share_below": 0.2578125
+     }
+    },
+    "class": "response only"
+   },
+   "N2perm143": {
+    "numerator": 0.01708845212124288,
+    "denominator": 0.01975600925652543,
+    "P4": 0.8649748995029726,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 0.96875,
+      "denominator_share_below": 0.2734375
+     },
+     "SH-route": {
+      "P4_share_below": 0.734375,
+      "denominator_share_below": 0.6015625
+     },
+     "SH-class": {
+      "P4_share_below": 0.8125,
+      "denominator_share_below": 0.328125
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.7578125,
+      "denominator_share_below": 0.3671875
+     },
+     "SH-recip": {
+      "P4_share_below": 0.9296875,
+      "denominator_share_below": 0.21875
+     }
+    },
+    "class": "both"
+   },
+   "N2perm144": {
+    "numerator": 0.020509468263298913,
+    "denominator": 0.023523817108070944,
+    "P4": 0.8718597058069365,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 0.9921875,
+      "denominator_share_below": 0.421875
+     },
+     "SH-route": {
+      "P4_share_below": 0.796875,
+      "denominator_share_below": 0.71875
+     },
+     "SH-class": {
+      "P4_share_below": 0.859375,
+      "denominator_share_below": 0.546875
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.796875,
+      "denominator_share_below": 0.609375
+     },
+     "SH-recip": {
+      "P4_share_below": 0.9609375,
+      "denominator_share_below": 0.3828125
+     }
+    },
+    "class": "both"
+   },
+   "N2perm145": {
+    "numerator": 0.02166323381152324,
+    "denominator": 0.029552565998528735,
+    "P4": 0.7330407049121128,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 0.3671875,
+      "denominator_share_below": 0.6875
+     },
+     "SH-route": {
+      "P4_share_below": 0.0,
+      "denominator_share_below": 0.9140625
+     },
+     "SH-class": {
+      "P4_share_below": 0.0546875,
+      "denominator_share_below": 0.765625
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.0078125,
+      "denominator_share_below": 0.8125
+     },
+     "SH-recip": {
+      "P4_share_below": 0.390625,
+      "denominator_share_below": 0.6796875
+     }
+    },
+    "class": "both"
+   },
+   "N2perm146": {
+    "numerator": 0.020896283444017172,
+    "denominator": 0.022260941108470433,
+    "P4": 0.9386972159980245,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.359375
+     },
+     "SH-route": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.6796875
+     },
+     "SH-class": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.5078125
+     },
+     "SH-mirror": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.5078125
+     },
+     "SH-recip": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.3359375
+     }
+    },
+    "class": "response only"
+   },
+   "N2perm147": {
+    "numerator": 0.03174912537269847,
+    "denominator": 0.03587265236728854,
+    "P4": 0.8850509588092177,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 0.9921875,
+      "denominator_share_below": 0.828125
+     },
+     "SH-route": {
+      "P4_share_below": 0.8984375,
+      "denominator_share_below": 0.9765625
+     },
+     "SH-class": {
+      "P4_share_below": 0.9375,
+      "denominator_share_below": 0.890625
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.8828125,
+      "denominator_share_below": 0.9375
+     },
+     "SH-recip": {
+      "P4_share_below": 0.9765625,
+      "denominator_share_below": 0.8359375
+     }
+    },
+    "class": "both"
+   },
+   "N2perm148": {
+    "numerator": 0.013333054684153467,
+    "denominator": 0.01667773815279361,
+    "P4": 0.799452213603684,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 0.7578125,
+      "denominator_share_below": 0.125
+     },
+     "SH-route": {
+      "P4_share_below": 0.140625,
+      "denominator_share_below": 0.359375
+     },
+     "SH-class": {
+      "P4_share_below": 0.171875,
+      "denominator_share_below": 0.1328125
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.125,
+      "denominator_share_below": 0.2109375
+     },
+     "SH-recip": {
+      "P4_share_below": 0.671875,
+      "denominator_share_below": 0.1328125
+     }
+    },
+    "class": "both"
+   },
+   "N2perm149": {
+    "numerator": 0.013865709261153825,
+    "denominator": 0.016019358512494364,
+    "P4": 0.8655595821979518,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 0.96875,
+      "denominator_share_below": 0.1171875
+     },
+     "SH-route": {
+      "P4_share_below": 0.7421875,
+      "denominator_share_below": 0.296875
+     },
+     "SH-class": {
+      "P4_share_below": 0.8203125,
+      "denominator_share_below": 0.109375
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.7578125,
+      "denominator_share_below": 0.1875
+     },
+     "SH-recip": {
+      "P4_share_below": 0.9296875,
+      "denominator_share_below": 0.0859375
+     }
+    },
+    "class": "both"
+   },
+   "N2perm150": {
+    "numerator": 0.019856592902215198,
+    "denominator": 0.02489989009427518,
+    "P4": 0.7974570500927832,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 0.75,
+      "denominator_share_below": 0.5078125
+     },
+     "SH-route": {
+      "P4_share_below": 0.125,
+      "denominator_share_below": 0.796875
+     },
+     "SH-class": {
+      "P4_share_below": 0.1640625,
+      "denominator_share_below": 0.6171875
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.125,
+      "denominator_share_below": 0.671875
+     },
+     "SH-recip": {
+      "P4_share_below": 0.671875,
+      "denominator_share_below": 0.4609375
+     }
+    },
+    "class": "both"
+   },
+   "N2perm151": {
+    "numerator": 0.017507427986856783,
+    "denominator": 0.018779595711748698,
+    "P4": 0.9322579812463143,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.2265625
+     },
+     "SH-route": {
+      "P4_share_below": 0.9921875,
+      "denominator_share_below": 0.5546875
+     },
+     "SH-class": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.2734375
+     },
+     "SH-mirror": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.296875
+     },
+     "SH-recip": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.171875
+     }
+    },
+    "class": "response only"
+   },
+   "N2perm152": {
+    "numerator": 0.01837714182511263,
+    "denominator": 0.022430850071032182,
+    "P4": 0.8192797761528163,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 0.859375,
+      "denominator_share_below": 0.375
+     },
+     "SH-route": {
+      "P4_share_below": 0.2734375,
+      "denominator_share_below": 0.6875
+     },
+     "SH-class": {
+      "P4_share_below": 0.40625,
+      "denominator_share_below": 0.515625
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.25,
+      "denominator_share_below": 0.5078125
+     },
+     "SH-recip": {
+      "P4_share_below": 0.765625,
+      "denominator_share_below": 0.34375
+     }
+    },
+    "class": "both"
+   },
+   "N2perm153": {
+    "numerator": 0.01382338669100136,
+    "denominator": 0.014817569925071439,
+    "P4": 0.9329051093332171,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.0625
+     },
+     "SH-route": {
+      "P4_share_below": 0.9921875,
+      "denominator_share_below": 0.2421875
+     },
+     "SH-class": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.0703125
+     },
+     "SH-mirror": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.109375
+     },
+     "SH-recip": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.0859375
+     }
+    },
+    "class": "response only"
+   },
+   "N2perm154": {
+    "numerator": 0.02391069818622782,
+    "denominator": 0.02616798443341395,
+    "P4": 0.9137386277139558,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.5625
+     },
+     "SH-route": {
+      "P4_share_below": 0.9765625,
+      "denominator_share_below": 0.8203125
+     },
+     "SH-class": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.6640625
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.9921875,
+      "denominator_share_below": 0.703125
+     },
+     "SH-recip": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.5078125
+     }
+    },
+    "class": "response only"
+   },
+   "N2perm155": {
+    "numerator": 0.01037928184177872,
+    "denominator": 0.012834849411774485,
+    "P4": 0.8086796742824994,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 0.8046875,
+      "denominator_share_below": 0.0390625
+     },
+     "SH-route": {
+      "P4_share_below": 0.1875,
+      "denominator_share_below": 0.1171875
+     },
+     "SH-class": {
+      "P4_share_below": 0.265625,
+      "denominator_share_below": 0.015625
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.1796875,
+      "denominator_share_below": 0.0234375
+     },
+     "SH-recip": {
+      "P4_share_below": 0.703125,
+      "denominator_share_below": 0.0078125
+     }
+    },
+    "class": "both"
+   },
+   "N2perm156": {
+    "numerator": 0.025372012998559512,
+    "denominator": 0.028657825849222718,
+    "P4": 0.885343261280502,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 0.9921875,
+      "denominator_share_below": 0.6640625
+     },
+     "SH-route": {
+      "P4_share_below": 0.8984375,
+      "denominator_share_below": 0.890625
+     },
+     "SH-class": {
+      "P4_share_below": 0.9375,
+      "denominator_share_below": 0.734375
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.8828125,
+      "denominator_share_below": 0.7890625
+     },
+     "SH-recip": {
+      "P4_share_below": 0.9765625,
+      "denominator_share_below": 0.640625
+     }
+    },
+    "class": "both"
+   },
+   "N2perm157": {
+    "numerator": 0.01696404206995794,
+    "denominator": 0.01823436321592453,
+    "P4": 0.9303336710515239,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.1953125
+     },
+     "SH-route": {
+      "P4_share_below": 0.9921875,
+      "denominator_share_below": 0.5078125
+     },
+     "SH-class": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.234375
+     },
+     "SH-mirror": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.2578125
+     },
+     "SH-recip": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.1640625
+     }
+    },
+    "class": "response only"
+   },
+   "N2perm158": {
+    "numerator": 0.023113395417567517,
+    "denominator": 0.025140526874565694,
+    "P4": 0.9193679803485345,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.515625
+     },
+     "SH-route": {
+      "P4_share_below": 0.9921875,
+      "denominator_share_below": 0.8046875
+     },
+     "SH-class": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.6171875
+     },
+     "SH-mirror": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.6796875
+     },
+     "SH-recip": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.4765625
+     }
+    },
+    "class": "response only"
+   },
+   "N2perm159": {
+    "numerator": 0.028140100486780284,
+    "denominator": 0.031151279021287337,
+    "P4": 0.9033369213363807,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.7421875
+     },
+     "SH-route": {
+      "P4_share_below": 0.9453125,
+      "denominator_share_below": 0.9296875
+     },
+     "SH-class": {
+      "P4_share_below": 0.9921875,
+      "denominator_share_below": 0.8359375
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.9765625,
+      "denominator_share_below": 0.8515625
+     },
+     "SH-recip": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.75
+     }
+    },
+    "class": "response only"
+   },
+   "N2perm160": {
+    "numerator": 0.021062594217255537,
+    "denominator": 0.02474834341501264,
+    "P4": 0.8510708722620487,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 0.9375,
+      "denominator_share_below": 0.5
+     },
+     "SH-route": {
+      "P4_share_below": 0.5546875,
+      "denominator_share_below": 0.7890625
+     },
+     "SH-class": {
+      "P4_share_below": 0.7109375,
+      "denominator_share_below": 0.6171875
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.640625,
+      "denominator_share_below": 0.6640625
+     },
+     "SH-recip": {
+      "P4_share_below": 0.8828125,
+      "denominator_share_below": 0.4375
+     }
+    },
+    "class": "both"
+   },
+   "N2perm161": {
+    "numerator": 0.020379219296046358,
+    "denominator": 0.02402507935403264,
+    "P4": 0.8482477412764791,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 0.9296875,
+      "denominator_share_below": 0.46875
+     },
+     "SH-route": {
+      "P4_share_below": 0.5078125,
+      "denominator_share_below": 0.75
+     },
+     "SH-class": {
+      "P4_share_below": 0.671875,
+      "denominator_share_below": 0.578125
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.6015625,
+      "denominator_share_below": 0.6484375
+     },
+     "SH-recip": {
+      "P4_share_below": 0.8828125,
+      "denominator_share_below": 0.421875
+     }
+    },
+    "class": "both"
+   },
+   "N2perm162": {
+    "numerator": 0.01762716489520244,
+    "denominator": 0.022170802536493284,
+    "P4": 0.7950621032408733,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 0.7421875,
+      "denominator_share_below": 0.3515625
+     },
+     "SH-route": {
+      "P4_share_below": 0.109375,
+      "denominator_share_below": 0.671875
+     },
+     "SH-class": {
+      "P4_share_below": 0.1484375,
+      "denominator_share_below": 0.5
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.1015625,
+      "denominator_share_below": 0.5
+     },
+     "SH-recip": {
+      "P4_share_below": 0.671875,
+      "denominator_share_below": 0.3359375
+     }
+    },
+    "class": "both"
+   },
+   "N2perm163": {
+    "numerator": 0.019964346727647353,
+    "denominator": 0.021236467278868076,
+    "P4": 0.9400973554350737,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.3203125
+     },
+     "SH-route": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.671875
+     },
+     "SH-class": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.4453125
+     },
+     "SH-mirror": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.4609375
+     },
+     "SH-recip": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.296875
+     }
+    },
+    "class": "response only"
+   }
+  },
+  "paired": {
+   "N2perm100": {
+    "numerator": 0.035188398347600014,
+    "denominator": 0.04252454459492583,
+    "P4": 0.8274844253546413,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 0.875,
+      "denominator_share_below": 0.9140625
+     },
+     "SH-route": {
+      "P4_share_below": 0.328125,
+      "denominator_share_below": 0.9921875
+     },
+     "SH-class": {
+      "P4_share_below": 0.5078125,
+      "denominator_share_below": 0.9375
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.3671875,
+      "denominator_share_below": 0.9765625
+     },
+     "SH-recip": {
+      "P4_share_below": 0.8125,
+      "denominator_share_below": 0.8984375
+     }
+    },
+    "class": "both"
+   },
+   "N2perm101": {
+    "numerator": 0.03526575663454423,
+    "denominator": 0.03866990741698828,
+    "P4": 0.9119689957946847,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.890625
+     },
+     "SH-route": {
+      "P4_share_below": 0.96875,
+      "denominator_share_below": 0.984375
+     },
+     "SH-class": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.9140625
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.9921875,
+      "denominator_share_below": 0.953125
+     },
+     "SH-recip": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.8515625
+     }
+    },
+    "class": "response only"
+   },
+   "N2perm102": {
+    "numerator": 0.02435178878295119,
+    "denominator": 0.026620648462994723,
+    "P4": 0.9147706832462227,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.578125
+     },
+     "SH-route": {
+      "P4_share_below": 0.984375,
+      "denominator_share_below": 0.8203125
+     },
+     "SH-class": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.6640625
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.9921875,
+      "denominator_share_below": 0.7421875
+     },
+     "SH-recip": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.546875
+     }
+    },
+    "class": "response only"
+   },
+   "N2perm103": {
+    "numerator": 0.039379429187647474,
+    "denominator": 0.04366509110877814,
+    "P4": 0.9018515291665312,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.9140625
+     },
+     "SH-route": {
+      "P4_share_below": 0.9453125,
+      "denominator_share_below": 0.9921875
+     },
+     "SH-class": {
+      "P4_share_below": 0.984375,
+      "denominator_share_below": 0.9375
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.96875,
+      "denominator_share_below": 0.9765625
+     },
+     "SH-recip": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.8984375
+     }
+    },
+    "class": "response only"
+   },
+   "N2perm104": {
+    "numerator": 0.018660299255316204,
+    "denominator": 0.0216950397925757,
+    "P4": 0.8601182313434604,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 0.953125,
+      "denominator_share_below": 0.328125
+     },
+     "SH-route": {
+      "P4_share_below": 0.6640625,
+      "denominator_share_below": 0.671875
+     },
+     "SH-class": {
+      "P4_share_below": 0.7578125,
+      "denominator_share_below": 0.4921875
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.734375,
+      "denominator_share_below": 0.484375
+     },
+     "SH-recip": {
+      "P4_share_below": 0.921875,
+      "denominator_share_below": 0.328125
+     }
+    },
+    "class": "both"
+   },
+   "N2perm105": {
+    "numerator": 0.02736392552651523,
+    "denominator": 0.030723267887879047,
+    "P4": 0.8906580389292135,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.7109375
+     },
+     "SH-route": {
+      "P4_share_below": 0.921875,
+      "denominator_share_below": 0.9296875
+     },
+     "SH-class": {
+      "P4_share_below": 0.96875,
+      "denominator_share_below": 0.828125
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.90625,
+      "denominator_share_below": 0.84375
+     },
+     "SH-recip": {
+      "P4_share_below": 0.984375,
+      "denominator_share_below": 0.7265625
+     }
+    },
+    "class": "response only"
+   },
+   "N2perm106": {
+    "numerator": 0.02006085942593927,
+    "denominator": 0.02255555207193538,
+    "P4": 0.8893978459033101,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.3828125
+     },
+     "SH-route": {
+      "P4_share_below": 0.9140625,
+      "denominator_share_below": 0.6875
+     },
+     "SH-class": {
+      "P4_share_below": 0.9609375,
+      "denominator_share_below": 0.515625
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.90625,
+      "denominator_share_below": 0.5078125
+     },
+     "SH-recip": {
+      "P4_share_below": 0.984375,
+      "denominator_share_below": 0.3515625
+     }
+    },
+    "class": "response only"
+   },
+   "N2perm107": {
+    "numerator": 0.021563801287811657,
+    "denominator": 0.02251982629968552,
+    "P4": 0.9575474073755528,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.3828125
+     },
+     "SH-route": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.6875
+     },
+     "SH-class": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.515625
+     },
+     "SH-mirror": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.5078125
+     },
+     "SH-recip": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.3515625
+     }
+    },
+    "class": "response only"
+   },
+   "N2perm108": {
+    "numerator": 0.02264432187166676,
+    "denominator": 0.02518518118722568,
+    "P4": 0.8991129229259751,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.515625
+     },
+     "SH-route": {
+      "P4_share_below": 0.9375,
+      "denominator_share_below": 0.8125
+     },
+     "SH-class": {
+      "P4_share_below": 0.984375,
+      "denominator_share_below": 0.6171875
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.96875,
+      "denominator_share_below": 0.6796875
+     },
+     "SH-recip": {
+      "P4_share_below": 0.9921875,
+      "denominator_share_below": 0.4765625
+     }
+    },
+    "class": "response only"
+   },
+   "N2perm109": {
+    "numerator": 0.01179242938360403,
+    "denominator": 0.013671076556420303,
+    "P4": 0.8625823529651724,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 0.9609375,
+      "denominator_share_below": 0.0546875
+     },
+     "SH-route": {
+      "P4_share_below": 0.703125,
+      "denominator_share_below": 0.1796875
+     },
+     "SH-class": {
+      "P4_share_below": 0.78125,
+      "denominator_share_below": 0.03125
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.7421875,
+      "denominator_share_below": 0.0546875
+     },
+     "SH-recip": {
+      "P4_share_below": 0.9296875,
+      "denominator_share_below": 0.0234375
+     }
+    },
+    "class": "both"
+   },
+   "N2perm110": {
+    "numerator": 0.016604510734396172,
+    "denominator": 0.018741520893854613,
+    "P4": 0.8859745603592304,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 0.9921875,
+      "denominator_share_below": 0.2265625
+     },
+     "SH-route": {
+      "P4_share_below": 0.8984375,
+      "denominator_share_below": 0.5546875
+     },
+     "SH-class": {
+      "P4_share_below": 0.9453125,
+      "denominator_share_below": 0.2734375
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.8828125,
+      "denominator_share_below": 0.296875
+     },
+     "SH-recip": {
+      "P4_share_below": 0.9765625,
+      "denominator_share_below": 0.171875
+     }
+    },
+    "class": "both"
+   },
+   "N2perm111": {
+    "numerator": 0.021510817616217537,
+    "denominator": 0.026552077650194406,
+    "P4": 0.8101368902128094,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 0.8125,
+      "denominator_share_below": 0.578125
+     },
+     "SH-route": {
+      "P4_share_below": 0.1953125,
+      "denominator_share_below": 0.8203125
+     },
+     "SH-class": {
+      "P4_share_below": 0.2734375,
+      "denominator_share_below": 0.6640625
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.1796875,
+      "denominator_share_below": 0.734375
+     },
+     "SH-recip": {
+      "P4_share_below": 0.7109375,
+      "denominator_share_below": 0.546875
+     }
+    },
+    "class": "both"
+   },
+   "N2perm112": {
+    "numerator": 0.020249593631888274,
+    "denominator": 0.02416124829051114,
+    "P4": 0.8381021290129661,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 0.90625,
+      "denominator_share_below": 0.484375
+     },
+     "SH-route": {
+      "P4_share_below": 0.4296875,
+      "denominator_share_below": 0.765625
+     },
+     "SH-class": {
+      "P4_share_below": 0.6015625,
+      "denominator_share_below": 0.5859375
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.4453125,
+      "denominator_share_below": 0.6484375
+     },
+     "SH-recip": {
+      "P4_share_below": 0.8359375,
+      "denominator_share_below": 0.421875
+     }
+    },
+    "class": "both"
+   },
+   "N2perm113": {
+    "numerator": 0.012773630380252143,
+    "denominator": 0.014377431467437418,
+    "P4": 0.8884500968884722,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 0.9921875,
+      "denominator_share_below": 0.0625
+     },
+     "SH-route": {
+      "P4_share_below": 0.9140625,
+      "denominator_share_below": 0.2109375
+     },
+     "SH-class": {
+      "P4_share_below": 0.953125,
+      "denominator_share_below": 0.0390625
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.8984375,
+      "denominator_share_below": 0.078125
+     },
+     "SH-recip": {
+      "P4_share_below": 0.984375,
+      "denominator_share_below": 0.0625
+     }
+    },
+    "class": "both"
+   },
+   "N2perm114": {
+    "numerator": 0.030874945874529658,
+    "denominator": 0.03568988365987025,
+    "P4": 0.865089563439667,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 0.96875,
+      "denominator_share_below": 0.828125
+     },
+     "SH-route": {
+      "P4_share_below": 0.7421875,
+      "denominator_share_below": 0.96875
+     },
+     "SH-class": {
+      "P4_share_below": 0.8125,
+      "denominator_share_below": 0.890625
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.7578125,
+      "denominator_share_below": 0.9375
+     },
+     "SH-recip": {
+      "P4_share_below": 0.9296875,
+      "denominator_share_below": 0.828125
+     }
+    },
+    "class": "both"
+   },
+   "N2perm115": {
+    "numerator": 0.014960384874484589,
+    "denominator": 0.0163528719012902,
+    "P4": 0.9148475548997759,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.125
+     },
+     "SH-route": {
+      "P4_share_below": 0.984375,
+      "denominator_share_below": 0.328125
+     },
+     "SH-class": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.125
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.9921875,
+      "denominator_share_below": 0.203125
+     },
+     "SH-recip": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.1015625
+     }
+    },
+    "class": "response only"
+   },
+   "N2perm116": {
+    "numerator": 0.020306052700107102,
+    "denominator": 0.022804435937359813,
+    "P4": 0.8904431030824277,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.390625
+     },
+     "SH-route": {
+      "P4_share_below": 0.921875,
+      "denominator_share_below": 0.6875
+     },
+     "SH-class": {
+      "P4_share_below": 0.96875,
+      "denominator_share_below": 0.515625
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.90625,
+      "denominator_share_below": 0.5234375
+     },
+     "SH-recip": {
+      "P4_share_below": 0.984375,
+      "denominator_share_below": 0.359375
+     }
+    },
+    "class": "response only"
+   },
+   "N2perm117": {
+    "numerator": 0.02758329305652296,
+    "denominator": 0.03066707104244415,
+    "P4": 0.8994433481549918,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.703125
+     },
+     "SH-route": {
+      "P4_share_below": 0.9375,
+      "denominator_share_below": 0.9296875
+     },
+     "SH-class": {
+      "P4_share_below": 0.984375,
+      "denominator_share_below": 0.828125
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.96875,
+      "denominator_share_below": 0.84375
+     },
+     "SH-recip": {
+      "P4_share_below": 0.9921875,
+      "denominator_share_below": 0.7265625
+     }
+    },
+    "class": "response only"
+   },
+   "N2perm118": {
+    "numerator": 0.019162405656970805,
+    "denominator": 0.021004669299145462,
+    "P4": 0.9122926614107841,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.3125
+     },
+     "SH-route": {
+      "P4_share_below": 0.96875,
+      "denominator_share_below": 0.6640625
+     },
+     "SH-class": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.4453125
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.9921875,
+      "denominator_share_below": 0.4609375
+     },
+     "SH-recip": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.28125
+     }
+    },
+    "class": "response only"
+   },
+   "N2perm119": {
+    "numerator": 0.01812177593819797,
+    "denominator": 0.01970912770866562,
+    "P4": 0.9194610845324357,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.2734375
+     },
+     "SH-route": {
+      "P4_share_below": 0.9921875,
+      "denominator_share_below": 0.6015625
+     },
+     "SH-class": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.328125
+     },
+     "SH-mirror": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.3515625
+     },
+     "SH-recip": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.21875
+     }
+    },
+    "class": "response only"
+   },
+   "N2perm120": {
+    "numerator": 0.026522156363171234,
+    "denominator": 0.031524015714239795,
+    "P4": 0.8413317834755057,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 0.90625,
+      "denominator_share_below": 0.7421875
+     },
+     "SH-route": {
+      "P4_share_below": 0.4375,
+      "denominator_share_below": 0.9296875
+     },
+     "SH-class": {
+      "P4_share_below": 0.609375,
+      "denominator_share_below": 0.84375
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.46875,
+      "denominator_share_below": 0.875
+     },
+     "SH-recip": {
+      "P4_share_below": 0.8515625,
+      "denominator_share_below": 0.75
+     }
+    },
+    "class": "both"
+   },
+   "N2perm121": {
+    "numerator": 0.02242371663396625,
+    "denominator": 0.025816795030550566,
+    "P4": 0.8685708898967095,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 0.984375,
+      "denominator_share_below": 0.5546875
+     },
+     "SH-route": {
+      "P4_share_below": 0.765625,
+      "denominator_share_below": 0.8203125
+     },
+     "SH-class": {
+      "P4_share_below": 0.84375,
+      "denominator_share_below": 0.640625
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.78125,
+      "denominator_share_below": 0.6953125
+     },
+     "SH-recip": {
+      "P4_share_below": 0.953125,
+      "denominator_share_below": 0.5
+     }
+    },
+    "class": "both"
+   },
+   "N2perm122": {
+    "numerator": 0.03999386740360933,
+    "denominator": 0.05197594920355186,
+    "P4": 0.7694687257558787,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 0.5859375,
+      "denominator_share_below": 0.953125
+     },
+     "SH-route": {
+      "P4_share_below": 0.0234375,
+      "denominator_share_below": 1.0
+     },
+     "SH-class": {
+      "P4_share_below": 0.0703125,
+      "denominator_share_below": 0.9765625
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.03125,
+      "denominator_share_below": 0.9765625
+     },
+     "SH-recip": {
+      "P4_share_below": 0.53125,
+      "denominator_share_below": 0.9453125
+     }
+    },
+    "class": "both"
+   },
+   "N2perm123": {
+    "numerator": 0.020765491629390453,
+    "denominator": 0.023215508525026962,
+    "P4": 0.8944663696254889,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.421875
+     },
+     "SH-route": {
+      "P4_share_below": 0.9296875,
+      "denominator_share_below": 0.7109375
+     },
+     "SH-class": {
+      "P4_share_below": 0.96875,
+      "denominator_share_below": 0.5234375
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.9375,
+      "denominator_share_below": 0.5859375
+     },
+     "SH-recip": {
+      "P4_share_below": 0.984375,
+      "denominator_share_below": 0.3671875
+     }
+    },
+    "class": "response only"
+   },
+   "N2perm124": {
+    "numerator": 0.017028946027494385,
+    "denominator": 0.01857867493345111,
+    "P4": 0.916585606265901,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.203125
+     },
+     "SH-route": {
+      "P4_share_below": 0.9921875,
+      "denominator_share_below": 0.546875
+     },
+     "SH-class": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.2578125
+     },
+     "SH-mirror": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.2734375
+     },
+     "SH-recip": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.171875
+     }
+    },
+    "class": "response only"
+   },
+   "N2perm125": {
+    "numerator": 0.023509045626269653,
+    "denominator": 0.026482795790798264,
+    "P4": 0.8877101123302898,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 0.9921875,
+      "denominator_share_below": 0.578125
+     },
+     "SH-route": {
+      "P4_share_below": 0.9140625,
+      "denominator_share_below": 0.8203125
+     },
+     "SH-class": {
+      "P4_share_below": 0.953125,
+      "denominator_share_below": 0.6640625
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.890625,
+      "denominator_share_below": 0.7265625
+     },
+     "SH-recip": {
+      "P4_share_below": 0.984375,
+      "denominator_share_below": 0.546875
+     }
+    },
+    "class": "both"
+   },
+   "N2perm126": {
+    "numerator": 0.015797043864949956,
+    "denominator": 0.020320682997407857,
+    "P4": 0.7773874464241706,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 0.625,
+      "denominator_share_below": 0.296875
+     },
+     "SH-route": {
+      "P4_share_below": 0.03125,
+      "denominator_share_below": 0.625
+     },
+     "SH-class": {
+      "P4_share_below": 0.09375,
+      "denominator_share_below": 0.3984375
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.03125,
+      "denominator_share_below": 0.3828125
+     },
+     "SH-recip": {
+      "P4_share_below": 0.5703125,
+      "denominator_share_below": 0.2421875
+     }
+    },
+    "class": "both"
+   },
+   "N2perm127": {
+    "numerator": 0.018337359118959284,
+    "denominator": 0.02128224572243198,
+    "P4": 0.8616270744224742,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 0.953125,
+      "denominator_share_below": 0.328125
+     },
+     "SH-route": {
+      "P4_share_below": 0.6796875,
+      "denominator_share_below": 0.671875
+     },
+     "SH-class": {
+      "P4_share_below": 0.7734375,
+      "denominator_share_below": 0.4453125
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.734375,
+      "denominator_share_below": 0.4609375
+     },
+     "SH-recip": {
+      "P4_share_below": 0.921875,
+      "denominator_share_below": 0.296875
+     }
+    },
+    "class": "both"
+   },
+   "N2perm128": {
+    "numerator": 0.026943443503114395,
+    "denominator": 0.029322784439500538,
+    "P4": 0.9188569236562355,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.6796875
+     },
+     "SH-route": {
+      "P4_share_below": 0.9921875,
+      "denominator_share_below": 0.90625
+     },
+     "SH-class": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.7578125
+     },
+     "SH-mirror": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.8046875
+     },
+     "SH-recip": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.671875
+     }
+    },
+    "class": "response only"
+   },
+   "N2perm129": {
+    "numerator": 0.02643379842174909,
+    "denominator": 0.02999860573618207,
+    "P4": 0.8811675667268303,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 0.9921875,
+      "denominator_share_below": 0.703125
+     },
+     "SH-route": {
+      "P4_share_below": 0.8671875,
+      "denominator_share_below": 0.9296875
+     },
+     "SH-class": {
+      "P4_share_below": 0.921875,
+      "denominator_share_below": 0.78125
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.8671875,
+      "denominator_share_below": 0.8203125
+     },
+     "SH-recip": {
+      "P4_share_below": 0.9765625,
+      "denominator_share_below": 0.703125
+     }
+    },
+    "class": "both"
+   },
+   "N2perm130": {
+    "numerator": 0.018730080448221997,
+    "denominator": 0.02463675400304055,
+    "P4": 0.7602495217474843,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 0.5,
+      "denominator_share_below": 0.5
+     },
+     "SH-route": {
+      "P4_share_below": 0.0078125,
+      "denominator_share_below": 0.7734375
+     },
+     "SH-class": {
+      "P4_share_below": 0.0625,
+      "denominator_share_below": 0.609375
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.03125,
+      "denominator_share_below": 0.65625
+     },
+     "SH-recip": {
+      "P4_share_below": 0.4921875,
+      "denominator_share_below": 0.4296875
+     }
+    },
+    "class": "both"
+   },
+   "N2perm131": {
+    "numerator": 0.02038842580441269,
+    "denominator": 0.02339224702154752,
+    "P4": 0.8715890262971364,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 0.9921875,
+      "denominator_share_below": 0.421875
+     },
+     "SH-route": {
+      "P4_share_below": 0.796875,
+      "denominator_share_below": 0.7109375
+     },
+     "SH-class": {
+      "P4_share_below": 0.859375,
+      "denominator_share_below": 0.53125
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.796875,
+      "denominator_share_below": 0.6015625
+     },
+     "SH-recip": {
+      "P4_share_below": 0.9609375,
+      "denominator_share_below": 0.3828125
+     }
+    },
+    "class": "both"
+   },
+   "N2perm132": {
+    "numerator": 0.032585264127192204,
+    "denominator": 0.03498836236940406,
+    "P4": 0.931317212939544,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.8203125
+     },
+     "SH-route": {
+      "P4_share_below": 0.9921875,
+      "denominator_share_below": 0.953125
+     },
+     "SH-class": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.8828125
+     },
+     "SH-mirror": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.9296875
+     },
+     "SH-recip": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.8203125
+     }
+    },
+    "class": "response only"
+   },
+   "N2perm133": {
+    "numerator": 0.02004019083597086,
+    "denominator": 0.022918114191270433,
+    "P4": 0.874425821807111,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 0.9921875,
+      "denominator_share_below": 0.3984375
+     },
+     "SH-route": {
+      "P4_share_below": 0.8203125,
+      "denominator_share_below": 0.703125
+     },
+     "SH-class": {
+      "P4_share_below": 0.875,
+      "denominator_share_below": 0.515625
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.828125,
+      "denominator_share_below": 0.5390625
+     },
+     "SH-recip": {
+      "P4_share_below": 0.9609375,
+      "denominator_share_below": 0.3671875
+     }
+    },
+    "class": "both"
+   },
+   "N2perm134": {
+    "numerator": 0.030140277872305887,
+    "denominator": 0.03356125740629068,
+    "P4": 0.8980675994176676,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.796875
+     },
+     "SH-route": {
+      "P4_share_below": 0.9375,
+      "denominator_share_below": 0.9375
+     },
+     "SH-class": {
+      "P4_share_below": 0.984375,
+      "denominator_share_below": 0.8671875
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.953125,
+      "denominator_share_below": 0.90625
+     },
+     "SH-recip": {
+      "P4_share_below": 0.984375,
+      "denominator_share_below": 0.78125
+     }
+    },
+    "class": "response only"
+   },
+   "N2perm135": {
+    "numerator": 0.02784397323648591,
+    "denominator": 0.03198524210984033,
+    "P4": 0.8705256361939386,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 0.9921875,
+      "denominator_share_below": 0.75
+     },
+     "SH-route": {
+      "P4_share_below": 0.78125,
+      "denominator_share_below": 0.9296875
+     },
+     "SH-class": {
+      "P4_share_below": 0.859375,
+      "denominator_share_below": 0.84375
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.78125,
+      "denominator_share_below": 0.8984375
+     },
+     "SH-recip": {
+      "P4_share_below": 0.9609375,
+      "denominator_share_below": 0.7578125
+     }
+    },
+    "class": "both"
+   },
+   "N2perm136": {
+    "numerator": 0.016688590033481887,
+    "denominator": 0.018167232726227667,
+    "P4": 0.9186093603231552,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.1953125
+     },
+     "SH-route": {
+      "P4_share_below": 0.9921875,
+      "denominator_share_below": 0.5
+     },
+     "SH-class": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.234375
+     },
+     "SH-mirror": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.2578125
+     },
+     "SH-recip": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.1640625
+     }
+    },
+    "class": "response only"
+   },
+   "N2perm137": {
+    "numerator": 0.017269510539335897,
+    "denominator": 0.019194203452570946,
+    "P4": 0.8997253041528406,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.2578125
+     },
+     "SH-route": {
+      "P4_share_below": 0.9375,
+      "denominator_share_below": 0.5703125
+     },
+     "SH-class": {
+      "P4_share_below": 0.984375,
+      "denominator_share_below": 0.3046875
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.96875,
+      "denominator_share_below": 0.3125
+     },
+     "SH-recip": {
+      "P4_share_below": 0.9921875,
+      "denominator_share_below": 0.1875
+     }
+    },
+    "class": "response only"
+   },
+   "N2perm138": {
+    "numerator": 0.024545253381802468,
+    "denominator": 0.030321582344186027,
+    "P4": 0.8094977730114691,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 0.8046875,
+      "denominator_share_below": 0.703125
+     },
+     "SH-route": {
+      "P4_share_below": 0.1875,
+      "denominator_share_below": 0.9296875
+     },
+     "SH-class": {
+      "P4_share_below": 0.265625,
+      "denominator_share_below": 0.8046875
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.1796875,
+      "denominator_share_below": 0.8359375
+     },
+     "SH-recip": {
+      "P4_share_below": 0.7109375,
+      "denominator_share_below": 0.71875
+     }
+    },
+    "class": "both"
+   },
+   "N2perm139": {
+    "numerator": 0.016651606246341544,
+    "denominator": 0.018983751161613327,
+    "P4": 0.8771504696085793,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 0.9921875,
+      "denominator_share_below": 0.2421875
+     },
+     "SH-route": {
+      "P4_share_below": 0.8359375,
+      "denominator_share_below": 0.5625
+     },
+     "SH-class": {
+      "P4_share_below": 0.890625,
+      "denominator_share_below": 0.296875
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.8515625,
+      "denominator_share_below": 0.3046875
+     },
+     "SH-recip": {
+      "P4_share_below": 0.96875,
+      "denominator_share_below": 0.1796875
+     }
+    },
+    "class": "both"
+   },
+   "N2perm140": {
+    "numerator": 0.024822994218084204,
+    "denominator": 0.028271114123526786,
+    "P4": 0.8780338160577439,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 0.9921875,
+      "denominator_share_below": 0.640625
+     },
+     "SH-route": {
+      "P4_share_below": 0.8359375,
+      "denominator_share_below": 0.8828125
+     },
+     "SH-class": {
+      "P4_share_below": 0.8984375,
+      "denominator_share_below": 0.7265625
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.8515625,
+      "denominator_share_below": 0.78125
+     },
+     "SH-recip": {
+      "P4_share_below": 0.9765625,
+      "denominator_share_below": 0.6171875
+     }
+    },
+    "class": "both"
+   },
+   "N2perm141": {
+    "numerator": 0.024495963732988457,
+    "denominator": 0.02813876926757075,
+    "P4": 0.8705414049938375,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 0.9921875,
+      "denominator_share_below": 0.640625
+     },
+     "SH-route": {
+      "P4_share_below": 0.78125,
+      "denominator_share_below": 0.8828125
+     },
+     "SH-class": {
+      "P4_share_below": 0.859375,
+      "denominator_share_below": 0.7265625
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.78125,
+      "denominator_share_below": 0.7734375
+     },
+     "SH-recip": {
+      "P4_share_below": 0.9609375,
+      "denominator_share_below": 0.6171875
+     }
+    },
+    "class": "both"
+   },
+   "N2perm142": {
+    "numerator": 0.01717385705342167,
+    "denominator": 0.01950419121840241,
+    "P4": 0.8805213639014139,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 0.9921875,
+      "denominator_share_below": 0.265625
+     },
+     "SH-route": {
+      "P4_share_below": 0.859375,
+      "denominator_share_below": 0.59375
+     },
+     "SH-class": {
+      "P4_share_below": 0.90625,
+      "denominator_share_below": 0.3125
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.8671875,
+      "denominator_share_below": 0.3359375
+     },
+     "SH-recip": {
+      "P4_share_below": 0.9765625,
+      "denominator_share_below": 0.203125
+     }
+    },
+    "class": "both"
+   },
+   "N2perm143": {
+    "numerator": 0.018383053076831857,
+    "denominator": 0.021135400403181848,
+    "P4": 0.8697754821841163,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 0.9921875,
+      "denominator_share_below": 0.3203125
+     },
+     "SH-route": {
+      "P4_share_below": 0.78125,
+      "denominator_share_below": 0.671875
+     },
+     "SH-class": {
+      "P4_share_below": 0.84375,
+      "denominator_share_below": 0.4453125
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.78125,
+      "denominator_share_below": 0.4609375
+     },
+     "SH-recip": {
+      "P4_share_below": 0.953125,
+      "denominator_share_below": 0.296875
+     }
+    },
+    "class": "both"
+   },
+   "N2perm144": {
+    "numerator": 0.020598400767994463,
+    "denominator": 0.0239778285358625,
+    "P4": 0.8590603080335825,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 0.953125,
+      "denominator_share_below": 0.46875
+     },
+     "SH-route": {
+      "P4_share_below": 0.6484375,
+      "denominator_share_below": 0.75
+     },
+     "SH-class": {
+      "P4_share_below": 0.75,
+      "denominator_share_below": 0.578125
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.71875,
+      "denominator_share_below": 0.6484375
+     },
+     "SH-recip": {
+      "P4_share_below": 0.9140625,
+      "denominator_share_below": 0.421875
+     }
+    },
+    "class": "both"
+   },
+   "N2perm145": {
+    "numerator": 0.020599788463186997,
+    "denominator": 0.028239781840966316,
+    "P4": 0.7294599009013487,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 0.359375,
+      "denominator_share_below": 0.640625
+     },
+     "SH-route": {
+      "P4_share_below": 0.0,
+      "denominator_share_below": 0.8828125
+     },
+     "SH-class": {
+      "P4_share_below": 0.0546875,
+      "denominator_share_below": 0.7265625
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.0078125,
+      "denominator_share_below": 0.78125
+     },
+     "SH-recip": {
+      "P4_share_below": 0.3671875,
+      "denominator_share_below": 0.6171875
+     }
+    },
+    "class": "both"
+   },
+   "N2perm146": {
+    "numerator": 0.01998085942977923,
+    "denominator": 0.021209909752542444,
+    "P4": 0.9420530149773085,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.3203125
+     },
+     "SH-route": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.671875
+     },
+     "SH-class": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.4453125
+     },
+     "SH-mirror": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.4609375
+     },
+     "SH-recip": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.296875
+     }
+    },
+    "class": "response only"
+   },
+   "N2perm147": {
+    "numerator": 0.030122066392323177,
+    "denominator": 0.03380616538834147,
+    "P4": 0.8910228665777987,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.796875
+     },
+     "SH-route": {
+      "P4_share_below": 0.9296875,
+      "denominator_share_below": 0.9453125
+     },
+     "SH-class": {
+      "P4_share_below": 0.96875,
+      "denominator_share_below": 0.875
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.90625,
+      "denominator_share_below": 0.90625
+     },
+     "SH-recip": {
+      "P4_share_below": 0.984375,
+      "denominator_share_below": 0.7890625
+     }
+    },
+    "class": "response only"
+   },
+   "N2perm148": {
+    "numerator": 0.013786037386125827,
+    "denominator": 0.01721739002641698,
+    "P4": 0.8007042510492961,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 0.765625,
+      "denominator_share_below": 0.1328125
+     },
+     "SH-route": {
+      "P4_share_below": 0.140625,
+      "denominator_share_below": 0.3984375
+     },
+     "SH-class": {
+      "P4_share_below": 0.1875,
+      "denominator_share_below": 0.1640625
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.125,
+      "denominator_share_below": 0.21875
+     },
+     "SH-recip": {
+      "P4_share_below": 0.6796875,
+      "denominator_share_below": 0.15625
+     }
+    },
+    "class": "both"
+   },
+   "N2perm149": {
+    "numerator": 0.014683914550914778,
+    "denominator": 0.01688112425381405,
+    "P4": 0.8698422172680328,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 0.9921875,
+      "denominator_share_below": 0.1328125
+     },
+     "SH-route": {
+      "P4_share_below": 0.78125,
+      "denominator_share_below": 0.359375
+     },
+     "SH-class": {
+      "P4_share_below": 0.84375,
+      "denominator_share_below": 0.1484375
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.78125,
+      "denominator_share_below": 0.2109375
+     },
+     "SH-recip": {
+      "P4_share_below": 0.9609375,
+      "denominator_share_below": 0.1328125
+     }
+    },
+    "class": "both"
+   },
+   "N2perm150": {
+    "numerator": 0.018569526721876173,
+    "denominator": 0.02341960234025464,
+    "P4": 0.7929052958323743,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 0.734375,
+      "denominator_share_below": 0.421875
+     },
+     "SH-route": {
+      "P4_share_below": 0.1015625,
+      "denominator_share_below": 0.71875
+     },
+     "SH-class": {
+      "P4_share_below": 0.140625,
+      "denominator_share_below": 0.5390625
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.1015625,
+      "denominator_share_below": 0.6015625
+     },
+     "SH-recip": {
+      "P4_share_below": 0.6484375,
+      "denominator_share_below": 0.3828125
+     }
+    },
+    "class": "both"
+   },
+   "N2perm151": {
+    "numerator": 0.017836116114267497,
+    "denominator": 0.019317053912345727,
+    "P4": 0.9233352143241808,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.2578125
+     },
+     "SH-route": {
+      "P4_share_below": 0.9921875,
+      "denominator_share_below": 0.578125
+     },
+     "SH-class": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.3046875
+     },
+     "SH-mirror": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.3203125
+     },
+     "SH-recip": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.1953125
+     }
+    },
+    "class": "response only"
+   },
+   "N2perm152": {
+    "numerator": 0.01856396884249989,
+    "denominator": 0.02252309164396138,
+    "P4": 0.8242193894139324,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 0.8671875,
+      "denominator_share_below": 0.3828125
+     },
+     "SH-route": {
+      "P4_share_below": 0.3046875,
+      "denominator_share_below": 0.6875
+     },
+     "SH-class": {
+      "P4_share_below": 0.4921875,
+      "denominator_share_below": 0.515625
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.3125,
+      "denominator_share_below": 0.5078125
+     },
+     "SH-recip": {
+      "P4_share_below": 0.7890625,
+      "denominator_share_below": 0.3515625
+     }
+    },
+    "class": "both"
+   },
+   "N2perm153": {
+    "numerator": 0.01378044742068596,
+    "denominator": 0.014757023607671726,
+    "P4": 0.9338229569221482,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.0625
+     },
+     "SH-route": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.2421875
+     },
+     "SH-class": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.0703125
+     },
+     "SH-mirror": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.109375
+     },
+     "SH-recip": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.078125
+     }
+    },
+    "class": "response only"
+   },
+   "N2perm154": {
+    "numerator": 0.02464520887042454,
+    "denominator": 0.02686281559181225,
+    "P4": 0.9174469737243912,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.59375
+     },
+     "SH-route": {
+      "P4_share_below": 0.9921875,
+      "denominator_share_below": 0.8359375
+     },
+     "SH-class": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.671875
+     },
+     "SH-mirror": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.75
+     },
+     "SH-recip": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.5625
+     }
+    },
+    "class": "response only"
+   },
+   "N2perm155": {
+    "numerator": 0.010500981604309345,
+    "denominator": 0.012714697320006962,
+    "P4": 0.8258931644236416,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 0.875,
+      "denominator_share_below": 0.0390625
+     },
+     "SH-route": {
+      "P4_share_below": 0.3046875,
+      "denominator_share_below": 0.1171875
+     },
+     "SH-class": {
+      "P4_share_below": 0.4921875,
+      "denominator_share_below": 0.015625
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.3359375,
+      "denominator_share_below": 0.0234375
+     },
+     "SH-recip": {
+      "P4_share_below": 0.796875,
+      "denominator_share_below": 0.0078125
+     }
+    },
+    "class": "both"
+   },
+   "N2perm156": {
+    "numerator": 0.028024493982229615,
+    "denominator": 0.03091891680196568,
+    "P4": 0.9063866681270007,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.734375
+     },
+     "SH-route": {
+      "P4_share_below": 0.9609375,
+      "denominator_share_below": 0.9296875
+     },
+     "SH-class": {
+      "P4_share_below": 0.9921875,
+      "denominator_share_below": 0.8359375
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.984375,
+      "denominator_share_below": 0.8515625
+     },
+     "SH-recip": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.734375
+     }
+    },
+    "class": "response only"
+   },
+   "N2perm157": {
+    "numerator": 0.01776148744920647,
+    "denominator": 0.01909552813594928,
+    "P4": 0.9301385812822143,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.2578125
+     },
+     "SH-route": {
+      "P4_share_below": 0.9921875,
+      "denominator_share_below": 0.5625
+     },
+     "SH-class": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.3046875
+     },
+     "SH-mirror": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.3125
+     },
+     "SH-recip": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.1875
+     }
+    },
+    "class": "response only"
+   },
+   "N2perm158": {
+    "numerator": 0.023053379406519525,
+    "denominator": 0.025039062055839167,
+    "P4": 0.9206966041742536,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.515625
+     },
+     "SH-route": {
+      "P4_share_below": 0.9921875,
+      "denominator_share_below": 0.8046875
+     },
+     "SH-class": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.6171875
+     },
+     "SH-mirror": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.6796875
+     },
+     "SH-recip": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.46875
+     }
+    },
+    "class": "response only"
+   },
+   "N2perm159": {
+    "numerator": 0.02766948159387539,
+    "denominator": 0.030434364719440055,
+    "P4": 0.9091525927663413,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.703125
+     },
+     "SH-route": {
+      "P4_share_below": 0.9609375,
+      "denominator_share_below": 0.9296875
+     },
+     "SH-class": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.8125
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.9921875,
+      "denominator_share_below": 0.84375
+     },
+     "SH-recip": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.71875
+     }
+    },
+    "class": "response only"
+   },
+   "N2perm160": {
+    "numerator": 0.02025844987747405,
+    "denominator": 0.02385925738417427,
+    "P4": 0.8490813251761717,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 0.9375,
+      "denominator_share_below": 0.4453125
+     },
+     "SH-route": {
+      "P4_share_below": 0.5234375,
+      "denominator_share_below": 0.75
+     },
+     "SH-class": {
+      "P4_share_below": 0.671875,
+      "denominator_share_below": 0.578125
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.625,
+      "denominator_share_below": 0.640625
+     },
+     "SH-recip": {
+      "P4_share_below": 0.8828125,
+      "denominator_share_below": 0.40625
+     }
+    },
+    "class": "both"
+   },
+   "N2perm161": {
+    "numerator": 0.020022681175760226,
+    "denominator": 0.023525677866928163,
+    "P4": 0.851099011429874,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 0.9375,
+      "denominator_share_below": 0.421875
+     },
+     "SH-route": {
+      "P4_share_below": 0.5546875,
+      "denominator_share_below": 0.71875
+     },
+     "SH-class": {
+      "P4_share_below": 0.7109375,
+      "denominator_share_below": 0.546875
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.640625,
+      "denominator_share_below": 0.609375
+     },
+     "SH-recip": {
+      "P4_share_below": 0.8828125,
+      "denominator_share_below": 0.3828125
+     }
+    },
+    "class": "both"
+   },
+   "N2perm162": {
+    "numerator": 0.019288145132122736,
+    "denominator": 0.024347978605874232,
+    "P4": 0.7921867126772177,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 0.734375,
+      "denominator_share_below": 0.484375
+     },
+     "SH-route": {
+      "P4_share_below": 0.1015625,
+      "denominator_share_below": 0.7734375
+     },
+     "SH-class": {
+      "P4_share_below": 0.140625,
+      "denominator_share_below": 0.6015625
+     },
+     "SH-mirror": {
+      "P4_share_below": 0.1015625,
+      "denominator_share_below": 0.65625
+     },
+     "SH-recip": {
+      "P4_share_below": 0.6484375,
+      "denominator_share_below": 0.4296875
+     }
+    },
+    "class": "both"
+   },
+   "N2perm163": {
+    "numerator": 0.019930435435526306,
+    "denominator": 0.02103996318510326,
+    "P4": 0.9472656990976808,
+    "valid": true,
+    "null_position": {
+     "SH": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.3125
+     },
+     "SH-route": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.671875
+     },
+     "SH-class": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.4453125
+     },
+     "SH-mirror": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.4609375
+     },
+     "SH-recip": {
+      "P4_share_below": 1.0,
+      "denominator_share_below": 0.28125
+     }
+    },
+    "class": "response only"
+   }
+  }
+ },
+ "seconds": 1621.5365931999404
+}

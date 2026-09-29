@@ -1,0 +1,688 @@
+{
+ "what": "exploratory (PLAN.md Q3)",
+ "plan": {
+  "genomes": 2048,
+  "per_chunk": 2048,
+  "reproduce_tolerance": 1e-06,
+  "cap_gpu_hours": 5.0,
+  "lead": {
+   "p4_below": "the pooled 95th percentile of 03's five ensembles",
+   "response_below": "the pooled maximum of 03's five ensembles"
+  },
+  "follow_up_top": 5,
+  "decay": {
+   "after": 300,
+   "every": 10,
+   "extra_ticks": [
+    5
+   ],
+   "graphs_per_ensemble": 16,
+   "remaining_fraction": 0.1,
+   "start_floor": 0.001,
+   "settle_tolerance": 0.0001,
+   "settle_window": 10
+  },
+  "weights": {
+   "permutations": 64,
+   "seed_base": 100
+  },
+  "by_type_seeds": [
+   100,
+   101,
+   102,
+   103,
+   104,
+   105,
+   106,
+   107
+  ]
+ },
+ "stamp": {
+  "git_commit": "66edaee8b7dd6e625fb0497f22b6fc56115a7337",
+  "branch": "roadmap",
+  "dirty": false,
+  "python": "3.13.3",
+  "numpy": "2.4.4",
+  "torch": "2.12.0+cu130",
+  "cuda": "13.0",
+  "gpu": "NVIDIA GeForce RTX 5080",
+  "connectome_cache_sha256": "43b87aa172a0042b9dce734b15bdf1c87efe3a33ac1cc0d9cd03255a60c96d4a",
+  "device": "cuda",
+  "genomes": 2048,
+  "smoke": false
+ },
+ "reproduce_N2": {
+  "got": {
+   "numerator": 0.11969424649760185,
+   "denominator": 0.12858509155194042
+  },
+  "03": {
+   "numerator": 0.11969424649760185,
+   "denominator": 0.12858509155194042
+  },
+  "relative_difference": {
+   "numerator": 0.0,
+   "denominator": 0.0
+  },
+  "reproduced": true
+ },
+ "thresholds": {
+  "P4_pooled_95th": 0.8885995336105148,
+  "response_pooled_max": 0.07317342492115131,
+  "response_pooled_median": 0.022893334492437134
+ },
+ "conditions": {
+  "intact": {
+   "numerator": 0.11969424649760185,
+   "denominator": 0.12858509155194042,
+   "P4": 0.9308563306443094,
+   "valid": true,
+   "null_position": {
+    "SH": {
+     "P4_share_below": 1.0,
+     "denominator_share_below": 1.0
+    },
+    "SH-route": {
+     "P4_share_below": 0.9921875,
+     "denominator_share_below": 1.0
+    },
+    "SH-class": {
+     "P4_share_below": 1.0,
+     "denominator_share_below": 1.0
+    },
+    "SH-mirror": {
+     "P4_share_below": 1.0,
+     "denominator_share_below": 1.0
+    },
+    "SH-recip": {
+     "P4_share_below": 1.0,
+     "denominator_share_below": 1.0
+    }
+   },
+   "class": "neither",
+   "change_from_intact": {
+    "P4": 0.0,
+    "denominator": 0.0
+   }
+  },
+  "gap junctions off": {
+   "numerator": 0.13484380512272764,
+   "denominator": 0.1426523852715036,
+   "P4": 0.9452614820711603,
+   "valid": true,
+   "null_position": {
+    "SH": {
+     "P4_share_below": 1.0,
+     "denominator_share_below": 1.0
+    },
+    "SH-route": {
+     "P4_share_below": 1.0,
+     "denominator_share_below": 1.0
+    },
+    "SH-class": {
+     "P4_share_below": 1.0,
+     "denominator_share_below": 1.0
+    },
+    "SH-mirror": {
+     "P4_share_below": 1.0,
+     "denominator_share_below": 1.0
+    },
+    "SH-recip": {
+     "P4_share_below": 1.0,
+     "denominator_share_below": 1.0
+    }
+   },
+   "class": "neither",
+   "change_from_intact": {
+    "P4": 0.014405151426850948,
+    "denominator": 0.014067293719563168
+   }
+  },
+  "chemical off": {
+   "numerator": 2.6127246201212984e-05,
+   "denominator": 3.587876199162565e-05,
+   "P4": null,
+   "valid": false,
+   "null_position": null,
+   "class": null,
+   "change_from_intact": null
+  },
+  "both off": {
+   "numerator": 0.0,
+   "denominator": 0.0,
+   "P4": null,
+   "valid": false,
+   "null_position": null,
+   "class": null,
+   "change_from_intact": null
+  },
+  "chemical permuted, seed 100": {
+   "numerator": 0.038317733493386186,
+   "denominator": 0.04573322329270013,
+   "P4": 0.837853331442361,
+   "valid": true,
+   "null_position": {
+    "SH": {
+     "P4_share_below": 0.90625,
+     "denominator_share_below": 0.9140625
+    },
+    "SH-route": {
+     "P4_share_below": 0.4296875,
+     "denominator_share_below": 0.9921875
+    },
+    "SH-class": {
+     "P4_share_below": 0.59375,
+     "denominator_share_below": 0.96875
+    },
+    "SH-mirror": {
+     "P4_share_below": 0.4453125,
+     "denominator_share_below": 0.9765625
+    },
+    "SH-recip": {
+     "P4_share_below": 0.8359375,
+     "denominator_share_below": 0.9140625
+    }
+   },
+   "class": "both",
+   "change_from_intact": {
+    "P4": -0.09300299920194843,
+    "denominator": -0.08285186825924029
+   }
+  },
+  "chemical permuted, seed 101": {
+   "numerator": 0.041048812701774295,
+   "denominator": 0.04479061085112335,
+   "P4": 0.9164602116772603,
+   "valid": true,
+   "null_position": {
+    "SH": {
+     "P4_share_below": 1.0,
+     "denominator_share_below": 0.9140625
+    },
+    "SH-route": {
+     "P4_share_below": 0.9921875,
+     "denominator_share_below": 0.9921875
+    },
+    "SH-class": {
+     "P4_share_below": 1.0,
+     "denominator_share_below": 0.9609375
+    },
+    "SH-mirror": {
+     "P4_share_below": 1.0,
+     "denominator_share_below": 0.9765625
+    },
+    "SH-recip": {
+     "P4_share_below": 1.0,
+     "denominator_share_below": 0.9140625
+    }
+   },
+   "class": "response only",
+   "change_from_intact": {
+    "P4": -0.014396118967049065,
+    "denominator": -0.08379448070081708
+   }
+  },
+  "chemical permuted, seed 102": {
+   "numerator": 0.02582616617110034,
+   "denominator": 0.02818343584476679,
+   "P4": 0.916359748092809,
+   "valid": true,
+   "null_position": {
+    "SH": {
+     "P4_share_below": 1.0,
+     "denominator_share_below": 0.640625
+    },
+    "SH-route": {
+     "P4_share_below": 0.9921875,
+     "denominator_share_below": 0.8828125
+    },
+    "SH-class": {
+     "P4_share_below": 1.0,
+     "denominator_share_below": 0.7265625
+    },
+    "SH-mirror": {
+     "P4_share_below": 1.0,
+     "denominator_share_below": 0.7734375
+    },
+    "SH-recip": {
+     "P4_share_below": 1.0,
+     "denominator_share_below": 0.6171875
+    }
+   },
+   "class": "response only",
+   "change_from_intact": {
+    "P4": -0.014496582551500437,
+    "denominator": -0.10040165570717363
+   }
+  },
+  "chemical permuted, seed 103": {
+   "numerator": 0.043079471648525214,
+   "denominator": 0.048002796043874696,
+   "P4": 0.8974367161685842,
+   "valid": true,
+   "null_position": {
+    "SH": {
+     "P4_share_below": 1.0,
+     "denominator_share_below": 0.9375
+    },
+    "SH-route": {
+     "P4_share_below": 0.9375,
+     "denominator_share_below": 1.0
+    },
+    "SH-class": {
+     "P4_share_below": 0.984375,
+     "denominator_share_below": 0.96875
+    },
+    "SH-mirror": {
+     "P4_share_below": 0.9453125,
+     "denominator_share_below": 0.9765625
+    },
+    "SH-recip": {
+     "P4_share_below": 0.984375,
+     "denominator_share_below": 0.9296875
+    }
+   },
+   "class": "response only",
+   "change_from_intact": {
+    "P4": -0.03341961447572517,
+    "denominator": -0.08058229550806573
+   }
+  },
+  "chemical permuted, seed 104": {
+   "numerator": 0.02036697486801131,
+   "denominator": 0.02326788597929408,
+   "P4": 0.8753255403664834,
+   "valid": true,
+   "null_position": {
+    "SH": {
+     "P4_share_below": 0.9921875,
+     "denominator_share_below": 0.421875
+    },
+    "SH-route": {
+     "P4_share_below": 0.8359375,
+     "denominator_share_below": 0.7109375
+    },
+    "SH-class": {
+     "P4_share_below": 0.8828125,
+     "denominator_share_below": 0.5234375
+    },
+    "SH-mirror": {
+     "P4_share_below": 0.8359375,
+     "denominator_share_below": 0.5859375
+    },
+    "SH-recip": {
+     "P4_share_below": 0.96875,
+     "denominator_share_below": 0.375
+    }
+   },
+   "class": "both",
+   "change_from_intact": {
+    "P4": -0.055530790277826036,
+    "denominator": -0.10531720557264634
+   }
+  },
+  "chemical permuted, seed 105": {
+   "numerator": 0.029877631401177496,
+   "denominator": 0.033293203756329603,
+   "P4": 0.8974093217297314,
+   "valid": true,
+   "null_position": {
+    "SH": {
+     "P4_share_below": 1.0,
+     "denominator_share_below": 0.7890625
+    },
+    "SH-route": {
+     "P4_share_below": 0.9375,
+     "denominator_share_below": 0.9375
+    },
+    "SH-class": {
+     "P4_share_below": 0.984375,
+     "denominator_share_below": 0.8671875
+    },
+    "SH-mirror": {
+     "P4_share_below": 0.9453125,
+     "denominator_share_below": 0.90625
+    },
+    "SH-recip": {
+     "P4_share_below": 0.984375,
+     "denominator_share_below": 0.78125
+    }
+   },
+   "class": "response only",
+   "change_from_intact": {
+    "P4": -0.03344700891457797,
+    "denominator": -0.09529188779561082
+   }
+  },
+  "chemical permuted, seed 106": {
+   "numerator": 0.022005619497576845,
+   "denominator": 0.02440887842567463,
+   "P4": 0.9015416076811664,
+   "valid": true,
+   "null_position": {
+    "SH": {
+     "P4_share_below": 1.0,
+     "denominator_share_below": 0.484375
+    },
+    "SH-route": {
+     "P4_share_below": 0.9375,
+     "denominator_share_below": 0.7734375
+    },
+    "SH-class": {
+     "P4_share_below": 0.984375,
+     "denominator_share_below": 0.6015625
+    },
+    "SH-mirror": {
+     "P4_share_below": 0.96875,
+     "denominator_share_below": 0.65625
+    },
+    "SH-recip": {
+     "P4_share_below": 1.0,
+     "denominator_share_below": 0.4296875
+    }
+   },
+   "class": "response only",
+   "change_from_intact": {
+    "P4": -0.02931472296314297,
+    "denominator": -0.1041762131262658
+   }
+  },
+  "chemical permuted, seed 107": {
+   "numerator": 0.027096791426629352,
+   "denominator": 0.028336755568489025,
+   "P4": 0.9562418450177643,
+   "valid": true,
+   "null_position": {
+    "SH": {
+     "P4_share_below": 1.0,
+     "denominator_share_below": 0.6484375
+    },
+    "SH-route": {
+     "P4_share_below": 1.0,
+     "denominator_share_below": 0.8828125
+    },
+    "SH-class": {
+     "P4_share_below": 1.0,
+     "denominator_share_below": 0.7265625
+    },
+    "SH-mirror": {
+     "P4_share_below": 1.0,
+     "denominator_share_below": 0.78125
+    },
+    "SH-recip": {
+     "P4_share_below": 1.0,
+     "denominator_share_below": 0.6171875
+    }
+   },
+   "class": "response only",
+   "change_from_intact": {
+    "P4": 0.02538551437345493,
+    "denominator": -0.1002483359834514
+   }
+  },
+  "gaps permuted, seed 100": {
+   "numerator": 0.10930333421219984,
+   "denominator": 0.118232091092068,
+   "P4": 0.9244811049403221,
+   "valid": true,
+   "null_position": {
+    "SH": {
+     "P4_share_below": 1.0,
+     "denominator_share_below": 1.0
+    },
+    "SH-route": {
+     "P4_share_below": 0.9921875,
+     "denominator_share_below": 1.0
+    },
+    "SH-class": {
+     "P4_share_below": 1.0,
+     "denominator_share_below": 1.0
+    },
+    "SH-mirror": {
+     "P4_share_below": 1.0,
+     "denominator_share_below": 1.0
+    },
+    "SH-recip": {
+     "P4_share_below": 1.0,
+     "denominator_share_below": 1.0
+    }
+   },
+   "class": "neither",
+   "change_from_intact": {
+    "P4": -0.006375225703987297,
+    "denominator": -0.010353000459872419
+   }
+  },
+  "gaps permuted, seed 101": {
+   "numerator": 0.11353030823192967,
+   "denominator": 0.12328811921543092,
+   "P4": 0.9208535985008363,
+   "valid": true,
+   "null_position": {
+    "SH": {
+     "P4_share_below": 1.0,
+     "denominator_share_below": 1.0
+    },
+    "SH-route": {
+     "P4_share_below": 0.9921875,
+     "denominator_share_below": 1.0
+    },
+    "SH-class": {
+     "P4_share_below": 1.0,
+     "denominator_share_below": 1.0
+    },
+    "SH-mirror": {
+     "P4_share_below": 1.0,
+     "denominator_share_below": 1.0
+    },
+    "SH-recip": {
+     "P4_share_below": 1.0,
+     "denominator_share_below": 1.0
+    }
+   },
+   "class": "neither",
+   "change_from_intact": {
+    "P4": -0.010002732143473136,
+    "denominator": -0.005296972336509498
+   }
+  },
+  "gaps permuted, seed 102": {
+   "numerator": 0.11929877913189557,
+   "denominator": 0.1289177142252811,
+   "P4": 0.925387017981279,
+   "valid": true,
+   "null_position": {
+    "SH": {
+     "P4_share_below": 1.0,
+     "denominator_share_below": 1.0
+    },
+    "SH-route": {
+     "P4_share_below": 0.9921875,
+     "denominator_share_below": 1.0
+    },
+    "SH-class": {
+     "P4_share_below": 1.0,
+     "denominator_share_below": 1.0
+    },
+    "SH-mirror": {
+     "P4_share_below": 1.0,
+     "denominator_share_below": 1.0
+    },
+    "SH-recip": {
+     "P4_share_below": 1.0,
+     "denominator_share_below": 1.0
+    }
+   },
+   "class": "neither",
+   "change_from_intact": {
+    "P4": -0.005469312663030412,
+    "denominator": 0.00033262267334066564
+   }
+  },
+  "gaps permuted, seed 103": {
+   "numerator": 0.11567778242533677,
+   "denominator": 0.12497702099244634,
+   "P4": 0.9255924129630869,
+   "valid": true,
+   "null_position": {
+    "SH": {
+     "P4_share_below": 1.0,
+     "denominator_share_below": 1.0
+    },
+    "SH-route": {
+     "P4_share_below": 0.9921875,
+     "denominator_share_below": 1.0
+    },
+    "SH-class": {
+     "P4_share_below": 1.0,
+     "denominator_share_below": 1.0
+    },
+    "SH-mirror": {
+     "P4_share_below": 1.0,
+     "denominator_share_below": 1.0
+    },
+    "SH-recip": {
+     "P4_share_below": 1.0,
+     "denominator_share_below": 1.0
+    }
+   },
+   "class": "neither",
+   "change_from_intact": {
+    "P4": -0.005263917681222474,
+    "denominator": -0.003608070559494081
+   }
+  },
+  "gaps permuted, seed 104": {
+   "numerator": 0.11219793318559823,
+   "denominator": 0.12216076673939824,
+   "P4": 0.9184448999484964,
+   "valid": true,
+   "null_position": {
+    "SH": {
+     "P4_share_below": 1.0,
+     "denominator_share_below": 1.0
+    },
+    "SH-route": {
+     "P4_share_below": 0.9921875,
+     "denominator_share_below": 1.0
+    },
+    "SH-class": {
+     "P4_share_below": 1.0,
+     "denominator_share_below": 1.0
+    },
+    "SH-mirror": {
+     "P4_share_below": 1.0,
+     "denominator_share_below": 1.0
+    },
+    "SH-recip": {
+     "P4_share_below": 1.0,
+     "denominator_share_below": 1.0
+    }
+   },
+   "class": "neither",
+   "change_from_intact": {
+    "P4": -0.012411430695812964,
+    "denominator": -0.0064243248125421815
+   }
+  },
+  "gaps permuted, seed 105": {
+   "numerator": 0.11430470456252806,
+   "denominator": 0.12437439888071822,
+   "P4": 0.9190372423198802,
+   "valid": true,
+   "null_position": {
+    "SH": {
+     "P4_share_below": 1.0,
+     "denominator_share_below": 1.0
+    },
+    "SH-route": {
+     "P4_share_below": 0.9921875,
+     "denominator_share_below": 1.0
+    },
+    "SH-class": {
+     "P4_share_below": 1.0,
+     "denominator_share_below": 1.0
+    },
+    "SH-mirror": {
+     "P4_share_below": 1.0,
+     "denominator_share_below": 1.0
+    },
+    "SH-recip": {
+     "P4_share_below": 1.0,
+     "denominator_share_below": 1.0
+    }
+   },
+   "class": "neither",
+   "change_from_intact": {
+    "P4": -0.011819088324429239,
+    "denominator": -0.004210692671222205
+   }
+  },
+  "gaps permuted, seed 106": {
+   "numerator": 0.11736605192891147,
+   "denominator": 0.126298530252825,
+   "P4": 0.9292748830407412,
+   "valid": true,
+   "null_position": {
+    "SH": {
+     "P4_share_below": 1.0,
+     "denominator_share_below": 1.0
+    },
+    "SH-route": {
+     "P4_share_below": 0.9921875,
+     "denominator_share_below": 1.0
+    },
+    "SH-class": {
+     "P4_share_below": 1.0,
+     "denominator_share_below": 1.0
+    },
+    "SH-mirror": {
+     "P4_share_below": 1.0,
+     "denominator_share_below": 1.0
+    },
+    "SH-recip": {
+     "P4_share_below": 1.0,
+     "denominator_share_below": 1.0
+    }
+   },
+   "class": "neither",
+   "change_from_intact": {
+    "P4": -0.0015814476035681535,
+    "denominator": -0.0022865612991154194
+   }
+  },
+  "gaps permuted, seed 107": {
+   "numerator": 0.10783882467694639,
+   "denominator": 0.1178548681873508,
+   "P4": 0.9150137481424852,
+   "valid": true,
+   "null_position": {
+    "SH": {
+     "P4_share_below": 1.0,
+     "denominator_share_below": 1.0
+    },
+    "SH-route": {
+     "P4_share_below": 0.984375,
+     "denominator_share_below": 1.0
+    },
+    "SH-class": {
+     "P4_share_below": 1.0,
+     "denominator_share_below": 1.0
+    },
+    "SH-mirror": {
+     "P4_share_below": 0.9921875,
+     "denominator_share_below": 1.0
+    },
+    "SH-recip": {
+     "P4_share_below": 1.0,
+     "denominator_share_below": 1.0
+    }
+   },
+   "class": "neither",
+   "change_from_intact": {
+    "P4": -0.015842582501824243,
+    "denominator": -0.01073022336458962
+   }
+  }
+ }
+}

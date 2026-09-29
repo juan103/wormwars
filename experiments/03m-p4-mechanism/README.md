@@ -1,7 +1,10 @@
 # 03m: what drives P4? An exploratory look
 
-**Status:** plan v4.1 agreed by Astra 6 and Fable 5.1 ("ready to run", after four rounds). Q1 is done
-from committed data; the simulations (Q2-Q5) run after 04a's evaluation. **Exploratory:** the
+**Status:** plan v4.1 agreed by Astra 6 and Fable 5.1 ("ready to run", after four rounds). All five
+parts ran on 2026-09-29 (3.32 GPU-hours); results written in [`RESULTS.md`](RESULTS.md), review
+pending. In brief: N2's large food response depends on where its chemical weights sit and on RIA and
+AIY; its high history dependence survives every deletion and weight permutation tested, and fades more
+slowly than in the shuffles. **Exploratory:** the
 analyses are declared in [`PLAN.md`](PLAN.md) before they run, but nothing here is confirmatory.
 
 ## The question
