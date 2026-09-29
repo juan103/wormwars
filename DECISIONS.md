@@ -3364,3 +3364,26 @@ go.
 **Also:** the 03m exploratory plan (v4.1) was agreed by both reviewers ("ready to run") and merged
 from its branch after 04a's evaluation (`69286d9`); its GPU commands run next, under their own
 5-hour cap.
+
+## D111 — 04a results review: both "fix", text only; corrections dated, the verdict unchanged
+
+Astra 6 and Fable 5.1 reviewed 04a's results (`5312475`; `docs/reviews/20260929-025032-04a-results/`).
+Both checked the registration against the records and found it followed: the stage commits and their
+pushes before each marker, the same-code and environment chain, the ids, seeds and compositions, all 16
+champions re-derived, `run_rules` against §6, and the share bound. Astra recomputed all 82 arm means.
+Both said **"fix"**, for text only, and the corrections are added as dated sections in RESULTS.md and
+the README, quoting what was written:
+- the training-curve and timing sentences were wrong;
+- "steer" and "like a stereo steerer" overclaimed: the probes show cue use, not its computation, and
+  the champions' behaviour is closer to E1's temporal controller (M-avg) than to a stereo steerer
+  (Fable). This matters for E3, which assumed a left-right cue follower;
+- reliability belongs to the 12 passing champions, not all 16 (Astra);
+- "no deviation" missed one: the guarded smoke run ran after the projection, on `9531aaf`, not on the
+  binding commit, and its record calls `9531aaf` the binding commit (both).
+
+**D110, corrected here** (both): *"the projection (9531aaf)"*: the projection ran at `e3d68be`;
+`9531aaf` holds its record. *"Every champion's checkpoint batch replayed exactly"*: every champion's
+checkpoint batch reproduced every recorded per-world count on the validation worlds (256 of 256);
+exact replay is not claimed (AGENTS.md rule 6).
+
+**Before main** (Fable): ROADMAP.md's 04a status and the root README's "next" line are out of date.

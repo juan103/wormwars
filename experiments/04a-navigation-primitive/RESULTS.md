@@ -122,3 +122,61 @@ well.
 - **Whether a better optimizer finds a better navigator is E2's question,** which now starts from a
   measured baseline: 02's optimizer, 1 000 generations, champions at k ≈ 4 equivalent.
 - **Whether the result depends on N2's wiring** needs the null-graph bridge (Bridge 1), deferred.
+
+## Corrections (2026-09-29, D111)
+
+Both reviewers checked these results against the records (`docs/reviews/20260929-025032-04a-results/`)
+and said "fix", for text only: the run followed the registration, the verdict stands, and every
+headline number matches. The corrections below quote what was written above, which is left as it was.
+
+1. **The training curves.** Written: *"Validation means rose from 0.0-1.1 at generation 0 to about
+   1.5-2.1 by generation 100 and moved noisily within about 1.5-2.9 afterwards."* Not accurate. At
+   generation 100, 13 of 16 runs were at 1.5-2.1; runs 7, 9 and 11 were at 1.46, 0.74 and 0.51, and
+   run 11 stayed below 1.0 until generation 300. After generation 100, checkpoint means ranged from
+   0.50 to 2.86, mostly within 1.5-2.9 (56 of 576 below 1.5). The pilot's plateau described the
+   eventual level, not every run's path (both).
+2. **The timing.** Written: *"training ran at 4.8-7 s."* Not what the logs show. No generation took
+   under 4.66 s; the median generation took 4.75 s (A) and 4.72 s (B), and the mean with checkpoints
+   5.20 s (A) and 4.88 s (B). The slowdown from the other CPU work was confined to a minority of
+   batch A's generations (Fable).
+3. **"Steer" overclaims** (both). Written: *"They steer by the cue, slowly"* and, in the README, *"they
+   perform like a stereo steerer with a small gain (k about 4)."* The mirrored and constant probes
+   show that the champions **use the cue**; they do not identify how (a left-right comparison, a
+   comparison over time, or something else). The performance-equivalent gain is a performance match,
+   as registered, not a measured steering gain. On the records, the champions' behaviour is closer to
+   E1's temporal controller (M-avg) than to a stereo steerer of equal mean:
+
+   | | Mean | First arrival | Median finished leg (ticks) | Path efficiency |
+   |---|---|---|---|---|
+   | Champions | 1.99-2.81 | 0.98-1.00 | 86-116 | 0.27-0.34 |
+   | M-avg (E1's temporal controller) | 2.18 | 1.00 | 117 | 0.42 |
+   | Stereo steerer, k = 4 | 2.18 | 0.92 | 80 | 0.48 |
+
+   Six of the 16 champions have a lower mean than M-avg. This matters for E3, which would use the
+   module as a left-right cue follower: that has not been shown.
+4. **Reliability is the passing champions'** (Astra). Written: *"The champions do."* (navigate by the
+   cue reliably, better than blind search and than where they started). Correctly: the 12 passing
+   champions do; all 16 passed the four other rules, and four missed reliability.
+5. **The margins.** The reliability rule is a point estimate: run 4 passed with 833 of 1 024 episodes
+   against 820, about one standard error. A rule on its one-sided 95% lower bound would have passed 7
+   of the 12 shaped runs, still above 6, so the verdict does not hinge on it (Fable). Run 5, the
+   furthest from the bar, had 719.
+6. **A deviation, not "none"** (both). Written: *"No deviation from the registration that I have
+   found."* The registration orders the guarded smoke run on the binding commit, before the formal
+   stages. It ran on `9531aaf`, the binding commit `e3d68be` plus the formal projection's record,
+   after the projection. The code was the same, so it is harmless, but it is a departure from the
+   stated order; `development-records/guarded-smoke.json` also calls `9531aaf` "the binding commit",
+   which it is not. And the stages' execution commits are: the projection `e3d68be`, batch A
+   `7ec22bb`, batch B `75307a3`, the evaluation `2b9ed94`; `9531aaf` only holds the projection's
+   record.
+
+**Added, as the reviewers suggested:**
+- The generation-0 populations scored zero on every training world for 78-97% of their genomes per
+  run (registered in §7 as reported). Three generation-0 baselines (runs 2, 4 and 13: 1.08, 0.96 and
+  1.00) already beat K's 0.90.
+- The decoy capture is an endpoint measure, not arrivals at the decoy: the median final distance to
+  the decoy was 2.35-4.10 cells, and to the true target 12.8-14.9. Chance would put about half the
+  episodes nearer each.
+- Selection optimism was small: every champion's hold-out mean is within 0.09 of its validation mean.
+- The evaluation's 304 s runs through the verdict; the replays and module saves after it, and start-up,
+  make up the rest of the 2.91 GPU-hours (the named parts sum to 2.894).

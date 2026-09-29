@@ -67,3 +67,21 @@ python scripts/e04a.py evaluate --smoke
 The genome files are not published (early genomes carry the connectome's weights; D028); the records
 hold every genome's hash, and a formal rerun regenerates them. A rerun is a replication with its own
 record.
+
+## Corrections (2026-09-29, D111)
+
+The reviewers' results review (`docs/reviews/20260929-025032-04a-results/`) found these slips above,
+left as written:
+- *"about 2.1-2.8 targets per 300-tick episode"*: 2.0-2.8 (1.99-2.81).
+- *"they perform like a stereo steerer with a small gain (k about 4)"*: the probes show the champions
+  use the cue, not how; the equivalent gain is a performance match, and their behaviour is closer to
+  E1's temporal controller than to a stereo steerer ([`RESULTS.md`](RESULTS.md), Corrections 3).
+- *"with the scent mirrored they go to the decoy"*: they end their unfinished leg nearer the decoy
+  than the target in 97-100% of episodes (median 2.4-4.1 cells from it); it is not an arrival rate.
+- *"Shaping was not needed: the unshaped arm did as well"*: descriptive, from 4 runs, all in one
+  batch; they show the procedure can succeed without shaping, not that shaping has no benefit.
+- *"The four failures missed only the reliability rule, narrowly"*: not all narrowly; run 5 had 719
+  of 1 024 against 820.
+- *"Reproduce it"*: those commands are a smoke check at tiny sizes (add `--device cpu` without a
+  GPU). A replication runs the four formal stages in order on a clean, pushed checkout of `e3d68be`
+  in the registered environment, and writes its own records.
