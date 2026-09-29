@@ -3520,3 +3520,23 @@ All are taken in design v2.2's last section. The one code gap, a batch tied with
 pair moving the mean through Adam's momentum, is fixed test-first (the test failed, then passed; 14
 tests). Since both reviewers review the pre-registration, which carries these specifications, the next
 step is the pre-registration rather than another design round.
+
+## D119 — E2's pre-registration v1: the loops, the runner, and three choices beyond the design
+
+E2's code is written test-first: the batched loops for random sampling and the ES
+(`wormwars/e2/loops.py`, 15 tests) and the runner (`scripts/e2.py`, 46 command tests with fake
+rollouts), each rule sabotage-checked (12 deliberate breaks, each caught by its test). One CPU smoke
+run of the whole chain, with real rollouts at smoke sizes, completed. The GA runs through 04a's
+`evolve_batch` unchanged; a test compares E2's call with a direct call on 04a's configuration.
+
+Three choices go beyond design v2.2; the pre-registration lists them (§13) for review:
+- **Paired starts:** run r of every method shares run seed 1 120 000 + r, so all three methods start
+  from the GA's own generation-0 population on the same world schedule. This removes start-to-start
+  variation from a comparison of only 8 runs per method.
+- **"Final" for a training stage that stops twice,** so an incomplete GA or random-sampling batch
+  reaches the decision rule's "no decision" or "not made" branches instead of halting E2.
+- **No mechanical reduction after an over-limit projection:** the generations are tied to the
+  allowance, so any change needs a reviewed amendment.
+
+Id block 995 000 000-995 999 999, unused by any earlier experiment (a test checks). The
+pre-registration goes to Astra 6 and Fable 5.1 before binding.
