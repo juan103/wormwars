@@ -20,6 +20,8 @@ what comes next.
 | `wormwars/evo/` | Evolution (`evolve.py`), rollouts and seed pools (`rollout.py`), genome files (`genomes.py`), run bundles and `replay_mode` (`bundle.py`), coevolution. |
 | `wormwars/accounting.py` | Compute accounting: worlds, ticks and neural updates, by category. |
 | `wormwars/exp02/`, `wormwars/exp03/` | Experiment-specific code: grids, probes, samplers, statistics and reports. |
+| `wormwars/e1/`, `wormwars/e04a/`, `wormwars/e2/` | Track E's code: Task N and its scripted controllers (E1); the lockstep batch of evolutionary runs (04a); the ES, random sampling and their batched loops (E2). |
+| `wormwars/registration.py` | The shared pre-registration guards: provenance, the formal-run checks, start markers, the cap clock. |
 | `scripts/` | Entry points. The evolution drivers write a run bundle (config, hashes, versions, commit); `exp03.py` records provenance per measurement instead. The experiment drivers write a compute record. |
 | `experiments/<id>/` | One folder per experiment, each with a README: design, pre-registration, results, reviews, and the committed summary data. |
 | `runs/` | Run outputs. Small summaries are committed; bulky files, such as most genome `.npz` files, stay local. |

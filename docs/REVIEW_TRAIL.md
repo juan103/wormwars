@@ -39,6 +39,8 @@ led to several of the findings.
 | 19 | 03m's exploratory plan: a filter pooled all five ensembles under "SH" in a committed output, and a settling check compared only the two ends of its window | Claude Opus 5.5 | **Astra 6 and Fable 5.1** (the filter); **Astra 6** (the settling check) | Fixed with tests before any simulation; the output regenerated | 03m's PLAN.md, v3 |
 | 20 | E2's pre-registration, over four rounds. A kill could leave a stage never "final" (both), and the rerun's own setup could be mistaken for a killed rerun (Astra, Fable). A stopped extension could lose its champions (Astra). The smoke run's projection had used the formal projection seeds, and "every score 0" was false (Astra). A new skip rule promised what the code did not do (both). "Each test was seen failing first" was false: eight tests pinned existing behaviour, and one could not fail at all | Claude Opus 5.5 | **Astra 6 and Fable 5.1**, in four rounds; the full count of pinned tests Claude found when checking their correction | Each fix test-first or sabotage-checked; the seeds moved; the claim corrected before binding | D119-D123 |
 | 21 | E2's results overclaimed in their interpretation: "1 000 generations of either optimizer add little" (the ES ran 623); run 2 carried "most" of the ES's lead (all of it); the extension showed a "budget effect" on the outcome (it did not change it); a champion "does not depend on the cue at all" (not measured that finely); two figures and the ledger's source were wrong | Claude Opus 5.5 | **Astra 6 and Fable 5.1**; **Fable 5.1** (the floor's dependence on one run, the ledger's source, the binding commit) | Dated corrections; the registered outcome and floor unchanged | D125 |
+| 22 | E2d's diagnosis plan, over four rounds: its arms were compared with E2's runs unpaired, so seed luck alone could meet the threshold (Fable: 04a's unchanged GA runs averaged 0.4 above E2's); one arm changed two settings; its readings claimed a "temporal" strategy the probes cannot show; its budget rule was already decided by E2's data | Claude Opus 5.5 | **Fable 5.1** (the pairing, the budget rule); **Astra 6 and Fable 5.1** (the readings, the two-setting arm) | The arms paired with E2's own runs, replayed first; the readings narrowed | D129-D131 |
+| 23 | E2d's runner: a capped arm blocked the protected hold-out pass; an incomplete arm was read as "supports", with an interaction claimed; a failed probe check did not reach Part C; many tests passed with their rule broken | Claude Opus 5.5 | **Astra 6** (reproduced two by running the code) and **Fable 5.1** (the untested rules) | Each fixed test-first and sabotage-checked | D133-D135 |
 
 Episode 6 went unnoticed for a week, through a passing test suite, every milestone report, a
 publication audit, the first public release and Claude's own review of the roadmap on the day it
@@ -73,7 +75,7 @@ food response is 1.55-2.7 times the most responsive graph's, not 1.5-1.8).
   useful.
 - One error (episode 16) was caught by neither a person nor a reviewer but by running the tests on
   another operating system.
-- This is one project and twenty-one episodes: an anecdote about multi-agent review, not a measurement
+- This is one project and twenty-three episodes: an anecdote about multi-agent review, not a measurement
   of it.
 
 ## In the history

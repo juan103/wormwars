@@ -1,6 +1,8 @@
 # E2: a short optimizer screen
 
-**Status: completed and reviewed (2026-09-29).** Pre-registered and pushed before its runs: the text
+**Status: completed, reviewed and published on main (2026-09-29; `8ad636b`, D126).** Its floor fired,
+and the diagnosis it requires is [E2d](../E2d-taskn-diagnosis/README.md). Pre-registered and pushed
+before its runs: the text
 bound at `60af3cf`, the binding commit (as the registration defines it, the one the projection
 records) `69f4163`, which adds only a development record. Every stage ran once on the binding code,
 with no rerun or amendment. Both reviewers checked the results ("fix", text only); the corrections

@@ -36,10 +36,10 @@ selection acts on team results.
 | [04a](experiments/04a-navigation-primitive/README.md) | Can evolution, from random weights on the N2 wiring, produce a brain that reaches moved targets, beats blind search and uses the cue? | Published; pre-registered, public before its run | "04a: passed": 8 of 12 shaped runs (4 of 4 unshaped); the champions use the cue but are weak navigators (2.0-2.8 targets, 23-32% of an oracle) |
 | [03m](experiments/03m-p4-mechanism/README.md) | What drives 03's history dependence (P4)? | Exploratory; run, reviewed, corrected | N2's history fades more slowly than nearly all the shuffles'; its large food response depends on weight placement and on RIA and AIY; most weight permutations lower its P4, gap junctions narrow its lead, and no tested single or paired deletion removed it |
 | [E2](experiments/E2-optimizer-screen/README.md) | At equal simulator work, does OpenAI-ES find better Task N navigators than 02's GA, with random sampling as a floor? | Published; pre-registered, public before its run | "E2: keep 02's GA": the ES led by 0.12 targets per episode (0.5 needed). The floor fired: random sampling came within 0.36 of the GA, so Task N is diagnosed before E3 builds on it |
+| [E2d](experiments/E2d-taskn-diagnosis/README.md) | Why did random sampling come so close? Noise, the operators, budget and stereo use on Task N | Exploratory; plan and runner reviewed; running | None yet. From E2's records alone: 8 training worlds rank close genomes barely better than a coin, and the champions sit at the level of a controller that cannot use the left-right difference |
 
-Next on the roadmap: the diagnosis E2's floor rule requires (saturation, noise and budget on Task N),
-with its own design and review, before E3; and, in the biology track, whether 03m's leads deserve a
-confirmatory study.
+Next on the roadmap: E2d's readings, then E3's design built on them. In the biology track, a
+confirmatory study of 03m's leads comes next, then 03a's six-neuron proof of concept.
 
 ## Newest: which optimizer for the next stage? (E2)
 
@@ -465,7 +465,7 @@ This project was designed and built almost entirely by AI models, directed by a 
 - Claude Fable 5.1 (Anthropic), in conversation: turned those ideas into the experimental design and
   specification, and reviewed the results. Later, consulted read-only, it reviewed experiment 01b
   before publication (D033), and since then every design, pre-registration and write-up: 02, 03,
-  03r, T0, T1, E1, 04a, 03m and E2.
+  03r, T0, T1, E1, 04a, 03m, E2 and E2d.
 - Astra 6 (a GPT model from OpenAI): adversarial review of the specification, which produced the
   statistical design, the resource accounting rules and the numerical stability requirements.
   Reviewing the roadmap, it found that the chemical synapses of experiment 01 ran backwards (D031),
@@ -477,7 +477,7 @@ This project was designed and built almost entirely by AI models, directed by a 
   the reversed synapses, ran experiment 01b, and acted on its review. It also designed,
   pre-registered, ran and wrote up experiment 02, which the owner delegated to it end to end,
   with the two reviewers standing in for approval at each stage; then, with the roadmap delegated,
-  03, 03r, the engineering work (T0, T1), E1, 04a, 03m and E2.
+  03, 03r, the engineering work (T0, T1), E1, 04a, 03m, E2 and E2d.
 - An outside review by a separate Claude Opus 5.5 instance, shared by the owner on 2026-09-28
   ([archived](docs/reviews/20260928-outside-review/review.md)), suggested the automatic test runs
   and the checks behind 03m.

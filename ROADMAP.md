@@ -2,13 +2,16 @@
 
 *27 September 2026. Replaces v2. Written from roadmap v2, Astra 6's review of v2, and Claude Code's status report of the same day. A local v2.2 exists on the `roadmap` branch and was not seen when this version was written, so merge anything it adds. (Merged: see "Carried over from v2.2" below. Four factual corrections were made on installation; they are listed in D062.) This is a living document, not a pre-registration. When a result changes it, the change is recorded here with the reason.*
 
-## Status, 28 September 2026 (updates the section below; that section's later edits are recorded in DECISIONS.md)
+## Status, 29 September 2026 (updates the section below; that section's later edits are recorded in DECISIONS.md)
 
 - **Published on main:**
   - 02's D050 correction, as a Corrections entry (27 September, D063);
   - 03 and 03r together, reported by the pre-registered rule, and 02b (28 September, D085);
   - the documentation for outsiders, and T1 (28 September, D093);
-  - E1, with its pre-registration, results and corrections (28 September, D102).
+  - E1, with its pre-registration, results and corrections (28 September, D102);
+  - 04a, with its pre-registration, results and corrections (29 September, D112);
+  - 03m, exploratory, with a replaced flaky test (29 September, D116);
+  - E2, with its design, pre-registration, results and corrections (29 September, D126).
 - **T0 (correctness) is closed** (D083). On CUDA, results repeated exactly for the same batch
   composition in the tested configurations; exact reproduction is guaranteed only inside
   `replay_mode()`. A chunk holding a single strain can differ from the same strain in a larger
@@ -58,6 +61,14 @@
   corrections.
   - **Next in Track E:** the diagnosis of saturation, noise and budget on Task N, with its own design
     and review. E3 waits for it.
+- **E2d, the diagnosis of Task N** (exploratory; `experiments/E2d-taskn-diagnosis/`, D127-D135):
+  - **Part A**, from E2's records alone, found training fitness noisy. With 8 worlds, two genomes
+    0.05-0.15 targets apart are ranked strictly correctly 54% of the time, with 16% ties. Nearly
+    every champion sits at the level of E1's best controller that cannot use the left-right difference.
+  - **Parts B, C0 and C** were agreed after four plan rounds and three code reviews: stereo probes of
+    the champions, a probe of how reliably 8 worlds rank siblings, and four one-change arms paired
+    with E2's own runs. They run on 2026-09-29, about 6 of a 7 GPU-hour cap.
+  - **E3's design waits for its readings.**
 - **03m, what drives P4** (exploratory; D113, D114): ran on 2026-09-29, 3.32 GPU-hours. Reviewed; its
   first summary overclaimed and is corrected. What stands: N2's history fades more slowly than the
   shuffles'; its large food response depends on the placement of its weights and on RIA and AIY
@@ -90,9 +101,9 @@
   - **P1, steering toward food:** N2 is unremarkable.
   - **P3, use of food information:** no criterion met, with low power.
   - **Exploratory:** N2's random brains respond 5 to 7 times more strongly to food input than the typical shuffled graph, and more strongly than every one of the 640. That does not explain P4. Two readings from 02 do not hold for unselected random brains.
-- **03r:** a pre-registered replication on 768 new graphs and new random brains for N2 too, **finished on 2026-09-28: "Replicated under the registered single-signal test and under 03's original three-signal rule"** (D080). P1 recurs as "not distinctive". P3 comes out *reversed*: an unpredicted secondary, weaker than its rank p suggests because N2's P3 measurement is noisy. Per "What would change this roadmap", the mechanism follow-up comes next in Track B, and bridge 2 gains priority.
+- **03r:** a pre-registered replication on 768 new graphs and new random brains for N2 too, **finished on 2026-09-28: "Replicated under the registered single-signal test and under 03's original three-signal rule"** (D080). P1 recurs as "not distinctive". P3 comes out *reversed*: an unpredicted secondary, weaker than its rank p suggests because N2's P3 measurement is noisy. Per "What would change this roadmap", the mechanism follow-up comes next in Track B, and bridge 2 gains priority. *(29 September: that follow-up, 03m, ran as an exploratory study; D113-D116.)*
   - **Timing, stated plainly:** neither 03's nor 03r's pre-registration was pushed before its run started. 03r's is pushed while the run is in progress, so GitHub's receipt time shows only when the text became public. That no 03r result had been seen by then rests on local records: at the push, N2 had not been measured, and no signal value from the formal run had been inspected since binding. The one exception is a disclosed preflight value from before binding (D063). The standing rule below applies from now on.
-- **03a (your self-consistency hypothesis):** draft v3.2, nothing run. Estimated at about 31 million genome evaluations, roughly 785 GPU-hours. Measured throughput so far is about 2 times experiment 02's; the one-week cap needs about 5 times.
+- **03a (your self-consistency hypothesis):** draft v3.2, nothing run. Estimated at about 31 million genome evaluations, roughly 785 GPU-hours. Measured throughput so far is about 2 times experiment 02's; the one-week cap needs about 5 times. *(28 September: it becomes a six-neuron proof of concept capped at 72 GPU-hours, D094. The owner left the order open; Claude put a confirmatory 03m study first, then 03a.)*
 - **Related work:** a first survey exists, with corrections pending (see Related work below).
 
 ## The thread worth following: memory (a hypothesis)
@@ -129,7 +140,7 @@ Failure in one track says nothing about the other. Track E may include optional 
 5. **E3:** the minimal A/B organism (04b).
 6. **E4:** does useful information cross between the two modules (04c)?
 
-Track B continues in parallel: 03r, then the mechanism follow-up or closure, then the 03a redesign.
+Track B continues in parallel: 03r, then the mechanism follow-up or closure, then the 03a redesign. *(29 September: 03r replicated, and 03m ran as the exploratory follow-up. Next in Track B: a confirmatory 03m study, then 03a's six-neuron proof of concept.)*
 
 **Tripwire.** No new infrastructure beyond T0, T1 and minimal module save/load until the minimal A/B organism runs. Everything after E4 is direction, not schedule.
 
@@ -179,9 +190,10 @@ Track B continues in parallel: 03r, then the mechanism follow-up or closure, the
     cannot separate close methods and E2 is cheap; no Augmented Random Search, so the spare budget goes
     to replication. See `docs/E2/DESIGN.md`.
 - Read ENOMAD before this screen. An ENOMAD-inspired hybrid is a later option.
-- *Status 2026-09-29 (D124, D125):* run as pre-registered
+- *Status 2026-09-29 (D124-D126):* run as pre-registered and published on main
   (`experiments/E2-optimizer-screen/`). Outcome: keep 02's GA as E3's provisional default. The floor
-  fired, so Task N is diagnosed before E3 (below, "What would change this roadmap").
+  fired, so Task N is diagnosed before E3 (below, "What would change this roadmap"). The diagnosis,
+  E2d, is running (D127-D135).
 
 ### E3 / 04b: minimal A/B organism
 
@@ -377,7 +389,8 @@ The first social experiments use colonies of clones: one genome for every wey, e
 - **The E1 positive control fails:** redesign the body or sensors before evolving anything.
 - **E2 finds random sampling matching the GA:** diagnose saturation, noise and budget before building on the task.
   - *Triggered 2026-09-29 (E2, D124):* random sampling came within 0.36 targets of the GA, inside
-    the registered 0.5. The diagnosis is designed and reviewed before E3 starts. The reviewers'
+    the registered 0.5. The diagnosis, E2d, was designed and reviewed and is running (D127-D135). The
+    reviewers'
     first suggestions are in D125.
 - **The minimal A/B organism fails:** diagnose sensing, objective, controller capacity and optimizer progress separately before adding capability.
 - **04c finds no useful transfer:** report it, and check whether the latch or the module interfaces block transfer before concluding anything about evolution.
