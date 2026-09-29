@@ -184,7 +184,7 @@ def test_weights_keep_every_finished_condition_on_a_stop(p, smoke):
         p.cmd_weights(args)
     part = json.loads((d / "weights-partial.json").read_text())
     assert list(part["permutations"]["independent"]) == ["N2perm100"] and part["permutations"]["paired"] == {}
-    assert "independent|N2perm100|final" in np.load(d / "weights-per-genome.npz").files
+    assert "independent|N2perm100|final" in np.load(d / "weights-per-genome.npz", allow_pickle=False).files
 
 
 def test_decay_keeps_the_long_history_when_the_gaps_off_check_stops(p, smoke, monkeypatch):
@@ -195,7 +195,7 @@ def test_decay_keeps_the_long_history_when_the_gaps_off_check_stops(p, smoke, mo
         p.cmd_decay(args)
     part = json.loads((d / "decay-partial.json").read_text())
     assert list(part["graphs"]) == ["N2"] and "gaps_off" not in part["graphs"]["N2"]
-    assert "N2|diff" in np.load(d / "decay-per-genome.npz").files
+    assert "N2|diff" in np.load(d / "decay-per-genome.npz", allow_pickle=False).files
 
 
 def test_the_lesion_follow_up_keeps_its_finished_deletions_on_a_stop(p, smoke, tmp_path, monkeypatch):
@@ -216,7 +216,7 @@ def test_the_lesion_follow_up_keeps_its_finished_deletions_on_a_stop(p, smoke, t
     part = json.loads((run2 / "lesions-partial.json").read_text())
     assert [r["deleted"] for r in part["follow_up_by_synapse_type"]["chemical"]] == top
     assert len(part["follow_up_by_synapse_type"].get("gap", [])) == len(top) - 1
-    arr = np.load(run2 / "lesions-follow-up-per-genome.npz").files
+    arr = np.load(run2 / "lesions-follow-up-per-genome.npz", allow_pickle=False).files
     assert all(f"chemical|{lbl}|{k}" in arr for lbl in top for k in ("final", "steady"))
     assert all(f"gap|{lbl}|{k}" in arr for lbl in top[:-1] for k in ("final", "steady"))
 
@@ -226,7 +226,7 @@ def test_lesions_flush_every_finished_deletion_on_a_stop(p, smoke):
     calls["stop_at"] = 4  # the command's check, then one check per deletion batch: two done, the third stops
     with pytest.raises(p.reg.CapReached):
         p.cmd_lesions(args)
-    arr = np.load(d / "lesions-per-genome.npz")
+    arr = np.load(d / "lesions-per-genome.npz", allow_pickle=False)
     assert arr["labels"].tolist() == ["intact", "pair RIA"] and arr["final"].shape == (2, 8)
     part = json.loads((d / "lesions-partial.json").read_text())
     assert [r["deleted"] for r in part["rows"]] == ["intact", "pair RIA"]
