@@ -245,10 +245,11 @@ def test_batch_mates_do_not_change_a_world(parts):
 
     Exactness is claimed within one composition only (D082, D091). The first version of this test
     compared a world simulated alone with the same world in a batch of 4, to 1e-5 after 40 ticks: a
-    different composition. It failed on one CI runner and passed on others, because a CPU batch of
-    one can differ in the last bits and the dynamics amplify it (D112). Here the composition is the
-    same (1 strain, 4 worlds, one wey per swarm) and only the batch-mates change, so it is exact."""
-    import numpy as np
+    different composition. It failed on one CI runner and passed on others; the likely cause is that
+    CPU arithmetic differs in the last bits between batch shapes on some processors, and the dynamics
+    amplify it (D112, D115; not reproduced). Here the composition is the same (1 strain, 4 worlds per
+    strain, 20 weys per world) and only the batch-mates change, so it is exact. A coupling of world 0
+    to its batch-mates' positions was caught when sabotaged in (D115)."""
     a = build(parts, n_strains=1, n_worlds=4, seed=15, run_seed=21, world_ids=np.array([0, 1, 2, 3]))
     b = build(parts, n_strains=1, n_worlds=4, seed=15, run_seed=21, world_ids=np.array([0, 7, 8, 9]))
     for _ in range(40):
@@ -257,3 +258,17 @@ def test_batch_mates_do_not_change_a_world(parts):
     torch.testing.assert_close(a.pos[0], b.pos[0], rtol=0, atol=0)
     torch.testing.assert_close(a.energy[0], b.energy[0], rtol=0, atol=0)
     assert not torch.equal(a.pos[1], b.pos[1])  # the batch-mates really differ
+
+
+def test_a_world_alone_and_in_a_batch_agree_approximately_over_a_few_ticks(parts):
+    """Across compositions only approximate agreement is claimed (D082, D091): a world alone and the
+    same world in a batch of 4 agree to 1e-4 over 5 ticks. It keeps some of the cross-composition
+    coverage the old 40-tick test gave (Fable, D115); the short horizon keeps amplified last-bit
+    differences far below the tolerance."""
+    alone = build(parts, n_strains=1, n_worlds=1, seed=15, run_seed=21)
+    together = build(parts, n_strains=1, n_worlds=4, seed=15, run_seed=21)
+    for _ in range(5):
+        alone.tick()
+        together.tick()
+    torch.testing.assert_close(alone.pos[0], together.pos[0], rtol=0, atol=1e-4)
+    torch.testing.assert_close(alone.energy[0], together.energy[0], rtol=0, atol=1e-4)

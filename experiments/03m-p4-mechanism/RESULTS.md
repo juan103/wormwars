@@ -257,7 +257,9 @@ in substance and asked for these:
 - *"The slower relaxation holds throughout the window"*: N2 keeps a larger share than all 80 null
   graphs at every recorded tick from 5 to 50, with a thin margin at tick 50 (0.300 against SH-10007's
   0.298); from tick 60 SH-10007 is above it (79 of 80), and from tick 150 SH-mirror-40014 too (78 of
-  80, through tick 300). These counts are exact at every recorded tick (Fable).
+  80, through tick 300). Fable's check traced only the six slowest graphs and called the intermediate
+  counts upper bounds; Claude then counted all 80 graphs at every recorded tick, which makes them
+  exact.
 - *"The single deletions give 0.089-0.104"* replaced the first write-up's *"RIAR, RIAL, AIYR and AIYL
   lower the response less (0.088-0.104)"*: the lowest is RIAR's 0.0885, which rounds to 0.089 (Astra).
   So the note at the top ("the numbers are right") holds with that one rounding.

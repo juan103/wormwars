@@ -127,3 +127,10 @@ rather than reshaped.
 - The raw connectome spreadsheet is not committed (4 MB binary); `scripts/fetch_connectome.py`
   re-downloads it and refuses to continue if the sha256 has changed upstream.
 - Wall-clock and per-GPU-hour numbers depend on what else is using the GPU.
+
+*Added 2026-09-29 (D112, D115):* the CPU statements in this file were measured on the development
+machine. The first CI runs on GitHub's Linux runners gave the first evidence from other processors:
+a test comparing a world alone with the same world in a batch of 4 failed once, by 0.0034 in one of
+40 positions after 40 ticks, and passed on other runs of the same code. So on the CPU too, agreement
+across batch compositions is approximate and processor-dependent; exact agreement is claimed only
+within one composition.

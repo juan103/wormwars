@@ -3448,3 +3448,31 @@ null graphs have more (SH-10007: 171).
 dependence of N2's large response on weight placement and on RIA and AIY; the negative deletion
 screen. A confirmatory follow-up is possible (RESULTS.md lists what both reviewers would register);
 it is not planned yet.
+
+## D115 — The flaky batching test replaced; 03m's last text fixes; both reviewers "fix" on text only
+
+Astra 6 and Fable 5.1 checked 03m's confirmation-round fixes and the test change together
+(`docs/reviews/20260929-065309-final/`). Both said "fix", for text only; both agreed the new test
+tests the right claim.
+
+**The test change (D112's to-do).** `test_batching_worlds_does_not_change_a_world` compared a world
+alone with the same world in a batch of 4, to 1e-5 after 40 ticks, and failed once on a Linux CI
+runner. Exactness is claimed only within one composition (D082, D091), so it is replaced by:
+- `test_batch_mates_do_not_change_a_world`: the composition fixed at (1 strain, 4 worlds per strain,
+  20 weys per world), only the batch-mates changed, exact equality. A coupling of world 0 to its
+  batch-mates, sabotaged in at 10⁻³ of their mean position, was caught (a first attempt at 10⁻⁶ was
+  below float32 resolution and changed nothing);
+- `test_a_world_alone_and_in_a_batch_agree_approximately_over_a_few_ticks`: alone against a batch of 4,
+  to 1e-4 over 5 ticks, labelled approximate (Fable).
+
+**What is no longer tested:** agreement across compositions after 40 ticks, the only foraging-world
+dynamics check that varied the number of worlds per strain. The cause of the CI failure is likely
+last-bit CPU differences between batch shapes amplified by the dynamics; it was not reproduced.
+**Still exposed** (Fable): three CPU tests assert exact equality across compositions
+(`tests/test_t0_pairing.py`, two; `tests/test_e1_task.py`, one) and could fail the same way on some
+runner. They are left as they are until one does, and this entry is where to look.
+
+**03m's last fixes** (both): the deletion claim scoped to "tested" deletions in README.md and
+ROADMAP.md, with the weight-permutation and gap-junction qualifications (Fable); the per-tick counts
+attributed correctly (Fable's check covered six graphs; Claude's count covered all 80); the roadmap's
+Track B section points to 03m.

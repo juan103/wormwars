@@ -50,9 +50,9 @@
 - **03m, what drives P4** (exploratory; D113, D114): ran on 2026-09-29, 3.32 GPU-hours. Reviewed; its
   first summary overclaimed and is corrected. What stands: N2's history fades more slowly than the
   shuffles'; its large food response depends on the placement of its weights and on RIA and AIY
-  (whose deletion cuts the history signal in proportion); N2's P4 lead over the shuffles narrows with
-  gap junctions off; no single or paired deletion removes it. A confirmatory study is possible, not
-  planned.
+  (whose deletion cuts the history signal in proportion); most weight permutations lower N2's P4 below
+  the shuffles' 95th percentile, and its lead narrows with gap junctions off; no tested single or
+  bilateral-pair deletion removed it. A confirmatory study is possible, not planned.
 - **Documentation for outsiders:** every experiment folder now has a README with its question,
   result, caveats and exact commands to rerun it, and [`AGENTS.md`](AGENTS.md) describes the
   repository and its rules. Others are welcome to take any open question here, and to get there
@@ -248,6 +248,9 @@ The first social experiments use colonies of clones: one genome for every wey, e
   - what gives N2's random brains their 5 to 7 times stronger response to food input.
 
   Its label is assigned at pre-registration.
+  - *Added 2026-09-29:* an exploratory first look, **03m**, has run (D113, D114,
+    `experiments/03m-p4-mechanism/`). Its leads, and what a confirmatory study would register, are in
+    its RESULTS.md.
 - **If it does not replicate**, it is reported as a borderline result that did not replicate. The memory thread leaves the plan.
 - **Either way**, the five validated null ensembles become the standard controls for later experiments.
 
