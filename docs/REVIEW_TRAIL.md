@@ -37,6 +37,8 @@ led to several of the findings.
 | 17 | 04a's pre-registration, as first written: the smoke mode trained on the formal training range, and a test fixture deleted the real smoke records (Astra); genome files would have been published with the connectome's weights, and the development pilot used the formal run seeds (Fable); a genome file's metadata could switch off padding unseen (Astra); a killed attempt's compute was never counted (both) | Claude Opus 5.5 | **Astra 6 and Fable 5.1**, in five rounds before binding | The exposed ids reconstructed and the range moved; the seeds moved; each fix with a test, several sabotage-checked | D104-D108 |
 | 18 | 04a's results said the champions "steer" and behave "like a stereo steerer"; the records show cue use, with behaviour closer to a controller that compares the scent over time. The training-curve and timing sentences were wrong, reliability was claimed for all 16 champions, and "no deviation" missed one | Claude Opus 5.5 | **Fable 5.1** (the steering reading, from the records) and **Astra 6** (reliability); the rest both | Dated corrections; the verdict unchanged | D111 |
 | 19 | 03m's exploratory plan: a filter pooled all five ensembles under "SH" in a committed output, and a settling check compared only the two ends of its window | Claude Opus 5.5 | **Astra 6 and Fable 5.1** (the filter); **Astra 6** (the settling check) | Fixed with tests before any simulation; the output regenerated | 03m's PLAN.md, v3 |
+| 20 | E2's pre-registration, over four rounds. A kill could leave a stage never "final" (both), and the rerun's own setup could be mistaken for a killed rerun (Astra, Fable). A stopped extension could lose its champions (Astra). The smoke run's projection had used the formal projection seeds, and "every score 0" was false (Astra). A new skip rule promised what the code did not do (both). "Each test was seen failing first" was false: eight tests pinned existing behaviour, and one could not fail at all | Claude Opus 5.5 | **Astra 6 and Fable 5.1**, in four rounds; the full count of pinned tests Claude found when checking their correction | Each fix test-first or sabotage-checked; the seeds moved; the claim corrected before binding | D119-D123 |
+| 21 | E2's results overclaimed in their interpretation: "1 000 generations of either optimizer add little" (the ES ran 623); run 2 carried "most" of the ES's lead (all of it); the extension showed a "budget effect" on the outcome (it did not change it); a champion "does not depend on the cue at all" (not measured that finely); two figures and the ledger's source were wrong | Claude Opus 5.5 | **Astra 6 and Fable 5.1**; **Fable 5.1** (the floor's dependence on one run, the ledger's source, the binding commit) | Dated corrections; the registered outcome and floor unchanged | D125 |
 
 Episode 6 went unnoticed for a week, through a passing test suite, every milestone report, a
 publication audit, the first public release and Claude's own review of the roadmap on the day it
@@ -71,7 +73,7 @@ food response is 1.55-2.7 times the most responsive graph's, not 1.5-1.8).
   useful.
 - One error (episode 16) was caught by neither a person nor a reviewer but by running the tests on
   another operating system.
-- This is one project and nineteen episodes: an anecdote about multi-agent review, not a measurement
+- This is one project and twenty-one episodes: an anecdote about multi-agent review, not a measurement
   of it.
 
 ## In the history

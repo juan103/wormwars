@@ -47,6 +47,17 @@
   - The results review asked for text fixes only, made as dated corrections.
   - **Next in Track E:** E2, the optimizer screen, from this measured baseline; E3 must not assume a
     left-right cue follower.
+- **E2, the optimizer screen** (pre-registered and pushed before its run; D117-D125): ran on
+  2026-09-29, 4.74 GPU-hours. **"E2: keep 02's GA"**:
+  - the ES led the GA by 0.12 targets per episode on the hold-out, and 0.5 was needed;
+  - 5 of its 8 champions beat the GA's median, and 6 were needed.
+
+  **The floor fired:** random sampling came within 0.36 of the GA, so the rule below ("E2 finds
+  random sampling matching the GA") applies before E3. It depends on one failed GA run. The ES kept
+  improving beyond its charged allowance. The results review asked for text fixes only, made as dated
+  corrections.
+  - **Next in Track E:** the diagnosis of saturation, noise and budget on Task N, with its own design
+    and review. E3 waits for it.
 - **03m, what drives P4** (exploratory; D113, D114): ran on 2026-09-29, 3.32 GPU-hours. Reviewed; its
   first summary overclaimed and is corrected. What stands: N2's history fades more slowly than the
   shuffles'; its large food response depends on the placement of its weights and on RIA and AIY
@@ -168,6 +179,9 @@ Track B continues in parallel: 03r, then the mechanism follow-up or closure, the
     cannot separate close methods and E2 is cheap; no Augmented Random Search, so the spare budget goes
     to replication. See `docs/E2/DESIGN.md`.
 - Read ENOMAD before this screen. An ENOMAD-inspired hybrid is a later option.
+- *Status 2026-09-29 (D124, D125):* run as pre-registered
+  (`experiments/E2-optimizer-screen/`). Outcome: keep 02's GA as E3's provisional default. The floor
+  fired, so Task N is diagnosed before E3 (below, "What would change this roadmap").
 
 ### E3 / 04b: minimal A/B organism
 
@@ -362,6 +376,9 @@ The first social experiments use colonies of clones: one genome for every wey, e
 - **The next experiment does not fit at measured speed:** shrink the experiment first. Change frameworks only if profiling points there.
 - **The E1 positive control fails:** redesign the body or sensors before evolving anything.
 - **E2 finds random sampling matching the GA:** diagnose saturation, noise and budget before building on the task.
+  - *Triggered 2026-09-29 (E2, D124):* random sampling came within 0.36 targets of the GA, inside
+    the registered 0.5. The diagnosis is designed and reviewed before E3 starts. The reviewers'
+    first suggestions are in D125.
 - **The minimal A/B organism fails:** diagnose sensing, objective, controller capacity and optimizer progress separately before adding capability.
 - **04c finds no useful transfer:** report it, and check whether the latch or the module interfaces block transfer before concluding anything about evolution.
 - **Infrastructure keeps growing while the first organism does not exist:** the tripwire applies. Stop and ship the minimal A/B organism.

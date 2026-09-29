@@ -1,7 +1,8 @@
 # WormWars: *C. elegans* wiring vs. shuffled and random graphs
 
 > **This is the `roadmap` working branch.** The published record is `main`. This branch holds work
-> in progress beyond it (roadmap v3's next step: E2), until it is merged.
+> in progress beyond it (roadmap v3's next step: diagnosing Task N, as E2's floor rule requires),
+> until it is merged.
 
 Many parallel 2D worlds on one GPU. In each world, swarms of small creatures called **weys** forage
 and fight. Every wey's brain is a small continuous-time recurrent network whose wiring is the real
@@ -34,11 +35,40 @@ selection acts on team results.
 | [E1](experiments/E1-navigation/README.md) | Can a scripted navigator reach moved targets on unseen layouts, beat blind search, and use the cue? The positive control before evolving a navigator | Published; pre-registered, public before its run | "E1 positive control: passed": 8.68 targets per episode (98.7% of an oracle); 0.03 with a mirrored decoy |
 | [04a](experiments/04a-navigation-primitive/README.md) | Can evolution, from random weights on the N2 wiring, produce a brain that reaches moved targets, beats blind search and uses the cue? | Published; pre-registered, public before its run | "04a: passed": 8 of 12 shaped runs (4 of 4 unshaped); the champions use the cue but are weak navigators (2.0-2.8 targets, 23-32% of an oracle) |
 | [03m](experiments/03m-p4-mechanism/README.md) | What drives 03's history dependence (P4)? | Exploratory; run, reviewed, corrected | N2's history fades more slowly than nearly all the shuffles'; its large food response depends on weight placement and on RIA and AIY; most weight permutations lower its P4, gap junctions narrow its lead, and no tested single or paired deletion removed it |
+| [E2](experiments/E2-optimizer-screen/README.md) | At equal simulator work, does OpenAI-ES find better Task N navigators than 02's GA, with random sampling as a floor? | Published; pre-registered, public before its run | "E2: keep 02's GA": the ES led by 0.12 targets per episode (0.5 needed). The floor fired: random sampling came within 0.36 of the GA, so Task N is diagnosed before E3 builds on it |
 
-Next on the roadmap: E2, a short optimizer screen on E1's task, starting from 04a's baseline; and,
-in the biology track, whether 03m's leads deserve a confirmatory study.
+Next on the roadmap: the diagnosis E2's floor rule requires (saturation, noise and budget on Task N),
+with its own design and review, before E3; and, in the biology track, whether 03m's leads deserve a
+confirmatory study.
 
-## Newest: an evolved navigator on the real wiring (E1 and 04a)
+## Newest: which optimizer for the next stage? (E2)
+
+**At equal simulator work, an evolution strategy did not beat experiment 02's genetic algorithm by
+the margin fixed in advance, and random sampling came close enough to both that the task itself is
+diagnosed next.** In the wording fixed in advance: *"E2: keep 02's GA (unshaped fitness; the ES did
+not satisfy both replacement criteria after paying for its tuning)"*.
+
+- **The screen:** 04a's task, 8 runs per method, each method given about 2.13 million episodes of
+  selection. OpenAI-ES paid for its own tuning pilot out of that. Each run's champion was tested once
+  on 1 024 unseen worlds.
+- **Scores (targets per episode):**
+  - the ES 2.09 and the GA 1.96: the ES led by 0.12, and 0.5 was needed;
+  - random sampling 1.60: the best of 32 000 random genomes per run, chosen on validation worlds.
+- **The floor fired:** random sampling came within 0.36 of the GA, inside the 0.5 set in advance, so
+  the roadmap's rule applies: diagnose saturation, noise and budget before building on the task.
+  - It is a trigger, not a finding that optimizing adds nothing: the GA gained 22% over random
+    sampling, the ES 30%.
+  - The trigger depends on one GA run that never learned to use the cue; without it the gap is 0.49.
+- **Given more work, the ES kept improving:** 2.33 at 1 000 generations, still short of the margin,
+  on 38% more episodes. Every method stayed far below a hand-written steering controller (8.65).
+- **How it was done:** Claude Opus 5.5 designed, pre-registered, ran and wrote it up. Astra 6 and
+  Fable 5.1 reviewed the design three times and the pre-registration four times before it was bound
+  and pushed, and the results after: both asked for text corrections, now dated in its RESULTS.md.
+
+Details: [E2's README](experiments/E2-optimizer-screen/README.md) and its RESULTS.md, and decisions
+D117-D125.
+
+## An evolved navigator on the real wiring (E1 and 04a)
 
 **Evolution, starting from random weights on the real *C. elegans* wiring, produced brains that
 find a moving scent by using it, reliably but slowly.** In the wording fixed in advance: *"04a:
@@ -62,7 +92,7 @@ time it is reached; the score is the number of sources reached in 300 ticks.
     by left against right; how they use the cue is not shown.
   - **The training bonus was not needed** here (descriptive, 4 runs).
 - **What it is not:** evidence that N2's wiring helps (no shuffled graphs were evolved on this task),
-  or a measure of how good evolved navigators can get (E2 compares optimizers next).
+  or a measure of how good evolved navigators can get (E2 compared optimizers; above).
 - **How it was done:** Claude Opus 5.5 designed, pre-registered, ran and wrote up both. Astra 6 and
   Fable 5.1 reviewed 04a's pre-registration in five rounds before it was bound and pushed, and its
   results after: both asked for text corrections, now dated in its RESULTS.md, and found that the
@@ -435,7 +465,7 @@ This project was designed and built almost entirely by AI models, directed by a 
 - Claude Fable 5.1 (Anthropic), in conversation: turned those ideas into the experimental design and
   specification, and reviewed the results. Later, consulted read-only, it reviewed experiment 01b
   before publication (D033), and since then every design, pre-registration and write-up: 02, 03,
-  03r, T0, T1, E1, 04a and 03m.
+  03r, T0, T1, E1, 04a, 03m and E2.
 - Astra 6 (a GPT model from OpenAI): adversarial review of the specification, which produced the
   statistical design, the resource accounting rules and the numerical stability requirements.
   Reviewing the roadmap, it found that the chemical synapses of experiment 01 ran backwards (D031),
@@ -447,7 +477,7 @@ This project was designed and built almost entirely by AI models, directed by a 
   the reversed synapses, ran experiment 01b, and acted on its review. It also designed,
   pre-registered, ran and wrote up experiment 02, which the owner delegated to it end to end,
   with the two reviewers standing in for approval at each stage; then, with the roadmap delegated,
-  03, 03r, the engineering work (T0, T1), E1, 04a and 03m.
+  03, 03r, the engineering work (T0, T1), E1, 04a, 03m and E2.
 - An outside review by a separate Claude Opus 5.5 instance, shared by the owner on 2026-09-28
   ([archived](docs/reviews/20260928-outside-review/review.md)), suggested the automatic test runs
   and the checks behind 03m.
@@ -461,7 +491,10 @@ made by Claude Code and caught by Astra 6 (D031). Claude Code's first write-up o
 rerun then overclaimed, and Astra 6 and Fable 5.1 each caught that independently (D033). More
 recently, the reviewers caught a smoke test that trained on 04a's real training worlds and a plan
 that would have published genomes carrying connectome weights (D104), and an overclaim that 04a's
-champions "steer" (D111). One error was caught by a machine: the first automatic test run on Linux
+champions "steer" (D111). In E2, they caught failure paths in four rounds of pre-registration
+review, including a false claim that every test had been seen failing first (D119-D123), and a
+first reading of its floor result that called the optimizers' gains "little" (D125). One error was
+caught by a machine: the first automatic test run on Linux
 showed that 03's graph files rebuild byte for byte only on Windows (D106). The full list, with
 commits: [`docs/REVIEW_TRAIL.md`](docs/REVIEW_TRAIL.md).
 
