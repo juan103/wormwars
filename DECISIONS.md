@@ -4012,3 +4012,21 @@ material benefit, 4 small ones).
 
 **Publication:** both said the results are publishable once corrected. They go to main under the
 owner's consensus rule (D112).
+
+## D138 — E2d published on main
+
+Under the owner's rule (D112), with both reviewers' fixes applied (D137), main was fast-forwarded from
+`8ad636b` to `df50f6a`: the roadmap branch at `f832f18`, plus one commit removing its banner. It
+carries:
+- E2d: the plan and its reviews, Part A's script and output, the runner and its tests and code
+  reviews, every stage record, the accounting's attempt files, RESULTS.md with its dated
+  corrections, and the README;
+- D127-D137, and 03m's script retry (D128);
+- the front page, the roadmap, the review trail (episodes 22-24), AGENTS.md's layout, and the
+  03a, 03m and E2 README statuses.
+
+**Checks:** the full suite, locally on the code that ran; CI green on every E2d commit through
+`f832f18`; the identity check.
+
+The GPU is paused at the owner's request (2026-09-29, about 21:50 UTC). The next step, E3's design,
+needs no GPU until its runs.
