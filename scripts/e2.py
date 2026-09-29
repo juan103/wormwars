@@ -118,6 +118,9 @@ REGISTERED = {
               "reason written first; never after the cap. A training stage whose rerun also stops is final and "
               "not completed"),
     "rerun_kill_tail_seconds": 900,  # charged beyond a killed attempt's last file write (04a, D107)
+    # the descriptive extension starts only if the cap's remainder covers its projected time and this
+    # reserve for the evaluation, so it can never use up the budget of the primary result (review v2)
+    "evaluation_reserve_hours": 0.5,
 }
 METHODS = ("ga", "random", "es")
 STAGES = ["project", "pilot-1", "pilot-2", "train-ga", "train-random", "train-es", "extend", "evaluate"]
@@ -133,6 +136,7 @@ OUTCOMES = {"replace": "E2: the ES replaces 02's GA as E3's provisional default 
                               "was made)"),
             "no decision": "E2: no decision (02's GA did not complete)",
             "over limit": "E2: not started (the projection exceeds its limit)",
+            "skipped": "not run (the cap's remainder is kept for the evaluation)",
             "cap": "E2: not completed (the registered cap was reached)",
             "stopped": "E2: not completed (the run stopped)"}
 FLOOR = {"clears": "the GA clears the random-sampling floor (random sampling's mean is more than 0.5 below it)",
@@ -280,9 +284,44 @@ def rerun_note(path: Path) -> Path:
     return path.with_name(path.stem + "-rerun.json")
 
 
-def rerun_used(path: Path) -> bool:
-    """The stage's one rerun has started: its note is written when the rerun is applied."""
-    return rerun_note(path).exists() or attempt1(path).exists()
+def marker_path(stage: str) -> Path:
+    return EXP / f"{stage}-started.json"
+
+
+def read_json(path: Path):
+    return json.loads(path.read_text(encoding="utf-8")) if path.exists() else None
+
+
+def marker_attempt(stage: str) -> int | None:
+    m = read_json(marker_path(stage))
+    return None if m is None else int(m.get("attempt", 1))
+
+
+def rerun_state(stage: str) -> str:
+    """'none' (no rerun set up), 'setup' (set up but not started: the archiving was interrupted, or
+    the rerun stopped before its marker) or 'used' (the rerun started: its marker, attempt 2, or its
+    record exists). The note is written before the first file is archived, and marked 'applied' after
+    the last (review v2)."""
+    note = read_json(rerun_note(record_path(stage)))
+    if note is None:
+        return "none"
+    if note.get("status") == "applied" and (record_path(stage).exists() or marker_attempt(stage) == 2):
+        return "used"
+    return "setup"
+
+
+def start_marker(stage: str, prov: dict, attempt: int) -> Path:
+    """`registration.start_marker`, with the attempt number, so a killed rerun is told apart from a
+    killed first attempt durably (review v2)."""
+    path = marker_path(stage)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        with open(path, "x", encoding="utf-8", newline="\n") as f:
+            json.dump({"stage": stage, "attempt": attempt, "provenance": prov,
+                       "started_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())}, f, indent=1)
+    except FileExistsError:
+        raise SystemExit(f"{path.name} exists: {stage} has started before and is not rerun") from None
+    return path
 
 
 def clock() -> reg.CapClock:
@@ -373,16 +412,22 @@ def require_earlier(args, prov: dict, stage: str, final_ok: bool = False) -> dic
     (formal), on the same code and environment (guarded)."""
     path = record_path(stage)
     if not path.exists():
-        if (EXP / f"{stage}-started.json").exists():
-            if rerun_used(path):
+        state = rerun_state(stage)
+        if marker_path(stage).exists():
+            if state == "used":
                 raise SystemExit(f"{WHAT[stage]}'s rerun was killed: run it with --rerun once more, which charges it "
                                  "and records it as final")
-            raise SystemExit(f"{WHAT[stage]} was killed: rerun it once first (--rerun --reason)")
+            raise SystemExit(f"{WHAT[stage]} was killed, or its rerun's setup was interrupted: rerun it "
+                             "(--rerun --reason)")
+        if state == "setup":
+            raise SystemExit(f"{WHAT[stage]}'s rerun was set up but did not start: continue it with --rerun")
         raise SystemExit(f"{WHAT[stage]} has not run")
     rec = json.loads(path.read_text(encoding="utf-8"))
+    if rec.get("outcome") == OUTCOMES["skipped"] and final_ok:
+        return rec  # the extension, not run to keep the evaluation's budget (it has no provenance to check)
     if rec.get("outcome") != "completed":
         stopped = rec.get("outcome") == OUTCOMES["stopped"]
-        if not (final_ok and stopped and rerun_used(path)):
+        if not (final_ok and stopped and rerun_state(stage) == "used"):
             if final_ok and stopped:
                 raise SystemExit(f"{WHAT[stage]} stopped: rerun it once first (--rerun --reason)")
             raise SystemExit(f"{WHAT[stage]} did not complete")
@@ -431,13 +476,21 @@ def rerun_plan(stage: str, files: list[Path], reason: str | None) -> dict:
     if not reason or not reason.strip():
         raise SystemExit("a rerun needs --reason, written before it runs")
     record, marker = files[0], files[1]
-    reconciled = reconcile_kill(stage, files) if (marker.exists() and not record.exists()) else None
-    if rerun_used(record) or any(attempt1(f).exists() for f in files[:2]):
-        if reconciled is not None:  # the rerun itself was killed: charged above, and now final
+    state = rerun_state(stage)
+    if state == "used":
+        if marker.exists() and not record.exists():  # the rerun itself was killed: charged, and now final
+            reconciled = reconcile_kill(stage, files)
             final_killed_record(stage, record, marker, reconciled)
             raise SystemExit(f"{WHAT[stage]} has been rerun once already; its killed rerun is charged and "
                              "recorded as final (not completed)")
         raise SystemExit(f"{WHAT[stage]} has been rerun once already")
+    if state == "setup":  # continue the interrupted setup; the first attempt was charged when it was planned
+        note = read_json(rerun_note(record))
+        return {"stage": stage, "files": files, "reason": note["reason"], "how": note["how_the_first_attempt_ended"],
+                "reconciled": note.get("reconciled_compute"), "resume": reason.strip()}
+    if any(attempt1(f).exists() for f in files[:2]):
+        raise SystemExit(f"{WHAT[stage]} has archived attempt files but no rerun note: resolve by hand")
+    reconciled = reconcile_kill(stage, files) if (marker.exists() and not record.exists()) else None
     if record.exists():
         rec = json.loads(record.read_text(encoding="utf-8"))
         if rec.get("outcome") != OUTCOMES["stopped"]:
@@ -447,7 +500,8 @@ def rerun_plan(stage: str, files: list[Path], reason: str | None) -> dict:
         how = "killed: a start marker and no record"
     else:
         raise SystemExit(f"{WHAT[stage]} has not run: nothing to rerun")
-    return {"stage": stage, "files": files, "reason": reason.strip(), "how": how, "reconciled": reconciled}
+    return {"stage": stage, "files": files, "reason": reason.strip(), "how": how, "reconciled": reconciled,
+            "resume": None}
 
 
 def final_killed_record(stage: str, record: Path, marker: Path, reconciled: dict) -> None:
@@ -457,6 +511,8 @@ def final_killed_record(stage: str, record: Path, marker: Path, reconciled: dict
     doc = json.loads(part.read_text(encoding="utf-8")) if part.exists() else {}
     doc = doc if isinstance(doc, dict) else {}
     m = json.loads(marker.read_text(encoding="utf-8"))
+    if stage == "extend" and "champions_over_both" not in doc:  # killed before its first partial record
+        doc.update(extension_fallback_champions(read_json(record_path("train-es")) or {}))
     doc.update(stage=stage, outcome=OUTCOMES["stopped"], final=True, reconciled_compute=reconciled,
                error="killed during the rerun: no record was written; this record is built from the marker and "
                      "the last partial record",
@@ -487,26 +543,35 @@ def reconcile_kill(stage: str, files: list[Path]) -> dict:
     else:
         tmp = path.with_name(path.name + ".partial")
         reg.write_json(tmp, doc)
-        os.replace(tmp, path)
+        replace(tmp, path)
     acct.write_aggregate(compute, OUT / "compute.json")
     return {"file": name, "seconds": seconds}
 
 
 def apply_rerun(plan: dict | None) -> dict | None:
     """After every other check has passed: keep the stopped attempt's files beside, renamed
-    `-attempt1`, and write the reason and the mapping to `<record>-rerun.json`."""
+    `-attempt1`. The note (`<record>-rerun.json`: the reason and the mapping) is written first, marked
+    'archiving', and marked 'applied' after the last move, so an interrupted setup is continued by the
+    next `--rerun` and never mistaken for a killed rerun (review v2)."""
     if plan is None:
         return None
-    moved = {}
-    for f in plan["files"]:
-        if f.exists():
-            os.replace(f, attempt1(f))
-            moved[f.name] = attempt1(f).name
     record = plan["files"][0]
-    note = {"stage": plan["stage"], "how_the_first_attempt_ended": plan["how"], "reason": plan["reason"],
-            "reconciled_compute": plan["reconciled"], "archived": moved,
-            "written_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())}
-    reg.write_json(record.with_name(record.stem + "-rerun.json"), note)
+    now = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+    if plan.get("resume") is None:
+        note = {"stage": plan["stage"], "how_the_first_attempt_ended": plan["how"], "reason": plan["reason"],
+                "reconciled_compute": plan["reconciled"], "status": "archiving",
+                "archived": {f.name: attempt1(f).name for f in plan["files"] if f.exists()}, "written_utc": now}
+        write_atomic(rerun_note(record), note)
+    else:
+        note = read_json(rerun_note(record))
+        note.setdefault("resumed", []).append({"utc": now, "reason": plan["resume"]})
+    for f in plan["files"]:
+        if f.name in note["archived"] and f.exists():
+            if attempt1(f).exists():
+                raise SystemExit(f"both {f.name} and {attempt1(f).name} exist: resolve by hand")
+            replace(f, attempt1(f))
+    note["status"] = "applied"
+    write_atomic(rerun_note(record), note)
     return note
 
 
@@ -523,6 +588,8 @@ def run_stage(args, stage: str, requires, body, local_files=()) -> dict:
     plan = rerun_plan(stage, files, args.reason) if args.rerun else None
     if plan is None and path.exists():
         raise SystemExit(f"{path.name} exists: {WHAT[stage]} runs once")
+    if plan is None and rerun_state(stage) != "none":
+        raise SystemExit(f"{WHAT[stage]}'s rerun was set up: continue it with --rerun")
     earlier = requires(args, prov)
     cap = clock()
     try:
@@ -533,8 +600,10 @@ def run_stage(args, stage: str, requires, body, local_files=()) -> dict:
     spec = BrainSpec.from_connectome(con)
     cfg = task_config()
     rerun = apply_rerun(plan)
-    marker = reg.start_marker(EXP, stage, prov)
-    doc = {"stage": stage, "registered": REGISTERED, "provenance_at_start": prov, "device": args.device,
+    attempt = 1 if plan is None else 2
+    marker = start_marker(stage, prov, attempt)
+    doc = {"stage": stage, "attempt": attempt, "registered": REGISTERED, "provenance_at_start": prov,
+           "device": args.device,
            "resolved_config": cfg.to_dict(), "resolved_config_sha256": config_sha256(cfg),
            "e1_inputs_sha256": e1_input_hashes(), "start_marker": marker.name, "rerun": rerun}
     ctx = SimpleNamespace(args=args, cfg=cfg, iface=iface, spec=spec, cap=cap, earlier=earlier, doc=doc,
@@ -547,6 +616,7 @@ def run_stage(args, stage: str, requires, body, local_files=()) -> dict:
         _not_completed(path, doc, ctx, "cap", str(e), t0)
         raise SystemExit(doc["outcome"]) from None
     except BaseException as e:  # noqa: BLE001  (recorded as not completed, then re-raised)
+        doc["final"] = attempt == 2  # a stopped rerun is final; a first stop awaits its rerun
         _not_completed(path, doc, ctx, "stopped", f"{type(e).__name__}: {e}", t0)
         raise
     doc.update({"outcome": "completed", **out, "seconds": time.perf_counter() - t0})
@@ -667,6 +737,9 @@ def train_batch(ctx, stage, method, runs, *, generations, ids, val, prefix, sigm
 
     ctx.salvage = lambda: {"records": [run_record(r, **extra(i)) for i, r in enumerate(records)], **summary(records)}
     ctx.after_fail = lambda: save_genomes(records, cfg, prefix)
+    # before the first generation, so even a kill before the first checkpoint leaves what a stopped
+    # record would hold (the extension's fallback champions; review v2)
+    write_atomic(partial_path(stage), {**ctx.doc, "generation": None, **summary([]), "records": []})
     recs, states = run_method(method, cfg, ctx.iface, ctx.spec, runs, generations=generations,
                               checkpoint_every=REGISTERED["checkpoint_every"], validation_ids=val,
                               world_seed=REGISTERED["world_seed"], id_base=ids["base"], id_span=ids["span"],
@@ -827,6 +900,13 @@ def cmd_extend(args):
         es = require_earlier(a, prov, "train-es")
         if not state_path().exists() or sha256_bytes(state_path()) != es["state_sha256"]:
             raise SystemExit("the ES's saved state is missing or differs from its record")
+        need = extension_hours(read_json(record_path("project"))) + REGISTERED["evaluation_reserve_hours"]
+        left = REGISTERED["cap_gpu_hours"] - clock().spent_hours()
+        if not a.rerun and need > left:  # a started extension is finished or finalised by the rerun rule
+            write_atomic(record_path("extend"), {"stage": "extend", "outcome": OUTCOMES["skipped"], "final": True,
+                                                 "hours_needed": need, "hours_left": left})
+            raise SystemExit(f"the extension is skipped: it needs {need:.2f} h with the evaluation's reserve, "
+                             f"and {left:.2f} h of the cap remain")
         return {"train-es": es}
 
     def body(ctx):
@@ -851,6 +931,17 @@ def cmd_extend(args):
                                       ctx.cfg, len(validation_ids()))}
 
     run_stage(args, "extend", requires, body, [genomes_path("extension", r.run) for r in run_specs()])
+
+
+def extension_fallback_champions(es: dict) -> dict:
+    """The extension's champions when none of its checkpoints completed: each formal run's own."""
+    return {"champions_over_both": [{"run": f["spec"]["run"], **champion_over_both(f, [])}
+                                    for f in es.get("records", []) if f.get("checkpoints")]}
+
+
+def extension_hours(projection: dict) -> float:
+    p, r = projection["plan"]["extend"], projection["rates"][projection["plan"]["extend"]["shape"]]
+    return (p["generations"] * r["seconds_per_generation"] + p["checkpoints"] * r["seconds_per_checkpoint"]) / 3600
 
 
 def champion_over_both(formal_rec: dict, extension_checkpoints: list[dict]) -> dict:
@@ -983,26 +1074,36 @@ def analyse(counts: dict, trains: dict, ext: dict | None, worlds: int) -> dict:
                       "fraction_of_oracle": (float(np.mean(real)) / oracle) if real and oracle > 0 else None}
     extension = None
     if ext is not None:
-        er = {f"run{r['spec']['run']:02d}": float(counts[f"extension run{r['spec']['run']:02d} real"].mean())
-              for r in ext.get("records", []) if f"extension run{r['spec']['run']:02d} real" in counts}
-        extension = {"complete": ext["outcome"] == "completed", "runs": er,
-                     "mean": float(np.mean(list(er.values()))) if er else None,
+        er = {f"run{c['run']:02d}": {"source": c["source"], "generation": c["generation"],
+                                     "real": float(counts[f"extension run{c['run']:02d} real"].mean())}
+              for c in ext.get("champions_over_both", []) if f"extension run{c['run']:02d} real" in counts}
+        extension = {"complete": ext["outcome"] == "completed", "outcome": ext["outcome"], "runs": er,
+                     "mean": float(np.mean([v["real"] for v in er.values()])) if er else None,
                      "note": "descriptive: never enters the decision"}
-    g0 = {m: {r["spec"]["run"]: r["checkpoints"][0]["sha256"] for r in trains[m].get("records", []) if r["checkpoints"]}
-          for m in ("ga", "random")}
-    starts = {r["spec"]["run"]: r["start"]["sha256"] for r in trains["es"].get("records", []) if r.get("start")}
-    shared = set(g0["ga"]) & set(g0["random"]) & set(starts)
-    pairing = {"runs_compared": sorted(shared),
-               "generation0_candidates_match": (all(g0["ga"][r] == g0["random"][r] == starts[r] for r in shared)
-                                                if shared else None),
-               "note": "the GA's and random sampling's generation-0 candidates and the ES's start genome, by hash"}
-    diffs = {f"run{r:02d}": float(counts[f"es run{r:02d} real"].mean() - counts[f"ga run{r:02d} real"].mean())
-             for r in sorted(set(runs["es"]) & set(runs["ga"]))}
     return {"outcome": d["outcome"], "floor": d["floor"], "provisional": d["provisional"], "decision": d,
-            "pairing": pairing, "es_minus_ga_per_run": diffs,
+            "pairing": pairing(trains), "es_minus_ga_per_run": per_run_differences(counts, runs),
             "methods": methods, "extension": extension,
             "controls": {k: float(counts[k].mean()) for k in REGISTERED["controls"]},
             "per_world_counts": {k: v.astype(int).tolist() for k, v in counts.items()}}
+
+
+def pairing(trains: dict) -> dict:
+    """Paired starts, checked: in each run, the three methods' generation-0 checkpoint candidates (and
+    the ES's start genome) are the same genome, by hash."""
+    g0 = {m: {r["spec"]["run"]: r["checkpoints"][0]["sha256"] for r in trains[m].get("records", [])
+              if r.get("checkpoints")} for m in METHODS}
+    starts = {r["spec"]["run"]: r["start"]["sha256"] for r in trains["es"].get("records", []) if r.get("start")}
+    shared = sorted(set(g0["ga"]) & set(g0["random"]) & set(g0["es"]) & set(starts))
+    bad = [r for r in shared if not g0["ga"][r] == g0["random"][r] == g0["es"][r] == starts[r]]
+    return {"runs_compared": shared, "mismatched_runs": bad,
+            "generation0_candidates_match": (not bad) if shared else None,
+            "note": "each method's generation-0 checkpoint candidate and the ES's start genome, by hash"}
+
+
+def per_run_differences(counts: dict, runs: dict) -> dict:
+    """Each run's ES-minus-GA hold-out mean (real probe), for the runs both methods have."""
+    return {f"run{r:02d}": float(np.mean(counts[f"es run{r:02d} real"]) - np.mean(counts[f"ga run{r:02d} real"]))
+            for r in sorted(set(runs["es"]) & set(runs["ga"]))}
 
 
 # ----------------------------------------------------------------------------- smoke

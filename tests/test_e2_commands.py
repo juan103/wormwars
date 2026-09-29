@@ -288,7 +288,7 @@ def test_the_decision_rule(es, ga, rnd, complete, outcome, floor):
     assert d["provisional"] == (floor == "not made" and outcome != "no decision")
 
 
-def test_the_pilot_selection_breaks_ties_by_the_smaller_value():
+def test_the_pilot_selection_takes_the_highest_total_and_breaks_ties_in_the_registered_order():
     mod = _load()
     rows = [{"sigma": s, "lr_multiple": 0.3, "total": t} for s, t in ((0.5, 12), (1.0, 10), (2.0, 12))]
     assert mod.select_sigma(rows) == 0.5  # a tie between 0.5 and 2: the registered order is 1, 0.5, 2
@@ -352,13 +352,15 @@ def test_seeds_are_disjoint_across_formal_pilot_projection_and_smoke_and_from_04
 
 # ------------------------------------------------------------------ review v1 (D120)
 
-def _kill(m, stage, hours_ago=2.0, last_write_hours_ago=1.0, partial=True):
-    """What a hard kill leaves: a marker, perhaps a partial record, no record, no accounting."""
+def _kill(m, stage, hours_ago=2.0, last_write_hours_ago=1.0, partial=True, attempt=1):
+    """What a hard kill leaves: a marker (with its attempt number), perhaps a partial record, no
+    record, no accounting."""
     import os
     import time
-    started = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(time.time() - hours_ago * 3600))
+    started = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(time.time() - hours_ago * 3600 + attempt))
     marker = m.EXP / f"{stage}-started.json"
-    marker.write_text(json.dumps({"stage": stage, "started_utc": started, "provenance": {"git_commit": "x"}}))
+    marker.write_text(json.dumps({"stage": stage, "attempt": attempt, "started_utc": started,
+                                  "provenance": {"git_commit": "x"}}))
     files = [marker]
     if partial:
         m.partial_path(stage).write_text("{}")
@@ -387,7 +389,7 @@ def test_a_crash_then_a_killed_rerun_is_charged_recorded_as_final_and_opens_the_
     plan = m.rerun_plan("train-ga", [m.record_path("train-ga"), m.EXP / "train-ga-started.json",
                                      m.partial_path("train-ga")], "crashed")
     m.apply_rerun(plan)  # the rerun starts ...
-    _kill(m, "train-ga")  # ... and is killed
+    _kill(m, "train-ga", attempt=2)  # ... and is killed
     with pytest.raises(SystemExit, match="killed"):
         _run(m, "train", method="random")
     with pytest.raises(SystemExit, match="recorded as final"):
@@ -403,7 +405,7 @@ def test_a_killed_attempt_and_a_killed_rerun_are_final(m):
     plan = m.rerun_plan("train-ga", [m.record_path("train-ga"), m.EXP / "train-ga-started.json",
                                      m.partial_path("train-ga")], "killed")
     m.apply_rerun(plan)
-    _kill(m, "train-ga")
+    _kill(m, "train-ga", attempt=2)
     with pytest.raises(SystemExit, match="recorded as final"):
         _run(m, "train", method="ga", rerun=True, reason="the rerun was killed")
     assert _rec(m, "train-ga")["final"]
@@ -532,3 +534,216 @@ def test_an_atomic_write_survives_a_transient_permission_error(tmp_path, monkeyp
     monkeypatch.setattr(os, "replace", flaky)
     mod.write_atomic(tmp_path / "x.json", {"a": 1})
     assert json.loads((tmp_path / "x.json").read_text()) == {"a": 1}
+
+
+# ------------------------------------------------------------------ review v2 (D121)
+
+def _crash_ga(m):
+    _upto(m, 3)
+    m._fakes.crash_at = len(m._fakes.calls) + 2
+    with pytest.raises(RuntimeError):
+        _run(m, "train", method="ga")
+    m._fakes.crash_at = None
+
+
+def _ga_files(m):
+    return [m.record_path("train-ga"), m.EXP / "train-ga-started.json", m.partial_path("train-ga")]
+
+
+def test_markers_carry_their_attempt_number(m):
+    _crash_ga(m)
+    assert json.loads((m.EXP / "train-ga-started-attempt1.json").read_text()
+                      if (m.EXP / "train-ga-started-attempt1.json").exists()
+                      else (m.EXP / "train-ga-started.json").read_text())["attempt"] == 1
+    _run(m, "train", method="ga", rerun=True, reason="crashed")
+    assert json.loads((m.EXP / "train-ga-started.json").read_text())["attempt"] == 2
+
+
+def test_a_rerun_of_a_stopped_stage_is_marked_final_when_it_stops(m):
+    _crash_ga(m)
+    m._fakes.crash_at = len(m._fakes.calls) + 2
+    with pytest.raises(RuntimeError):
+        _run(m, "train", method="ga", rerun=True, reason="crashed")
+    assert _rec(m, "train-ga")["final"] is True
+
+
+def test_a_rerun_interrupted_while_archiving_resumes_without_charging_again(m):
+    """Review v2 (Astra): the note is written first; if the setup stops after moving the record but
+    before moving the marker, the first attempt's marker must not be taken for a killed rerun."""
+    _crash_ga(m)
+    plan = m.rerun_plan("train-ga", _ga_files(m), "crashed")
+    note = {"stage": "train-ga", "how_the_first_attempt_ended": plan["how"], "reason": "crashed",
+            "reconciled_compute": None, "status": "archiving",
+            "archived": {f.name: m.attempt1(f).name for f in _ga_files(m) if f.exists()}}
+    m.rerun_note(m.record_path("train-ga")).write_text(json.dumps(note))
+    m.record_path("train-ga").rename(m.attempt1(m.record_path("train-ga")))  # moved; the marker is not
+    with pytest.raises(SystemExit, match="rerun"):
+        _run(m, "train", method="random")
+    with pytest.raises(SystemExit, match="continue it with --rerun"):
+        _run(m, "train", method="ga")
+    _run(m, "train", method="ga", rerun=True, reason="resuming the interrupted setup")
+    assert _rec(m, "train-ga")["outcome"] == "completed"
+    assert (m.EXP / "train-ga-started-attempt1.json").exists()
+    assert not list((m.OUT / "compute").glob("killed-*")) if (m.OUT / "compute").exists() else True
+    assert json.loads(m.rerun_note(m.record_path("train-ga")).read_text())["status"] == "applied"
+
+
+def test_a_rerun_stopped_before_its_marker_is_continued_by_rerun_only(m):
+    _crash_ga(m)
+    m.apply_rerun(m.rerun_plan("train-ga", _ga_files(m), "crashed"))  # set up, then stopped before its marker
+    with pytest.raises(SystemExit, match="continue it with --rerun"):
+        _run(m, "train", method="ga")
+    with pytest.raises(SystemExit, match="set up"):
+        _run(m, "train", method="random")
+    _run(m, "train", method="ga", rerun=True, reason="the rerun stopped before it started")
+    assert _rec(m, "train-ga")["outcome"] == "completed"
+
+
+def test_the_rerun_setup_survives_a_transient_permission_error(m, monkeypatch):
+    import os
+    _crash_ga(m)
+    real, fails = os.replace, [3]
+
+    def flaky(a, b):
+        if fails[0]:
+            fails[0] -= 1
+            raise PermissionError(5, "Access is denied")
+        return real(a, b)
+    monkeypatch.setattr(os, "replace", flaky)
+    m.apply_rerun(m.rerun_plan("train-ga", _ga_files(m), "crashed"))
+    assert m.attempt1(m.record_path("train-ga")).exists() and not m.record_path("train-ga").exists()
+
+
+def test_replace_retries_and_then_gives_up(tmp_path, monkeypatch):
+    import os
+    mod = _load()
+    a, b = tmp_path / "a", tmp_path / "b"
+    a.write_text("x")
+    real, fails = os.replace, [2]
+
+    def flaky(x, y):
+        if fails[0]:
+            fails[0] -= 1
+            raise PermissionError(5, "Access is denied")
+        return real(x, y)
+    monkeypatch.setattr(os, "replace", flaky)
+    mod.replace(a, b)
+    assert b.read_text() == "x"
+
+    def never(x, y):
+        raise PermissionError(5, "Access is denied")
+    monkeypatch.setattr(os, "replace", never)
+    b.rename(a)
+    with pytest.raises(PermissionError):
+        mod.replace(a, b, attempts=3)
+
+
+@pytest.mark.parametrize("after", [False, True])
+def test_a_stopped_extensions_champions_reach_the_evaluations_summary(m, after):
+    """Review v2 (both): the summary is built from the champions, not from the records, which are
+    empty when the extension stops before its first checkpoint."""
+    _upto(m, 6)
+    if after:
+        orig = m.save_genomes
+
+        def boom(records, cfg, prefix):
+            orig(records, cfg, prefix)
+            if prefix == "extension" and any(r.checkpoints for r in records):
+                raise RuntimeError("after the checkpoint")
+        m.save_genomes = boom
+        with pytest.raises(RuntimeError):
+            _run(m, "extend")
+        m.save_genomes = orig
+    else:
+        m._fakes.crash_at = len(m._fakes.calls) + 1
+        with pytest.raises(RuntimeError):
+            _run(m, "extend")
+        m._fakes.crash_at = None
+    m._fakes.crash_at = len(m._fakes.calls) + 1  # the rerun stops too: the extension is final
+    with pytest.raises(RuntimeError):
+        _run(m, "extend", rerun=True, reason="stopped")
+    m._fakes.crash_at = None
+    _run(m, "evaluate")
+    ext = _rec(m, "evaluate")["extension"]
+    assert ext["complete"] is False and len(ext["runs"]) == len(m.run_specs()) and ext["mean"] is not None
+    assert all(v["source"] in ("formal", "extension") for v in ext["runs"].values())
+
+
+def test_a_killed_extension_rerun_without_a_partial_keeps_the_formal_champions(m):
+    _upto(m, 6)
+    _kill(m, "extend", partial=False)
+    m.apply_rerun(m.rerun_plan("extend", [m.record_path("extend"), m.EXP / "extend-started.json",
+                                          m.partial_path("extend")], "killed"))
+    _kill(m, "extend", partial=False, attempt=2)
+    with pytest.raises(SystemExit, match="recorded as final"):
+        _run(m, "extend", rerun=True, reason="the rerun was killed")
+    ext = _rec(m, "extend")
+    assert len(ext["champions_over_both"]) == len(m.run_specs())
+    assert all(c["source"] == "formal" for c in ext["champions_over_both"])
+    _run(m, "evaluate")
+    assert len(_rec(m, "evaluate")["extension"]["runs"]) == len(m.run_specs())
+
+
+def test_the_extension_writes_its_fallback_champions_before_its_first_generation(m):
+    _upto(m, 6)
+    m._fakes.crash_at = len(m._fakes.calls) + 1
+    seen = {}
+    orig = m.write_atomic
+
+    def spy(path, doc, **kw):
+        if path == m.partial_path("extend") and "first" not in seen:
+            seen["first"] = doc
+        return orig(path, doc, **kw)
+    m.write_atomic = spy
+    with pytest.raises(RuntimeError):
+        _run(m, "extend")
+    assert all(c["source"] == "formal" for c in seen["first"]["champions_over_both"])
+
+
+def test_the_pairing_check_and_the_per_run_differences():
+    mod = _load()
+
+    def rec(run, sha, start=None):
+        r = {"spec": {"run": run}, "checkpoints": [{"sha256": sha}]}
+        if start:
+            r["start"] = {"sha256": start}
+        return r
+    trains = {"ga": {"records": [rec(0, "a"), rec(1, "b")]}, "random": {"records": [rec(0, "a"), rec(1, "b")]},
+              "es": {"records": [rec(0, "a", "a"), rec(1, "x", "b")]}}
+    p = mod.pairing(trains)
+    assert p["generation0_candidates_match"] is False and p["mismatched_runs"] == [1]
+    trains["es"]["records"][1]["checkpoints"][0]["sha256"] = "b"
+    assert mod.pairing(trains)["generation0_candidates_match"] is True
+    assert mod.pairing({"ga": {"records": []}, "random": {"records": []}, "es": {"records": []}})[
+        "generation0_candidates_match"] is None
+    counts = {"es run00 real": np.array([3, 1]), "ga run00 real": np.array([1, 1]),
+              "es run01 real": np.array([0, 0]), "ga run01 real": np.array([2, 0])}
+    assert mod.per_run_differences(counts, {"es": [0, 1], "ga": [0, 1]}) == {"run00": 1.0, "run01": -1.0}
+
+
+def test_the_extension_is_skipped_when_the_cap_must_be_kept_for_the_evaluation(m, monkeypatch):
+    _upto(m, 6)
+    monkeypatch.setattr(m.reg.CapClock, "spent_hours", lambda self: m.REGISTERED["cap_gpu_hours"] - 0.01)
+    with pytest.raises(SystemExit, match="skipped"):
+        _run(m, "extend")
+    assert _rec(m, "extend")["outcome"] == m.OUTCOMES["skipped"]
+    assert not (m.EXP / "extend-started.json").exists()
+    monkeypatch.setattr(m.reg.CapClock, "spent_hours", lambda self: 0.0)
+    _run(m, "evaluate")
+    ev = _rec(m, "evaluate")
+    assert ev["extension"]["complete"] is False and ev["extension"]["runs"] == {}
+
+
+def test_a_rerun_interrupted_before_anything_moved_does_not_make_the_first_stop_final(m):
+    """The note is written first; if the setup stops there, the first attempt's stopped record is
+    still in place and must not count as the rerun's (review v2)."""
+    _crash_ga(m)
+    plan = m.rerun_plan("train-ga", _ga_files(m), "crashed")
+    note = {"stage": "train-ga", "how_the_first_attempt_ended": plan["how"], "reason": "crashed",
+            "reconciled_compute": None, "status": "archiving",
+            "archived": {f.name: m.attempt1(f).name for f in _ga_files(m) if f.exists()}}
+    m.rerun_note(m.record_path("train-ga")).write_text(json.dumps(note))
+    with pytest.raises(SystemExit, match="rerun it once first"):
+        _run(m, "train", method="random")
+    _run(m, "train", method="ga", rerun=True, reason="resuming")
+    assert _rec(m, "train-ga")["outcome"] == "completed"

@@ -3572,3 +3572,35 @@ accepted the three choices beyond the design (D119).
 
 Each fix was test-first (14 new tests seen failing), and each new rule was sabotage-checked
 (8 deliberate breaks, each caught). Tests: 62 command, 16 loop, 14 optimizer.
+
+## D121 — E2's pre-registration v3: a recoverable rerun setup, the extension's champions on every path
+
+The v2 review (`docs/reviews/20260929-113044-E2-prereg-v2/`): **both "revise", narrowly**; all of
+v1's must-fixes were confirmed resolved.
+- **Astra: the rerun's own setup could deadlock or consume the rerun falsely.** A kill between the
+  note and the rerun's marker left neither record nor marker; a refusal between archive moves let the
+  first attempt's marker be taken for a killed rerun. Fable found the second through the bare
+  `os.replace` in `apply_rerun` and `reconcile_kill`. Now the note is written first ("archiving") and
+  marked "applied" after the last move, markers carry their attempt number, an interrupted setup is
+  continued by the next `--rerun` without charging the first attempt again, and every move retries.
+- **Both: a killed or early-stopped extension could lose its champions,** or have them evaluated but
+  missing from the summary. Now the fallback champions are in the first partial record, a killed
+  rerun without one rebuilds them from the formal record, and the summary is built from the
+  champions, with their source.
+- **Fable: the ES's generation-0 candidate was the decoded start**, not bit-identical to the start
+  genome, so the pairing check reported a match that was not one (in the smoke run: `7a9bafed…`
+  against the GA's `b6767851…`). Generation 0 now validates the start genome itself; in the third
+  smoke run all three methods' generation-0 candidates are `b6767851…`.
+- **Fable: §11 missed a smoke chain.** There were two (08:54 with v1's code, 09:29 with v2's), and
+  the second overwrote the first's records; §11 now names both, with a dated correction. A third ran
+  with v3's code at about 09:52 UTC (the same smoke folder, smoke seeds, CPU).
+- Suggestions taken: the extension is skipped when the cap's remainder must be kept for the
+  evaluation (0.5-hour reserve; Fable); `final` on a stopped rerun; stage records' `outcome`
+  explained; `replace` and the pairing tested directly; the pilot's stage-2 time scaled.
+- Not taken: guard-on tests of reconstructed records (Astra); the guards need a clean, pushed tree
+  and CUDA, and a reconstructed record keeps its own attempt's provenance.
+
+Each fix was test-first (12 new tests seen failing), except one regression pin, "setup interrupted
+before anything moved", written after the fix when a sabotage check ("used" without "applied") went
+uncaught; it fails under that sabotage. Nine deliberate breaks in all, each caught. Tests: 75
+command, 17 loop, 14 optimizer.

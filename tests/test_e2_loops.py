@@ -195,3 +195,10 @@ def test_the_flat_count_is_current_at_every_checkpoint(spec):
     seen = []
     _es(spec, Fake(flat=True), generations=5, on_checkpoint=lambda recs, g: seen.append((g, recs[0].flat_generations)))
     assert seen == [(0, 0), (2, 2), (4, 4)]
+
+
+def test_the_es_generation0_checkpoint_is_the_start_genome_itself(spec):
+    """Review v2 (Fable): the decoded mean is not bit-identical to the start genome, so generation 0
+    validates the start genome itself, the same genome as the GA's generation-0 candidate."""
+    recs, _ = _es(spec, Fake(), generations=3)
+    assert recs[0].checkpoints[0]["sha256"] == recs[0].start["sha256"]

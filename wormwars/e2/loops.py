@@ -179,7 +179,7 @@ def es_batch(cfg, iface, spec: BrainSpec, runs: list[RunSpec], *, generations: i
             rec.start["mean"] = mean.copy()
         _es_checkpoint(cfg, iface, ess, templates, records, validation_ids, world_seed, device, rollout_fn, check,
                        category, 0, generations, checkpoint_every, on_checkpoint,
-                       [r.start["score"] for r in records])
+                       [r.start["score"] for r in records], cands=[t.clone() for t in templates])
         for rec in records:
             rec.log[-1]["batch_seconds"] = time.perf_counter() - t_gen
     else:
@@ -246,10 +246,12 @@ def _mean_genome(es: OpenAIES, template: Genome) -> Genome:
 
 
 def _es_checkpoint(cfg, iface, ess, templates, records, validation_ids, world_seed, device, rollout_fn, check,
-                   category, g, generations, every, on_checkpoint, training_scores):
+                   category, g, generations, every, on_checkpoint, training_scores, cands=None):
+    """Validates the decoded mean; at generation 0, the start genome itself (`cands`), which the
+    decoded mean equals only up to rounding (review v2)."""
     if not _is_checkpoint(g, every, generations):
         return
-    cands = [_mean_genome(es, t) for es, t in zip(ess, templates)]
+    cands = cands if cands is not None else [_mean_genome(es, t) for es, t in zip(ess, templates)]
     _validate(cfg, iface, cands, records, validation_ids, world_seed, device, rollout_fn, check, category, g,
               training_scores)
     if on_checkpoint is not None:
