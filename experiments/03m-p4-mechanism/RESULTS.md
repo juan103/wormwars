@@ -1,6 +1,8 @@
 # 03m: results (exploratory)
 
-Written 2026-09-29, for review by Astra 6 and Fable 5.1. **Exploratory throughout:** the analyses
+Written 2026-09-29, for review by Astra 6 and Fable 5.1. **Corrected the same day (D114): the
+summary sections below ("In brief", "Reading it together") overstate the results; read them with
+the Corrections at the end, which replace them.** The numbers are right; the reading was not. **Exploratory throughout:** the analyses
 were declared in [`PLAN.md`](PLAN.md) (v4.1, agreed by both reviewers) before the simulations ran,
 but every comparison was chosen with 03's and 03r's data in view, and nothing here is confirmatory.
 Every number comes from the committed outputs in this folder: `tradeoff.json`, `tails.json` (Q1),
@@ -153,3 +155,90 @@ read-out neurons excluded). All valid.
   runs used 8 genomes on the CPU.
 - **Order of work:** the plan was merged into `roadmap` after 04a's evaluation (`69286d9`), and the
   formal runs used the pushed `roadmap` HEADs listed above.
+
+## Corrections (2026-09-29, D114)
+
+Both reviewers checked these results (`docs/reviews/20260929-061029-03m-results/`). They found that
+the runs followed the plan and that every number recomputes from the outputs (Astra recomputed all
+627 valid P4 ratios). Both said "fix": four claims in the summary are contradicted by the outputs.
+RESULTS.md was committed about two minutes after the last run ended (Fable), and the overclaims
+are all in the sections written last. What was written above is left as it was; these corrections
+replace it.
+
+1. **"The two properties come apart" and "they have different sources" are not shown** (both).
+   Written: *"N2's two unusual properties ... come apart"* and *"removing the response ... leaves N2's
+   P4 high"*, *"they have different sources"*. P4 is a ratio. Deleting the RIA pair cuts the raw
+   history signal (the numerator) by 61.5% and the response by 61.7%; deleting the AIY pair, by 53.1%
+   and 52.8%. The ratio survives because both parts fall together; the history signal itself depends
+   on RIA and AIY as much as the response does. What is supported: these deletions reduce the
+   response's size while leaving the normalised P4 nearly unchanged.
+2. **RIA and AIY do not bring the response to "the shuffles' typical level"** (both). Written: *"brings
+   it down to the shuffles' typical level, and so does deleting the RIA pair or the AIY pair"*. The
+   RIA pair leaves a response of 0.049, 2.2 times the null median and above 96% of the null graphs;
+   the AIY pair 0.061, 2.7 times and above 98%. They fall below the nulls' maximum, which is what the
+   "response only" class means, but stay in the nulls' upper tail. Only the weight permutations reach
+   the typical level. The single deletions give 0.089-0.104.
+3. **High P4 does not survive "every weight permutation"** (both). Written, in the summary and the
+   README: *"the high P4 survives all of those"*, *"every ... weight permutation tested"*. Under the
+   plan's classes, 37 of 64 independent and 35 of 64 paired permutations fall in "both": P4 below the
+   nulls' pooled 95th percentile, and the response below their maximum. Only 27 and 29 of 64 stay above
+   that percentile; the lowest are 0.733 and 0.730; 59 of 64 are below N2 in each design; the median
+   drop from N2 (0.046) is about twice the largest deletion's. Two of Q3's eight chemical-only
+   permutations also fall below the percentile. Relative to the pooled null median, the permutations'
+   medians keep about 60% (independent) and 58% (paired) of N2's excess P4: N2's topology under these
+   permutations keeps an elevated P4 distribution, and the placement of the weights contributes a
+   substantial part. The two designs reuse the same 64 permutations; they are not 128 independent
+   ones. "0 of 128 above any null graph's" response means above the pooled null maximum.
+4. **Gap junctions: the reading ran against the plan's own rule** (Fable; Astra on the response).
+   Written: *"Gap junctions are not needed for either property"* and *"not carried by any ... synapse
+   type"*. Gap junctions are not needed for N2's absolute values. But the plan's rule compares N2's
+   change with the null panel's, and N2's change in P4 (+0.014) lies below the whole null range
+   (+0.051 to +0.143): switching gap junctions off raises the shuffles' P4 much more than N2's. With
+   gap junctions off in every brain, the panel's median P4 rises from 0.822 to 0.908, and 5 of the 80
+   null graphs match or exceed N2's 0.945 (intact, N2 was above all 80; the highest was 0.898). So
+   **how far N2's P4 stands above the shuffles depends on gap junctions**, which is the opposite of
+   what the summary said. N2's response change (+0.014) lies inside the null range (+0.006 to
+   +0.029), and its gaps-off response (0.143) stays above every gaps-off null graph (at most 0.082).
+   Chemical synapses off leaves a response of 3.6 × 10⁻⁵, below the validity floor; it does not show
+   that no path exists, and it establishes nothing about whether chemical synapses are dispensable.
+5. **"Distributed" is an inference from a negative screen** (both). What was tested: no single or
+   bilateral-pair deletion, of those tried, lowered N2's P4 below the threshold. That does not
+   establish a network-wide distribution: redundancy within a small circuit, dependencies that differ
+   between genomes, and the excluded turn read-out neurons remain possible.
+6. **"Settle into a lasting different state" was not measured** (both). Written: *"a small minority of
+   its random brains (about 1%) settle into a lasting different state"* and *"About 1% of N2's random
+   brains (26 of 2 048) have settled with the difference intact"*. What was measured: 26 of 2 048 genomes kept more than 10% of
+   their starting separation at tick 300 and met the full-state settling criterion over the last ten
+   ticks. That is consistent with distinct stable states, as the plan says, but a ten-tick test does
+   not show lasting stability. And it is not specific to N2: SH-10007 has 171 such genomes and
+   SH-mirror-40003 has 37; SH-10007's P4 is an unremarkable 0.867.
+7. **The saturation sentence overstated** (both). Written: *"part of N2's large response and of its
+   read-out's nonlinearity is in this final step"*. What is measured: N2's turn read-out neurons have
+   a mean tanh slope of 0.44 at the holds' end, below all 80 null graphs (0.66-0.80). A lower slope
+   compresses differences; whether it contributes to N2's response needs another comparison. It
+   complicates reading the output ratio.
+
+**The corrected summary.**
+- **The slower relaxation holds throughout the window:** N2 keeps a larger share of the difference
+  than all 80 null graphs at ticks 5, 10 and 50, and than 78 of 80 at tick 300. By ensemble, SH-mirror
+  and SH-recip relax much more slowly than SH (median 2.5% and 1.5% left at 300 ticks, against 0.08%),
+  and N2 (9.4%) is near their top rather than apart from them.
+- **N2's large response depends on the placement of its weights** (all-weight and chemical-only
+  permutations bring it to the null range) **and on RIA and AIY** (deleting either pair roughly halves
+  it or more). Those deletions reduce the history signal in proportion, so P4 as a ratio changes little.
+- **N2's P4 elevation over the shuffles depends partly on gap junctions** (switching them off narrows
+  it) **and partly on weight placement** (permutations keep about 60% of it).
+- **No tested single or paired deletion removed the elevated P4.**
+
+**Also, as the reviewers asked:** none of the guarded files changed between the four commits the
+commands ran at (Astra checked the Git objects: identical); the smoke runs were not repeated after the
+merge into `roadmap`, and the only change after the last smoke run was `allow_pickle=False` in four
+test lines.
+
+**For a confirmatory follow-up** (both reviewers' suggestions, not yet a plan): on fresh genomes and
+fresh null graphs, (1) N2's P4 with gap junctions off, ranked against each ensemble with gap
+junctions off; (2) the RIA and AIY deletions, with matched control deletions and a registered
+equivalence margin for P4, analysing numerator and denominator jointly; (3) N2's rank among many
+fresh weight permutations; (4) the retained separation at 300 ticks, by ensemble; (5) P4 on the
+read-out neurons' state before the tanh, against saturation. "No deletion removes P4" should be
+described, not registered.

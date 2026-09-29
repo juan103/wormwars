@@ -3425,3 +3425,26 @@ Exploratory findings (RESULTS.md):
 - the history mostly relaxes, more slowly in N2 (9.4% left at 300 ticks, above 78 of 80 null
   graphs); about 1% of N2's random brains settle with the difference intact.
 The results go to Astra 6 and Fable 5.1.
+
+## D114 — 03m results review: both "fix"; the summary corrected
+
+Astra 6 and Fable 5.1 reviewed 03m's results (`40fcbef`; `docs/reviews/20260929-061029-03m-results/`).
+Both found the runs followed the plan and every number recomputes (Astra: all 627 valid P4 ratios, the
+neural-update total, the reproduction checks). Both said **"fix"**: the summary overclaimed, written
+minutes after the last run (Fable). Corrections are dated in RESULTS.md and the README, quoting what
+was written.
+
+**D113, corrected here** (both): *"N2's large food response depends ... on RIA and AIY (deleting
+either pair does too)"* — the deletions leave the response in the nulls' upper tail, not at their
+typical level, and they cut the history signal in proportion, so the response and the persistence
+are not shown to have separate sources. *"its high P4 survives all of these ... and gap junctions
+switched off"* — it does not survive most weight permutations (37 and 35 of 64 fall below the
+threshold on both measures), and N2's elevation over the shuffles narrows with gap junctions off (5
+of 80 gaps-off null graphs match or exceed N2). *"about 1% of N2's random brains settle with the
+difference intact"* — 26 of 2 048 kept more than 10% and passed a ten-tick settling test, and some
+null graphs have more (SH-10007: 171).
+
+**What stands:** the slower relaxation (N2 above all 80 null graphs at ticks 5-50, 78 at 300); the
+dependence of N2's large response on weight placement and on RIA and AIY; the negative deletion
+screen. A confirmatory follow-up is possible (RESULTS.md lists what both reviewers would register);
+it is not planned yet.
