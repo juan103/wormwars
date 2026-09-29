@@ -3902,3 +3902,37 @@ breaks were each caught, three only after their tests were strengthened:
 - a budget example whose mean really is at the threshold.
 
 The Task N probe test passed on the unchanged code, so it is a pin of real behaviour.
+
+## D134 — E2d's runner, confirmation round: Fable "run"; Astra's review failed and is retried
+
+The confirmation review (`docs/reviews/20260929-191508-E2d-code-v2/`):
+- **Fable: "run".** All eight must-fixes are resolved, and the fixes introduced no new defect. Two
+  tests still could not fail when their rule broke; both are test-only, to close before the formal
+  stages.
+- **Astra's review failed** ("Selected model is at capacity"). There is no consensus until Astra
+  answers, so Astra is asked again on the current code.
+
+Taken:
+- **Fable's two must-fixes:**
+  - `pairing_check` is now tested directly on its own inputs: a later strain playing another world,
+    a changed roster with nothing else changed, and a changed generation-0 hash. The check now
+    compares every strain's row, not only each run's first;
+  - Part B's fallback is pinned by behaviour: champions that use the difference but score 2 leave
+    the plateau only while Part B's checks pass.
+- **Most suggestions:**
+  - `boot_se` is pinned against an independent recomputation;
+  - both of C0's reading branches are tested (material, and declined under the minimum);
+  - C0 records its seeds, which are tested;
+  - Part B loads and checks every champion, and the plan's denominators, before its start marker,
+    so a failure there cannot spend its rerun;
+  - the training-clock test writes only to a scratch folder;
+  - recorded paths use forward slashes.
+- **Recorded before Part B, as Fable asked:** the budget reading is drawn even if a Part B check
+  fails. It uses only the `real` probe, so the reference checks do not bear on it.
+
+**Sabotage:** five breaks. Four were caught at once. The fifth, the roster check, was missed at first,
+because reversing the runs also broke the generation-0 comparison. A test that changes only the run
+number now catches it.
+
+Four of the new tests passed on the unchanged code, so they are pins: the plateau behaviour, boot_se,
+C0's reading and the training clock. Each fails under its sabotage.

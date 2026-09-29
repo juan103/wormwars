@@ -245,4 +245,40 @@ def test_the_es_pairs_share_their_noise_and_alternate(d):
 
 def test_c0s_seeds_and_the_training_clock_are_pinned(d):
     assert (d.REGISTERED["c0"]["seed_ga"], d.REGISTERED["c0"]["seed_es"]) == (1_131_000, 1_131_100)
+
+
+# ------------------------------------------------------------------ confirmation review (D134)
+
+def test_boot_se_matches_an_independent_recomputation(d):
+    rng = np.random.default_rng(1)
+    counts = rng.integers(0, 5, size=(3, 40))
+    got = d.boot_se(counts, 30, resamples=500, seed=7)
+    idx = np.random.default_rng(7).integers(0, 40, size=(500, 30))
+    want = np.mean([counts[i][idx].mean(1).std(ddof=1) for i in range(3)])
+    assert got == pytest.approx(want) and got > 0
+
+
+def _noisy_c0(d, monkeypatch, min_pairs):
+    monkeypatch.setitem(d.REGISTERED["c0"], "draws", 100)
+    monkeypatch.setitem(d.REGISTERED["c0"], "k", 2)
+    monkeypatch.setitem(d.REGISTERED["c0"], "top", 2)
+    monkeypatch.setitem(d.REGISTERED["c0"], "scales", [1.0])
+    monkeypatch.setitem(d.REGISTERED["c0"], "sigmas", [])
+    monkeypatch.setitem(d.REGISTERED["analysis"], "bins", [[0.0, 0.1], [0.1, 0.4], [0.4, 9.0]])
+    monkeypatch.setitem(d.REGISTERED["analysis"], "min_pairs", min_pairs)
+    rng = np.random.default_rng(3)
+    kids = rng.integers(0, 3, size=(8, 40))  # noisy children with close means
+    return d.analyse_c0({"ga run00 scale 1.0": np.vstack([kids[0], kids])})
+
+
+def test_c0s_reading_can_say_material_and_can_decline(d, monkeypatch):
+    r = _noisy_c0(d, monkeypatch, min_pairs=1)
+    row = r["ga"]["1.0"]["pooled"][1]
+    assert row["pairs"] >= 1 and row["ties_half"] < 0.8 and r["reading"] == "selection noise is material"
+    r = _noisy_c0(d, monkeypatch, min_pairs=10_000)
+    assert r["reading"].startswith("not drawn")
+
+
+def test_the_training_clock_is_6_5_hours(d, tmp_path, monkeypatch):
+    monkeypatch.setattr(d, "OUT", tmp_path)  # never the formal folder
     assert d.training_clock().cap_hours == 6.5

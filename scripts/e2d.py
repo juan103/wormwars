@@ -364,7 +364,7 @@ def source_hashes() -> dict:
     """The sha256 of every source record read (E2's and 04a's), for each stage's record."""
     files = [E2_EXP / f"{n}.json" for n in ("train-ga", "train-random", "train-es", "extension", "pilot-2")]
     files += [E04A_EXP / f"train-{b}.json" for b in ("A", "B")]
-    return {str(f.name if SMOKE else f.relative_to(ROOT)): reg.file_sha256(f) for f in files if f.exists()}
+    return {(f.name if SMOKE else f.relative_to(ROOT).as_posix()): reg.file_sha256(f) for f in files if f.exists()}
 
 
 def references() -> dict:
@@ -553,11 +553,16 @@ def require_projection(args, prov) -> dict:
 # ============================================================================== Part B
 
 def cmd_probe(args):
-    def body(ctx):
-        cfg, dev, hold = ctx.cfg, ctx.args.device, ids("holdout")
-        genomes = {k: v[:2] for k, v in e2_champions(ctx.spec, cfg).items()}
+    loaded = {}
+
+    def requires(a, prov):
+        """The projection, then every champion loaded and checked on the CPU, and the plan's
+        denominators, all before the start marker, so a failure here does not spend Part B's rerun."""
+        proj = require_projection(a, prov)
+        spec, cfg = BrainSpec.from_connectome(load_connectome()), E.task_config()
+        genomes = {k: v[:2] for k, v in e2_champions(spec, cfg).items()}
         shaped = {}
-        for k, v in e04a_champions(ctx.spec, cfg).items():
+        for k, v in e04a_champions(spec, cfg).items():
             genomes[k] = v[:2]
             shaped[k] = v[2]
         if not SMOKE:  # the plan's denominators
@@ -565,6 +570,12 @@ def cmd_probe(args):
             n_sh, n_un = sum(shaped.values()), sum(not x for x in shaped.values())
             if (n_e2, n_sh, n_un) != (31, 12, 4):
                 raise SystemExit(f"Part B's genomes are not the plan's: {n_e2} distinct E2, {n_sh} shaped, {n_un} unshaped")
+        loaded.update(genomes=genomes, shaped=shaped)
+        return proj
+
+    def body(ctx):
+        cfg, dev, hold = ctx.cfg, ctx.args.device, ids("holdout")
+        genomes, shaped = loaded["genomes"], loaded["shaped"]
         ctx.doc["source_records_sha256"] = source_hashes()
         counts, done = {}, {}
         ctx.salvage = lambda: {"arms_completed": list(counts),
@@ -587,7 +598,7 @@ def cmd_probe(args):
         return {**analyse_b(counts, list(genomes), shaped), "budget_context": budget_context(),
                 "distinct_genomes": len({v[1] for v in genomes.values()})}
 
-    doc = E.run_stage(args, "probe", require_projection, body)
+    doc = E.run_stage(args, "probe", requires, body)
     print(doc["checks"]["passed"], {k: v["reading"] for k, v in doc["sets"].items()}, doc["budget"]["reading"])
 
 
@@ -667,22 +678,23 @@ def cmd_siblings(args):
     def body(ctx):
         cfg, dev, pw, C = ctx.cfg, ctx.args.device, ids("probe"), REGISTERED["c0"]
         champs = e2_champions(ctx.spec, cfg)
-        batches = {}
+        batches, seeds = {}, {}
         ctx.salvage = lambda: {"batches_completed": list(batches)}
         for r in [x.run for x in e2_runs()]:
             parent = EV.moved(champs[f"e2 ga run{r:02d}"][0], dev)
+            seeds[f"ga run{r:02d}"], seeds[f"es run{r:02d}"] = C["seed_ga"] + 10 * r, C["seed_es"] + 10 * r
             for s in C["scales"]:
-                kids = children(parent, cfg.mutation, s, C["children"], C["seed_ga"] + 10 * r)
+                kids = children(parent, cfg.mutation, s, C["children"], seeds[f"ga run{r:02d}"])
                 batches[f"ga run{r:02d} scale {s}"] = neural(cfg, ctx.iface, Genome.cat([parent, kids]), pw, "real", dev,
                                                              ctx.cap).astype(int)
                 E.write_atomic(E.partial_path("siblings"), {**ctx.doc, "batches_completed": list(batches)})
             mean = EV.moved(champs[f"e2 es run{r:02d}"][0], dev)
             for sg in C["sigmas"]:
-                cands = es_pairs(mean, sg, C["pairs"], C["seed_es"] + 10 * r)
+                cands = es_pairs(mean, sg, C["pairs"], seeds[f"es run{r:02d}"])
                 batches[f"es run{r:02d} sigma {sg}"] = neural(cfg, ctx.iface, Genome.cat([mean, cands]), pw, "real", dev,
                                                               ctx.cap).astype(int)
                 E.write_atomic(E.partial_path("siblings"), {**ctx.doc, "batches_completed": list(batches)})
-        ctx.doc.update(worlds=E.id_record(pw), source_records_sha256=source_hashes())
+        ctx.doc.update(worlds=E.id_record(pw), source_records_sha256=source_hashes(), seeds=seeds)
         return analyse_c0(batches)
 
     doc = E.run_stage(args, "siblings", lambda a, p: {"probe": require(a, p, "probe")}, body)
@@ -867,10 +879,10 @@ def pairing_check(arm: str, recs, train: dict, last_ids=None) -> dict:
     last_rows, played = [], []
     if last_ids is not None:
         for i, rec in enumerate(recs):
-            row = last_ids[i * P]
-            played.append(row.tolist())
+            block = np.asarray(last_ids[i * P:(i + 1) * P])  # every strain of the run
+            played.append(block[0].tolist())
             want = EV.train_ids(rec.spec.run_seed, a["generations"] - 1, W8, train["base"], train["span"])
-            last_rows.append(bool((row[:W8] == want).all()))
+            last_rows.append(bool(len(block) == P and (block == block[0]).all() and (block[0, :W8] == want).all()))
     rows = []
     for rec, e in zip(recs, ref):
         if a["worlds"] == REGISTERED["ga"]["worlds_per_strain"]:  # E2's own worlds: the same generation 0

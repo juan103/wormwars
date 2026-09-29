@@ -371,3 +371,73 @@ def test_a_missing_04a_record_is_an_error_outside_smoke(m, tmp_path):
     m.E04A_EXP = tmp_path / "nowhere"
     with pytest.raises(SystemExit, match="04a"):
         m.e04a_champions(None, None)
+
+
+# ------------------------------------------------------------------ confirmation review (D134)
+
+def _as_recs(m, arm):
+    """The arm's committed records as the objects `pairing_check` reads."""
+    from wormwars.e04a.evolve import RunSpec
+    return [SimpleNamespace(spec=RunSpec(**r["spec"]), checkpoints=r["checkpoints"], generation0=r["generation0"])
+            for r in _rec(m, f"arm-{arm}")["records"]]
+
+
+def _played(m, arm):
+    P = m.REGISTERED["ga"]["population"]
+    rows = _rec(m, f"arm-{arm}")["pairing"]["last_generation_ids"]
+    return np.repeat(np.asarray(rows), P, axis=0)  # every strain of a run plays its run's worlds
+
+
+def test_the_pairing_check_fails_on_each_kind_of_mismatch(m):
+    """Fable: seen failing on its own inputs, not only through its consequence."""
+    _upto(m, 6)
+    train, _ = m.e2_ids()
+    recs, played = _as_recs(m, "c1"), _played(m, "c1")
+    assert m.pairing_check("c1", recs, train, played)["passed"]
+    bad = played.copy()
+    bad[m.REGISTERED["ga"]["population"] + 1, 0] += 1  # a later strain of run 1 plays another world
+    assert not m.pairing_check("c1", recs, train, bad)["passed"]
+    from wormwars.e04a.evolve import RunSpec
+    renamed = [SimpleNamespace(spec=RunSpec(99, recs[0].spec.run_seed, 0.0), checkpoints=recs[0].checkpoints,
+                               generation0=recs[0].generation0)] + recs[1:]
+    r = m.pairing_check("c1", renamed, train, played)  # only the roster differs
+    assert r["per_run"] == m.pairing_check("c1", recs, train, played)["per_run"] and not r["passed"]
+    recs2, played2 = _as_recs(m, "c2"), _played(m, "c2")
+    assert m.pairing_check("c2", recs2, train, played2)["passed"]
+    recs2[0].checkpoints = [{**recs2[0].checkpoints[0], "sha256": "0" * 64}] + recs2[0].checkpoints[1:]
+    assert not m.pairing_check("c2", recs2, train, played2)["passed"]  # generation 0
+
+
+def _analyse_c_inputs(m, b_ok):
+    runs, W = range(8), 16
+    real, zero = [2] * W, [0] * W
+    b = {"checks": {"passed": b_ok}, "per_world_counts": {}}
+    for r in runs:
+        for lab in ("e2 ga", "e2 es"):
+            for p in ("real", "mean", "swapped"):
+                b["per_world_counts"][f"{lab} run{r:02d} {p}"] = real
+    counts = {}
+    for r in runs:
+        for lab in ("ga'", "c1", "c2", "c4", "c3", "c2'"):
+            counts[f"{lab} run{r:02d} real"] = np.array(real)
+            counts[f"{lab} run{r:02d} mean"] = np.array(zero)  # loses under the probes: "uses"
+            counts[f"{lab} run{r:02d} swapped"] = np.array(zero)
+    arms = {x: {"outcome": "completed", "pairing": {"passed": True}} for x in ("c1", "c2", "c4", "c3")}
+    return counts, b, arms
+
+
+@pytest.mark.parametrize("b_ok,leaves", [(True, True), (False, False)])
+def test_part_bs_check_failure_changes_the_plateau_rule_by_behaviour(m, b_ok, leaves):
+    """Fable: champions that use the difference but score 2 (< 2.5) leave the plateau only while Part
+    B's checks pass; on scores alone they do not."""
+    counts, b, arms = _analyse_c_inputs(m, b_ok)
+    out = m.analyse_c(counts, b, arms)
+    assert all(v["leaves_plateau"] is leaves for v in out["arms"].values())
+
+
+def test_c0_records_its_seeds(m):
+    _upto(m, 3)
+    seeds = _rec(m, "siblings")["seeds"]
+    C = m.REGISTERED["c0"]
+    for r in range(len(m.e2_runs())):
+        assert seeds[f"ga run{r:02d}"] == C["seed_ga"] + 10 * r and seeds[f"es run{r:02d}"] == C["seed_es"] + 10 * r
