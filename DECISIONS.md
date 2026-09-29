@@ -3863,3 +3863,42 @@ for reruns, the 6.5-hour training clock, and the replay gate.
 - **A CPU smoke run with real rollouts** reached the replay. Part B's reference check failed at 40
   ticks, and the replay reported drift against the CUDA-made smoke sources; both are the designed
   responses. The full chain runs in the guarded CUDA smoke, after review.
+
+## D133 — E2d's runner, fixed after its code review
+
+The code review (`docs/reviews/20260929-185027-E2d-code/`): **both "fix"**; both found the rules
+implemented faithfully and the frame reuse safe. The must-fixes, all taken:
+- **A capped arm blocked every later stage, the hold-out pass included** (both). The cap outcome is
+  now final under `final_ok`.
+- **An incomplete arm got a normal reading** (both; Astra reproduced a stopped C2 read as "supports",
+  with an interaction claimed). Only completed arms are evaluated and read. C2′ needs every matched
+  checkpoint. Contrasts need their arms completed.
+- **A failed Part B check did not propagate** (both; Astra reproduced it). Set readings are "not
+  drawn", and Part C's plateau rule falls back to scores, recorded.
+- **Arm records carried the base configuration** (both). They now record the arm's own, with the base
+  hash beside it.
+- **A failed pairing check did not block the paired readings, and the generation-249 check compared
+  two regenerated schedules** (Astra). Failed pairing now blocks the readings. The check uses the ids
+  actually played, captured at the rollout, and the run roster.
+- **C0's reference uncertainty was SD/√248, not the plan's bootstrap** (both). It is now a bootstrap:
+  1 000 resamples, seed 0, recorded.
+- **The projection ignored what was already spent** (Astra). The limit now applies to the total.
+- **Promised outputs were missing** (both), and now added:
+  - the per-genome contrasts of the arms and of the matched references;
+  - E2's registered champion beside C1's and C4's matched one;
+  - a statement where the interval and the sign-flip test disagree;
+  - the budget reading's costs and curves;
+  - the pooled distinct-genome count and the three named genomes;
+  - the ES mean's score in C0.
+- **A missing 04a record now fails outside smoke,** and the plan's denominators are asserted (31, 12, 4)
+  (Fable).
+- **Also:** the replay compares validation counts, the logged best genomes and the configuration hash;
+  the source records' hashes go into every record; smoke C0 gets its own seeds.
+
+**Tests:** 13 of Fable's "passes with the rule broken" gaps are now pinned. Thirteen more deliberate
+breaks were each caught, three only after their tests were strengthened:
+- an exact reason, where a second guard gave the same "not drawn";
+- a spent figure far enough from the limit;
+- a budget example whose mean really is at the threshold.
+
+The Task N probe test passed on the unchanged code, so it is a pin of real behaviour.

@@ -145,3 +145,104 @@ def test_the_same_noise_at_every_scale(d):
     half = d.children(parent, cfg.mutation, 0.5, 16, seed=1_131_000)
     free = (full.w.abs() < cfg.brain.w_max - 1e-4) & (half.w.abs() < cfg.brain.w_max - 1e-4)
     torch.testing.assert_close(((half.w - parent.w) * 2)[free], (full.w - parent.w)[free], rtol=1e-4, atol=1e-5)
+
+
+# ------------------------------------------------------------------ code review (D133): pins that can fail
+
+def test_world_ci_is_a_paired_bootstrap_at_the_2_5_and_97_5_percentiles(d):
+    rng = np.random.default_rng(5)
+    a, b = rng.integers(0, 5, 200), rng.integers(0, 5, 200)
+    r = d.world_ci(a, b)
+    diff = (a - b).astype(float)
+    idx = np.random.default_rng(0).integers(0, 200, size=(10_000, 200))
+    m = diff[idx].mean(1)
+    assert (r["lo95"], r["hi95"]) == (pytest.approx(np.percentile(m, 2.5)), pytest.approx(np.percentile(m, 97.5)))
+
+
+def test_run_summary_uses_the_5th_and_95th_percentiles(d):
+    x = np.array([0.5, 0.4, 0.6, 0.5, 0.3, 0.7, 0.5, 0.4])
+    s = d.run_summary(x)
+    m = x[np.random.default_rng(0).integers(0, 8, size=(10_000, 8))].mean(1)
+    assert (s["lo90"], s["hi90"]) == (pytest.approx(np.percentile(m, 5)), pytest.approx(np.percentile(m, 95)))
+
+
+def test_a_gain_of_0_3_whose_interval_crosses_0_is_inconclusive(d):
+    x = np.array([2.0, -0.2, -0.2, -0.2, 0.5, -0.2, -0.2, 0.9])
+    r = d.arm_reading(x)
+    assert r["all_runs"]["mean"] >= 0.3 and r["all_runs"]["lo90"] <= 0 and r["reading"] == "inconclusive"
+
+
+def test_harm_carried_by_run_2(d):
+    x = -np.array([0.0, 0.1, 2.0, 0.05, 0.1, 0.0, 0.1, 0.05])
+    assert d.arm_reading(x)["reading"] == "harmful, carried by run 2"
+
+
+def test_the_interaction_needs_both_the_eight_and_the_seven(d):
+    assert d.claimed({"lo90": 0.1, "hi90": 0.3}, {"lo90": -0.1, "hi90": 0.2}) is False
+    assert d.claimed({"lo90": 0.1, "hi90": 0.3}, {"lo90": 0.05, "hi90": 0.2}) is True
+    r = d.interaction(np.arange(8.0), np.zeros(8), np.zeros(8), np.zeros(8))
+    assert r["without_run_2"]["n"] == 7 and 2.0 not in r["without_run_2"]["per_run"]
+
+
+def test_the_budget_rule_needs_both_the_mean_and_the_interval(d):
+    wide = np.array([3.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, 0.0])  # mean 0.25, interval crossing 0
+    r = d.budget_reading(wide)
+    assert r["mean"] == pytest.approx(0.25) and r["lo90"] <= 0 and r["reading"] == "not budget-limited"
+    small = np.full(8, 0.15) + np.array([0.01, -0.01] * 4)  # interval above 0, mean below 0.2
+    assert d.budget_reading(small)["reading"] == "not budget-limited"
+
+
+@pytest.mark.parametrize("n_nomat,reading", [(5, "mixed"), (6, "non-stereo")])
+def test_three_quarters_of_a_set(d, n_nomat, reading):
+    assert d.set_reading(["no material benefit"] * n_nomat + ["unclear"] * (8 - n_nomat)) == reading
+
+
+def test_a_reversed_complement_scores_against_the_complement(d):
+    a, b = np.array([2, 2, 0, 0]), np.array([0, 0, 1, 0])  # full means 1.0 and 0.25
+    row = d.sibling_ranking(np.stack([a, b]), np.array([[0, 1]]), bins=[(0.6, 0.9)])["rows"][0]
+    # the draw ranks a above b; its complement [2, 3] ranks b above a: incorrect, not tied
+    assert row["correct"] == 0.0 and row["tied"] == 0.0
+
+
+def test_c0s_analysis_on_known_batches(d, monkeypatch):
+    monkeypatch.setitem(d.REGISTERED["c0"], "draws", 50)
+    monkeypatch.setitem(d.REGISTERED["c0"], "k", 4)
+    monkeypatch.setitem(d.REGISTERED["c0"], "top", 2)
+    monkeypatch.setitem(d.REGISTERED["c0"], "scales", [1.0])
+    monkeypatch.setitem(d.REGISTERED["c0"], "sigmas", [0.5])
+    monkeypatch.setitem(d.REGISTERED["analysis"], "bins", [[0.0, 0.5], [0.5, 1.5], [1.5, 9.0]])
+    monkeypatch.setitem(d.REGISTERED["analysis"], "min_pairs", 1)
+    W = 16
+    kids = np.stack([np.full(W, v) for v in (0, 1, 2, 3)])  # constant per child: every draw ranks exactly
+    ga = np.vstack([np.full(W, 2), kids])
+    es = np.vstack([np.full(W, 2)] + [np.full(W, 2), np.full(W, 1)] * 2)  # plus scores 2, minus 1
+    r = d.analyse_c0({"ga run00 scale 1.0": ga, "es run00 sigma 0.5": es})
+    row = r["ga"]["1.0"]["pooled"][1]  # gaps of 1: pairs (0,1), (1,2), (2,3)
+    assert row["pairs"] == 3 and row["correct"] == 1.0 and row["tied"] == 0.0
+    assert r["reading"] == "selection noise is not material by this rule"
+    assert r["ga"]["1.0"]["top8_overlap"] == [1.0]
+    assert r["es"]["0.5"]["sign_agreement"] == 1.0 and r["es"]["0.5"]["mean_score"] == 2.0
+    assert r["ga"]["1.0"]["children"][0]["parent"] == 2.0
+
+
+def test_the_es_pairs_share_their_noise_and_alternate(d):
+    """Same draws at both σ (halved), and mean + σε, mean − σε interleaved. Clamping can move a few
+    coordinates, so nearly all, not all, must match."""
+    import torch
+
+    from wormwars.brain import BrainSpec, Genome
+    from wormwars.config import Config
+    from wormwars.connectome import load_connectome
+    from wormwars.e2.optimizers import encode
+    spec = BrainSpec.from_connectome(load_connectome())
+    t = Genome.random(spec, Config().brain, 1, generator=torch.Generator().manual_seed(4))
+    z = encode(t)[0]
+    half, full = encode(d.es_pairs(t, 0.25, 3, seed=9)) - z, encode(d.es_pairs(t, 0.5, 3, seed=9)) - z
+    assert float(((half * 2 - full).abs() < 1e-3).float().mean()) > 0.95
+    assert float(((half[0] + half[1]).abs() < 1e-3).float().mean()) > 0.95
+    assert float((half[0].abs() > 1e-3).float().mean()) > 0.95  # the noise is not zero
+
+
+def test_c0s_seeds_and_the_training_clock_are_pinned(d):
+    assert (d.REGISTERED["c0"]["seed_ga"], d.REGISTERED["c0"]["seed_es"]) == (1_131_000, 1_131_100)
+    assert d.training_clock().cap_hours == 6.5

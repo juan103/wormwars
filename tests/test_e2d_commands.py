@@ -258,3 +258,116 @@ def test_a_32_world_draw_begins_with_the_8_world_draw():
         for g in (0, 1, 249, 999):
             assert (train_ids(1_120_000 + r, g, 32, 995_300_000, 500_000)[:8]
                     == train_ids(1_120_000 + r, g, 8, 995_300_000, 500_000)).all()
+
+
+# ------------------------------------------------------------------ code review (D133)
+
+def test_a_capped_arm_is_final_and_the_pass_still_runs(m, monkeypatch):
+    """Review (both): the hard stop's "cap reached" must not block the later arms or the pass."""
+    _upto(m, 4)
+    real = m.training_clock
+    monkeypatch.setattr(m, "training_clock", lambda: m.reg.CapClock(0.0, m.OUT / "compute.json"))
+    with pytest.raises(SystemExit, match="cap"):
+        _run(m, "arm", "c1")
+    monkeypatch.setattr(m, "training_clock", real)
+    for x in ("c2", "c4", "c3"):
+        _run(m, "arm", x)
+    _run(m, "evaluate")
+    ev = _rec(m, "evaluate")
+    assert ev["arms"]["c1"]["reading"] == "not drawn (the arm did not complete)"
+    assert ev["contrasts"]["interaction"].startswith("not drawn")
+
+
+def test_an_arm_stopped_after_a_checkpoint_gets_no_reading(m, monkeypatch):
+    """Review (both): a stopped arm keeps champions from its last checkpoint; they must not be read."""
+    _upto(m, 5)
+    orig = m.E.write_atomic
+
+    def boom(path, doc, **kw):
+        orig(path, doc, **kw)
+        if path == m.E.partial_path("arm-c2") and doc.get("records"):
+            raise RuntimeError("after the checkpoint")
+    m.E.write_atomic = boom
+    with pytest.raises(RuntimeError):
+        _run(m, "arm", "c2")
+    m.E.write_atomic = orig
+    monkeypatch.setattr(m.reg.CapClock, "spent_hours", lambda self: m.REGISTERED["cap_gpu_hours"] - 0.1)
+    with pytest.raises(SystemExit, match="not admitted"):
+        _run(m, "arm", "c2", rerun=True, reason="stopped")
+    monkeypatch.setattr(m.reg.CapClock, "spent_hours", lambda self: 0.0)
+    for x in ("c4", "c3"):
+        _run(m, "arm", x)
+    _run(m, "evaluate")
+    ev = _rec(m, "evaluate")
+    assert ev["arms"]["c2"]["reading"] == "not drawn (the arm did not complete)"
+    assert ev["contrasts"]["interaction"].startswith("not drawn")
+
+
+def test_failed_part_b_checks_suppress_set_readings_and_leave_part_c_on_scores(m, monkeypatch):
+    _upto(m, 1)
+    monkeypatch.setattr(m, "scripted", lambda cfg, iface, maker, params, ids, probe, device, cap: np.full(len(ids), 2.0))
+    _run(m, "probe")
+    b = _rec(m, "probe")
+    assert all(s["reading"].startswith("not drawn") for s in b["sets"].values() if s["read"])
+    for c in CHAIN[2:]:
+        _run(m, *c)
+    ev = _rec(m, "evaluate")
+    assert all(v["plateau_rule"] == "scores only (a Part B check failed)" for v in ev["arms"].values())
+
+
+def test_an_arm_record_carries_the_arms_own_configuration(m):
+    _upto(m, 6)
+    c2, c1 = _rec(m, "arm-c2"), _rec(m, "arm-c1")
+    assert c2["resolved_config"]["mutation"]["w_sigma"] == pytest.approx(0.04)
+    assert c1["resolved_config"]["evo"]["worlds_per_strain"] == m.REGISTERED["arms"]["c1"]["worlds"]
+    assert c1["resolved_config"]["evo"]["generations"] == m.REGISTERED["arms"]["c1"]["generations"]
+    assert c1["resolved_config_sha256"] != c1["base_config_sha256"]
+
+
+def test_a_failed_pairing_check_blocks_the_paired_readings(m, monkeypatch):
+    _upto(m, 4)
+    real = m.pairing_check
+    monkeypatch.setattr(m, "pairing_check", lambda *a, **k: {**real(*a, **k), "passed": False})
+    for x in ("c1", "c2", "c4", "c3"):
+        _run(m, "arm", x)
+    _run(m, "evaluate")
+    ev = _rec(m, "evaluate")
+    assert all(v["reading"].startswith("not drawn (the pairing") for v in ev["arms"].values())
+
+
+def test_the_pairing_check_uses_the_ids_actually_played_at_the_last_generation(m):
+    _upto(m, 5)
+    rec = _rec(m, "arm-c1")
+    last = rec["pairing"]["last_generation_ids"]
+    assert len(last) == len(m.e2_runs()) and all(len(x) == m.REGISTERED["arms"]["c1"]["worlds"] for x in last)
+
+
+def test_the_projection_counts_what_is_already_spent(m, monkeypatch):
+    monkeypatch.setattr(m.reg.CapClock, "spent_hours", lambda self: 6.2)
+    _run(m, "project")
+    p = _rec(m, "project")
+    assert p["spent_hours"] >= 6.2 and p["projected_total_hours"] > 6.2 >= p["projected_hours"]
+    assert p["within_limit"] is False  # the rest alone would fit; the total does not
+
+
+def test_the_probes_act_on_task_ns_sensors():
+    """`mean` and `swapped` change what a stereo steerer does on Task N (a real rollout, CPU)."""
+    mod = _load("e2d")
+    from wormwars.connectome import load_connectome
+    from wormwars.interface import load_interface
+    iface = load_interface(load_connectome())
+    cfg = mod.E.task_config()
+    cfg.world.max_ticks = 60
+    world = np.arange(8)
+    res = {}
+    for p in ("real", "mean", "swapped"):
+        res[p] = mod.scripted(cfg, iface, "S-const", {"k": 64.0, "speed": 1.0, "turn": -0.2}, world, p, "cpu",
+                              SimpleNamespace(check=lambda: None))
+    assert res["real"].mean() > res["mean"].mean() and res["real"].mean() > res["swapped"].mean()
+
+
+def test_a_missing_04a_record_is_an_error_outside_smoke(m, tmp_path):
+    m.SMOKE = False
+    m.E04A_EXP = tmp_path / "nowhere"
+    with pytest.raises(SystemExit, match="04a"):
+        m.e04a_champions(None, None)

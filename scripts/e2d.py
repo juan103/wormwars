@@ -116,7 +116,8 @@ def _boot_means(x: np.ndarray, resamples: int, seed: int) -> np.ndarray:
 
 
 def world_ci(a: np.ndarray, b: np.ndarray) -> dict:
-    """Paired percentile bootstrap over worlds of mean(a - b), with a two-sided 95% interval."""
+    """Paired percentile bootstrap over worlds of mean(a - b), with a two-sided 95% interval: the
+    2.5th and 97.5th percentiles (not E1's one-sided 5th, `registration.lower_bound`)."""
     A = REGISTERED["analysis"]
     d = np.asarray(a, dtype=np.float64) - np.asarray(b, dtype=np.float64)
     m = _boot_means(d, A["resamples"], A["seed"])
@@ -138,9 +139,12 @@ def run_summary(d: np.ndarray) -> dict:
     A = REGISTERED["analysis"]
     d = np.asarray(d, dtype=np.float64)
     m = _boot_means(d, A["resamples"], A["seed"])
+    lo, hi, p = float(np.percentile(m, 5)), float(np.percentile(m, 95)), sign_flip_p(d)
+    agree = (lo > 0 or hi < 0) == (p < 0.10)
     return {"n": int(len(d)), "per_run": d.tolist(), "mean": float(d.mean()), "median": float(np.median(d)),
-            "improved": int((d > 0).sum()), "lo90": float(np.percentile(m, 5)), "hi90": float(np.percentile(m, 95)),
-            "sign_flip_p": sign_flip_p(d)}
+            "improved": int((d > 0).sum()), "lo90": lo, "hi90": hi, "sign_flip_p": p,
+            "interval_and_sign_flip_agree": bool(agree),
+            "note": None if agree else "the 90% interval and the sign-flip test (at 0.10) disagree; the interval decides"}
 
 
 def classify(mean_ci: dict, swapped_ci: dict) -> str:
@@ -203,11 +207,16 @@ def leaves_plateau(classes: list[str], scores: list[float]) -> bool:
     return n >= R["plateau_count"]
 
 
+def claimed(s8: dict, s7: dict) -> bool:
+    """An interaction is claimed only if both 90% intervals, with and without run 2, exclude 0."""
+    excl = lambda s: s["lo90"] > 0 or s["hi90"] < 0  # noqa: E731
+    return bool(excl(s8) and excl(s7))
+
+
 def interaction(c4, c1, c2p, gap) -> dict:
     d = (np.asarray(c4) - np.asarray(c1)) - (np.asarray(c2p) - np.asarray(gap))
     s8, s7 = run_summary(d), run_summary(_drop(d))
-    excl = lambda s: s["lo90"] > 0 or s["hi90"] < 0  # noqa: E731
-    return {"all_runs": s8, "without_run_2": s7, "claimed": bool(excl(s8) and excl(s7))}
+    return {"all_runs": s8, "without_run_2": s7, "claimed": claimed(s8, s7)}
 
 
 def top_k(v: np.ndarray, k: int) -> np.ndarray:
@@ -341,12 +350,21 @@ def e04a_champions(spec, cfg) -> dict:
     for b in ("A", "B"):
         path = E04A_EXP / f"train-{b}.json"
         if not path.exists():
-            continue
+            if SMOKE:
+                continue
+            raise SystemExit(f"04a's {path.name} is missing: Part B's sets would shrink silently")
         for r in read(path)["records"]:
             run, c = r["spec"]["run"], r["champion"]
             out[f"04a run{run:02d}"] = (_load(E04A_OUT / "genomes" / f"run{run:02d}-candidates.npz", c["checkpoint"],
                                                c["sha256"], spec, cfg), c["sha256"], r["spec"]["shaping"] > 0)
     return out
+
+
+def source_hashes() -> dict:
+    """The sha256 of every source record read (E2's and 04a's), for each stage's record."""
+    files = [E2_EXP / f"{n}.json" for n in ("train-ga", "train-random", "train-es", "extension", "pilot-2")]
+    files += [E04A_EXP / f"train-{b}.json" for b in ("A", "B")]
+    return {str(f.name if SMOKE else f.relative_to(ROOT)): reg.file_sha256(f) for f in files if f.exists()}
 
 
 def references() -> dict:
@@ -396,7 +414,7 @@ def require(args, prov, stage: str, final_ok: bool = False) -> dict:
     if not path.exists():
         return E.require_earlier(args, prov, stage, final_ok)  # its messages for a missing or killed stage
     rec = read(path)
-    final = rec.get("outcome") == E.OUTCOMES["skipped"] or (
+    final = rec.get("outcome") in (E.OUTCOMES["skipped"], E.OUTCOMES["cap"]) or (
         rec.get("outcome") == E.OUTCOMES["stopped"] and (rec.get("final") or E.rerun_state(stage) == "used"))
     if rec.get("outcome") != "completed" and not (final_ok and final):
         return E.require_earlier(args, prov, stage, final_ok)
@@ -514,10 +532,14 @@ def cmd_project(args):
         n_b = (len(e2_record("train-ga")["records"]) * 4 + 16 + 3) * len(REGISTERED["probes"])
         n_eval = (len(e2_runs()) * (len(REGISTERED["arms"]) + 2)) * len(REGISTERED["probes"])
         v = projection_verdict(rates, plan_counts(n_b, n_eval))
-        return {"seeds_base": P["seed_base"], **v}
+        spent = ctx.cap.spent_hours() + (time.perf_counter() - ctx.cap.t_start) / 3600
+        total = spent + v["projected_hours"]
+        v.update(spent_hours=spent, projected_total_hours=total, within_limit=total <= v["limit_hours"],
+                 note="the limit applies to the total: what is spent, this projection included, plus the rest")
+        return {"seeds_base": P["seed_base"], "source_records_sha256": source_hashes(), **v}
 
     doc = E.run_stage(args, "project", lambda a, p: {}, body)
-    print(f"projected {doc['projected_hours']:.2f} h (limit {doc['limit_hours']} h): "
+    print(f"projected {doc['projected_total_hours']:.2f} h in all (limit {doc['limit_hours']} h): "
           f"{'within' if doc['within_limit'] else 'OVER: nothing further starts'}")
 
 
@@ -538,6 +560,12 @@ def cmd_probe(args):
         for k, v in e04a_champions(ctx.spec, cfg).items():
             genomes[k] = v[:2]
             shaped[k] = v[2]
+        if not SMOKE:  # the plan's denominators
+            n_e2 = len({sha for lab, (_, sha) in genomes.items() if lab.startswith("e2 ")})
+            n_sh, n_un = sum(shaped.values()), sum(not x for x in shaped.values())
+            if (n_e2, n_sh, n_un) != (31, 12, 4):
+                raise SystemExit(f"Part B's genomes are not the plan's: {n_e2} distinct E2, {n_sh} shaped, {n_un} unshaped")
+        ctx.doc["source_records_sha256"] = source_hashes()
         counts, done = {}, {}
         ctx.salvage = lambda: {"arms_completed": list(counts),
                                "per_world_counts": {k: v.astype(int).tolist() for k, v in counts.items()}}
@@ -556,7 +584,8 @@ def cmd_probe(args):
                 counts[f"ref {name} {p}"] = scripted(cfg, ctx.iface, maker, params, hold, p, dev, ctx.cap)
                 keep()
         ctx.doc.update(worlds=E.id_record(hold), champion_sha256={k: v[1] for k, v in genomes.items()})
-        return analyse_b(counts, list(genomes), shaped)
+        return {**analyse_b(counts, list(genomes), shaped), "budget_context": budget_context(),
+                "distinct_genomes": len({v[1] for v in genomes.values()})}
 
     doc = E.run_stage(args, "probe", require_projection, body)
     print(doc["checks"]["passed"], {k: v["reading"] for k, v in doc["sets"].items()}, doc["budget"]["reading"])
@@ -592,18 +621,44 @@ def analyse_b(counts: dict, labels: list[str], shaped: dict) -> dict:
         if not labs:
             continue
         cls = [per[k]["class"] for k in labs]
+        reading = ("classified, not read" if name not in read_sets else
+                   set_reading(cls) if checks["passed"] else "not drawn (a check failed)")
         sets[name] = {"genomes": labs, "classes": {c: cls.count(c) for c in ("uses", "no material benefit", "unclear")},
                       "median_real": float(np.median([per[k]["real"] for k in labs])), "read": name in read_sets,
-                      "reading": set_reading(cls) if name in read_sets else "classified, not read"}
+                      "reading": reading}
     plateau = None
     if checks["passed"]:
         plateau = plateau_reading({n: (s["reading"], s["median_real"]) for n, s in sets.items() if s["read"]})
     runs = sorted(int(k.split("run")[1]) for k in groups["e2 es"])
     gains = np.array([counts[f"e2 extension run{r:02d} real"].mean() - counts[f"e2 es run{r:02d} real"].mean() for r in runs])
-    return {"checks": checks, "references": refs, "genomes": per, "sets": sets,
+    named = {k: per[k] for k in ("04a run02", "04a run12", "e2 extension run03") if k in per}
+    return {"checks": checks, "references": refs, "genomes": per, "sets": sets, "named": named,
             "non_stereo_plateau": plateau if checks["passed"] else "not drawn (a check failed)",
             "budget": {**budget_reading(gains), "runs": runs},
             "per_world_counts": {k: np.asarray(v).astype(int).tolist() for k, v in counts.items()}}
+
+
+def budget_context() -> dict:
+    """The budget reading's costs and curves: selection episodes per run, and the runs' mean validation
+    count at each checkpoint against cumulative selection episodes (E2's formal ES, then the extension)."""
+    es, ext = e2_record("train-es"), e2_record("extension")
+    n = len(es["records"])
+    out = {"episodes_per_run": {"formal": es["episodes"]["selection_total"] / n,
+                                "extension": ext["episodes"]["selection_total"] / n},
+           "note": "per run; the pilot's episodes (charged to the ES) are not included"}
+    P = REGISTERED["ga"]["population"] * REGISTERED["ga"]["worlds_per_strain"]
+    V = es["validation_worlds"]["count"]
+    curve = []
+    for part in (es, ext):
+        gens = [c["generation"] for c in part["records"][0]["checkpoints"]]
+        for i, g in enumerate(gens):
+            mean_v = float(np.mean([r["checkpoints"][i]["validation_mean"] for r in part["records"]]))
+            curve.append({"generation": g, "mean_validation": mean_v})
+    all_g = sorted({c["generation"] for c in curve})
+    for c in curve:
+        c["cumulative_selection_episodes"] = (c["generation"] + 1) * P + sum(g <= c["generation"] for g in all_g) * V
+    out["curve"] = curve
+    return out
 
 
 # ============================================================================== Part C0
@@ -627,11 +682,20 @@ def cmd_siblings(args):
                 batches[f"es run{r:02d} sigma {sg}"] = neural(cfg, ctx.iface, Genome.cat([mean, cands]), pw, "real", dev,
                                                               ctx.cap).astype(int)
                 E.write_atomic(E.partial_path("siblings"), {**ctx.doc, "batches_completed": list(batches)})
-        ctx.doc.update(worlds=E.id_record(pw))
+        ctx.doc.update(worlds=E.id_record(pw), source_records_sha256=source_hashes())
         return analyse_c0(batches)
 
     doc = E.run_stage(args, "siblings", lambda a, p: {"probe": require(a, p, "probe")}, body)
     print(doc["reading"])
+
+
+def boot_se(counts: np.ndarray, size: int, resamples: int = 1000, seed: int = 0) -> float:
+    """The bootstrap standard error of a `size`-world mean, per candidate (resampling its worlds with
+    replacement), averaged over the candidates."""
+    rng = np.random.default_rng(seed)
+    counts = np.asarray(counts, dtype=np.float64)
+    idx = rng.integers(0, counts.shape[1], size=(resamples, size))
+    return float(np.mean([counts[i][idx].mean(1).std(ddof=1) for i in range(counts.shape[0])]))
 
 
 def analyse_c0(batches: dict) -> dict:
@@ -663,13 +727,14 @@ def analyse_c0(batches: dict) -> dict:
         ga[str(s)] = {"children": kids_stats, "pooled": _bin_rows(pooled, A["bins"]), "per_champion": per_champ,
                       "top8_overlap": overlap}
     for sg in C["sigmas"]:
-        agree, tie, excl, se = [], [], 0, []
+        agree, tie, excl, se, means = [], [], 0, [], []
         for key, b in batches.items():
             if not key.startswith("es ") or not key.endswith(f"sigma {sg}"):
                 continue
             cand = b[1:].astype(float)
             plus, minus = cand[0::2], cand[1::2]
-            se.append(float((cand.std(1, ddof=1) / np.sqrt(W - k)).mean()))
+            se.append(boot_se(cand, W - k))
+            means.append(float(b[0].mean()))
             for d in dr:
                 d8 = plus[:, d].mean(1) - minus[:, d].mean(1)
                 dc = (plus.sum(1) - plus[:, d].sum(1) - minus.sum(1) + minus[:, d].sum(1)) / (W - k)
@@ -679,11 +744,12 @@ def analyse_c0(batches: dict) -> dict:
                 tie += (d8 == 0)[keep].tolist()
         es[str(sg)] = {"sign_agreement": float(np.mean(agree)) if agree else None,
                        "tied": float(np.mean(tie)) if tie else None, "excluded_draws": excl,
-                       "reference_se": float(np.mean(se)) if se else None, "note": "a proxy: the ES ranks all 32"}
+                       "reference_se": float(np.mean(se)) if se else None,
+                       "mean_score": float(np.mean(means)) if means else None, "note": "a proxy: the ES ranks all 32"}
     ref_se = []
     for key, b in batches.items():
         if key.startswith("ga "):
-            ref_se.append(float((b[1:].std(1, ddof=1) / np.sqrt(W - k)).mean()))
+            ref_se.append(boot_se(b[1:], W - k))
     row = next(r for r in ga["1.0"]["pooled"] if r["gap"] == REGISTERED["analysis"]["bins"][1])
     if not row["drawn"] or "ties_half" not in row:
         reading = "not drawn (fewer than the minimum of distinct pairs)"
@@ -692,6 +758,7 @@ def analyse_c0(batches: dict) -> dict:
                    else "selection noise is not material by this rule")
     return {"ga": ga, "es": es, "reference_se_ga": float(np.mean(ref_se)) if ref_se else None, "reading": reading,
             "surrogate": "one parent's children, not E2's population; ES pair signs, not its rank update",
+            "reference_se_method": "bootstrap over each candidate's worlds, 1 000 resamples of W - k, seed 0",
             "per_world_counts": {k: v.tolist() for k, v in batches.items()}}
 
 
@@ -704,6 +771,11 @@ def cmd_replay(args):
         sel = e2_record("pilot-2")["selected"]
         want = {m: [[c["sha256"] for c in r["checkpoints"][:2]] for r in e2_record(f"train-{m}")["records"]]
                 for m in ("ga", "es")}
+        want_more = {m: [{"validation_counts": [c["validation_counts"] for c in r["checkpoints"][:2]],
+                          "best_sha256": [x["best_sha256"] for x in r["log"][:G]]}
+                         for r in e2_record(f"train-{m}")["records"]] for m in ("ga", "es")}
+        config_ok = E.config_sha256(ctx.cfg) == e2_record("train-ga")["resolved_config_sha256"]
+        ctx.doc["source_records_sha256"] = source_hashes()
         got = []
         for rep in range(REGISTERED["replay"]["repeats"]):
             one = {}
@@ -713,12 +785,16 @@ def cmd_replay(args):
                                        id_span=train["span"], device=ctx.args.device, check=ctx.cap.check,
                                        category=acct.category, sigma=sel["sigma"], lr=sel["lr"])
                 one[m] = [[c["sha256"] for c in r.checkpoints[:2]] for r in recs]
+                one[f"{m} more"] = [{"validation_counts": [c["validation_counts"] for c in r.checkpoints[:2]],
+                                     "best_sha256": [x["best_sha256"] for x in r.log[:G]]} for r in recs]
             got.append(one)
         agree = all(g == got[0] for g in got)
-        match = all(g == want for g in got)
+        match = all({m: g[m] for m in ("ga", "es")} == want and
+                    {m: g[f"{m} more"] for m in ("ga", "es")} == want_more for g in got) and config_ok
         diagnosis = ("reproduces E2" if match else "drift: the replays agree with each other, not with E2" if agree
                      else "nondeterminism: the replays disagree with each other")
-        return {"generations": G, "replays": got, "e2": want, "replays_agree": agree, "matches_e2": match,
+        return {"generations": G, "replays": got, "e2": want, "config_matches_e2": config_ok,
+                "replays_agree": agree, "matches_e2": match,
                 "passed": bool(agree and match), "diagnosis": diagnosis}
 
     doc = E.run_stage(args, "replay", lambda a, p: {"siblings": require(a, p, "siblings")}, body)
@@ -749,14 +825,28 @@ def cmd_arm(args):
 
     def body(ctx):
         spec_a = REGISTERED["arms"][arm]
+        base = ctx.doc["resolved_config_sha256"]
         ctx.cfg = arm_config(arm)
+        ctx.cfg.evo.generations = spec_a["generations"]
+        ctx.doc.update(resolved_config=ctx.cfg.to_dict(), resolved_config_sha256=E.config_sha256(ctx.cfg),
+                       base_config_sha256=base, source_records_sha256=source_hashes())
         ctx.cap = training_clock()  # the hard stop at the cap less the reserve
         runs, (train, val) = e2_runs(), e2_ids()
         extra = (lambda i: {"sigma": spec_a["sigma"], "lr": spec_a["lr"]}) if spec_a["method"] == "es" else None
-        recs, _ = E.train_batch(ctx, stage, spec_a["method"], runs, generations=spec_a["generations"], ids=train, val=val,
-                                prefix=arm, sigma=spec_a.get("sigma"), lr=spec_a.get("lr"), extra=extra)
+        played, orig = {}, rollout_mod.rollout
+
+        def capture(cfg, iface, genome, world_ids, *a, **k):  # the training ids actually played
+            if np.ndim(world_ids) == 2:
+                played["last"] = np.asarray(world_ids).copy()
+            return orig(cfg, iface, genome, world_ids, *a, **k)
+        rollout_mod.rollout = capture
+        try:
+            recs, _ = E.train_batch(ctx, stage, spec_a["method"], runs, generations=spec_a["generations"], ids=train,
+                                    val=val, prefix=arm, sigma=spec_a.get("sigma"), lr=spec_a.get("lr"), extra=extra)
+        finally:
+            rollout_mod.rollout = orig
         return {"arm": spec_a, "records": [E.run_record(r, **(extra(i) if extra else {})) for i, r in enumerate(recs)],
-                "pairing": pairing_check(arm, recs, train),
+                "pairing": pairing_check(arm, recs, train, played.get("last")),
                 "episodes": E._episodes(len(runs), spec_a["generations"],
                                         E.n_checkpoints(0, spec_a["generations"], REGISTERED["checkpoint_every"]),
                                         ctx.cfg, len(val))}
@@ -766,9 +856,21 @@ def cmd_arm(args):
     print(arm, [round(r["champion"]["validation_mean"], 3) for r in doc["records"]], doc["pairing"]["passed"])
 
 
-def pairing_check(arm: str, recs, train: dict) -> dict:
+def pairing_check(arm: str, recs, train: dict, last_ids=None) -> dict:
+    """Generation 0 as E2's (the checkpoint's hash for 8-world arms; the first ids for 32-world arms),
+    the same run roster as E2's, and the ids actually played at the last generation beginning with
+    the 8-world draw for that run and generation."""
     a = REGISTERED["arms"][arm]
     ref = e2_record("train-es" if a["method"] == "es" else "train-ga")["records"]
+    P, W8 = REGISTERED["ga"]["population"], REGISTERED["ga"]["worlds_per_strain"]
+    roster = [(r.spec.run, r.spec.run_seed) for r in recs] == [(e["spec"]["run"], e["spec"]["run_seed"]) for e in ref]
+    last_rows, played = [], []
+    if last_ids is not None:
+        for i, rec in enumerate(recs):
+            row = last_ids[i * P]
+            played.append(row.tolist())
+            want = EV.train_ids(rec.spec.run_seed, a["generations"] - 1, W8, train["base"], train["span"])
+            last_rows.append(bool((row[:W8] == want).all()))
     rows = []
     for rec, e in zip(recs, ref):
         if a["worlds"] == REGISTERED["ga"]["worlds_per_strain"]:  # E2's own worlds: the same generation 0
@@ -780,7 +882,9 @@ def pairing_check(arm: str, recs, train: dict) -> dict:
                               train["span"])
             e32 = EV.train_ids(rec.spec.run_seed, last, a["worlds"], train["base"], train["span"])
             rows.append(bool(g0 and (e32[:len(e8)] == e8).all()))
-    return {"per_run": rows, "passed": all(rows)}
+    ok = all(rows) and roster and (bool(last_rows) and all(last_rows))
+    return {"per_run": rows, "roster": roster, "last_generation": last_rows, "last_generation_ids": played,
+            "passed": bool(ok)}
 
 
 # ============================================================================== Part C's hold-out pass
@@ -809,13 +913,15 @@ def cmd_evaluate(args):
             genomes[f"ga' run{r['spec']['run']:02d}"] = _load(
                 E2_OUT / "genomes" / f"ga-run{r['spec']['run']:02d}-candidates.npz", m["checkpoint"], m["sha256"], spec, cfg)
         for x, rec in arms.items():
+            if rec.get("outcome") != "completed":  # an incomplete arm is not evaluated or read
+                continue
             for r in rec.get("records", []):
                 run = r["spec"]["run"]
                 if "champion" in r:
                     c = r["champion"]
                     genomes[f"{x} run{run:02d}"] = _load(OUT / "genomes" / f"{x}-run{run:02d}-candidates.npz",
                                                          c["checkpoint"], c["sha256"], spec, cfg)
-                if x == "c2" and matched(r, gens):
+                if x == "c2" and {c["generation"] for c in r["checkpoints"]} >= set(gens):
                     m = matched(r, gens)
                     genomes[f"c2' run{run:02d}"] = _load(OUT / "genomes" / f"c2-run{run:02d}-candidates.npz",
                                                          m["checkpoint"], m["sha256"], spec, cfg)
@@ -829,7 +935,8 @@ def cmd_evaluate(args):
             for p in REGISTERED["probes"]:
                 counts[f"{label} {p}"] = neural(ctx.cfg, ctx.iface, g, hold, p, ctx.args.device, ctx.cap)[0]
                 E.write_atomic(E.partial_path("evaluate"), {**ctx.doc, **ctx.salvage()})
-        ctx.doc.update(worlds=E.id_record(hold), champion_sha256={k: genome_hash(g, 0) for k, g in genomes.items()})
+        ctx.doc.update(worlds=E.id_record(hold), champion_sha256={k: genome_hash(g, 0) for k, g in genomes.items()},
+                       source_records_sha256=source_hashes())
         return analyse_c(counts, ctx.earlier["probe"], ctx.earlier["arms"])
 
     doc = E.run_stage(args, "evaluate", requires, body)
@@ -842,31 +949,43 @@ def analyse_c(counts: dict, b: dict, arms: dict) -> dict:
     runs = sorted({int(k.split("run")[1][:2]) for k in counts if k.startswith("ga' ")})
     score = lambda lab: float(allc[f"{lab} real"].mean())  # noqa: E731
     out, ref_of = {}, {"c1": "ga'", "c4": "ga'", "c2": "e2 ga", "c3": "e2 es"}
+    b_ok = bool(b["checks"]["passed"])
+    rule = "classes or scores" if b_ok else "scores only (a Part B check failed)"
+    usable = set()
     for x in REGISTERED["arm_order"]:
-        have = [r for r in runs if f"{x} run{r:02d} real" in allc]
-        if len(have) < len(runs):
-            out[x] = {"reading": "not drawn (the arm did not complete)", "outcome": arms[x].get("outcome")}
+        a = arms[x]
+        if a.get("outcome") != "completed":
+            out[x] = {"reading": "not drawn (the arm did not complete)", "outcome": a.get("outcome"), "plateau_rule": rule}
             continue
+        if not a.get("pairing", {}).get("passed"):
+            out[x] = {"reading": "not drawn (the pairing check failed)", "outcome": a.get("outcome"), "plateau_rule": rule}
+            continue
+        usable.add(x)
         diffs = np.array([score(f"{x} run{r:02d}") - score(f"{ref_of[x]} run{r:02d}") for r in runs])
-        cls = [contrasts(allc, f"{x} run{r:02d}")["class"] for r in runs]
+        per = {f"run{r:02d}": contrasts(allc, f"{x} run{r:02d}") for r in runs}
+        cls = [v["class"] for v in per.values()] if b_ok else ["n/a"] * len(runs)
         sc = [score(f"{x} run{r:02d}") for r in runs]
         refs = [score(f"{ref_of[x]} run{r:02d}") for r in runs]
-        out[x] = {**arm_reading(diffs), "outcome": arms[x].get("outcome"), "reference": ref_of[x],
-                  "classes": cls, "scores": sc, "failures": int(sum(s < REGISTERED["readings"]["failure"] for s in sc)),
-                  "leaves_plateau": leaves_plateau(cls, sc),
+        out[x] = {**arm_reading(diffs), "outcome": a.get("outcome"), "reference": ref_of[x], "genomes": per,
+                  "scores": sc, "failures": int(sum(s < REGISTERED["readings"]["failure"] for s in sc)),
+                  "leaves_plateau": leaves_plateau(cls, sc), "plateau_rule": rule,
                   "arm_reference_correlation": float(np.corrcoef(sc, refs)[0, 1]) if np.std(sc) and np.std(refs) else None}
+        if x in ("c1", "c4"):  # E2's registered champion, beside the matched reference
+            out[x]["beside_e2_registered_champion"] = run_summary(
+                np.array([score(f"{x} run{r:02d}") - score(f"e2 ga run{r:02d}") for r in runs]))
     extra = {}
-    ok = lambda *xs: all(f"{x} run{r:02d} real" in allc for x in xs for r in runs)  # noqa: E731
+    have = lambda *xs: all(f"{x} run{r:02d} real" in allc for x in xs for r in runs)  # noqa: E731
     vec = lambda lab: np.array([score(f"{lab} run{r:02d}") for r in runs])  # noqa: E731
-    if ok("c4", "c1"):
-        extra["c4_minus_c1"] = arm_reading(vec("c4") - vec("c1"))
-    if ok("c4", "c2'"):
-        extra["c4_minus_c2prime (work allocation)"] = arm_reading(vec("c4") - vec("c2'"))
-    if ok("c4", "c1", "c2'", "ga'"):
-        extra["interaction"] = interaction(vec("c4"), vec("c1"), vec("c2'"), vec("ga'"))
-    else:
-        extra["interaction"] = "not drawn (an arm did not complete)"
-    return {"arms": out, "contrasts": extra, "references": {"ga'": vec("ga'").tolist()},
+    extra["c4_minus_c1"] = (arm_reading(vec("c4") - vec("c1")) if {"c4", "c1"} <= usable
+                            else "not drawn (an arm did not complete or pair)")
+    extra["c4_minus_c2prime (work allocation)"] = (arm_reading(vec("c4") - vec("c2'")) if "c4" in usable and
+                                                   "c2" in usable and have("c2'") else "not drawn (an arm did not complete or pair)")
+    extra["interaction"] = (interaction(vec("c4"), vec("c1"), vec("c2'"), vec("ga'")) if {"c1", "c2", "c4"} <= usable
+                            and have("c2'") else "not drawn (an arm did not complete or pair)")
+    matched_refs = {lab: {f"run{r:02d}": contrasts(allc, f"{lab} run{r:02d}") for r in runs}
+                    for lab in ("ga'", "c2'") if have(lab)}
+    return {"arms": out, "contrasts": extra, "matched_references": matched_refs,
+            "references": {"ga'": vec("ga'").tolist()},
             "per_world_counts": {k: v.astype(int).tolist() for k, v in counts.items()}}
 
 
@@ -890,7 +1009,8 @@ def use_smoke(args, folder: Path | None = None, e2_folder: Path | None = None, e
                  "c4": {"method": "ga", "worlds": 8, "mutation_scale": 0.5, "generations": 3},
                  "c3": {"method": "es", "worlds": 2, "sigma": 0.25, "lr": 0.15, "generations": 3}}
     R["matched_generations"] = [0, 2]
-    R["c0"].update(children=6, pairs=3, draws=20, k=4, top=2)
+    R["c0"].update(children=6, pairs=3, draws=20, k=4, top=2, seed_ga=SMOKE_SEED_BASE + 200,
+                   seed_es=SMOKE_SEED_BASE + 300)
     R["analysis"].update(resamples=200, min_pairs=1)
     R["projection"].update(generations_timed=3, seed_base=SMOKE_SEED_BASE + 100)
     configure()
