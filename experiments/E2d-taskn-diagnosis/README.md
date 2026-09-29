@@ -1,9 +1,21 @@
 # E2d: diagnosing Task N after E2's floor fired
 
-**Status: running (2026-09-29).** Exploratory. The plan ([`PLAN.md`](PLAN.md), v4) was agreed by
-Astra 6 and Fable 5.1 after four rounds (D127-D131); the runner after three code reviews (D132-D135).
-The guarded smoke passed on CUDA; the formal stages started on 2026-09-29, about 6 GPU-hours under a
-7-hour cap. Nothing below is a result yet except Part A.
+**Status: run; results under review (2026-09-29).** Exploratory. The plan ([`PLAN.md`](PLAN.md), v4)
+was agreed after four rounds (D127-D131) and the runner after three code reviews (D132-D135). The
+formal stages ran once each on 2026-09-29, 3.90 of a 7 GPU-hour cap, with no stop, rerun or
+amendment. Read [`RESULTS.md`](RESULTS.md).
+
+- **A non-stereo plateau:** none of the 47 evolved champions from E2 and 04a uses the left-right
+  difference, although the probes detect a low-gain stereo steerer at the same score (2.27). They
+  score like M-avg, which reads only the mean of the two sensors.
+- **No tested change leaves it:**
+  - 32 worlds per genome: inconclusive;
+  - halved mutation: "supports, carried by run 2", but every paired run improved;
+  - both together: "supports, carried by run 2";
+  - the ES at σ 0.25: inconclusive, with one run stuck at zero.
+- **Other readings:** the ES is budget-limited; selection noise is "not material" by the rule, narrowly.
+- **For E3:** the question is whether to make stereo steering reachable, or to build on the
+  non-stereo module knowingly.
 
 **Why:** E2's registered floor fired. Random sampling came within 0.36 targets per episode of 02's
 GA ([E2](../E2-optimizer-screen/README.md)). The roadmap then requires diagnosing saturation, noise

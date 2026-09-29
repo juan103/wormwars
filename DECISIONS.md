@@ -3954,3 +3954,28 @@ The C2′ rule and the prefix comparison were each sabotage-checked.
 
 **With Fable's "run" (D134), both agree.** The plan is PLAN.md v4; the runner is at this commit.
 Next: the guarded smoke of every stage on CUDA, then the formal chain.
+
+## D136 — E2d's results: a non-stereo plateau that no tested change leaves
+
+The formal chain ran from 17:37 to 21:32 UTC on the agreed runner, once, with no stop, rerun, skip
+or amendment: 3.90 GPU-hours of a 7-hour cap.
+- **The controls' replay reproduced E2 exactly,** twice.
+- **Part B: "a non-stereo plateau".** No champion of E2's or 04a's 47 uses the left-right difference,
+  while a low-gain stereo steerer at the same score (2.27) is detected.
+- **The budget reading:** "budget-limited" (+0.24).
+- **C0:** "not material by this rule", narrowly (0.82 against 0.8). Mutation at 02's scale leaves 78%
+  of children under half their parent's score.
+- **Part C:**
+  - C1 is inconclusive;
+  - C2 and C4 "support, carried by run 2";
+  - C3 is inconclusive; its run 2 never left zero at σ 0.25;
+  - no arm leaves the plateau, and no interaction is claimed.
+
+Writing up, a check of every number against the records found three errors in the first draft, all
+corrected before the first commit:
+- the projection's estimate (3.86 hours, not 5.1);
+- a false claim that the 32-world arms ran at a third of their projection;
+- run 2's score on these worlds (0.69; 0.75 was on E2's hold-out).
+
+The results go to both reviewers. E3's design then faces the plan's question: make stereo steering
+reachable, or build on the non-stereo module knowingly.
