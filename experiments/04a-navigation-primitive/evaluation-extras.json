@@ -1,0 +1,250 @@
+{
+ "errors": {},
+ "decoy_capture": {
+  "0": {
+   "median_distance_to_decoy": 2.788450241088867,
+   "median_distance_to_target": 13.996356964111328,
+   "share_closer_to_decoy": 0.998046875
+  },
+  "1": {
+   "median_distance_to_decoy": 3.4194579124450684,
+   "median_distance_to_target": 12.960038185119629,
+   "share_closer_to_decoy": 0.990234375
+  },
+  "2": {
+   "median_distance_to_decoy": 3.9009084701538086,
+   "median_distance_to_target": 13.560306549072266,
+   "share_closer_to_decoy": 0.9775390625
+  },
+  "3": {
+   "median_distance_to_decoy": 3.0453577041625977,
+   "median_distance_to_target": 12.94596004486084,
+   "share_closer_to_decoy": 0.990234375
+  },
+  "4": {
+   "median_distance_to_decoy": 4.096904277801514,
+   "median_distance_to_target": 13.68716812133789,
+   "share_closer_to_decoy": 0.96875
+  },
+  "5": {
+   "median_distance_to_decoy": 3.8009114265441895,
+   "median_distance_to_target": 13.082515716552734,
+   "share_closer_to_decoy": 0.982421875
+  },
+  "6": {
+   "median_distance_to_decoy": 3.388885498046875,
+   "median_distance_to_target": 13.075838088989258,
+   "share_closer_to_decoy": 0.9814453125
+  },
+  "7": {
+   "median_distance_to_decoy": 2.931121587753296,
+   "median_distance_to_target": 13.015180587768555,
+   "share_closer_to_decoy": 0.9931640625
+  },
+  "8": {
+   "median_distance_to_decoy": 3.7831387519836426,
+   "median_distance_to_target": 13.544168472290039,
+   "share_closer_to_decoy": 0.98046875
+  },
+  "9": {
+   "median_distance_to_decoy": 3.710411548614502,
+   "median_distance_to_target": 13.239158630371094,
+   "share_closer_to_decoy": 0.986328125
+  },
+  "10": {
+   "median_distance_to_decoy": 3.4089012145996094,
+   "median_distance_to_target": 13.75991439819336,
+   "share_closer_to_decoy": 0.98046875
+  },
+  "11": {
+   "median_distance_to_decoy": 3.6198134422302246,
+   "median_distance_to_target": 13.003116607666016,
+   "share_closer_to_decoy": 0.9833984375
+  },
+  "12": {
+   "median_distance_to_decoy": 2.3517658710479736,
+   "median_distance_to_target": 13.860928535461426,
+   "share_closer_to_decoy": 0.9970703125
+  },
+  "13": {
+   "median_distance_to_decoy": 3.264453887939453,
+   "median_distance_to_target": 12.806841850280762,
+   "share_closer_to_decoy": 0.9892578125
+  },
+  "14": {
+   "median_distance_to_decoy": 3.408750057220459,
+   "median_distance_to_target": 13.05571460723877,
+   "share_closer_to_decoy": 0.984375
+  },
+  "15": {
+   "median_distance_to_decoy": 3.5277113914489746,
+   "median_distance_to_target": 14.906445503234863,
+   "share_closer_to_decoy": 0.966796875
+  }
+ },
+ "replay": {
+  "0": {
+   "worlds": 256,
+   "identical_worlds": 256,
+   "recorded_mean": 2.203125,
+   "replayed_mean": 2.203125
+  },
+  "1": {
+   "worlds": 256,
+   "identical_worlds": 256,
+   "recorded_mean": 2.05859375,
+   "replayed_mean": 2.05859375
+  },
+  "2": {
+   "worlds": 256,
+   "identical_worlds": 256,
+   "recorded_mean": 2.625,
+   "replayed_mean": 2.625
+  },
+  "3": {
+   "worlds": 256,
+   "identical_worlds": 256,
+   "recorded_mean": 2.2890625,
+   "replayed_mean": 2.2890625
+  },
+  "4": {
+   "worlds": 256,
+   "identical_worlds": 256,
+   "recorded_mean": 2.3046875,
+   "replayed_mean": 2.3046875
+  },
+  "5": {
+   "worlds": 256,
+   "identical_worlds": 256,
+   "recorded_mean": 2.0234375,
+   "replayed_mean": 2.0234375
+  },
+  "6": {
+   "worlds": 256,
+   "identical_worlds": 256,
+   "recorded_mean": 2.265625,
+   "replayed_mean": 2.265625
+  },
+  "7": {
+   "worlds": 256,
+   "identical_worlds": 256,
+   "recorded_mean": 2.3203125,
+   "replayed_mean": 2.3203125
+  },
+  "8": {
+   "worlds": 256,
+   "identical_worlds": 256,
+   "recorded_mean": 2.1015625,
+   "replayed_mean": 2.1015625
+  },
+  "9": {
+   "worlds": 256,
+   "identical_worlds": 256,
+   "recorded_mean": 2.2734375,
+   "replayed_mean": 2.2734375
+  },
+  "10": {
+   "worlds": 256,
+   "identical_worlds": 256,
+   "recorded_mean": 2.37890625,
+   "replayed_mean": 2.37890625
+  },
+  "11": {
+   "worlds": 256,
+   "identical_worlds": 256,
+   "recorded_mean": 2.16015625,
+   "replayed_mean": 2.16015625
+  },
+  "12": {
+   "worlds": 256,
+   "identical_worlds": 256,
+   "recorded_mean": 2.85546875,
+   "replayed_mean": 2.85546875
+  },
+  "13": {
+   "worlds": 256,
+   "identical_worlds": 256,
+   "recorded_mean": 2.26953125,
+   "replayed_mean": 2.26953125
+  },
+  "14": {
+   "worlds": 256,
+   "identical_worlds": 256,
+   "recorded_mean": 2.23828125,
+   "replayed_mean": 2.23828125
+  },
+  "15": {
+   "worlds": 256,
+   "identical_worlds": 256,
+   "recorded_mean": 2.140625,
+   "replayed_mean": 2.140625
+  }
+ },
+ "modules": {
+  "0": {
+   "file": "runs\\e04a\\modules\\run00-champion.npz",
+   "genome_sha256": "4ecc36cb7b28213a55ba9830449a7f5fa8c2e7f21e8a9e5e943b23781558e243"
+  },
+  "1": {
+   "file": "runs\\e04a\\modules\\run01-champion.npz",
+   "genome_sha256": "1f5ca492742ea341bf9871932ee44366a807e4a4d55b78e7177ed90d91e119f9"
+  },
+  "2": {
+   "file": "runs\\e04a\\modules\\run02-champion.npz",
+   "genome_sha256": "e8561228b2ddc1d4ed218d36a93c68f593eb0ec7c0c868b0a375bc9b61ed4a15"
+  },
+  "3": {
+   "file": "runs\\e04a\\modules\\run03-champion.npz",
+   "genome_sha256": "cff066f75d30ae88733f67098da09e68f6e2b84afd26449cd7946363b0514454"
+  },
+  "4": {
+   "file": "runs\\e04a\\modules\\run04-champion.npz",
+   "genome_sha256": "a8ad21da70d41d26f33d35db282e6f88d23332386d558fb609cbe06b9643c6be"
+  },
+  "5": {
+   "file": "runs\\e04a\\modules\\run05-champion.npz",
+   "genome_sha256": "248f43347e7fead726cebb4d264a4a3d3da3f9c9f22473c08018b7ec100dd93a"
+  },
+  "6": {
+   "file": "runs\\e04a\\modules\\run06-champion.npz",
+   "genome_sha256": "b351c04c6452488c359f1991d8781573c402d03c90016398a25abfb2de026f81"
+  },
+  "7": {
+   "file": "runs\\e04a\\modules\\run07-champion.npz",
+   "genome_sha256": "1b89430ce87e797c06512179edba211bd89dc2d9e160f79674949ad81fe2b48c"
+  },
+  "8": {
+   "file": "runs\\e04a\\modules\\run08-champion.npz",
+   "genome_sha256": "4d40c65515432412ee7ba970df539f6e5fe029359c7415320817c4ccf443e8b8"
+  },
+  "9": {
+   "file": "runs\\e04a\\modules\\run09-champion.npz",
+   "genome_sha256": "19f2bd877de8794875a5b35bb28e81ee1c7a4a38f96819ea698fe44ea56127c6"
+  },
+  "10": {
+   "file": "runs\\e04a\\modules\\run10-champion.npz",
+   "genome_sha256": "d177579df4132b27b74deddd8004a1b4ed24c1d5535db55306f54b1acd974fc6"
+  },
+  "11": {
+   "file": "runs\\e04a\\modules\\run11-champion.npz",
+   "genome_sha256": "3ca3f58a033510faf6f62428ab35574a4cdff8705a1ff9f4b19b3c553bf116b7"
+  },
+  "12": {
+   "file": "runs\\e04a\\modules\\run12-champion.npz",
+   "genome_sha256": "afaa87435077798c02d874a0ed49910edf4ae68c63cbbf9e83d619a3e3a3b950"
+  },
+  "13": {
+   "file": "runs\\e04a\\modules\\run13-champion.npz",
+   "genome_sha256": "70590d42e46c19d22932588fb598b662286bfbc81efbbe059d4ae3ae5a966a86"
+  },
+  "14": {
+   "file": "runs\\e04a\\modules\\run14-champion.npz",
+   "genome_sha256": "fc7795a2facb741874f571b72f9622aae12181c60862b4149f2e88712ed79444"
+  },
+  "15": {
+   "file": "runs\\e04a\\modules\\run15-champion.npz",
+   "genome_sha256": "56a0ff8d9dd00f06e8d2b21981771f0e84f66e59b9ed26a0db63a1cdab3a46ee"
+  }
+ },
+ "module_for_E3": 2
+}
