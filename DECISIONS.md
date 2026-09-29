@@ -3476,3 +3476,11 @@ runner. They are left as they are until one does, and this entry is where to loo
 ROADMAP.md, with the weight-permutation and gap-junction qualifications (Fable); the per-tick counts
 attributed correctly (Fable's check covered six graphs; Claude's count covered all 80); the roadmap's
 Track B section points to 03m.
+
+## D116 — 03m and the test change published on main
+
+Under the owner's rule (D112), with both reviewers' fixes applied (D114, D115), main was fast-forwarded
+from `009bed1` to `1c0c978`: the roadmap branch at `d812e1b` plus one commit removing its banner. It
+carries 03m (the plan and its four review rounds, the outputs, RESULTS.md with its dated corrections,
+the README), the replaced batching test, the REPRODUCIBILITY note, and D113-D115. Checks: the full
+suite locally, CI on `d812e1b`, the hygiene tests, the identity check.
