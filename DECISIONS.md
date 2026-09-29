@@ -3831,3 +3831,35 @@ v4 takes both corrections as written, and the suggestions:
 
 **The plan is agreed.** The runner (`scripts/e2d.py`) is written test-first against it and goes to
 both reviewers, as code, before any GPU work.
+
+## D132 — E2d's runner, for review before any GPU work
+
+`scripts/e2d.py` implements PLAN.md v4. It reuses E2's stage frame by importing `scripts/e2.py` and
+pointing it at E2d's folders, stages, outcome wording and registered numbers: markers with attempt
+numbers, the cap, reruns, not-completed records, retried atomic writes. It adds the admission rule
+for reruns, the 6.5-hour training clock, and the replay gate.
+- **Tests:**
+  - `tests/test_e2d_analysis.py` (the registered rules as pure functions): written before the code,
+    but first run only after it existed;
+  - `tests/test_e2d_commands.py` (the stages, with fakes, against E2's and 04a's smoke chains
+    generated in a scratch folder).
+- **Sabotage checks:** twelve deliberate breaks, each caught by its test:
+  - two-sided classes;
+  - unclear not counted as non-stereo;
+  - the run-2 rule;
+  - the interaction rule;
+  - the tie rule;
+  - the complement exclusion;
+  - the same noise at every scale;
+  - the replay gate;
+  - admission for reruns;
+  - the hard stop;
+  - Part B's de-duplication;
+  - the hash check.
+- **Found while testing:**
+  - two of the analysis tests were wrong as first written, and were fixed before the code existed;
+  - the pairing check hard-coded 8 worlds (twice);
+  - E2d's records would have carried E2's outcome wording.
+- **A CPU smoke run with real rollouts** reached the replay. Part B's reference check failed at 40
+  ticks, and the replay reported drift against the CUDA-made smoke sources; both are the designed
+  responses. The full chain runs in the guarded CUDA smoke, after review.
