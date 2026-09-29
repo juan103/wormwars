@@ -1,14 +1,19 @@
 # E2: a short optimizer screen
 
-**Status: run, results under review (2026-09-29).** Pre-registered and bound at `60af3cf`, pushed
-before its runs; every stage ran once on the binding code, with no rerun or amendment.
+**Status: completed and reviewed (2026-09-29).** Pre-registered and pushed before its runs: the text
+bound at `60af3cf`, the binding commit (as the registration defines it, the one the projection
+records) `69f4163`, which adds only a development record. Every stage ran once on the binding code,
+with no rerun or amendment. Both reviewers checked the results ("fix", text only); the corrections
+are dated in `RESULTS.md` (D125).
 
 - **Outcome:** "E2: keep 02's GA (unshaped fitness; the ES did not satisfy both replacement criteria
   after paying for its tuning)". The ES led the GA by 0.125 targets per episode (0.5 needed); 5 of
   its 8 champions were above the GA's median (6 needed).
 - **The floor fired:** random sampling came within 0.36 targets of the GA, so the roadmap's rule
-  applies before building on Task N: diagnose saturation, noise and budget. See
-  [`RESULTS.md`](RESULTS.md).
+  applies before building on Task N: diagnose saturation, noise and budget. It is a registered
+  trigger, not a finding that the optimizers add nothing (the GA gained 22% over random sampling, the
+  ES 30%), and it depends on the GA's one failed run. See [`RESULTS.md`](RESULTS.md) and its
+  corrections.
 
 **The question.** Given the same additional simulator work, does OpenAI-ES find better Task N
 navigators than 02's genetic algorithm (GA), starting from random N2 genomes? The answer chooses the
@@ -30,7 +35,8 @@ comes within 0.5 targets of the GA, the task or budget is diagnosed before E3 bu
 - [`PREREGISTRATION.md`](PREREGISTRATION.md): everything fixed before the run, and the outcome
   wording;
 - [`../../docs/E2/DESIGN.md`](../../docs/E2/DESIGN.md): the design and its three review rounds;
-- `DECISIONS.md` D117-D122: how the design and the pre-registration changed under review;
+- `DECISIONS.md` D117-D125: how the design and the pre-registration changed under review, and the
+  results;
 - reviews: `docs/reviews/20260929-*-E2-*`.
 
 **Reproduce it** (after binding; CUDA, one RTX 5080, the pinned environment):

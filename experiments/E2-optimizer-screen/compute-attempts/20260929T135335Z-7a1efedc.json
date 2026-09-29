@@ -1,0 +1,53 @@
+{
+ "script": "e2",
+ "argv": [
+  "train",
+  "--method",
+  "es"
+ ],
+ "default_category": "measure",
+ "status": "completed",
+ "error": null,
+ "started_utc": "2026-09-29T13:53:35+00:00",
+ "ended_utc": "2026-09-29T14:44:59+00:00",
+ "pid": 53356,
+ "git_commit": "9f470b8a4c2a39c9e9734801b98a30e2a9e0cfc7",
+ "code_dirty": false,
+ "git_commit_at_end": "9f470b8a4c2a39c9e9734801b98a30e2a9e0cfc7",
+ "cuda_devices": [
+  "NVIDIA GeForce RTX 5080"
+ ],
+ "time_unit": "synchronised wall-clock seconds per category (not GPU kernel time)",
+ "neural_update_unit": "strains x batch x substeps network updates (network size not included)",
+ "uncategorised": false,
+ "categories": {
+  "measure": {
+   "worlds_built": 0,
+   "world_ticks": 0,
+   "neural_updates": 0,
+   "neural_padding": 0,
+   "seconds": 16.701952199218795
+  },
+  "selection": {
+   "worlds_built": 1275904,
+   "world_ticks": 382771200,
+   "neural_updates": 12248678400,
+   "neural_padding": 0,
+   "seconds": 2986.3345204009674
+  },
+  "holdout": {
+   "worlds_built": 53248,
+   "world_ticks": 15974400,
+   "neural_updates": 511180800,
+   "neural_padding": 0,
+   "seconds": 80.81201389990747
+  }
+ },
+ "totals": {
+  "worlds_built": 1329152,
+  "world_ticks": 398745600,
+  "neural_updates": 12759859200,
+  "neural_padding": 0,
+  "seconds_timed": 3083.8484865000937
+ }
+}

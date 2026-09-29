@@ -192,3 +192,76 @@ worlds built: training plus checkpoint validation, as registered.
   skipped; `AMENDMENTS.md` has none.
 - **The records were read and this file written after the whole chain finished.** Each number was
   re-derived from the committed JSON, not taken from the chain's console output (D114's lesson).
+
+## Corrections (2026-09-29, D125)
+
+Both reviewers checked these results against the records
+(`docs/reviews/20260929-172345-E2-results/`) and said "fix", for text only. The registered decision
+and the floor are correct, and both recomputed them independently: the ES led by 0.1246, 5 of its
+champions were above the GA's median of 2.1309, and random sampling minus the GA was −0.3562. The
+corrections below quote what was written above, which is left as it was; each figure was checked
+against the records before it was written here.
+
+1. **The floor's interpretation (§8).** Written: *"On Task N at this budget, 1 000 generations of
+   either optimizer add little to selecting the best of about 32 000 random genomes."* Wrong for the
+   ES, and too strong for both. The compared ES ran 623 generations (0-622), not 1 000. The mean
+   gains over random sampling were **0.356 for the GA (22%) and 0.481 for the ES (30%)**. Paired by
+   run, the GA beat random sampling in 7 of 8 runs and the ES in all 8. **The floor is a registered
+   trigger for a diagnosis, not a finding that the optimizers add nothing** (Fable, Astra).
+   **Its sensitivity, disclosed:** the −0.356 depends on the GA's run 2. Without that run the gap is
+   −0.495, and by medians it is −0.540; the floor would not have fired under either. It fires as
+   registered, on the registered means (Fable).
+2. **The ES's lead (§1).** Written: *"Run 2 carries most of the ES's lead."* It carries all of it and
+   more. Run 2 contributes +0.152 to the mean difference; the other seven paired differences average
+   −0.032 (they sum to −0.22). Without run 2, the ES's mean is 2.102 and the GA's 2.134 (both).
+3. **The extension (§5).** Written: *"What it shows: the ES's 'keep the GA' is partly a budget effect.
+   It was still improving when its charged allowance ran out."* The first sentence overclaims.
+   - At generation 999 the ES still falls short of the registered margin: 0.37 against 0.5. It
+     would pass the spread criterion, with 7 of 8 above the GA's median.
+   - Without run 2, the extended lead is 0.24.
+   - It also uses 38% more charged work.
+
+   **Corrected:** the ES improved beyond its formal allowance; the extended comparison still falls
+   short of the registered mean margin and uses more charged work (Astra's wording; Fable).
+4. **The GA's drift (§8).** Written: *"The GA's mean validation drifted up from about 1.6 to 1.8
+   between generations 600 and 900."* Mostly one run: run 6 left a plateau between generations 600
+   and 625 (validation 0.45 to 1.81). The other seven runs' mean moved only from 1.72 to 1.80
+   (Fable).
+5. **The GA's run 2 and the cue (§2, §3).** Written: *"Its count does not depend on the cue at
+   all"* and *"The GA's run 2 never found a cue-follower."* Both overstate what was measured. Only
+   its champion was probed. That champion showed **little aggregate advantage from the real cue**
+   (real 0.75, mirrored 0.74, constant 0.74), though its per-world counts differ on 75 of 1 024
+   worlds (mirrored) and 51 (constant). Its best validation score was 0.82, at generation 900
+   (Astra).
+6. **Two figures.** The GA's mean validation at generation 100 is 1.505, so **1.50**, not "1.51"
+   (§3). The training time is **16 630 s** (16 630.45), not "16 631 s" (§7) (both).
+7. **Where the ledger's numbers come from (the header, §7).** Written: *"Every number below is from
+   the committed records in this folder."* Not true of §7's per-stage neural updates and wall
+   times. They came from the accounting's per-attempt files in `runs/e2/compute/`, which are not
+   committed (`.gitignore`); the committed `compute-record.json` holds the attempt list and the
+   category totals. **The eight attempt files are now committed**, unchanged, in `compute-attempts/`.
+   The stage records' own `seconds` are 1-2 s shorter than the attempts', because the accounting
+   also times the process's setup (Fable).
+8. **The binding commit (the header; README; D124).** Written: *"The pre-registration was bound at
+   `60af3cf`."* The registration defines the binding commit as the commit the projection records,
+   and `projection.json` records **`69f4163`**. That commit adds only the guarded smoke run's
+   development record (a file the guards do not cover) to `60af3cf`; every guarded file is
+   identical. Say: registered text bound at `60af3cf`, binding commit (as defined) `69f4163`
+   (Fable).
+
+**Added from the reviews** (the suggestions, checked against the records):
+- **Selection optimism** was small and even: validation to hold-out, GA 2.012 to 1.961 (−0.051), ES
+  2.136 to 2.086 (−0.051), random sampling 1.665 to 1.605 (−0.060), extension 2.363 to 2.331 (−0.031).
+  It does not explain the ranking (Fable).
+- **Run 2 shared a zero start.** All 32 of its generation-0 genomes scored 0 in training, and every
+  method started from that population on those worlds (paired starts). It is the GA's failed run, the
+  ES's flat start (generations 1-51; 54 flat generations in all) and random sampling's lowest
+  champion (1.36) (Fable).
+- **The controls (§6).** "Every method's mean is below M-avg" holds for the formal methods; the
+  extension's 2.331 is above M-avg's 2.20. The scripted controls show that the task has headroom, not
+  what this neural network and interface can reach. Whether they can express more is untested, and
+  similar scores do not imply similar navigation (both).
+- **The extension's run 3** (2.91) is an outlier. Without it, the extension's rise in validation is
+  +0.22 rather than +0.29 (Fable).
+- **Section references:** in this file, "§3" and "§4" name its own sections. "§6", "§7", "§8",
+  "§9" and "§12" in parentheses name the pre-registration's (Fable).

@@ -3688,3 +3688,47 @@ number against the records before committing found five slips in the draft (two 
 subsample of checkpoints, ES run 2's flat generations, the last random-sampling candidate's pool,
 and the training hours); all were corrected before the first commit. The results go to both
 reviewers; the next step, the diagnosis, gets its own design and review.
+
+## D125 — E2's results reviewed: "fix" (text only), corrections dated
+
+The results review (`docs/reviews/20260929-172345-E2-results/`): **both "fix"**, text corrections
+only; no rerun or rework. Both independently recomputed the decision from the per-world counts and
+confirmed it: the ES led the GA by 0.1246, 5 of its champions were above the GA's median of 2.1309,
+and random sampling minus the GA was −0.3562. Both registered sentences are correct.
+
+The corrections (RESULTS.md, "Corrections (2026-09-29, D125)", quoting the original text, which
+stays):
+- **The floor's interpretation overclaimed** (both). "1 000 generations of either optimizer add
+  little" was wrong: the compared ES ran 623 generations. The gains over random sampling were 22%
+  (GA) and 30% (ES), and paired by run, the GA beat random sampling in 7 of 8 runs and the ES in all
+  8. The floor is a trigger, not a finding. **Its sensitivity:** it depends on the GA's run 2; without
+  that run the gap is −0.495, and by medians −0.540.
+- **Run 2 carries all of the ES's lead, and more** (both), not "most".
+- **The extension does not show a budget effect on the outcome** (both): at 1 000 generations the ES
+  still misses the margin (0.37 against 0.5).
+- **The GA's late drift is mostly one run** (Fable).
+- **The GA's run 2 and the cue** (Astra): only its champion was probed, and it showed little
+  aggregate advantage from the cue; "does not depend on the cue at all" overstated it.
+- **Two figures** (1.50 and 16 630 s), **the ledger's source** (the per-attempt accounting files were
+  not committed; they now are, in `compute-attempts/`), and **the binding commit** (the registration
+  defines it as the one the projection records, `69f4163`: `60af3cf` plus the guarded smoke's
+  development record, with every guarded file identical).
+
+**A correction to D124,** quoted: *"The formal chain ran from 10:38 to 15:20 UTC on the binding code
+(`60af3cf`)."* The formal projection started at 10:34:39 and is part of the 4.74 GPU-hours; 10:38 is
+pilot stage 1's start. The binding commit, as defined, is `69f4163` (above). D124 also said "five
+slips" were fixed before the first commit. That stands; the review found further ones, listed above.
+
+**For the diagnosis the floor requires** (the reviewers' advice, to be designed and reviewed
+separately):
+- **Fable:** noise first, from the existing records and without a GPU: the standard error of an
+  8-world training mean, from `per_world_counts`. Then search against selection (random sampling
+  gets 41 independent nominees), the plateaus (six GA champions at 2.11-2.21, beside M-avg's 2.20;
+  a second level near 0.7), and budget last, crossed with worlds per genome, on new worlds.
+- **Astra:** noise and nomination (re-evaluate fixed genomes and antithetic pairs on independent
+  8-world blocks; rank stability, ties); saturation (trajectories and sensor-to-motor responses of
+  strong champions and of the GA's run 2); budget (matched-work comparisons with fresh worlds,
+  including smaller σ, since the pilot chose its grid's edge).
+
+**Publication:** both said the results are publishable once corrected. They go to main under the
+owner's consensus rule (D112).
