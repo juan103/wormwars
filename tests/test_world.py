@@ -240,12 +240,20 @@ def test_rollouts_are_reproducible_on_cpu(parts):
     torch.testing.assert_close(a.energy, b.energy, rtol=0, atol=0)
 
 
-def test_batching_worlds_does_not_change_a_world(parts):
-    """World 0 must behave the same whether it is simulated alone or alongside others."""
-    alone = build(parts, n_strains=1, n_worlds=1, seed=15, run_seed=21)
-    together = build(parts, n_strains=1, n_worlds=4, seed=15, run_seed=21)
+def test_batch_mates_do_not_change_a_world(parts):
+    """A world behaves the same whatever other worlds share its batch, at a fixed batch composition.
+
+    Exactness is claimed within one composition only (D082, D091). The first version of this test
+    compared a world simulated alone with the same world in a batch of 4, to 1e-5 after 40 ticks: a
+    different composition. It failed on one CI runner and passed on others, because a CPU batch of
+    one can differ in the last bits and the dynamics amplify it (D112). Here the composition is the
+    same (1 strain, 4 worlds, one wey per swarm) and only the batch-mates change, so it is exact."""
+    import numpy as np
+    a = build(parts, n_strains=1, n_worlds=4, seed=15, run_seed=21, world_ids=np.array([0, 1, 2, 3]))
+    b = build(parts, n_strains=1, n_worlds=4, seed=15, run_seed=21, world_ids=np.array([0, 7, 8, 9]))
     for _ in range(40):
-        alone.tick()
-        together.tick()
-    torch.testing.assert_close(alone.pos[0], together.pos[0], rtol=1e-5, atol=1e-5)
-    torch.testing.assert_close(alone.energy[0], together.energy[0], rtol=1e-4, atol=1e-4)
+        a.tick()
+        b.tick()
+    torch.testing.assert_close(a.pos[0], b.pos[0], rtol=0, atol=0)
+    torch.testing.assert_close(a.energy[0], b.energy[0], rtol=0, atol=0)
+    assert not torch.equal(a.pos[1], b.pos[1])  # the batch-mates really differ
