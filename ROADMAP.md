@@ -35,21 +35,21 @@
       for shaping;
     - throughput in 04a's shape is 110, 336 and 438 strain-worlds/s at 1, 4 and 8 runs batched;
     - a gain curve for stereo steering is measured (RESULTS.md).
-- **04a's pre-registration is bound** (v5, D103-D109, `experiments/04a-navigation-primitive/`), after
-  five review rounds with Astra 6 and Fable 5.1, the last "ready to bind" from both.
-  Nothing has run on 04a's validation, hold-out or training worlds, or with its run seeds.
-  - 16 N2 runs of 1 000 generations with 02's optimizer: 12 with a bounded shaping term (at most
-    half an arrival per episode, training only) and 4 without;
-  - runs are batched 8 at a time in one rollout, each with its own random streams. This is T1's
-    batching of runs; its exactness across compositions is still not claimed;
-  - "04a: passed" needs 6 of the 12 shaped runs to pass five rules on 1 024 hold-out worlds: E1's
-    three, the real cue beating the champion's own constant probe, and beating their own
-    generation 0;
-  - a development pilot on smoke ids plateaued near 2 targets per episode, so "not passed" or "some
-    runs passed" would not surprise us; both reviewers advised keeping the design, and E2 compares
-    optimizers;
-  - about 2.99 GPU-hours estimated, with a cap of 6.
-  - **Next:** the guarded projection and smoke run, then the stages.
+- **04a: "passed"** (D110, D111; `experiments/04a-navigation-primitive/`). Registered in five review
+  rounds, bound at `e3d68be`, public before the run; 2.91 GPU-hours.
+  - 8 of 12 shaped runs and 4 of 4 unshaped runs passed five rules on 1 024 hold-out worlds; the
+    four failures missed only reliability.
+  - The champions use the cue (a mirrored decoy captures them; a constant scent leaves them near
+    zero) but are weak navigators: 2.0-2.8 targets per episode, 23-32% of an oracle, indirect paths,
+    closer in behaviour to E1's temporal controller than to a stereo steerer. How they use the cue is
+    not shown.
+  - Shaping was not needed here (descriptive, 4 runs). The module for E3 is run 2's champion.
+  - The results review asked for text fixes only, made as dated corrections.
+  - **Next in Track E:** E2, the optimizer screen, from this measured baseline; E3 must not assume a
+    left-right cue follower.
+- **03m, what drives P4** (exploratory; plan v4.1 agreed by both reviewers): Q1 from committed data
+  is done; the simulations are running under their own 5 GPU-hour cap. First signs: N2's large food
+  response comes from where its chemical weights sit, and survives without gap junctions.
 - **Documentation for outsiders:** every experiment folder now has a README with its question,
   result, caveats and exact commands to rerun it, and [`AGENTS.md`](AGENTS.md) describes the
   repository and its rules. Others are welcome to take any open question here, and to get there
