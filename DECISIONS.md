@@ -4099,3 +4099,54 @@ the placement matter, and the break is caught.
 
 **Design v1 said "exactly on the CPU"; that is wrong.** It goes into v2. The rule-7 check for E4s
 must therefore be stated at rounding level, with the effect on episode scores measured.
+
+## D141 — E4s design v1 reviewed: both "revise"; design v2; the gain probe extended; a correction to D139
+
+**The review** (Astra 6 and Fable 5.1, xhigh; archived verbatim in
+`docs/reviews/20260930-014518-E4s-design/`): both "revise". The main points, which both raised:
+- **Stage A could not run.** With the 302 worm neurons silent, the forward command is zero and the wey
+  cannot move (checked: `world.py`'s motor readout; forward uses AVB/PVC against AVA/AVD/AVE, which
+  the module does not reach).
+- **The GA was not covered.** `evolve_batch` hard-wires `initial_population` and `breed`, and
+  `Genome.mutate` takes scalar sigmas (checked). A seeded start, per-block scales and a pinned control
+  are engine changes, with equivalence checks.
+- **The outcomes were biased toward "kept".** E2's champion rule can pick generation 0; the +0.5 over
+  the inert control is nearly guaranteed by the gate and elitism; the lesion cost at generation 0 is
+  capped by locomotion.
+- **The gain ≥ 32 gate was invalid.** The probe's least-squares slope caps at 66.7 on its δ grid, and
+  a zero start cannot see a latch.
+- Astra, separately: the ring encodes normalised lateral contrast, not bearing; the turn copy is not
+  the executed turn; v1's direct nose-to-readout path let M2 pass without its ring; the tuning grid
+  lacked forward drive and turn bias (E1's k = 32 scores 5.63 with turn bias 0.2, and 4.23 without).
+- Fable, separately: draw the initial populations on N2 and embed them; the hygiene guard would pass
+  E4s genome files; the nose gain is not evolvable.
+
+**Checked before adopting:** the forward readout, the GA's hard-wired initialisation and mutation,
+`Genome.random`'s normalisation over all edges, the hygiene test's keys (302 and known labels), E2's
+settings (8 worlds per strain, checkpoints every 25), and the grafted synapses' direction (pre → post,
+by a direct simulation: a module synapse onto SMDDL drives SMDDL; the reverse edge drives the module).
+
+**Done:**
+- **Design v2** (`docs/E4s/DESIGN.md`) takes every must-fix of both reviewers, and most suggestions;
+  its last section maps each item to its change. The chief changes: a declared carrier for Stage A; a
+  generation-0 graft measurement; the final generation's best as the registered reading; exclusive
+  outcome classes by E2d's criterion; per-parameter mutation scales and `evolve_batch` hooks with
+  bit-identity checks; B3 pinned; M2 without a direct path; 16 runs for B1 and B3; two descriptive
+  arms (the module at 02's scale; the module frozen); a proposed cap of 30 GPU-hours (estimate about
+  16).
+- **The gain probe, v2** (`scripts/e4s_gain_probe.py`): a small-signal central difference, a signed
+  curve, a step transient, a reversal with the state carried over, and turn-neuron saturation, with
+  provenance hashes. The median |small-signal gain| is 0.098 and the maximum 0.68, as v1 reported.
+  138 of 141 genome-level pairs respond to a reversal; the other 3 are one bias-dominated genome with a
+  response below 10⁻³.
+- **Not taken:** Fable's suggestion to optimise N2's open-loop gain by gradient, which asks a separate
+  question (gain against topology). It is proposed as a follow-up within the ceiling.
+
+**Correction to D139 (2026-09-30).** D139 said of the gain probe: "It supports the report's
+hypothesis that the plateau is a gain problem." That is too strong (Fable; Astra). Low gain is what a
+non-stereo controller shows under either reading, so the probe is **consistent with** the hypothesis,
+not evidence for it. Design v1 said the same, and also "All sit near 2.2" (35 of the 47 lie in
+1.90-2.50, as E2d's correction states) and "by the temporal route" (not measured); v2 corrects all
+three.
+
+Design v2 goes to Astra 6 and Fable 5.1 for a second review.

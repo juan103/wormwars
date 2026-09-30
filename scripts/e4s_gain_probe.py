@@ -1,23 +1,32 @@
-"""E4s design, exploratory: the evolved champions' open-loop stereo gain.
+"""E4s design, exploratory: the evolved champions' open-loop response to a left-right difference (v2).
 
     python scripts/e4s_gain_probe.py     # writes experiments/E4s-stereo-module/development-records/gain-probe.json
 
-Each champion's brain (E2's 31 distinct champions and 04a's 16) receives a fixed scent current at
-its left and right sensory neurons (AWA, AWC and ASE, as the interface injects it): a common level
-c with a left-right difference δ, held for 40 ticks, all other inputs zero. The turn command is read
-as the world reads it (the turn neurons' mean tanh, dorsal minus ventral, times 0.5 × turn gain,
-clamped) and averaged over the last 10 ticks. The slope of the turn command against δ, at each c, is
-the brain's effective stereo gain, comparable with E1's scripted k (turn = bias + k(L − R)).
+Each distinct champion's brain (E2's 31 and 04a's 16) receives scent currents at its left and right
+sensory neurons (AWA, AWC and ASE, as the interface injects them): a common level c with a left-right
+difference δ, all other inputs zero, from a zero state. The turn command is read as the world reads it
+(the turn neurons' mean tanh, dorsal minus ventral, times 0.5 × turn gain, clamped).
 
-It tests one hypothesis from the E4s literature report: that the champions' stereo gain is tiny
-next to the k of about 250 a stereo steerer needs. It is open-loop (no world, no movement) and
-descriptive; it informs the design and is not a registered measure.
+Measured, per genome and common level (review v1 of the E4s design, D141):
+- **small-signal gain:** the central difference (T(+δ) − T(−δ)) / 2δ at δ = 0.001, after 40 ticks,
+  averaged over the last 10. A least-squares slope over a wide δ grid (v1) caps a clipped
+  controller's apparent gain (an ideal k = 256 reads about 67), so it is dropped;
+- **signed response curve:** T(δ) for δ = 0, ±0.001, ±0.003, ±0.01, ±0.03, ±0.1;
+- **transient:** the largest change in T over 40 ticks after a step from δ = 0 to δ = +0.01;
+- **reversal with the state carried:** 40 ticks at δ = +0.01, then 40 at δ = −0.01 from that state; a
+  latching (bistable) brain keeps its sign;
+- **motor saturation:** the share of turn neurons with |tanh v| > 0.99 at δ = 0.
+
+It describes weak or strong sustained differential responses under these conditions only. It does
+not show why the plateau exists, nor that the champions use a temporal strategy. It informs the
+design; it is not a registered measure.
 """
 
 from __future__ import annotations
 
 import importlib.util
 import json
+import subprocess
 import sys
 from pathlib import Path
 
@@ -26,36 +35,57 @@ import torch
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from wormwars.brain import Brain, BrainSpec  # noqa: E402
+from wormwars import registration as reg  # noqa: E402
+from wormwars.brain import Brain, BrainSpec, Genome  # noqa: E402
 from wormwars.connectome import load_connectome  # noqa: E402
+from wormwars.evo.genomes import genome_hash  # noqa: E402
 from wormwars.interface import load_interface  # noqa: E402
 
 OUT = ROOT / "experiments" / "E4s-stereo-module" / "development-records" / "gain-probe.json"
-COMMON = [0.02, 0.08, 0.25]  # the report's range of common-mode currents
-DELTAS = [-0.02, -0.01, -0.005, 0.0, 0.005, 0.01, 0.02]
-TICKS, AVG = 40, 10
+COMMON = [0.02, 0.08, 0.25]
+SMALL = 0.001
+CURVE = [-0.1, -0.03, -0.01, -0.003, -0.001, 0.0, 0.001, 0.003, 0.01, 0.03, 0.1]
+TICKS, AVG, STEP = 40, 10, 0.01
 
 
 def load_e2d():
-    spec_ = importlib.util.spec_from_file_location("e2d_for_probe", ROOT / "scripts" / "e2d.py")
-    mod = importlib.util.module_from_spec(spec_)
-    spec_.loader.exec_module(mod)
-    return mod
+    s = importlib.util.spec_from_file_location("e2d_for_probe", ROOT / "scripts" / "e2d.py")
+    m = importlib.util.module_from_spec(s)
+    s.loader.exec_module(m)
+    return m
 
 
-def turn_of(brain, iface, cfg, currents: torch.Tensor) -> np.ndarray:
-    """Mean turn command over the last AVG of TICKS ticks, per strain; `currents` [strains, 1, n]."""
-    v = brain.initial_state(1)
-    tp = torch.as_tensor(np.asarray(iface.turn_plus))
-    tm = torch.as_tensor(np.asarray(iface.turn_minus))
-    out = []
-    for t in range(TICKS):
-        v = brain.step(v, currents)
-        if t >= TICKS - AVG:
-            act = torch.tanh(v)
-            turn = act[..., tp].mean(-1) - act[..., tm].mean(-1)
-            out.append((turn * 0.5 * cfg.world.turn_gain).clamp(-1, 1)[:, 0])
-    return torch.stack(out).mean(0).numpy()
+class Probe:
+    def __init__(self, brain, iface, cfg, n):
+        self.brain, self.cfg, self.n = brain, cfg, n
+        names = list(iface.signal_names)
+        self.left = [int(iface.sensor_neuron[i]) for i, s in enumerate(names) if s == "food_left"]
+        self.right = [int(iface.sensor_neuron[i]) for i, s in enumerate(names) if s == "food_right"]
+        self.tp = torch.as_tensor(np.asarray(iface.turn_plus))
+        self.tm = torch.as_tensor(np.asarray(iface.turn_minus))
+        self.S = brain.n_strains
+
+    def current(self, c, d):
+        cur = torch.zeros(self.S, 1, self.n)
+        cur[..., self.left] = c + d / 2
+        cur[..., self.right] = c - d / 2
+        return cur
+
+    def turn(self, v):
+        act = torch.tanh(v)
+        t = act[..., self.tp].mean(-1) - act[..., self.tm].mean(-1)
+        return (t * 0.5 * self.cfg.world.turn_gain).clamp(-1, 1)[:, 0]
+
+    def run(self, v, c, d, ticks=TICKS):
+        cur, trace = self.current(c, d), []
+        for _ in range(ticks):
+            v = self.brain.step(v, cur)
+            trace.append(self.turn(v))
+        return v, torch.stack(trace)  # [ticks, strains]
+
+    def settled(self, c, d):
+        _, tr = self.run(self.brain.initial_state(1), c, d)
+        return tr[-AVG:].mean(0).numpy()
 
 
 def main():
@@ -66,41 +96,46 @@ def main():
     spec = BrainSpec.from_connectome(con)
     champs = {k: v[0] for k, v in d.e2_champions(spec, cfg).items()}
     champs.update({k: v[0] for k, v in d.e04a_champions(spec, cfg).items()})
-    shas = {}
-    labels = []
-    for k, g in champs.items():  # one entry per distinct genome
-        from wormwars.evo.genomes import genome_hash
+    seen, labels = set(), []
+    for k, g in champs.items():
         h = genome_hash(g, 0)
-        if h not in shas:
-            shas[h] = k
+        if h not in seen:
+            seen.add(h)
             labels.append(k)
-    from wormwars.brain import Genome
     genome = Genome.cat([champs[k] for k in labels])
-    brain = Brain(genome)
-    names = list(iface.signal_names)
-    left = [int(iface.sensor_neuron[i]) for i, s in enumerate(names) if s == "food_left"]
-    right = [int(iface.sensor_neuron[i]) for i, s in enumerate(names) if s == "food_right"]
-    S, n = genome.n_strains, spec.n
-    table = {}
+    p = Probe(Brain(genome), iface, cfg, spec.n)
+    per = {}
     for c in COMMON:
-        turns = []
-        for dl in DELTAS:
-            cur = torch.zeros(S, 1, n)
-            cur[..., left] = c + dl / 2
-            cur[..., right] = c - dl / 2
-            turns.append(turn_of(brain, iface, cfg, cur))
-        turns = np.stack(turns, axis=1)  # [strains, deltas]
-        slope = np.polyfit(np.asarray(DELTAS), turns.T, 1)[0]  # per strain
-        table[str(c)] = {"turn_at_zero": turns[:, DELTAS.index(0.0)].tolist(), "slope_k": slope.tolist()}
-    ks = np.array([table[str(c)]["slope_k"] for c in COMMON])  # [commons, strains]
-    doc = {"what": __doc__.strip().splitlines()[0], "genomes": labels, "common": COMMON, "deltas": DELTAS,
-           "ticks": TICKS, "averaged_over_last": AVG, "per_common": table,
-           "summary": {"median_abs_k": float(np.median(np.abs(ks))), "max_abs_k": float(np.abs(ks).max()),
-                       "median_abs_k_per_common": {str(c): float(np.median(np.abs(ks[i]))) for i, c in enumerate(COMMON)},
-                       "share_turn_saturated_at_zero": float(np.mean([np.abs(np.asarray(table[str(c)]["turn_at_zero"])) >= 0.99
-                                                                       for c in COMMON])),
+        small = (p.settled(c, SMALL) - p.settled(c, -SMALL)) / (2 * SMALL)
+        curve = np.stack([p.settled(c, x) for x in CURVE], axis=1)  # [strains, deltas]
+        v0, base = p.run(p.brain.initial_state(1), c, 0.0)
+        _, step = p.run(v0, c, STEP)
+        transient = (step - base[-1]).abs().max(0).values.numpy()
+        vpos, pos = p.run(p.brain.initial_state(1), c, STEP)
+        _, neg = p.run(vpos, c, -STEP)
+        act = torch.tanh(v0)[:, 0][:, torch.cat([p.tp, p.tm])]
+        per[str(c)] = {"small_signal_gain": small.tolist(), "curve": curve.tolist(),
+                       "transient_max_change": transient.tolist(),
+                       "reversal": {"after_plus": pos[-AVG:].mean(0).tolist(), "after_minus": neg[-AVG:].mean(0).tolist()},
+                       "turn_neurons_saturated_share": (act.abs() > 0.99).float().mean(1).tolist()}
+    gains = np.abs(np.array([per[str(c)]["small_signal_gain"] for c in COMMON]))
+    flips = np.array([[np.sign(a) != np.sign(b) or abs(a - b) > 1e-3 for a, b in
+                       zip(per[str(c)]["reversal"]["after_plus"], per[str(c)]["reversal"]["after_minus"])] for c in COMMON])
+    doc = {"what": "E4s design, exploratory: the champions' open-loop response to a left-right difference (v2)",
+           "genomes": labels, "genome_sha256": sorted(seen), "common": COMMON, "small_delta": SMALL, "curve_deltas": CURVE,
+           "ticks": TICKS, "averaged_over_last": AVG, "step": STEP, "per_common": per,
+           "summary": {"median_abs_small_signal_gain": float(np.median(gains)), "max_abs_small_signal_gain": float(gains.max()),
+                       "median_abs_small_signal_gain_per_common": {str(c): float(np.median(gains[i])) for i, c in enumerate(COMMON)},
+                       "median_transient_max_change": float(np.median([per[str(c)]["transient_max_change"] for c in COMMON])),
+                       "share_responding_to_reversal": float(flips.mean()),
+                       "mean_turn_neuron_saturation": float(np.mean([per[str(c)]["turn_neurons_saturated_share"] for c in COMMON])),
                        "e1_scripted_k_for_reference": {"4": 2.38, "32": 5.63, "256": 8.51, "8192": 8.78}},
-           "note": "open-loop, descriptive, design-informing; not a registered measure"}
+           "provenance": {"git_commit": reg.git("rev-parse", "HEAD"),
+                          "script_sha256": reg.file_sha256(Path(__file__)),
+                          "resolved_config_sha256": d.E.config_sha256(cfg),
+                          "dirty": bool(subprocess.run(["git", "status", "--porcelain", "--", "scripts", "wormwars"],
+                                                       cwd=ROOT, capture_output=True, text=True).stdout.strip())},
+           "note": "open-loop, zero start, other inputs zero; descriptive and design-informing, not a registered measure"}
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps(doc, indent=1) + "\n", encoding="utf-8", newline="\n")
     print(json.dumps(doc["summary"], indent=1))
