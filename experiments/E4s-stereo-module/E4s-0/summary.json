@@ -1,0 +1,327 @@
+{
+ "sweep": {
+  "class_counts": {
+   "rises early": 24,
+   "rises late": 0,
+   "dips first": 23,
+   "harmed": 0,
+   "no detected benefit on the tested grid": 0
+  },
+  "k_star_counts": {
+   "0.05": 5,
+   "0.1": 8,
+   "0.25": 8,
+   "0.5": 2,
+   "1": 1,
+   "16": 2,
+   "32": 21
+  },
+  "rises_early_gain_at_k_star": [
+   0.017578125,
+   0.0234375,
+   0.0234375,
+   0.0234375,
+   0.025390625,
+   0.02734375,
+   0.029296875,
+   0.03515625,
+   0.03515625,
+   0.0390625,
+   0.041015625,
+   0.04296875,
+   0.04296875,
+   0.044921875,
+   0.048828125,
+   0.048828125,
+   0.048828125,
+   0.05078125,
+   0.052734375,
+   0.0546875,
+   0.056640625,
+   0.060546875,
+   0.080078125,
+   0.19140625
+  ],
+  "harmed_at_larger_k": 19,
+  "harmed_at_counts": {
+   "0.05": 1,
+   "0.1": 2,
+   "0.25": 2,
+   "0.5": 7,
+   "1": 16,
+   "2": 35,
+   "4": 41,
+   "8": 39,
+   "16": 0,
+   "32": 0,
+   "64": 0,
+   "256": 0
+  },
+  "harmed_somewhere": 42,
+  "never_harmed": [
+   "04a run12",
+   "e2 es run00",
+   "e2 extension run00",
+   "e2 extension run04",
+   "e2 ga run02"
+  ],
+  "max_gain_at_k_le_1": {
+   "max": 0.267578125,
+   "top": [
+    [
+     "e2 es run00",
+     0.267578125
+    ],
+    [
+     "e2 extension run04",
+     0.208984375
+    ],
+    [
+     "e2 ga run02",
+     0.19140625
+    ],
+    [
+     "04a run08",
+     0.154296875
+    ]
+   ]
+  },
+  "pointwise_k16": {
+   "upper_below_0": 40,
+   "lower_above_0": 7
+  },
+  "all_improve_at": [
+   "32",
+   "64",
+   "256"
+  ],
+  "median_across_champions_by_k": {
+   "0": 2.19140625,
+   "0.05": 2.19921875,
+   "0.1": 2.205078125,
+   "0.25": 2.224609375,
+   "0.5": 2.22265625,
+   "1": 2.15625,
+   "2": 1.568359375,
+   "4": 0.830078125,
+   "8": 0.693359375,
+   "16": 0.7734375,
+   "32": 5.74609375,
+   "64": 7.029296875,
+   "256": 8.380859375
+  },
+  "k0_range": [
+   0.79296875,
+   2.955078125
+  ],
+  "k256_score_range": [
+   7.587890625,
+   8.484375
+  ]
+ },
+ "attenuation": {
+  "0.02": {
+   "sensory": {
+    "K_D": 0.2612446630373597,
+    "K_C": 0.8003781338532766,
+    "ratio": 0.2803776932348441
+   },
+   "first interneurons": {
+    "K_D": 0.16893305885605514,
+    "K_C": 0.8153814077377319,
+    "ratio": 0.24797792240506136
+   },
+   "RIA": {
+    "K_D": 0.11333823204040527,
+    "K_C": 0.7571667432785034,
+    "ratio": 0.17487621085327948
+   },
+   "turn motor": {
+    "K_D": 0.10190251748917944,
+    "K_C": 0.5896512866020203,
+    "ratio": 0.18830314357098496
+   },
+   "turn command": {
+    "K_D": 0.08881091326475143,
+    "K_C": 0.6565526127815247,
+    "ratio": 0.18512506037531315
+   }
+  },
+  "0.08": {
+   "sensory": {
+    "K_D": 0.2715286426246166,
+    "K_C": 0.823391909400622,
+    "ratio": 0.2812919187246654
+   },
+   "first interneurons": {
+    "K_D": 0.17988215223886073,
+    "K_C": 0.929240558296442,
+    "ratio": 0.22992507722194108
+   },
+   "RIA": {
+    "K_D": 0.13878941512666643,
+    "K_C": 1.0085076093673706,
+    "ratio": 0.15345613388252335
+   },
+   "turn motor": {
+    "K_D": 0.11951009824406356,
+    "K_C": 0.7230142280459404,
+    "ratio": 0.17013717307463214
+   },
+   "turn command": {
+    "K_D": 0.122696153819561,
+    "K_C": 0.8123964071273804,
+    "ratio": 0.1627084145017699
+   }
+  },
+  "0.25": {
+   "sensory": {
+    "K_D": 0.2542448466022809,
+    "K_C": 0.7702073752880096,
+    "ratio": 0.293381585471451
+   },
+   "first interneurons": {
+    "K_D": 0.16470567183569074,
+    "K_C": 0.8120649978518486,
+    "ratio": 0.24581279904347797
+   },
+   "RIA": {
+    "K_D": 0.11796503327786922,
+    "K_C": 0.7428061366081238,
+    "ratio": 0.19274457760640684
+   },
+   "turn motor": {
+    "K_D": 0.11734850239008665,
+    "K_C": 0.5011590197682381,
+    "ratio": 0.2079569811007352
+   },
+   "turn command": {
+    "K_D": 0.09778141230344772,
+    "K_C": 0.6285443902015686,
+    "ratio": 0.19237005385719655
+   }
+  }
+ },
+ "ladder": {
+  "qualified": {
+   "step": "L1",
+   "w_n": 3.0,
+   "w_o": 3.0,
+   "tau": 0.5,
+   "bias": 0.0,
+   "forward": 1.0,
+   "turn": 0.2
+  },
+  "qualification": {
+   "mean": 5.1767578125,
+   "lo95": 5.0986083984375,
+   "hi95": 5.2568359375
+  },
+  "tune_mean_by_turn_command": {
+   "0.0": 3.859375,
+   "0.1": 4.7421875,
+   "0.2": 5.265625
+  },
+  "c0_in_top5": false,
+  "grid_corner": {
+   "w_n": "max",
+   "w_o": "max",
+   "tau": "min",
+   "bias": "interior (0 of -0.5, 0)",
+   "forward": "max",
+   "turn": "max"
+  },
+  "dynamics_t90_convention": "zero-based index of the update after the change: t90 = 3 is the 4th update"
+ },
+ "populations": {
+  "g0_real_mean": {
+   "median": 2.0576171875,
+   "min": 1.091796875,
+   "max": 3.2998046875
+  },
+  "g0_classes": {
+   "uses": 16,
+   "unclear": 0,
+   "no material benefit": 0
+  },
+  "selection_population_median_fitness": 0.0,
+  "backgrounds": {
+   "classes": {
+    "uses": 41,
+    "unclear": 107,
+    "no material benefit": 364
+   },
+   "real_zero": 398,
+   "zero_under_all_three": 294,
+   "median_score": 0.0,
+   "forward_below_0_share": 0.529296875,
+   "median_forward": -0.05786341242492199,
+   "median_abs_turn": 0.2527426779270172,
+   "median_saturated_share": 0.10123047232627869
+  },
+  "e04a_run02": {
+   "means": {
+    "real": 0.8857421875,
+    "mean": 2.6435546875,
+    "swapped": 0.01953125
+   },
+   "real_minus_mean": {
+    "mean": -1.7578125,
+    "lo95": -1.8193359375,
+    "hi95": -1.697265625
+   },
+   "real_minus_swapped": {
+    "mean": 0.8662109375,
+    "lo95": 0.8349609375,
+    "hi95": 0.8974609375
+   },
+   "forward": 0.9792211651802063,
+   "turn": -0.28145548701286316
+  }
+ },
+ "robustness": {
+  "parent_mean": 5.234375,
+  "fallback": "0.25x",
+  "0.125": {
+   "median_share": 0.9208955223880597,
+   "zero": 36,
+   "below_0.7": 60,
+   "keep_half": 192,
+   "above_parent": 52,
+   "n": 256,
+   "survivor_range": [
+    1.109375,
+    5.484375
+   ]
+  },
+  "0.25": {
+   "median_share": 0.7761194029850746,
+   "zero": 78,
+   "below_0.7": 122,
+   "keep_half": 134,
+   "above_parent": 34,
+   "n": 256,
+   "survivor_range": [
+    3.828125,
+    5.4375
+   ]
+  },
+  "1.0": {
+   "median_share": 0.0,
+   "zero": 195,
+   "below_0.7": 215,
+   "keep_half": 39,
+   "above_parent": 7,
+   "n": 256,
+   "survivor_range": [
+    1.265625,
+    5.5625
+   ]
+  }
+ },
+ "references": {
+  "e1_tuned_k256": "E1's best tuned S-const score at k = 256 (turn bias 0.2), on its 256 tuning worlds: experiments/E1-navigation/freeze.json",
+  "e2d_04a_run02": "04a run 2 on E2d's hold-out: experiments/E2d-taskn-diagnosis/part-b.json",
+  "gain_probe": "the champions' open-loop gain 0.098: development-records/gain-probe.json"
+ }
+}

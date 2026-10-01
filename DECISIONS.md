@@ -4449,3 +4449,51 @@ and which candidate robustness uses if nothing qualifies (the later rule, as the
 
 Both reviewers said "fix then run", and the fixes are applied without disagreement between them, so
 E4s-0 runs without a further round. The formal run starts from a clean, pushed tree.
+
+## D147 — E4s-0 ran (0.23 GPU-hours); its results reviewed (both "fix", text only) and corrected
+
+**The run** (2026-10-01): the projection, then the five stages, each once.
+- The first five stage commands were refused within seconds: the projection's record had not been
+  committed and pushed, which the stage frame requires before the next stage.
+- After that, each stage was committed and pushed before the next.
+- 0.23 of the 2 GPU-hours.
+
+**The results** (`experiments/E4s-stereo-module/E4s-0/RESULTS.md`):
+- **For 42 of 47 champions, a valley along the stereo-gain direction:** small k changes little,
+  k = 2-16 harms, and k = 32, 64 and 256 help all 47.
+- **The differential response** falls from the sensory neurons to RIA, then levels off.
+- **L1, the 4-neuron comparator, qualified** (5.18, lower bound 5.10, "uses"), with the carrier's
+  turn command of 0.2.
+- **It is used at generation 0** by all 16 simulated populations' bests, so E4s-1 proceeds on random
+  N2.
+- **On 04a run 2 the graft is harmful** (real minus mean input to the module: −1.76).
+- **Robustness is bimodal;** the factor stays 0.25×.
+
+**The review** (`docs/reviews/20261001-E4s-0-results/`): both "fix", text only.
+- Both re-derived the main numbers from the records, and they hold.
+- What they corrected, quoted in the results' Corrections section (15 items):
+  - a wrong small-k maximum in the README (+0.08 against +0.27);
+  - "a valley" unqualified (five champions are never harmed);
+  - the adjacency rule's blind spot at k = 16;
+  - pooled attenuation medians, and "shrinks at every stage";
+  - **L1's dependence on the carrier's turn command, unstated** (Fable: 3.86 at turn 0, 5.27 at 0.2
+    in tuning);
+  - an unmeasured counterfactual about clipping at the bounds;
+  - one-generation robustness turned into survival claims, and a bimodal distribution hidden by its
+    median;
+  - "the valley predicts" mutation outcomes (against the plan's reach);
+  - 04a run 2's harmful interaction understated;
+  - `t90`'s indexing;
+  - numbers with no generator (rule 5), and references from outside the folder;
+  - an exact-repeat promise without `replay_mode()`.
+
+**Rule 5:** `scripts/e4s0_summary.py` now derives every summary number into `summary.json`.
+
+**For E4s-1's design** (from both reviews):
+- the turn offset is a first-order variable;
+- the module's ceiling is near 5;
+- generation-0 bests start at the plateau's level, so "uses" must be read along training;
+- mutational load is high (consider a 0.125× sensitivity arm);
+- R's control varies only signs, since all of L1's magnitudes are 3;
+- C2 starts in a harmful interaction;
+- the pending CUDA and score-level gates stay gates.
