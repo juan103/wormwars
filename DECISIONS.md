@@ -4573,3 +4573,50 @@ Both listed what the pre-registration must pin. The items they raised, all fixed
 
 **The pre-registration draft** (`experiments/E4s-stereo-module/E4s-1/PREREGISTRATION.md`) pins every
 item both reviewers listed. It goes to both for review before it binds.
+
+## D150 — E4s-1's pre-registration reviewed (both "bind after fixes"); the fixes applied; bound and pushed
+
+**The review** (`docs/reviews/20261001-E4s-1-prereg/`): both "bind after fixes", text only, with no
+arm changed. Both checked that O1's rules, C2's ordered reading and the O2 table are exclusive and
+complete, and that the masks, the seeds and F, C and G0 match the code. **Their fixes, all applied:**
+
+**The gates:**
+- **G2:** its shapes did not cover the 48 genomes (only genome 0 in the single-strain shapes). Its
+  input history was not reproducible as written.
+- **G3:** its execution shape was missing.
+- **Source genomes** must be bound by parameter hash, not only by graph label: `source-genomes.json`
+  is written and its sha256 bound.
+- **The module's sha256** is given in full.
+
+**Failures and stages:**
+- **A failed gate is final;** reruns are only for stopped stages, and never after a cap stop.
+- **The stage list** is stated. The projection runs on smoke ids and reads no scores.
+- **The evaluation reserve** has a value, and admission works batch by batch in order.
+- **An end-of-run assertion failure** has a consequence.
+
+**The outcomes:**
+- **O2's labels** keep an unclear endpoint visible (all nine cells named).
+- **Fixed denominators,** and "no label named" in place of an undefined "mixed".
+- **"Positive; estimate below 0.5":** the interval can extend above 0.5.
+- **Fixed companion sentences** for O1 and O1b "supports".
+- **C never changes an O1 label.**
+- **The O3 split** is 8 against 8 by rank.
+- **R's weight** is s_k × 3.0.
+
+**The probability claims:**
+- **The family rate** assumes independent tests, which these are not: it is an illustration.
+- **The power** used 2 000 resamples.
+- **Gate 1's figures** cover the score threshold only.
+- **SD 1.3** has no basis; both SD rows are quoted.
+
+**The episode count:** 3.7 M was wrong. By the measures as listed it is about 4.2 M, after §5's table
+of which measures apply where.
+
+**L1 sits on the bounds** (Fable). Its weights can only shrink and its τ only grow under mutation, so
+a loss of use may be one-sided drift. F0 − M is the stated comparison.
+
+**The departures from design v2,** listed in the pre-registration's §12: C2's harmful bound; the O2
+labels; run indices from 0; G3's genomes; the new O1 label.
+
+Both reviewers said "bind after fixes", and every listed fix is applied, so the pre-registration
+binds without a further round. It is committed and pushed before any E4s-1 stage runs (rule 2).

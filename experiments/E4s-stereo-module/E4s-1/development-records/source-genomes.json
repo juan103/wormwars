@@ -1,0 +1,132 @@
+{
+ "what": "E4s-1's named source genomes: each loaded by E2d's loaders and checked against this sha256 (genome_hash)",
+ "e04a": {
+  "04a run00": {
+   "record": "experiments/04a-navigation-primitive/train-A.json",
+   "checkpoint": 38,
+   "sha256": "4ecc36cb7b28213a55ba9830449a7f5fa8c2e7f21e8a9e5e943b23781558e243"
+  },
+  "04a run01": {
+   "record": "experiments/04a-navigation-primitive/train-A.json",
+   "checkpoint": 17,
+   "sha256": "1f5ca492742ea341bf9871932ee44366a807e4a4d55b78e7177ed90d91e119f9"
+  },
+  "04a run02": {
+   "record": "experiments/04a-navigation-primitive/train-A.json",
+   "checkpoint": 24,
+   "sha256": "e8561228b2ddc1d4ed218d36a93c68f593eb0ec7c0c868b0a375bc9b61ed4a15"
+  },
+  "04a run03": {
+   "record": "experiments/04a-navigation-primitive/train-A.json",
+   "checkpoint": 33,
+   "sha256": "cff066f75d30ae88733f67098da09e68f6e2b84afd26449cd7946363b0514454"
+  },
+  "04a run04": {
+   "record": "experiments/04a-navigation-primitive/train-A.json",
+   "checkpoint": 26,
+   "sha256": "a8ad21da70d41d26f33d35db282e6f88d23332386d558fb609cbe06b9643c6be"
+  },
+  "04a run05": {
+   "record": "experiments/04a-navigation-primitive/train-A.json",
+   "checkpoint": 27,
+   "sha256": "248f43347e7fead726cebb4d264a4a3d3da3f9c9f22473c08018b7ec100dd93a"
+  },
+  "04a run06": {
+   "record": "experiments/04a-navigation-primitive/train-A.json",
+   "checkpoint": 28,
+   "sha256": "b351c04c6452488c359f1991d8781573c402d03c90016398a25abfb2de026f81"
+  },
+  "04a run07": {
+   "record": "experiments/04a-navigation-primitive/train-A.json",
+   "checkpoint": 23,
+   "sha256": "1b89430ce87e797c06512179edba211bd89dc2d9e160f79674949ad81fe2b48c"
+  },
+  "04a run08": {
+   "record": "experiments/04a-navigation-primitive/train-B.json",
+   "checkpoint": 7,
+   "sha256": "4d40c65515432412ee7ba970df539f6e5fe029359c7415320817c4ccf443e8b8"
+  },
+  "04a run09": {
+   "record": "experiments/04a-navigation-primitive/train-B.json",
+   "checkpoint": 37,
+   "sha256": "19f2bd877de8794875a5b35bb28e81ee1c7a4a38f96819ea698fe44ea56127c6"
+  },
+  "04a run10": {
+   "record": "experiments/04a-navigation-primitive/train-B.json",
+   "checkpoint": 38,
+   "sha256": "d177579df4132b27b74deddd8004a1b4ed24c1d5535db55306f54b1acd974fc6"
+  },
+  "04a run11": {
+   "record": "experiments/04a-navigation-primitive/train-B.json",
+   "checkpoint": 38,
+   "sha256": "3ca3f58a033510faf6f62428ab35574a4cdff8705a1ff9f4b19b3c553bf116b7"
+  },
+  "04a run12": {
+   "record": "experiments/04a-navigation-primitive/train-B.json",
+   "checkpoint": 37,
+   "sha256": "afaa87435077798c02d874a0ed49910edf4ae68c63cbbf9e83d619a3e3a3b950"
+  },
+  "04a run13": {
+   "record": "experiments/04a-navigation-primitive/train-B.json",
+   "checkpoint": 17,
+   "sha256": "70590d42e46c19d22932588fb598b662286bfbc81efbbe059d4ae3ae5a966a86"
+  },
+  "04a run14": {
+   "record": "experiments/04a-navigation-primitive/train-B.json",
+   "checkpoint": 30,
+   "sha256": "fc7795a2facb741874f571b72f9622aae12181c60862b4149f2e88712ed79444"
+  },
+  "04a run15": {
+   "record": "experiments/04a-navigation-primitive/train-B.json",
+   "checkpoint": 16,
+   "sha256": "56a0ff8d9dd00f06e8d2b21981771f0e84f66e59b9ed26a0db63a1cdab3a46ee"
+  }
+ },
+ "e2_ga": {
+  "e2 ga run00": {
+   "record": "experiments/E2-optimizer-screen/train-ga.json",
+   "checkpoint": 34,
+   "sha256": "9c68bff4180782a6f53a3f9e2c8349cb13b3954f4c555440138cbfa768aa13f8"
+  },
+  "e2 ga run01": {
+   "record": "experiments/E2-optimizer-screen/train-ga.json",
+   "checkpoint": 29,
+   "sha256": "ea49bd200ad878f6525700a5631f1069f81c0109c7923dafa4cde014f9aaf157"
+  },
+  "e2 ga run02": {
+   "record": "experiments/E2-optimizer-screen/train-ga.json",
+   "checkpoint": 36,
+   "sha256": "17b53b047883fe3c37452becccde8548f40ca46ce76bbf8d8709a99bbfabf2a3"
+  },
+  "e2 ga run03": {
+   "record": "experiments/E2-optimizer-screen/train-ga.json",
+   "checkpoint": 6,
+   "sha256": "920e60ef43c16caf46bf32a93d3fc9852e5c3123820fea3274eece17493572ae"
+  },
+  "e2 ga run04": {
+   "record": "experiments/E2-optimizer-screen/train-ga.json",
+   "checkpoint": 20,
+   "sha256": "1dff4adfb62afb6fd10392f80c9f638b45577ec4878bb15e9731f8f485ae4c8e"
+  },
+  "e2 ga run05": {
+   "record": "experiments/E2-optimizer-screen/train-ga.json",
+   "checkpoint": 39,
+   "sha256": "29c782891c22409f8dc9c12128c61b7c0963730b2d4f73519dec045ecdfdc933"
+  },
+  "e2 ga run06": {
+   "record": "experiments/E2-optimizer-screen/train-ga.json",
+   "checkpoint": 37,
+   "sha256": "c7c5a59e7bb8e9908fdb7fb7671ec90e7451da9e8ff30011710edaf8da2d1bdb"
+  },
+  "e2 ga run07": {
+   "record": "experiments/E2-optimizer-screen/train-ga.json",
+   "checkpoint": 35,
+   "sha256": "63d1d25336d27766f182013bcfc81e1a25c21477977f5a6ce3da6e043d07a617"
+  }
+ },
+ "c2": {
+  "record": "experiments/04a-navigation-primitive/train-A.json",
+  "checkpoint": 24,
+  "sha256": "e8561228b2ddc1d4ed218d36a93c68f593eb0ec7c0c868b0a375bc9b61ed4a15"
+ }
+}

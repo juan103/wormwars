@@ -20,7 +20,7 @@ import numpy as np
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "experiments" / "E4s-stereo-module" / "E4s-1" / "development-records" / "power.json"
 SEED, SIMS, BOOT, RUNS = 20_261_001, 1000, 2000, 16
-LABELS = ("reversed", "supports", "positive, below 0.5", "does not support an effect of at least 0.5", "inconclusive")
+LABELS = ("reversed", "supports", "positive; estimate below 0.5", "does not support an effect of at least 0.5", "inconclusive")
 
 
 def decide(d, rng):
@@ -66,15 +66,19 @@ def main():
     bi = {f"share {s} keep +{g}": rates(bimodal(s, g), rng) for s in (0.25, 0.5, 0.75) for g in (2.0, 3.0)}
     zero = normal["sd 1.3 effect 0.0"]["supports"], normal["sd 2.0 effect 0.0"]["supports"]
     doc = {"seed": SEED, "simulations": SIMS, "bootstrap": BOOT, "runs": RUNS, "normal": normal, "bimodal": bi,
-           "family_false_supports_two_tests": {"sd 1.3": 1 - (1 - zero[0]) ** 2, "sd 2.0": 1 - (1 - zero[1]) ** 2},
+           "family_false_supports_two_tests_if_independent": {"sd 1.3": 1 - (1 - zero[0]) ** 2, "sd 2.0": 1 - (1 - zero[1]) ** 2},
            "gate1": gate1(),
+           "bootstrap_note": "2 000 resamples per simulated decision, against the registered 10 000 (for speed); "
+                             "the family rate assumes the two tests are independent, an illustration only: "
+                             "M - N and M - R share M",
+           "gate1_note": "the score-threshold component of gate 1 only, under a fixed-se normal model",
            "note": "the bimodal scenario: each run keeps the benefit (normal around the gain, sd 0.7) with the "
                    "given share, else none (normal around 0, sd 0.7)"}
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps(doc, indent=1) + "\n", encoding="utf-8", newline="\n")
-    print(json.dumps({"gate1": doc["gate1"], "family": doc["family_false_supports_two_tests"],
+    print(json.dumps({"gate1": doc["gate1"], "family": doc["family_false_supports_two_tests_if_independent"],
                       "normal sd1.3": {k: v["supports"] for k, v in normal.items() if "1.3" in k},
-                      "bimodal": {k: (v["supports"], v["positive, below 0.5"]) for k, v in bi.items()}}, indent=1))
+                      "bimodal": {k: (v["supports"], v["positive; estimate below 0.5"]) for k, v in bi.items()}}, indent=1))
 
 
 if __name__ == "__main__":
