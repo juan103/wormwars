@@ -4542,3 +4542,34 @@ arms are unchanged.
 now also needs O2b ≥ 0.9.
 
 Design v2 goes to Astra 6 and Fable 5.1 for a confirmation round.
+
+## D149 — E4s-1's design v2 confirmed (Fable "proceed", Astra "revise": specification only); the pre-registration drafted
+
+**The confirmation round** (`docs/reviews/20261001-E4s-1-design-v2/`):
+- **Fable: "proceed to pre-registration".** All of v1's must-fixes are resolved in substance.
+- **Astra: "revise",** as a small specification revision with no change of arms.
+
+Both listed what the pre-registration must pin. The items they raised, all fixed in the draft:
+- **C2's "unclear by construction":** identical founders do not fix a class on fresh worlds (Astra).
+- **Gate 1's probability:** plug-in about 1%, predictive about 4-5% (both); both are now computed.
+- **Gate 3's G0 bests score almost nothing without the module** (0.02-0.44 under module mean). They
+  are dropped for E2 GA's 8 champions.
+- **The power simulation had no committed generator** (rule 5; both). Fable asked for a bimodal
+  scenario.
+- **C2's classifier was ambiguous;** it now has an order.
+- **"M − N needs M to climb"** was an overclaim (Astra).
+- **O1c's M − N climb difference is confounded** by the graft's immediate benefit at G0 (Fable).
+- **"Does not support"** covered a significant small positive effect (Fable); it now has its own
+  label.
+- **The two unadjusted tests' family rate** is now stated.
+
+**Checked:** E2's 1.35 h per batch is measured (`train-ga.json`, 4 862 s), not only planned.
+
+**`scripts/e4s1_power.py`** writes `experiments/E4s-stereo-module/E4s-1/development-records/power.json`:
+- gate 1's chance of a fail by chance: 0.9% plug-in and 4.7% predictive;
+- O1's power at SD 1.3: 6% with no effect, 44% at 0.5, 91% at 1.0;
+- bimodal, half the runs keeping +2: 93%;
+- a family false "supports" of 11-14%.
+
+**The pre-registration draft** (`experiments/E4s-stereo-module/E4s-1/PREREGISTRATION.md`) pins every
+item both reviewers listed. It goes to both for review before it binds.
