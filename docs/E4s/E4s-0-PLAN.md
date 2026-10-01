@@ -32,19 +32,23 @@ Status: v2, for review by Astra 6 and Fable 5.1 together with the script, before
   - single-genome evaluations use `pad_single_strain`, as in E2d.
 - **Compute:** counted through `wormwars.accounting`. The stage frame is E2's (markers, the cap
   clock, not-completed records, retried atomic writes), reused as E2d reuses it.
-- **World ids**, new and disjoint from E1, 04a, E2 and E2d (a test checks):
+- **World ids**, new and disjoint from E1, 04a, E2 and E2d, and from 03's timing ids (a test checks).
+  v2 first placed them at 990 million, which 03's timing ids occupy (D-entry of the E2 code review;
+  E2's and E2d's disjointness tests list it). Neither review caught it, since those ids are not
+  written as literals in the code; the script's test did. 970 million is 02's gate ids, so they are moved
+  to 940 million, where no range starts (D145):
 
   | Use | Ids |
   |---|---|
-  | 1. the residual sweep | 990 000 000 + 512 |
-  | 3. tuning, step s (s = 0..4 for L1, L2, L3, L4×2, L4×4) | 990 100 000 + 20 000·s + 128, re-scored on 990 101 000 + 20 000·s + 512 |
-  | 3. qualification, step s | 990 300 000 + 10 000·s + 1 024 |
+  | 1. the residual sweep | 940 000 000 + 512 |
+  | 3. tuning, step s (s = 0..4 for L1, L2, L3, L4×2, L4×4) | 940 100 000 + 20 000·s + 128, re-scored on 940 101 000 + 20 000·s + 512 |
+  | 3. qualification, step s | 940 300 000 + 10 000·s + 1 024 |
   | 3. step response and reversal | none (open loop) |
-  | 3. simulated populations: selection | population i: 990 500 000 + 8·i + 0..7 |
-  | 3. simulated populations: G0 bests' D | 990 510 000 + 1 024 |
-  | 3. individual backgrounds | 990 520 000 + 64 |
-  | 3. 04a run 2 grafted | 990 540 000 + 1 024 |
-  | 4. robustness | 990 560 000 + 64 |
+  | 3. simulated populations: selection | population i: 940 500 000 + 8·i + 0..7 |
+  | 3. simulated populations: G0 bests' D | 940 510 000 + 1 024 |
+  | 3. individual backgrounds | 940 520 000 + 64 |
+  | 3. 04a run 2 grafted | 940 540 000 + 1 024 |
+  | 4. robustness | 940 560 000 + 64 |
   | smoke and projection | 0-9 999 (reused on purpose; exempt from the disjointness test) |
 
 - **Seeds:**

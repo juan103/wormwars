@@ -4335,3 +4335,58 @@ without a third round. **`ROADMAP.md` is amended:**
 
 **Next:** E4s-0's plan (`docs/E4s/E4s-0-PLAN.md`), which pins the script's details, is reviewed
 before anything runs.
+
+## D145 — E4s-0's plan v2 and its script; a world-id collision found by the script's own test
+
+**The review of E4s-0's plan v1** (`docs/reviews/20261001-E4s-0-plan/`): both "revise". There were no
+disagreements; the reviewers asked for pins and tests:
+- **The residual wrapper's tests** missed "before the clamp", the sign and removal.
+- **The k = 0 check** needed one fixed composition.
+- **The bootstrap seed** (20 261 001) contradicted "imported from E2d unchanged" (E2d's is 0).
+- **The sweep's classes** dropped a condition, and their "unclear" was unreachable.
+- **The simulated G0 statistic** was untested against `evolve_batch`, and was measured on 256 worlds
+  where E4s-1 will use 1 024.
+- **A toy smoke** cannot project the formal compositions.
+- **Robustness's seeds and ownership** were unpinned.
+- **"Settled" at 40 ticks** is too short for slow comparators.
+
+Astra also corrected the adopted proposal (v2.1). Its "a 'retained' majority would be out of reach by
+construction" holds only for the same runs. The proposal gets a dated note: the rule is a design
+trigger, not a prediction.
+
+**Plan v2** (`docs/E4s/E4s-0-PLAN.md`) takes every item; its last section maps them.
+
+**Found by the script's own test, missed by both plan reviews and by me:** v1 placed E4s-0's worlds at
+990 million.
+- **03's timing ids** occupy 990 million. E2's and E2d's disjointness tests list it as used, but the
+  ids are not written as literals in the code, so a search of the constants found nothing.
+- **The new test** (`test_e4s0_script.py`) carries the earlier ranges and failed on the first
+  version.
+- **970 million**, the next candidate, is 02's gate ids (`exp02/grid.py`).
+- **The ranges are now at 940 million,** where no range starts. A sabotage that moves them back to
+  990 million is caught.
+
+**Built:**
+- **`scripts/e4s0.py`:** six stages (project, sweep, attenuation, ladder, populations, robustness)
+  in E4s-0's own copy of E2's stage frame. It imports E2d's `world_ci`, `classify` and champion
+  loaders unchanged.
+- **`wormwars/e4s/diagnostics.py`:** the sweep's classes, the G0 selection, module-only mutation
+  scales, per-strain motor statistics, and the settling rule.
+- **More tests on the residual wrapper.**
+- **The tests:**
+  - the library's were seen failing first;
+  - the script's 6 tests were written after the script, so their evidence is sabotage: 4 caught (the
+    ranges at 990 million, a ladder that does not stop, a reversed shrink order, L4's base chosen
+    twice);
+  - one diagnostics test was strengthened after a missed sabotage: scrambled population boundaries
+    gave the same answer on the first constructed case.
+- **The full suite passes.**
+
+**The smoke** (`runs/e4s0-smoke`, toy sizes, never results) ran every stage end to end.
+- The k = 0 check held for all 47 champions.
+- A smoke-only acceptance makes L1 "qualify" so that the qualified path also runs: the open-loop
+  dynamics, the module file, the populations and robustness. Formal qualification is unchanged.
+- Two bugs were fixed: an import that bound the `rollout` function instead of its module, and an
+  undefined robustness share when the parent scores 0.
+
+Plan v2 and the script go to Astra 6 and Fable 5.1 for a code review before the formal run.

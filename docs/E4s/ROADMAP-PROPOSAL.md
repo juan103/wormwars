@@ -199,7 +199,9 @@ first step that qualifies, in this order, is used:
       does.
     - Each G0 best is then classified for D on 256 worlds.
   - **If fewer than 12 of the 16 simulated G0 bests are D,** a "retained" majority in E4s-1 is out
-    of reach by construction. E4s-1's design must then change its background, its reading, or both.
+    of reach by construction. *(Corrected 2026-10-01, D145, Astra: this holds only for the same 16
+    runs' own G0 classifications. 16 pilot populations are neither necessary nor sufficient for 12
+    retained outcomes in E4s-1's future runs; the rule is a design trigger, not a prediction.)* E4s-1's design must then change its background, its reading, or both.
     One option is the 47 distinct champions, one per run (Fable). That choice is made in E4s-1's
     design review, not here.
   - Otherwise E4s-1 proceeds on random N2.
