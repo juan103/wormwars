@@ -1,0 +1,558 @@
+{
+ "stage": "project",
+ "attempt": 1,
+ "registered": {
+  "world_seed": 1100001,
+  "task_sigma": 6.0,
+  "ga": {
+   "population": 32,
+   "elites": 3,
+   "truncation": 8,
+   "worlds_per_strain": 8,
+   "generations": 1000,
+   "islands": 1,
+   "mutation": {
+    "w_sigma": 0.08,
+    "g_sigma": 0.04,
+    "tau_sigma": 0.15,
+    "bias_sigma": 0.05,
+    "p_mutate": 1.0
+   }
+  },
+  "checkpoint_every": 25,
+  "rerun_kill_tail_seconds": 900,
+  "cap_gpu_hours": 2.0,
+  "admit_hours": 1.8,
+  "champions": 47,
+  "sweep": {
+   "ks": [
+    0,
+    0.05,
+    0.1,
+    0.25,
+    0.5,
+    1,
+    2,
+    4,
+    8,
+    16,
+    32,
+    64,
+    256
+   ],
+   "first": 940000000,
+   "worlds": 512,
+   "chunk_strains": 8
+  },
+  "attenuation": {
+   "levels": [
+    0.02,
+    0.08,
+    0.25
+   ],
+   "d": 0.001,
+   "dm": 0.01,
+   "ticks": 40,
+   "average": 10,
+   "neurons": [
+    "ASEL",
+    "ASER",
+    "AWAL",
+    "AWAR",
+    "AWCL",
+    "AWCR",
+    "AIYL",
+    "AIYR",
+    "AIZL",
+    "AIZR",
+    "AIAL",
+    "AIAR",
+    "AIBL",
+    "AIBR",
+    "RIAL",
+    "RIAR",
+    "SMDDL",
+    "SMDDR",
+    "SMDVL",
+    "SMDVR",
+    "RMDDL",
+    "RMDDR",
+    "RMDVL",
+    "RMDVR"
+   ]
+  },
+  "ladder": {
+   "steps": [
+    "L1",
+    "L2",
+    "L3",
+    "L4x2",
+    "L4x4"
+   ],
+   "w_n": [
+    1.0,
+    2.0,
+    3.0
+   ],
+   "w_o": [
+    1.0,
+    2.0,
+    3.0
+   ],
+   "tau": [
+    0.5,
+    2.0
+   ],
+   "bias": [
+    -0.5,
+    0.0
+   ],
+   "forward": [
+    0.5,
+    1.0
+   ],
+   "turn": [
+    0.0,
+    0.1,
+    0.2
+   ],
+   "w_s": [
+    0.5,
+    0.8,
+    0.95
+   ],
+   "w_m": [
+    -0.5,
+    -0.8,
+    -0.95
+   ],
+   "tune_first": 940100000,
+   "step_stride": 20000,
+   "tune_worlds": 128,
+   "rescore_offset": 1000,
+   "rescore_worlds": 512,
+   "top": 5,
+   "qual_first": 940300000,
+   "qual_stride": 10000,
+   "qual_worlds": 1024,
+   "lower_bound": 5.0,
+   "tune_chunk_strains": 32
+  },
+  "dynamics": {
+   "levels": [
+    0.02,
+    0.08,
+    0.25
+   ],
+   "precondition": 60,
+   "horizon": 400,
+   "step": 0.01
+  },
+  "populations": {
+   "n": 16,
+   "size": 32,
+   "seed_base": 1150000,
+   "select_first": 940500000,
+   "select_worlds": 8,
+   "d_first": 940510000,
+   "d_worlds": 1024,
+   "bg_first": 940520000,
+   "bg_worlds": 64,
+   "e04a_first": 940540000,
+   "e04a_worlds": 1024,
+   "e04a_label": "04a run02",
+   "needed": 12,
+   "g0_chunk_strains": 4,
+   "bg_chunk_strains": 64
+  },
+  "robustness": {
+   "mutants": 256,
+   "scales": [
+    0.125,
+    0.25,
+    1.0
+   ],
+   "seed_base": 1151000,
+   "first": 940560000,
+   "worlds": 64,
+   "chunk_strains": 64
+  },
+  "probes": [
+   "real",
+   "mean",
+   "swapped"
+  ],
+  "shrink": [
+   [
+    "populations",
+    "bg_worlds",
+    32
+   ],
+   [
+    "ladder",
+    "tune_worlds",
+    64
+   ],
+   [
+    "sweep",
+    "worlds",
+    256
+   ]
+  ]
+ },
+ "provenance_at_start": {
+  "git_commit": "706a3fa1e6888e9abec7ff7d07d55332c8e72cbf",
+  "branch": "roadmap",
+  "dirty": false,
+  "python": "3.13.3",
+  "numpy": "2.4.4",
+  "torch": "2.12.0+cu130",
+  "cuda": "13.0",
+  "gpu": "NVIDIA GeForce RTX 5080",
+  "connectome_cache_sha256": "43b87aa172a0042b9dce734b15bdf1c87efe3a33ac1cc0d9cd03255a60c96d4a",
+  "connectome_source_sha256": "1f4fdbf84746b69b49a8da0816f52787860ce349b638dce37924ba80f90c70c9"
+ },
+ "device": "cuda",
+ "resolved_config": {
+  "brain": {
+   "substeps": 32,
+   "tau_min": 0.5,
+   "tau_max": 20.0,
+   "w_max": 3.0,
+   "g_max": 2.0,
+   "b_max": 2.0,
+   "init_w_scale": 0.2,
+   "init_g_scale": 0.05,
+   "init_bias_std": 0.5,
+   "init_tau_log_uniform": true,
+   "init_chem_magnitude": "anatomical",
+   "init_gap_magnitude": "anatomical",
+   "init_permutation_seed": 0,
+   "dale": false,
+   "input_gain": 1.0,
+   "input_max": 5.0,
+   "chem_direction": "pre_to_post",
+   "pad_single_strain": true
+  },
+  "world": {
+   "n_swarms": 1,
+   "weys_per_swarm": 1,
+   "max_ticks": 300,
+   "cells_per_wey": 24.0,
+   "min_side": 24,
+   "body_length": 2.4,
+   "max_speed": 0.35,
+   "reverse_fraction": 0.4,
+   "max_turn": 0.3,
+   "forward_gain": 4.0,
+   "turn_gain": 2.0,
+   "start_energy": 12.0,
+   "max_energy": 40.0,
+   "body_mass": 6.0,
+   "metabolic_drain": 0.0,
+   "move_cost": 0.0,
+   "hazard_damage": 0.0,
+   "eat_rate": 0.0,
+   "pheromone_deposit": 0.0,
+   "pheromone_decay": 0.93,
+   "pheromone_diffusion": 0.35,
+   "sense_scale_food": 0.35,
+   "sense_scale_pheromone": 0.0,
+   "sense_scale_hazard": 2.0,
+   "sense_scale_damage": 2.0,
+   "sense_scale_collision": 2.0,
+   "body_splat": 1.0,
+   "crowd_threshold": 0.8,
+   "crowd_resist": 0.6,
+   "crowd_push": 0.1,
+   "crowd_blur": 1,
+   "food_sensing": "stereo",
+   "food_probe": "real",
+   "food_odour_sigma": 0.0,
+   "food_probe_radius": 0.0,
+   "check_ledger_every_tick": false,
+   "food_probe_hold": 1,
+   "task": "navigate",
+   "target_sigma": 6.0,
+   "target_amplitude": 1.0,
+   "target_radius": 1.5,
+   "target_separation": 8.0,
+   "target_max_separation": 0.0,
+   "target_wall_clearance": 3.0,
+   "target_sequence_length": 64
+  },
+  "map": {
+   "food_patches": [
+    0,
+    0
+   ],
+   "food_patch_radius": [
+    2.5,
+    5.0
+   ],
+   "food_per_patch": [
+    70.0,
+    160.0
+   ],
+   "food_centre_bias": 0.62,
+   "hazard_patches": [
+    0,
+    0
+   ],
+   "hazard_radius": [
+    2.0,
+    4.0
+   ],
+   "hazard_strength": [
+    0.5,
+    1.0
+   ],
+   "hazard_spawn_clearance": 6.0,
+   "spawn_margin": 3.0,
+   "spawn_spread": 0.28,
+   "food_regen": 0.0,
+   "food_scales_with_headcount": true,
+   "food_reference_weys": 20
+  },
+  "combat": {
+   "attack_strength": 1.0,
+   "attack_offset": 0.9,
+   "attack_blur": 1,
+   "damage_k": 0.55,
+   "head_armor": 0.25,
+   "transfer_fraction": 0.5,
+   "max_flank_payback": 0.1,
+   "max_head_on_asymmetry": 1.5,
+   "pump_cost": 0.1
+  },
+  "mutation": {
+   "w_sigma": 0.08,
+   "g_sigma": 0.04,
+   "tau_sigma": 0.15,
+   "bias_sigma": 0.05,
+   "p_mutate": 1.0
+  },
+  "evo": {
+   "population": 32,
+   "generations": 1000,
+   "elites": 3,
+   "truncation": 8,
+   "worlds_per_strain": 8,
+   "holdout_worlds": 24,
+   "islands": 1,
+   "migrate_every": 10,
+   "migrants": 1,
+   "chunk_worlds": 512,
+   "train_seed_base": 0,
+   "train_seed_span": 1000000,
+   "holdout_seed_base": 900000000,
+   "eval_ticks": 0,
+   "opponents_self": 3,
+   "opponents_hof": 2,
+   "coevo_worlds": 2,
+   "coevo_sizes": [
+    40,
+    40
+   ],
+   "coevo_lopsided": false,
+   "coevo_vary_sizes": false,
+   "coevo_size_range": [
+    50,
+    200
+   ],
+   "coevo_size_pairs": 2,
+   "coevo_lopsided_fraction": 0.5,
+   "hof_capacity": 12,
+   "suite_every": 5,
+   "suite_sizes": [
+    100,
+    100
+   ],
+   "suite_size": 6,
+   "suite_worlds": 8
+  }
+ },
+ "resolved_config_sha256": "6f884526e5dd58661325732304f5bee89c9627563f7c6dfbd88242d83dc90b24",
+ "e1_inputs_sha256": {
+  "experiments/E1-navigation/freeze.json": "c5c48f83079a6bd0dd48bdeb13d02ab211a08eb64433fdc8372cbd6e74bcaae9",
+  "experiments/E1-navigation/gate.json": "a18b5a53845360107448527b2af038b9c613e4bf11fdfe843c328b7c2a01afa0"
+ },
+ "start_marker": "project-started.json",
+ "rerun": null,
+ "outcome": "completed",
+ "rates_episodes_per_second": {
+  "sweep": 831.201687926172,
+  "sweep_small": 464.71373893427676,
+  "tuning": 857.8100474117113,
+  "tuning_small": 541.7997587841082,
+  "rescore": 674.8441611018386,
+  "base_rescore": 140.54293327516967,
+  "qualification": 306.33211210928624,
+  "selection": 461.6663422865348,
+  "g0": 862.9759933326685,
+  "backgrounds": 834.2617958402094,
+  "backgrounds_small": 554.168495767964,
+  "robustness": 839.6511823244532,
+  "robustness_parent": 20.13215944912365
+ },
+ "timing": {
+  "sweep": {
+   "episodes": 4096,
+   "seconds_first": 4.957858300069347,
+   "seconds": 4.927805199986324,
+   "composition": [
+    8,
+    512,
+    1
+   ]
+  },
+  "sweep_small": {
+   "episodes": 2048,
+   "seconds_first": 3.508947800146416,
+   "seconds": 4.407014100113884,
+   "composition": [
+    8,
+    256,
+    1
+   ]
+  },
+  "tuning": {
+   "episodes": 4096,
+   "seconds_first": 4.971703599905595,
+   "seconds": 4.774949899874628,
+   "composition": [
+    32,
+    128,
+    1
+   ]
+  },
+  "tuning_small": {
+   "episodes": 2048,
+   "seconds_first": 3.776603100122884,
+   "seconds": 3.7799943001009524,
+   "composition": [
+    32,
+    64,
+    1
+   ]
+  },
+  "rescore": {
+   "episodes": 2560,
+   "seconds_first": 4.1416196001227945,
+   "seconds": 3.7934683999046683,
+   "composition": [
+    5,
+    512,
+    1
+   ]
+  },
+  "base_rescore": {
+   "episodes": 512,
+   "seconds_first": 3.2336955000646412,
+   "seconds": 3.643014899920672,
+   "composition": [
+    1,
+    512,
+    1
+   ]
+  },
+  "qualification": {
+   "episodes": 1024,
+   "seconds_first": 3.196954899933189,
+   "seconds": 3.3427772000432014,
+   "composition": [
+    1,
+    1024,
+    1
+   ]
+  },
+  "selection": {
+   "episodes": 4096,
+   "seconds_first": 8.808809000067413,
+   "seconds": 8.872208399930969,
+   "composition": [
+    512,
+    8,
+    1
+   ]
+  },
+  "g0": {
+   "episodes": 4096,
+   "seconds_first": 4.836798200150952,
+   "seconds": 4.7463661001529545,
+   "composition": [
+    4,
+    1024,
+    1
+   ]
+  },
+  "backgrounds": {
+   "episodes": 4096,
+   "seconds_first": 5.300952199846506,
+   "seconds": 4.909729799954221,
+   "composition": [
+    64,
+    64,
+    1
+   ]
+  },
+  "backgrounds_small": {
+   "episodes": 2048,
+   "seconds_first": 3.6769185999874026,
+   "seconds": 3.6956268998328596,
+   "composition": [
+    64,
+    32,
+    1
+   ]
+  },
+  "robustness": {
+   "episodes": 4096,
+   "seconds_first": 5.016598999965936,
+   "seconds": 4.878216200042516,
+   "composition": [
+    64,
+    64,
+    1
+   ]
+  },
+  "robustness_parent": {
+   "episodes": 64,
+   "seconds_first": 2.711187700042501,
+   "seconds": 3.178993299836293,
+   "composition": [
+    1,
+    64,
+    1
+   ]
+  }
+ },
+ "projected_hours": {
+  "sweep": 0.11579249914643394,
+  "attenuation": 0.0003666876667800049,
+  "ladder": 0.10865508713760776,
+  "populations": 0.055215076627274456,
+  "robustness": 0.017143774361207356
+ },
+ "non_rollout_seconds": {
+  "attenuation": 1.3200756004080176,
+  "dynamics": 20.36374908015132,
+  "bootstrap_per_call": {
+   "32": 0.001913700019940734,
+   "64": 0.0034632000606507063,
+   "256": 0.01180560002103448,
+   "512": 0.02046280005015433,
+   "1024": 0.04522089986130595
+  }
+ },
+ "spent_hours_at_freeze": 0.033772292250004186,
+ "projected_total_hours": 0.29717312493930353,
+ "frozen_sizes": {
+  "populations.bg_worlds": 64,
+  "ladder.tune_worlds": 128,
+  "sweep.worlds": 512
+ },
+ "within_limit": true,
+ "admit_hours": 1.8,
+ "seconds": 121.47679059999064
+}
