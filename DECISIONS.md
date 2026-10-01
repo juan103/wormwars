@@ -4390,3 +4390,62 @@ trigger, not a prediction.
   undefined robustness share when the parent scores 0.
 
 Plan v2 and the script go to Astra 6 and Fable 5.1 for a code review before the formal run.
+
+## D146 — E4s-0's code review (both "fix then run"); the fixes; cleared to run
+
+**The review** (`docs/reviews/20261001-E4s-0-code/`): both "fix then run". The items are implementation
+fixes; neither reviewer asked for a redesign. Both found:
+- **Re-score ties** went to the screening rank, not the grid order.
+- **The projection** left out its own elapsed time. It timed each shape once, cold, and it did not
+  price the attenuation, the dynamics, the bootstrap, L4's padded common re-score, or the shrunk
+  compositions.
+- **The per-world counts the plan promises** were missing for tuning, the re-scores, the base
+  selection, the G0 selection and the robustness children.
+- **The robustness fallback** defaulted to "0.25x" when neither scale kept half.
+
+Fable also found:
+- **Compositions** were recorded only by the sweep.
+- **A missing 04a run 2** would be dropped silently.
+- **The module file** could survive beside a not-completed record.
+- **The reversal's "wrong sign" flag** tested the change, not the output's own sign.
+- **Parameters on the genome's bounds** make robustness look better, so they should be recorded.
+
+Astra also found:
+- **The attenuation probe** read the turn command unclamped.
+- **The settling rule** called a drifting trace settled when its final mean was negligible, and gave
+  a response time for unsettled traces.
+- **No test** checked that the G0 selection reads the selection worlds.
+- **A zero-score parent** left fabricated shares.
+- **The plan contradicted itself** about which candidate robustness uses when nothing qualifies.
+
+**Fixed, each new behaviour with a test seen failing first:**
+- `rescore_choice`: ties go to the lower grid index.
+- **The projection:**
+  - it times every shape twice and uses the second;
+  - it adds this attempt's elapsed time to the hours spent;
+  - it prices L4's common re-score, the robustness parent and the shrunk compositions at their own
+    measured rates;
+  - it measures the attenuation, the dynamics and the bootstrap per call, and adds them.
+- **Per-world counts and compositions** are recorded in every record. The robustness record notes
+  that its parent (one padded strain) and its children (chunks of 64) differ in composition, so their
+  share is descriptive.
+- `robustness_reading` has three outcomes, and shares are null for a zero-score parent.
+- **A missing 04a run 2 stops the stage,** and the module file is deleted if the ladder does not
+  complete.
+- **The reversal flag** also checks the output's own final sign.
+- `settle` judges convergence on its own, and gives no response time for an unsettled trace.
+- **The attenuation turn** is clamped each tick.
+- `on_bounds` is recorded for the qualifying candidate.
+- `pick_g0` and `population_selection_ids` are the production routing, tested with scores that differ
+  between selection and other worlds.
+
+**Sabotages:** 3 more, all caught (every population reading population 0's worlds, ties by screening
+rank, a "0.25x" default).
+
+**Two dated corrections in the plan:** the stated grid order (the step's own parameter outermost),
+and which candidate robustness uses if nothing qualifies (the later rule, as the code does).
+
+**The smoke** again ran every stage. **The full suite passes.**
+
+Both reviewers said "fix then run", and the fixes are applied without disagreement between them, so
+E4s-0 runs without a further round. The formal run starts from a clean, pushed tree.

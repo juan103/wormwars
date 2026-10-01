@@ -165,6 +165,9 @@ Status: v2, for review by Astra 6 and Fable 5.1 together with the script, before
 - **Tuning:**
   - every candidate on the step's 128 tuning worlds;
   - the best 5 by mean (ties to the first in grid order, the order of the grid's product as listed)
+    *(Corrected 2026-10-01, D146, both code reviews: the grid order is the step's own parameter
+    outermost, then w_n, w_o, τ, bias, forward and turn, as the code builds it. Re-score ties also go to
+    the lower grid index, not to the screening rank.)*
     re-scored on the step's 512 worlds;
   - the best re-scored mean (ties the same way) goes to qualification.
 - **Qualification** on the step's own 1 024 worlds:
@@ -176,6 +179,9 @@ Status: v2, for review by Astra 6 and Fable 5.1 together with the script, before
   qualification. **The first step that qualifies stops the ladder.**
 - If none qualifies, the record says "none of the tested candidates passed within the search budget".
   E4s-0 still runs items 1, 2 and 4 (item 4 then on L1's tuned candidate, labelled as not qualified).
+  *(Corrected 2026-10-01, D146, Astra: this contradicts "If no step qualifies" below, which v2 added.
+  That later rule is authoritative, and the code implements it: item 4 uses the candidate with the
+  highest qualification mean, labelled.)*
 
 ### L4's base, and when nothing qualifies
 

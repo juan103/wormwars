@@ -104,19 +104,23 @@ def motor_stats():
 
 
 def settle(trace, expected_sign: int | None = None, window: int = 20, tol: float = 0.01,
-           negligible: float = 1e-4, frac: float = 0.9) -> dict:
-    """`trace`: the change from the control, tick by tick after the input changed."""
+           negligible: float = 1e-4, frac: float = 0.9, endpoint: float | None = None) -> dict:
+    """`trace`: the change from the control, tick by tick after the input changed. `endpoint`: the
+    changed output's own final mean, which must also have `expected_sign` (a reversal must cross).
+    Convergence is judged on its own; a response time is given only for a settled, non-negligible trace."""
     x = np.asarray(trace, dtype=np.float64)
     last, prev = x[-window:].mean(), x[-2 * window:-window].mean()
-    out = {"final": float(last), "settled": bool(abs(last - prev) < tol * abs(last)) if last != 0 else True,
-           "t90": None, "flag": None}
+    settled = bool(abs(last - prev) <= tol * abs(last)) if last != 0 else bool(prev == 0)
+    out = {"final": float(last), "settled": settled, "t90": None, "flag": None}
     if abs(last) < negligible:
-        out.update(flag="negligible", settled=True)
+        out["flag"] = "negligible"
         return out
-    if expected_sign is not None and np.sign(last) != expected_sign:
+    if expected_sign is not None and (np.sign(last) != expected_sign or
+                                      (endpoint is not None and np.sign(endpoint) != expected_sign)):
         out["flag"] = "wrong sign"
+    if not settled:
+        out["flag"] = out["flag"] or "not settled"
+        return out
     reached = np.flatnonzero(np.abs(x) >= frac * abs(last))
     out["t90"] = int(reached[0]) if reached.size else None
-    if not out["settled"] and out["flag"] is None:
-        out["flag"] = "not settled"
     return out

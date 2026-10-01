@@ -83,6 +83,7 @@ REGISTERED = {
     "probes": ["real", "mean", "swapped"],
     "shrink": [["populations", "bg_worlds", 32], ["ladder", "tune_worlds", 64], ["sweep", "worlds", 256]],
 }
+REGISTERED_FULL = copy.deepcopy(REGISTERED)  # the sizes before any shrink
 STAGES = ["project", "sweep", "attenuation", "ladder", "populations", "robustness"]
 RECORD = {s: s for s in STAGES}
 WHAT = {"project": "the projection", "sweep": "the residual sweep", "attenuation": "the attenuation probe",
@@ -120,7 +121,56 @@ def ladder_ids(step: int, what: str) -> np.ndarray:
 
 def selection_ids(i: int) -> np.ndarray:
     P = REGISTERED["populations"]
+    if SMOKE:
+        return E.SMOKE_IDS[8 * i:8 * i + P["select_worlds"]]
     return P["select_first"] + P["select_worlds"] * i + np.arange(P["select_worlds"])
+
+
+def population_selection_ids(n: int, size: int) -> np.ndarray:
+    """[n x size, worlds]: every strain of population i reads population i's selection worlds."""
+    return np.concatenate([np.tile(selection_ids(i), (size, 1)) for i in range(n)])
+
+
+def pick_g0(play_fn, n: int, size: int) -> np.ndarray:
+    """Each population's generation-0 best, scored on its own selection worlds (`play_fn(ids)` returns
+    [strains, worlds] counts), as `evolve_batch` picks generation 0's best."""
+    return DG.g0_bests(play_fn(population_selection_ids(n, size)), size)
+
+
+def rescore_choice(top: list[int], means) -> int:
+    """Among the re-scored candidates (`top`, in screening order), the best re-score; ties to the
+    lowest grid index (Astra)."""
+    order = sorted(range(len(top)), key=lambda i: (-float(means[i]), top[i]))
+    return top[order[0]]
+
+
+def robustness_shares(child_counts: np.ndarray, parent_mean: float):
+    """Each child's mean as a share of the parent's; undefined (None) when the parent scores 0."""
+    if parent_mean <= 0:
+        return None
+    return (np.asarray(child_counts, dtype=np.float64).mean(axis=1) / parent_mean).tolist()
+
+
+def robustness_reading(parent_mean: float, median_0125, median_025) -> dict:
+    """The plan's fallback: 0.125x if the median child keeps less than half at 0.25x and at least half at
+    0.125x; 0.25x if 0.25x keeps half; otherwise not drawn."""
+    if parent_mean <= 0 or median_0125 is None or median_025 is None:
+        return {"fallback": "undefined (the parent scores 0)"}
+    if median_025 >= 0.5:
+        return {"fallback": "0.25x"}
+    if median_0125 >= 0.5:
+        return {"fallback": "0.125x"}
+    return {"fallback": "neither scale keeps half: not drawn"}
+
+
+def on_bounds(c: dict, bcfg) -> list[str]:
+    """The candidate's parameters that sit on the genome's hard bounds (mutation is clamped there; Fable)."""
+    out = [k for k in ("w_n", "w_o", "w_s", "w_m") if k in c and abs(abs(float(c[k])) - bcfg.w_max) < 1e-9]
+    if abs(float(c["tau"]) - bcfg.tau_min) < 1e-9 or abs(float(c["tau"]) - bcfg.tau_max) < 1e-9:
+        out.append("tau")
+    if abs(abs(float(c["bias"])) - bcfg.b_max) < 1e-9:
+        out.append("bias")
+    return out
 
 
 def formal_ranges() -> dict:
@@ -257,38 +307,58 @@ def admit(args, prov, stage: str) -> dict:
 # ============================================================================== the projection
 
 def stage_episodes(R: dict) -> dict:
-    """{stage: {shape: episodes}} at the sizes in R; the ladder at its worst case (every step)."""
+    """{stage: {shape: episodes}} at the sizes in R; the ladder at its worst case (every step). A
+    shrunk size is priced at its own measured composition (the "_small" shapes)."""
     S, L, P, Rb = R["sweep"], R["ladder"], R["populations"], R["robustness"]
+    F = REGISTERED_FULL
     n_ch, n_k = R["champions"], len(S["ks"])
     cands = {"L1": 216, "L2": 648, "L3": 648, "L4x2": 216, "L4x4": 216}
     probes = len(R["probes"])
+    small = lambda shape, sec, key: shape + ("_small" if R[sec][key] < F[sec][key] else "")  # noqa: E731
     return {
-        "sweep": {"sweep": n_ch * (n_k + 1) * S["worlds"]},
+        "sweep": {small("sweep", "sweep", "worlds"): n_ch * (n_k + 1) * S["worlds"]},
         "attenuation": {},
-        "ladder": {"tuning": sum(cands.values()) * L["tune_worlds"],
-                   "rescore": len(cands) * L["top"] * L["rescore_worlds"] + 3 * L["rescore_worlds"],
+        "ladder": {small("tuning", "ladder", "tune_worlds"): sum(cands.values()) * L["tune_worlds"],
+                   "rescore": len(cands) * L["top"] * L["rescore_worlds"],
+                   "base_rescore": 3 * L["rescore_worlds"],
                    "qualification": len(cands) * probes * L["qual_worlds"]},
         "populations": {"selection": P["n"] * P["size"] * P["select_worlds"],
                         "g0": P["n"] * probes * P["d_worlds"],
-                        "backgrounds": P["n"] * P["size"] * probes * P["bg_worlds"],
+                        small("backgrounds", "populations", "bg_worlds"): P["n"] * P["size"] * probes * P["bg_worlds"],
                         "qualification": probes * P["e04a_worlds"]},
-        "robustness": {"robustness": len(Rb["scales"]) * Rb["mutants"] * Rb["worlds"] + Rb["worlds"]},
+        "robustness": {"robustness": len(Rb["scales"]) * Rb["mutants"] * Rb["worlds"], "robustness_parent": Rb["worlds"]},
     }
 
 
-def project_hours(rates: dict, R: dict) -> dict:
+def analysis_seconds(R: dict, boot: dict) -> dict:
+    """Bootstrap calls per stage, priced by the measured seconds per call at each world count."""
+    S, L, P = R["sweep"], R["ladder"], R["populations"]
+    n_ch, n_k = R["champions"], len(S["ks"]) - 1
+    per = lambda n: boot.get(str(n), max(boot.values()) if boot else 0.0)  # noqa: E731
+    return {"sweep": n_ch * n_k * per(S["worlds"]),
+            "ladder": 5 * 3 * per(L["qual_worlds"]),
+            "populations": P["n"] * 2 * per(P["d_worlds"]) + P["n"] * P["size"] * 2 * per(P["bg_worlds"]) + 2 * per(P["e04a_worlds"]),
+            "robustness": 0.0, "attenuation": 0.0}
+
+
+def project_hours(rates: dict, R: dict, extra_seconds: dict | None = None) -> dict:
+    """Rollouts at the measured rates, plus the measured non-rollout work (attenuation, dynamics, the
+    bootstrap) in `extra_seconds` {stage: seconds}."""
     eps = stage_episodes(R)
-    return {s: sum(n / rates[shape] for shape, n in eps[s].items()) / 3600.0 for s in eps}
+    extra = extra_seconds or {}
+    return {s: (sum(n / rates[shape] for shape, n in eps[s].items()) + extra.get(s, 0.0)) / 3600.0 for s in eps}
 
 
-def freeze_sizes(rates: dict, spent_hours: float) -> tuple[dict, dict, bool]:
-    """Apply the shrink order until the projection fits; return (sizes, projected hours, within)."""
+def freeze_sizes(rates: dict, spent_hours: float, extra=None) -> tuple[dict, dict, bool]:
+    """Apply the shrink order until the projection fits; return (sizes, projected hours, within).
+    `extra(R)` gives the non-rollout seconds per stage at the sizes in R."""
     R = copy.deepcopy(REGISTERED)
-    hours = project_hours(rates, R)
+    ex = (lambda r: extra(r)) if extra is not None else (lambda r: {})
+    hours = project_hours(rates, R, ex(R))
     for section, key, small in [[None, None, None]] + REGISTERED["shrink"]:
         if section is not None:
             R[section][key] = min(R[section][key], small)  # a shrink never grows a size
-            hours = project_hours(rates, R)
+            hours = project_hours(rates, R, ex(R))
         if spent_hours + sum(hours.values()) <= REGISTERED["admit_hours"]:
             break
     sizes = {f"{s}.{k}": R[s][k] for s, k, _ in REGISTERED["shrink"]}
@@ -314,16 +384,26 @@ def cmd_project(args):
             return Genome.cat([C.carrier_genome(ext, m, cfg.brain, forward=1.0, turn=0.1) for _ in range(n)])
 
         S, L, P, Rb = REGISTERED["sweep"], REGISTERED["ladder"], REGISTERED["populations"], REGISTERED["robustness"]
+        small = {k: dict(v) for k, v in REGISTERED_FULL.items() if isinstance(v, dict)}
+        for sec, key, val in REGISTERED["shrink"]:
+            small[sec][key] = min(REGISTERED[sec][key], val)
         shapes = {  # one chunk of each formal composition: (genome, interface, ids, chunk strains, instrumented)
             "sweep": (n2(S["chunk_strains"], 1), ctx.iface, smoke[:S["worlds"]], S["chunk_strains"], False),
+            "sweep_small": (n2(S["chunk_strains"], 1), ctx.iface, smoke[:small["sweep"]["worlds"]], S["chunk_strains"], False),
             "tuning": (carrier(L["tune_chunk_strains"]), gif, smoke[:L["tune_worlds"]], L["tune_chunk_strains"], False),
+            "tuning_small": (carrier(L["tune_chunk_strains"]), gif, smoke[:small["ladder"]["tune_worlds"]],
+                             L["tune_chunk_strains"], False),
             "rescore": (carrier(L["top"]), gif, smoke[:L["rescore_worlds"]], L["top"], False),
+            "base_rescore": (carrier(1), gif, smoke[:L["rescore_worlds"]], 1, False),
             "qualification": (carrier(1), gif, smoke[:L["qual_worlds"]], 1, False),
             "selection": (grafted(P["n"] * P["size"], 2), gif,
                           np.tile(smoke[:P["select_worlds"]], (P["n"] * P["size"], 1)), P["n"] * P["size"], False),
             "g0": (grafted(P["g0_chunk_strains"], 3), gif, smoke[:P["d_worlds"]], P["g0_chunk_strains"], False),
             "backgrounds": (grafted(P["bg_chunk_strains"], 4), gif, smoke[:P["bg_worlds"]], P["bg_chunk_strains"], True),
+            "backgrounds_small": (grafted(P["bg_chunk_strains"], 4), gif, smoke[:small["populations"]["bg_worlds"]],
+                                  P["bg_chunk_strains"], True),
             "robustness": (carrier(Rb["chunk_strains"]), gif, smoke[:Rb["worlds"]], Rb["chunk_strains"], False),
+            "robustness_parent": (carrier(1), gif, smoke[:Rb["worlds"]], 1, False),
         }
         if SMOKE:
             shapes = {k: (g.select(list(range(min(2, g.n_strains)))), i, ids[..., :4] if ids.ndim == 1 else ids[:2, :4],
@@ -331,22 +411,63 @@ def cmd_project(args):
         import time
         rates, timing = {}, {}
         play(cfg, ctx.iface, n2(1, 9), smoke[:4], dev, ctx.cap, 1, category="calibration")  # warm-up
-        for shape, (g, iface, ids, chunk, inst) in shapes.items():
+        def timed(fn):
             t0 = time.perf_counter()
-            if inst:
-                with DG.motor_stats():
-                    play(cfg, iface, g, ids, dev, ctx.cap, chunk, category="calibration")
-            else:
-                play(cfg, iface, g, ids, dev, ctx.cap, chunk, category="calibration")
+            fn()
             if dev != "cpu":
                 torch.cuda.synchronize()
-            secs = time.perf_counter() - t0
+            return time.perf_counter() - t0
+
+        for shape, (g, iface, ids, chunk, inst) in shapes.items():
+            def run(g=g, iface=iface, ids=ids, chunk=chunk, inst=inst):
+                if inst:
+                    with DG.motor_stats():
+                        play(cfg, iface, g, ids, dev, ctx.cap, chunk, category="calibration")
+                else:
+                    play(cfg, iface, g, ids, dev, ctx.cap, chunk, category="calibration")
+            first, secs = timed(run), timed(run)  # the second timing is used (warm), as E2d's projection
             episodes = g.n_strains * ids.shape[-1]
-            rates[shape], timing[shape] = episodes / secs, {"episodes": int(episodes), "seconds": secs}
-        sizes, hours, within = freeze_sizes(rates, E.clock().spent_hours())
+            rates[shape] = episodes / secs
+            timing[shape] = {"episodes": int(episodes), "seconds_first": first, "seconds": secs,
+                             "composition": [int(chunk), int(ids.shape[-1]), 1]}
+        # the non-rollout work, measured: attenuation (12 settles of 40 ticks per level, 47 strains), the
+        # open-loop dynamics (3 levels x 2 tests x (60 + 2 x 400) ticks, one strain, read every tick), and
+        # the bootstrap per call at each world count
+        A, Dy = REGISTERED["attenuation"], REGISTERED["dynamics"]
+        b47 = Brain(EV.moved(n2(47 if not SMOKE else 2, 5), dev))
+
+        def settle47():
+            v = b47.initial_state(1)
+            cur = torch.zeros(b47.n_strains, 1, spec.n, device=dev)
+            for _ in range(A["ticks"]):
+                v = b47.step(v, cur)
+        att = timed(settle47) * 4 * len(A["levels"])
+        b1 = Brain(EV.moved(carrier(1), dev))
+
+        def ticks100():
+            v = b1.initial_state(1)
+            cur = torch.zeros(1, 1, ext.n, device=dev)
+            for _ in range(100):
+                v = b1.step(v, cur)
+                float(C.motor_commands(v.cpu(), gif, cfg)[1])
+        dyn = timed(ticks100) / 100 * len(Dy["levels"]) * 2 * (Dy["precondition"] + 2 * Dy["horizon"])
+        boot = {}
+        for nw in sorted({S["worlds"], small["sweep"]["worlds"], L["qual_worlds"], P["d_worlds"], P["bg_worlds"],
+                          small["populations"]["bg_worlds"], P["e04a_worlds"]}):
+            x = np.arange(nw, dtype=np.float64) % 3
+            boot[str(nw)] = timed(lambda x=x: D2.world_ci(x, x[::-1]))
+
+        def extra(R):
+            a = analysis_seconds(R, boot)
+            return {"sweep": a["sweep"], "attenuation": att, "ladder": a["ladder"] + dyn,
+                    "populations": a["populations"], "robustness": 0.0}
+        elapsed = (time.perf_counter() - ctx.cap.t_start) / 3600.0  # this attempt so far (Fable, Astra)
+        spent = E.clock().spent_hours() + elapsed
+        sizes, hours, within = freeze_sizes(rates, spent, extra)
         return {"rates_episodes_per_second": rates, "timing": timing, "projected_hours": hours,
-                "projected_total_hours": float(sum(hours.values())), "frozen_sizes": sizes, "within_limit": within,
-                "admit_hours": REGISTERED["admit_hours"]}
+                "non_rollout_seconds": {"attenuation": att, "dynamics": dyn, "bootstrap_per_call": boot},
+                "spent_hours_at_freeze": spent, "projected_total_hours": float(sum(hours.values())),
+                "frozen_sizes": sizes, "within_limit": within, "admit_hours": REGISTERED["admit_hours"]}
     return E.run_stage(args, "project", lambda a, prov: {}, body)
 
 
@@ -419,7 +540,8 @@ def cmd_attenuation(args):
                 v = brain.step(v, cur)
                 a = torch.tanh(v)[:, 0]
                 acts.append(a[:, read])
-                turns.append((a[:, tp.to(dev)].mean(-1) - a[:, tm.to(dev)].mean(-1)) * 0.5 * ctx.cfg.world.turn_gain)
+                turns.append(((a[:, tp.to(dev)].mean(-1) - a[:, tm.to(dev)].mean(-1)) * 0.5
+                              * ctx.cfg.world.turn_gain).clamp(-1, 1))  # the world's command, clamped
             k = A["average"]
             return (torch.stack(acts[-k:]).mean(0).cpu().numpy(), torch.stack(turns[-k:]).mean(0).cpu().numpy())
 
@@ -477,7 +599,7 @@ def open_loop_dynamics(c: dict, cfg, con, device) -> dict:
             v0, _ = trace(brain.initial_state(1), current(mm, d0), Dy["precondition"])
             _, changed = trace(v0.clone(), current(mm, d1), Dy["horizon"])
             _, control = trace(v0.clone(), current(mm, d0), Dy["horizon"])
-            res[f"{name} m={mm}"] = DG.settle(changed - control, expected_sign=sign)
+            res[f"{name} m={mm}"] = DG.settle(changed - control, expected_sign=sign, endpoint=float(changed[-20:].mean()))
     return res
 
 
@@ -500,9 +622,18 @@ def cmd_ladder(args):
             top = take_best(tune.mean(axis=1), L["top"])
             res = play(cfg, gif, candidate_genome(ext, [cands[i] for i in top], cfg.brain), ids(s, "rescore"), dev,
                        ctx.cap, L["top"], category="tuning")
-            best = top[take_best(res.mean(axis=1), 1)[0]]
+            best = rescore_choice(top, res.mean(axis=1))
             log["steps"].append({"step": step, "candidates": len(cands), "tune_means": tune.mean(axis=1).tolist(),
-                                 "top": top, "rescore_means": res.mean(axis=1).tolist(), "chosen": cands[best]})
+                                 "top": top, "rescore_means": res.mean(axis=1).tolist(), "chosen": cands[best],
+                                 "tune_worlds": [int(ids(s, "tune")[0]), len(ids(s, "tune"))],
+                                 "rescore_worlds": [int(ids(s, "rescore")[0]), len(ids(s, "rescore"))],
+                                 "composition": {"tuning": [L["tune_chunk_strains"], len(ids(s, "tune")), 1],
+                                                 "tuning_last_chunk_strains": len(cands) % L["tune_chunk_strains"]
+                                                 or L["tune_chunk_strains"],
+                                                 "rescore": [L["top"], len(ids(s, "rescore")), 1],
+                                                 "qualification": [1, len(ids(s, "qual")), 1]},
+                                 "tune_per_world_counts": tune.astype(int).tolist(),
+                                 "rescore_per_world_counts": res.astype(int).tolist()})
             E.write_atomic(E.partial_path("ladder"), {**ctx.doc, "ladder_log": log})
             return cands[best]
 
@@ -519,14 +650,16 @@ def cmd_ladder(args):
 
         def base_select(finalists):
             s = LADDER_STEPS.index("L4x2")
-            means = []
+            means, per_world = [], []
             for c in finalists:
                 m = module_of(c)
                 ext = G.graft_connectome(con, m)
                 g = C.carrier_genome(ext, m, cfg.brain, forward=c["forward"], turn=c["turn"])
-                means.append(float(play(cfg, G.graft_interface(ext, m), g, ids(s, "rescore"), dev, ctx.cap, 1,
-                                        category="tuning").mean()))
-            log["base_selection"] = {"finalists": finalists, "means": means}
+                counts = play(cfg, G.graft_interface(ext, m), g, ids(s, "rescore"), dev, ctx.cap, 1, category="tuning")
+                means.append(float(counts.mean()))
+                per_world.append(counts[0].astype(int).tolist())
+            log["base_selection"] = {"finalists": finalists, "means": means, "per_world_counts": per_world,
+                                     "composition": [1, len(ids(s, "rescore")), 1]}
             return finalists[take_best(means, 1)[0]]
 
         result = ladder_search(evaluate, qualify, base_select)
@@ -537,6 +670,7 @@ def cmd_ladder(args):
         c = result["qualified"]
         with acct.category("probe"):
             out["dynamics"] = open_loop_dynamics(c, cfg, con, dev)
+        out["on_bounds"] = on_bounds(c, cfg.brain)
         m = module_of(c)
         module_doc = {"candidate": c, "neurons": list(m.neurons), "synapses": [list(s) for s in m.synapses],
                       "tau": m.tau, "bias": m.bias, "noses": m.noses, "nose_gain": m.nose_gain,
@@ -545,6 +679,7 @@ def cmd_ladder(args):
         path = E.EXP / "module.json"
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(text, encoding="utf-8", newline="\n")
+        ctx.after_fail = lambda: path.unlink(missing_ok=True)  # never beside a not-completed record (Fable)
         out["module_file"] = {"path": path.name, "sha256": hashlib.sha256(text.encode()).hexdigest()}
         return out
     return E.run_stage(args, "ladder", lambda a, prov: admit(a, prov, "ladder"), body)
@@ -567,6 +702,8 @@ def cmd_populations(args):
         spec = BrainSpec.from_connectome(load_connectome())
         e04a = D2.e04a_champions(spec, cfg)
         lab = REGISTERED["populations"]["e04a_label"]
+        if lab not in e04a and not SMOKE:
+            raise SystemExit(f"{lab} is missing: item 3.4 would be dropped silently")
         loaded["e04a"] = e04a[lab][:2] if lab in e04a else None
         return proj
 
@@ -581,10 +718,13 @@ def cmd_populations(args):
         pops = [C.embedded_population(con, ext, m, cfg.brain, run_seed=P["seed_base"] + i, population=size)
                 for i in range(n)]
         genome = Genome.cat(pops)
-        sel = np.concatenate([np.tile(selection_ids(i) if not SMOKE else E.SMOKE_IDS[8 * i:8 * i + 2], (size, 1))
-                              for i in range(n)])
-        score = play(cfg, G.graft_interface(ext, m), genome, sel, dev, ctx.cap, n * size, category="selection")
-        best = DG.g0_bests(score, size)
+        held = {}
+
+        def select_play(ids2d):
+            held["ids"], held["score"] = ids2d, play(cfg, G.graft_interface(ext, m), genome, ids2d, dev, ctx.cap,
+                                                     n * size, category="selection")
+            return held["score"]
+        best = pick_g0(select_play, n, size)
         bests = Genome.cat([pops[i].select([int(b)]) for i, b in enumerate(best)])
         d_ids = np.arange(P["d_first"], P["d_first"] + P["d_worlds"]) if not SMOKE else E.SMOKE_IDS[2000:2016]
         g0 = module_probe_counts(cfg, ext, m, bests, d_ids, dev, ctx.cap, P["g0_chunk_strains"])
@@ -597,7 +737,11 @@ def cmd_populations(args):
         for p in ("mean", "swapped"):
             bg[p] = play(cfg, G.graft_interface(ext, m, probe=p), genome, bg_ids, dev, ctx.cap, P["bg_chunk_strains"])
         bg_classes = [uses_class(bg, i) for i in range(genome.n_strains)]
-        out = {"g0_best_index": best.tolist(), "g0_best_sha256": [genome_hash(bests, i) for i in range(n)],
+        out = {"selection": {"world_ids": held["ids"].astype(int).tolist(), "per_world_counts": held["score"].astype(int).tolist(),
+                             "composition": [n * size, int(held["ids"].shape[1]), 1]},
+               "composition": {"g0": [P["g0_chunk_strains"], len(d_ids), 1], "backgrounds": [P["bg_chunk_strains"], len(bg_ids), 1],
+                               "e04a_run02": [1, P["e04a_worlds"] if not SMOKE else 16, 1]},
+               "g0_best_index": best.tolist(), "g0_best_sha256": [genome_hash(bests, i) for i in range(n)],
                "g0_classes": g0_classes, "g0_counts": tally,
                "reading": ("E4s-1 proceeds on random N2" if tally["uses"] >= P["needed"] else
                            "E4s-1's design must change its background, its reading, or both"),
@@ -658,17 +802,20 @@ def cmd_robustness(args):
         ids = np.arange(Rb["first"], Rb["first"] + Rb["worlds"]) if not SMOKE else E.SMOKE_IDS[5000:5008]
         n = Rb["mutants"] if not SMOKE else 4
         p_counts = play(cfg, gif, parent, ids, dev, ctx.cap, 1)
-        out = {"candidate": c, "label": loaded["labelled"], "parent_mean": float(p_counts.mean()), "per_scale": {}}
+        pm = float(p_counts.mean())
+        out = {"candidate": c, "label": loaded["labelled"], "parent_mean": pm, "per_scale": {},
+               "composition": {"parent": [1, len(ids), 1], "children": [Rb["chunk_strains"], len(ids), 1],
+                               "note": "the parent runs as one padded strain and the children in chunks of "
+                                       f"{Rb['chunk_strains']}: the share compares across compositions (descriptive)"}}
         for scale in Rb["scales"]:
             kids = mutants(parent, ext, cfg.mutation, scale, n, Rb["seed_base"])
             k_counts = play(cfg, gif, kids, ids, dev, ctx.cap, Rb["chunk_strains"])
-            share = k_counts.mean(axis=1) / max(p_counts.mean(), 1e-12)
-            out["per_scale"][str(scale)] = {"median_share": float(np.median(share)), "child_means": k_counts.mean(axis=1).tolist()}
-        if p_counts.mean() <= 0:  # a share of a zero score is undefined
-            out["fallback"] = "undefined (the parent scores 0)"
-        else:
-            q, e = out["per_scale"]["0.25"]["median_share"], out["per_scale"]["0.125"]["median_share"]
-            out["fallback"] = "0.125x" if (q < 0.5 and e >= 0.5) else "0.25x"
+            shares = robustness_shares(k_counts, pm)
+            out["per_scale"][str(scale)] = {"median_share": None if shares is None else float(np.median(shares)),
+                                            "child_means": k_counts.mean(axis=1).tolist(),
+                                            "per_world_counts": k_counts.astype(int).tolist()}
+        out.update(robustness_reading(pm, out["per_scale"]["0.125"]["median_share"],
+                                      out["per_scale"]["0.25"]["median_share"]))
         out["parent_per_world_counts"] = p_counts[0].astype(int).tolist()
         return out
     return E.run_stage(args, "robustness", requires, body)

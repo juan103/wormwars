@@ -116,10 +116,18 @@ def test_the_module_probes_change_only_the_noses_currents():
 
 
 def test_the_projection_shrinks_in_order_and_never_grows(mod):
-    fast = {s: 1e9 for s in ("sweep", "tuning", "rescore", "qualification", "selection", "g0", "backgrounds",
-                             "robustness")}
+    fast = {s: 1e9 for s in ("sweep", "sweep_small", "tuning", "tuning_small", "rescore", "base_rescore",
+                             "qualification", "selection", "g0", "backgrounds", "backgrounds_small", "robustness",
+                             "robustness_parent")}
     sizes, hours, within = mod.freeze_sizes(fast, 0.0)
     assert within and sizes == {"populations.bg_worlds": 64, "ladder.tune_worlds": 128, "sweep.worlds": 512}
+    # the non-rollout work counts: an hour of it alone forces every shrink and still does not fit
+    sizes, _, within = mod.freeze_sizes(fast, 0.0, lambda R: {"ladder": 7000.0})
+    assert not within and sizes["sweep.worlds"] == 256
+    # a shrunk size is priced at its own measured composition
+    R = mod.copy.deepcopy(mod.REGISTERED)
+    R["sweep"]["worlds"] = 256
+    assert "sweep_small" in mod.stage_episodes(R)["sweep"] and "sweep" not in mod.stage_episodes(R)["sweep"]
     eps = mod.stage_episodes(mod.REGISTERED)
     total = sum(sum(v.values()) for v in eps.values())
     assert 0.75e6 < total < 0.9e6  # the plan's about 0.82 M
@@ -130,3 +138,63 @@ def test_the_projection_shrinks_in_order_and_never_grows(mod):
     assert within and sizes["populations.bg_worlds"] == 32 and sizes["ladder.tune_worlds"] == 128
     sizes, _, within = mod.freeze_sizes({k: 1.0 for k in fast}, 0.0)
     assert not within and sizes == {"populations.bg_worlds": 32, "ladder.tune_worlds": 64, "sweep.worlds": 256}
+
+
+def test_rescore_ties_go_to_the_first_in_grid_order(mod):
+    """`top` is in screening order; a tie on the re-score goes to the lower grid index (Astra)."""
+    assert mod.rescore_choice([1, 0], [5.0, 5.0]) == 0
+    assert mod.rescore_choice([3, 7, 2], [4.0, 6.0, 6.0]) == 2
+    assert mod.rescore_choice([3, 7, 2], [9.0, 6.0, 6.0]) == 3
+
+
+def test_generation0_selection_reads_the_selection_worlds(mod):
+    """Scores that depend on the world: on selection worlds strain 1 of each population wins, on any
+    other world strain 0 does. The production routing must pick strain 1."""
+    sel_all = set(np.concatenate([mod.selection_ids(i) for i in range(16)]).tolist())
+
+    def fake_play(ids2d):
+        ids2d = np.asarray(ids2d)
+        score = np.zeros(ids2d.shape)
+        on_sel = np.isin(ids2d, list(sel_all))
+        strain = np.arange(ids2d.shape[0])[:, None] % 4
+        score[(strain == 1) & on_sel] = 3.0
+        score[(strain == 0) & ~on_sel] = 5.0
+        return score
+
+    ids = mod.population_selection_ids(3, 4)
+    assert ids.shape == (12, 8)
+    for s in range(12):
+        np.testing.assert_array_equal(ids[s], mod.selection_ids(s // 4))
+    np.testing.assert_array_equal(mod.pick_g0(fake_play, 3, 4), [1, 1, 1])
+
+
+def test_mutants_are_paired_across_scales_and_differ_across_j(mod):
+    con = load_connectome()
+    m = C.comparator("L1", w_n=1.5, w_o=1.5, tau=2.0, bias=0.0)
+    ext = G.graft_connectome(con, m)
+    from wormwars.config import Config
+    cfg = Config()
+    parent = C.carrier_genome(ext, m, cfg.brain, forward=1.0, turn=0.1)
+    a = mod.mutants(parent, ext, cfg.mutation, 0.25, 3, 1_151_000)
+    b = mod.mutants(parent, ext, cfg.mutation, 1.0, 3, 1_151_000)
+    i, j = ext.index("E4S_NL"), ext.index("E4S_CL")
+    W0, _ = parent.dense()
+    Wa, _ = a.dense()
+    Wb, _ = b.dense()
+    da, db = Wa[:, i, j] - W0[0, i, j], Wb[:, i, j] - W0[0, i, j]
+    np.testing.assert_allclose(da.numpy(), 0.25 * db.numpy(), rtol=1e-4, atol=1e-6)  # the same draws
+    assert len({float(x) for x in db}) == 3  # mutant j's draws differ across j
+
+
+def test_the_robustness_reading(mod):
+    assert mod.robustness_reading(0.0, 0.9, 0.9)["fallback"] == "undefined (the parent scores 0)"
+    assert mod.robustness_reading(5.0, 0.6, 0.4)["fallback"] == "0.125x"
+    assert mod.robustness_reading(5.0, 0.6, 0.7)["fallback"] == "0.25x"
+    assert mod.robustness_reading(5.0, 0.3, 0.2)["fallback"] == "neither scale keeps half: not drawn"
+    assert mod.robustness_shares(np.array([[1.0, 2.0]]), 0.0) is None
+
+
+def test_parameters_on_the_genomes_bounds_are_named(mod):
+    from wormwars.config import Config
+    b = mod.on_bounds({"w_n": 3.0, "w_o": 2.0, "tau": 0.5, "bias": 0.0, "w_m": -0.8}, Config().brain)
+    assert set(b) == {"w_n", "tau"}

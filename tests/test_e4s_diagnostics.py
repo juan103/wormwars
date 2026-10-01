@@ -142,3 +142,12 @@ def test_the_settling_rule():
     assert not D.settle(slow)["settled"]
     assert D.settle(np.full(400, 5e-5))["flag"] == "negligible"
     assert D.settle(-fast, expected_sign=1)["flag"] == "wrong sign"
+    # unsettled traces get no response time, and a negligible final mean does not make a trace settled
+    s = D.settle(slow)
+    assert s["t90"] is None and s["flag"] == "not settled"
+    drifting = np.concatenate([np.zeros(360), np.linspace(0, 8e-5, 40)])
+    r = D.settle(drifting)
+    assert r["flag"] == "negligible" and not r["settled"]
+    # a reversal whose own output never crosses zero is flagged, though its change from control is negative
+    assert D.settle(-fast, expected_sign=-1, endpoint=0.05)["flag"] == "wrong sign"
+    assert D.settle(-fast, expected_sign=-1, endpoint=-0.05)["flag"] is None
