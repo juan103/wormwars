@@ -4620,3 +4620,38 @@ labels; run indices from 0; G3's genomes; the new O1 label.
 
 Both reviewers said "bind after fixes", and every listed fix is applied, so the pre-registration
 binds without a further round. It is committed and pushed before any E4s-1 stage runs (rule 2).
+
+## D151 — E4s-1's runner, test-first; smoke end to end; to code review
+
+**Built, against the bound pre-registration (D150):**
+- **`wormwars/e4s/arms.py`:**
+  - L1, loaded by its bound sha256 and registered in `graft.MODULES`;
+  - `arm_scales`;
+  - R's signs, s_k × 3.0;
+  - N's construction;
+  - the Mc transplant;
+  - reset and the L1 rescue.
+- **`wormwars/e4s/readings.py`:**
+  - O1's five ordered rules and their companion sentences;
+  - the nine O2 labels;
+  - the arm reading and retention;
+  - C2's ordered reading;
+  - the O3 split.
+- **`scripts/e4s1.py`:** projection, three gates, R's draws, ten training batches, the endpoint
+  evaluation and the evaluation along training, in E4s-1's own copy of E2's stage frame.
+  - Per-world counts go to committed `.npz` files, and genomes stay local.
+  - One design choice the pre-registration left open: the G0 population counts and the final
+    populations run 32 strains per chunk, and along training 8 per chunk. Both compositions are
+    recorded. The endpoints run one padded strain per genome, as registered.
+  - **R's "open-loop K_D and K_C at generation 0"** is measured on the draw's own module on the
+    carrier (turn 0), apart from the host.
+
+**Tests:**
+- **The libraries' 20:** seen failing first. 6 sabotages caught, after one test was strengthened (a
+  tie at the split's boundary).
+- **The script's 6,** written after it: 4 sabotages caught (ranges overlapping E4s-0's, N's
+  assertion off, G2's seed, C2 sharing seeds).
+- **The full suite passes.**
+
+**The smoke** (`runs/e4s1-smoke`) ran all 17 stages end to end. Admission is skipped in smoke, where
+the projection prices the formal work at toy rates.
