@@ -2,7 +2,27 @@
 
 *27 September 2026. Replaces v2. Written from roadmap v2, Astra 6's review of v2, and Claude Code's status report of the same day. A local v2.2 exists on the `roadmap` branch and was not seen when this version was written, so merge anything it adds. (Merged: see "Carried over from v2.2" below. Four factual corrections were made on installation; they are listed in D062.) This is a living document, not a pre-registration. When a result changes it, the change is recorded here with the reason.*
 
-## Status, 29 September 2026 (updates the section below; that section's later edits are recorded in DECISIONS.md)
+## Status, 1 October 2026 (updates the section below; that section's later edits are recorded in DECISIONS.md)
+
+- **E4s, a hand-built stereo module, ahead of plan** (the owner, 2026-09-30; D139-D144). E2d's
+  plateau means E3 has no stereo navigator. The owner asked for one to be built by hand and settled by
+  evolution, with a **96 GPU-hour ceiling**. What happened:
+  - **The first designs (v1-v3) rested on an unchecked report.** It was called "a deep research", but
+    it was a single CLI session with snippet-level sources (corrected in D143).
+  - **A real literature review followed** (`docs/reviews/20261001-literature-review/`, by Claude Opus
+    and Astra 6, from one prompt). It found that:
+    - a ring attractor is not needed to steer on a smooth scent; a small comparator suffices;
+    - the worm's own chemotaxis is temporal, not stereo.
+  - **The owner kept bilateral stereo sensing as an explicit game-design choice** (option (a)).
+  - **The plan, reviewed in two rounds** (both reviewers "adopt with changes"; v2.1 adopted):
+    - **E4s-0:** exploratory diagnostics, at most 2 GPU-hours;
+    - **E4s-1:** a comparator graft under evolution, pre-registered;
+    - **E4s-2:** the ring, deferred to a task that needs memory.
+
+    See "E4s" under Track E and `docs/E4s/ROADMAP-PROPOSAL.md`.
+  - **The engine changes are done:** grafting extra neurons, per-parameter mutation scales and GA
+    hooks, all test-first. The GPU check passed: E2's generations 0-25 reproduce exactly.
+  - **E3 no longer waits:** it starts after E4s-0, with the artefact rule in the E4s section.
 
 - **Published on main:**
   - 02's D050 correction, as a Corrections entry (27 September, D063);
@@ -148,12 +168,16 @@ Failure in one track says nothing about the other. Track E may include optional 
 2. **T0 and T1:** correctness and throughput on the code path actually used.
 3. **E1:** scripted navigation first, then the evolved navigation primitive (04a).
 4. **E2:** a short optimizer screen on that task.
+   - **E4s** (added 2026-10-01, ahead of plan): a hand-built stereo module, because E2d found a
+     non-stereo plateau.
+     - E4s-0, the diagnostics, comes before E3.
+     - E4s-1, the comparator graft under evolution, runs in parallel with E3.
 5. **E3:** the minimal A/B organism (04b).
 6. **E4:** does useful information cross between the two modules (04c)?
 
 Track B continues in parallel: 03r, then the mechanism follow-up or closure, then the 03a redesign. *(29 September: 03r replicated, and 03m ran as the exploratory follow-up. Next in Track B: a confirmatory 03m study, then 03a's six-neuron proof of concept.)*
 
-**Tripwire.** No new infrastructure beyond T0, T1 and minimal module save/load until the minimal A/B organism runs. Everything after E4 is direction, not schedule.
+**Tripwire.** No new infrastructure beyond T0, T1 and minimal module save/load until the minimal A/B organism runs. Everything after E4 is direction, not schedule. *(Relaxed 2026-10-01, D144, for E4s's graft functions and GA hooks only.)*
 
 ## Shared foundations
 
@@ -206,7 +230,43 @@ Track B continues in parallel: 03r, then the mechanism follow-up or closure, the
   fired, so Task N is diagnosed before E3 (below, "What would change this roadmap"). The diagnosis,
   E2d, ran (D127-D137): a non-stereo plateau that no tested change leaves.
 
+### E4s: a hand-built stereo module (added 2026-10-01, ahead of plan; D139-D144)
+
+- **Why:** E2d found a non-stereo plateau. None of the 47 distinct champions meets the "uses the
+  left-right difference" criterion: 43 show no material benefit, and 4 are unclear.
+- **The owner's decisions:**
+  - build stereo steering by hand and let evolution settle it into N2;
+  - **96 GPU-hours** for all of E4s, as a ceiling;
+  - **the bilateral left/right scent stays as an explicit game-design choice** (option (a)). The
+    real worm steers by temporal sensing. E4s's claims say that the stereo computation lives in a
+    graft with its own noses and path to the motors, outside the N2 mask.
+- **The plan** (`docs/E4s/ROADMAP-PROPOSAL.md`, v2.1, adopted after two review rounds):
+  - **E4s-0, diagnostics** (exploratory; at most 2 GPU-hours; plan in `docs/E4s/E4s-0-PLAN.md`,
+    reviewed before it runs):
+    - a residual stereo-gain sweep on the 47 champions;
+    - where their response to the difference is attenuated;
+    - a fixed ladder of small comparators (4-10 neurons, within the genome's bounds), qualified on
+      the carrier and measured on random N2 backgrounds;
+    - mutational robustness.
+  - **E4s-1, the comparator graft under evolution** (confirmatory; pre-registered):
+    - the arms are main (M), no added output (N) and a random graft of the same shape (R),
+      confirmatory; and frozen, uniform mutation and a case study on 04a run 2, descriptive;
+    - each run is classified exclusively: acquired, never used, retained, used with the module
+      changed, host stereo, bypassed or lost.
+  - **E4s-2, memory:** a ring only if a task shows demand for it (outages, relocation, displacement),
+    starting from Noorman et al.'s released code.
+- **What E3 takes:** E4s-0's frozen comparator on the carrier if one qualifies, labelled as a
+  hand-built circuit on a silent worm; otherwise 04a run 2. An evolved genome from E4s-1 replaces it
+  only with a "retained" majority, chosen among individually retained genomes, and only if it passes
+  E3's own positive control.
+
 ### E3 / 04b: minimal A/B organism
+
+- *Added 2026-10-01 (D144):*
+  - a baseline of one shared navigator plus a persistent goal bit;
+  - the latch may be one self-exciting extra neuron, validated in our integrator;
+  - the inactive module's semantics are declared in advance;
+  - the navigation artefact follows E4s's rule.
 
 - **The organism:** two copies of the validated navigation module. A-related observations go to one copy and B-related observations to the other.
 - **The selector:** a set-reset latch. A confirmed visit to A switches to "go to B", and a confirmed visit to B switches to "go to A". It is engineered starting structure, labelled hybrid.
@@ -254,6 +314,14 @@ Three separate questions, from easiest to hardest:
 - the prior results to compare against: goals varying across modular subtasks (Kashtan and Alon, 2005), connection costs (Clune, Mouret and Lipson, 2013), and duplicated modules specialising (Calabretta and colleagues, 2000);
 - each run's gene-duplication fate, as description only;
 - controls: cross-links impossible; the unevolved duplicates at generation 0; the selector removed.
+
+- *Added 2026-10-01 (D144):* pruning follows a protocol (Fakhar & Hilgetag 2022):
+  - importance recomputed after each removal;
+  - several removal orders;
+  - pairs tested;
+  - acute and retrained results reported separately;
+  - the preserved function includes the stereo or latch property;
+  - the claim limited to "the smallest circuit found under this procedure".
 
 ### Direction after E4 (not scheduled)
 
@@ -389,6 +457,10 @@ The first social experiments use colonies of clones: one genome for every wey, e
   - cite the Creamer et al. preprint by version;
   - describe named neurons as solving gene correspondence, not co-adaptation.
 - **ENOMAD** (Churchland and Garcia-Ojalvo) is the closest prior work. Read it in full before E2.
+- **The E4s literature review** (`docs/reviews/20261001-literature-review/`, 2026-10-01; two reviews,
+  Claude Opus and Astra 6, not verified by us as a whole). Each claim is verified before it is cited.
+  - Izquierdo & Beer 2013 is the reference worm-chemotaxis model.
+  - Hironaka & Sumi's MIT repository is a candidate executable baseline, not yet run.
 - **For the memory thread,** compare 02b's critical core and 03's history effect with the state-dependent mechanisms in evolved klinotaxis models (Izquierdo and colleagues) and with the navigation interneurons in the experimental literature, citing only what survey v2 has checked.
 - **A collective-behaviour survey** is needed before claims for stages 05 to 08. It should cover double-pheromone mechanisms, evolved signalling, swarm robotics, task allocation, behaviour arbitration, predator–prey coevolution, and causal measures of cooperation.
 
@@ -403,6 +475,11 @@ The first social experiments use colonies of clones: one genome for every wey, e
     the registered 0.5. The diagnosis, E2d, ran (D127-D137): a non-stereo plateau that no tested
     change leaves; E3's design takes it from there. The reviewers'
     first suggestions are in D125.
+- **No comparator step qualifies in E4s-0** (added 2026-10-01): the owner decides among wider or
+  rescaled weights, temporal sensing with head oscillation, and larger circuits. E3 proceeds on 04a
+  run 2.
+- **E4s-1 finds no "retained" majority** (added 2026-10-01): E3 keeps E4s-0's frozen module, and the
+  result is reported in the wording fixed in advance.
 - **The minimal A/B organism fails:** diagnose sensing, objective, controller capacity and optimizer progress separately before adding capability.
 - **04c finds no useful transfer:** report it, and check whether the latch or the module interfaces block transfer before concluding anything about evolution.
 - **Infrastructure keeps growing while the first organism does not exist:** the tripwire applies. Stop and ship the minimal A/B organism.

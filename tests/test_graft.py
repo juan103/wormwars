@@ -161,3 +161,20 @@ def test_a_module_synapse_drives_its_postsynaptic_neuron(con):
             v = brain.step(v, torch.zeros(1, 1, ext.n))
         if driven.startswith("E4S_"):  # a module neuron has no other inputs, so it stays at 0
             assert abs(float(v[0, 0, ext.index(driven)])) < 1e-6
+
+
+def test_a_module_neuron_may_excite_itself(con):
+    """A self-edge (E4s-0's ladder step L2, E3's latch): it becomes a chemical edge i -> i, its weight is
+    placed, and the neuron's activity holds above what its bias alone gives."""
+    m = G.Module(name="self", neurons=("E4S_S",), synapses=(("E4S_S", "E4S_S", 0.95),), bias={"E4S_S": 0.2})
+    ext = G.graft_connectome(con, m)
+    i = ext.index("E4S_S")
+    assert ext.chem[i, i] == 1.0
+    gen = G.seeded_genome(ext, m, Config().brain, n_strains=1)
+    W, _ = gen.dense()
+    assert float(W[0, i, i]) == pytest.approx(0.95)
+    brain, v = Brain(gen), None
+    v = brain.initial_state(1)
+    for _ in range(60):
+        v = brain.step(v, torch.zeros(1, 1, ext.n))
+    assert float(v[0, 0, i]) > 0.5  # a bias of 0.2 alone settles at 0.2

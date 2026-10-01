@@ -1,11 +1,15 @@
-# Proposed roadmap change: E4s after the literature review (v2, 2026-10-01)
+# Proposed roadmap change: E4s after the literature review (v2.1, 2026-10-01)
 
-Status: v2, for a confirmation round by Astra 6 and Fable 5.1. Nothing here has run.
-- **v1** (commit cc13ff8): both reviewers said "adopt with changes"
+Status: v2.1, adopted. It goes into `ROADMAP.md` as a dated amendment (D144). Nothing here has run.
+- **v1** (cc13ff8): both reviewers said "adopt with changes"
   (`docs/reviews/20261001-roadmap-proposal/`).
-- **v2** takes every must-fix; the map is the last section.
+- **v2** (fdddee4): both said "adopt with changes" again
+  (`docs/reviews/20261001-roadmap-proposal-v2/`). Fable added that none of its items needed a new
+  design round.
+- **v2.1** takes every v2 item; the maps are the last two sections.
 
-If both agree, it goes into `ROADMAP.md` as a dated amendment (D143).
+The details of E4s-0's script are pinned in its own plan (`docs/E4s/E4s-0-PLAN.md`), which is
+reviewed before it runs.
 
 ## Why a change
 
@@ -88,13 +92,26 @@ If both agree, it goes into `ROADMAP.md` as a dated amendment (D143).
   - The champions' own gain is about 0.1, hence the small values. E1's useful range reaches 256.
   - The addition is made by the exploratory script around the world's motor readout. It is not an
     engine change.
-- **Per champion, the difference from k = 0 at each k.** The pre-stated description:
-  - **rises:** the smallest k whose lower bound is above 0 is at most 1, and no smaller k has an
-    upper bound below 0;
-  - **dips first:** some k below the first improving k has an upper bound below 0;
-  - **no benefit:** no k has a lower bound above 0;
+- **Units:** L and R are the scaled `food_left` and `food_right` the interface injects (E1's units),
+  and turn > 0 is a left turn.
+- **Checked first:**
+  - the residual is inserted before the clamp;
+  - at k = 0 the wrapped world reproduces the unwrapped champion's per-world counts exactly.
+- **Per champion, the paired difference from k = 0 at each k.** The materiality threshold is 0:
+  this is descriptive, not E2d's criterion.
+- **Adjacency, against multiplicity** (Fable): "improves at k" needs lower bounds above 0 at k and at
+  the next larger k. "Is harmed at k" needs upper bounds below 0 at k and at the next larger k. The
+  first improving k is the smallest k that improves.
+- **The pre-stated classes:**
+  - **rises early:** the first improving k is at most 1, and no smaller k is harmed;
+  - **rises late:** the first improving k is above 1, and no smaller k is harmed. This is the likeliest
+    case: k ≤ 1 adds at most about 0.017 to the turn command;
+  - **dips first:** an improving k exists, and some smaller k is harmed;
+  - **harmed:** no improving k, and some k is harmed;
+  - **no detected benefit on the tested grid:** neither (Astra: broad intervals fall here too);
   - otherwise **unclear**.
-- **Reported:** the count of champions in each class, and each champion's best k.
+- **Reported:** the count in each class, and each champion's first improving k. Even with adjacency,
+  these are exploratory results from scanning many pointwise intervals.
 - **Its reach (Astra):** this tests one externally inserted change of policy. A dip shows a valley
   along that intervention, not along every route evolution could take, and it says nothing direct
   about what weight mutations produce. It informs E4s-1's interpretation; it does not gate it.
@@ -103,10 +120,13 @@ If both agree, it goes into `ROADMAP.md` as a dated amendment (D143).
 both suggested).
 - **Method:** the differential gain K_D = ∂u/∂d and the common-mode gain K_C = ∂u/∂m (d = L − R,
   m = (L + R)/2), with gain probe v3's controls, read at:
+  - the sensory neurons ASE, AWA and AWC (left and right);
   - the first-layer interneurons AIY, AIZ, AIA and AIB (left and right);
   - RIA;
   - the turn motor neurons SMDD, SMDV, RMDD and RMDV.
-- K_D at the sensory neurons is 1 by construction, so it is not reported.
+- **The sensory neurons are not trivial** (Astra corrects v2's "1 by construction"). The injected
+  currents have derivatives of +½ and −½ with respect to d. A sensory neuron's activity in a recurrent
+  brain is not fixed by that.
 - **Its reach:** a weak gain shows an attenuated response, not necessarily lost information (Astra).
   It has no decision rule.
 
@@ -122,25 +142,44 @@ genome's bounds:
 - **Our arithmetic (not yet measured; Fable's, re-derived):** the turn command is about
   4·w_o·w_n·d, up to about 36·d at w_n = w_o = 3. The world's turn is 1 × (mean tanh dorsal − mean
   tanh ventral), not 2× as design v3 said (D143). k = 32 scored 5.63 with a tuned turn bias, and
-  4.23 without. So the first step sits near the line.
+  4.23 without.
+  - Corrections: sech²(m) at the noses (about 0.89 at the peak level, so about 32·d) and sech²(b_t)
+    from the turn bias.
+  - The path has three lags (nose, comparator, motor relay) that E1's scripted steerer did not have.
+  - It assumes the outputs reach all eight turn neurons, as wired.
+  - So the first step sits near the line, probably slightly below it (Fable). E1's scores do not
+    predict the graft's closed-loop score.
 
-**The ladder, fixed in advance; the smallest step that qualifies is used:**
+**The ladder, fixed in advance.** Each step is defined against L1; the steps are not cumulative. The
+first step that qualifies, in this order, is used:
 
-| Step | Added | Neurons |
+| Step | Built from L1 by adding | Neurons |
 |---|---|---|
-| L1 | the circuit above | 4 |
+| L1 | nothing | 4 |
 | L2 | self-excitation on CL and CR, w_s ∈ {0.5, 0.8, 0.95} (gain about 1/(1 − w_s) near rest, slower) | 4 |
-| L3 | mutual inhibition between CL and CR, w_m ∈ {−1, −2, −3} | 4 |
-| L4 | L3 with 2, then 4, parallel comparator pairs on the same noses | 6, 10 |
-| L5 | L4 with 2 relay noses per side | at most 16 |
+| L3 | mutual inhibition between CL and CR, w_m ∈ {−0.5, −0.8, −0.95} | 4 |
+| L4 | 2, then 4, parallel comparator pairs on the same noses, each built as the better of L1-L3 on the tuning worlds | 6, 10 |
+
+- **Keeping the comparator monostable.** In the differential mode, τẋ = −x + |w_m|·tanh x + w_n·d.
+  - At |w_m| ≥ 1 the pair is bistable: a latch whose switching threshold (about 0.53 at |w_m| = 2)
+    is far above the available drive w_n·d ≤ 0.05. It would latch on the first transient and never
+    flip (Fable). So v2's grid of −1, −2 and −3 is replaced.
+  - Any combination of self-excitation and mutual inhibition must satisfy w_s + |w_m| < 1.
+  - Bistable candidates are latches, not amplifiers. They belong to E3, not to this ladder (Astra).
+- **v2's L5 (relay noses) is dropped:** a relay through tanh adds no gain (Fable).
+- **The self-edge L2 needs is tested,** and that test was seen failing under a sabotage (D144).
 
 - **Each step's tuning grid:**
   - w_n and w_o ∈ {1, 2, 3}, and each step's own parameter;
   - comparator τ ∈ {0.5, 2} and bias ∈ {−0.5, 0};
-  - the carrier's forward command ∈ {0.5, 1} and turn bias ∈ {0, 0.1, 0.2}.
+  - the carrier's forward command ∈ {0.5, 1}, and its turn command ∈ {0, 0.1, 0.2}. These are command
+    values: the bias b_t = atanh(command / 2), since the turn is 2·tanh(b_t) with dorsal +b_t and
+    ventral −b_t.
 
-  Each step is tuned on 128 tuning worlds, and its best 5 are re-scored on 512.
-- **Qualification (on 1 024 fresh worlds, on the carrier),** as design v3's gate:
+  Each step is tuned on 128 tuning worlds, and its best 5 are re-scored on 512. The best of those 5
+  (ties to the first in grid order) goes to qualification.
+- **Qualification,** as design v3's gate, on 1 024 fresh worlds for each step's attempt (a new
+  range each time), on the carrier:
   - the Task N mean's 95% lower bound is at least 5.0;
   - **and** E2d's "uses" criterion holds under the module probes.
 - **Also measured for the qualifying step** (Astra): the step response and the carried-state reversal
@@ -154,12 +193,28 @@ genome's bounds:
 - **Pre-stated readings:**
   - If no step qualifies: "none of the tested candidates passed within the search budget". It is not
     read as a bounds limit (Astra). The owner decides the next step.
-  - If the qualifying step meets "uses" on fewer than 25% of the random N2 backgrounds, E4s-1's
-    design must take its confirmatory background from somewhere else. One option is the 47
-    distinct champions, one per run (Fable). That choice is made in E4s-1's design review, not here.
+  - **The statistic is the one E4s-1's outcome table uses** (Fable): the G0 best of a population.
+    - 16 simulated populations are drawn, 32 random N2 genomes each, as E4s-1 will draw them.
+    - Each population's G0 best is picked by fitness on 8 training worlds, as the GA's generation 0
+      does.
+    - Each G0 best is then classified for D on 256 worlds.
+  - **If fewer than 12 of the 16 simulated G0 bests are D,** a "retained" majority in E4s-1 is out
+    of reach by construction. E4s-1's design must then change its background, its reading, or both.
+    One option is the 47 distinct champions, one per run (Fable). That choice is made in E4s-1's
+    design review, not here.
   - Otherwise E4s-1 proceeds on random N2.
+  - The share of the 256 individual backgrounds that are D is reported beside it.
 - The chosen step is frozen in a module file, and its hash is committed and pushed before E4s-1's
   pre-registration.
+
+**4. Mutational robustness** (Astra: v3's mutation-scale fallback needs it). The qualifying
+comparator is mutated on the carrier, module parameters only:
+- 256 mutants at each of 0.125×, 0.25× and 1× 02's scales;
+- 64 worlds of their own;
+- measured: the median child's score as a share of the parent's.
+
+v3's fallback rule applies to E4s-1: if the median child at 0.25× keeps less than half its parent's
+score, and at 0.125× keeps at least half, the module's factor becomes 0.125×.
 
 ### E4s-1: the comparator graft under evolution (confirmatory; pre-registered; cap set there)
 
@@ -175,7 +230,7 @@ descriptive case study of 32 identical copies.
 |---|---|---|---|---|
 | **M** (main) | the frozen comparator | reduced (0.25×, fallback as v3) | 16 | |
 | **N** (no added output) | M's genomes, every graft-to-host edge at 0 and pinned throughout | as M | 16, paired with M | **Confirmatory 1:** does the graft's output help? (M − N) |
-| **R** (random graft) | M's topology and access, with weights drawn at random (the same magnitude distribution, random signs) | as M | 16, paired with M | **Confirmatory 2:** the designed weights against an added path of the same shape (M − R) |
+| **R** (random graft) | M's topology and access, with the designed weight magnitudes permuted across the module's edges and each sign drawn at random; τ and bias as designed; **one draw per run**, from a seed derived from the run seed, shared by the whole population | as M | 16, paired with M | **Confirmatory 2:** the designed weights against an added path of the same shape (M − R) |
 | F0 (frozen) | as M | none | 8, paired with M 1-8 | descriptive |
 | U (uniform) | as M | 02's scale | 8, paired with M 1-8 | descriptive |
 | C2 (case study) | the comparator on 04a run 2 | as M | 8 | descriptive |
@@ -183,6 +238,13 @@ descriptive case study of 32 identical copies.
 - **R is matched** in parameter count, sensory and motor access, and mutation treatment, not only
   in neuron count (Astra). It isolates the designed weights from the new sensor-to-motor path
   outside N2 (Fable).
+  - One draw per run tests designed against random weights. A draw per individual would let
+    generation-0 selection choose among sign patterns, which is a different question (Fable).
+  - At 0.25× mutation a weight of magnitude about 3 will not change sign, so R cannot repair itself.
+    The reading of M − R says so.
+- **M − N is close to a foregone conclusion once the module qualifies. M − R is the informative
+  comparison.** The two 90% intervals are read separately, with no multiplicity adjustment, and that
+  is stated.
 - **Graft-to-host integration edges:** if E4s-1's design adds them (for merging), they start at zero
   or at a declared small value. The seed's own edges keep their designed values (Astra, Tomko &
   Harvey). In N, every graft-to-host route is pinned at 0 throughout.
@@ -199,26 +261,41 @@ descriptive case study of 32 identical copies.
 - **Three separate properties at each of G0 and F** (Astra):
   - **D, dependence:** the whole brain meets "uses" under the module probes;
   - **Mc, module competence:** the module transplanted onto the carrier meets "uses";
-  - **H, host stereo:** the brain with the module silenced meets "uses" under the world probes.
+  - **H, host stereo:** the host meets "uses" while the module is alive but blind (Fable).
+    - The module's noses get the mean of the two sides (the module "mean" probe), and the host's
+      sensors get the real input.
+    - This is contrasted with the host's sensors on the world's mean probe, and on its swapped
+      probe.
+    - Silencing the module would also remove the constant drive the host adapted to, so it is
+      reported as a secondary measure, not as H.
 - **Beside them:** the lesion cost, and the reset-to-seed probe.
 
 **Outcome classes per run** (exclusive; read in order; "unclear" whenever a deciding measurement is
-in E2d's unclear class):
+in E2d's unclear class). The table applies to M, R, F0, U and C2. In N, D is impossible by
+construction, so N reports H at G0 and at F only.
 
 | Order | Condition | Class |
 |---|---|---|
 | 1 | the run did not complete | not read |
-| 2 | G0 is not D | never used (H at F reported) |
-| 3 | F is D and Mc | **retained** |
-| 4 | F is D, not Mc | **used, module changed** (the host compensates or co-adapts) |
-| 5 | F is not D, and is H | **host stereo** |
-| 6 | F is not D, not H, and Mc | **bypassed** |
-| 7 | F is not D, not H, not Mc | **lost** |
+| 2 | G0 is not D, and F is D | **acquired** |
+| 3 | G0 is not D, and F is not D | **never used** |
+| 4 | F is D and Mc | **retained** |
+| 5 | F is D, not Mc | **used, module changed** (the host compensates or co-adapts) |
+| 6 | F is not D, and is H | **host stereo** |
+| 7 | F is not D, not H, and Mc | **bypassed** |
+| 8 | F is not D, not H, not Mc | **lost** |
 
-- **H at F is reported for every class.** "Retained" with H flags redundancy.
-- **"Host stereo" shows acquisition, not transfer.** Transfer would need host stereo above N's and
-  R's hosts, whose output never reached the motors (Astra). That comparison is reported, not
-  classified.
+- **H at G0 and at F are reported for every class.**
+  - "Retained" with H flags redundancy.
+  - **Host acquisition** means H at F without H at G0 (Astra: H at F alone shows only host
+    competence).
+- **What M against N and R can show** (Astra corrects v2, which said R's output never reached the
+  motors: R remains connected):
+  - M against N can support graft-assisted host acquisition: the H-acquisition rates of M and N,
+    compared.
+  - M against R tests the contribution of the designed weights.
+  - Neither alone shows that a particular computation transferred into the host. That comparison is
+    reported, not classified.
 - **The arm's reading:** a class is named if at least 12 of 16 runs fall in it; otherwise "mixed".
 - **The outcome statistics are design v3's:**
   - one estimand per confirmatory comparison (the mean paired difference in F's hold-out mean);
@@ -248,13 +325,20 @@ stale memory, or displacement. E3's shuttle may be one.
 ### E3 (in parallel; three additions)
 
 **One rule for its navigation artefact:**
-1. E3 starts after E4s-0, without waiting for E4s-1 (both reviewers). It uses E4s-0's frozen
-   comparator on the carrier, as one complete genome, if a step qualified. Otherwise it uses 04a run 2,
-   with its measured limits stated.
-2. E4s-1 decides only whether an evolved host-plus-graft genome replaces it. That needs "retained" in
-   at least 12 of 16 M runs; the genome is chosen by validation mean.
-3. E3 runs its own navigation positive control on its own task, whichever artefact it uses. A module
-   that is useful in one host is not assumed portable (Astra).
+1. E3 starts after E4s-0, without waiting for E4s-1 (both reviewers).
+   - It uses E4s-0's frozen comparator on the carrier, as one complete genome, if a step qualified.
+     That artefact is a hand-built circuit on a silent worm, with no evolved N2 in it, and E3's claims
+     say so (Fable).
+   - Otherwise it uses 04a run 2, with its measured limits stated.
+   - If the frozen module later fails E4s-1's re-qualification, E4s-1 stops for diagnosis, and E3
+     falls back to 04a run 2, by a dated amendment.
+2. E4s-1 decides only whether an evolved host-plus-graft genome replaces it.
+   - That needs "retained" in at least 12 of 16 M runs.
+   - The genome is chosen by validation mean **among the individually "retained" F genomes** (Astra).
+   - The swap happens before E3's pre-registration is bound, or by a dated amendment to it.
+3. E3 runs its own navigation positive control on its own task, whichever artefact it uses, and a
+   replacement must pass it too. A module that is useful in one host is not assumed portable
+   (Astra).
 
 **Two additions:**
 - **A baseline:** one shared navigator plus a persistent goal bit, beside the two-module organism
@@ -293,6 +377,10 @@ Pruning follows a protocol (Fakhar & Hilgetag 2022, via Astra's review):
   - The owner's 96-hour ceiling covers all of E4s: diagnostics, tuning, equivalence work and
     evaluation, all counted in the accounting.
   - E4s-0: at most 2 h.
+    - About 0.85 M episodes: the sweep 0.31 M, the ladder about 0.25 M, the backgrounds and simulated
+      populations about 0.2 M, robustness 0.05 M, and qualification and probes.
+    - That is about 0.25-0.6 h at Task N's measured 434-1 027 episodes per second, before overheads.
+      The plan checks it against a smoke measurement.
   - E4s-1: its cap is set in its pre-registration. Expected about 15 h: about 4-16 extra neurons,
     so a factor of about 1.03-1.11 on E2's rate, for 72 runs.
   - The rest is not a target.
@@ -313,3 +401,22 @@ Pruning follows a protocol (Fakhar & Hilgetag 2022, via Astra's review):
 | E3's fallback contradicted (both) | One rule, the artefact named, E3's own positive control |
 | Repository state (Fable 10, Astra 7) | Design v3, D142 and the engine changes committed (60bc85e, ab290f7); pending gates kept as gates; accounting covers everything |
 | Literature qualifications (both) | Dorsal/ventral symmetry; ±15 not comparable; Adden's switching logic; Noorman threshold-linear; Tomko & Harvey cautious; the latch and comparator labelled as constructions; Hironaka a candidate; the gain ceiling not used |
+
+## Changes from v2
+
+| v2 review item | v2.1 |
+|---|---|
+| L3's grid latches; steps cumulative?; L5 undefined (Fable 3a; Astra 2) | Steps defined against L1, not cumulative; L3 at w_m ∈ {−0.5, −0.8, −0.95}, and w_s + \|w_m\| < 1; bistable candidates are E3 latches; L5 dropped |
+| The self-edge needs a test before L2 (Fable 3a) | `test_a_module_neuron_may_excite_itself`, which failed under a sabotage that drops self-edges |
+| Candidate selection, fresh worlds per attempt, turn bias units (Fable 3a) | The best of 5 (ties to grid order); a new 1 024-world range per attempt; turn command values, b_t = atanh(command / 2) |
+| The sweep's classes have a hole; "no benefit" hides harm; multiplicity; units; materiality (Fable 3b; Astra 3) | "Rises early", "rises late", "dips first" (only with an improving k), "harmed", "no detected benefit on the tested grid"; adjacency for both directions; units and sign pinned; threshold 0, descriptive; k = 0 must reproduce the champion exactly |
+| "K_D at sensory neurons is 1 by construction" (Astra 3) | Withdrawn: the derivatives are ±½ and recurrent activity is not fixed; sensory neurons are measured |
+| "Acquired" dropped; table scope; H at F is not acquisition; R remains connected (Fable 3c; Astra 1) | An "acquired" row; scope M, R, F0, U, C2, with N reporting H; host acquisition needs H at G0 against F; v2's false statement about R corrected |
+| The 25% reading does not match 12 of 16 (Fable 3c) | The statistic is the simulated populations' G0 bests, with a threshold of 12 of 16 |
+| R's draw unit (Fable 3c; Astra 4) | Permuted magnitudes, random signs, τ and bias designed, one draw per run; R cannot repair its signs at 0.25× |
+| H by silencing (Fable, should-fix) | H with the module alive but blind; silencing reported as secondary |
+| M − N foregone; the two intervals (Fable 3c) | Said; read separately, without adjustment |
+| E3: failed re-qualification; "among retained"; timing of a swap; what the artefact is (Fable 3d; Astra 5) | All four added to E3's rule |
+| The robustness measurement for the mutation fallback (Astra) | E4s-0 item 4 |
+| A compute estimate against the 2 h cap (Fable 4.8) | About 0.85 M episodes, about 0.25-0.6 h, checked in the smoke |
+| The script's details (both) | Pinned in `docs/E4s/E4s-0-PLAN.md`, reviewed before it runs |

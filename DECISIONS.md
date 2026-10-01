@@ -4286,3 +4286,52 @@ path does not bound a recurrent network, and it does not explain a measured gain
 Its engineering is reused by E4s-1.
 
 Proposal v2 goes to Astra 6 and Fable 5.1 for a confirmation round.
+
+## D144 — The E4s plan adopted (proposal v2.1) and the roadmap amended; the GPU engine gate passed
+
+**The review of proposal v2** (`docs/reviews/20261001-roadmap-proposal-v2/`): both "adopt with
+changes". Fable added that none of its items needed a new design round. Both found:
+- **E4s-1's outcome table had dropped "acquired":** a run whose generation-0 best does not use the
+  module but whose final best does.
+- **Several details were unpinned:** R's draw unit, the comparator ladder, and the residual-sweep
+  classes.
+
+Fable also found:
+- **L3's mutual-inhibition grid would latch.** At |w_m| ≥ 1 the comparator pair is bistable, with a
+  switching threshold far above the scent difference.
+- **The sweep's likeliest outcome fell into "unclear",** and twelve unadjusted intervals invite
+  spurious classes.
+- **The 25% background reading did not match the 12-of-16 rule.**
+
+Astra also found:
+- **v2 said R's output "never reached the motors". That is wrong:** R stays connected.
+- **H at the final generation alone shows host competence,** not acquisition.
+- **v2's "K_D at the sensory neurons is 1 by construction" was wrong:** the injected derivatives are
+  ±½, and recurrent activity is not fixed by them.
+
+**Proposal v2.1 takes every item** (its last section maps them). Both reviewers had said "adopt with
+changes", and their items are applied without disagreement between them, so the plan is adopted
+without a third round. **`ROADMAP.md` is amended:**
+- the status of 1 October;
+- E4s in the sequence;
+- an E4s section in Track E;
+- additions to E3 and E4;
+- the tripwire relaxed for the graft functions and GA hooks only;
+- the literature review in related work;
+- two new entries under "What would change this roadmap".
+
+**Checked here:**
+- **A graft accepts a self-edge,** which L2 and E3's latch need. The new test passed at once, because
+  the behaviour already existed. It failed under a sabotage that drops self-edges.
+- **The GPU engine gate passed**
+  (`experiments/E4s-stereo-module/development-records/equivalence-ga.json`):
+  - E2's GA, generations 0-25, at E2's composition (8 runs × 32 strains × 8 worlds);
+  - every run's best-genome hash matched E2's committed `train-ga.json`, 26 of 26 generations;
+  - three ways: the defaults, hooks restating the defaults, and scale vectors of ones.
+
+**Still pending, as gates for E4s-1:**
+- the CUDA state tolerance at the real batch shapes;
+- the score-level inert-graft check.
+
+**Next:** E4s-0's plan (`docs/E4s/E4s-0-PLAN.md`), which pins the script's details, is reviewed
+before anything runs.
