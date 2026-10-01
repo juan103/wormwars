@@ -1,0 +1,138 @@
+{
+ "candidate": {
+  "step": "L1",
+  "w_n": 3.0,
+  "w_o": 3.0,
+  "tau": 0.5,
+  "bias": 0.0,
+  "forward": 1.0,
+  "turn": 0.2
+ },
+ "neurons": [
+  "E4S_NL",
+  "E4S_NR",
+  "E4S_CL",
+  "E4S_CR"
+ ],
+ "synapses": [
+  [
+   "E4S_NL",
+   "E4S_CL",
+   3.0
+  ],
+  [
+   "E4S_NL",
+   "E4S_CR",
+   -3.0
+  ],
+  [
+   "E4S_NR",
+   "E4S_CR",
+   3.0
+  ],
+  [
+   "E4S_NR",
+   "E4S_CL",
+   -3.0
+  ],
+  [
+   "E4S_CL",
+   "SMDDL",
+   3.0
+  ],
+  [
+   "E4S_CL",
+   "SMDDR",
+   3.0
+  ],
+  [
+   "E4S_CL",
+   "RMDDL",
+   3.0
+  ],
+  [
+   "E4S_CL",
+   "RMDDR",
+   3.0
+  ],
+  [
+   "E4S_CL",
+   "SMDVL",
+   -3.0
+  ],
+  [
+   "E4S_CL",
+   "SMDVR",
+   -3.0
+  ],
+  [
+   "E4S_CL",
+   "RMDVL",
+   -3.0
+  ],
+  [
+   "E4S_CL",
+   "RMDVR",
+   -3.0
+  ],
+  [
+   "E4S_CR",
+   "SMDDL",
+   -3.0
+  ],
+  [
+   "E4S_CR",
+   "SMDDR",
+   -3.0
+  ],
+  [
+   "E4S_CR",
+   "RMDDL",
+   -3.0
+  ],
+  [
+   "E4S_CR",
+   "RMDDR",
+   -3.0
+  ],
+  [
+   "E4S_CR",
+   "SMDVL",
+   3.0
+  ],
+  [
+   "E4S_CR",
+   "SMDVR",
+   3.0
+  ],
+  [
+   "E4S_CR",
+   "RMDVL",
+   3.0
+  ],
+  [
+   "E4S_CR",
+   "RMDVR",
+   3.0
+  ]
+ ],
+ "tau": {
+  "E4S_NL": 0.5,
+  "E4S_NR": 0.5,
+  "E4S_CL": 0.5,
+  "E4S_CR": 0.5
+ },
+ "bias": {
+  "E4S_CL": 0.0,
+  "E4S_CR": 0.0
+ },
+ "noses": {
+  "E4S_NL": "food_left",
+  "E4S_NR": "food_right"
+ },
+ "nose_gain": 1.0,
+ "carrier": {
+  "forward": 1.0,
+  "turn": 0.2
+ }
+}
