@@ -1,0 +1,92 @@
+{
+ "what": "E4s engine check: E2's GA, generations 0-25, with the E4s hooks at their defaults",
+ "generations": 26,
+ "composition": {
+  "training": [
+   256,
+   8,
+   1
+  ]
+ },
+ "device": "NVIDIA GeForce RTX 5080",
+ "torch": "2.12.0+cu130",
+ "results": {
+  "defaults": {
+   "all_match": true,
+   "matching_generations_per_run": [
+    26,
+    26,
+    26,
+    26,
+    26,
+    26,
+    26,
+    26
+   ],
+   "first_mismatch_per_run": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+   ],
+   "seconds": 143.23048160015605
+  },
+  "hooks restating the defaults": {
+   "all_match": true,
+   "matching_generations_per_run": [
+    26,
+    26,
+    26,
+    26,
+    26,
+    26,
+    26,
+    26
+   ],
+   "first_mismatch_per_run": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+   ],
+   "seconds": 139.77018849994056
+  },
+  "scale vectors of ones": {
+   "all_match": true,
+   "matching_generations_per_run": [
+    26,
+    26,
+    26,
+    26,
+    26,
+    26,
+    26,
+    26
+   ],
+   "first_mismatch_per_run": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+   ],
+   "seconds": 140.6822770999279
+  }
+ },
+ "provenance": {
+  "git_commit": "fdddee4e326c63940559b5aa67dc55c87b22c12c",
+  "script_sha256": "6c6d355c5753b27388950834b551b6f92a6a524420c339e92d683fd26adfd4ba",
+  "dirty": false
+ }
+}
