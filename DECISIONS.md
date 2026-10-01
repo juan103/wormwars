@@ -4241,3 +4241,48 @@ only the graft tests, not the full suite. The genome is now built through `with_
 six … seen failing first" stands, but its commit did not have a green suite.
 
 Design v3 goes to Astra 6 and Fable 5.1 for a third review.
+
+## D143 — E4s rethought after a literature review; the Sonnet report corrected; a roadmap proposal reviewed
+
+**Correction (2026-10-01).** D139 said: "Sonnet 5.5's research is archived in `docs/E4s/`", and the
+designs called it "a deep research". **It was not.** It was a single CLI session, `claude -p` with web
+search allowed. Its report marks 57 claims as seen only in a search snippet or a page extract, and
+nobody checked its claims. It also missed obvious prior art, Braitenberg vehicles among it. I designed
+E4s v1-v3 on it without flagging that to the owner.
+
+The owner: "We do need a literature research before going forward because it is a big step and
+Sonnet did not do it. So the decisions we took were based on a wrong assumption."
+
+**The literature review** (`docs/reviews/20261001-literature-review/`, f1ffd50):
+- the prompt was written by Claude Opus 5.5 at the owner's request;
+- the owner ran it with Claude Opus and with Astra 6;
+- both reviews are archived verbatim, with the points where they disagree.
+
+**The owner's decision:** option (a). The bilateral left/right scent stays, as an explicit
+game-design choice, not a biological claim.
+
+**A roadmap proposal** (`docs/E4s/ROADMAP-PROPOSAL.md`; v1 cc13ff8):
+- E4s-0, exploratory diagnostics;
+- E4s-1, a comparator graft under evolution, pre-registered;
+- E4s-2, the ring, deferred to a memory task;
+- additions to E3 and E4.
+
+**The review of v1** (`docs/reviews/20261001-roadmap-proposal/`): both "adopt with changes". Fable 5.1
+ran at effort "high" to save the owner's Claude budget; Astra 6 at "xhigh". Proposal v2 takes every
+must-fix.
+
+**Found by Fable and checked:** design v3 stated the world's turn as clamp(2·[…]). The factor is 1
+(0.5 × `turn_gain` 2.0, in `world.py` and E1's freeze), so v3's gain estimates halve. The gain probe
+used the correct formula.
+
+**Both rejected:** the Opus review's "gain ceiling" explanation of the plateau. A bound on one short
+path does not bound a recurrent network, and it does not explain a measured gain of about 0.1.
+
+**Design v3** is committed as superseded (60bc85e). A dated note in it records:
+- that the Sonnet report was not a deep research;
+- the turn-readout error;
+- that the ring is deferred.
+
+Its engineering is reused by E4s-1.
+
+Proposal v2 goes to Astra 6 and Fable 5.1 for a confirmation round.
