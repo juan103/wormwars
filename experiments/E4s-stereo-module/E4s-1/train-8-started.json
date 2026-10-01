@@ -1,0 +1,17 @@
+{
+ "stage": "train-8",
+ "attempt": 1,
+ "provenance": {
+  "git_commit": "8bacda674c570e3c3ca54741a11986222a71f224",
+  "branch": "roadmap",
+  "dirty": false,
+  "python": "3.13.3",
+  "numpy": "2.4.4",
+  "torch": "2.12.0+cu130",
+  "cuda": "13.0",
+  "gpu": "NVIDIA GeForce RTX 5080",
+  "connectome_cache_sha256": "43b87aa172a0042b9dce734b15bdf1c87efe3a33ac1cc0d9cd03255a60c96d4a",
+  "connectome_source_sha256": "1f4fdbf84746b69b49a8da0816f52787860ce349b638dce37924ba80f90c70c9"
+ },
+ "started_utc": "2026-10-01T21:14:09Z"
+}
