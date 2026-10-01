@@ -1,6 +1,8 @@
-# E4s-0: diagnostics before the comparator graft (plan v1, 2026-10-01)
+# E4s-0: diagnostics before the comparator graft (plan v2, 2026-10-01)
 
-Status: v1, for review by Astra 6 and Fable 5.1 before any code runs.
+Status: v2, for review by Astra 6 and Fable 5.1 together with the script, before any formal run.
+- **v1** (21d84b2): both reviewers said "revise" (`docs/reviews/20261001-E4s-0-plan/`).
+- **v2** takes every must-fix and most suggestions; the map is the last section.
 - **Exploratory:** nothing here is confirmatory, and nothing here evolves.
 - **What it implements:** E4s-0 of the adopted plan (`docs/E4s/ROADMAP-PROPOSAL.md` v2.1, D144). This
   file pins what the proposal left to the script.
@@ -13,11 +15,15 @@ Status: v1, for review by Astra 6 and Fable 5.1 before any code runs.
   1 100 001, E1's: with the world id, it generates each world and its targets.
 - **The intervals:**
   - E2d's `world_ci`: a paired percentile bootstrap over worlds of the mean difference, two-sided
-    95% (2.5th and 97.5th percentiles), 10 000 resamples, seed 20 261 001;
+    95% (2.5th and 97.5th percentiles), 10 000 resamples, **seed 0, E2d's registered seed** (v1
+    said 20 261 001, which contradicted "unchanged"; both reviewers). A test checks the imported
+    settings;
   - E2d's `classify` for "uses" (both lower bounds above 0.5), "no material benefit" (both intervals
     inside (−0.25, 0.25)) and "unclear".
 
-  These are imported from `scripts/e2d.py` unchanged.
+  These are imported from `scripts/e2d.py` unchanged. E2d loads its own copy of E2's stage frame, and
+  E4s-0 loads another, configured for its own folder. A test checks that E4s-0's records, compute
+  file and cap clock use `experiments/E4s-stereo-module/E4s-0/` (Fable).
 - **The 47 distinct champions:** E2's and 04a's, deduplicated by genome hash, as `e4s_gain_probe.py`
   does.
 - **Device and exactness:**
@@ -34,17 +40,18 @@ Status: v1, for review by Astra 6 and Fable 5.1 before any code runs.
   | 3. tuning, step s (s = 0..4 for L1, L2, L3, L4×2, L4×4) | 990 100 000 + 20 000·s + 128, re-scored on 990 101 000 + 20 000·s + 512 |
   | 3. qualification, step s | 990 300 000 + 10 000·s + 1 024 |
   | 3. step response and reversal | none (open loop) |
-  | 3. simulated populations: selection | 990 500 000 + 8 per population (16 × 8) |
-  | 3. simulated populations: G0 bests' D | 990 510 000 + 256 |
+  | 3. simulated populations: selection | population i: 990 500 000 + 8·i + 0..7 |
+  | 3. simulated populations: G0 bests' D | 990 510 000 + 1 024 |
   | 3. individual backgrounds | 990 520 000 + 64 |
   | 3. 04a run 2 grafted | 990 540 000 + 1 024 |
   | 4. robustness | 990 560 000 + 64 |
-  | smoke | 0-9 999 |
+  | smoke and projection | 0-9 999 (reused on purpose; exempt from the disjointness test) |
 
 - **Seeds:**
   - simulated populations: run seeds 1 150 000 + i (i < 16), drawn with 04a's
     `initial_population` on N2's spec, then embedded;
-  - robustness mutations: 1 151 000 + j;
+  - robustness mutations: mutant j (j < 256) uses a generator seeded 1 151 000 + j, at every scale. So
+    the three scales share their draws, paired, as `e2d.children` does;
   - E4s-1 reserves 1 160 000 onwards.
 
 ## 1. The residual stereo-gain sweep
@@ -56,18 +63,32 @@ Status: v1, for review by Astra 6 and Fable 5.1 before any code runs.
     These are the scaled values the interface injects at gain 1, which is what E1's S-const reads.
   - Turn > 0 is a left turn.
   - This is done in the script, not in the engine.
-- **The check, before anything is recorded:** with k = 0, every champion's per-world counts equal the
-  unwrapped world's exactly on the sweep worlds. A test also checks this on the CPU.
+- **The check, before anything is recorded:**
+  - with k = 0, every champion's per-world counts equal the unwrapped world's exactly on the sweep
+    worlds;
+  - **the composition is fixed:** the unwrapped reference and every k use one chunking, 8 strains ×
+    512 worlds per chunk (the last chunk holds 7 strains). Each champion's composition is therefore
+    identical across k and the reference (rule 6; both reviewers);
+  - a CPU test checks the same.
 - **The grid:** k ∈ {0, 0.05, 0.1, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64, 256}; 47 champions × 13 k × 512
   worlds, paired.
-- **The classes,** per champion, on the paired difference from k = 0 (the proposal's adjacency rule):
-  - "improves at k": the 95% lower bounds at k and at the next larger k are both above 0;
-  - "is harmed at k": both upper bounds are below 0;
-  - the classes: rises early (the first improving k is at most 1), rises late, dips first, harmed, no
-    detected benefit on the tested grid, and unclear.
+- **The classes,** per champion, on the paired difference from k = 0. These are the proposal's
+  definitions, restated in full (Fable):
+  - **"improves at k"**, for k < 256: the 95% lower bounds at k and at the next larger k are both
+    above 0;
+  - **"is harmed at k"**, for k < 256: both upper bounds are below 0;
+  - **k = 256 alone does not make a class** (Astra). Its interval is reported, descriptive;
+  - **k\*:** the first improving k;
+  - **the classes, exhaustive and exclusive:**
+    - **rises early:** k\* exists, k\* ≤ 1, and no k below k\* is harmed;
+    - **rises late:** k\* exists, k\* > 1, and no k below k\* is harmed;
+    - **dips first:** k\* exists, and some k below k\* is harmed;
+    - **harmed:** no k\*, and some k is harmed;
+    - **no detected benefit on the tested grid:** no k\*, and no k harmed.
 
-  At k = 256, the last grid point, "improves" or "is harmed" needs only its own bound, and that is
-  flagged.
+    v1's "unclear" could never occur under these definitions, so it is dropped.
+  - **A flag, beside the class:** "harmed at a larger k" (some k above k\* is harmed).
+  - **A unit test** checks the classifier on synthetic intervals, the k = 256 edge included.
 - **Recorded:** per champion and k, the mean, the interval and the class; the counts per class; and
   each champion's first improving k.
 
@@ -152,21 +173,50 @@ Status: v1, for review by Astra 6 and Fable 5.1 before any code runs.
 - If none qualifies, the record says "none of the tested candidates passed within the search budget".
   E4s-0 still runs items 1, 2 and 4 (item 4 then on L1's tuned candidate, labelled as not qualified).
 
+### L4's base, and when nothing qualifies
+
+- **L4's base:** L1's, L2's and L3's qualification candidates are re-scored on one common set, L4's
+  first 512 re-score worlds, paired (Fable).
+  - The best mean wins; ties go to the lower step.
+  - Its recurrent coefficient (w_s or w_m) stays fixed while L4 retunes the rest (Astra).
+- **If no step qualifies:**
+  - items 3.1-3.5 are skipped, and the 12-of-16 reading is recorded as "not drawn";
+  - item 4 runs on the candidate with the highest qualification mean among the attempted steps,
+    labelled as not qualified. These are unpaired means on different worlds, and that is noted. It is
+    the closest to qualifying, which is why it is preferred to L1.
+
 ### For the qualifying comparator
 
-1. **Its open-loop dynamics on the carrier,** at c = 0 and m ∈ {0.02, 0.08, 0.25}. Each is read over
-   40 ticks after the change, against a control that does not change:
-   - the step response from d = 0 to d = +0.01;
-   - the carried-state reversal from +0.01 to −0.01;
-   - the response time: the first tick after the change at which the turn command reaches 90% of its
-     settled change (the mean of the last 10 ticks).
+1. **Its open-loop dynamics on the carrier,** at c = 0 and m ∈ {0.02, 0.08, 0.25}:
+   - **the conditions:**
+     - each test first runs 60 ticks of preconditioning at its starting input;
+     - it is then read for up to 400 ticks after the change, against a control that does not
+       change;
+   - **the measures:**
+     - the step response from d = 0 to d = +0.01;
+     - the carried-state reversal from +0.01 to −0.01;
+   - **settled:** when the mean change from the control over the last 20 ticks differs by less than
+     1% from the mean over the 20 before. If it never does, the response is flagged "not settled"
+     (both reviewers: at w_s = 0.95 and τ = 2 the time constant is about 40 ticks or more);
+   - **the response time:** the first tick at which the absolute change from the control reaches 90%
+     of its settled value;
+   - **edge cases:**
+     - a change below 10⁻⁴ is flagged "negligible", with no time;
+     - a reversal that ends with the wrong sign is flagged.
 2. **The simulated generation-0 populations** (the statistic E4s-1 uses):
    - 16 populations of 32 random N2 genomes, each with the comparator grafted;
    - each population's G0 best is picked by Task N fitness (unshaped mean count) on 8 selection
      worlds, as `evolve_batch` picks generation 0's best (ties to the lowest index);
-   - each G0 best is classified for D (E2d's classes under the module probes) on 256 worlds.
+   - each G0 best is classified for D (E2d's classes under the module probes) on **1 024 worlds**,
+     as E4s-1's hold-out will be (both reviewers);
+   - the counts of D, "unclear" and "no material benefit" are reported separately;
+   - **a toy-size CPU test:**
+     - the simulated G0 best is the genome `evolve_batch` logs as generation 0's `best_sha256`, given
+       the same population through its `initial` hook and the same selection worlds;
+     - a constructed test checks ties (the lowest index wins), population boundaries, and that
+       selection reads the selection worlds, not the diagnostic ones (Astra).
 3. **The individual backgrounds** (descriptive): all 512 genomes of those populations, on 64 worlds
-   each:
+   each. On 64 worlds, D will mostly be "unclear"; it is labelled so (Fable). Measured:
    - the score;
    - D;
    - the forward command and the turn command, and the share of saturated turn neurons
@@ -177,17 +227,29 @@ Status: v1, for review by Astra 6 and Fable 5.1 before any code runs.
    written to `experiments/E4s-stereo-module/E4s-0/module.json`, with its sha256 in the record. It is
    committed and pushed before E4s-1's pre-registration.
 
-**The readings, as the proposal fixed them:**
+**The readings, as the proposal fixed them, with Astra's correction:**
 - If fewer than 12 of the 16 simulated G0 bests are D, E4s-1's design must change its background,
   its reading, or both.
 - Otherwise E4s-1 proceeds on random N2.
+- **This is a design trigger, not a prediction.**
+  - The proposal (v2.1) said a "retained" majority would then be "out of reach by construction".
+    That holds only for the same 16 runs' own G0 classifications.
+  - 16 pilot populations are neither necessary nor sufficient for 12 retained outcomes in E4s-1's
+    future runs.
+  - A dated note corrects the proposal (D145).
 
 ## 4. Mutational robustness
 
 - The qualifying comparator, on its carrier, is mutated in its module parameters only. The worm's
   are pinned at scale 0, and the carrier's biases too.
-- 256 mutants at each of 0.125×, 0.25× and 1× 02's scales, through `Genome.mutate`'s scales, on
-  seeds 1 151 000 + j.
+- 256 mutants at each of 0.125×, 0.25× and 1× 02's scales, through `Genome.mutate`'s scales.
+  Mutant j uses seed 1 151 000 + j at every scale, so the scales are paired.
+- **Module parameters** are the module's neurons' τ and bias, and every edge with a module neuron at
+  either end, the outputs onto the turn neurons included.
+- **A test checks ownership:**
+  - every mutant's worm block (weights, conductances, τ, biases, the carrier's biases included) is
+    bit-identical to the parent's;
+  - its module parameters, the graft-to-host weights included, differ (both reviewers).
 - 64 robustness worlds.
 - **Recorded:** each child's score, and the median child's score as a share of the parent's on the
   same worlds.
@@ -197,29 +259,55 @@ Status: v1, for review by Astra 6 and Fable 5.1 before any code runs.
 ## Budget, smoke and projection
 
 - **Episodes:**
-  - item 1, 313 k;
-  - item 3: at most 1 944 candidates × 128, plus re-scores, about 0.26 M; populations and
-    backgrounds about 0.11 M; 04a run 2 and qualifications about 0.02 M;
-  - item 4, about 0.05 M;
+  - item 1: 313 k, plus the unwrapped reference, 24 k (Astra);
+  - item 3:
+    - at most 1 944 candidates × 128, plus re-scores, about 0.26 M;
+    - L4's common re-score, 2 k;
+    - simulated populations and backgrounds about 0.15 M (the G0 bests now on 1 024 worlds);
+    - 04a run 2 and qualifications about 0.02 M;
+  - item 4: about 0.05 M.
 
-  about 0.76 M in total.
-- **The smoke:** every item at toy sizes (worlds 0-9 999; 2 champions, 2 values of k, 4 candidates,
-  1 population). It times the shapes, and its rates project the formal run.
+  About 0.82 M in total.
+- **The projection stage** (Fable, Astra; as E2d's `project`):
+  - it times one chunk of each formal composition on smoke ids, the instrumentation included:
+
+    | Shape | Composition |
+    |---|---|
+    | sweep | 8 strains × 512 |
+    | tuning | 32 strains × 128 |
+    | re-score | 5 × 512 |
+    | qualification | 1 padded strain × 1 024 |
+    | population selection | 512 × 8, own ids per row |
+    | G0 bests | 4 × 1 024 |
+    | backgrounds | 64 × 64 |
+    | robustness | 64 × 64 |
+  - it projects the formal work from those rates.
+- **Admission and the cap:**
+  - each stage starts only if the GPU-hours already spent plus the projected remaining work stay
+    within 1.8 h;
+  - the projection stage and the unwrapped reference count against the 2-hour cap.
 - **If the projection exceeds 1.8 h,** the sizes shrink in a pre-stated order before anything formal
   runs:
-  1. sweep worlds 512 → 256;
-  2. tuning worlds 128 → 64;
-  3. backgrounds' worlds 64 → 32.
+  1. the backgrounds' worlds 64 → 32 (descriptive; Astra);
+  2. the tuning worlds 128 → 64 (a screen with a re-score behind it; Fable);
+  3. the sweep worlds 512 → 256 (the only interval-based classes, so shrunk last).
 
-  If it still exceeds 1.8 h, E4s-0 stops for a new plan.
+  The chosen sizes are frozen in the projection record before any formal measurement. If even the
+  smallest sizes exceed 1.8 h, E4s-0 stops for a new plan.
 - **The cap clock** stops a stage when 2 GPU-hours are reached; the stage leaves a not-completed
   record.
+- **Per-world counts** are committed with every summary (Astra).
 
 ## Tests, before any formal run (each seen failing first; sabotage where a check could not fail)
 
-1. The world-id ranges are disjoint from each other and from E1's, 04a's, E2's and E2d's.
-2. With k = 0, the residual wrapper reproduces the unwrapped counts exactly (CPU, 2 genomes, 8
-   worlds). With k ≠ 0, it changes the turn.
+1. The formal world-id ranges are disjoint from each other and from E1's, 04a's, E2's and E2d's.
+2. **The residual wrapper:**
+   - with k = 0 it reproduces whole episodes exactly (CPU);
+   - **the residual goes in before the clamp:** a raw turn of 1.5 plus a residual of −0.75 gives
+     0.75, not 0.25 (Astra, Fable);
+   - k > 0 with L > R raises the turn (the sign);
+   - forward and pump are unchanged;
+   - the patch is removed after its block, even after an error.
 3. L1's wiring has the 20 edges with the signs above. A source on the left produces a left turn
    command, on the carrier, open loop.
 4. The carrier's forward and turn commands equal f and c, within 10⁻⁶ after settling.
@@ -227,9 +315,34 @@ Status: v1, for review by Astra 6 and Fable 5.1 before any code runs.
 6. The simulated populations' worm blocks equal `initial_population`'s draws exactly.
 7. L4×P builds 2 + 2P neurons with P copies of the base's edges.
 8. The ladder stops at the first qualifying step, and each step reads its own worlds.
+9. The sweep's classifier, on synthetic intervals.
+10. The simulated G0 best matches `evolve_batch`'s generation 0, with ties, boundaries and the
+    selection worlds.
+11. Robustness mutates only the module.
+12. E4s-0's stage frame writes to its own folder and compute file, and the imported analysis
+    settings are E2d's.
 
 ## What E4s-0 cannot show
 
 - What mutations would do: the sweep inserts a policy change from outside.
 - Whether the comparator survives evolution: that is E4s-1.
 - Anything about the worm's own chemotaxis: the stereo sensing is a game-design choice.
+
+## Changes from v1
+
+| v1 review item | v2 |
+|---|---|
+| The wrapper's tests miss "before the clamp", the sign and removal (Fable 1, Astra 1) | Tests for 1.5 − 0.75 → 0.75, for the sign, for forward and pump unchanged, and for removal after an error |
+| The k = 0 composition (Fable 2, Astra 1) | One chunking for the reference and every k, 8 × 512 |
+| The bootstrap seed contradicts the code (both) | Seed 0, E2d's, imported and tested |
+| Incomplete classes; "unclear" unreachable; the k = 256 bypass (Fable 4, Astra) | The full definitions; "unclear" dropped; k = 256 descriptive; a "harmed at a larger k" flag; a classifier unit test |
+| The simulated statistic: untested against `evolve_batch`; 256 worlds (Fable 5, Astra 3) | 1 024 worlds; D, unclear and no-benefit reported separately; a test against `evolve_batch`'s generation 0 with ties, boundaries and selection worlds |
+| "Out of reach by construction" (Astra 3) | A design trigger, not a prediction; the proposal gets a dated note (D145) |
+| The smoke cannot project (Fable 6, Astra 5) | A projection stage timing each formal composition; admission on spent plus projected; the reference and the projection count; the shrink frozen first |
+| Robustness ownership and seeds (Fable 7, Astra 6) | A per-mutant seed shared across scales; an ownership test including graft-to-host weights |
+| "Settled" at 40 ticks (both) | 60 ticks of preconditioning, up to 400 ticks, a declared convergence rule and flags |
+| The shrink order (both suggestions) | Backgrounds first, then tuning, the sweep last |
+| L4's base on different worlds; its coefficient while retuning (Fable, Astra) | A common paired re-score; ties to the lower step; the coefficient fixed |
+| No step qualifies (Fable) | Items 3.1-3.5 skipped and the reading "not drawn"; item 4 on the closest candidate, labelled |
+| Explicit selection ids; smoke ids; the stage frame's folder; per-world counts (both) | All pinned |
+| Not taken: dropping comparator bias −0.5 from the grid (Fable: harmless, half of L1's grid) | Kept, since the grid is cheap; it can only lower L1's gain, and that is noted |

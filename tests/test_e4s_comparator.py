@@ -140,3 +140,38 @@ def test_an_embedded_population_keeps_the_n2_draw_exactly(con):
     np.testing.assert_array_equal(g, ref.g.numpy())
     torch.testing.assert_close(pop.tau[:, :con.n], ref.tau, rtol=0, atol=0)
     torch.testing.assert_close(pop.bias[:, :con.n], ref.bias, rtol=0, atol=0)
+
+
+def fake_world2(dorsal, ventral, left, right):
+    w, _ = fake_world(0.1, left, right)
+    v = torch.zeros(1, 6)
+    v[0, 2], v[0, 3] = float(np.arctanh(dorsal)), float(np.arctanh(ventral))
+    v[0, 0], v[0, 4] = 0.3, 0.2  # some forward drive and pump
+    return w, v
+
+
+def test_the_residual_goes_in_before_the_clamp_not_after():
+    """Raw turn 1.5 (dorsal 0.75, ventral -0.75) plus a residual of -0.75 is 0.75; clamping the raw
+    turn first would give 0.25 (Astra, Fable)."""
+    w, v = fake_world2(0.75, -0.75, 0.100, 0.175)
+    with C.residual_turn(10.0):
+        fwd, turn, pump = World._read_motors(w, v)
+    assert float(turn) == pytest.approx(0.75, abs=1e-6)
+    f0, _, p0 = World._read_motors(w, v)
+    assert torch.equal(fwd, f0) and torch.equal(pump, p0)
+
+
+def test_a_positive_k_with_a_stronger_left_signal_turns_more_left():
+    w, v = fake_world2(0.1, 0.0, 0.12, 0.10)
+    _, t0, _ = World._read_motors(w, v)
+    with C.residual_turn(2.0):
+        _, t1, _ = World._read_motors(w, v)
+    assert float(t1) > float(t0)
+
+
+def test_the_patch_is_removed_after_an_error():
+    original = World._read_motors
+    with pytest.raises(RuntimeError):
+        with C.residual_turn(5.0):
+            raise RuntimeError("boom")
+    assert World._read_motors is original
