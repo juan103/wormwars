@@ -1,4 +1,4 @@
-"""E4s design, exploratory: the evolved champions' open-loop response to a left-right difference (v2).
+"""E4s design, exploratory: the evolved champions' open-loop response to a left-right difference (v3).
 
     python scripts/e4s_gain_probe.py     # writes experiments/E4s-stereo-module/development-records/gain-probe.json
 
@@ -12,10 +12,13 @@ Measured, per genome and common level (review v1 of the E4s design, D141):
   averaged over the last 10. A least-squares slope over a wide δ grid (v1) caps a clipped
   controller's apparent gain (an ideal k = 256 reads about 67), so it is dropped;
 - **signed response curve:** T(δ) for δ = 0, ±0.001, ±0.003, ±0.01, ±0.03, ±0.1;
-- **transient:** the largest change in T over 40 ticks after a step from δ = 0 to δ = +0.01;
-- **reversal with the state carried:** 40 ticks at δ = +0.01, then 40 at δ = −0.01 from that state; a
-  latching (bistable) brain keeps its sign;
-- **motor saturation:** the share of turn neurons with |tanh v| > 0.99 at δ = 0.
+- **transient:** after 40 ticks at δ = 0, the largest difference over the next 40 ticks between a
+  step to δ = +0.01 and a control that stays at δ = 0 (v2 had no control, so it measured drift too;
+  review v2 of the design, D142);
+- **carried-state reversal:** after 40 ticks at δ = +0.01, the difference between switching to
+  δ = −0.01 and a control that stays at +0.01, averaged over the last 10 of the next 40 ticks, as a
+  gain (divided by 0.02); and the history effect: the switched arm against a zero start at −0.01;
+- **the turn neurons:** each one's tanh at δ = 0 (after 40 ticks), and the share with |tanh v| > 0.99.
 
 It describes weak or strong sustained differential responses under these conditions only. It does
 not show why the plateau exists, nor that the champions use a temporal strategy. It informs the
@@ -108,26 +111,37 @@ def main():
     for c in COMMON:
         small = (p.settled(c, SMALL) - p.settled(c, -SMALL)) / (2 * SMALL)
         curve = np.stack([p.settled(c, x) for x in CURVE], axis=1)  # [strains, deltas]
-        v0, base = p.run(p.brain.initial_state(1), c, 0.0)
+        v0, _ = p.run(p.brain.initial_state(1), c, 0.0)
         _, step = p.run(v0, c, STEP)
-        transient = (step - base[-1]).abs().max(0).values.numpy()
-        vpos, pos = p.run(p.brain.initial_state(1), c, STEP)
+        _, stay0 = p.run(v0, c, 0.0)
+        transient = (step - stay0).abs().max(0).values.numpy()
+        vpos, _ = p.run(p.brain.initial_state(1), c, STEP)
         _, neg = p.run(vpos, c, -STEP)
+        _, stay = p.run(vpos, c, STEP)
+        switched, control = neg[-AVG:].mean(0).numpy(), stay[-AVG:].mean(0).numpy()
+        zero_start_minus = curve[:, CURVE.index(-STEP)]
         act = torch.tanh(v0)[:, 0][:, torch.cat([p.tp, p.tm])]
         per[str(c)] = {"small_signal_gain": small.tolist(), "curve": curve.tolist(),
-                       "transient_max_change": transient.tolist(),
-                       "reversal": {"after_plus": pos[-AVG:].mean(0).tolist(), "after_minus": neg[-AVG:].mean(0).tolist()},
+                       "transient_max_difference_from_control": transient.tolist(),
+                       "reversal": {"switched": switched.tolist(), "control": control.tolist(),
+                                    "carried_state_gain": ((control - switched) / (2 * STEP)).tolist(),
+                                    "history_effect": (switched - zero_start_minus).tolist()},
+                       "turn_neurons_tanh": act.tolist(),
                        "turn_neurons_saturated_share": (act.abs() > 0.99).float().mean(1).tolist()}
     gains = np.abs(np.array([per[str(c)]["small_signal_gain"] for c in COMMON]))
-    flips = np.array([[np.sign(a) != np.sign(b) or abs(a - b) > 1e-3 for a, b in
-                       zip(per[str(c)]["reversal"]["after_plus"], per[str(c)]["reversal"]["after_minus"])] for c in COMMON])
-    doc = {"what": "E4s design, exploratory: the champions' open-loop response to a left-right difference (v2)",
+    carried = np.abs(np.array([per[str(c)]["reversal"]["carried_state_gain"] for c in COMMON]))
+    history = np.abs(np.array([per[str(c)]["reversal"]["history_effect"] for c in COMMON]))
+    doc = {"what": "E4s design, exploratory: the champions' open-loop response to a left-right difference (v3)",
            "genomes": labels, "genome_sha256": sorted(seen), "common": COMMON, "small_delta": SMALL, "curve_deltas": CURVE,
            "ticks": TICKS, "averaged_over_last": AVG, "step": STEP, "per_common": per,
            "summary": {"median_abs_small_signal_gain": float(np.median(gains)), "max_abs_small_signal_gain": float(gains.max()),
                        "median_abs_small_signal_gain_per_common": {str(c): float(np.median(gains[i])) for i, c in enumerate(COMMON)},
-                       "median_transient_max_change": float(np.median([per[str(c)]["transient_max_change"] for c in COMMON])),
-                       "share_responding_to_reversal": float(flips.mean()),
+                       "median_transient_max_difference_from_control": float(np.median(
+                           [per[str(c)]["transient_max_difference_from_control"] for c in COMMON])),
+                       "median_abs_carried_state_gain": float(np.median(carried)),
+                       "max_abs_carried_state_gain": float(carried.max()),
+                       "median_abs_history_effect": float(np.median(history)),
+                       "max_abs_history_effect": float(history.max()),
                        "mean_turn_neuron_saturation": float(np.mean([per[str(c)]["turn_neurons_saturated_share"] for c in COMMON])),
                        "e1_scripted_k_for_reference": {"4": 2.38, "32": 5.63, "256": 8.51, "8192": 8.78}},
            "provenance": {"git_commit": reg.git("rev-parse", "HEAD"),

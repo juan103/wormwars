@@ -254,22 +254,34 @@ class Genome:
             self.w.copy_(self.w.abs() * self.dale_sign[:, self.spec.chem_i])
         return self
 
-    def mutate(self, mcfg: MutationConfig, generator: torch.Generator | None = None) -> "Genome":
-        """Gaussian mutation in place, then clamp. Returns self for chaining."""
-        gen, dev = generator, self.device
+    def mutate(self, mcfg: MutationConfig, generator: torch.Generator | None = None,
+               scales: dict | None = None) -> "Genome":
+        """Gaussian mutation in place, then clamp. Returns self for chaining.
 
-        def noise(x, sigma):
+        `scales` (E4s) optionally maps "w", "g", "tau" and "bias" to per-parameter factors on the
+        sigmas (shapes [n_chem], [n_gap], [n], [n]). A factor of 0 pins a parameter; factors of 1 give
+        the plain mutation bit for bit. The random draws are the same with or without scales."""
+        gen, dev = generator, self.device
+        sizes = {"w": self.spec.n_chem, "g": self.spec.n_gap, "tau": self.spec.n, "bias": self.spec.n}
+        scales = dict(scales or {})
+        for k, v in scales.items():
+            if k not in sizes or tuple(v.shape) != (sizes[k],):
+                raise ValueError(f"mutation scale {k!r} must have shape ({sizes.get(k, '?')},)")
+
+        def noise(x, sigma, key):
             e = torch.randn(x.shape, generator=gen, device=dev) * sigma
             if mcfg.p_mutate < 1.0:
                 keep = torch.rand(x.shape, generator=gen, device=dev) < mcfg.p_mutate
                 e = e * keep
+            if key in scales:
+                e = e * scales[key].to(device=dev, dtype=e.dtype)
             return e
 
-        self.w.add_(noise(self.w, mcfg.w_sigma))
-        self.g.add_(noise(self.g, mcfg.g_sigma))
+        self.w.add_(noise(self.w, mcfg.w_sigma, "w"))
+        self.g.add_(noise(self.g, mcfg.g_sigma, "g"))
         # tau is positive and spans a decade and a half, so it is perturbed multiplicatively
-        self.tau.mul_(torch.exp(noise(self.tau, mcfg.tau_sigma)))
-        self.bias.add_(noise(self.bias, mcfg.bias_sigma))
+        self.tau.mul_(torch.exp(noise(self.tau, mcfg.tau_sigma, "tau")))
+        self.bias.add_(noise(self.bias, mcfg.bias_sigma, "bias"))
         return self.clamp_()
 
     def clone(self) -> "Genome":

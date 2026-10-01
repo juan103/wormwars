@@ -4150,3 +4150,94 @@ not evidence for it. Design v1 said the same, and also "All sit near 2.2" (35 of
 three.
 
 Design v2 goes to Astra 6 and Fable 5.1 for a second review.
+
+## D142 — E4s design v2 reviewed (Fable "proceed", Astra "revise"); design v3; the engine changes; corrections to D141
+
+**The review** (archived verbatim in `docs/reviews/20260930-020427-E4s-design-v2/`):
+- **Fable 5.1: "proceed to pre-registration"**, conditional on ten must-fixes going into the
+  pre-registration.
+- **Astra 6: "revise".**
+
+Both found:
+- **O1's decision rules overlapped:** an interval on the mean, a threshold on the median. Nine runs at
+  +0.6 and seven at −0.1 read both "supports" and "does not support".
+- **O2's "eroded" overstated,** and its trigger was ambiguous.
+- **Wrong counts:** M1 is 14 neurons, not 30, and the total is 334, not 332. The budget factor is
+  1.22.
+- **Stage A's grid was underestimated:** 20 × 3⁷ = 43 740 closed-loop candidates, several GPU-hours,
+  not "about 0.5 h".
+
+Fable also found:
+- persistence contradicted the shifters under a turn bias;
+- "no spontaneous bump" from an exact zero state cannot fail;
+- the score-level tolerance was nearly vacuous on random genomes (which score about 0.03);
+- **the gain probe's transient and reversal had no unchanged-input control, so they measured drift.**
+
+Astra also found:
+- **the three weak reversal cases are three different genomes, not one;**
+- the shifter's computation was unspecified for signed tanh activity;
+- a 45° calibration treats ψ as a bearing;
+- a committed anatomical sabotage fixture would itself break rule 1.
+
+**Checked before adopting:** the three genomes, from `gain-probe.json` (e2 GA run 3 at 0.02, e2
+random run 6 at 0.08, 04a run 3 at 0.25); the counts; the grid size; the drift, by rerunning the probe
+with controls.
+
+**Corrections to D141 (2026-09-30):**
+- D141 said: "138 of 141 genome-level pairs respond to a reversal; the other 3 are one bias-dominated
+  genome with a response below 10⁻³." **Wrong twice.**
+  - The three are three different genomes. I inferred "one genome" from their similar values
+    without checking.
+  - The measure had no unchanged-input control, so "respond" mixed the reversal with drift. Design
+    v2's "That is a weak response, not a latch" is withdrawn with it.
+- Design v2's "the median largest change after a step is 0.032" was mostly drift. Against a control
+  that stays at δ = 0, it is 0.0012.
+
+**The gain probe, v3** (`scripts/e4s_gain_probe.py`) adds:
+- the controls: a step against staying at 0, and a switch against staying at +δ;
+- a carried-state gain: median 0.096, maximum 1.60;
+- the history effect against a zero start: median 0.033, maximum 0.33, which mixes history with slow
+  settling;
+- each turn neuron's activity.
+
+**Design v3** (`docs/E4s/DESIGN.md`; the change map is its last section):
+- **M2 is pinned:** every weight, τ and bias. Signed resting drives are kept uniform around the ring.
+  The shifters are renamed by their gate (Pᴸ and Pᴿ), with v2's direction.
+- **The claim is restricted:** a heuristic rotating memory, tested by cue-off and reacquisition probes
+  across distances and bearings, with no rate target, and M1 as a pre-stated fallback.
+- **A0 and A1 are restructured.**
+  - The component checks run at turn 0, at each candidate's nose values.
+  - A carried-state crossing check is added, and a seeded 10⁻³ perturbation for spontaneous bumps.
+  - A stratified sample replaces "the deepest".
+  - The grid is bounded at 2 160 + 972 + 10 closed-loop candidates.
+- **A feedforward control** (M2 with the ring's recurrence at 0) is added, and **a freeze** is pushed
+  before the gate.
+- **O1:** one estimand, with ordered rules.
+- **O2:** each run classified by its generation-0 best and its final best: retained, lost, acquired,
+  never used, unclear. **O2b** adds performance retention.
+- **Budget:** 17-19 h estimated, with per-stage caps; the 30 h cap is kept.
+
+**The engine changes** (made while the reviews ran; test-first; every test was seen failing, and each
+behaviour was sabotage-checked):
+- `Genome.mutate(..., scales=)`: per-parameter factors on the sigmas. Four tests; two sabotages caught
+  (scales ignored; the random stream changed).
+- `evolve_batch(..., initial=, mutation_scales=)`, with `breed(..., scales=)`. Four tests; two
+  sabotages caught (each hook ignored).
+- **`graft.py`:**
+  - the genome is now built through `with_params`, and Dale's law is refused (a new test);
+  - `MODULES` and `worm_parameters` added for the hygiene guard;
+  - a synapse-direction test, which fails under the legacy reversed direction.
+- **The hygiene guard** now checks grafted genomes (their worm block, by edge identity), refuses an
+  unregistered grafted label, and flags square matrices wider than 302.
+  - Its sabotage check builds the genome in memory; no anatomical fixture is committed.
+  - **The first version of the test did not catch its sabotage.** The toy module has no gap
+    junctions, so `g` fired anyway. It now requires the offence on `w`, and catches it.
+- `scripts/e4s_equivalence.py`: E2's GA, generations 0-25, on the GPU, against E2's committed hashes.
+  It runs before any E4s stage.
+
+**Found, and corrected in the open:** the T0 guard `test_no_genome_is_built_by_hand_in_the_library`
+had failed since D140's commit (1b628be). `graft.py` built a `Genome(...)` by hand, and at D140 I ran
+only the graft tests, not the full suite. The genome is now built through `with_params`. D140's "Tests:
+six … seen failing first" stands, but its commit did not have a green suite.
+
+Design v3 goes to Astra 6 and Fable 5.1 for a third review.

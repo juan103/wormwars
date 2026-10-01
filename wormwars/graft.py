@@ -32,6 +32,10 @@ from .interface import Interface, interface_from_spec, load_interface_spec
 
 PROBES = ("real", "mean", "swapped")
 
+# Every module whose genomes may be saved, by name, so the publication guard can rebuild a grafted
+# genome's edge order from its label ("<graph>+<module>") and check its worm block (rule 1).
+MODULES: dict = {}
+
 
 @dataclass(frozen=True)
 class Module:
@@ -79,7 +83,12 @@ def _edge_positions(spec: BrainSpec, kind: str) -> dict:
 
 def seeded_genome(ext: Connectome, module: Module, bcfg, base: Genome | None = None, n_strains: int | None = None,
                   device="cpu") -> Genome:
-    """Genomes on `ext`: the background's parameters (or a silent background), then the module's."""
+    """Genomes on `ext`: the background's parameters (or a silent background), then the module's.
+
+    Dale's law is refused: the designed weights are signed in `w`, and a presynaptic sign would
+    override them."""
+    if bcfg.dale or (base is not None and base.dale_sign is not None):
+        raise ValueError("grafts assume Dale's law is off (the designed weights carry their own signs)")
     spec = BrainSpec.from_connectome(ext)
     n0 = int(ext.meta["worm_neurons"])
     S = base.n_strains if base is not None else int(n_strains or 1)
@@ -104,7 +113,9 @@ def seeded_genome(ext: Connectome, module: Module, bcfg, base: Genome | None = N
     for name in module.neurons:
         tau[:, ext.index(name)] = float(module.tau.get(name, 1.0))
         bias[:, ext.index(name)] = float(module.bias.get(name, 0.0))
-    genome = Genome(spec, bcfg, w, g, tau, bias, None)
+    # built through `with_params` from a template (the T0 guard against hand-built genomes)
+    template = base if base is not None else Genome.random(spec, bcfg, 1, generator=torch.Generator().manual_seed(0))
+    genome = template.with_params(spec=spec, cfg=bcfg, w=w, g=g, tau=tau, bias=bias, dale_sign=None)
     genome.clamp_()
     if device != "cpu":
         from .e04a.evolve import moved
@@ -130,3 +141,13 @@ def graft_interface(ext: Connectome, module: Module, probe: str = "real", path=N
             sensors.append({"signal": "food_left", "neurons": [nose], "gain": gain / 2})
             sensors.append({"signal": "food_right", "neurons": [nose], "gain": gain / 2})
     return interface_from_spec(ext, {**spec, "sensors": sensors})
+
+
+def worm_parameters(ext: Connectome, w, g):
+    """The worm-to-worm part of a grafted genome's chemical and gap parameters ([..., edges]), in the
+    original connectome's edge order (edges are enumerated row-major, so the worm's keep their order)."""
+    spec = BrainSpec.from_connectome(ext)
+    n0 = int(ext.meta["worm_neurons"])
+    chem = ((spec.chem_i < n0) & (spec.chem_j < n0)).cpu().numpy()
+    gap = ((spec.gap_i < n0) & (spec.gap_j < n0)).cpu().numpy()
+    return np.asarray(w)[..., chem], np.asarray(g)[..., gap]

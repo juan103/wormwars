@@ -107,19 +107,31 @@ def _stack_ids(per_run: list[np.ndarray], population: int) -> np.ndarray:
 
 def evolve_batch(cfg, iface, spec: BrainSpec, runs: list[RunSpec], *, generations: int, checkpoint_every: int,
                  validation_ids: np.ndarray, world_seed: int, id_base: int, id_span: int, device="cpu",
-                 rollout_fn=rollout, check=None, category=None, on_checkpoint=None) -> list[RunRecord]:
+                 rollout_fn=rollout, check=None, category=None, on_checkpoint=None, initial=None,
+                 mutation_scales=None) -> list[RunRecord]:
     """Evolve every run in `runs` for `generations` generations, in lockstep.
 
     `check()` is called before every rollout (the cap); `category(name)` returns a context manager
     for the compute accounting; `on_checkpoint(records, generation)` is called after every
-    checkpoint, so a caller can write partial records."""
+    checkpoint, so a caller can write partial records.
+
+    E4s's hooks, both optional, and the defaults are unchanged: `initial(run_spec)` returns a run's
+    generation-0 population (`population` strains) in place of `initial_population`;
+    `mutation_scales(run_spec)` returns that run's per-parameter factors on the mutation sigmas
+    (`Genome.mutate`), or None."""
     if len({r.run for r in runs}) != len(runs) or len({r.run_seed for r in runs}) != len(runs):
         raise ValueError("every run in a batch needs its own run number and run seed")
     P, W = cfg.evo.population, cfg.evo.worlds_per_strain
     check = check or (lambda: None)
     category = category or (lambda name: _Null())
     validation_ids = np.asarray(validation_ids, dtype=np.int64)
-    pops = [initial_population(spec, cfg.brain, r.run_seed, P, device) for r in runs]
+    if initial is None:
+        pops = [initial_population(spec, cfg.brain, r.run_seed, P, device) for r in runs]
+    else:
+        pops = [moved(initial(r), device) for r in runs]
+        if any(p.n_strains != P for p in pops):
+            raise ValueError(f"an initial population must hold {P} strains (the population)")
+    scales = [None if mutation_scales is None else mutation_scales(r) for r in runs]
     gens = [torch.Generator(device=device).manual_seed(breed_seed(r.run_seed)) for r in runs]
     records = [RunRecord(r) for r in runs]
     R = len(runs)
@@ -167,7 +179,7 @@ def evolve_batch(cfg, iface, spec: BrainSpec, runs: list[RunSpec], *, generation
                 on_checkpoint(records, g)
 
         if g < generations - 1:
-            pops = [breed(pops[i], fits[i], cfg, gens[i]) for i in range(R)]
+            pops = [breed(pops[i], fits[i], cfg, gens[i], scales[i]) for i in range(R)]
         for rec in records:  # wall seconds for the whole batch's generation, checkpoint included
             rec.log[-1]["batch_seconds"] = time.perf_counter() - t_gen
     for i, rec in enumerate(records):

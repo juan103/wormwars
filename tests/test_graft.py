@@ -122,3 +122,42 @@ def test_an_inert_graft_leaves_the_worms_trajectories_unchanged(con):
         v0, v1 = b0.step(v0, cur), b1.step(v1, cur1)
         worst = max(worst, float((v0 - v1[..., :con.n]).abs().max()))
     assert 0 <= worst <= 1e-5, worst
+
+
+def test_a_graft_refuses_dales_law_rather_than_dropping_its_signs(con):
+    """Designed weights are signed in `Genome.w`; under Dale's law the presynaptic sign would override
+    them, and a hand-built genome would drop `dale_sign` (the T0 guard's reason). So it is refused."""
+    cfg = Config()
+    cfg.brain.dale = True
+    m = toy()
+    ext = G.graft_connectome(con, m)
+    with pytest.raises(ValueError, match="Dale"):
+        G.seeded_genome(ext, m, cfg.brain, n_strains=1)
+    base = Genome.random(BrainSpec.from_connectome(con), cfg.brain, 1, generator=torch.Generator().manual_seed(4))
+    with pytest.raises(ValueError, match="Dale"):
+        G.seeded_genome(ext, m, Config().brain, base=base)
+
+
+def test_a_module_synapse_drives_its_postsynaptic_neuron(con):
+    """Direction, pre -> post (the bug class of exp01's reversed synapses, D-entries on 01b): a driven
+    module neuron's synapse onto SMDDL moves SMDDL, and SMDDL's synapse onto a module neuron moves it."""
+    cfg = Config()
+    out = G.Module(name="dir-out", neurons=("E4S_A",), synapses=(("E4S_A", "SMDDL", 1.5),), bias={"E4S_A": 1.0})
+    back = G.Module(name="dir-in", neurons=("E4S_B",), synapses=(("SMDDL", "E4S_B", 1.5),))
+    for m, driven, reader in ((out, "E4S_A", "SMDDL"), (back, "SMDDL", "E4S_B")):
+        ext = G.graft_connectome(con, m)
+        gen = G.seeded_genome(ext, m, cfg.brain, n_strains=1)
+        gen.bias[0, ext.index(driven)] = 1.0
+        brain, v = Brain(gen), None
+        v = brain.initial_state(1)
+        for _ in range(20):
+            v = brain.step(v, torch.zeros(1, 1, ext.n))
+        assert float(v[0, 0, ext.index(reader)]) > 0.5, (m.name, float(v[0, 0, ext.index(reader)]))
+        # and nothing flows the other way: the reader's own drive does not reach the driven neuron
+        gen.bias[0, ext.index(driven)] = 0.0
+        gen.bias[0, ext.index(reader)] = 1.0
+        brain, v = Brain(gen), brain.initial_state(1)
+        for _ in range(20):
+            v = brain.step(v, torch.zeros(1, 1, ext.n))
+        if driven.startswith("E4S_"):  # a module neuron has no other inputs, so it stays at 0
+            assert abs(float(v[0, 0, ext.index(driven)])) < 1e-6

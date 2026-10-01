@@ -69,8 +69,10 @@ def breed(
     fitness: np.ndarray,
     cfg: Config,
     generator: torch.Generator,
+    scales: dict | None = None,
 ) -> Genome:
-    """Truncation selection + elitism + Gaussian mutation, bounds re-clamped inside `mutate`."""
+    """Truncation selection + elitism + Gaussian mutation, bounds re-clamped inside `mutate`.
+    `scales`: optional per-parameter factors on the mutation sigmas (`Genome.mutate`; E4s)."""
     e = cfg.evo
     order = np.argsort(-fitness)  # best first
     elites = order[: e.elites]
@@ -83,7 +85,7 @@ def breed(
         ).cpu().numpy()
     ]
     children = genome.select(list(pick))
-    children.mutate(cfg.mutation, generator=generator)
+    children.mutate(cfg.mutation, generator=generator, scales=scales)
 
     return Genome.cat([genome.select(list(elites)), children])
 
