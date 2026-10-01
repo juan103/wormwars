@@ -22,6 +22,7 @@ what comes next.
 | `wormwars/exp02/`, `wormwars/exp03/` | Experiment-specific code: grids, probes, samplers, statistics and reports. |
 | `wormwars/e1/`, `wormwars/e04a/`, `wormwars/e2/` | Track E's code: Task N and its scripted controllers (E1); the lockstep batch of evolutionary runs (04a); the ES, random sampling and their batched loops (E2). |
 | `wormwars/registration.py` | The shared pre-registration guards: provenance, the formal-run checks, start markers, the cap clock. |
+| `wormwars/graft.py`, `wormwars/e4s/` | E4s: grafting extra neurons onto a connectome (with a registry for the publication guard); the comparator ladder, its carrier and E4s-0's diagnostics; E4s-1's arms and registered readings. |
 | `scripts/` | Entry points. The evolution drivers write a run bundle (config, hashes, versions, commit); `exp03.py` records provenance per measurement instead. The experiment drivers write a compute record. |
 | `experiments/<id>/` | One folder per experiment, each with a README: design, pre-registration, results, reviews, and the committed summary data. |
 | `runs/` | Run outputs. Small summaries are committed; bulky files, such as most genome `.npz` files, stay local. |

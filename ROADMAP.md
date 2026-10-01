@@ -23,6 +23,14 @@
   - **The engine changes are done:** grafting extra neurons, per-parameter mutation scales and GA
     hooks, all test-first. The GPU check passed: E2's generations 0-25 reproduce exactly.
   - **E3 no longer waits:** it starts after E4s-0, with the artefact rule in the E4s section.
+  - **E4s-0 ran** (0.23 GPU-hours; D147; `experiments/E4s-stereo-module/E4s-0/`). Reviewed, corrected
+    by 15 dated corrections.
+    - For 42 of 47 champions, a valley along the stereo-gain direction.
+    - The 4-neuron comparator L1 qualified: 5.18 targets per episode, with a carrier turn bias.
+    - It is used at generation 0 by all 16 simulated populations' bests, so E4s-1 runs on random N2.
+  - **E4s-1 was pre-registered** (D148-D150): bound at 023267d, public before any stage ran, and
+    amended once before any stage ran (D152). Its formal run started on 2026-10-01: all three gates
+    passed, and training is under way (about 18 GPU-hours, cap 24).
 
 - **Published on main:**
   - 02's D050 correction, as a Corrections entry (27 September, D063);
@@ -259,6 +267,12 @@ Track B continues in parallel: 03r, then the mechanism follow-up or closure, the
   hand-built circuit on a silent worm; otherwise 04a run 2. An evolved genome from E4s-1 replaces it
   only with a "retained" majority, chosen among individually retained genomes, and only if it passes
   E3's own positive control.
+  - *Amended 2026-10-01 (D148, D150):* the majority is "uses at both endpoints" in at least 12 of 16
+    M runs, and the chosen genome also needs O2b of at least 0.9.
+- **Status, 2026-10-01:**
+  - **E4s-0 ran:** L1, a 4-neuron comparator, qualified (D147).
+  - **E4s-1 is pre-registered and running** (`experiments/E4s-stereo-module/E4s-1/PREREGISTRATION.md`;
+    D150, D152).
 
 ### E3 / 04b: minimal A/B organism
 

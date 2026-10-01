@@ -1,8 +1,8 @@
 # WormWars: *C. elegans* wiring vs. shuffled and random graphs
 
 > **This is the `roadmap` working branch.** The published record is `main`. This branch holds work
-> in progress beyond it (roadmap v3's next step: E3's design, after E2d's diagnosis), until it is
-> merged.
+> in progress beyond it until it is merged. Now: E4s, a hand-built stereo module, ahead of plan. E4s-0
+> has run, and E4s-1 is pre-registered and running.
 
 Many parallel 2D worlds on one GPU. In each world, swarms of small creatures called **weys** forage
 and fight. Every wey's brain is a small continuous-time recurrent network whose wiring is the real
@@ -37,11 +37,15 @@ selection acts on team results.
 | [03m](experiments/03m-p4-mechanism/README.md) | What drives 03's history dependence (P4)? | Exploratory; run, reviewed, corrected | N2's history fades more slowly than nearly all the shuffles'; its large food response depends on weight placement and on RIA and AIY; most weight permutations lower its P4, gap junctions narrow its lead, and no tested single or paired deletion removed it |
 | [E2](experiments/E2-optimizer-screen/README.md) | At equal simulator work, does OpenAI-ES find better Task N navigators than 02's GA, with random sampling as a floor? | Published; pre-registered, public before its run | "E2: keep 02's GA": the ES led by 0.12 targets per episode (0.5 needed). The floor fired: random sampling came within 0.36 of the GA, so Task N is diagnosed before E3 builds on it |
 | [E2d](experiments/E2d-taskn-diagnosis/README.md) | Why did random sampling come so close? Noise, the operators, budget and stereo use on Task N | Exploratory; plan and runner reviewed; run, reviewed, corrected | "A non-stereo plateau": no champion of 47 meets the "uses the left-right difference" criterion. No tested change (more worlds, gentler mutation, both, a smaller ES σ) leaves the plateau; gentler mutation improved all 8 paired runs but met the bar only with the failed run 2; the ES is budget-limited |
+| [E4s](experiments/E4s-stereo-module/README.md) | After E2d's plateau, can a hand-built stereo module grafted onto N2 steer, and what does evolution do to it? (Ahead of plan; stereo sensing is a game-design choice, not worm biology) | E4s-0 exploratory: run, reviewed, corrected. E4s-1 pre-registered, public before its run, and running | E4s-0: for 42 of 47 champions, a valley along the stereo-gain direction (small gains change little, intermediate ones hurt, large ones help). A 4-neuron comparator steers by the left-right difference: 5.18 targets per episode on its carrier, with a turn bias. Grafted onto random N2, it is used at generation 0. E4s-1: under way |
 
-Next on the roadmap: E3's design, which starts from E2d's question: is stereo steering expressible and
-reachable (the sensing geometry, the interface, shaping, a seeded start), or does E3 build on the
-non-stereo module with its measured limitations? In the biology track, a confirmatory study of 03m's
-leads comes next, then 03a's six-neuron proof of concept.
+Next on the roadmap:
+- **Now:** E4s-1, the comparator graft under evolution. It was pre-registered and running from
+  2026-10-01, for about 18 GPU-hours.
+- **Alongside it:** E3's design. It starts from E4s-0's frozen module, labelled as a hand-built
+  circuit, or from 04a run 2.
+- **In the biology track:** a confirmatory study of 03m's leads, then 03a's six-neuron proof of
+  concept.
 
 ## Newest: which optimizer for the next stage? (E2)
 
@@ -467,7 +471,7 @@ This project was designed and built almost entirely by AI models, directed by a 
 - Claude Fable 5.1 (Anthropic), in conversation: turned those ideas into the experimental design and
   specification, and reviewed the results. Later, consulted read-only, it reviewed experiment 01b
   before publication (D033), and since then every design, pre-registration and write-up: 02, 03,
-  03r, T0, T1, E1, 04a, 03m, E2 and E2d.
+  03r, T0, T1, E1, 04a, 03m, E2, E2d and E4s.
 - Astra 6 (a GPT model from OpenAI): adversarial review of the specification, which produced the
   statistical design, the resource accounting rules and the numerical stability requirements.
   Reviewing the roadmap, it found that the chemical synapses of experiment 01 ran backwards (D031),
@@ -479,7 +483,12 @@ This project was designed and built almost entirely by AI models, directed by a 
   the reversed synapses, ran experiment 01b, and acted on its review. It also designed,
   pre-registered, ran and wrote up experiment 02, which the owner delegated to it end to end,
   with the two reviewers standing in for approval at each stage; then, with the roadmap delegated,
-  03, 03r, the engineering work (T0, T1), E1, 04a, 03m, E2 and E2d.
+  03, 03r, the engineering work (T0, T1), E1, 04a, 03m, E2, E2d and E4s.
+- Claude Sonnet 5.5 (Anthropic), through the Claude CLI: a literature report for E4s's first designs.
+  Most of its sources were search snippets and nobody checked its claims. It was wrongly called "a
+  deep research" (corrected, D143).
+- Claude Opus (Anthropic) and Astra 6 (OpenAI), run by the owner from one prompt: the literature
+  review that replaced it (`docs/reviews/20261001-literature-review/`).
 - An outside review by a separate Claude Opus 5.5 instance, shared by the owner on 2026-09-28
   ([archived](docs/reviews/20260928-outside-review/review.md)), suggested the automatic test runs
   and the checks behind 03m.

@@ -42,6 +42,11 @@ led to several of the findings.
 | 22 | E2d's diagnosis plan, over four rounds: its arms were compared with E2's runs unpaired, so seed luck alone could meet the threshold (Fable: 04a's unchanged GA runs averaged 0.4 above E2's); one arm changed two settings; its readings claimed a "temporal" strategy the probes cannot show; its budget rule was already decided by E2's data | Claude Opus 5.5 | **Fable 5.1** (the pairing, the budget rule); **Astra 6 and Fable 5.1** (the readings, the two-setting arm) | The arms paired with E2's own runs, replayed first; the readings narrowed | D129-D131 |
 | 23 | E2d's runner: a capped arm blocked the protected hold-out pass; an incomplete arm was read as "supports", with an interaction claimed; a failed probe check did not reach Part C; many tests passed with their rule broken | Claude Opus 5.5 | **Astra 6** (reproduced two by running the code) and **Fable 5.1** (the untested rules) | Each fixed test-first and sabotage-checked | D133-D135 |
 | 24 | E2d's results called the plateau a shared "basin" and said why random sampling came close; claimed the non-stereo module was "near its ceiling", which the plan and the budget reading contradict; read a scripted stereo steerer as proof that stereo was reachable; omitted two interval/sign-flip disagreements and run 2's share of each gain | Claude Opus 5.5 | **Fable 5.1** (the ceiling, the disagreements, the margins) and **Astra 6** (the mechanism wording, run 2's changed start) | Dated corrections; every registered reading unchanged | D137 |
+| 25 | E4s's first designs rested on a literature report called "a deep research": a single CLI session whose sources were mostly search snippets. Its claims were unchecked, and it missed obvious prior art (Braitenberg vehicles) | Claude Opus 5.5, using Claude Sonnet 5.5's report | **The human**: "Sonnet did not do it" | A literature review by Claude Opus and Astra 6, run by the human; the ring deferred, a small comparator instead | D143 |
+| 26 | E4s's design v1: its isolated module could not move (a silent worm drives no forward motor); its outcomes were biased toward "kept"; its gain gate was unreachable by the probe's own arithmetic | Claude Opus 5.5 | **Fable 5.1** and **Astra 6**, independently | Checked against the motor read-out and the probe's code | D141 |
+| 27 | E4s-0's world ids were placed on 03's timing ids (990 million), then on 02's gate ids (970 million) | Claude Opus 5.5 | **Neither reviewer**: both said the ranges were disjoint. The script's own disjointness test caught it, because it carried E2's list of earlier ranges | Moved to 940 million; a sabotage that moves them back is caught | D145 |
+| 28 | E4s-0's results: a wrong small-k maximum; "a valley" without its five exceptions; the comparator's qualification without its dependence on the carrier's turn bias; a bimodal robustness hidden by its median | Claude Opus 5.5 | **Fable 5.1** (the turn bias, the exceptions, the bimodality) and **Astra 6** (re-derived every number; the pooled attenuation) | 15 dated corrections; a script derives every summary number | D147 |
+| 29 | E4s-1's runner: a gate could pass on NaN states (`max(0, NaN)` is 0); a batch stopped twice would have blocked all evaluation; some genome loads were unchecked | Claude Opus 5.5 | **Astra 6** (the NaN) and **Fable 5.1** (the stranded evaluation) | Fixed test-first and sabotage-checked; an amendment before any stage ran | D152 |
 
 Episode 6 went unnoticed for a week, through a passing test suite, every milestone report, a
 publication audit, the first public release and Claude's own review of the roadmap on the day it
@@ -76,7 +81,7 @@ food response is 1.55-2.7 times the most responsive graph's, not 1.5-1.8).
   useful.
 - One error (episode 16) was caught by neither a person nor a reviewer but by running the tests on
   another operating system.
-- This is one project and twenty-four episodes: an anecdote about multi-agent review, not a measurement
+- This is one project and twenty-nine episodes: an anecdote about multi-agent review, not a measurement
   of it.
 
 ## In the history

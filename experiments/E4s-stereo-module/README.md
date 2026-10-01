@@ -1,8 +1,16 @@
 # E4s: a hand-built stereo module grafted onto N2
 
-**Status (2026-10-01):** E4s-0, the diagnostics, has run and been reviewed (both "fix", text only;
-corrected, D147). E4s-1, the
-graft under evolution, is next; it will be pre-registered. The plan is
+**Status (2026-10-01):**
+- **E4s-0, the diagnostics,** has run and been reviewed (both "fix", text only; corrected, D147).
+- **E4s-1, the graft under evolution,** is pre-registered (`E4s-1/PREREGISTRATION.md`).
+  - It was bound at 023267d and public before any stage ran, and amended once before any stage ran
+    (D150, D152).
+  - Its formal run started at 13:22 that day.
+  - **The three gates passed:**
+    - re-qualification: 5.19 targets per episode, lower bound 5.11;
+    - the CUDA state check: a largest difference of 2.7 × 10⁻⁶;
+    - the score check: identical counts in every world for all 24 champions.
+  - Training is under way. The plan is
 [`docs/E4s/ROADMAP-PROPOSAL.md`](../../docs/E4s/ROADMAP-PROPOSAL.md) (v2.1, adopted, D144). The
 owner set a ceiling of 96 GPU-hours for all of E4s.
 
@@ -76,9 +84,11 @@ python scripts/e4s0.py robustness
 
 ## Extend it
 
-- **E4s-1** grafts `E4s-0/module.json` onto random N2 and evolves the whole brain. The arms are main,
-  no added output, a random graft of the same shape, frozen, uniform mutation, and a case study on 04a
-  run 2.
+- **E4s-1** grafts `E4s-0/module.json` onto random N2 and evolves the whole brain (pre-registered,
+  running).
+  - **The arms:** M (main), N (no added output) and R (random signs) are confirmatory; F0 (frozen), U
+    (02's mutation scale), S (half the module's scale) and C2 (04a run 2) are descriptive.
+  - **The readings** come from `scripts/e4s1_report.py`.
 - **Open questions:**
   - why intermediate stereo gains hurt the champions;
   - whether temporal sensing would avoid the valley;
