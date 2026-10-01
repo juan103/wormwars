@@ -335,6 +335,10 @@ stale memory, or displacement. E3's shuttle may be one.
    - If the frozen module later fails E4s-1's re-qualification, E4s-1 stops for diagnosis, and E3
      falls back to 04a run 2, by a dated amendment.
 2. E4s-1 decides only whether an evolved host-plus-graft genome replaces it.
+   *(Amended 2026-10-01, D148, after E4s-1's design review: "retained" says nothing about score. A
+   replacement now also needs O2b of at least 0.9, its score at least 0.9 of L1's on its carrier on the
+   same worlds. E4s-1's labels are endpoint-based ("uses at both endpoints"); see
+   `docs/E4s/E4s-1-DESIGN.md`.)*
    - That needs "retained" in at least 12 of 16 M runs.
    - The genome is chosen by validation mean **among the individually "retained" F genomes** (Astra).
    - The swap happens before E3's pre-registration is bound, or by a dated amendment to it.

@@ -4497,3 +4497,48 @@ E4s-0 runs without a further round. The formal run starts from a clean, pushed t
 - R's control varies only signs, since all of L1's magnitudes are 3;
 - C2 starts in a harmful interaction;
 - the pending CUDA and score-level gates stay gates.
+
+## D148 — E4s-1's design v1 reviewed (both "revise"); design v2; E3's artefact rule amended
+
+**The review** (`docs/reviews/20261001-E4s-1-design/`): both "revise", one text round, with no new arm.
+
+Both found:
+- **O1 is not a manipulation check.** Generation-0 bests score about 2.06, so M − N at generation 999
+  needs M to climb. Final superiority is also not improvement by evolution: F − G0 changes are needed.
+- **The class labels claim histories two endpoints cannot show.** Mc and H were hidden behind the
+  table's priority.
+- **The turn offset was measured confounded with steering:** open-loop u(m, 0) is needed. Neither
+  wants a controlled bias in the main arms.
+- **`module_scales` pins the host:** E4s-1 needs its own masks.
+- **The gates needed precise implementations.**
+
+Fable also found:
+- **C2 is "unclear" by construction:** its 32 copies are identical, and the probes show harm.
+- **R is often a harmful graft,** not a neutral one: random nose signs make a comparator respond to
+  the common level.
+- **"Retained" says nothing about score,** which matters for E3's swap rule.
+- **Mc only at turn +0.2** misses a module that co-adapted to a negative offset.
+- **Gate 1's chance fail** is about 4-5%, not 1%.
+- **Gate 3 was nearly vacuous** on random genomes, which score 0.
+- **"Reversed"** was missing from O1's rules.
+
+Astra also found:
+- **Overclaims:** "a ceiling near 5", "R cannot repair itself", "lethal".
+- **Gate 2** needs identical imposed inputs and validation's shape.
+- **Evaluation at 1 × 1 024 runs at 306 episodes per second,** so the 16-17 h estimate was too low.
+- **R's reset** must be told apart from an L1 rescue.
+
+**Power, simulated** with the exact O1 rules, at Astra's request (16 runs, 600 simulations, normal
+paired differences):
+- at SD 1.3, "supports" in 5% with no effect, 47% at an effect of 0.5, and 92% at 1.0;
+- at SD 2.0, 8%, 29% and 65%.
+
+So E4s-1 detects effects of about 1 target per episode. The design states it.
+
+**Design v2** (`docs/E4s/E4s-1-DESIGN.md`) takes every must-fix; its last section maps them. The
+arms are unchanged.
+
+**E3's artefact rule is amended** (a dated note in the proposal). A replacement for E4s-0's module
+now also needs O2b ≥ 0.9.
+
+Design v2 goes to Astra 6 and Fable 5.1 for a confirmation round.
