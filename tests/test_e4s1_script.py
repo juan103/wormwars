@@ -112,3 +112,101 @@ def test_the_stage_frame_is_e4s1s(mod):
     assert mod.E.record_path("gate-1").parent == mod.EXP and mod.E.clock().cap_hours == 24.0
     assert mod.D2.E is not mod.E
     assert G.MODULES.get("comparator-L1") is not None or A.load_l1()
+
+
+def test_g2_covers_every_genome_in_every_shape(mod):
+    cov = mod.g2_coverage(48)
+    assert len(cov["training"]) == 1 and len(cov["training"][0]) == 256
+    assert set(cov["training"][0]) == set(range(48))
+    assert [len(b) for b in cov["validation"]] == [8] * 6 and sorted(sum(cov["validation"], [])) == list(range(48))
+    for shape in ("evaluation_1x1024", "probe_1x256"):
+        assert cov[shape] == [[k] for k in range(48)]
+
+
+def test_non_finite_values_stop_the_stage(mod):
+    with pytest.raises(FloatingPointError):
+        mod.finite(np.array([1.0, np.nan]), "a score")
+    assert mod.finite(np.array([1.0, 2.0]), "a score") is not None
+    with pytest.raises(FloatingPointError):
+        mod.finite_max([0.0, float("nan"), 1e-6], "G2's difference")
+    assert mod.finite_max([0.0, 3e-7], "G2's difference") == 3e-7
+
+
+def test_the_h_conditions_feed_the_intended_inputs(mod):
+    """Conditions 2, 4 and 5: the module's noses always get the mean; the host's sensors get real, the
+    world's mean, or the world's swapped input (§5)."""
+    assert [mod.CONDITIONS[k] for k in (1, 2, 3, 4, 5)] == [("real", "real"), ("mean", "real"), ("swapped", "real"),
+                                                             ("mean", "mean"), ("mean", "swapped")]
+    cfg = Config()
+    cx = mod.context(cfg)
+    ext = cx["ext"]
+    L, R = 0.3, 0.1
+    world = {"real": (L, R), "mean": ((L + R) / 2, (L + R) / 2), "swapped": (R, L)}
+
+    def currents(k):
+        iface_key, probe = mod.CONDITIONS[k]
+        iface = cx["iface"][iface_key]
+        l, r = world[probe]
+        cur = np.zeros(ext.n)
+        for s, n, g in zip(iface.signal_names, iface.sensor_neuron, iface.sensor_gain):
+            cur[int(n)] += {"food_left": l, "food_right": r}.get(s, 0.0) * float(g)
+        return cur
+
+    nl, nr, asel = ext.index("E4S_NL"), ext.index("E4S_NR"), ext.index("ASEL")
+    for k in (2, 4, 5):
+        c = currents(k)
+        assert c[nl] == pytest.approx(0.2) and c[nr] == pytest.approx(0.2)
+    assert currents(2)[asel] == pytest.approx(L) and currents(4)[asel] == pytest.approx(0.2)
+    assert currents(5)[asel] == pytest.approx(R)
+
+
+def test_the_open_loop_uses_m_plus_minus_d_over_2_and_clamps_u(mod):
+    cfg = Config()
+    cx = mod.context(cfg)
+    from wormwars.e4s import comparator as C
+    g = C.carrier_genome(cx["ext"], cx["l1"], cfg.brain, forward=1.0, turn=0.0)
+    ol = mod.open_loop(g, cx["ext"], cx["iface"]["real"], cfg, "cpu")
+    for m in ("0.02", "0.08", "0.25"):
+        assert abs(ol[m]["u"][0]) < 1e-6  # symmetric input, no turn bias
+        assert ol[m]["K_D"][0] > 20  # a stronger left side turns left, with L1's gain of about 35
+        assert abs(ol[m]["K_C"][0]) < 1e-3
+    big = C.carrier_genome(cx["ext"], cx["l1"], cfg.brain, forward=1.0, turn=1.9)
+    assert mod.open_loop(big, cx["ext"], cx["iface"]["real"], cfg, "cpu")["0.08"]["u"][0] == pytest.approx(1.0)
+
+
+def test_r_draws_record_their_hash(mod):
+    doc = mod.r_draws_doc()
+    import hashlib, json
+    assert doc["sha256"] == hashlib.sha256(json.dumps(doc["signs"], sort_keys=True).encode()).hexdigest()
+    assert doc["signs"]["0"] == A.r_signs(0).tolist() and len(doc["signs"]) == 16
+
+
+@pytest.mark.parametrize("states,want", [
+    (["completed"] * 10, list(range(10))),
+    (["completed", "final-stopped", "completed"] + ["completed"] * 7, [0, 2, 3, 4, 5, 6, 7, 8, 9]),
+    (["completed"] * 6 + ["refused", "absent", "absent", "absent"], list(range(6))),
+])
+def test_which_batches_the_evaluation_covers(mod, states, want):
+    assert mod.evaluated_batches(states) == want
+
+
+@pytest.mark.parametrize("states", [
+    ["completed", "killed"] + ["absent"] * 8,             # a killed attempt must be reconciled first
+    ["completed", "awaiting-rerun"] + ["absent"] * 8,     # a first stop awaits its rerun
+    ["completed", "absent", "completed"] + ["absent"] * 7,  # a gap: batches run in order
+    ["completed"] * 6 + ["refused", "completed"] + ["absent"] * 2,  # nothing starts after a refusal
+])
+def test_the_evaluation_refuses_an_unsettled_training(mod, states):
+    with pytest.raises(SystemExit):
+        mod.evaluated_batches(states)
+
+
+def test_module_parameters_are_named_in_module_json_order(mod):
+    cfg = Config()
+    cx = mod.context(cfg)
+    r = mod.initial("R", 5, cx, cfg, 2)
+    p = mod.module_parameters(r.select([1]), cx["ext"], cx["l1"])
+    names = [f"{a}->{b}" for a, b, _ in cx["l1"].synapses]
+    assert [e["edge"] for e in p["edges"]] == names
+    assert [e["weight"] for e in p["edges"]] == (A.r_signs(5) * 3.0).tolist()
+    assert set(p["tau"]) == set(cx["l1"].neurons) and set(p["bias"]) == set(cx["l1"].neurons)

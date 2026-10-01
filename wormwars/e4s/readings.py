@@ -42,6 +42,8 @@ def interval(d, boot=boot_means) -> dict:
 
 def o1(d, boot=boot_means, min_pairs: int = MIN_PAIRS) -> dict:
     d = np.asarray(d, dtype=np.float64)
+    if not np.isfinite(d).all():
+        raise ValueError("a non-finite paired difference: the run is not read, not a pair")
     if len(d) < min_pairs:
         return {"label": "not read", "pairs": int(len(d))}
     ci = interval(d, boot)
@@ -81,6 +83,9 @@ def arm_reading(labels, threshold: int, denominator: int) -> dict:
 
 def retention(g0_classes, f_classes):
     """Among the runs that use at G0 and whose F was read (not None), the share that also use at F."""
+    known = {"uses", "unclear", "no material benefit"}
+    if any(g not in known for g in g0_classes) or any(f is not None and f not in known for f in f_classes):
+        raise ValueError("classes must be E2d's three states, or None for an unread F")
     pairs = [(g, f) for g, f in zip(g0_classes, f_classes) if g == "uses" and f is not None]
     if not pairs:
         return "not applicable"

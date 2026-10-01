@@ -176,3 +176,14 @@ def test_the_o3_split_is_eight_against_eight_by_rank():
     tie = np.array([0.1, 0.2, 0.3, 0.5, 0.35, 0.25, 0.15, 0.05, 0.9, 0.8, 0.7, 0.6, 0.5, 0.95, 0.85, 0.75])
     low, high = RD.o3_split(tie)
     assert 3 in low and 12 in high
+
+
+def test_o1_refuses_non_finite_differences():
+    d = np.array([0.5] * 11 + [np.nan])
+    with pytest.raises(ValueError):
+        RD.o1(d)
+
+
+def test_retention_refuses_unknown_statuses():
+    with pytest.raises(ValueError):
+        RD.retention(["uses", "uses"], ["uses", "not read"])  # an unread F is None, not a string

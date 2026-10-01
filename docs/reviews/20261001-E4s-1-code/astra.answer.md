@@ -1,0 +1,40 @@
+**Verdict: fix then run.**
+
+Reviewed `roadmap` at `ab8836d`, including the shared evolution/stage code and local smoke records. All **26 requested tests pass**. I did not run formal gates or experiments.
+
+1. **G2’s input specification needs resolution.** [e4s1.py:381](D:/Claude/random/wormWars/scripts/e4s1.py:381) deduplicates `iface.signal_names`: the actual draw is **300 × 15**, whereas that interface has **19 channel entries**. The bound text specifies `iface.signal_names` order without specifying deduplication. Distinct shared signals are a reasonable interpretation, but not an unambiguous implementation of that text. **Fix:** add a dated clarification binding the exact signal list, shape and routing, then test against that contract. The current test simply endorses deduplication.
+
+2. **Non-finite measurements are mishandled.** [e4s1.py:419](D:/Claude/random/wormWars/scripts/e4s1.py:419) uses `max(w, difference)`: Python’s `max(0.0, NaN)` returns `0.0`, so G2 can **pass despite NaN states**. [play:184](D:/Claude/random/wormWars/scripts/e4s1.py:184) accepts non-finite scores; G1/G3 can consequently record a completed gate failure instead of a stopped stage, and evaluation can record invalid summaries/counts. [readings.py:43](D:/Claude/random/wormWars/wormwars/e4s/readings.py:43) labels twelve NaN differences “inconclusive,” counting twelve complete pairs. **Fix:** explicit finite checks before reductions, classification and integer conversion; treat invalid measurements as stopped/not read.
+
+3. **Evaluation admission is incomplete, and its stage estimates are misallocated.** [e4s1.py:674](D:/Claude/random/wormWars/scripts/e4s1.py:674) never checks `spent + projected_eval_training <= 24`. The overall cap still applies, but that is not the registered admission rule. Moreover, [projection:341](D:/Claude/random/wormWars/scripts/e4s1.py:341) charges G0 population evaluation to `eval-training`, while [line 643](D:/Claude/random/wormWars/scripts/e4s1.py:643) executes it in `eval-endpoints`. Thus endpoint admission underprices its own work. Reference budgeting also counts 24 reference episodes per world where execution uses seven. **Fix:** price each stage’s actual work and apply both admission checks.
+
+4. **The projection departs from the registered procedure.** [e4s1.py:309](D:/Claude/random/wormWars/scripts/e4s1.py:309) runs evolution, which reads scores for selection, despite “reads no scores.” It estimates training through several generations and validation by subtraction, rather than timing each specified chunk twice and taking the second. [Lines 327–332](D:/Claude/random/wormWars/scripts/e4s1.py:327) time uninstrumented probes and only one open-loop execution. **Fix:** implement the registered timing procedure, including motor instrumentation. Also pass cap checks into projection evolution and G2’s comparison loop.
+
+5. **Stage order and incomplete-stage handling are not enforced correctly.** [completed_batches:586](D:/Claude/random/wormWars/scripts/e4s1.py:586) accepts a missing next record as the end of training—even if a start marker identifies a killed attempt—but rejects an existing final stopped record. Consequently:
+   - endpoint evaluation can start with zero training batches, without R’s draws;
+   - training can start after endpoint evaluation;
+   - a twice-stopped training batch blocks evaluation of earlier completed batches;
+   - a killed attempt can be bypassed without reconciling its compute.
+
+   Admission refusal also leaves no durable decision record. **Fix:** represent completed, refused, stopped and killed stages explicitly; reconcile kills, close training before evaluation, freeze the evaluated batch set, and permit evaluation of completed work after final training stops.
+
+6. **Along-training and final-population genomes are not checked against their training records.** [e4s1.py:688](D:/Claude/random/wormWars/scripts/e4s1.py:688), [line 708](D:/Claude/random/wormWars/scripts/e4s1.py:708). Loading checks a file’s *own* hashes, not the committed run’s hashes. A valid final-population file copied from another M run is accepted under the wrong run label. Endpoint checking covers only F/C/G0 candidates. **Fix:** validate every loaded candidate against `checkpoints[*].sha256`, every final strain against `final_sha256`, and the run/checkpoint metadata.
+
+7. **Interrupted evaluations lose completed measurement data.** [e4s1.py:621](D:/Claude/random/wormWars/scripts/e4s1.py:621) salvages endpoint summaries but not per-world arrays; those are written only at [line 664](D:/Claude/random/wormWars/scripts/e4s1.py:664). `eval-training` has no salvage callback, and its partial record omits final-population results. Rerun archiving receives neither count archives nor genome files. **Fix:** persist completed measurement units incrementally, with explicit completion status and hashes; preserve their artifacts across reruns. Require committed, unchanged count artifacts alongside the stage JSON.
+
+8. **Mutation counts are not logged per generation as registered.** [e4s1.py:507](D:/Claude/random/wormWars/scripts/e4s1.py:507) computes one theoretical proposal-count dictionary. It does not observe breeding or record generation-specific counts, including the final generation where no breeding occurs. **Fix:** log actual proposals per block at each breeding step; distinguish proposals from changes surviving clipping.
+
+9. **Required tests remain missing despite the passing suite.** [test_e4s1_script.py:75](D:/Claude/random/wormWars/tests/test_e4s1_script.py:75) checks G2’s seed and some injection values, not its genome/shape coverage or graft-nose routing. There are no runner tests for H’s combined conditions 2/4/5 or the registered open-loop finite differences. [test_e4s1_lib.py:39](D:/Claude/random/wormWars/tests/test_e4s1_lib.py:39) does not check every parameter factor for every arm; R’s recorded hash is also untested. **Fix:** complete §10’s tests, with demonstrated failures/sabotages, plus regression tests for the defects above.
+
+10. **Composition records are inaccurate in smoke and incomplete for open loop.** [e4s1.py:665](D:/Claude/random/wormWars/scripts/e4s1.py:665) reports 32 G0 population strains when smoke executes four; [line 718](D:/Claude/random/wormWars/scripts/e4s1.py:718) reports eight/32 when smoke executes two/four. Open-loop compositions—one or eight strains × one row—are not separately recorded. **Fix:** derive composition metadata from actual calls.
+
+For the analysis, preserve these additional data now:
+
+- **G0 population per-world counts:** [lines 646–651](D:/Claude/random/wormWars/scripts/e4s1.py:646) discard all three arrays, retaining only classes and user counts. Those suffice for the reported count, but not independent verification.
+- **Per-world motor episode means:** [lines 247–248](D:/Claude/random/wormWars/scripts/e4s1.py:247) collapse them to scalars, losing the registered per-world audit trail.
+- **R’s final edge identities/order:** [line 642](D:/Claude/random/wormWars/scripts/e4s1.py:642) stores weights in mask order, **not `module.json` synapse order**. Save named edges or reorder explicitly before comparing initial/final signs.
+- **Explicit missingness:** `retention()` excludes `None` but counts `"not read"` in its denominator. Normalize statuses before analysis or make the helper reject unsupported values.
+
+The core happy-path implementation is otherwise consistent: arm initialization, seeds, masks, R draws, N construction, training hooks, N/F0 assertions, F/C/G0 selection, condition applicability, D/H/Mc and motor formulas. The formal along-training candidate indices are correctly **0, 4, 10, 20, 30, 40**. Completed records already contain enough to derive O1/O1b, companion sentences, Mc shares, O2b and E3’s validation-based choice.
+
+One pre-registration text error deserves a dated annotation: **L1 rescue does not equal real at R’s G0**. The code correctly follows the table’s omission of G0 conditions 12–14; the parenthetical justification is wrong.

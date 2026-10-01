@@ -4655,3 +4655,73 @@ binds without a further round. It is committed and pushed before any E4s-1 stage
 
 **The smoke** (`runs/e4s1-smoke`) ran all 17 stages end to end. Admission is skipped in smoke, where
 the projection prices the formal work at toy rates.
+
+## D152 — E4s-1's code review (both "fix then run"); Amendment 1 before any stage; the fixes; the analysis script; cleared to run
+
+**The review** (`docs/reviews/20261001-E4s-1-code/`): both "fix then run". Neither found a bug that
+would silently corrupt a formal number on the happy path. Both found:
+- **A training batch that stopped twice would have blocked all evaluation,** against §8.
+- **`eval-training` had no admission check,** and the G0 population counts were priced in the wrong
+  stage.
+- **Registered tests were missing:** H's conditions, the open loop, G2's coverage and R's hash.
+- **G2's input shape** was an interpretation of the bound text.
+- **The projection** departed from §3.
+- **Mutation counts** were analytic, not logged per generation.
+- **Some loaded genomes** were not checked against their records.
+- **The analysis needed data the records did not keep:** the G0 population's per-world counts, the
+  module's parameters at each endpoint, per-world motor values, and R's edges by name.
+
+Astra also found:
+- **Non-finite values passed silently.** Python's `max(0, NaN)` is 0, so G2 could have passed on NaN
+  states.
+- **Interrupted evaluations lost their per-world counts.**
+- **Killed and refused batches** had no durable state.
+
+Fable also found that no analysis script existed yet.
+
+**Amendment 1** (the pre-registration's §13, dated, before any stage ran), settling what the bound text
+left ambiguous:
+1. G2's input is the distinct signals, 300 × 15.
+2. The projection's procedure.
+3. The analytic mutation counts, with what they rest on.
+4. Later batches run after a final stop; a refusal is recorded and ends training.
+5. The compositions the text left open.
+6. An annotation: §5's "reset and rescue equal real at G0" is wrong for the rescue at R's G0. Nothing
+   measured changes.
+
+**Fixed** (`scripts/e4s1.py`, `wormwars/e4s/readings.py`):
+- **Finite checks** on scores, open-loop values, motor measures and G2's differences. A non-finite
+  value stops the stage, and the O1 readings refuse it.
+- **Stage states:** completed, final-stopped, awaiting-rerun, refused, killed and absent.
+  - Training runs in order, after settled predecessors, and is closed once the evaluation starts.
+  - A refused batch writes a refusal record.
+  - The evaluation covers the completed batches and names the others; it refuses a killed or
+    unsettled batch.
+- **Admission for both evaluation stages,** with the G0 population counts priced where they run.
+- **The projection:** two timings, an instrumented probe, the cap checked, and the references
+  counted right.
+- **Every loaded genome is checked** against its committed record: the brain configuration, every
+  hash, and the checkpoint generations. The regenerated G0 population must hold the record's G0
+  best.
+- **Per-world counts and motor values** are written incrementally, with their sha256, and archived
+  on a rerun.
+- **More data kept:** module parameters by edge name at G0, C and F; the G0 population's per-world
+  counts and contrasts; the checkpoint and hash along training.
+- **Gates 2 and 3 load their genomes before the start marker.**
+
+**Tests:**
+- **New tests, each seen failing first:** non-finite values, retention's statuses, G2's coverage, H's
+  routing, the open loop, R's hash, the training states, and the named module parameters. The open-loop
+  test passed at once, so its evidence is a sabotage.
+- **Sabotages:** 7 of 8 caught at first. The missed one (a killed batch accepted) was not a real break:
+  the code refused it as an unknown state. Treating a killed batch as finished was caught.
+- **The full suite passes.**
+
+**`scripts/e4s1_report.py`** applies the registered readings from `readings.py` and E2d's bootstrap
+and sign-flip test: O1 and O1b with their companions, O1c, O2 with O2b and retention, C2, O3 and E3's
+rule. It ran on the smoke records.
+
+**The smoke** again ran all 17 stages end to end.
+
+Both reviewers said "fix then run". Every item is applied or settled by Amendment 1, so the formal run
+starts from a clean, pushed tree.

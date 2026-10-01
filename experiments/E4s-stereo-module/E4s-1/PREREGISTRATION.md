@@ -473,4 +473,40 @@ All arose in the pre-registration reviews:
 
 ## 13. Amendments
 
-None yet.
+### Amendment 1 (2026-10-01, before any stage of E4s-1 ran; D152)
+
+The code review of the runner (both "fix then run", `docs/reviews/20261001-E4s-1-code/`) found
+places where the bound text is ambiguous, or does not match what the code can do. They are settled
+here before the gates run, because a failed gate is final. Nothing above is changed.
+
+1. **G2's input history.**
+   - "S is the number of interface signals, in `iface.signal_names` order" means the distinct signal
+     names, in order of first appearance: 15 for N2's interface, so the draw is 300 × 15.
+   - `iface.signal_names` has one entry per channel, with repeats (19 entries), so the text could be
+     read either way.
+   - Each tick's value of a signal goes to every neuron the interface maps that signal to, the
+     module's noses included, through the world's injection formula (gain, `input_gain`, then the
+     clamp to ±`input_max`).
+2. **The projection.**
+   - Training and validation are timed by a short `evolve_batch` of 8 runs on smoke ids: six
+     generations, with a checkpoint at the last. Its selection uses scores on smoke ids internally;
+     no score is recorded.
+   - The other shapes, and the open loop, are timed twice, using the second timing. The 1 × 256 probe
+     shape is timed with the motor instrumentation on.
+3. **Mutation counts.**
+   - p_mutate is 1, so every child mutates every parameter whose factor is non-zero. The count per
+     generation is the number of children times each block's non-zero parameters.
+   - It is recorded once per arm, as an analytic count, and it is the same for every breeding step.
+   - Its correctness rests on the tested factors (`arm_scales`) and on the end-of-run assertions for
+     N and F0.
+4. **After a training batch stops finally** (stopped twice), later batches still run (E2's
+   precedent). The evaluation covers every batch that completed, and names the rest. A batch refused
+   by admission writes a refusal record, and no later batch starts.
+5. **The compositions the text leaves open:**
+   - the G0 population counts and the final populations run 32 strains per chunk;
+   - along training, 8 per chunk (one batch's runs);
+   - the open loop runs each genome alone, or a batch's 8 together along training.
+
+   Every record states its compositions.
+6. **An annotation to §5:** "reset and rescue equal real at G0" is wrong for the L1 rescue at R's G0
+   (Astra). The G0 conditions stay 1-11, as tabulated, so nothing measured changes.
