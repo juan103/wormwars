@@ -4858,3 +4858,48 @@ for every spawn, and so is v1's 12-18 with 8.
 
 **Design v2** takes every must-fix; its last section maps them. It proposes a 20 GPU-hour cap for
 E3a, pending the owner's ceiling for E3.
+
+## D157 — E3's design v2 reviewed (Fable: proceed if the budget is fixed; Astra: revise); design v2.1
+
+**The review** (`docs/reviews/20261002-E3-design-v2/`): both checked v2's latch and gate numbers and
+found them right. Astra checked them in the real `Brain.step` on the CPU: active K_D 31.6-35.6,
+inactive 0.059-0.068.
+
+**What both found:**
+- **The budget was wrong by about 2×:** E4s-1's rate was at 8 worlds per genome, v2 used 16, and
+  B-task was given one stage where its text gave it two.
+- **w_s was not a genome parameter:** an interface gain `mutate` cannot touch.
+- **The 7-parameter count rested on unstated tying.**
+- **A hold test on sign alone cannot tell a latch from a leaky trace.**
+- **Still missing:** the dtypes (promised but not declared) and the latency from movement to sensing.
+
+**Fable also found:**
+- the maximum spawn distance (a first leg could start outside the scent's support);
+- the carrier's circle can visit both sources;
+- Stage 2 may be answered at generation 0;
+- clamping q is new engine code.
+
+**Astra also found:**
+- the component tests' protocol needed absolute limits;
+- each module's turn contribution needed a definition;
+- the start cue's overdrive;
+- L1-switch is a reference, not an upper bound.
+
+**Checked:**
+- **The relay-driven latch, by simulation at 32 substeps:** a one-tick level switches it.
+- **The geometry, in `scripts/e3_geometry_check.py`** (committed with its output):
+  - without an axis limit, 0.19% of accepted worlds start with A beyond the scent's reach;
+  - with A within 16 along both axes, none do, and every spawn accepts at least 11.8% of draws.
+- **The rate, from E4s-1's ten training batches:** 1.35-1.43 h for 8 runs × 32 × 8 worlds × 300 ticks
+  × 1 000 generations.
+- **The world-id blocks 944M-947M** are unused.
+
+**Design v2.1:**
+- relays carry the visit signals, so all 13 selector parameters are genome parameters, untied;
+- bistability and hold tests on magnitude and function;
+- dtypes declared;
+- the budget recomputed, with Stage 2 at 300 generations: about 13.3 h;
+- a proposed cap of 20 GPU-hours for E3a;
+- a dated correction of v2's budget.
+
+E3's ceiling is still the owner's to set.
