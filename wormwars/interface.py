@@ -38,6 +38,16 @@ KNOWN_SIGNALS = (
     "collision_front_right",
     "collision_rear_left",
     "collision_rear_right",
+    # E3a's shuttle task (experiments/E3-ab-organism/E3a/PREREGISTRATION.md §3): two scents, the
+    # visit levels, and the current goal's scent for L1-switch
+    "a_left",
+    "a_right",
+    "b_left",
+    "b_right",
+    "at_a",
+    "at_b",
+    "goal_left",
+    "goal_right",
 )
 
 

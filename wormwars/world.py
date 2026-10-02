@@ -51,8 +51,10 @@ P_BODY_L, P_BODY_R = 8, 9
 N_POINTS = 10
 FOOD_SENSING = ("stereo", "mono")
 FOOD_PROBES = ("real", "constant", "mirrored", "jitter", "hold", "mean", "swapped")
-TASKS = ("forage", "navigate")
+TASKS = ("forage", "navigate", "shuttle")
 _TARGET_STREAM = 0x5CE27  # the target sequence's own random stream, apart from the map's
+_SHUTTLE_STREAM = 0x5E3A  # E3a's sources' own stream (wormwars.e3.task.SHUTTLE_SOURCES_STREAM)
+_SHUTTLE_LEGS = 128  # legs tracked per world; running out is an error
 
 
 def gaussian_blur(field: Tensor, sigma: float) -> Tensor:
@@ -271,6 +273,16 @@ class World:
                 raise ValueError("target_radius must not exceed target_wall_clearance")
             if wcfg.target_separation <= 2 * wcfg.target_radius:
                 raise ValueError("target_separation must exceed 2 x target_radius: consecutive goal discs are disjoint")
+        self.shuttle = wcfg.task == "shuttle"
+        if self.shuttle:
+            if self.n_swarms != 1 or bool((self.swarm_sizes != 1).any()):
+                raise ValueError("the shuttle task has one swarm of one wey per world")
+            unset = [k for k in ("shuttle_separation_min", "shuttle_separation_max", "shuttle_spawn_min",
+                                 "shuttle_spawn_max", "shuttle_cue_ticks") if getattr(wcfg, k) is None]
+            if unset:
+                raise ValueError(f"the shuttle task needs its settings (wormwars.e3.task.shuttle_config): {unset}")
+            if wcfg.shuttle_separation_min <= 2 * wcfg.target_radius:
+                raise ValueError("the sources must be more than 2 x target_radius apart: their discs are disjoint")
         self.assigns = [
             StrainAssignment(strain_of[:, s], self.brains[s].n_strains)
             for s in range(self.n_swarms)
@@ -361,6 +373,8 @@ class World:
         self._build_maps()
         if self.navigate:
             self._build_targets()
+        if self.shuttle:
+            self._build_shuttle()
         # the "constant" probe's value: each world's mean food level at tick 0 (with the starting
         # scent, in the navigate task)
         self._food_constant = self.fields[:, self.ch.FOOD].mean(dim=(1, 2))
@@ -520,9 +534,129 @@ class World:
                                 torch.arange(self.W, device=dev, dtype=self.dtype) + 0.5, indexing="ij")
         self._grid_x, self._grid_y = xx, yy
 
+    # ------------------------------------------------------------ E3a's shuttle
+
+    def _build_shuttle(self) -> None:
+        """E3a's sources: A and B per world, a function of (run seed, world id) only, from their own
+        stream. Drawn jointly, uniformly in the centre box, and both redrawn until |A - B| and each
+        source's distance from the spawn are within the declared limits (PREREGISTRATION §3)."""
+        wcfg = self.cfg.world
+        lo, hi = 1.0 + wcfg.target_wall_clearance, self.side - 1.0 - wcfg.target_wall_clearance
+        if hi <= lo:
+            raise ValueError("the arena is too small for the target wall clearance")
+        spawn = self.pos[:, 0, 0].cpu().numpy().astype(np.float64)
+        src = np.zeros((self.n_worlds, 2, 2), dtype=np.float32)
+        for w in range(self.n_worlds):
+            rng = np.random.default_rng([world_seed(self.run_seed, int(self.world_ids[w])), _SHUTTLE_STREAM])
+            for _try in range(10_000):
+                a, b = rng.uniform(lo, hi, 2), rng.uniform(lo, hi, 2)
+                dab = float(np.hypot(*(a - b)))
+                da, db = float(np.hypot(*(a - spawn[w]))), float(np.hypot(*(b - spawn[w])))
+                if (wcfg.shuttle_separation_min <= dab <= wcfg.shuttle_separation_max
+                        and wcfg.shuttle_spawn_min <= da <= wcfg.shuttle_spawn_max
+                        and wcfg.shuttle_spawn_min <= db <= wcfg.shuttle_spawn_max):
+                    break
+            else:
+                raise ValueError(f"no source pair satisfies the geometry (world {self.world_ids[w]})")
+            src[w, 0], src[w, 1] = a, b
+        dev, W, T = self.device, self.n_worlds, int(wcfg.max_ticks)
+        self.shuttle_sources = torch.from_numpy(src).to(dev, self.dtype)  # [worlds, (A, B), 2]
+        self.shuttle_goal = torch.zeros(W, dtype=torch.int8, device=dev)  # 0: A, 1: B
+        self.shuttle_visits = torch.zeros(W, dtype=torch.int64, device=dev)
+        self._sh_inside = torch.zeros(W, 2, dtype=torch.bool, device=dev)  # after the last movement
+        self._sh_goal_log = torch.full((W, T), -1, dtype=torch.int8, device=dev)
+        self._sh_inside_log = torch.zeros(W, T, 2, dtype=torch.bool, device=dev)
+        self._sh_visit_log = torch.zeros(W, T, dtype=torch.bool, device=dev)
+        self._sh_path = torch.zeros(W, _SHUTTLE_LEGS, dtype=torch.float64, device=dev)
+        self._sh_overflow = torch.zeros((), dtype=torch.bool, device=dev)
+        yy, xx = torch.meshgrid(torch.arange(self.H, device=dev, dtype=self.dtype) + 0.5,
+                                torch.arange(self.W, device=dev, dtype=self.dtype) + 0.5, indexing="ij")
+        self._grid_x, self._grid_y = xx, yy
+
+    def shuttle_fields(self) -> Tensor:
+        """[worlds, 2, H, W]: A's and B's scents, as Task N's (A exp(-d^2 / 2 sigma^2) at cell centres,
+        zero beyond ceil(3 sigma) cells along either axis). Sensing-only."""
+        wcfg = self.cfg.world
+        c = self.shuttle_sources  # [worlds, 2, 2]
+        dx = self._grid_x.view(1, 1, self.H, self.W) - c[..., 0].view(-1, 2, 1, 1)
+        dy = self._grid_y.view(1, 1, self.H, self.W) - c[..., 1].view(-1, 2, 1, 1)
+        reach = math.ceil(3 * wcfg.target_sigma)
+        inside = (dx.abs() <= reach) & (dy.abs() <= reach)
+        g = wcfg.target_amplitude * torch.exp(-(dx * dx + dy * dy) / (2 * wcfg.target_sigma ** 2))
+        return torch.where(inside, g, torch.zeros_like(g))
+
+    def _shuttle_signals(self, pts: Tensor) -> dict[str, Tensor]:
+        """The shuttle's signals, [worlds, swarms, weys]: each scent at the two front points, scaled as
+        food is; the goal's scent (for L1-switch); and the visit levels, which report the position
+        after the previous tick's movement, with at_b held at 1 during the start cue."""
+        wcfg = self.cfg.world
+        s = sample_bilinear(self.shuttle_fields(), pts).reshape(self.n_worlds, 2, self.n_swarms, self.n_weys, N_POINTS)
+        sf = wcfg.sense_scale_food
+        a_l, a_r = s[:, 0, ..., P_FRONT_L] * sf, s[:, 0, ..., P_FRONT_R] * sf
+        b_l, b_r = s[:, 1, ..., P_FRONT_L] * sf, s[:, 1, ..., P_FRONT_R] * sf
+        to_b = (self.shuttle_goal == 1).view(-1, 1, 1)
+        shape = a_l.shape
+        level = self._sh_inside.to(self.dtype)
+        at_a = level[:, 0].view(-1, 1, 1).expand(shape)
+        at_b = level[:, 1].view(-1, 1, 1).expand(shape)
+        if self.tick_count < wcfg.shuttle_cue_ticks:
+            at_b = torch.ones_like(at_b)
+        return {"a_left": a_l, "a_right": a_r, "b_left": b_l, "b_right": b_r,
+                "goal_left": torch.where(to_b, b_l, a_l), "goal_right": torch.where(to_b, b_r, a_r),
+                "at_a": at_a.contiguous(), "at_b": at_b.contiguous()}
+
+    def _advance_shuttle(self, moved: Tensor) -> None:
+        """After the tick's movement: log the goal in force during this tick, add the step to the
+        current leg's path, find entries, count a confirmed visit (an entry into the current goal)
+        and switch the goal for the next tick."""
+        wcfg, t = self.cfg.world, self.tick_count
+        ar = torch.arange(self.n_worlds, device=self.device)
+        if t < self._sh_goal_log.shape[1]:
+            self._sh_goal_log[:, t] = self.shuttle_goal
+        leg = self.shuttle_visits.clamp_max(_SHUTTLE_LEGS - 1)
+        self._sh_path[ar, leg] += moved[:, 0, 0].double()
+        head = self.pos[:, 0, 0]
+        inside = (head.unsqueeze(1) - self.shuttle_sources).norm(dim=-1) <= wcfg.target_radius  # [worlds, 2]
+        entry = inside & ~self._sh_inside
+        confirmed = entry[ar, self.shuttle_goal.long()]
+        if t < self._sh_inside_log.shape[1]:
+            self._sh_inside_log[:, t] = inside
+            self._sh_visit_log[:, t] = confirmed
+        self.shuttle_visits += confirmed.long()
+        self._sh_overflow |= (self.shuttle_visits >= _SHUTTLE_LEGS).any()
+        self.shuttle_goal = torch.where(confirmed, 1 - self.shuttle_goal, self.shuttle_goal)
+        self._sh_inside = inside
+
+    def shuttle_events(self) -> dict[str, np.ndarray]:
+        """The shuttle's ledger, per world: entry ticks into A and into B and confirmed-visit ticks
+        ([worlds, ticks], int64, padded with -1), the goal in force at each tick ([worlds, ticks],
+        int8; -1 after the last tick run), each leg's path length ([worlds, legs], float64), and the
+        sources' positions."""
+        if bool(self._sh_overflow):
+            raise RuntimeError("a world completed every tracked leg: raise _SHUTTLE_LEGS")
+        inside = self._sh_inside_log.cpu().numpy()
+        prev = np.concatenate([np.zeros_like(inside[:, :1]), inside[:, :-1]], axis=1)
+        entry = inside & ~prev
+
+        def ticks(mask):
+            out = np.full(mask.shape, -1, dtype=np.int64)
+            for w in range(mask.shape[0]):
+                idx = np.flatnonzero(mask[w])
+                out[w, :len(idx)] = idx
+            return out
+
+        src = self.shuttle_sources.cpu().numpy()
+        return {"entry_a": ticks(entry[..., 0]), "entry_b": ticks(entry[..., 1]),
+                "visit_tick": ticks(self._sh_visit_log.cpu().numpy()),
+                "goal": self._sh_goal_log.cpu().numpy(), "path_length": self._sh_path.cpu().numpy(),
+                "a_x": src[:, 0, 0], "a_y": src[:, 0, 1], "b_x": src[:, 1, 0], "b_y": src[:, 1, 1]}
+
     def current_target(self) -> Tensor:
-        """[worlds, 2]: the centre of each world's current target."""
-        return self.target_centres[torch.arange(self.n_worlds, device=self.device), self.target_index]
+        """[worlds, 2]: the centre of each world's current target (in the shuttle, the current goal)."""
+        ar = torch.arange(self.n_worlds, device=self.device)
+        if self.shuttle:
+            return self.shuttle_sources[ar, self.shuttle_goal.long()]
+        return self.target_centres[ar, self.target_index]
 
     def target_field(self) -> Tensor:
         """[worlds, H, W]: the current target's scent, A exp(-d^2 / 2 sigma^2) at cell centres,
@@ -772,6 +906,8 @@ class World:
                 (wcfg.food_odour_sigma > 0 or self.navigate) and wcfg.food_probe != "constant")
             self._food_sample = self._sensed_food(pts) if needs_field else None
         signals = self._sensor_signals(sampled)
+        if self.shuttle:
+            signals.update(self._shuttle_signals(pts))
         self.last_signals = signals
         current = self._build_current(signals)
 
@@ -832,6 +968,8 @@ class World:
         self._points = None
         if self.navigate:
             self._advance_targets(moved)
+        if self.shuttle:
+            self._advance_shuttle(moved)
 
         # 4. pay for living and moving (capped at remaining energy, so energy never goes negative)
         cost = (wcfg.metabolic_drain + wcfg.move_cost * moved) * alive_f

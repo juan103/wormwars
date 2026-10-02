@@ -84,9 +84,15 @@ def _play(cfg, iface, brain, world_ids, run_seed, device, combat_stage=0, ticks=
     food1 = world.fields[:, world.ch.FOOD].sum(dim=(1, 2))
     shape = (n_sub, n_ids)
     # the score selector (E1): the energy score, or the number of targets reached
-    score = (world.targets_reached.to(torch.float32) if world.navigate else foraging_score(world))
-    events = ({k: v.reshape(n_sub, n_ids, -1) for k, v in world.target_events().items()}
-              if world.navigate else None)
+    # E3a's shuttle: the number of confirmed visits, with its own ledger
+    score = (world.targets_reached.to(torch.float32) if world.navigate
+             else world.shuttle_visits.to(torch.float32) if world.shuttle else foraging_score(world))
+    if world.navigate:
+        events = {k: v.reshape(n_sub, n_ids, -1) for k, v in world.target_events().items()}
+    elif world.shuttle:
+        events = {k: v.reshape(n_sub, n_ids, *v.shape[1:]) for k, v in world.shuttle_events().items()}
+    else:
+        events = None
     return {
         "events": events,
         "progress": world.final_progress().reshape(shape).cpu().numpy() if world.navigate else None,

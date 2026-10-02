@@ -334,6 +334,10 @@ class Brain:
         # Optional per-strain silencing mask, [S, 1, N] of 1.0 (alive) / 0.0 (silenced). Kept per
         # strain so that dozens of different ablations of the same champion run in one batch.
         self.silence_mask: Tensor | None = None
+        # Optional per-strain clamp (E3a): neurons held at set values after every substep, as
+        # v * clamp_mask + clamp_value. Unset, the update is unchanged.
+        self.clamp_mask: Tensor | None = None
+        self.clamp_value: Tensor | None = None
         self._padded: tuple[Tensor, Tensor] | None = None  # (M, G) doubled for a single strain
 
     def silence(self, per_strain: list[list[int]] | None) -> "Brain":
@@ -355,6 +359,25 @@ class Brain:
             if idx:
                 mask[s, 0, torch.as_tensor(list(idx), device=self.device)] = 0.0
         self.silence_mask = mask
+        return self
+
+    def clamp(self, per_strain: list[dict[int, float]] | None) -> "Brain":
+        """Hold neurons at set values after every substep, one {neuron index: value} per strain.
+
+        Like `silence` (the case of value 0), a clamped neuron keeps its gap coupling and emits
+        tanh(value) through its chemical synapses. `None` removes every clamp."""
+        if per_strain is None:
+            self.clamp_mask = self.clamp_value = None
+            return self
+        if len(per_strain) != self.n_strains:
+            raise ValueError(f"{len(per_strain)} clamps for {self.n_strains} strains")
+        mask = torch.ones(self.n_strains, 1, self.n, device=self.device, dtype=self.W.dtype)
+        value = torch.zeros_like(mask)
+        for s, held in enumerate(per_strain):
+            for i, x in held.items():
+                mask[s, 0, int(i)] = 0.0
+                value[s, 0, int(i)] = float(x)
+        self.clamp_mask, self.clamp_value = mask, value
         return self
 
     def cut_gap(self, pairs: list[list[tuple[int, int]]]) -> "Brain":
@@ -422,6 +445,8 @@ class Brain:
             v = (v + c * (drive + chem + gap)) / den
             if mask is not None:
                 v = v * mask
+            if self.clamp_mask is not None:
+                v = v * self.clamp_mask + self.clamp_value
         return v[:1] if pad else v
 
     def activity(self, v: Tensor) -> Tensor:

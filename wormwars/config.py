@@ -159,6 +159,18 @@ class WorldConfig:
     target_max_separation: float = 0.0  # a maximum for consecutive centres; 0 means none
     target_wall_clearance: float = 3.0  # centres at least this far from the wall ring's inner edge
     target_sequence_length: int = 64  # centres drawn per world; running out is an error
+    # --- E3a's shuttle (experiments/E3-ab-organism/E3a/PREREGISTRATION.md §3). "shuttle": one wey,
+    # two fixed sources A and B per world with separate scents (target_sigma, target_amplitude and
+    # Task N's square support), the goal starting at A and switching at each confirmed visit
+    # (target_radius), visit levels at_a/at_b, and the start cue (at_b held for the first ticks).
+    # Unset (None) by default and left out of `Config.to_dict` while unset, so every earlier
+    # configuration serialises, and hashes, exactly as before (E1's gate record and its guards).
+    # `wormwars.e3.task.shuttle_config` sets them.
+    shuttle_separation_min: float | None = None  # |A - B|
+    shuttle_separation_max: float | None = None
+    shuttle_spawn_min: float | None = None  # |A - spawn| and |B - spawn|
+    shuttle_spawn_max: float | None = None
+    shuttle_cue_ticks: int | None = None
 
 
 @dataclass
@@ -316,12 +328,20 @@ class Config:
         return cls(**kwargs)
 
     def to_dict(self) -> dict[str, Any]:
-        return dataclasses.asdict(self)
+        out = dataclasses.asdict(self)
+        for name in _OMITTED_WHILE_UNSET:  # fields added after earlier records were hashed
+            if out["world"].get(name, 0) is None:
+                del out["world"][name]
+        return out
 
     def copy(self) -> "Config":
         """A deep copy. `Config(**cfg.to_dict())` does NOT work: asdict flattens the sections to
         plain dicts, so the sections have to be rebuilt."""
         return Config.from_dict(dataclasses.asdict(self))
+
+
+_OMITTED_WHILE_UNSET = ("shuttle_separation_min", "shuttle_separation_max", "shuttle_spawn_min",
+                        "shuttle_spawn_max", "shuttle_cue_ticks")
 
 
 def _resolve(f: dataclasses.Field) -> type:

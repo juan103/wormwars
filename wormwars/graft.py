@@ -15,6 +15,10 @@ that receive a scent signal through the interface.
 - `graft_interface` is the worm's interface plus the noses' entries. Its `probe` gives the
   module-only probes: "mean" feeds each nose the average of the two sides, "swapped" feeds each nose
   the other side. They act on the module alone; the world's own probes act on every consumer.
+  `probe_on` limits a probe to some signals, so one pair of noses can be probed alone (E3a).
+- A nose reads any declared signal: a plain name takes the module's `nose_gain`, and a
+  `(signal, gain)` pair its own gain (E3a's relays read the visit levels at gain 3).
+- `combine` merges several modules into one graft; synapses may run between them (E3a's selector).
 
 The brain and world code take the neuron count from the connectome, so nothing else changes.
 """
@@ -44,7 +48,7 @@ class Module:
     synapses: tuple[tuple[str, str, float], ...]  # (pre, post, initial weight)
     tau: dict = field(default_factory=dict)  # neuron -> τ (default 1.0)
     bias: dict = field(default_factory=dict)  # neuron -> bias (default 0.0)
-    noses: dict = field(default_factory=dict)  # module neuron -> "food_left" or "food_right"
+    noses: dict = field(default_factory=dict)  # module neuron -> signal, or (signal, gain)
     nose_gain: float = 1.0
     neuron_class: str = "inter"
 
@@ -54,6 +58,35 @@ class Module:
         return Module(f"{self.name}-inert", self.neurons,
                       tuple(s for s in self.synapses if s[1] not in worm),
                       dict(self.tau), dict(self.bias), dict(self.noses), self.nose_gain, self.neuron_class)
+
+
+# Left/right partners for the module-only probes; a signal without one (a level) is never probed.
+PAIRS = {"food_left": "food_right", "a_left": "a_right", "b_left": "b_right", "goal_left": "goal_right"}
+PAIRS.update({v: k for k, v in list(PAIRS.items())})
+
+
+def nose_entry(module: Module, nose: str) -> tuple[str, float]:
+    """(signal, gain) for one nose: a plain signal name takes the module's `nose_gain`."""
+    entry = module.noses[nose]
+    if isinstance(entry, str):
+        return entry, float(module.nose_gain)
+    signal, gain = entry
+    return str(signal), float(gain)
+
+
+def combine(name: str, *modules: Module, neuron_class: str = "inter") -> Module:
+    """One module from several, in order. Neuron names must be distinct; every nose keeps its own
+    gain, so modules with different `nose_gain`s combine exactly."""
+    neurons, synapses, tau, bias, noses = [], [], {}, {}, {}
+    for m in modules:
+        if set(m.neurons) & set(neurons):
+            raise ValueError(f"module {m.name} reuses neuron names: {sorted(set(m.neurons) & set(neurons))}")
+        neurons += list(m.neurons)
+        synapses += list(m.synapses)
+        tau.update(m.tau)
+        bias.update(m.bias)
+        noses.update({n: nose_entry(m, n) for n in m.noses})
+    return Module(name, tuple(neurons), tuple(synapses), tau, bias, noses, 1.0, neuron_class)
 
 
 def graft_connectome(con: Connectome, module: Module) -> Connectome:
@@ -123,23 +156,24 @@ def seeded_genome(ext: Connectome, module: Module, bcfg, base: Genome | None = N
     return genome
 
 
-def graft_interface(ext: Connectome, module: Module, probe: str = "real", path=None) -> Interface:
+def graft_interface(ext: Connectome, module: Module, probe: str = "real", path=None, probe_on=None) -> Interface:
     """The worm's interface, with the noses' entries appended (after the worm's own, so every existing
-    entry keeps its position)."""
+    entry keeps its position). `probe_on`, if given, is the set of signals the probe acts on."""
     if probe not in PROBES:
         raise ValueError(f"probe must be one of {PROBES}")
     spec = load_interface_spec(path)
     sensors = list(spec["sensors"])
-    other = {"food_left": "food_right", "food_right": "food_left"}
-    gain = float(module.nose_gain)
-    for nose, signal in module.noses.items():
-        if probe == "real":
+    for nose in module.noses:
+        signal, gain = nose_entry(module, nose)
+        probed = probe != "real" and signal in PAIRS and (probe_on is None or signal in probe_on)
+        if not probed:
             sensors.append({"signal": signal, "neurons": [nose], "gain": gain})
         elif probe == "swapped":
-            sensors.append({"signal": other[signal], "neurons": [nose], "gain": gain})
-        else:  # the mean of the two sides
-            sensors.append({"signal": "food_left", "neurons": [nose], "gain": gain / 2})
-            sensors.append({"signal": "food_right", "neurons": [nose], "gain": gain / 2})
+            sensors.append({"signal": PAIRS[signal], "neurons": [nose], "gain": gain})
+        else:  # the mean of the two sides, the left side first
+            left, right = sorted((signal, PAIRS[signal]), key=lambda s: not s.endswith("_left"))
+            sensors.append({"signal": left, "neurons": [nose], "gain": gain / 2})
+            sensors.append({"signal": right, "neurons": [nose], "gain": gain / 2})
     return interface_from_spec(ext, {**spec, "sensors": sensors})
 
 
