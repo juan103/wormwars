@@ -1,0 +1,146 @@
+{
+ "note": "    python scripts/e3b0_diagnose.py     # writes experiments/E3-ab-organism/E3b-0/development-records/stage-b-diagnosis.json",
+ "maze_ids": [
+  0,
+  64
+ ],
+ "c": 5,
+ "H": 2400,
+ "run_seed": 1180000,
+ "settings": {
+  "pilot": {
+   "constants": {
+    "mu": 0.01,
+    "lam": 0.03,
+    "delta": 0.15,
+    "d0": 0.571
+   },
+   "follower_shared": {
+    "later_leg_rate": 4.159410193173306,
+    "visits": 9.232421875
+   },
+   "nose_range": {
+    "on_route_noses": 1170766,
+    "in_range": 402796,
+    "above": 99782,
+    "zero": 262371,
+    "occluded": 162187,
+    "in_range_share": 0.3440448390199237,
+    "above_share": 0.08522796186428372,
+    "in_range_share_unoccluded": 0.39936980643063164,
+    "above_share_unoccluded": 0.09893325163422995
+   },
+   "follower_own": {
+    "later_leg_rate": 3.401644763552641,
+    "visits": 7.908203125
+   },
+   "follower_none": {
+    "later_leg_rate": 3.326972665217058,
+    "visits": 7.736328125
+   },
+   "shared_minus_none": {
+    "mean": 0.8324375279562483,
+    "lo95": 0.08603965655164666,
+    "hi95": 1.7229492136889804,
+    "n": 64
+   },
+   "own_minus_none": {
+    "mean": 0.07467209833558372,
+    "lo95": -0.5521399121389832,
+    "hi95": 0.7346362148361105,
+    "n": 64
+   },
+   "shared_minus_own": {
+    "mean": 0.7577654296206647,
+    "lo95": 0.07052644306132974,
+    "hi95": 1.5887932350974654,
+    "n": 64
+   },
+   "polarity_away": {
+    "real": 0.046875,
+    "none": 0.015625,
+    "permuted": 0.046875,
+    "single_pass_mazes": 64
+   },
+   "polarity_toward": {
+    "real": 0.5,
+    "none": 0.46875,
+    "permuted": 0.484375,
+    "single_pass_mazes": 64
+   },
+   "polarity_random": {
+    "real": 0.296875,
+    "none": 0.28125,
+    "permuted": 0.359375,
+    "single_pass_mazes": 64
+   }
+  },
+  "stage_b_best_rate": {
+   "constants": {
+    "mu": 0.005,
+    "lam": 0.02,
+    "delta": 0.05,
+    "d0": 0.571
+   },
+   "follower_shared": {
+    "later_leg_rate": 6.17251741877139,
+    "visits": 13.748046875
+   },
+   "nose_range": {
+    "on_route_noses": 1500836,
+    "in_range": 516243,
+    "above": 465271,
+    "zero": 323702,
+    "occluded": 216882,
+    "in_range_share": 0.34397029388953887,
+    "above_share": 0.310007888936566,
+    "in_range_share_unoccluded": 0.40207281569277403,
+    "above_share_unoccluded": 0.36237357413116045
+   },
+   "follower_own": {
+    "later_leg_rate": 4.420461813757463,
+    "visits": 9.91796875
+   },
+   "follower_none": {
+    "later_leg_rate": 3.326972665217058,
+    "visits": 7.736328125
+   },
+   "shared_minus_none": {
+    "mean": 2.845544753554334,
+    "lo95": 1.83406654757449,
+    "hi95": 3.915301136980295,
+    "n": 64
+   },
+   "own_minus_none": {
+    "mean": 1.0934891485404057,
+    "lo95": 0.39341075275913473,
+    "hi95": 1.9159519189896281,
+    "n": 64
+   },
+   "shared_minus_own": {
+    "mean": 1.7520556050139278,
+    "lo95": 0.9258396375971175,
+    "hi95": 2.639472282823964,
+    "n": 64
+   },
+   "polarity_away": {
+    "real": 0.046875,
+    "none": 0.015625,
+    "permuted": 0.09375,
+    "single_pass_mazes": 64
+   },
+   "polarity_toward": {
+    "real": 0.609375,
+    "none": 0.46875,
+    "permuted": 0.453125,
+    "single_pass_mazes": 64
+   },
+   "polarity_random": {
+    "real": 0.40625,
+    "none": 0.28125,
+    "permuted": 0.328125,
+    "single_pass_mazes": 64
+   }
+  }
+ }
+}

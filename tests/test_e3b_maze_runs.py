@@ -90,3 +90,21 @@ def test_the_nose_range_recorder_counts_on_route_noses(iface):
     nr = out["nose_range"]
     assert nr["on_route_noses"] > 0
     assert nr["in_range"] + nr["above"] <= nr["on_route_noses"]
+
+
+def test_the_polarity_start_can_face_toward_the_source_or_at_random(iface):
+    cfg = _cfg(colony=1, horizon=600)
+    ids = np.arange(4)
+    for facing in ("toward", "random"):
+        res = MR.polarity(cfg, iface, ids, run_seed=5, facing=facing)
+        assert res["facing"] == facing and res["pass_real"].shape == (4,)
+    away = MR._start(*M.maze_for(run_seed=5, maze_id=0, episode=0, c=5), 5, 0, facing="away")[2]
+    toward = MR._start(*M.maze_for(run_seed=5, maze_id=0, episode=0, c=5), 5, 0, facing="toward")[2]
+    assert abs(abs((away - toward + np.pi) % (2 * np.pi) - np.pi) - np.pi) < 1e-9  # opposite, same jitter
+
+
+def test_the_nose_range_counts_occluded_and_zero_noses_apart(iface):
+    cfg = _cfg(colony=2, horizon=200)
+    nr = MR.play(cfg, iface, lambda: MC.follower(iface, cfg), np.arange(3), run_seed=5, nose_range=True)["nose_range"]
+    assert 0 <= nr["occluded"] <= nr["zero"] <= nr["on_route_noses"]
+    assert nr["in_range_share_unoccluded"] >= nr["in_range_share"]

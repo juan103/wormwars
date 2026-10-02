@@ -337,7 +337,8 @@ class MazeWorld(World):
         sf = wcfg.sense_scale_food
         read = (read * sf).reshape(Wn, 1, B, 2, 2)
         a_l, a_r, b_l, b_r = read[..., 0, 0], read[..., 0, 1], read[..., 1, 0], read[..., 1, 1]
-        self.last_occluded = blocked.reshape(Wn, B, 2).sum(-1)
+        self.last_blocked = blocked.reshape(Wn, B, 2)  # per nose, (left, right)
+        self.last_occluded = self.last_blocked.sum(-1)
         self._occluded_ticks += (self.last_occluded > 0).long()
         if set(self._mode) <= {"own", "none"}:  # nothing but the wey's own trail is sensed
             self.last_exposure = torch.zeros(Wn, B, dtype=self.dtype, device=self.device)

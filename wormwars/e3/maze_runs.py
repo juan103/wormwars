@@ -38,7 +38,7 @@ class NoseRange:
     """Counts goal-channel nose inputs on route-cell ticks (the head's cell when the tick sensed)."""
 
     def __init__(self):
-        self.on = self.inr = self.above = 0
+        self.on = self.inr = self.above = self.zero = self.occluded = 0
 
     def attach(self, world) -> None:
         routes = np.stack([MM.route_cells(mz, pl.a, pl.b) for mz, pl in zip(world.mazes, world.placements)])
@@ -54,12 +54,15 @@ class NoseRange:
         self.on += int(on.sum())
         self.inr += int((on & (g >= NOSE_LOW) & (g <= NOSE_HIGH)).sum())
         self.above += int((on & (g > NOSE_HIGH)).sum())
+        self.zero += int((on & (g == 0)).sum())
+        self.occluded += int((on & world.last_blocked).sum())
         self.prev = world.pos[:, 0].clone()
 
     def result(self) -> dict:
-        n = max(self.on, 1)
-        return {"on_route_noses": self.on, "in_range": self.inr, "above": self.above,
-                "in_range_share": self.inr / n, "above_share": self.above / n}
+        n, m = max(self.on, 1), max(self.on - self.occluded, 1)
+        return {"on_route_noses": self.on, "in_range": self.inr, "above": self.above, "zero": self.zero,
+                "occluded": self.occluded, "in_range_share": self.inr / n, "above_share": self.above / n,
+                "in_range_share_unoccluded": self.inr / m, "above_share_unoccluded": self.above / m}
 
 
 def world(cfg, iface, brain, ids, run_seed, device="cpu", **kw) -> MW.MazeWorld:
@@ -132,18 +135,26 @@ def age(x: torch.Tensor, open_: torch.Tensor, *, delta: float, mu: float, steps:
     return out
 
 
-def _start(mz, pl, run_seed: int, maze_id: int):
-    """The middle maze cell of the A-B route, and a heading toward B with its jitter."""
+def _start(mz, pl, run_seed: int, maze_id: int, facing: str = "away"):
+    """The middle maze cell of the A-B route, and a heading with its jitter: toward B ("away" from the
+    source A, the registered start), toward A ("toward"), or uniform ("random", a further draw)."""
     path = MM.tree_path(mz, pl.a, pl.b)
     k = len(path) // 2
     mid, nxt = path[k], path[k + 1]
     x0, y0 = M.cell_centre(mid)
     x1, y1 = M.cell_centre(nxt)
     rng = np.random.default_rng([run_seed, maze_id, POLARITY_STREAM])
-    return mid, (x0, y0), math.atan2(y1 - y0, x1 - x0) + rng.uniform(-JITTER, JITTER)
+    h = math.atan2(y1 - y0, x1 - x0) + rng.uniform(-JITTER, JITTER)
+    if facing == "toward":
+        h += math.pi
+    elif facing == "random":
+        h = rng.uniform(0, 2 * math.pi)
+    elif facing != "away":
+        raise ValueError("facing is away, toward or random")
+    return mid, (x0, y0), h
 
 
-def polarity(cfg, iface, ids, run_seed, device="cpu") -> dict:
+def polarity(cfg, iface, ids, run_seed, device="cpu", facing: str = "away") -> dict:
     from . import maze_controls as MC
     wcfg = cfg.world
     ids = np.asarray(ids)
@@ -162,7 +173,7 @@ def polarity(cfg, iface, ids, run_seed, device="cpu") -> dict:
             leg[new] = (vt[:, 1] - vt[:, 0])[new]
             done |= new
     aged = age(snap, w._open, delta=wcfg.maze_trail_delta, mu=wcfg.maze_trail_mu, steps=leg)
-    starts = [_start(w.mazes[i], w.placements[i], run_seed, int(ids[i])) for i in range(n)]
+    starts = [_start(w.mazes[i], w.placements[i], run_seed, int(ids[i]), facing) for i in range(n)]
     mids = torch.tensor([s[0] for s in starts], dtype=torch.long, device=w.device)
     pos = torch.tensor([s[1] for s in starts], dtype=w.dtype, device=w.device)
     head = torch.tensor([s[2] % (2 * math.pi) for s in starts], dtype=w.dtype, device=w.device)
@@ -183,7 +194,8 @@ def polarity(cfg, iface, ids, run_seed, device="cpu") -> dict:
     fields["permuted"] = np.stack([
         MM.route_permuted(fields["real"][i], MM.route_cells(w.mazes[i], w.placements[i].a, w.placements[i].b),
                           np.random.default_rng([run_seed, int(ids[i]), PERMUTE_STREAM])) for i in range(n)])
-    out = {"oracle_ticks": t_or.astype(np.int64), "leg_ticks": leg.cpu().numpy(), "single_pass": done.cpu().numpy()}
+    out = {"oracle_ticks": t_or.astype(np.int64), "leg_ticks": leg.cpu().numpy(), "single_pass": done.cpu().numpy(),
+           "facing": facing}
     for name, f in fields.items():
         trail = torch.from_numpy(f).to(device, w.dtype)
 
