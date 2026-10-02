@@ -5486,3 +5486,50 @@ values in `champions-3.json`, set on E's carrier genome, give S3r3 exactly: its 
 - the scramble permutation comes from a stream keyed by (run seed, maze id, episode);
 - the scripted reflex used by the scripted controls is W1's steady-state turn on a silent carrier (next
   commit).
+
+## D177 — E3b-0's runner and measures: the pins taken while building, and the power figures made traceable
+
+Decided by Claude while building `scripts/e3b0.py`, `wormwars/e3/maze_measures.py` and
+`wormwars/e3/maze_runs.py` (2026-10-02), before any formal stage ran. E3b-0 is exploratory; each pin is
+disclosed in its results.
+
+**A leftover in plan v3.** §4's Stage B rule still reads "pass(real) − max(pass(none), pass(flat))", but
+§3b replaced the flat trail with the route-permuted one (both reviewers). The runner uses §3b's
+route-permuted trail.
+
+**The power figures, made traceable (rule 5).** Plan v3's table (8 runs 0.25-0.28, 12 runs 0.20-0.22,
+16 runs 0.17-0.19) and D175 quoted figures that were not in the committed `power.json`, which held 8 runs
+on a 0.05 grid only. `scripts/e3b0_power.py` now writes a `fine` block (8, 12 and 16 runs, a 0.01 grid,
+4 000 trials, seed 20 261 004), with its first output unchanged. Under the t-test it gives 0.25-0.28,
+0.19-0.22 and 0.17-0.19. The conclusion stands: 8 runs fail the 0.25 criterion and 12 pass. The plan's
+table carries a dated annotation. Criterion 2's headroom uses 0.22, the larger of the two shapes at
+12 runs and CV 0.282.
+
+**Pins in the measures and drivers:**
+- **The maze run seed** is 1 180 000 (the plan names none).
+- **Legs:** a wey's legs are its visits − 1.
+- **The later-leg rate** runs from the first-visit tick to the horizon. A colony with no first visit
+  scores 0, and the unvisited share is reported beside it.
+- **The route cells** are the open cells of the tree path's maze cells and of the gaps between them.
+- **The gradient share** compares each route cell with the mean of its route neighbours one step nearer
+  the source. Each trail is read toward its own source, and A's and B's are averaged.
+- **The polarity test:**
+  - the A trail is snapshotted at the oracle's B visit and aged by that leg's duration;
+  - the start is the route's middle maze cell, facing its next cell toward B, with jitter keyed by
+    (run seed, maze id);
+  - a pass enters A within twice the oracle's time from the same start;
+  - mazes where the oracle made no single pass are left out, and their number is reported.
+- **The nose range** counts both noses' goal-channel inputs on ticks whose sensing position was on route.
+- **Stage A's colonies** have 8 weys for every control. The oracle and the blind controls play with
+  access none, since they read no trail.
+- **The replay donors** play with shared trails. The coefficient is shared exposure over donor exposure
+  at coefficient 1, from one selection-maze pre-pass.
+- **The component tests' latch states** are the seed's own stable roots of −q + w·tanh q + b (E's are
+  ±1.915), the upper root for A.
+- **The timing projection** uses 500 generations (E3a's Stage 3), 12 runs per arm, two training arms and
+  a 25% reserve. It covers training only.
+
+**The engine was made faster without a change in rule.** The supercover test is vectorised over its 3 × 3
+window, and each use batches its segments into one call. One occlusion geometry now serves both the
+signal and the exposure reading. A tick at 256 worlds × 8 weys on the GPU fell from 114 ms to 8.9 ms. The
+maze tests pass unchanged.

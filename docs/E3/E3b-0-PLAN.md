@@ -347,6 +347,12 @@ selection mazes. Each candidate has one episode per maze.
      | 12 | 0.20 to 0.22 |
      | 16 | 0.17 to 0.19 |
 
+     *Annotation, 2026-10-02 (rule 5):* when this table was written, only the 8-run figures on a 0.05 grid
+     were in `power.json`; the finer 8-run figures and the 12- and 16-run ones came from an uncommitted
+     calculation. `scripts/e3b0_power.py` now writes them to `power.json`'s `fine` block (seed 20 261 004,
+     4 000 trials, a 0.01 grid). Under the t-test, it gives 0.25-0.28 for 8 runs, 0.19-0.22 for 12 and
+     0.17-0.19 for 16; the exact sign-flip test gives 0.26-0.28 for 8 and 0.19-0.22 for 12. The bootstrap's
+     false-positive rate is 6-9%. The conclusion below is unchanged.
    - **The criterion:** at most 0.25 at a CV of 0.282 with the calibrated test. **Eight runs fail it, and
      twelve pass.** So E3b-1 is designed with 12 runs per gate arm, and criterion 5's projection uses 12.
    - The assumption comes from 8 single-wey, open-arena runs, so it is weak (Fable). E3b-0's own

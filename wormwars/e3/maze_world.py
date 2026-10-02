@@ -63,6 +63,9 @@ def maze_config(base: Config | None = None, *, c: int, horizon: int, colony: int
 
 # ------------------------------------------------------------------ geometry
 
+_WINDOW = [(ox, oy) for oy in range(3) for ox in range(3)]
+
+
 def segment_hits(wall: Tensor, p0: Tensor, p1: Tensor) -> Tensor:
     """[N, P]: whether each segment p0 → p1 ([N, P, 2], (x, y) in cell units) touches a wall cell of
     `wall` [N, H, W], each cell taken as the closed square [x, x + 1] × [y, y + 1]; outside the grid
@@ -71,30 +74,61 @@ def segment_hits(wall: Tensor, p0: Tensor, p1: Tensor) -> Tensor:
     0.78 from the head and a support cell's centre within 1.5 of the nose."""
     n, h, w = wall.shape
     p0, p1 = p0.double(), p1.double()
-    d = p1 - p0
-    lo = torch.minimum(p0, p1).floor().long()
-    flat = wall.reshape(n, h * w)
-    hit = torch.zeros(p0.shape[:-1], dtype=torch.bool, device=wall.device)
-    for oy in range(3):
-        for ox in range(3):
-            cx, cy = lo[..., 0] + ox, lo[..., 1] + oy
-            in_grid = (cx >= 0) & (cx < w) & (cy >= 0) & (cy < h)
-            cell = flat.gather(1, (cy.clamp(0, h - 1) * w + cx.clamp(0, w - 1)).reshape(n, -1)).reshape(cx.shape)
-            is_wall = torch.where(in_grid, cell, torch.ones_like(cell))
-            t_lo = torch.zeros_like(d[..., 0])
-            t_hi = torch.ones_like(d[..., 0])
-            for k, c in ((0, cx), (1, cy)):
-                a, dk = p0[..., k], d[..., k]
-                c = c.double()
-                flat_axis = dk == 0
-                safe = torch.where(flat_axis, torch.ones_like(dk), dk)
-                t1, t2 = (c - a) / safe, (c + 1 - a) / safe
-                inside = (a >= c) & (a <= c + 1)
-                lo_k = torch.where(flat_axis, torch.where(inside, -math.inf, math.inf), torch.minimum(t1, t2))
-                hi_k = torch.where(flat_axis, torch.where(inside, math.inf, -math.inf), torch.maximum(t1, t2))
-                t_lo, t_hi = torch.maximum(t_lo, lo_k), torch.minimum(t_hi, hi_k)
-            hit |= is_wall & (t_lo <= t_hi)
-    return hit
+    d = (p1 - p0).unsqueeze(-2)  # [N, P, 1, 2]
+    a = p0.unsqueeze(-2)
+    off = torch.tensor(_WINDOW, dtype=torch.float64, device=wall.device)
+    cell = torch.minimum(p0, p1).floor().unsqueeze(-2) + off  # [N, P, 9, 2]
+    cx, cy = cell[..., 0].long(), cell[..., 1].long()
+    in_grid = (cx >= 0) & (cx < w) & (cy >= 0) & (cy < h)
+    idx = (cy.clamp(0, h - 1) * w + cx.clamp(0, w - 1)).reshape(n, -1)
+    is_wall = wall.reshape(n, h * w).gather(1, idx).reshape(cx.shape) | ~in_grid
+    flat_axis = d == 0
+    safe = torch.where(flat_axis, torch.ones_like(d), d)
+    t1, t2 = (cell - a) / safe, (cell + 1 - a) / safe
+    inside = (a >= cell) & (a <= cell + 1)
+    lo_k = torch.where(flat_axis, torch.where(inside, -math.inf, math.inf), torch.minimum(t1, t2))
+    hi_k = torch.where(flat_axis, torch.where(inside, math.inf, -math.inf), torch.maximum(t1, t2))
+    t_lo = lo_k.amax(-1).clamp_min(0.0)
+    t_hi = hi_k.amin(-1).clamp_max(1.0)
+    return (is_wall & (t_lo <= t_hi)).any(-1)
+
+
+def occlusion(wall: Tensor, head: Tensor, nose: Tensor) -> dict:
+    """The geometry of an occluded bilinear read at `nose` [N, P, 2] from `head`, against `wall` [N, H, W]:
+    whether the head → nose segment is blocked, the four support cells' flat indices and their weights
+    with every hidden or out-of-grid cell's weight at 0, and whether all four are in view. One supercover
+    call for all five segments per nose."""
+    n, h, w = wall.shape
+    x, y = nose[..., 0] - 0.5, nose[..., 1] - 0.5
+    x0, y0 = x.floor(), y.floor()
+    fx, fy = x - x0, y - y0
+    x0, y0 = x0.long(), y0.long()
+    dx = torch.tensor([0, 1, 0, 1], device=nose.device)
+    dy = torch.tensor([0, 0, 1, 1], device=nose.device)
+    cx, cy = x0.unsqueeze(-1) + dx, y0.unsqueeze(-1) + dy  # [N, P, 4]
+    wt = torch.stack(((1 - fx) * (1 - fy), fx * (1 - fy), (1 - fx) * fy, fx * fy), dim=-1)
+    centre = torch.stack(((cx + 0.5).to(nose.dtype), (cy + 0.5).to(nose.dtype)), dim=-1)  # [N, P, 4, 2]
+    P = nose.shape[1]
+    starts = torch.cat((head, nose.unsqueeze(2).expand(-1, -1, 4, -1).reshape(n, 4 * P, 2)), dim=1)
+    ends = torch.cat((nose, centre.reshape(n, 4 * P, 2)), dim=1)
+    hits = segment_hits(wall, starts, ends)
+    blocked, hidden = hits[:, :P], hits[:, P:].reshape(n, P, 4)
+    in_grid = (cx >= 0) & (cx < w) & (cy >= 0) & (cy < h)
+    return {"blocked": blocked, "all_seen": ~hidden.any(-1),
+            "idx": cy.clamp(0, h - 1) * w + cx.clamp(0, w - 1), "wt": wt * (~hidden & in_grid)}
+
+
+def read_occluded(field: Tensor, nose: Tensor, occ: dict) -> Tensor:
+    """[N, C, P]: `field` [N, C, H, W] read at `nose` through the geometry `occ` (`occlusion`): exactly
+    `sample_bilinear` where every support cell is in view and the nose is not blocked; the visible cells'
+    weighted sum, not renormalised, where some are hidden; 0 where the nose is blocked."""
+    n, c, h, w = field.shape
+    plain = sample_bilinear(field, nose)
+    P = nose.shape[1]
+    vals = field.reshape(n, c, h * w).gather(2, occ["idx"].reshape(n, 1, 4 * P).expand(n, c, -1)).reshape(n, c, P, 4)
+    acc = (vals * occ["wt"].unsqueeze(1)).sum(-1)
+    out = torch.where(occ["all_seen"].unsqueeze(1), plain, acc)
+    return torch.where(occ["blocked"].unsqueeze(1), torch.zeros_like(out), out)
 
 
 def occluded_bilinear(field: Tensor, wall: Tensor, head: Tensor, nose: Tensor,
@@ -103,28 +137,9 @@ def occluded_bilinear(field: Tensor, wall: Tensor, head: Tensor, nose: Tensor,
     0 where the head → nose segment crosses a wall cell; otherwise each of the four support cells counts
     only if the nose → its centre segment crosses no wall cell, with the weights not renormalised. A nose
     with every support cell in view reads exactly `sample_bilinear` (bitwise)."""
-    n, c, h, w = field.shape
-    plain = sample_bilinear(field, nose)
-    blocked = segment_hits(wall, head, nose)  # [N, P]
-    x, y = nose[..., 0] - 0.5, nose[..., 1] - 0.5
-    x0, y0 = x.floor(), y.floor()
-    fx, fy = x - x0, y - y0
-    x0, y0 = x0.long(), y0.long()
-    flat = field.reshape(n, c, h * w)
-    acc = torch.zeros_like(plain)
-    all_seen = torch.ones_like(blocked)
-    for dx, dy, wt in ((0, 0, (1 - fx) * (1 - fy)), (1, 0, fx * (1 - fy)), (0, 1, (1 - fx) * fy), (1, 1, fx * fy)):
-        cx, cy = x0 + dx, y0 + dy
-        centre = torch.stack(((cx + 0.5).to(nose.dtype), (cy + 0.5).to(nose.dtype)), dim=-1)
-        seen = ~segment_hits(wall, nose, centre)
-        all_seen &= seen
-        in_grid = (cx >= 0) & (cx < w) & (cy >= 0) & (cy < h)
-        idx = (cy.clamp(0, h - 1) * w + cx.clamp(0, w - 1)).unsqueeze(1).expand(n, c, -1)
-        val = flat.gather(2, idx) * in_grid.unsqueeze(1)
-        acc = acc + (wt * seen).unsqueeze(1) * val
-    out = torch.where(all_seen.unsqueeze(1), plain, acc)
-    out = torch.where(blocked.unsqueeze(1), torch.zeros_like(out), out)
-    return (out, blocked) if return_blocked else out
+    occ = occlusion(wall, head, nose)
+    out = read_occluded(field, nose, occ)
+    return (out, occ["blocked"]) if return_blocked else out
 
 
 def diffuse(x: Tensor, open_: Tensor, delta: float) -> Tensor:
@@ -213,6 +228,7 @@ class MazeWorld(World):
         Wn, B, H, W = self.n_worlds, self.n_weys, self.H, self.W
         self._wall = self.fields[:, self.ch.WALL] > 0
         self._open = (~self._wall).to(dt)
+        self._wall_per_wey = self._wall.unsqueeze(1).expand(-1, B, -1, -1).reshape(Wn * B, H, W).contiguous()
         lo = np.zeros((Wn, 2, 2), dtype=np.int64)  # [worlds, (A, B), (x, y)] of each source block's low corner
         scent = np.zeros((Wn, 2, H, W), dtype=np.float32)
         sig, reach = float(wcfg.maze_scent_sigma), float(wcfg.maze_scent_reach)
@@ -296,17 +312,16 @@ class MazeWorld(World):
         Wn, B = self.n_worlds, self.n_weys
         p0, p1 = self.pos.double().reshape(Wn, -1, 2), proposed.double().reshape(Wn, -1, 2)
 
-        def ok(q):
-            return ~segment_hits(self._wall, p0, q)
-
-        full = ok(p1)
         if self.cfg.world.maze_sliding:
             qx = torch.stack((p1[..., 0], p0[..., 1]), dim=-1)
             qy = torch.stack((p0[..., 0], p1[..., 1]), dim=-1)
+            n = p0.shape[1]
+            ok = ~segment_hits(self._wall, p0.repeat(1, 3, 1), torch.cat((p1, qx, qy), dim=1))
+            full, okx, oky = ok[:, :n], ok[:, n:2 * n], ok[:, 2 * n:]
             new = torch.where(full.unsqueeze(-1), p1,
-                              torch.where(ok(qx).unsqueeze(-1), qx, torch.where(ok(qy).unsqueeze(-1), qy, p0)))
+                              torch.where(okx.unsqueeze(-1), qx, torch.where(oky.unsqueeze(-1), qy, p0)))
         else:
-            new = torch.where(full.unsqueeze(-1), p1, p0)
+            new = torch.where((~segment_hits(self._wall, p0, p1)).unsqueeze(-1), p1, p0)
         return new.reshape(Wn, 1, B, 2).to(self.dtype)
 
     def _extra_signals(self, pts: Tensor) -> dict:
@@ -315,10 +330,10 @@ class MazeWorld(World):
         P = pts.reshape(Wn, B, N_POINTS, 2)
         head = P[:, :, 0:1].expand(-1, -1, 2, -1).reshape(Wn * B, 2, 2)
         noses = P[:, :, [P_FRONT_L, P_FRONT_R]].reshape(Wn * B, 2, 2)
-        wall = self._wall.unsqueeze(1).expand(-1, B, -1, -1).reshape(Wn * B, H, W)
+        occ = occlusion(self._wall_per_wey, head, noses)
         base, other = self._components()
         field = (base + other + self.scent.unsqueeze(1)).reshape(Wn * B, 2, H, W)
-        read, blocked = occluded_bilinear(field, wall, head, noses, return_blocked=True)  # [W*B, (A, B), (L, R)]
+        read, blocked = read_occluded(field, noses, occ), occ["blocked"]  # [W*B, (A, B), (L, R)]
         sf = wcfg.sense_scale_food
         read = (read * sf).reshape(Wn, 1, B, 2, 2)
         a_l, a_r, b_l, b_r = read[..., 0, 0], read[..., 0, 1], read[..., 1, 0], read[..., 1, 1]
@@ -327,7 +342,7 @@ class MazeWorld(World):
         if set(self._mode) <= {"own", "none"}:  # nothing but the wey's own trail is sensed
             self.last_exposure = torch.zeros(Wn, B, dtype=self.dtype, device=self.device)
         else:
-            ex = occluded_bilinear(other.reshape(Wn * B, 2, H, W), wall, head, noses) * sf
+            ex = read_occluded(other.reshape(Wn * B, 2, H, W), noses, occ) * sf
             self.last_exposure = ex.reshape(Wn, B, 4).mean(-1)
         self._exposure += self.last_exposure.double()
         self._exposure_zero += (self.last_exposure == 0).long()

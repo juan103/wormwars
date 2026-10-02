@@ -16,6 +16,12 @@ alone: a one-sample problem on 8 differences.
 
 For each: the false-positive rate at effect 0, the power at effects of 0.05-0.50 of the seed's mean, and
 the minimum detectable effect at 80% power.
+
+**Added 2026-10-02 (rule 5):** the plan's figures for 12 and 16 runs, and its finer ones for 8, were not in
+this file's first output (8 runs, a 0.05 grid). `fine` now holds, for 8, 12 and 16 runs, the t-test's and
+the exact sign-flip test's power on a 0.01 grid of effects (sign-flip for 8 and 12 only: 16 needs 65 536
+patterns per trial), the bootstrap's false-positive rate, and the minimum detectable effects read from it.
+The first output (`results`) is unchanged.
 """
 
 from __future__ import annotations
@@ -55,6 +61,33 @@ def draws(shape, cv, effect, rng, n=8):
     return effect + cv * rng.choice(z, size=n, replace=True)
 
 
+def fine(rng, trials: int = 4000) -> dict:
+    """Vectorised: power on a 0.01 grid for 8, 12 and 16 runs."""
+    effects = [round(0.01 * k, 2) for k in range(0, 51)]
+    out = {}
+    for n in (8, 12, 16):
+        signs = np.array(list(itertools.product((1.0, -1.0), repeat=n))) if n <= 12 else None
+        for shape in ("normal", "empirical"):
+            for cv in (0.267, 0.282):
+                res = {"t": {}, "signflip": {}} if signs is not None else {"t": {}}
+                for e in effects:
+                    d = np.stack([draws(shape, cv, e, rng, n=n) for _ in range(trials)])
+                    res["t"][str(e)] = float(np.mean(stats.ttest_1samp(d, 0.0, axis=1, alternative="greater").pvalue <= 0.05))
+                    if signs is not None:
+                        null = d @ signs.T / n
+                        p = np.mean(null >= d.mean(axis=1, keepdims=True) - 1e-12, axis=1)
+                        res["signflip"][str(e)] = float(np.mean(p <= 0.05))
+                d0 = np.stack([draws(shape, cv, 0.0, rng, n=n) for _ in range(1000)])
+                boot_fp = float(np.mean([bootstrap_reject(x, rng) for x in d0]))
+                row = {r: {"false_positive": v["0.0"], "power": v,
+                           "mde_80": next((e for e in effects[1:] if v[str(e)] >= 0.8), None)} for r, v in res.items()}
+                row["bootstrap90_false_positive"] = boot_fp
+                out[f"{n} runs, {shape}, CV {cv}"] = row
+                print(n, shape, cv, {r: (round(x["false_positive"], 3), x["mde_80"]) for r, x in row.items()
+                                     if isinstance(x, dict)}, "boot fp", round(boot_fp, 3))
+    return {"trials": trials, "effects_step": 0.01, "results": out}
+
+
 def main():
     rng = np.random.default_rng(20_261_003)
     effects = [0.0, 0.05, 0.10, 0.15, 0.20, 0.25, 0.30, 0.35, 0.40, 0.50]
@@ -73,6 +106,7 @@ def main():
                 res[rule] = {"false_positive": pw["0.0"], "power": pw, "mde_80": mde}
             out["results"][key] = res
             print(key, {r: (round(v["false_positive"], 3), v["mde_80"]) for r, v in res.items()})
+    out["fine"] = fine(np.random.default_rng(20_261_004))
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps(out, indent=1) + "\n", encoding="utf-8", newline="\n")
 
