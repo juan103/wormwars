@@ -1,0 +1,580 @@
+{
+ "note": "    python scripts/e3b0_diagnose2.py    # writes experiments/E3-ab-organism/E3b-0/development-records/stage-b-diagnosis-2.json",
+ "maze_ids": [
+  0,
+  64
+ ],
+ "c": 5,
+ "H": 2400,
+ "run_seed": 1180000,
+ "settings": {
+  "pilot": {
+   "constants": {
+    "mu": 0.01,
+    "lam": 0.03,
+    "delta": 0.15,
+    "d0": 0.571
+   },
+   "polarity_away_age1": {
+    "single_pass_mazes": 64,
+    "real_within_2x": 0.046875,
+    "real_within_4x": 0.328125,
+    "real_time_over_oracle_quartiles": [
+     3.600754310344828,
+     NaN,
+     NaN
+    ],
+    "none_within_2x": 0.015625,
+    "none_within_4x": 0.15625,
+    "none_time_over_oracle_quartiles": [
+     NaN,
+     NaN,
+     NaN
+    ],
+    "permuted_within_2x": 0.046875,
+    "permuted_within_4x": 0.3125,
+    "permuted_time_over_oracle_quartiles": [
+     3.8125,
+     NaN,
+     NaN
+    ],
+    "reading_2x": 0.0,
+    "reading_4x": 0.015625
+   },
+   "polarity_away_age0": {
+    "single_pass_mazes": 64,
+    "real_within_2x": 0.046875,
+    "real_within_4x": 0.21875,
+    "real_time_over_oracle_quartiles": [
+     4.915625,
+     NaN,
+     NaN
+    ],
+    "none_within_2x": 0.015625,
+    "none_within_4x": 0.15625,
+    "none_time_over_oracle_quartiles": [
+     NaN,
+     NaN,
+     NaN
+    ],
+    "permuted_within_2x": 0.046875,
+    "permuted_within_4x": 0.28125,
+    "permuted_time_over_oracle_quartiles": [
+     3.663103448275862,
+     NaN,
+     NaN
+    ],
+    "reading_2x": 0.0,
+    "reading_4x": -0.0625
+   },
+   "polarity_toward_age1": {
+    "single_pass_mazes": 64,
+    "real_within_2x": 0.6875,
+    "real_within_4x": 0.703125,
+    "real_time_over_oracle_quartiles": [
+     0.9645225464190982,
+     1.1000400160064026,
+     NaN
+    ],
+    "none_within_2x": 0.765625,
+    "none_within_4x": 0.875,
+    "none_time_over_oracle_quartiles": [
+     0.9493421052631579,
+     1.1057781919850886,
+     1.9617094861660078
+    ],
+    "permuted_within_2x": 0.734375,
+    "permuted_within_4x": 0.8125,
+    "permuted_time_over_oracle_quartiles": [
+     1.0,
+     1.1069794050343251,
+     2.52639116202946
+    ],
+    "reading_2x": -0.078125,
+    "reading_4x": -0.171875
+   },
+   "polarity_toward_age0": {
+    "single_pass_mazes": 64,
+    "real_within_2x": 0.890625,
+    "real_within_4x": 0.890625,
+    "real_time_over_oracle_quartiles": [
+     0.9338455772113943,
+     1.0220019342359767,
+     1.1013157894736842
+    ],
+    "none_within_2x": 0.765625,
+    "none_within_4x": 0.875,
+    "none_time_over_oracle_quartiles": [
+     0.9493421052631579,
+     1.1057781919850886,
+     1.9617094861660078
+    ],
+    "permuted_within_2x": 0.703125,
+    "permuted_within_4x": 0.8125,
+    "permuted_time_over_oracle_quartiles": [
+     0.9786077705827937,
+     1.1103343465045592,
+     3.000858123569794
+    ],
+    "reading_2x": 0.125,
+    "reading_4x": 0.015625
+   },
+   "polarity_random_age1": {
+    "single_pass_mazes": 64,
+    "real_within_2x": 0.296875,
+    "real_within_4x": 0.453125,
+    "real_time_over_oracle_quartiles": [
+     1.4817460317460318,
+     4.614522417153996,
+     NaN
+    ],
+    "none_within_2x": 0.28125,
+    "none_within_4x": 0.4375,
+    "none_time_over_oracle_quartiles": [
+     1.3234432234432234,
+     NaN,
+     NaN
+    ],
+    "permuted_within_2x": 0.359375,
+    "permuted_within_4x": 0.515625,
+    "permuted_time_over_oracle_quartiles": [
+     1.1741071428571428,
+     3.6945652173913044,
+     NaN
+    ],
+    "reading_2x": -0.0625,
+    "reading_4x": -0.0625
+   },
+   "polarity_random_age0": {
+    "single_pass_mazes": 64,
+    "real_within_2x": 0.34375,
+    "real_within_4x": 0.484375,
+    "real_time_over_oracle_quartiles": [
+     1.1039473684210528,
+     4.079248366013072,
+     NaN
+    ],
+    "none_within_2x": 0.28125,
+    "none_within_4x": 0.4375,
+    "none_time_over_oracle_quartiles": [
+     1.3234432234432234,
+     NaN,
+     NaN
+    ],
+    "permuted_within_2x": 0.265625,
+    "permuted_within_4x": 0.421875,
+    "permuted_time_over_oracle_quartiles": [
+     1.8745370370370371,
+     5.053053053053053,
+     NaN
+    ],
+    "reading_2x": 0.0625,
+    "reading_4x": 0.046875
+   },
+   "synthetic_away": {
+    "single_pass_mazes": 64,
+    "real_within_2x": 0.0625,
+    "real_within_4x": 0.359375,
+    "real_time_over_oracle_quartiles": [
+     3.0449507389162562,
+     NaN,
+     NaN
+    ],
+    "none_within_2x": 0.015625,
+    "none_within_4x": 0.15625,
+    "none_time_over_oracle_quartiles": [
+     NaN,
+     NaN,
+     NaN
+    ],
+    "permuted_within_2x": 0.046875,
+    "permuted_within_4x": 0.328125,
+    "permuted_time_over_oracle_quartiles": [
+     3.5380555555555557,
+     NaN,
+     NaN
+    ],
+    "reading_2x": 0.015625,
+    "reading_4x": 0.03125
+   },
+   "synthetic_toward": {
+    "single_pass_mazes": 64,
+    "real_within_2x": 1.0,
+    "real_within_4x": 1.0,
+    "real_time_over_oracle_quartiles": [
+     0.8846153846153846,
+     0.9441268191268191,
+     1.0
+    ],
+    "none_within_2x": 0.765625,
+    "none_within_4x": 0.875,
+    "none_time_over_oracle_quartiles": [
+     0.9493421052631579,
+     1.1057781919850886,
+     1.9617094861660078
+    ],
+    "permuted_within_2x": 0.671875,
+    "permuted_within_4x": 0.78125,
+    "permuted_time_over_oracle_quartiles": [
+     1.0281853281853282,
+     1.1673469387755102,
+     3.480683090705487
+    ],
+    "reading_2x": 0.234375,
+    "reading_4x": 0.125
+   },
+   "synthetic_random": {
+    "single_pass_mazes": 64,
+    "real_within_2x": 0.5,
+    "real_within_4x": 0.609375,
+    "real_time_over_oracle_quartiles": [
+     0.99375,
+     2.116279069767442,
+     NaN
+    ],
+    "none_within_2x": 0.28125,
+    "none_within_4x": 0.4375,
+    "none_time_over_oracle_quartiles": [
+     1.3234432234432234,
+     NaN,
+     NaN
+    ],
+    "permuted_within_2x": 0.28125,
+    "permuted_within_4x": 0.5,
+    "permuted_time_over_oracle_quartiles": [
+     1.63875786163522,
+     4.1,
+     NaN
+    ],
+    "reading_2x": 0.21875,
+    "reading_4x": 0.109375
+   },
+   "nose_range": {
+    "on_route_noses": 1170766,
+    "in_range": 402796,
+    "above": 99782,
+    "zero": 262371,
+    "occluded": 162187,
+    "in_range_share": 0.3440448390199237,
+    "above_share": 0.08522796186428372,
+    "in_range_share_unoccluded": 0.39936980643063164,
+    "above_share_unoccluded": 0.09893325163422995,
+    "positive_unoccluded_after_trail": 898110,
+    "quantiles_unoccluded_positive": {
+     "1": 1e-06,
+     "5": 1e-06,
+     "25": 0.0003548133892335757,
+     "50": 0.009332543007969915,
+     "75": 0.12022644346174131,
+     "95": 0.7244359600749906,
+     "99": 1.513561248436207
+    }
+   }
+  },
+  "stage_b_best_rate": {
+   "constants": {
+    "mu": 0.005,
+    "lam": 0.02,
+    "delta": 0.05,
+    "d0": 0.571
+   },
+   "polarity_away_age1": {
+    "single_pass_mazes": 64,
+    "real_within_2x": 0.046875,
+    "real_within_4x": 0.328125,
+    "real_time_over_oracle_quartiles": [
+     3.5219298245614032,
+     NaN,
+     NaN
+    ],
+    "none_within_2x": 0.015625,
+    "none_within_4x": 0.15625,
+    "none_time_over_oracle_quartiles": [
+     NaN,
+     NaN,
+     NaN
+    ],
+    "permuted_within_2x": 0.09375,
+    "permuted_within_4x": 0.328125,
+    "permuted_time_over_oracle_quartiles": [
+     3.0980635551142006,
+     NaN,
+     NaN
+    ],
+    "reading_2x": -0.046875,
+    "reading_4x": 0.0
+   },
+   "polarity_away_age0": {
+    "single_pass_mazes": 64,
+    "real_within_2x": 0.046875,
+    "real_within_4x": 0.453125,
+    "real_time_over_oracle_quartiles": [
+     2.991071428571429,
+     4.849085365853659,
+     NaN
+    ],
+    "none_within_2x": 0.015625,
+    "none_within_4x": 0.15625,
+    "none_time_over_oracle_quartiles": [
+     NaN,
+     NaN,
+     NaN
+    ],
+    "permuted_within_2x": 0.140625,
+    "permuted_within_4x": 0.328125,
+    "permuted_time_over_oracle_quartiles": [
+     3.2895978152929493,
+     NaN,
+     NaN
+    ],
+    "reading_2x": -0.09375,
+    "reading_4x": 0.125
+   },
+   "polarity_toward_age1": {
+    "single_pass_mazes": 64,
+    "real_within_2x": 0.921875,
+    "real_within_4x": 0.921875,
+    "real_time_over_oracle_quartiles": [
+     0.9310344827586207,
+     1.0,
+     1.0704741379310345
+    ],
+    "none_within_2x": 0.765625,
+    "none_within_4x": 0.875,
+    "none_time_over_oracle_quartiles": [
+     0.9493421052631579,
+     1.1057781919850886,
+     1.9617094861660078
+    ],
+    "permuted_within_2x": 0.6875,
+    "permuted_within_4x": 0.75,
+    "permuted_time_over_oracle_quartiles": [
+     1.0,
+     1.157142857142857,
+     4.142533936651584
+    ],
+    "reading_2x": 0.15625,
+    "reading_4x": 0.046875
+   },
+   "polarity_toward_age0": {
+    "single_pass_mazes": 64,
+    "real_within_2x": 1.0,
+    "real_within_4x": 1.0,
+    "real_time_over_oracle_quartiles": [
+     0.913975155279503,
+     0.9473684210526315,
+     0.9761479591836735
+    ],
+    "none_within_2x": 0.765625,
+    "none_within_4x": 0.875,
+    "none_time_over_oracle_quartiles": [
+     0.9493421052631579,
+     1.1057781919850886,
+     1.9617094861660078
+    ],
+    "permuted_within_2x": 0.640625,
+    "permuted_within_4x": 0.71875,
+    "permuted_time_over_oracle_quartiles": [
+     1.016304347826087,
+     1.2741641337386018,
+     Infinity
+    ],
+    "reading_2x": 0.234375,
+    "reading_4x": 0.125
+   },
+   "polarity_random_age1": {
+    "single_pass_mazes": 64,
+    "real_within_2x": 0.40625,
+    "real_within_4x": 0.5625,
+    "real_time_over_oracle_quartiles": [
+     1.0764423076923078,
+     3.3578431372549016,
+     NaN
+    ],
+    "none_within_2x": 0.28125,
+    "none_within_4x": 0.4375,
+    "none_time_over_oracle_quartiles": [
+     1.3234432234432234,
+     NaN,
+     NaN
+    ],
+    "permuted_within_2x": 0.328125,
+    "permuted_within_4x": 0.5,
+    "permuted_time_over_oracle_quartiles": [
+     1.4775641025641026,
+     3.966183574879227,
+     NaN
+    ],
+    "reading_2x": 0.078125,
+    "reading_4x": 0.0625
+   },
+   "polarity_random_age0": {
+    "single_pass_mazes": 64,
+    "real_within_2x": 0.5,
+    "real_within_4x": 0.734375,
+    "real_time_over_oracle_quartiles": [
+     0.9790441176470588,
+     1.9501679731243,
+     Infinity
+    ],
+    "none_within_2x": 0.28125,
+    "none_within_4x": 0.4375,
+    "none_time_over_oracle_quartiles": [
+     1.3234432234432234,
+     NaN,
+     NaN
+    ],
+    "permuted_within_2x": 0.34375,
+    "permuted_within_4x": 0.515625,
+    "permuted_time_over_oracle_quartiles": [
+     1.3028975741239892,
+     3.5032733224222588,
+     NaN
+    ],
+    "reading_2x": 0.15625,
+    "reading_4x": 0.21875
+   },
+   "synthetic_away": {
+    "single_pass_mazes": 64,
+    "real_within_2x": 0.09375,
+    "real_within_4x": 0.421875,
+    "real_time_over_oracle_quartiles": [
+     2.9674524982406756,
+     NaN,
+     NaN
+    ],
+    "none_within_2x": 0.015625,
+    "none_within_4x": 0.15625,
+    "none_time_over_oracle_quartiles": [
+     NaN,
+     NaN,
+     NaN
+    ],
+    "permuted_within_2x": 0.078125,
+    "permuted_within_4x": 0.390625,
+    "permuted_time_over_oracle_quartiles": [
+     3.1890161725067387,
+     NaN,
+     NaN
+    ],
+    "reading_2x": 0.015625,
+    "reading_4x": 0.03125
+   },
+   "synthetic_toward": {
+    "single_pass_mazes": 64,
+    "real_within_2x": 1.0,
+    "real_within_4x": 1.0,
+    "real_time_over_oracle_quartiles": [
+     0.8840497737556561,
+     0.9310344827586207,
+     0.9787234042553191
+    ],
+    "none_within_2x": 0.765625,
+    "none_within_4x": 0.875,
+    "none_time_over_oracle_quartiles": [
+     0.9493421052631579,
+     1.1057781919850886,
+     1.9617094861660078
+    ],
+    "permuted_within_2x": 0.671875,
+    "permuted_within_4x": 0.734375,
+    "permuted_time_over_oracle_quartiles": [
+     1.0606242496998801,
+     1.3621848739495799,
+     Infinity
+    ],
+    "reading_2x": 0.234375,
+    "reading_4x": 0.125
+   },
+   "synthetic_random": {
+    "single_pass_mazes": 64,
+    "real_within_2x": 0.515625,
+    "real_within_4x": 0.65625,
+    "real_time_over_oracle_quartiles": [
+     0.9699258081611023,
+     1.7424986361156574,
+     NaN
+    ],
+    "none_within_2x": 0.28125,
+    "none_within_4x": 0.4375,
+    "none_time_over_oracle_quartiles": [
+     1.3234432234432234,
+     NaN,
+     NaN
+    ],
+    "permuted_within_2x": 0.359375,
+    "permuted_within_4x": 0.515625,
+    "permuted_time_over_oracle_quartiles": [
+     1.418353576248313,
+     3.728937728937729,
+     NaN
+    ],
+    "reading_2x": 0.15625,
+    "reading_4x": 0.140625
+   },
+   "nose_range": {
+    "on_route_noses": 1500836,
+    "in_range": 516243,
+    "above": 465271,
+    "zero": 323702,
+    "occluded": 216882,
+    "in_range_share": 0.34397029388953887,
+    "above_share": 0.310007888936566,
+    "in_range_share_unoccluded": 0.40207281569277403,
+    "above_share_unoccluded": 0.36237357413116045,
+    "positive_unoccluded_after_trail": 1167247,
+    "quantiles_unoccluded_positive": {
+     "1": 1e-06,
+     "5": 5.011872336272725e-05,
+     "25": 0.02754228703338169,
+     "50": 0.21877616239495518,
+     "75": 0.6165950018614822,
+     "95": 1.7782794100389228,
+     "99": 3.3113112148259143
+    }
+   }
+  }
+ },
+ "active_k_d_high_levels": {
+  "E": {
+   "latch_states": {
+    "A": 1.9150080481549399,
+    "B": -1.9150080481549399
+   },
+   "active": {
+    "A@0.35": 31.602880477905273,
+    "A@0.5": 28.019241333007812,
+    "A@0.7": 22.610200881958008,
+    "A@1.0": 14.96336555480957,
+    "A@1.5": 6.435207843780518,
+    "A@2.0": 2.5208516120910645,
+    "B@0.35": 31.602880477905273,
+    "B@0.5": 28.019241333007812,
+    "B@0.7": 22.610200881958008,
+    "B@1.0": 14.96336555480957,
+    "B@1.5": 6.435207843780518,
+    "B@2.0": 2.5208516120910645
+   }
+  },
+  "S3r3": {
+   "latch_states": {
+    "A": 0.7239480302464241,
+    "B": -0.95734533012318
+   },
+   "active": {
+    "A@0.35": 29.273475646972656,
+    "A@0.5": 25.76401710510254,
+    "A@0.7": 19.518583297729492,
+    "A@1.0": 0.0,
+    "A@1.5": 0.0,
+    "A@2.0": 0.0,
+    "B@0.35": 29.847091674804688,
+    "B@0.5": 27.407249450683594,
+    "B@0.7": 22.924779891967773,
+    "B@1.0": 15.641524314880371,
+    "B@1.5": 6.8477983474731445,
+    "B@2.0": 2.683669090270996
+   }
+  }
+ }
+}

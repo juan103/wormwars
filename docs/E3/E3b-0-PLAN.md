@@ -444,3 +444,100 @@ intervals are labelled adaptively selected.
 | The polarity pins (Fable) | A single-pass oracle trail at age 1 leg; the follower's goal is its source; one placement per selection maze |
 | Single-wey evaluations (both) | Reported |
 | The second seed's qualification and fallback (both) | Its actual modules; its inactive limit reported; the other candidate not tried after a report-maze failure |
+
+## Amendment 1 (2026-10-02, after Stage B; draft for review)
+
+**Status: draft, for both reviewers' confirmation. Decided after seeing Stage B's data.** Everything chosen
+under it is labelled adaptively selected. The text above is unchanged.
+
+### What happened
+- **Stage A** (`stage-a.json`) chose c = 5, H = 2 400.
+- **Stage B** (`stage-b.json`) chose no setting. Its record stands as it is.
+  - Polarity read −0.06 to +0.02 against 0.3.
+  - The nose range read 0.26-0.46 against 0.9.
+  - The gradient passed in 22 of 24 settings. The two at μ 0.005, λ 0.01, δ 0.05 scored 0.797.
+- **Both reviewers said "amend and continue", not the fallback** (`docs/reviews/20261002-E3b-0-stage-b/`;
+  D178). Nonlinear trails would not help a follower that cannot turn around, and they would break the
+  linear peer controls. "Controller failures never change the trail rule" argues against the fallback
+  here, not against repairing the tests.
+
+### The diagnoses (exploratory, CPU, selection mazes 0-63)
+`development-records/stage-b-diagnosis.json` and `-2.json`.
+
+**The trails help the follower.** At Stage B's highest-rate setting (μ 0.005, λ 0.02, δ 0.05, d₀ 0.571),
+in legs per 1 000 ticks:
+
+| Contrast | Mean | 95% interval |
+|---|---|---|
+| shared − none | +2.85 | 1.83 to 3.92 |
+| own − none | +1.09 | 0.39 to 1.92 |
+| shared − own | +1.75 | 0.93 to 2.64 |
+
+These are on a subset of the selection mazes, at a setting picked as the maximum, so they are optimistic.
+
+**The registered polarity start cannot be passed by this follower.**
+- Facing away from A, even a clean synthetic slope (exp(−d/8) along the route) gives +0.02. A bilateral,
+  memoryless follower does not turn round on a longitudinal slope within the deadline.
+- Facing toward A (the route's previous cell), the readings are:
+  - the synthetic slope +0.23;
+  - the real trail +0.16 at the best-rate setting (−0.08 at the pilot, at age 1 leg).
+- At a uniform heading: synthetic +0.16, real +0.08.
+- With no trail, the follower facing toward A already arrives in 77% of mazes, so the 0.3 threshold was out
+  of reach for any trail.
+
+**The 90% in-range target was unreachable.** About 22% of on-route readings are exactly 0, 14% because the
+nose is occluded, and early ticks precede any trail.
+
+**High levels are a real limit (Fable).** At the best-rate setting, the unoccluded positive on-route goal
+inputs (once the goal's trail exists) have median 0.22, 95th percentile 1.78 and 99th percentile 3.31.
+
+| Active K_D | 0.35 | 0.5 | 1.0 | 2.0 |
+|---|---|---|---|---|
+| E | 31.6 | 28.0 | 15.0 | 2.5 |
+| S3r3, module A | 29.3 | — | 0 | — |
+
+So 0.35, the top of the modules' registered range, stays the cap.
+
+### The amendment
+1. **A new stage, `stage-b2`, reads Stage B's record** and does not re-execute Stage B. For each of Stage
+   B's live settings, plus the widening's, it reruns the follower's shared colony (8 weys) on the 256
+   selection mazes with the nose recorder. It also runs the follower with no trail once on the same mazes.
+   A setting qualifies if all of these hold:
+   - λ > m;
+   - **the gradient share is at least 0.8** at age 1 leg, with 1 and 8 contributors (from Stage B's rows;
+     computed afresh for widened settings). It is described narrowly, as the gradient's signs, not as
+     readable magnitude or behavioural polarity;
+   - **the high-level cap:** at most 5% of the unoccluded, positive, on-route goal-channel inputs, counted
+     once the goal's trail exists, lie above 0.35;
+   - **a trail effect:** shared − none in the follower's later-leg rate has a 95% lower bound above 0, on
+     the 256 selection mazes.
+2. **The rule:**
+   - **The choice:** the highest mean shared later-leg rate among the qualifying settings. This ranks the
+     same as shared − none, since the no-trail run does not depend on the constants (both reviewers). Ties
+     go to smaller μ, then smaller λ.
+   - **One widening,** by a factor of 2 beyond whichever edges the winner sits on in μ, λ or d₀ (d₀'s grid
+     is 0.5 and 1 × the pilot, so 0.25 × below it or 2 × above it), with all their combinations. Then the rule is applied again, and the
+     search stops there even if the winner is on the new edge.
+3. **Reported, not required, for the chosen setting:**
+   - polarity at the three headings (away as registered, toward via the previous route cell, uniform), at
+     2× and 4× the oracle's time and at trail ages 0 and 1, beside the synthetic slope as a reference;
+   - the in-range share, with the zero and occluded shares apart;
+   - the share of on-route ticks with one nose occluded (reading 0) and the other positive.
+
+   **The wording is fixed in advance:** "the trails' slope exists physically (the gradient share); this
+   follower uses it only when already facing the source". E3b-1 makes no claim of directional trail use
+   unless a controller that can read a longitudinal slope passes the registered polarity test.
+4. **Criterion 4, made executable (Astra):**
+   - the component tests run at 0.001, 0.003, and the 25th, 50th, 75th and 95th percentiles of the chosen
+     seed's own unoccluded positive on-route inputs, from its shared colony on the selection mazes;
+   - an active K_D of at least 30 is required at each such level up to 0.35. Levels above 0.35 are
+     reported; by the cap they are at most 5% of inputs.
+5. **Unchanged:** the recheck (now required to pass, not only to complete), Stage C, criterion 3 (its
+   peer measure stays the first-B time of later discoverers) and the report on the untouched mazes
+   1000-1255.
+6. **Fixes made before the rerun (D178):**
+   - shared exposure was recorded as 0, which zeroed the replay coefficient;
+   - Stage C now checks that the recheck passed;
+   - the "toward" start is fixed.
+7. **If `stage-b2` qualifies no setting:** a report and a redesign, with the owner informed. There is no
+   fallback.
