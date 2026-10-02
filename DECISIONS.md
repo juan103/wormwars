@@ -5223,3 +5223,31 @@ library and the engine changes faithful to the bound text, and the runner not.
 **Running on the review's verdict:** both said "fix then run", which is consent to run once the fixes are
 in, as with E4s-1 (D152). No further round is held. The owner asked for the GPU to be used (2026-10-02).
 The fixes and the amendment are pushed before any stage runs.
+
+## D168 — E3a ran; its results drafted, for review
+
+**The run:** every stage, from 12:20 to 18:20 on 2026-10-02, used 5.97 of the owner's 30 GPU-hours.
+- G-E, G0 and G1 passed. No stage stopped, and every assertion passed.
+- No reduction applied (9.26 planned hours, with the reserve).
+
+**The registered readings** (`experiments/E3-ab-organism/E3a/evaluate.json`):
+- **S2-a:** "evolution found a working selector in 1 of 8 runs, not reliably".
+- **S2-b:** "unclear", −1.49 (90% −2.98 to +0.24).
+- **S2-c:** none of 1 024 draws in either census passed the screen and the full check.
+- **Stage 3:** "better", +2.36.
+- **B-task:** "worse" than Stage 3, −3.73.
+
+**Descriptive:**
+- random sampling's champions are working in 7 of 8 runs (5 latches);
+- four champions are "bistable, not a latch", with memories that hold behind gates that leak;
+- several monostable champions score highly, which was not examined.
+
+**The results draft** (`RESULTS.md`) was checked against `summary.json` before committing. Five
+statements were corrected by Claude in that check:
+- E compared with L1-switch on other worlds;
+- three tuned organisms beating E, where there are four;
+- a ratio range;
+- a rounded clamp share that hid a failure;
+- the explanation of "unclear".
+
+A results review by both follows.

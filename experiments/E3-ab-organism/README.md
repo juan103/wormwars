@@ -1,8 +1,10 @@
 # E3: the minimal A/B organism
 
 **Status (2026-10-02):** E3a's design is agreed (`docs/E3/DESIGN.md` v2.4, D163). Its
-pre-registration is bound (`E3a/PREREGISTRATION.md`; two review rounds, D164 and D165), pushed before
-any stage runs. Implementation is under way; nothing has run.
+pre-registration is bound (`E3a/PREREGISTRATION.md`; two review rounds, D164 and D165; Amendment 1,
+D167), pushed before any stage ran.
+- **E3a ran** on 2026-10-02, using 5.97 of its 30 GPU-hours (D168).
+- **Its results draft** (`E3a/RESULTS.md`) is in review.
 
 ## What it asks
 
