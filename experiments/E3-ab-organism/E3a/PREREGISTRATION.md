@@ -717,4 +717,61 @@ generations. It is scaled linearly; the projection replaces it.
 
 ## 13. Amendments
 
-None.
+### Amendment 1 (2026-10-02, before any stage of E3a ran; D167)
+
+The code review (both "fix then run", `docs/reviews/20261002-E3a-code/`) found one conflict in the bound
+text and several places it leaves open. They are settled here, before the gates run. Nothing above is
+changed.
+
+1. **Module skill: §6 against §8.**
+   - §6 measures each module's skill "for Stage 2's and Stage 3's champions (not the checkpoint
+     candidates, which are not calibrated)". §8's Stage 3 paragraph says "at the checkpoints and
+     endpoints".
+   - §6's text, which was the later fix (D165), governs: champions only.
+2. **The window.** "W ... starting at the stimulus's last tick and read at its end" means:
+   - a settable run lasts stimulus + W − 1 ticks;
+   - the hold lasts stimulus + W − 1, then 580 more.
+3. **The per-tick logs (§3).**
+   - **Who:** E and every Stage 2, random-sampling and Stage 3 champion.
+   - **Where:** the first 16 test worlds, 32 strains per chunk.
+   - **Where they go:** `evaluate-traces.npz`, committed.
+4. **The hysteresis sweep (§6, descriptive).**
+   - **The start:** the "go to B" side, which is the lower stable state if bistable, otherwise the
+     release start.
+   - **The ramps:** A's stimulus (`at_b` → RB) is ramped 0 to 3 over 200 ticks and back; then B's (RA)
+     likewise.
+   - **Reported:** q after each ramp, and the drive at q's first zero crossing on each up-ramp.
+5. **"Each logged generation's offsets" (§6).**
+   - **What is measured:** the turn offsets of each Stage 2 run's checkpoint candidates, every 25
+     generations.
+   - **The offset:** u − 0.2 after 60 ticks from q = 0 with no levels, every nose at 0.05.
+   - **Generation 0's offsets and K_D** (A's, q held at 0) are measured on the first 64 census draws from
+     the GA distribution.
+6. **The release test** also runs, descriptively, on latches (every bistable champion), from each stable
+   equilibrium.
+7. **The projection.**
+   - Every shape is timed twice and the second timing is used.
+   - Its runs use the smoke seed (1 179 000).
+   - Its record gives each non-training stage's projected hours, so admission uses them directly.
+8. **Compositions** (§5's table, made specific; every record states its own):
+   - **Test-world scoring at 32 × 256:** E, its controls, the q-zero ablation, the champions and the
+     qualifiers together on E's mask; B-task's champions together on theirs.
+   - **Single:** B-shared and L1-switch, alone at 1 padded × 256.
+   - **Calibration:** 32 organisms per chunk on the 256 calibration worlds.
+9. **The census qualifiers** that get the full check are kept as the screened genomes themselves (local,
+   rule 1). Their sha256s are in the census record, and they are verified on every later load.
+10. **Admission's remaining non-training stages:**
+    - the stage projections from the projection's record (item 7), at the plan's run counts and, after
+      the census, the actual number of checked qualifiers;
+    - calibration is admitted together with the evaluation (spent + both ≤ 30 h);
+    - the evaluation is admitted again when it starts.
+11. **B-shared's memory assays** (its latch, with its nose pairs as the modules) are reported beside its
+    component tests, descriptively.
+12. **Stage 3 starts only from existing Stage 2 champions.** A run whose Stage 2 batch stopped finally
+    (no champion) is named "not run".
+13. **The stage guards:**
+    - every gate requires the earlier gates to have passed, and every stage requires the projection's
+      plan to fit (§9);
+    - a champions stage requires its batches to be settled (completed, skipped, stopped finally or
+      refused);
+    - the test worlds cannot be read before stage 14.

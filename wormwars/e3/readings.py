@@ -17,6 +17,8 @@ from ..e4s.readings import boot_means
 SEED, RESAMPLES = 20_261_002, 10_000
 R, SPEED, TURN, T = 1.5, 0.35, 0.30, 600
 MARGIN = 0.5
+S2B_WORDING = ("evolution from a start near the ungated pair, with untied mutation, against a blind search over the whole "
+               "range with the comparator pairs permanently tied")
 NULL_S2A = ("no working selector was found in 300 generations at 02's sigmas, with untied mutation at 1×, "
             "from this initial distribution")
 
@@ -82,7 +84,7 @@ def s2a(flags: list) -> dict:
     if n == 0:
         wording = "not read"
     elif k == 0:
-        wording = NULL_S2A
+        wording = NULL_S2A + ("" if n == 8 else f" ({k} of {n} read)")
     elif k >= 7:
         wording = f"evolution found a working selector in {of} runs"
     else:
@@ -100,17 +102,24 @@ def _ordered(ci: dict, better: str, worse: str) -> str:
     return "unclear"
 
 
-def s2b(d, ga_working: list, rs_working: list, boot=boot_means) -> dict:
+def s2b(d, ga_working: list, rs_working: list, boot=boot_means, *, ga_all: list | None = None,
+        rs_all: list | None = None) -> dict:
+    """`ga_working`/`rs_working` are the paired runs' flags; rule 1 reads every read champion of
+    either arm (`ga_all`, `rs_all`), paired or not."""
     d = np.asarray(d, dtype=np.float64)
-    out = {"pairs": int(len(d)), "descriptive": len(d) < 8}
-    if not any(ga_working) and not any(rs_working):
+    out = {"pairs": int(len(d)), "descriptive": len(d) < 8, "wording": S2B_WORDING}
+    every = list(ga_all if ga_all is not None else ga_working) + list(rs_all if rs_all is not None else rs_working)
+    if not any(bool(x) for x in every):
         return {**out, "label": "neither found a working selector"}
     ci = interval(d, boot)
     return {**out, **ci, "label": _ordered(ci, "evolution better", "random sampling better")}
 
 
-def compare(d, boot=boot_means) -> dict:
-    """Stage 3's and B-task's descriptive comparisons: S2-b's rules 2-5, no working branch."""
+def compare(d, boot=boot_means, *, a_working: list | None = None, b_working: list | None = None) -> dict:
+    """The descriptive comparisons. Stage 3's against Stage 2's keeps S2-b's rule 1 (pass both arms'
+    working flags); B-task's has no working branch (pass none)."""
+    if a_working is not None and not any(bool(x) for x in list(a_working) + list(b_working or [])):
+        return {"label": "neither found a working selector", "pairs": int(len(d))}
     ci = interval(d, boot)
     return {**ci, "label": _ordered(ci, "better", "worse")}
 
@@ -118,7 +127,8 @@ def compare(d, boot=boot_means) -> dict:
 def s2c(count: int, n: int = 1024, *, unchecked: int = 0, ga_distribution: bool = False) -> dict:
     lo = 0.0 if count == 0 else float(beta.ppf(0.025, count, n - count + 1))
     hi = 1.0 if count == n else float(beta.ppf(0.975, count + 1, n - count))
-    if unchecked:
+    if unchecked:  # unchecked qualifiers are not failures: no ordinary interval
+        lo = hi = None
         wording = f"at least {count} of {n} draws passed the screen and the full check; {unchecked} qualifiers unchecked"
     elif count == 0:
         wording = f"none of {n} draws passed the screen and the full check; that rate is below {hi:.4f}"

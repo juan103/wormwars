@@ -66,20 +66,24 @@ def test_the_plan_seeds_and_frame(mod):
     assert cfg.world.task == "shuttle" and cfg.world.max_ticks == 600 and cfg.evo.worlds_per_strain == 16
 
 
-def _hours(scale=1.0):
-    return {"fixed": 2.0 * scale, "ga": 1.7 * scale, "rs": 1.7 * scale, "stage3": 2.8 * scale,
-            "btask_per_generation": 4.5 * scale / 800, "evaluation_per_champion": 0.05 * scale}
+def _proj(scale=1.0):
+    unit = {"ga_batch": 1.7 * scale, "rs_batch": 1.7 * scale, "stage3_batch": 2.8 * scale,
+            "btask_per_generation": 4.5 * scale / 800, "validation_per_run": 0.01 * scale,
+            "calibration_per_organism": 0.002 * scale, "scoring_per_organism": 0.002 * scale,
+            "evaluation_per_organism": 0.01 * scale, "evaluation_fixed": 0.3 * scale}
+    return {"unit": unit, "fixed": 1.0 * scale}
 
 
 def test_no_reduction_when_the_plan_fits(mod):
-    p = mod.reductions(_hours(), 0.0)
+    p = mod.reductions(_proj(), 0.0)
     assert p["steps"] == [] and p["fits"] and p["btask_generations"] == 800 and p["stage3_runs"] == 8
 
 
 def test_the_reductions_apply_in_order(mod):
-    p = mod.reductions(_hours(1.8), 0.0)  # 1.25 x 14.3 x 1.8 = 32.2 h: over the cap
+    total = lambda s: mod.reductions(_proj(s), 0.0)  # noqa: E731
+    p = total(2.0)
     assert p["steps"][:1] == ["B-task, to 300 generations"] and p["fits"]
-    p = mod.reductions(_hours(100.0), 0.0)
+    p = total(100.0)
     assert p["steps"] == ["B-task, to 300 generations", "B-task, dropped", "Stage 3, to runs 0-3", "Stage 3, dropped",
                           "random sampling, to runs 0-3"]
     assert not p["fits"] and p["rs_runs"] == 4 and p["stage3_runs"] == 0 and p["btask_generations"] == 0
@@ -90,12 +94,57 @@ def test_the_champion_rule_breaks_ties_low(mod):
     assert mod.champion_of(np.array([0.0])) == 0
 
 
-def test_admission_counts_the_batch_and_the_reserved_evaluation(mod):
-    p = {"btask_generations": 800, "stage3_runs": 8, "rs_runs": 8}
-    h = _hours()
-    assert mod.batch_hours("btask", p, h) == pytest.approx(4.5)
-    assert mod.batch_hours("rs", {**p, "rs_runs": 4}, h) == pytest.approx(0.85)
-    assert mod.remaining_eval_hours(1, p, h) == pytest.approx(0.05 * 32 + 1.0)
+def test_random_samplings_champion_ties_go_to_the_lower_draw(mod):
+    """The top 32 are stored by selection score, so position is not draw order (both reviewers)."""
+    assert mod.champion_of(np.array([3.0, 3.0]), keys=[9, 2]) == 1
+
+
+def test_admission_prices_the_remaining_stages(mod):
+    p = {"btask_generations": 800, "stage3_runs": 8, "rs_runs": 8, "steps": []}
+    proj = _proj()
+    assert mod.batch_hours("btask", p, proj) == pytest.approx(4.5)
+    assert mod.batch_hours("rs", {**p, "rs_runs": 4}, proj) == pytest.approx(0.85)
+    sh = mod.stage_hours(proj, p, 128)
+    assert sh["champions-2"] == pytest.approx(16 * 0.01) and sh["champions-3"] == pytest.approx(16 * 0.01)
+    assert sh["calibrate"] == pytest.approx((24 + 128) * 0.002)
+    assert sh["evaluate"] == pytest.approx((24 + 128) * 0.01 + 8 * 0.002 + 0.3)
+    assert mod.remaining_hours(3, p, proj) == pytest.approx(sh["champions-3"] + sh["calibrate"] + sh["evaluate"])
+    assert mod.remaining_hours(1, p, proj) == pytest.approx(sum(sh.values()))
+
+
+def test_the_test_worlds_are_closed_before_stage_14(mod, monkeypatch):
+    monkeypatch.setattr(mod, "TEST_OPEN", False)
+    with pytest.raises(SystemExit):
+        mod.ids("test")
+    monkeypatch.setattr(mod, "TEST_OPEN", True)
+    assert len(mod.ids("test")) == 256
+
+
+def test_the_end_of_run_assertions_catch_each_change(mod):
+    """§7's assertions, each seen failing on a sabotaged population (test 13)."""
+    import torch
+    from wormwars.config import Config
+    from wormwars.e3 import samplers as S
+    from wormwars.e3.task import shuttle_config
+    cfg = shuttle_config()
+    cx = mod.context(cfg, "cpu")
+    ext, base = cx["ext"]["E"], cx["genomes"]["E"]
+    pop = S.with_selector(base, ext, S.ga_draw(np.random.default_rng(0), 4))
+    assert mod.assertions("ga", [pop], cx) == []
+    bad = pop.with_params(bias=pop.bias.clone())
+    bad.bias[:, 0] += 0.5  # a worm neuron
+    assert mod.assertions("ga", [bad], cx) and mod.assertions("stage3", [bad], cx)
+    relay = pop.with_params(tau=pop.tau.clone())
+    relay.tau[:, ext.index("E3_RA")] = 2.0
+    assert mod.assertions("stage3", [relay], cx) and not mod.assertions("stage3", [pop], cx)
+    gap = pop.with_params(g=pop.g.clone() + 0.01)
+    assert mod.assertions("stage3", [gap], cx)
+    bt_ext = cx["ext"]["b_task"]
+    bt = S.b_task_draw(np.random.default_rng(0), bt_ext, cx["mods"]["b_task"], cfg.brain, 2)
+    assert mod.assertions("btask", [bt], cx) == []
+    bt2 = bt.with_params(tau=bt.tau.clone())
+    bt2.tau[:, bt_ext.index("E3_RB")] = 3.0
+    assert mod.assertions("btask", [bt2], cx)
 
 
 def test_stage_three_needs_the_frozen_stage_two_champions(mod, tmp_path, monkeypatch):

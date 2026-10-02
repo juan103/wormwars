@@ -5154,3 +5154,72 @@ decision; the owner is informed.
 - A new guard test (`tests/test_e3_hygiene.py`) fails if any E3 test names a registered E3a block or the
   evaluation seed. It was seen failing on the committed version of the assay tests.
 - Found by Claude while writing the calibration test. Reported in E3a's results as a deviation.
+
+## D167 — E3a's code reviewed (both "fix then run"); fixes and Amendment 1
+
+**The review** (`docs/reviews/20261002-E3a-code/`, of 910fc7e): both said "fix then run". Both found the
+library and the engine changes faithful to the bound text, and the runner not.
+
+**What both found:**
+- random sampling's champion ties went to list position, not the draw j;
+- S2-b's "neither found" read only the paired runs;
+- the gates did not require the earlier gates to have passed;
+- the champion stages accepted unsettled batches;
+- admission was not the registered calculation (validation priced per champion, an unregistered 0.5,
+  no recount after the census, no check that the plan fits, no evaluation admission);
+- a failed assertion blocked the registered readings;
+- the assertions were incomplete and untested;
+- the calibration and test-world compositions were not §5's 32 × 256;
+- registered descriptive measures were missing (the per-tick logs, the hysteresis sweep, the training
+  offsets, B-shared's memory, the release test on latches).
+
+**Fable also found:**
+- the window ran one tick long;
+- §6 and §8 conflict on Stage 3's module skill;
+- B-task's comparator under reduction step 1;
+- G-E did not cover the module-only probes.
+
+**Astra also found:**
+- census qualifiers were rebuilt from rounded parameters (reproduced: a float32 parameter changed);
+- the projection used the evaluation seed;
+- the foraging check used Task N's 32-substep brain and hashed no fields;
+- Stage 3 would crash after a final stop of Stage 2.
+
+**Fixed, each with a test seen failing first, or a sabotage:**
+- the readings (S2-b over every champion, with its registered wording; "0 of n read"; no ordinary
+  interval under the census cap; Stage 3's "neither" branch; B-task against Stage 2 under reduction
+  step 1);
+- the window (stimulus + W − 1);
+- calibration and scoring batched at 32 per chunk;
+- the hysteresis sweep and the per-tick logs;
+- the runner rewritten:
+  - the guards and admission by the stage projections;
+  - the census qualifiers kept as genomes with hashes;
+  - the champion tie by j;
+  - complete assertions, with a sabotage test;
+  - a failed assertion makes the batch "not read", per §7's text;
+  - the test worlds closed before stage 14;
+  - Stage 3 only from existing champions.
+- **G-E's CPU leg broadened:** foraging at its own 8 substeps, with fields hashed and its score through
+  `rollout`, and E4s-1's "mean" and "swapped" probes.
+  - The reference was regenerated at 989da99: every case identical.
+  - A sabotage of the mean probe is caught in exactly that case.
+
+**Amendment 1** to E3a's pre-registration (§13, before any stage):
+- the §6/§8 conflict, resolved by §6;
+- the window's reading;
+- the per-tick logs' organisms and worlds;
+- the hysteresis sweep;
+- the logged generations' offsets;
+- the release test on latches;
+- the projection's timings and seed;
+- the compositions;
+- the qualifiers' genomes;
+- admission's stage projections;
+- B-shared's memory assays;
+- Stage 3's runs;
+- the guards.
+
+**Running on the review's verdict:** both said "fix then run", which is consent to run once the fixes are
+in, as with E4s-1 (D152). No further round is held. The owner asked for the GPU to be used (2026-10-02).
+The fixes and the amendment are pushed before any stage runs.

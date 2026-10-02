@@ -12,7 +12,10 @@ final scores and Task N's events compared, tolerance zero:
 - Task N: 300 ticks on smoke ids 0-15 (world seed 1 179 500), for 4 random N2 genomes
   (`initial_population`, run seed 1 179 500), and for E4s-1's M run 0 generation-0 genome (L1 on random
   N2, `embedded_population` with run seed 1 160 000, strain 0);
-- foraging: 300 ticks on the same ids under the default configuration, for the same 4 random genomes.
+- foraging: 300 ticks on the same ids under the default configuration (8 substeps), for 4 random
+  genomes drawn with that configuration's brain, the fields hashed too, and the foraging score through
+  `rollout`;
+- E4s-1's M genome with the module-only "mean" and "swapped" probes (`graft_interface`).
 The graft: E4s-1's grafted genome (that M genome) rebuilt bit-identically, and its `MODULES` entry
 unchanged.
 """
@@ -45,7 +48,8 @@ def _import(root: Path):
     from wormwars.e4s import comparator as C
     from wormwars.interface import load_interface
     from wormwars.world import World
-    return dict(G=G, Brain=Brain, BrainSpec=BrainSpec, Config=Config, load_connectome=load_connectome, EV=EV,
+    from wormwars.evo.rollout import rollout
+    return dict(rollout=rollout, G=G, Brain=Brain, BrainSpec=BrainSpec, Config=Config, load_connectome=load_connectome, EV=EV,
                 task_n_config=task_n_config, A=A, C=C, load_interface=load_interface, World=World)
 
 
@@ -65,8 +69,8 @@ def _trace(M, cfg, iface, genome) -> dict:
     ticks = []
     for _ in range(TICKS):
         world.tick()
-        ticks.append(_h(world.pos, world.heading, world.energy, world.alive.to(torch.uint8), *world.v))
-    out = {"ticks": ticks, "final": _h(world.pos, world.heading, world.energy, *world.v)}
+        ticks.append(_h(world.pos, world.heading, world.energy, world.alive.to(torch.uint8), world.fields, *world.v))
+    out = {"ticks": ticks, "final": _h(world.pos, world.heading, world.energy, world.fields, *world.v)}
     if getattr(world, "navigate", False):
         out["targets_reached"] = world.targets_reached.tolist()
         out["events"] = {k: hashlib.sha256(np.ascontiguousarray(v).tobytes()).hexdigest()
@@ -75,6 +79,7 @@ def _trace(M, cfg, iface, genome) -> dict:
 
 
 def run(root: Path, cache: Path) -> dict:
+    import numpy as np
     M = _import(root)
     con = M["load_connectome"](cache)
     iface = M["load_interface"](con)
@@ -83,6 +88,7 @@ def run(root: Path, cache: Path) -> dict:
     forage = M["Config"]()
     forage.world.max_ticks = TICKS
     g4 = M["EV"].initial_population(spec, taskn.brain, SEED, 4, "cpu")
+    g4f = M["EV"].initial_population(spec, forage.brain, SEED, 4, "cpu")
     l1 = M["A"].load_l1()
     ext = M["G"].graft_connectome(con, l1)
     gm = M["C"].embedded_population(con, ext, l1, taskn.brain, run_seed=1_160_000, population=32).select([0])
@@ -95,7 +101,11 @@ def run(root: Path, cache: Path) -> dict:
         "engine": {"package": str(Path(wormwars.__file__).resolve()), "commit": commit},
         "task_n_random": _trace(M, taskn, iface, g4),
         "task_n_e4s1_m0": _trace(M, taskn, iface_m, gm),
-        "forage_random": _trace(M, forage, iface, g4),
+        "forage_random": _trace(M, forage, iface, g4f),
+        "forage_rollout_score": hashlib.sha256(np.ascontiguousarray(M["rollout"](forage, iface, g4f, np.asarray(IDS),
+                                                                                  SEED).score).tobytes()).hexdigest(),
+        "task_n_e4s1_m0_mean": _trace(M, taskn, M["G"].graft_interface(ext, l1, probe="mean"), gm),
+        "task_n_e4s1_m0_swapped": _trace(M, taskn, M["G"].graft_interface(ext, l1, probe="swapped"), gm),
         "graft": {"w": _h(gm.w), "tau": _h(gm.tau), "bias": _h(gm.bias), "g": _h(gm.g),
                   "module_entry": hashlib.sha256(repr(entry).encode()).hexdigest()},
         "configs": {"task_n": hashlib.sha256(json.dumps(taskn.to_dict(), sort_keys=True).encode()).hexdigest(),
@@ -105,10 +115,11 @@ def run(root: Path, cache: Path) -> dict:
 
 def compare(ref: dict, new: dict) -> dict:
     diffs = {}
-    for case in ("task_n_random", "task_n_e4s1_m0", "forage_random"):
+    for case in ("task_n_random", "task_n_e4s1_m0", "forage_random", "task_n_e4s1_m0_mean", "task_n_e4s1_m0_swapped"):
         a, b = ref[case], new[case]
         first = next((t for t, (x, y) in enumerate(zip(a["ticks"], b["ticks"])) if x != y), None)
         diffs[case] = {"identical": a == b, "first_differing_tick": first}
+    diffs["forage_rollout_score"] = {"identical": ref["forage_rollout_score"] == new["forage_rollout_score"]}
     diffs["graft"] = {"identical": ref["graft"] == new["graft"]}
     diffs["configs"] = {"identical": ref["configs"] == new["configs"]}
     return {"cases": diffs, "passed": all(d["identical"] for d in diffs.values())}

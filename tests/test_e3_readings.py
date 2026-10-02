@@ -111,3 +111,26 @@ def test_the_descriptive_comparison_has_no_working_branch():
     assert R.compare(np.full(8, 1.0))["label"] == "better"
     assert R.compare(np.full(8, -1.0))["label"] == "worse"
     assert R.compare(np.array([0.1, -0.1] * 4))["label"] == "as good"
+
+
+def test_s2b_rule_one_reads_every_champion_not_only_the_pairs():
+    """A working GA champion in an unpaired run (random sampling reduced to 4) is not 'neither'."""
+    r = R.s2b(np.full(4, 0.0), [False] * 4, [False] * 4, ga_all=[False] * 7 + [True], rs_all=[False] * 4)
+    assert r["label"] != "neither found a working selector"
+    assert "against a blind search over the whole range" in r["wording"]
+
+
+def test_s2a_zero_with_unread_runs_says_so():
+    r = R.s2a([False] * 6 + [None] * 2)
+    assert r["wording"].startswith("no working selector was found") and "(0 of 6 read)" in r["wording"]
+
+
+def test_a_capped_census_reports_no_ordinary_interval():
+    r = R.s2c(64, 1024, unchecked=7)
+    assert r["lo"] is None and r["hi"] is None
+
+
+def test_stage_three_has_the_neither_branch():
+    assert R.compare(np.full(8, 1.0), a_working=[False] * 8, b_working=[False] * 8)["label"] == \
+        "neither found a working selector"
+    assert R.compare(np.full(8, 1.0), a_working=[True] + [False] * 7, b_working=[False] * 8)["label"] == "better"

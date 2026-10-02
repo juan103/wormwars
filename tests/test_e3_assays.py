@@ -123,8 +123,58 @@ def test_es_reset(ctx):
 
 def test_calibration_medians_and_stimulus_duration(ctx):
     ids = np.arange(100, 108)
-    cal = A.calibrate(ctx["E"], ctx["ext"], ctx["iface"], ctx["cfg"], world_ids=ids, run_seed=SMOKE_SEED)
+    cal = A.calibrate(ctx["E"], ctx["ext"], ctx["iface"], ctx["cfg"], world_ids=ids, run_seed=SMOKE_SEED)[0]
     assert cal["median_q"]["A"] > 1.5 and cal["median_q"]["B"] < -1.5
     assert cal["stimulus"] >= 1 and cal["pool"] > 0
     assert A.stimulus_from([], fallback=2) == 2
     assert A.stimulus_from([3, 4, 6], fallback=2) == 4 and A.stimulus_from([3, 4], fallback=2) == 4  # half up
+
+
+def test_the_window_includes_the_stimulus_last_tick(ctx, monkeypatch):
+    """§6: W starts at the stimulus's last tick, so a settable run lasts stim + W − 1 ticks."""
+    seen = []
+    real = A.P._free_run
+
+    def spy(genome, pc, state, ticks, relay, stim, m=0.05):
+        seen.append((ticks, stim))
+        return real(genome, pc, state, ticks, relay, stim, m)
+
+    monkeypatch.setattr(A.P, "_free_run", spy)
+    A.memory_assays(ctx["E"], ctx["pc"], w_qq=2.0, b_q=0.0, tau_q=1.0, stim=3, D=10, assignment=None)
+    assert (3 + 20 - 1, 3) in seen  # settable
+    assert (3 + 20 - 1 + 580, 3) in seen  # the hold
+
+
+def test_latches_also_report_the_release_test(ctx):
+    r = _classify(ctx, ctx["E"])
+    assert r["class"] == "latch" and "release_detail" in r
+
+
+def test_calibration_runs_strains_together_and_matches_one_by_one(ctx):
+    from wormwars.brain import Genome
+    ids = np.arange(200, 204)
+    two = Genome.cat([ctx["E"], _variant(ctx, tau_q=0.5, w_qq=0.0)])
+    both = A.calibrate(two, ctx["ext"], ctx["iface"], ctx["cfg"], world_ids=ids, run_seed=SMOKE_SEED)
+    one = A.calibrate(ctx["E"], ctx["ext"], ctx["iface"], ctx["cfg"], world_ids=ids, run_seed=SMOKE_SEED)
+    assert len(both) == 2 and both[0]["median_q"] == pytest.approx(one[0]["median_q"], abs=1e-5)
+    assert both[0]["durations"] == one[0]["durations"]
+
+
+def test_the_hysteresis_sweep_switches_e_both_ways(ctx):
+    h = A.hysteresis(ctx["E"], ctx["pc"], w_qq=2.0, b_q=0.0)
+    assert h["q_after_a_ramp"] > 1.5 and h["q_after_b_ramp"] < -1.5
+    assert h["a_crossing_drive"] is not None and h["b_crossing_drive"] is not None
+
+
+def test_the_per_tick_traces(ctx):
+    from wormwars.brain import Genome
+    ids = np.arange(300, 303)
+    tr = A.traces(Genome.cat([ctx["E"], ctx["E"]]), ctx["ext"], ctx["iface"], ctx["cfg"], world_ids=ids,
+                  run_seed=SMOKE_SEED, ticks=40)
+    assert set(tr) == {"q", "ra", "rb", "u", "contribution_A", "contribution_B"}
+    assert tr["q"].shape == (2, 3, 40) and tr["q"].dtype == np.float32
+    assert np.array_equal(tr["q"][0], tr["q"][1])
+    assert tr["rb"][0, :, 2].min() > 0.5  # the cue drives RB in the first ticks
+    # E's two modules never push together: one is saturated, so one contribution is near 0
+    small = np.minimum(np.abs(tr["contribution_A"]), np.abs(tr["contribution_B"]))
+    assert float(small[:, :, 20:].max()) < 0.1

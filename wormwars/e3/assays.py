@@ -89,12 +89,13 @@ def memory_assays(genome, pc: P.ProbeContext, *, w_qq: float, b_q: float, tau_q:
         other = {"A": "B", "B": "A"}
         settable = {}
         for goal in ("A", "B"):
-            q_end = float(_after(genome, pc, asg[other[goal]], goal, stim, W)[0, 0, pc.q])
+            # W starts at the stimulus's last tick: stim + W - 1 ticks in all
+            q_end = float(_after(genome, pc, asg[other[goal]], goal, stim, W - 1)[0, 0, pc.q])
             settable[goal] = {"q": q_end, "passed": abs(q_end - asg[goal]) <= TOL * sep}
         hold = {}
         for goal in ("A", "B"):
             ref_k, _ = _gate(genome, pc, goal, _settle_state(genome, pc, asg[goal]))
-            end = _after(genome, pc, asg[goal], goal, stim, W + HOLD_TICKS)
+            end = _after(genome, pc, asg[goal], goal, stim, W - 1 + HOLD_TICKS)
             q_end = float(end[0, 0, pc.q])
             k_x, k_o = _gate(genome, pc, goal, end)
             hold[goal] = {"q": q_end, "K_D": k_x, "other": k_o, "K_D_at_fixed_point": ref_k,
@@ -103,9 +104,9 @@ def memory_assays(genome, pc: P.ProbeContext, *, w_qq: float, b_q: float, tau_q:
         res.update(states=asg, settable_detail=settable, hold_detail=hold,
                    settable=all(s["passed"] for s in settable.values()), hold=all(h["passed"] for h in hold.values()))
         res["class"] = "latch" if res["settable"] and res["hold"] else "bistable, not a latch"
-        if res["class"] != "latch":  # descriptive, from each stable equilibrium
-            res["release_detail"] = {f"from {y}": _release(genome, pc, asg[y], stim, D) for y in ("A", "B")}
-            res["release"] = all(v["passed"] for d in res["release_detail"].values() for v in d.values())
+        # descriptive for every bistable q, from each stable equilibrium
+        res["release_detail"] = {f"from {y}": _release(genome, pc, asg[y], stim, D) for y in ("A", "B")}
+        res["release"] = all(v["passed"] for d in res["release_detail"].values() for v in d.values())
     else:
         start = L.release_start(w_qq, b_q)
         detail = _release(genome, pc, start, stim, D)
@@ -220,34 +221,63 @@ def stimulus_from(durations, fallback: int = 2) -> int:
     return max(1, int(math.floor(float(np.median(d)) + 0.5)))
 
 
-def calibrate(genome, ext, iface, cfg, *, world_ids, run_seed: int, device="cpu") -> dict:
-    """One organism on the calibration worlds: its median q in each goal phase (None where the phase
-    never occurs), its pooled level durations at confirmed visits (censored ones excluded), the
-    stimulus they give, and its leg durations after the first confirmed visit."""
+def calibrate(genome, ext, iface, cfg, *, world_ids, run_seed: int, device="cpu") -> list[dict]:
+    """Every strain of `genome` on the calibration worlds, together (32 strains x 256 worlds is the
+    registered composition): per strain, its median q in each goal phase (None where the phase never
+    occurs), its pooled level durations at confirmed visits (censored ones excluded), the stimulus they
+    give, and its leg durations after the first confirmed visit."""
     ids = np.asarray(world_ids)
-    n = len(ids)
-    world = World(cfg, iface, Brain(genome.select([0])), torch.zeros(n, 1, dtype=torch.long, device=device),
-                  run_seed=run_seed, world_ids=ids, device=device)
+    n, S = len(ids), genome.n_strains
+    strain_of = torch.arange(S, device=device).repeat_interleave(n).reshape(-1, 1)
+    world = World(cfg, iface, Brain(genome), strain_of, run_seed=run_seed, world_ids=np.tile(ids, S), device=device)
     q = ext.index("E3_Q")
-    rows = world.assigns[0].slot_of.reshape(-1)
+    a = world.assigns[0]
+    flat = lambda v: v.reshape(a.n_strains * a.n_slots, -1)[a.slot_of]  # noqa: E731  [worlds, N]
     qs, goals = [], []
     for _ in range(int(cfg.world.max_ticks)):
         goals.append(world.shuttle_goal.clone().cpu())
         world.tick()
-        qs.append(world.v[0][0, rows, q].clone().cpu())
-    qs, goals = torch.stack(qs).numpy(), torch.stack(goals).numpy()
-    med = {}
-    for name, g in (("A", 0), ("B", 1)):
-        sel = qs[goals == g]
-        med[name] = float(np.median(sel)) if sel.size else None
+        qs.append(flat(world.v[0])[:, q].clone().cpu())
+    qs, goals = torch.stack(qs).numpy(), torch.stack(goals).numpy()  # [ticks, S * n]
     ev = world.shuttle_events()
-    pool = [int(x) for x in ev["visit_level_ticks"].reshape(-1) if x >= 0]
-    legs = []
-    for w in range(n):
-        v = [int(t) for t in ev["visit_tick"][w] if t >= 0]
-        legs += [b - a for a, b in zip(v[:-1], v[1:])]
-    return {"median_q": med, "pool": len(pool), "stimulus": stimulus_from(pool), "durations": pool,
-            "legs_after_first_visit": legs, "visits": int(world.shuttle_visits.sum())}
+    out = []
+    for s in range(S):
+        cols = slice(s * n, (s + 1) * n)
+        med = {}
+        for name, g in (("A", 0), ("B", 1)):
+            sel = qs[:, cols][goals[:, cols] == g]
+            med[name] = float(np.median(sel)) if sel.size else None
+        pool = [int(x) for x in ev["visit_level_ticks"][cols].reshape(-1) if x >= 0]
+        legs = []
+        for w in range(s * n, (s + 1) * n):
+            v = [int(t) for t in ev["visit_tick"][w] if t >= 0]
+            legs += [b - a_ for a_, b in zip(v[:-1], v[1:])]
+        out.append({"median_q": med, "pool": len(pool), "stimulus": stimulus_from(pool), "durations": pool,
+                    "legs_after_first_visit": legs, "visits": int(world.shuttle_visits[cols].sum())})
+    return out
+
+
+def hysteresis(genome, pc: P.ProbeContext, *, w_qq: float, b_q: float, ramp: int = 200) -> dict:
+    """Descriptive (§6): from the "go to B" side (the lower stable state if bistable, else the release
+    start), the A stimulus (RB) ramped 0 -> 3 over `ramp` ticks and back, then the B stimulus (RA)
+    likewise; q at the end of each, and the drive at which q first crossed 0 on each up-ramp."""
+    st = L.structure(w_qq, b_q)
+    q0 = st.states[0] if st.kind == "bistable" else L.release_start(w_qq, b_q)
+    brain = __import__("wormwars.brain", fromlist=["Brain"]).Brain(genome)
+    v = pc.latch_state(genome, q0)
+    out = {}
+    for name, relay, sign in (("a", pc.rb, 1.0), ("b", pc.ra, -1.0)):
+        crossing = None
+        for t in range(2 * ramp):
+            drive = P.STIMULUS * (t / (ramp - 1) if t < ramp else (2 * ramp - 1 - t) / (ramp - 1))
+            cur = pc.noses(genome.n_strains, 0.05)
+            cur[..., relay] = drive
+            v = brain.step(v, cur)
+            if crossing is None and t < ramp and sign * float(v[0, 0, pc.q]) > 0:
+                crossing = drive
+        out[f"q_after_{name}_ramp"] = float(v[0, 0, pc.q])
+        out[f"{name}_crossing_drive"] = crossing
+    return out
 
 
 def leg_median(legs) -> int:
@@ -255,3 +285,48 @@ def leg_median(legs) -> int:
     if not legs:
         raise ValueError("no completed leg after a first confirmed visit: D is undefined")
     return int(math.floor(float(np.median(legs)) + 0.5))
+
+
+def _contribution_weights(genome, ext, prefix: str) -> torch.Tensor:
+    """[S, N]: for each neuron, its summed signed weight onto the 4 dorsal minus the 4 ventral turn
+    neurons, nonzero only for the given module's comparators (E3_<prefix>_CL and _CR)."""
+    from ..brain import BrainSpec
+    from ..e4s import comparator as C
+    spec = BrainSpec.from_connectome(ext)
+    comps = {ext.index(f"E3_{prefix}_CL"), ext.index(f"E3_{prefix}_CR")}
+    dors = {ext.index(n) for n in C.TURN_DORSAL}
+    vent = {ext.index(n) for n in C.TURN_VENTRAL}
+    w = torch.zeros(genome.n_strains, ext.n, device=genome.w.device)
+    for p, (i, j) in enumerate(zip(spec.chem_i.tolist(), spec.chem_j.tolist())):
+        if i in comps and (j in dors or j in vent):
+            w[:, i] += genome.w[:, p] * (1.0 if j in dors else -1.0)
+    return w
+
+
+def traces(genome, ext, iface, cfg, *, world_ids, run_seed: int, ticks: int | None = None, device="cpu") -> dict:
+    """The per-tick logs (§3), float32 [strains, worlds, ticks]: q, RA, RB, the turn command u, and
+    each module's turn contribution (its comparators' summed signed input current into the dorsal
+    minus the ventral turn neurons, before their nonlinearity)."""
+    from ..e4s import comparator as C
+    ids = np.asarray(world_ids)
+    n, S = len(ids), genome.n_strains
+    T = int(ticks or cfg.world.max_ticks)
+    strain_of = torch.arange(S, device=device).repeat_interleave(n).reshape(-1, 1)
+    world = World(cfg, iface, Brain(genome), strain_of, run_seed=run_seed, world_ids=np.tile(ids, S), device=device)
+    a = world.assigns[0]
+    flat = lambda v: v.reshape(a.n_strains * a.n_slots, -1)[a.slot_of]  # noqa: E731
+    idx = {k: ext.index(nm) for k, nm in (("q", "E3_Q"), ("ra", "E3_RA"), ("rb", "E3_RB"))}
+    wa = _contribution_weights(genome, ext, "A").repeat_interleave(n, dim=0)
+    wb = _contribution_weights(genome, ext, "B").repeat_interleave(n, dim=0)
+    out = {k: np.zeros((S * n, T), dtype=np.float32) for k in ("q", "ra", "rb", "u", "contribution_A", "contribution_B")}
+    for t in range(T):
+        world.tick()
+        v = flat(world.v[0])
+        act = torch.tanh(v)
+        for k, i in idx.items():
+            out[k][:, t] = v[:, i].float().cpu().numpy()
+        _, u = C.motor_commands(v.cpu(), iface, cfg)
+        out["u"][:, t] = u.reshape(-1).numpy()
+        out["contribution_A"][:, t] = (act * wa).sum(-1).float().cpu().numpy()
+        out["contribution_B"][:, t] = (act * wb).sum(-1).float().cpu().numpy()
+    return {k: v.reshape(S, n, T) for k, v in out.items()}
