@@ -1,0 +1,2857 @@
+{
+ "stage": "stage-b2",
+ "attempt": 1,
+ "registered": {
+  "maze_seed": 1180000,
+  "colony": 8,
+  "spawns": 4,
+  "pilot": {
+   "mu": 0.01,
+   "lam": 0.03,
+   "delta": 0.15,
+   "d0": 0.571
+  },
+  "stage_a": {
+   "c": [
+    5,
+    6,
+    7,
+    8
+   ],
+   "H": [
+    1200,
+    2400
+   ],
+   "oracle_visits_min": 8.0,
+   "follower_legs_median_min": 4.0,
+   "w2_share_max": 0.5,
+   "walk_share_max": 0.25,
+   "discovery_share_of_H_max": 0.25
+  },
+  "stage_b": {
+   "mu": [
+    0.005,
+    0.01,
+    0.02
+   ],
+   "lam": [
+    0.01,
+    0.02,
+    0.04
+   ],
+   "delta": [
+    0.05,
+    0.15
+   ],
+   "d0_scale": [
+    0.5,
+    1.0
+   ],
+   "polarity_min": 0.3,
+   "gradient_min": 0.8,
+   "range_min": 0.9,
+   "saturated_max": 0.05
+  },
+  "criterion2": {
+   "legs_median_min": 2.0,
+   "mde": 0.22,
+   "headroom_factor": 2.0,
+   "lb_min": 0.0,
+   "mde_source": "power.json fine: 12 runs, t-test, CV 0.282, normal (the larger of the two shapes)"
+  },
+  "criterion3": {
+   "rate_lb_min": 0.5
+  },
+  "stage_b2": {
+   "gradient_min": 0.8,
+   "high_level": 0.35,
+   "high_share_max": 0.05,
+   "trail_lb_min": 0.0,
+   "d0_scale_edges": {
+    "low": 0.25,
+    "high": 2.0
+   },
+   "component_quantiles": [
+    5,
+    25,
+    50,
+    75,
+    95,
+    99
+   ],
+   "component_floor": 0.001,
+   "trail_effect_rule": "world_ci: paired bootstrap over mazes, 10 000 resamples, seed 0, two-sided 95%; lower end above 0"
+  },
+  "historical": {
+   "stage-a": "50187714b13f8d489fb112339bf4f3e1cb561b12ab8251741a80ba21dd40c80b",
+   "stage-b": "71c8b2aada4756c6679a30729d0a1fd7597e4b3fe1525cc155beb337017e19b6"
+  },
+  "component_levels_fixed": [
+   0.001,
+   0.003
+  ],
+  "ids": {
+   "selection": [
+    0,
+    256
+   ],
+   "report": [
+    1000,
+    1256
+   ],
+   "fresh": [
+    2000,
+    2256
+   ]
+  },
+  "seeds": [
+   "E",
+   "S3r3"
+  ],
+  "variants": [
+   "W0",
+   "W1",
+   "W1+M40",
+   "W1+M80",
+   "W2",
+   "W2+M40",
+   "W2+M80"
+  ],
+  "cap_gpu_hours": 3.0,
+  "e3b1": {
+   "strains": 256,
+   "worlds_per_strain": 16,
+   "weys": 8,
+   "runs_per_arm": 12,
+   "population": 32,
+   "generations": 500,
+   "training_arms": 2,
+   "budget_hours": 24.0,
+   "reserve_factor": 1.25,
+   "note": "the projection's generations follow E3a's Stage 3 (500); E3b-1's design sets its own"
+  }
+ },
+ "provenance_at_start": {
+  "git_commit": "29d44e28770f4dfb87b5d7658d6b14611be44cdc",
+  "branch": "roadmap",
+  "dirty": false,
+  "python": "3.13.3",
+  "numpy": "2.4.4",
+  "torch": "2.12.0+cu130",
+  "cuda": "13.0",
+  "gpu": "NVIDIA GeForce RTX 5080",
+  "connectome_cache_sha256": "43b87aa172a0042b9dce734b15bdf1c87efe3a33ac1cc0d9cd03255a60c96d4a",
+  "connectome_source_sha256": "1f4fdbf84746b69b49a8da0816f52787860ce349b638dce37924ba80f90c70c9"
+ },
+ "device": "cuda",
+ "resolved_config": {
+  "brain": {
+   "substeps": 32,
+   "tau_min": 0.5,
+   "tau_max": 20.0,
+   "w_max": 3.0,
+   "g_max": 2.0,
+   "b_max": 2.0,
+   "init_w_scale": 0.2,
+   "init_g_scale": 0.05,
+   "init_bias_std": 0.5,
+   "init_tau_log_uniform": true,
+   "init_chem_magnitude": "anatomical",
+   "init_gap_magnitude": "anatomical",
+   "init_permutation_seed": 0,
+   "dale": false,
+   "input_gain": 1.0,
+   "input_max": 5.0,
+   "chem_direction": "pre_to_post",
+   "pad_single_strain": true
+  },
+  "world": {
+   "n_swarms": 1,
+   "weys_per_swarm": 8,
+   "max_ticks": 1200,
+   "cells_per_wey": 0,
+   "min_side": 21,
+   "body_length": 2.4,
+   "max_speed": 0.35,
+   "reverse_fraction": 0.4,
+   "max_turn": 0.3,
+   "forward_gain": 4.0,
+   "turn_gain": 2.0,
+   "start_energy": 12.0,
+   "max_energy": 40.0,
+   "body_mass": 6.0,
+   "metabolic_drain": 0.0,
+   "move_cost": 0.0,
+   "hazard_damage": 0.0,
+   "eat_rate": 0.0,
+   "pheromone_deposit": 0.0,
+   "pheromone_decay": 0.93,
+   "pheromone_diffusion": 0.35,
+   "sense_scale_food": 0.35,
+   "sense_scale_pheromone": 0.0,
+   "sense_scale_hazard": 2.0,
+   "sense_scale_damage": 2.0,
+   "sense_scale_collision": 2.0,
+   "body_splat": 1.0,
+   "crowd_threshold": 0.8,
+   "crowd_resist": 0.0,
+   "crowd_push": 0.0,
+   "crowd_blur": 1,
+   "food_sensing": "stereo",
+   "food_probe": "real",
+   "food_odour_sigma": 0.0,
+   "food_probe_radius": 0.0,
+   "check_ledger_every_tick": false,
+   "food_probe_hold": 1,
+   "task": "maze_shuttle",
+   "target_sigma": 6.0,
+   "target_amplitude": 1.0,
+   "target_radius": 1.5,
+   "target_separation": 8.0,
+   "target_max_separation": 0.0,
+   "target_wall_clearance": 3.0,
+   "target_sequence_length": 64,
+   "shuttle_cue_ticks": 5,
+   "maze_cells": 5,
+   "maze_spawns": 4,
+   "maze_sliding": true,
+   "maze_trail_mu": 0.01,
+   "maze_trail_lambda": 0.03,
+   "maze_trail_delta": 0.15,
+   "maze_trail_d0": 0.571,
+   "maze_scent_sigma": 3.0,
+   "maze_scent_reach": 9,
+   "maze_trail_access": "shared"
+  },
+  "map": {
+   "food_patches": [
+    0,
+    0
+   ],
+   "food_patch_radius": [
+    2.5,
+    5.0
+   ],
+   "food_per_patch": [
+    70.0,
+    160.0
+   ],
+   "food_centre_bias": 0.62,
+   "hazard_patches": [
+    0,
+    0
+   ],
+   "hazard_radius": [
+    2.0,
+    4.0
+   ],
+   "hazard_strength": [
+    0.5,
+    1.0
+   ],
+   "hazard_spawn_clearance": 6.0,
+   "spawn_margin": 3.0,
+   "spawn_spread": 0.28,
+   "food_regen": 0.0,
+   "food_scales_with_headcount": true,
+   "food_reference_weys": 20
+  },
+  "combat": {
+   "attack_strength": 1.0,
+   "attack_offset": 0.9,
+   "attack_blur": 1,
+   "damage_k": 0.55,
+   "head_armor": 0.25,
+   "transfer_fraction": 0.5,
+   "max_flank_payback": 0.1,
+   "max_head_on_asymmetry": 1.5,
+   "pump_cost": 0.1
+  },
+  "mutation": {
+   "w_sigma": 0.08,
+   "g_sigma": 0.04,
+   "tau_sigma": 0.15,
+   "bias_sigma": 0.05,
+   "p_mutate": 1.0
+  },
+  "evo": {
+   "population": 32,
+   "generations": 40,
+   "elites": 3,
+   "truncation": 8,
+   "worlds_per_strain": 6,
+   "holdout_worlds": 24,
+   "islands": 1,
+   "migrate_every": 10,
+   "migrants": 1,
+   "chunk_worlds": 512,
+   "train_seed_base": 0,
+   "train_seed_span": 1000000,
+   "holdout_seed_base": 900000000,
+   "eval_ticks": 0,
+   "opponents_self": 3,
+   "opponents_hof": 2,
+   "coevo_worlds": 2,
+   "coevo_sizes": [
+    40,
+    40
+   ],
+   "coevo_lopsided": false,
+   "coevo_vary_sizes": false,
+   "coevo_size_range": [
+    50,
+    200
+   ],
+   "coevo_size_pairs": 2,
+   "coevo_lopsided_fraction": 0.5,
+   "hof_capacity": 12,
+   "suite_every": 5,
+   "suite_sizes": [
+    100,
+    100
+   ],
+   "suite_size": 6,
+   "suite_worlds": 8
+  }
+ },
+ "resolved_config_sha256": "4bce2d50ca0fbb6d92c55e6699c04a32058ede5d4bc38e7fb5b884b9f28c7e81",
+ "e1_inputs_sha256": {
+  "experiments/E1-navigation/freeze.json": "c5c48f83079a6bd0dd48bdeb13d02ab211a08eb64433fdc8372cbd6e74bcaae9",
+  "experiments/E1-navigation/gate.json": "a18b5a53845360107448527b2af038b9c613e4bf11fdfe843c328b7c2a01afa0"
+ },
+ "start_marker": "stage-b2-started.json",
+ "rerun": null,
+ "outcome": "completed",
+ "c": 5,
+ "H": 2400,
+ "follower_none_brief": {
+  "visits": {
+   "mean": 8.9296875,
+   "median": 7.0,
+   "sd": 8.18821561758116
+  },
+  "legs": {
+   "mean": 8.04833984375,
+   "median": 6.0,
+   "sd": 8.086900547698546
+  },
+  "later_leg_rate": {
+   "mean": 3.9442097685836335,
+   "median": 2.827538812117589,
+   "sd": 3.8440233116797295
+  },
+  "unvisited_share": {
+   "mean": 0.11865234375,
+   "median": 0.0,
+   "sd": 0.2638724443674369
+  },
+  "first_discovery": {
+   "mean": 157.703125,
+   "median": 66.5,
+   "sd": 411.09159056508724
+  },
+  "occluded_share": {
+   "mean": 0.23474344889322918,
+   "median": 0.23403645833333336,
+   "sd": 0.02912164029860692
+  },
+  "exposure_mean": {
+   "mean": 0.0,
+   "median": 0.0,
+   "sd": 0.0
+  },
+  "exposure_zero_share": {
+   "mean": 1.0,
+   "median": 1.0,
+   "sd": 0.0
+  },
+  "later_first_b": {
+   "mean": 975.0619419642858,
+   "median": 637.9285714285714,
+   "sd": 725.9085702832359
+  }
+ },
+ "rows": [
+  {
+   "setting": {
+    "mu": 0.005,
+    "lam": 0.01,
+    "delta": 0.05,
+    "d0": 0.2855
+   },
+   "config_sha256": "fb45247fdf1b4d3c79de71e1cb17eb4d830e0b2fd83cd66a2203b0d12179824d",
+   "follower_later_leg_rate": 6.444144583048075,
+   "trail_effect": {
+    "mean": 2.4999348144644413,
+    "lo95": 1.897676123777487,
+    "hi95": 3.1316182079089763,
+    "n": 256
+   },
+   "follower_brief": {
+    "visits": {
+     "mean": 13.85791015625,
+     "median": 6.6875,
+     "sd": 13.17506607594899
+    },
+    "legs": {
+     "mean": 12.9501953125,
+     "median": 5.6875,
+     "sd": 13.100229565453644
+    },
+    "later_leg_rate": {
+     "mean": 6.444144583048075,
+     "median": 2.8511362557427633,
+     "sd": 6.201530172231496
+    },
+    "unvisited_share": {
+     "mean": 0.09228515625,
+     "median": 0.0,
+     "sd": 0.23890385451132354
+    },
+    "first_discovery": {
+     "mean": 157.703125,
+     "median": 66.5,
+     "sd": 411.09159056508724
+    },
+    "occluded_share": {
+     "mean": 0.25130493164062495,
+     "median": 0.25083333333333335,
+     "sd": 0.03671712702028645
+    },
+    "exposure_mean": {
+     "mean": 0.2253176394381287,
+     "median": 0.12685280455659126,
+     "sd": 0.21684425252465614
+    },
+    "exposure_zero_share": {
+     "mean": 0.1500927734375,
+     "median": 0.11515624999999999,
+     "sd": 0.15747059020899482
+    },
+    "later_first_b": {
+     "mean": 990.2276785714286,
+     "median": 784.2857142857143,
+     "sd": 677.6554500508304
+    }
+   },
+   "gradient": {
+    "one_age1": 0.797452665526236,
+    "one_age2": 0.8170043662244202,
+    "one_age4": 0.82073487119687,
+    "eight_age1": 0.8158073698372099,
+    "eight_age2": 0.832446113262033,
+    "eight_age4": 0.834966594542004
+   },
+   "nose_range": {
+    "on_route_noses": 5958784,
+    "in_range": 2292921,
+    "above": 1812033,
+    "zero": 1256612,
+    "occluded": 918944,
+    "in_range_share": 0.38479679746740275,
+    "above_share": 0.3040944259768436,
+    "in_range_share_unoccluded": 0.4549590860027303,
+    "above_share_unoccluded": 0.35954177116733865,
+    "positive_unoccluded_after_trail": 4664835,
+    "quantiles_unoccluded_positive": {
+     "1": 1e-06,
+     "5": 0.0005011872336272725,
+     "25": 0.038018939632056124,
+     "50": 0.20417379446695316,
+     "75": 0.5623413251903491,
+     "95": 1.2589254117941688,
+     "99": 2.1379620895022327
+    },
+    "qualified_inputs": 4664835,
+    "qualified_above_high": 1812033,
+    "above_high_share_qualified": 0.3884452504750972
+   },
+   "checks": {
+    "live": true,
+    "gradient": false,
+    "high_cap": false,
+    "trail_effect": true
+   },
+   "passed": false
+  },
+  {
+   "setting": {
+    "mu": 0.005,
+    "lam": 0.01,
+    "delta": 0.05,
+    "d0": 0.571
+   },
+   "config_sha256": "09acc460fad9b05e7a1a41e12e838c8c8fae6971766f279ca2886e18432f91a3",
+   "follower_later_leg_rate": 6.820750842598742,
+   "trail_effect": {
+    "mean": 2.8765410740151083,
+    "lo95": 2.273661497333325,
+    "hi95": 3.5031566685473337,
+    "n": 256
+   },
+   "follower_brief": {
+    "visits": {
+     "mean": 14.59814453125,
+     "median": 7.1875,
+     "sd": 13.042307625968702
+    },
+    "legs": {
+     "mean": 13.68896484375,
+     "median": 6.25,
+     "sd": 12.967157715489044
+    },
+    "later_leg_rate": {
+     "mean": 6.820750842598742,
+     "median": 3.970611367065187,
+     "sd": 6.172563594386071
+    },
+    "unvisited_share": {
+     "mean": 0.0908203125,
+     "median": 0.0,
+     "sd": 0.23546722626431016
+    },
+    "first_discovery": {
+     "mean": 157.703125,
+     "median": 66.5,
+     "sd": 411.09159056508724
+    },
+    "occluded_share": {
+     "mean": 0.2612233479817708,
+     "median": 0.2585677083333333,
+     "sd": 0.04392101239335596
+    },
+    "exposure_mean": {
+     "mean": 0.4858569829669672,
+     "median": 0.3521565642448041,
+     "sd": 0.4141504819042771
+    },
+    "exposure_zero_share": {
+     "mean": 0.145196533203125,
+     "median": 0.11130208333333333,
+     "sd": 0.158602136499881
+    },
+    "later_first_b": {
+     "mean": 963.6344866071429,
+     "median": 773.7857142857142,
+     "sd": 652.5463959054645
+    }
+   },
+   "gradient": {
+    "one_age1": 0.797452665526236,
+    "one_age2": 0.8170043662244202,
+    "one_age4": 0.82073487119687,
+    "eight_age1": 0.8158073698372099,
+    "eight_age2": 0.832446113262033,
+    "eight_age4": 0.834966594542004
+   },
+   "nose_range": {
+    "on_route_noses": 6209082,
+    "in_range": 1835368,
+    "above": 2640235,
+    "zero": 1281171,
+    "occluded": 968779,
+    "in_range_share": 0.2955940990954863,
+    "above_share": 0.4252214739634619,
+    "in_range_share_unoccluded": 0.3502408162276113,
+    "above_share_unoccluded": 0.5038325073950877,
+    "positive_unoccluded_after_trail": 4890744,
+    "quantiles_unoccluded_positive": {
+     "1": 1e-06,
+     "5": 0.0010471285480508996,
+     "25": 0.10471285480509006,
+     "50": 0.43651583224016566,
+     "75": 1.096478196143185,
+     "95": 2.39883291901949,
+     "99": 3.9810717055349776
+    },
+    "qualified_inputs": 4890744,
+    "qualified_above_high": 2640235,
+    "above_high_share_qualified": 0.539843222217315
+   },
+   "checks": {
+    "live": true,
+    "gradient": false,
+    "high_cap": false,
+    "trail_effect": true
+   },
+   "passed": false
+  },
+  {
+   "setting": {
+    "mu": 0.005,
+    "lam": 0.01,
+    "delta": 0.15,
+    "d0": 0.2855
+   },
+   "config_sha256": "ba2016f2d3874b8046635e83fc881abf0b197e2dc7d33b88bcfc9a0d60a3f513",
+   "follower_later_leg_rate": 5.874507989036521,
+   "trail_effect": {
+    "mean": 1.9302982204528871,
+    "lo95": 1.34368934004714,
+    "hi95": 2.554348153473611,
+    "n": 256
+   },
+   "follower_brief": {
+    "visits": {
+     "mean": 12.640625,
+     "median": 7.1875,
+     "sd": 12.513855066583238
+    },
+    "legs": {
+     "mean": 11.73876953125,
+     "median": 6.1875,
+     "sd": 12.43628598763649
+    },
+    "later_leg_rate": {
+     "mean": 5.874507989036521,
+     "median": 3.0750963200812276,
+     "sd": 5.9211195340176435
+    },
+    "unvisited_share": {
+     "mean": 0.09814453125,
+     "median": 0.0,
+     "sd": 0.24065672935062546
+    },
+    "first_discovery": {
+     "mean": 157.703125,
+     "median": 66.5,
+     "sd": 411.09159056508724
+    },
+    "occluded_share": {
+     "mean": 0.2530564371744792,
+     "median": 0.2505208333333333,
+     "sd": 0.033410422846700136
+    },
+    "exposure_mean": {
+     "mean": 0.18131444128444837,
+     "median": 0.10106513053069864,
+     "sd": 0.18398719905319796
+    },
+    "exposure_zero_share": {
+     "mean": 0.1483382161458333,
+     "median": 0.11510416666666667,
+     "sd": 0.15761238106234976
+    },
+    "later_first_b": {
+     "mean": 1006.3655133928571,
+     "median": 788.4285714285714,
+     "sd": 679.3731491014165
+    }
+   },
+   "gradient": {
+    "one_age1": 0.8163170023069536,
+    "one_age2": 0.8124761054747427,
+    "one_age4": 0.8122746363708726,
+    "eight_age1": 0.838983061527015,
+    "eight_age2": 0.8276696918709319,
+    "eight_age4": 0.8251694956005837
+   },
+   "nose_range": {
+    "on_route_noses": 5783526,
+    "in_range": 2498110,
+    "above": 1468306,
+    "zero": 1242305,
+    "occluded": 911397,
+    "in_range_share": 0.4319354663573744,
+    "above_share": 0.2538773059894604,
+    "in_range_share_unoccluded": 0.5127347818581979,
+    "above_share_unoccluded": 0.30136845719807503,
+    "positive_unoccluded_after_trail": 4503033,
+    "quantiles_unoccluded_positive": {
+     "1": 1e-06,
+     "5": 0.000707945784384138,
+     "25": 0.02951209226666384,
+     "50": 0.19054607179632482,
+     "75": 0.4466835921509635,
+     "95": 1.1481536214968842,
+     "99": 1.9498445997580456
+    },
+    "qualified_inputs": 4503033,
+    "qualified_above_high": 1468306,
+    "above_high_share_qualified": 0.3260704507384245
+   },
+   "checks": {
+    "live": true,
+    "gradient": true,
+    "high_cap": false,
+    "trail_effect": true
+   },
+   "passed": false
+  },
+  {
+   "setting": {
+    "mu": 0.005,
+    "lam": 0.01,
+    "delta": 0.15,
+    "d0": 0.571
+   },
+   "config_sha256": "4834cb4c05f784d03d73b0941634ffa7bd480ea0fd8086184d069579990dd713",
+   "follower_later_leg_rate": 6.071442491894343,
+   "trail_effect": {
+    "mean": 2.1272327233107093,
+    "lo95": 1.5343632136244711,
+    "hi95": 2.751705998790635,
+    "n": 256
+   },
+   "follower_brief": {
+    "visits": {
+     "mean": 13.2607421875,
+     "median": 7.375,
+     "sd": 12.604942107182758
+    },
+    "legs": {
+     "mean": 12.33984375,
+     "median": 6.375,
+     "sd": 12.541577299206061
+    },
+    "later_leg_rate": {
+     "mean": 6.071442491894343,
+     "median": 3.1662294782668123,
+     "sd": 5.943047860224601
+    },
+    "unvisited_share": {
+     "mean": 0.0791015625,
+     "median": 0.0,
+     "sd": 0.22680166129501006
+    },
+    "first_discovery": {
+     "mean": 157.703125,
+     "median": 66.5,
+     "sd": 411.09159056508724
+    },
+    "occluded_share": {
+     "mean": 0.2658725992838542,
+     "median": 0.26296875,
+     "sd": 0.04685867379720639
+    },
+    "exposure_mean": {
+     "mean": 0.41485775717304785,
+     "median": 0.3141064555400177,
+     "sd": 0.3579509238889981
+    },
+    "exposure_zero_share": {
+     "mean": 0.1425752766927083,
+     "median": 0.10942708333333334,
+     "sd": 0.15865722970234925
+    },
+    "later_first_b": {
+     "mean": 942.5569196428571,
+     "median": 693.6428571428571,
+     "sd": 670.2798162271981
+    }
+   },
+   "gradient": {
+    "one_age1": 0.8163170023069536,
+    "one_age2": 0.8124761054747427,
+    "one_age4": 0.8122746363708726,
+    "eight_age1": 0.838983061527015,
+    "eight_age2": 0.8276696918709319,
+    "eight_age4": 0.8251694956005837
+   },
+   "nose_range": {
+    "on_route_noses": 6055556,
+    "in_range": 1857304,
+    "above": 2551333,
+    "zero": 1304178,
+    "occluded": 959755,
+    "in_range_share": 0.30671072978269875,
+    "above_share": 0.42132101494891633,
+    "in_range_share_unoccluded": 0.36447734124625353,
+    "above_share_unoccluded": 0.5006735938079214,
+    "positive_unoccluded_after_trail": 4713711,
+    "quantiles_unoccluded_positive": {
+     "1": 1e-06,
+     "5": 0.0025118864315095794,
+     "25": 0.12022644346174131,
+     "50": 0.407380277804113,
+     "75": 0.8912509381337459,
+     "95": 2.1877616239495516,
+     "99": 3.6307805477010175
+    },
+    "qualified_inputs": 4713711,
+    "qualified_above_high": 2551333,
+    "above_high_share_qualified": 0.5412578327351847
+   },
+   "checks": {
+    "live": true,
+    "gradient": true,
+    "high_cap": false,
+    "trail_effect": true
+   },
+   "passed": false
+  },
+  {
+   "setting": {
+    "mu": 0.005,
+    "lam": 0.02,
+    "delta": 0.05,
+    "d0": 0.2855
+   },
+   "config_sha256": "af7286e681f69afc13436a79cf655849fe056db78c5ac0a7848b66fde7002e87",
+   "follower_later_leg_rate": 6.6552985027415685,
+   "trail_effect": {
+    "mean": 2.711088734157935,
+    "lo95": 2.134525605602939,
+    "hi95": 3.3332722794128102,
+    "n": 256
+   },
+   "follower_brief": {
+    "visits": {
+     "mean": 14.32421875,
+     "median": 7.6875,
+     "sd": 13.355751106641252
+    },
+    "legs": {
+     "mean": 13.43115234375,
+     "median": 6.6875,
+     "sd": 13.263813877194494
+    },
+    "later_leg_rate": {
+     "mean": 6.6552985027415685,
+     "median": 3.7759304551914155,
+     "sd": 6.268525206554904
+    },
+    "unvisited_share": {
+     "mean": 0.10693359375,
+     "median": 0.0,
+     "sd": 0.2538493290269377
+    },
+    "first_discovery": {
+     "mean": 157.703125,
+     "median": 66.5,
+     "sd": 411.09159056508724
+    },
+    "occluded_share": {
+     "mean": 0.24,
+     "median": 0.240078125,
+     "sd": 0.03078064675293336
+    },
+    "exposure_mean": {
+     "mean": 0.15374211314233222,
+     "median": 0.043440514177113684,
+     "sd": 0.17629639464419625
+    },
+    "exposure_zero_share": {
+     "mean": 0.1502809651692708,
+     "median": 0.11755208333333333,
+     "sd": 0.15755116877578315
+    },
+    "later_first_b": {
+     "mean": 998.8677455357142,
+     "median": 708.5714285714286,
+     "sd": 705.3248060290999
+    }
+   },
+   "gradient": {
+    "one_age1": 0.8634028500955679,
+    "one_age2": 0.8809363653240843,
+    "one_age4": 0.8861585750985703,
+    "eight_age1": 0.8747761054542291,
+    "eight_age2": 0.8900282371206467,
+    "eight_age4": 0.8941704580739663
+   },
+   "nose_range": {
+    "on_route_noses": 5666682,
+    "in_range": 2419925,
+    "above": 1134674,
+    "zero": 1199036,
+    "occluded": 854827,
+    "in_range_share": 0.4270444327032997,
+    "above_share": 0.2002360464201097,
+    "in_range_share_unoccluded": 0.5029089613049438,
+    "above_share_unoccluded": 0.23580801998397707,
+    "positive_unoccluded_after_trail": 4429638,
+    "quantiles_unoccluded_positive": {
+     "1": 1e-06,
+     "5": 3.9810717055349695e-05,
+     "25": 0.010471285480509006,
+     "50": 0.10715193052376071,
+     "75": 0.36307805477010174,
+     "95": 1.071519305237607,
+     "99": 1.9054607179632483
+    },
+    "qualified_inputs": 4429638,
+    "qualified_above_high": 1134674,
+    "above_high_share_qualified": 0.25615501763349513
+   },
+   "checks": {
+    "live": true,
+    "gradient": true,
+    "high_cap": false,
+    "trail_effect": true
+   },
+   "passed": false
+  },
+  {
+   "setting": {
+    "mu": 0.005,
+    "lam": 0.02,
+    "delta": 0.05,
+    "d0": 0.571
+   },
+   "config_sha256": "79c7f6d4ab684be1db8bbb3ea6dccc08391bcb0495f1887fd6f9c90f1e0f8796",
+   "follower_later_leg_rate": 7.4848461738783545,
+   "trail_effect": {
+    "mean": 3.540636405294722,
+    "lo95": 2.9291066947969853,
+    "hi95": 4.176436732883878,
+    "n": 256
+   },
+   "follower_brief": {
+    "visits": {
+     "mean": 16.10546875,
+     "median": 10.75,
+     "sd": 13.245841351637317
+    },
+    "legs": {
+     "mean": 15.1962890625,
+     "median": 9.9375,
+     "sd": 13.158392941479963
+    },
+    "later_leg_rate": {
+     "mean": 7.4848461738783545,
+     "median": 6.964596041299943,
+     "sd": 6.184744230736022
+    },
+    "unvisited_share": {
+     "mean": 0.0908203125,
+     "median": 0.0,
+     "sd": 0.23805525585604337
+    },
+    "first_discovery": {
+     "mean": 157.703125,
+     "median": 66.5,
+     "sd": 411.09159056508724
+    },
+    "occluded_share": {
+     "mean": 0.242069091796875,
+     "median": 0.23979166666666665,
+     "sd": 0.035272410048935166
+    },
+    "exposure_mean": {
+     "mean": 0.3560961831293745,
+     "median": 0.24555937807475386,
+     "sd": 0.34674244382058556
+    },
+    "exposure_zero_share": {
+     "mean": 0.14918192545572914,
+     "median": 0.11703125,
+     "sd": 0.1575113010344625
+    },
+    "later_first_b": {
+     "mean": 939.42578125,
+     "median": 679.4285714285714,
+     "sd": 687.6534267247579
+    }
+   },
+   "gradient": {
+    "one_age1": 0.8634028500955679,
+    "one_age2": 0.8809363653240843,
+    "one_age4": 0.8861585750985703,
+    "eight_age1": 0.8747761054542291,
+    "eight_age2": 0.8900282371206467,
+    "eight_age4": 0.8941704580739663
+   },
+   "nose_range": {
+    "on_route_noses": 6253562,
+    "in_range": 2096026,
+    "above": 2198211,
+    "zero": 1286654,
+    "occluded": 947772,
+    "in_range_share": 0.33517313812511973,
+    "above_share": 0.35151342546855696,
+    "in_range_share_unoccluded": 0.3950450357062756,
+    "above_share_unoccluded": 0.4143041846737244,
+    "positive_unoccluded_after_trail": 4929568,
+    "quantiles_unoccluded_positive": {
+     "1": 1e-06,
+     "5": 0.00019054607179632481,
+     "25": 0.046773514128719815,
+     "50": 0.2691534803926914,
+     "75": 0.7244359600749906,
+     "95": 1.9952623149688788,
+     "99": 3.5481338923357533
+    },
+    "qualified_inputs": 4929568,
+    "qualified_above_high": 2198211,
+    "above_high_share_qualified": 0.4459236590305682
+   },
+   "checks": {
+    "live": true,
+    "gradient": true,
+    "high_cap": false,
+    "trail_effect": true
+   },
+   "passed": false
+  },
+  {
+   "setting": {
+    "mu": 0.005,
+    "lam": 0.02,
+    "delta": 0.15,
+    "d0": 0.2855
+   },
+   "config_sha256": "e1abd30dee52c03e860ecbfcdad8e815b59c412530a3dc95d8d1122de6a98a84",
+   "follower_later_leg_rate": 6.014982296966133,
+   "trail_effect": {
+    "mean": 2.0707725283824994,
+    "lo95": 1.5232086144152082,
+    "hi95": 2.657018648624551,
+    "n": 256
+   },
+   "follower_brief": {
+    "visits": {
+     "mean": 13.08447265625,
+     "median": 6.375,
+     "sd": 12.647531558558752
+    },
+    "legs": {
+     "mean": 12.19775390625,
+     "median": 5.375,
+     "sd": 12.549437231893691
+    },
+    "later_leg_rate": {
+     "mean": 6.014982296966133,
+     "median": 2.9286144537967504,
+     "sd": 5.922221371247977
+    },
+    "unvisited_share": {
+     "mean": 0.11328125,
+     "median": 0.0,
+     "sd": 0.25745621177278316
+    },
+    "first_discovery": {
+     "mean": 157.703125,
+     "median": 66.5,
+     "sd": 411.09159056508724
+    },
+    "occluded_share": {
+     "mean": 0.2404840087890625,
+     "median": 0.23903645833333334,
+     "sd": 0.028191271063873487
+    },
+    "exposure_mean": {
+     "mean": 0.12193753390283318,
+     "median": 0.03591498823104045,
+     "sd": 0.1459393758804265
+    },
+    "exposure_zero_share": {
+     "mean": 0.14633280436197915,
+     "median": 0.11403645833333333,
+     "sd": 0.15834860210866655
+    },
+    "later_first_b": {
+     "mean": 1033.6964285714284,
+     "median": 760.9285714285713,
+     "sd": 698.4118825901355
+    }
+   },
+   "gradient": {
+    "one_age1": 0.8852724172663701,
+    "one_age2": 0.8803376782102652,
+    "one_age4": 0.884645282025206,
+    "eight_age1": 0.8989470255923109,
+    "eight_age2": 0.8889540476564297,
+    "eight_age4": 0.8918521578570761
+   },
+   "nose_range": {
+    "on_route_noses": 5453108,
+    "in_range": 2481677,
+    "above": 882230,
+    "zero": 1148028,
+    "occluded": 828248,
+    "in_range_share": 0.455094049118411,
+    "above_share": 0.16178480235491394,
+    "in_range_share_unoccluded": 0.5365950536881117,
+    "above_share_unoccluded": 0.19075820673490657,
+    "positive_unoccluded_after_trail": 4268109,
+    "quantiles_unoccluded_positive": {
+     "1": 1e-06,
+     "5": 8.317637711026709e-05,
+     "25": 0.007585775750291836,
+     "50": 0.09332543007969905,
+     "75": 0.30199517204020193,
+     "95": 1.0,
+     "99": 1.7378008287493762
+    },
+    "qualified_inputs": 4268109,
+    "qualified_above_high": 882230,
+    "above_high_share_qualified": 0.2067027810208221
+   },
+   "checks": {
+    "live": true,
+    "gradient": true,
+    "high_cap": false,
+    "trail_effect": true
+   },
+   "passed": false
+  },
+  {
+   "setting": {
+    "mu": 0.005,
+    "lam": 0.02,
+    "delta": 0.15,
+    "d0": 0.571
+   },
+   "config_sha256": "c037373ec18801a967a5b39817860fbb8f12de343ac7ef1af2bff4cb8f187f6e",
+   "follower_later_leg_rate": 7.044911606931137,
+   "trail_effect": {
+    "mean": 3.1007018383475042,
+    "lo95": 2.518744864817464,
+    "hi95": 3.7031882038778265,
+    "n": 256
+   },
+   "follower_brief": {
+    "visits": {
+     "mean": 15.234375,
+     "median": 12.8125,
+     "sd": 12.65309676889959
+    },
+    "legs": {
+     "mean": 14.32666015625,
+     "median": 11.8125,
+     "sd": 12.564082586989022
+    },
+    "later_leg_rate": {
+     "mean": 7.044911606931137,
+     "median": 6.1244887338360385,
+     "sd": 5.881698252370957
+    },
+    "unvisited_share": {
+     "mean": 0.09228515625,
+     "median": 0.0,
+     "sd": 0.2412011460935421
+    },
+    "first_discovery": {
+     "mean": 157.703125,
+     "median": 66.5,
+     "sd": 411.09159056508724
+    },
+    "occluded_share": {
+     "mean": 0.24327067057291668,
+     "median": 0.24127604166666666,
+     "sd": 0.0333695781547932
+    },
+    "exposure_mean": {
+     "mean": 0.29859455033783217,
+     "median": 0.2253992623627312,
+     "sd": 0.2923932109258911
+    },
+    "exposure_zero_share": {
+     "mean": 0.1473760986328125,
+     "median": 0.11606770833333332,
+     "sd": 0.15777922578976988
+    },
+    "later_first_b": {
+     "mean": 934.8303571428571,
+     "median": 674.0714285714286,
+     "sd": 686.0036054560351
+    }
+   },
+   "gradient": {
+    "one_age1": 0.8852724172663701,
+    "one_age2": 0.8803376782102652,
+    "one_age4": 0.884645282025206,
+    "eight_age1": 0.8989470255923109,
+    "eight_age2": 0.8889540476564297,
+    "eight_age4": 0.8918521578570761
+   },
+   "nose_range": {
+    "on_route_noses": 6184858,
+    "in_range": 2257038,
+    "above": 2014636,
+    "zero": 1276340,
+    "occluded": 949964,
+    "in_range_share": 0.3649296394517061,
+    "above_share": 0.32573682370718937,
+    "in_range_share_unoccluded": 0.4311525696604363,
+    "above_share_unoccluded": 0.3848475250883781,
+    "positive_unoccluded_after_trail": 4870368,
+    "quantiles_unoccluded_positive": {
+     "1": 1e-06,
+     "5": 0.0003548133892335757,
+     "25": 0.0478630092322638,
+     "50": 0.26302679918953814,
+     "75": 0.5888436553555896,
+     "95": 1.8197008586099825,
+     "99": 3.1622776601683795
+    },
+    "qualified_inputs": 4870368,
+    "qualified_above_high": 2014636,
+    "above_high_share_qualified": 0.4136516994198385
+   },
+   "checks": {
+    "live": true,
+    "gradient": true,
+    "high_cap": false,
+    "trail_effect": true
+   },
+   "passed": false
+  },
+  {
+   "setting": {
+    "mu": 0.005,
+    "lam": 0.04,
+    "delta": 0.05,
+    "d0": 0.2855
+   },
+   "config_sha256": "1ee31316db55bb1dcc4d23897b818814dce4b2ad179a8b0448fb481c7130cd4a",
+   "follower_later_leg_rate": 5.0263595163554236,
+   "trail_effect": {
+    "mean": 1.0821497477717903,
+    "lo95": 0.5925115855480143,
+    "hi95": 1.6319017764179375,
+    "n": 256
+   },
+   "follower_brief": {
+    "visits": {
+     "mean": 11.13232421875,
+     "median": 6.5,
+     "sd": 11.943376725869388
+    },
+    "legs": {
+     "mean": 10.24169921875,
+     "median": 5.5,
+     "sd": 11.862544735069655
+    },
+    "later_leg_rate": {
+     "mean": 5.0263595163554236,
+     "median": 2.6595940895072308,
+     "sd": 5.620993167820869
+    },
+    "unvisited_share": {
+     "mean": 0.109375,
+     "median": 0.0,
+     "sd": 0.2531662245539518
+    },
+    "first_discovery": {
+     "mean": 157.703125,
+     "median": 66.5,
+     "sd": 411.09159056508724
+    },
+    "occluded_share": {
+     "mean": 0.24046305338541668,
+     "median": 0.24070312500000002,
+     "sd": 0.026858381659586823
+    },
+    "exposure_mean": {
+     "mean": 0.06755905518592599,
+     "median": 0.014717727733752224,
+     "sd": 0.10741143413270456
+    },
+    "exposure_zero_share": {
+     "mean": 0.1427069091796875,
+     "median": 0.1075,
+     "sd": 0.15917225769400428
+    },
+    "later_first_b": {
+     "mean": 1007.1467633928571,
+     "median": 759.6428571428571,
+     "sd": 685.4695554649202
+    }
+   },
+   "gradient": {
+    "one_age1": 0.9283420959527016,
+    "one_age2": 0.9378535911458828,
+    "one_age4": 0.9391713916184845,
+    "eight_age1": 0.931957106335648,
+    "eight_age2": 0.9412933924500355,
+    "eight_age4": 0.9415770807566418
+   },
+   "nose_range": {
+    "on_route_noses": 4777844,
+    "in_range": 1732102,
+    "above": 378245,
+    "zero": 1017565,
+    "occluded": 693297,
+    "in_range_share": 0.3625279519381545,
+    "above_share": 0.07916646085556582,
+    "in_range_share_unoccluded": 0.4240622032259636,
+    "above_share_unoccluded": 0.09260390442318328,
+    "positive_unoccluded_after_trail": 3725812,
+    "quantiles_unoccluded_positive": {
+     "1": 1e-06,
+     "5": 1e-06,
+     "25": 0.0005011872336272725,
+     "50": 0.009549925860214359,
+     "75": 0.1096478196143185,
+     "95": 0.6606934480075964,
+     "99": 1.513561248436207
+    },
+    "qualified_inputs": 3725812,
+    "qualified_above_high": 378245,
+    "above_high_share_qualified": 0.1015201518487782
+   },
+   "checks": {
+    "live": true,
+    "gradient": true,
+    "high_cap": false,
+    "trail_effect": true
+   },
+   "passed": false
+  },
+  {
+   "setting": {
+    "mu": 0.005,
+    "lam": 0.04,
+    "delta": 0.05,
+    "d0": 0.571
+   },
+   "config_sha256": "2fe3c94617291f37bd1d76f819edf486d27299be766d97357b30c899f870fb41",
+   "follower_later_leg_rate": 6.164149380751748,
+   "trail_effect": {
+    "mean": 2.2199396121681145,
+    "lo95": 1.6593845587290381,
+    "hi95": 2.8158241606159677,
+    "n": 256
+   },
+   "follower_brief": {
+    "visits": {
+     "mean": 13.30859375,
+     "median": 7.3125,
+     "sd": 13.055015915874078
+    },
+    "legs": {
+     "mean": 12.419921875,
+     "median": 6.3125,
+     "sd": 12.96745770787926
+    },
+    "later_leg_rate": {
+     "mean": 6.164149380751748,
+     "median": 3.1588453058441255,
+     "sd": 6.176014293862644
+    },
+    "unvisited_share": {
+     "mean": 0.111328125,
+     "median": 0.0,
+     "sd": 0.25424550770126597
+    },
+    "first_discovery": {
+     "mean": 157.703125,
+     "median": 66.5,
+     "sd": 411.09159056508724
+    },
+    "occluded_share": {
+     "mean": 0.236923828125,
+     "median": 0.237109375,
+     "sd": 0.02863690313119891
+    },
+    "exposure_mean": {
+     "mean": 0.17136149500667852,
+     "median": 0.038710172441782015,
+     "sd": 0.23167307216479938
+    },
+    "exposure_zero_share": {
+     "mean": 0.14474894205729166,
+     "median": 0.11328125,
+     "sd": 0.158708382885083
+    },
+    "later_first_b": {
+     "mean": 1008.1908482142857,
+     "median": 766.4285714285713,
+     "sd": 701.1780466828735
+    }
+   },
+   "gradient": {
+    "one_age1": 0.9283420959527016,
+    "one_age2": 0.9378535911458828,
+    "one_age4": 0.9391713916184845,
+    "eight_age1": 0.931957106335648,
+    "eight_age2": 0.9412933924500355,
+    "eight_age4": 0.9415770807566418
+   },
+   "nose_range": {
+    "on_route_noses": 5218610,
+    "in_range": 1960024,
+    "above": 843699,
+    "zero": 1097494,
+    "occluded": 760409,
+    "in_range_share": 0.37558353661223964,
+    "above_share": 0.1616712112995606,
+    "in_range_share_unoccluded": 0.43964460103974673,
+    "above_share_unoccluded": 0.18924651445728893,
+    "positive_unoccluded_after_trail": 4084613,
+    "quantiles_unoccluded_positive": {
+     "1": 1e-06,
+     "5": 1.3182567385564074e-06,
+     "25": 0.0017782794100389228,
+     "50": 0.04265795188015926,
+     "75": 0.2754228703338169,
+     "95": 1.3489628825916533,
+     "99": 2.818382931264455
+    },
+    "qualified_inputs": 4084613,
+    "qualified_above_high": 843699,
+    "above_high_share_qualified": 0.20655543132237986
+   },
+   "checks": {
+    "live": true,
+    "gradient": true,
+    "high_cap": false,
+    "trail_effect": true
+   },
+   "passed": false
+  },
+  {
+   "setting": {
+    "mu": 0.005,
+    "lam": 0.04,
+    "delta": 0.15,
+    "d0": 0.2855
+   },
+   "config_sha256": "47b8f7fc8a0f005d48b850f6069b1f56778160c55b6b508906f577f0fb76f0e3",
+   "follower_later_leg_rate": 4.760024190818842,
+   "trail_effect": {
+    "mean": 0.8158144222352084,
+    "lo95": 0.3230558561604968,
+    "hi95": 1.343602528284417,
+    "n": 256
+   },
+   "follower_brief": {
+    "visits": {
+     "mean": 10.5390625,
+     "median": 6.3125,
+     "sd": 11.397220270836252
+    },
+    "legs": {
+     "mean": 9.64990234375,
+     "median": 5.375,
+     "sd": 11.313515797324376
+    },
+    "later_leg_rate": {
+     "mean": 4.760024190818842,
+     "median": 2.6352635094335106,
+     "sd": 5.306245821938174
+    },
+    "unvisited_share": {
+     "mean": 0.11083984375,
+     "median": 0.0,
+     "sd": 0.2533736637164043
+    },
+    "first_discovery": {
+     "mean": 157.703125,
+     "median": 66.5,
+     "sd": 411.09159056508724
+    },
+    "occluded_share": {
+     "mean": 0.238863525390625,
+     "median": 0.23697916666666666,
+     "sd": 0.027177404213210878
+    },
+    "exposure_mean": {
+     "mean": 0.05644636015576412,
+     "median": 0.014612521418901741,
+     "sd": 0.08988343495710051
+    },
+    "exposure_zero_share": {
+     "mean": 0.13738138834635416,
+     "median": 0.10231770833333334,
+     "sd": 0.1599469935328385
+    },
+    "later_first_b": {
+     "mean": 1034.7611607142858,
+     "median": 819.0714285714286,
+     "sd": 683.3545818012692
+    }
+   },
+   "gradient": {
+    "one_age1": 0.9395540907741642,
+    "one_age2": 0.9338383435313193,
+    "one_age4": 0.9335236498380748,
+    "eight_age1": 0.9434999050003745,
+    "eight_age2": 0.9354225908455658,
+    "eight_age4": 0.9349034528471416
+   },
+   "nose_range": {
+    "on_route_noses": 4696210,
+    "in_range": 1737962,
+    "above": 378803,
+    "zero": 1000259,
+    "occluded": 662695,
+    "in_range_share": 0.3700775731919995,
+    "above_share": 0.08066142698048,
+    "in_range_share_unoccluded": 0.4308802620047279,
+    "above_share_unoccluded": 0.09391386916870273,
+    "positive_unoccluded_after_trail": 3658263,
+    "quantiles_unoccluded_positive": {
+     "1": 1e-06,
+     "5": 5.623413251903491e-06,
+     "25": 0.0008317637711026709,
+     "50": 0.01,
+     "75": 0.09549925860214369,
+     "95": 0.6606934480075964,
+     "99": 1.3489628825916533
+    },
+    "qualified_inputs": 3658263,
+    "qualified_above_high": 378803,
+    "above_high_share_qualified": 0.10354722992852072
+   },
+   "checks": {
+    "live": true,
+    "gradient": true,
+    "high_cap": false,
+    "trail_effect": true
+   },
+   "passed": false
+  },
+  {
+   "setting": {
+    "mu": 0.005,
+    "lam": 0.04,
+    "delta": 0.15,
+    "d0": 0.571
+   },
+   "config_sha256": "647a7257667ac66be52c2fd29d973156ddf78f370d1d578e536d6a68458d0d8a",
+   "follower_later_leg_rate": 5.843984056528152,
+   "trail_effect": {
+    "mean": 1.899774287944519,
+    "lo95": 1.351450136800299,
+    "hi95": 2.478149879536128,
+    "n": 256
+   },
+   "follower_brief": {
+    "visits": {
+     "mean": 12.7578125,
+     "median": 6.625,
+     "sd": 12.582144308191543
+    },
+    "legs": {
+     "mean": 11.8671875,
+     "median": 5.625,
+     "sd": 12.494108905918068
+    },
+    "later_leg_rate": {
+     "mean": 5.843984056528152,
+     "median": 2.7757331923866584,
+     "sd": 5.956972034243338
+    },
+    "unvisited_share": {
+     "mean": 0.109375,
+     "median": 0.0,
+     "sd": 0.2538912844382916
+    },
+    "first_discovery": {
+     "mean": 157.703125,
+     "median": 66.5,
+     "sd": 411.09159056508724
+    },
+    "occluded_share": {
+     "mean": 0.23534423828125,
+     "median": 0.2359375,
+     "sd": 0.02943388707885113
+    },
+    "exposure_mean": {
+     "mean": 0.14516901933259813,
+     "median": 0.035208521061843065,
+     "sd": 0.19537138503728113
+    },
+    "exposure_zero_share": {
+     "mean": 0.1403556315104167,
+     "median": 0.10640625000000001,
+     "sd": 0.15945187998034402
+    },
+    "later_first_b": {
+     "mean": 1003.260044642857,
+     "median": 702.8571428571429,
+     "sd": 700.5012565177191
+    }
+   },
+   "gradient": {
+    "one_age1": 0.9395540907741642,
+    "one_age2": 0.9338383435313193,
+    "one_age4": 0.9335236498380748,
+    "eight_age1": 0.9434999050003745,
+    "eight_age2": 0.9354225908455658,
+    "eight_age4": 0.9349034528471416
+   },
+   "nose_range": {
+    "on_route_noses": 5161048,
+    "in_range": 2027341,
+    "above": 788626,
+    "zero": 1080902,
+    "occluded": 739563,
+    "in_range_share": 0.3928157614500001,
+    "above_share": 0.15280346162252317,
+    "in_range_share_unoccluded": 0.4585203839886373,
+    "above_share_unoccluded": 0.17836224707309875,
+    "positive_unoccluded_after_trail": 4042194,
+    "quantiles_unoccluded_positive": {
+     "1": 1e-06,
+     "5": 1.445439770745928e-05,
+     "25": 0.0025703957827688645,
+     "50": 0.046773514128719815,
+     "75": 0.24547089156850285,
+     "95": 1.3489628825916533,
+     "99": 2.4547089156850337
+    },
+    "qualified_inputs": 4042194,
+    "qualified_above_high": 788626,
+    "above_high_share_qualified": 0.1950985034365001
+   },
+   "checks": {
+    "live": true,
+    "gradient": true,
+    "high_cap": false,
+    "trail_effect": true
+   },
+   "passed": false
+  },
+  {
+   "setting": {
+    "mu": 0.01,
+    "lam": 0.02,
+    "delta": 0.05,
+    "d0": 0.2855
+   },
+   "config_sha256": "82a5d52ba73edc9b6db8b8fa9db63b51c6ae3f75219eb3561c3e12c1d2d6fd08",
+   "follower_later_leg_rate": 5.812882400716617,
+   "trail_effect": {
+    "mean": 1.8686726321329838,
+    "lo95": 1.314895731427048,
+    "hi95": 2.4619913548844075,
+    "n": 256
+   },
+   "follower_brief": {
+    "visits": {
+     "mean": 12.50390625,
+     "median": 6.25,
+     "sd": 12.733191895901166
+    },
+    "legs": {
+     "mean": 11.61572265625,
+     "median": 5.25,
+     "sd": 12.651395891565947
+    },
+    "later_leg_rate": {
+     "mean": 5.812882400716617,
+     "median": 2.7507448243058885,
+     "sd": 6.043436753863443
+    },
+    "unvisited_share": {
+     "mean": 0.11181640625,
+     "median": 0.0,
+     "sd": 0.25511343398646735
+    },
+    "first_discovery": {
+     "mean": 157.703125,
+     "median": 66.5,
+     "sd": 411.09159056508724
+    },
+    "occluded_share": {
+     "mean": 0.24004455566406252,
+     "median": 0.24080729166666667,
+     "sd": 0.02791844571467542
+    },
+    "exposure_mean": {
+     "mean": 0.07250173290590256,
+     "median": 0.018200851425624935,
+     "sd": 0.09510568643029521
+    },
+    "exposure_zero_share": {
+     "mean": 0.1475909423828125,
+     "median": 0.115625,
+     "sd": 0.1580994302384057
+    },
+    "later_first_b": {
+     "mean": 1017.1127232142858,
+     "median": 773.3571428571429,
+     "sd": 689.238688551846
+    }
+   },
+   "gradient": {
+    "one_age1": 0.8199868911920012,
+    "one_age2": 0.8438902021131759,
+    "one_age4": 0.8584346394598359,
+    "eight_age1": 0.8408597992765237,
+    "eight_age2": 0.8631420948018077,
+    "eight_age4": 0.8787280256419685
+   },
+   "nose_range": {
+    "on_route_noses": 5184294,
+    "in_range": 2350342,
+    "above": 468279,
+    "zero": 1110214,
+    "occluded": 769715,
+    "in_range_share": 0.4533581621721299,
+    "above_share": 0.09032647454021704,
+    "in_range_share_unoccluded": 0.5324045622470456,
+    "above_share_unoccluded": 0.10607557368437624,
+    "positive_unoccluded_after_trail": 4038011,
+    "quantiles_unoccluded_positive": {
+     "1": 1e-06,
+     "5": 1.479108388168207e-06,
+     "25": 0.00223872113856834,
+     "50": 0.03162277660168379,
+     "75": 0.1995262314968879,
+     "95": 0.6025595860743581,
+     "99": 1.122018454301963
+    },
+    "qualified_inputs": 4038011,
+    "qualified_above_high": 468279,
+    "above_high_share_qualified": 0.11596773758169554
+   },
+   "checks": {
+    "live": true,
+    "gradient": true,
+    "high_cap": false,
+    "trail_effect": true
+   },
+   "passed": false
+  },
+  {
+   "setting": {
+    "mu": 0.01,
+    "lam": 0.02,
+    "delta": 0.05,
+    "d0": 0.571
+   },
+   "config_sha256": "591b48f456b9ede85da0bcaeaad0368f1a870baef2f4a2dfaf55b5140dfc578a",
+   "follower_later_leg_rate": 6.823220260590914,
+   "trail_effect": {
+    "mean": 2.8790104920072803,
+    "lo95": 2.3073714432153145,
+    "hi95": 3.4843633964076526,
+    "n": 256
+   },
+   "follower_brief": {
+    "visits": {
+     "mean": 14.6826171875,
+     "median": 8.3125,
+     "sd": 13.117076528437268
+    },
+    "legs": {
+     "mean": 13.779296875,
+     "median": 7.375,
+     "sd": 13.03484662596764
+    },
+    "later_leg_rate": {
+     "mean": 6.823220260590914,
+     "median": 4.20163304761723,
+     "sd": 6.154227419555782
+    },
+    "unvisited_share": {
+     "mean": 0.0966796875,
+     "median": 0.0,
+     "sd": 0.23908262362438146
+    },
+    "first_discovery": {
+     "mean": 157.703125,
+     "median": 66.5,
+     "sd": 411.09159056508724
+    },
+    "occluded_share": {
+     "mean": 0.24038370768229167,
+     "median": 0.23947916666666666,
+     "sd": 0.03096367389261509
+    },
+    "exposure_mean": {
+     "mean": 0.1782608908764258,
+     "median": 0.05672623143179145,
+     "sd": 0.19482925330127646
+    },
+    "exposure_zero_share": {
+     "mean": 0.149083251953125,
+     "median": 0.11624999999999999,
+     "sd": 0.1578075113185925
+    },
+    "later_first_b": {
+     "mean": 963.4151785714286,
+     "median": 701.0,
+     "sd": 691.0208942213688
+    }
+   },
+   "gradient": {
+    "one_age1": 0.8199868911920012,
+    "one_age2": 0.8438902021131759,
+    "one_age4": 0.8584346394598359,
+    "eight_age1": 0.8408597992765237,
+    "eight_age2": 0.8631420948018077,
+    "eight_age4": 0.8787280256419685
+   },
+   "nose_range": {
+    "on_route_noses": 5758374,
+    "in_range": 2341102,
+    "above": 1309343,
+    "zero": 1191933,
+    "occluded": 869605,
+    "in_range_share": 0.40655608683979194,
+    "above_share": 0.22738068072688575,
+    "in_range_share_unoccluded": 0.47887351601190403,
+    "above_share_unoccluded": 0.26782672693269,
+    "positive_unoccluded_after_trail": 4530525,
+    "quantiles_unoccluded_positive": {
+     "1": 1e-06,
+     "5": 1.698243652461746e-05,
+     "25": 0.01122018454301963,
+     "50": 0.11748975549395303,
+     "75": 0.407380277804113,
+     "95": 1.096478196143185,
+     "99": 1.9952623149688788
+    },
+    "qualified_inputs": 4530525,
+    "qualified_above_high": 1309343,
+    "above_high_share_qualified": 0.2890046959237616
+   },
+   "checks": {
+    "live": true,
+    "gradient": true,
+    "high_cap": false,
+    "trail_effect": true
+   },
+   "passed": false
+  },
+  {
+   "setting": {
+    "mu": 0.01,
+    "lam": 0.02,
+    "delta": 0.15,
+    "d0": 0.2855
+   },
+   "config_sha256": "10a5f7c5ab89241071254757e5db33a0daf63bd5c94e4c9427fe5f7dafdab74a",
+   "follower_later_leg_rate": 4.95504084747704,
+   "trail_effect": {
+    "mean": 1.0108310788934067,
+    "lo95": 0.4917469862204825,
+    "hi95": 1.563131393201593,
+    "n": 256
+   },
+   "follower_brief": {
+    "visits": {
+     "mean": 10.96533203125,
+     "median": 6.0625,
+     "sd": 11.84743009227249
+    },
+    "legs": {
+     "mean": 10.07861328125,
+     "median": 5.0625,
+     "sd": 11.764534570381663
+    },
+    "later_leg_rate": {
+     "mean": 4.95504084747704,
+     "median": 2.459017733651465,
+     "sd": 5.591509646419769
+    },
+    "unvisited_share": {
+     "mean": 0.11328125,
+     "median": 0.0,
+     "sd": 0.25745621177278316
+    },
+    "first_discovery": {
+     "mean": 157.703125,
+     "median": 66.5,
+     "sd": 411.09159056508724
+    },
+    "occluded_share": {
+     "mean": 0.2417401123046875,
+     "median": 0.24007812499999998,
+     "sd": 0.025223425034831146
+    },
+    "exposure_mean": {
+     "mean": 0.05423850586179078,
+     "median": 0.016742102686052692,
+     "sd": 0.07774139659317592
+    },
+    "exposure_zero_share": {
+     "mean": 0.14261250813802084,
+     "median": 0.10776041666666666,
+     "sd": 0.15909747647714262
+    },
+    "later_first_b": {
+     "mean": 1032.3370535714284,
+     "median": 779.3571428571429,
+     "sd": 681.3462348260865
+    }
+   },
+   "gradient": {
+    "one_age1": 0.8519178442557876,
+    "one_age2": 0.8535008483645914,
+    "one_age4": 0.8597765865218661,
+    "eight_age1": 0.878556740109828,
+    "eight_age2": 0.8715406319953212,
+    "eight_age4": 0.8772888768067233
+   },
+   "nose_range": {
+    "on_route_noses": 4866938,
+    "in_range": 2158604,
+    "above": 361609,
+    "zero": 1063081,
+    "occluded": 726759,
+    "in_range_share": 0.4435240391391877,
+    "above_share": 0.07429907675010448,
+    "in_range_share_unoccluded": 0.5213793896350858,
+    "above_share_unoccluded": 0.08734139272722266,
+    "positive_unoccluded_after_trail": 3765713,
+    "quantiles_unoccluded_positive": {
+     "1": 1e-06,
+     "5": 6.9183097091893625e-06,
+     "25": 0.0019498445997580456,
+     "50": 0.025118864315095822,
+     "75": 0.1445439770745928,
+     "95": 0.5623413251903491,
+     "99": 1.071519305237607
+    },
+    "qualified_inputs": 3765713,
+    "qualified_above_high": 361609,
+    "above_high_share_qualified": 0.09602670198180265
+   },
+   "checks": {
+    "live": true,
+    "gradient": true,
+    "high_cap": false,
+    "trail_effect": true
+   },
+   "passed": false
+  },
+  {
+   "setting": {
+    "mu": 0.01,
+    "lam": 0.02,
+    "delta": 0.15,
+    "d0": 0.571
+   },
+   "config_sha256": "e01c93662f6352611ace30c88e1bc5f852a3152ccd76ad5b54cc7a42e1d05efa",
+   "follower_later_leg_rate": 6.199595327477123,
+   "trail_effect": {
+    "mean": 2.2553855588934897,
+    "lo95": 1.6876340078278638,
+    "hi95": 2.8461335927708187,
+    "n": 256
+   },
+   "follower_brief": {
+    "visits": {
+     "mean": 13.25634765625,
+     "median": 7.0,
+     "sd": 12.584650479314247
+    },
+    "legs": {
+     "mean": 12.369140625,
+     "median": 6.0,
+     "sd": 12.495914620377128
+    },
+    "later_leg_rate": {
+     "mean": 6.199595327477123,
+     "median": 3.1524861439580123,
+     "sd": 5.98974791031565
+    },
+    "unvisited_share": {
+     "mean": 0.11279296875,
+     "median": 0.0,
+     "sd": 0.253958681426598
+    },
+    "first_discovery": {
+     "mean": 157.703125,
+     "median": 66.5,
+     "sd": 411.09159056508724
+    },
+    "occluded_share": {
+     "mean": 0.242647705078125,
+     "median": 0.24145833333333333,
+     "sd": 0.027259022190913744
+    },
+    "exposure_mean": {
+     "mean": 0.140273857557859,
+     "median": 0.046588575820450485,
+     "sd": 0.16563316829651065
+    },
+    "exposure_zero_share": {
+     "mean": 0.14589762369791665,
+     "median": 0.11239583333333333,
+     "sd": 0.15843177798604463
+    },
+    "later_first_b": {
+     "mean": 996.3258928571429,
+     "median": 749.1428571428571,
+     "sd": 681.456636183697
+    }
+   },
+   "gradient": {
+    "one_age1": 0.8519178442557876,
+    "one_age2": 0.8535008483645914,
+    "one_age4": 0.8597765865218661,
+    "eight_age1": 0.878556740109828,
+    "eight_age2": 0.8715406319953212,
+    "eight_age4": 0.8772888768067233
+   },
+   "nose_range": {
+    "on_route_noses": 5578732,
+    "in_range": 2453565,
+    "above": 972946,
+    "zero": 1164540,
+    "occluded": 853046,
+    "in_range_share": 0.4398069310373755,
+    "above_share": 0.1744027137349491,
+    "in_range_share_unoccluded": 0.5191976360680757,
+    "above_share_unoccluded": 0.2058846059598543,
+    "positive_unoccluded_after_trail": 4376169,
+    "quantiles_unoccluded_positive": {
+     "1": 1e-06,
+     "5": 2.290867652767775e-05,
+     "25": 0.007585775750291836,
+     "50": 0.09120108393559097,
+     "75": 0.31622776601683794,
+     "95": 1.0232929922807537,
+     "99": 1.8620871366628695
+    },
+    "qualified_inputs": 4376169,
+    "qualified_above_high": 972946,
+    "above_high_share_qualified": 0.2223282510341808
+   },
+   "checks": {
+    "live": true,
+    "gradient": true,
+    "high_cap": false,
+    "trail_effect": true
+   },
+   "passed": false
+  },
+  {
+   "setting": {
+    "mu": 0.01,
+    "lam": 0.04,
+    "delta": 0.05,
+    "d0": 0.2855
+   },
+   "config_sha256": "c80cb976ba99e8f0324435791d8b9fbc09a51215cc0ca79872716748763fa7dd",
+   "follower_later_leg_rate": 4.500302750818509,
+   "trail_effect": {
+    "mean": 0.5560929822348757,
+    "lo95": 0.10930470635326307,
+    "hi95": 1.0444439250048811,
+    "n": 256
+   },
+   "follower_brief": {
+    "visits": {
+     "mean": 10.1044921875,
+     "median": 6.25,
+     "sd": 11.36949907220542
+    },
+    "legs": {
+     "mean": 9.21337890625,
+     "median": 5.25,
+     "sd": 11.29115844492566
+    },
+    "later_leg_rate": {
+     "mean": 4.500302750818509,
+     "median": 2.625806571931599,
+     "sd": 5.285118631105742
+    },
+    "unvisited_share": {
+     "mean": 0.10888671875,
+     "median": 0.0,
+     "sd": 0.25082536472139844
+    },
+    "first_discovery": {
+     "mean": 157.703125,
+     "median": 66.5,
+     "sd": 411.09159056508724
+    },
+    "occluded_share": {
+     "mean": 0.23918009440104165,
+     "median": 0.23867187499999998,
+     "sd": 0.026366528661557174
+    },
+    "exposure_mean": {
+     "mean": 0.03232418545931073,
+     "median": 0.007783491897817718,
+     "sd": 0.0574173665553383
+    },
+    "exposure_zero_share": {
+     "mean": 0.1397749837239583,
+     "median": 0.10403645833333333,
+     "sd": 0.15933434657794607
+    },
+    "later_first_b": {
+     "mean": 1004.4972098214286,
+     "median": 735.7142857142858,
+     "sd": 688.4711226673827
+    }
+   },
+   "gradient": {
+    "one_age1": 0.9093739097064487,
+    "one_age2": 0.9245600205885999,
+    "one_age4": 0.9319514031497553,
+    "eight_age1": 0.9180488181764699,
+    "eight_age2": 0.9293158317298975,
+    "eight_age4": 0.9370048039040251
+   },
+   "nose_range": {
+    "on_route_noses": 4513232,
+    "in_range": 1415409,
+    "above": 211428,
+    "zero": 967831,
+    "occluded": 635259,
+    "in_range_share": 0.31361317122629634,
+    "above_share": 0.04684625120091323,
+    "in_range_share_unoccluded": 0.36498681140895,
+    "above_share_unoccluded": 0.0545202351847215,
+    "positive_unoccluded_after_trail": 3507275,
+    "quantiles_unoccluded_positive": {
+     "1": 1e-06,
+     "5": 1e-06,
+     "25": 0.0001,
+     "50": 0.003235936569296284,
+     "75": 0.05495408738576248,
+     "95": 0.407380277804113,
+     "99": 0.8912509381337459
+    },
+    "qualified_inputs": 3507275,
+    "qualified_above_high": 211428,
+    "above_high_share_qualified": 0.06028269810607951
+   },
+   "checks": {
+    "live": true,
+    "gradient": true,
+    "high_cap": false,
+    "trail_effect": true
+   },
+   "passed": false
+  },
+  {
+   "setting": {
+    "mu": 0.01,
+    "lam": 0.04,
+    "delta": 0.05,
+    "d0": 0.571
+   },
+   "config_sha256": "36aed47fc7b80f70c4313a3d9cd5cb6a83896fc282f767129e64a5aa79afa4ea",
+   "follower_later_leg_rate": 5.524407012907062,
+   "trail_effect": {
+    "mean": 1.5801972443234282,
+    "lo95": 1.0437368938826188,
+    "hi95": 2.1576571944273018,
+    "n": 256
+   },
+   "follower_brief": {
+    "visits": {
+     "mean": 11.982421875,
+     "median": 6.75,
+     "sd": 12.354915215972651
+    },
+    "legs": {
+     "mean": 11.095703125,
+     "median": 5.75,
+     "sd": 12.275034287470582
+    },
+    "later_leg_rate": {
+     "mean": 5.524407012907062,
+     "median": 2.864139232112218,
+     "sd": 5.905360503979419
+    },
+    "unvisited_share": {
+     "mean": 0.11328125,
+     "median": 0.0,
+     "sd": 0.25482476678044047
+    },
+    "first_discovery": {
+     "mean": 157.703125,
+     "median": 66.5,
+     "sd": 411.09159056508724
+    },
+    "occluded_share": {
+     "mean": 0.23773417154947918,
+     "median": 0.23645833333333333,
+     "sd": 0.02733979371396221
+    },
+    "exposure_mean": {
+     "mean": 0.08168555351871068,
+     "median": 0.01835749015308627,
+     "sd": 0.12329405166790311
+    },
+    "exposure_zero_share": {
+     "mean": 0.142503662109375,
+     "median": 0.10833333333333334,
+     "sd": 0.15913455508753022
+    },
+    "later_first_b": {
+     "mean": 1000.6032366071429,
+     "median": 741.6428571428571,
+     "sd": 683.1071113045841
+    }
+   },
+   "gradient": {
+    "one_age1": 0.9093739097064487,
+    "one_age2": 0.9245600205885999,
+    "one_age4": 0.9319514031497553,
+    "eight_age1": 0.9180488181764699,
+    "eight_age2": 0.9293158317298975,
+    "eight_age4": 0.9370048039040251
+   },
+   "nose_range": {
+    "on_route_noses": 4908494,
+    "in_range": 1831669,
+    "above": 435965,
+    "zero": 1030291,
+    "occluded": 704261,
+    "in_range_share": 0.3731631331320768,
+    "above_share": 0.08881848485502886,
+    "in_range_share_unoccluded": 0.4356725709540837,
+    "above_share_unoccluded": 0.10369667903753194,
+    "positive_unoccluded_after_trail": 3840349,
+    "quantiles_unoccluded_positive": {
+     "1": 1e-06,
+     "5": 1e-06,
+     "25": 0.0004073802778041126,
+     "50": 0.012022644346174132,
+     "75": 0.1479108388168207,
+     "95": 0.6918309709189363,
+     "99": 1.5488166189124828
+    },
+    "qualified_inputs": 3840349,
+    "qualified_above_high": 435965,
+    "above_high_share_qualified": 0.11352223456774371
+   },
+   "checks": {
+    "live": true,
+    "gradient": true,
+    "high_cap": false,
+    "trail_effect": true
+   },
+   "passed": false
+  },
+  {
+   "setting": {
+    "mu": 0.01,
+    "lam": 0.04,
+    "delta": 0.15,
+    "d0": 0.2855
+   },
+   "config_sha256": "c94a6a8999a2ee5f72c551d6b9cd39825c37c2669da23276706330878b55baa6",
+   "follower_later_leg_rate": 4.200972007819903,
+   "trail_effect": {
+    "mean": 0.2567622392362695,
+    "lo95": -0.1864788588828797,
+    "hi95": 0.7182140382981251,
+    "n": 256
+   },
+   "follower_brief": {
+    "visits": {
+     "mean": 9.49609375,
+     "median": 6.25,
+     "sd": 10.357115313761309
+    },
+    "legs": {
+     "mean": 8.60400390625,
+     "median": 5.25,
+     "sd": 10.276089994376932
+    },
+    "later_leg_rate": {
+     "mean": 4.200972007819903,
+     "median": 2.5871795018838704,
+     "sd": 4.8007188804392324
+    },
+    "unvisited_share": {
+     "mean": 0.10791015625,
+     "median": 0.0,
+     "sd": 0.25100470219479365
+    },
+    "first_discovery": {
+     "mean": 157.703125,
+     "median": 66.5,
+     "sd": 411.09159056508724
+    },
+    "occluded_share": {
+     "mean": 0.2384895833333333,
+     "median": 0.237734375,
+     "sd": 0.026693151150081147
+    },
+    "exposure_mean": {
+     "mean": 0.02616206754991878,
+     "median": 0.0077066063118944855,
+     "sd": 0.04548976217879363
+    },
+    "exposure_zero_share": {
+     "mean": 0.13428995768229166,
+     "median": 0.09796875,
+     "sd": 0.1601766177628841
+    },
+    "later_first_b": {
+     "mean": 1019.9073660714284,
+     "median": 754.8571428571429,
+     "sd": 687.138623207684
+    }
+   },
+   "gradient": {
+    "one_age1": 0.9313111992861758,
+    "one_age2": 0.9264963568110982,
+    "one_age4": 0.9287602866735571,
+    "eight_age1": 0.9389496282951418,
+    "eight_age2": 0.9307985667568106,
+    "eight_age4": 0.9325242858923924
+   },
+   "nose_range": {
+    "on_route_noses": 4410364,
+    "in_range": 1421180,
+    "above": 199884,
+    "zero": 951942,
+    "occluded": 609621,
+    "in_range_share": 0.3222364412551889,
+    "above_share": 0.045321429251644535,
+    "in_range_share_unoccluded": 0.3739216253243116,
+    "above_share_unoccluded": 0.05259076975212478,
+    "positive_unoccluded_after_trail": 3420397,
+    "quantiles_unoccluded_positive": {
+     "1": 1e-06,
+     "5": 1e-06,
+     "25": 0.00019054607179632481,
+     "50": 0.003630780547701014,
+     "75": 0.039810717055349776,
+     "95": 0.3890451449942805,
+     "99": 0.8317637711026709
+    },
+    "qualified_inputs": 3420397,
+    "qualified_above_high": 199884,
+    "above_high_share_qualified": 0.05843883034630191
+   },
+   "checks": {
+    "live": true,
+    "gradient": true,
+    "high_cap": false,
+    "trail_effect": false
+   },
+   "passed": false
+  },
+  {
+   "setting": {
+    "mu": 0.01,
+    "lam": 0.04,
+    "delta": 0.15,
+    "d0": 0.571
+   },
+   "config_sha256": "526445e2ec621cac919f2de0892bc49ead3944ec7812154793530f8664f4078c",
+   "follower_later_leg_rate": 4.859556147915442,
+   "trail_effect": {
+    "mean": 0.9153463793318082,
+    "lo95": 0.43879267871568495,
+    "hi95": 1.44763884654432,
+    "n": 256
+   },
+   "follower_brief": {
+    "visits": {
+     "mean": 10.84521484375,
+     "median": 6.625,
+     "sd": 11.66324476649071
+    },
+    "legs": {
+     "mean": 9.95654296875,
+     "median": 5.625,
+     "sd": 11.57908669491435
+    },
+    "later_leg_rate": {
+     "mean": 4.859556147915442,
+     "median": 2.7122227327561426,
+     "sd": 5.462822682118908
+    },
+    "unvisited_share": {
+     "mean": 0.111328125,
+     "median": 0.0,
+     "sd": 0.25616629431511334
+    },
+    "first_discovery": {
+     "mean": 157.703125,
+     "median": 66.5,
+     "sd": 411.09159056508724
+    },
+    "occluded_share": {
+     "mean": 0.23916849772135415,
+     "median": 0.23833333333333334,
+     "sd": 0.0267176267464609
+    },
+    "exposure_mean": {
+     "mean": 0.06482282785117514,
+     "median": 0.016318270311908196,
+     "sd": 0.10295941292051647
+    },
+    "exposure_zero_share": {
+     "mean": 0.1377679443359375,
+     "median": 0.10231770833333334,
+     "sd": 0.15989294348066158
+    },
+    "later_first_b": {
+     "mean": 1006.3091517857143,
+     "median": 746.6428571428571,
+     "sd": 701.4973519997742
+    }
+   },
+   "gradient": {
+    "one_age1": 0.9313111992861758,
+    "one_age2": 0.9264963568110982,
+    "one_age4": 0.9287602866735571,
+    "eight_age1": 0.9389496282951418,
+    "eight_age2": 0.9307985667568106,
+    "eight_age4": 0.9325242858923924
+   },
+   "nose_range": {
+    "on_route_noses": 4719486,
+    "in_range": 1707838,
+    "above": 384124,
+    "zero": 1002322,
+    "occluded": 674032,
+    "in_range_share": 0.36186949172007293,
+    "above_share": 0.08139106673904743,
+    "in_range_share_unoccluded": 0.42216225916794503,
+    "above_share_unoccluded": 0.09495201280251858,
+    "positive_unoccluded_after_trail": 3678894,
+    "quantiles_unoccluded_positive": {
+     "1": 1e-06,
+     "5": 1e-06,
+     "25": 0.0004897788193684461,
+     "50": 0.01,
+     "75": 0.10232929922807536,
+     "95": 0.6918309709189363,
+     "99": 1.4454397707459279
+    },
+    "qualified_inputs": 3678894,
+    "qualified_above_high": 384124,
+    "above_high_share_qualified": 0.10441290235597982
+   },
+   "checks": {
+    "live": true,
+    "gradient": true,
+    "high_cap": false,
+    "trail_effect": true
+   },
+   "passed": false
+  },
+  {
+   "setting": {
+    "mu": 0.02,
+    "lam": 0.04,
+    "delta": 0.05,
+    "d0": 0.2855
+   },
+   "config_sha256": "1b5101d3c322bc0e7fd6a8bfb62b3e570caa45c3264b46afffe24ca38a68f671",
+   "follower_later_leg_rate": 4.16935085902488,
+   "trail_effect": {
+    "mean": 0.2251410904412463,
+    "lo95": -0.12647976924767135,
+    "hi95": 0.6076210179182144,
+    "n": 256
+   },
+   "follower_brief": {
+    "visits": {
+     "mean": 9.39453125,
+     "median": 6.6875,
+     "sd": 9.799358941367784
+    },
+    "legs": {
+     "mean": 8.5048828125,
+     "median": 5.75,
+     "sd": 9.714520695286742
+    },
+    "later_leg_rate": {
+     "mean": 4.16935085902488,
+     "median": 2.7524247146230607,
+     "sd": 4.554553418937745
+    },
+    "unvisited_share": {
+     "mean": 0.1103515625,
+     "median": 0.0,
+     "sd": 0.25346669626441276
+    },
+    "first_discovery": {
+     "mean": 157.703125,
+     "median": 66.5,
+     "sd": 411.09159056508724
+    },
+    "occluded_share": {
+     "mean": 0.23915547688802086,
+     "median": 0.2371875,
+     "sd": 0.027224949319145604
+    },
+    "exposure_mean": {
+     "mean": 0.014168682441847007,
+     "median": 0.004283102862736645,
+     "sd": 0.025110904749381307
+    },
+    "exposure_zero_share": {
+     "mean": 0.13693216959635418,
+     "median": 0.10111979166666667,
+     "sd": 0.15940564307163485
+    },
+    "later_first_b": {
+     "mean": 1011.0976562499999,
+     "median": 701.9285714285714,
+     "sd": 701.6685420958205
+    }
+   },
+   "gradient": {
+    "one_age1": 0.8653223635729603,
+    "one_age2": 0.8902477458438876,
+    "one_age4": 0.9079906548050363,
+    "eight_age1": 0.8818760478637694,
+    "eight_age2": 0.9051509044236252,
+    "eight_age4": 0.9218497803832695
+   },
+   "nose_range": {
+    "on_route_noses": 4362648,
+    "in_range": 1142891,
+    "above": 110134,
+    "zero": 927960,
+    "occluded": 596725,
+    "in_range_share": 0.26197185745904783,
+    "above_share": 0.025244759604717136,
+    "in_range_share_unoccluded": 0.3034823069935312,
+    "above_share_unoccluded": 0.02924488896878667,
+    "positive_unoccluded_after_trail": 3396891,
+    "quantiles_unoccluded_positive": {
+     "1": 1e-06,
+     "5": 1e-06,
+     "25": 1.62181009735893e-05,
+     "50": 0.0010471285480508996,
+     "75": 0.022908676527677748,
+     "95": 0.28840315031266056,
+     "99": 0.5370317963702532
+    },
+    "qualified_inputs": 3396891,
+    "qualified_above_high": 110134,
+    "above_high_share_qualified": 0.03242199999941123
+   },
+   "checks": {
+    "live": true,
+    "gradient": true,
+    "high_cap": true,
+    "trail_effect": false
+   },
+   "passed": false
+  },
+  {
+   "setting": {
+    "mu": 0.02,
+    "lam": 0.04,
+    "delta": 0.05,
+    "d0": 0.571
+   },
+   "config_sha256": "d1bd101588bca5ef99359556fabfbfc5da07aa36ec7d5fd52c02eaf35f0ddcb0",
+   "follower_later_leg_rate": 4.67487810491577,
+   "trail_effect": {
+    "mean": 0.7306683363321366,
+    "lo95": 0.30811569048829585,
+    "hi95": 1.1957860381562435,
+    "n": 256
+   },
+   "follower_brief": {
+    "visits": {
+     "mean": 10.4716796875,
+     "median": 6.75,
+     "sd": 11.412220561660117
+    },
+    "legs": {
+     "mean": 9.58154296875,
+     "median": 5.75,
+     "sd": 11.330015171498303
+    },
+    "later_leg_rate": {
+     "mean": 4.67487810491577,
+     "median": 2.7869387030834734,
+     "sd": 5.294892884592526
+    },
+    "unvisited_share": {
+     "mean": 0.10986328125,
+     "median": 0.0,
+     "sd": 0.2547641755746871
+    },
+    "first_discovery": {
+     "mean": 157.703125,
+     "median": 66.5,
+     "sd": 411.09159056508724
+    },
+    "occluded_share": {
+     "mean": 0.23888814290364582,
+     "median": 0.23875000000000002,
+     "sd": 0.025818523564525638
+    },
+    "exposure_mean": {
+     "mean": 0.036091214183227,
+     "median": 0.009469020548858845,
+     "sd": 0.061917696222223206
+    },
+    "exposure_zero_share": {
+     "mean": 0.1393865966796875,
+     "median": 0.10500000000000001,
+     "sd": 0.1592298279774552
+    },
+    "later_first_b": {
+     "mean": 1004.8242187499999,
+     "median": 700.5714285714286,
+     "sd": 701.588207510185
+    }
+   },
+   "gradient": {
+    "one_age1": 0.8653223635729603,
+    "one_age2": 0.8902477458438876,
+    "one_age4": 0.9079906548050363,
+    "eight_age1": 0.8818760478637694,
+    "eight_age2": 0.9051509044236252,
+    "eight_age4": 0.9218497803832695
+   },
+   "nose_range": {
+    "on_route_noses": 4550310,
+    "in_range": 1407488,
+    "above": 212206,
+    "zero": 969638,
+    "occluded": 639407,
+    "in_range_share": 0.30931694763653467,
+    "above_share": 0.04663550395467562,
+    "in_range_share_unoccluded": 0.35988824064416836,
+    "above_share_unoccluded": 0.054260103101508785,
+    "positive_unoccluded_after_trail": 3543576,
+    "quantiles_unoccluded_positive": {
+     "1": 1e-06,
+     "5": 1e-06,
+     "25": 5.248074602497723e-05,
+     "50": 0.002818382931264455,
+     "75": 0.0630957344480193,
+     "95": 0.39810717055349776,
+     "99": 0.8709635899560815
+    },
+    "qualified_inputs": 3543576,
+    "qualified_above_high": 212206,
+    "above_high_share_qualified": 0.059884704039083685
+   },
+   "checks": {
+    "live": true,
+    "gradient": true,
+    "high_cap": false,
+    "trail_effect": true
+   },
+   "passed": false
+  },
+  {
+   "setting": {
+    "mu": 0.02,
+    "lam": 0.04,
+    "delta": 0.15,
+    "d0": 0.2855
+   },
+   "config_sha256": "7fc0d19752607c5cd9a2fc83ca3a8c1cb6253c503a11b6aff02ab67fa7235f1a",
+   "follower_later_leg_rate": 3.780607293969826,
+   "trail_effect": {
+    "mean": -0.16360247461380736,
+    "lo95": -0.5221652344847164,
+    "hi95": 0.21302819020852104,
+    "n": 256
+   },
+   "follower_brief": {
+    "visits": {
+     "mean": 8.66455078125,
+     "median": 6.75,
+     "sd": 8.48275128170189
+    },
+    "legs": {
+     "mean": 7.77392578125,
+     "median": 5.75,
+     "sd": 8.392798694116294
+    },
+    "later_leg_rate": {
+     "mean": 3.780607293969826,
+     "median": 2.75274331476866,
+     "sd": 3.8876993620083518
+    },
+    "unvisited_share": {
+     "mean": 0.109375,
+     "median": 0.0,
+     "sd": 0.25437350953458415
+    },
+    "first_discovery": {
+     "mean": 157.703125,
+     "median": 66.5,
+     "sd": 411.09159056508724
+    },
+    "occluded_share": {
+     "mean": 0.238477783203125,
+     "median": 0.23830729166666667,
+     "sd": 0.027535409045671633
+    },
+    "exposure_mean": {
+     "mean": 0.011059861980139443,
+     "median": 0.004212953025735069,
+     "sd": 0.018996653978357207
+    },
+    "exposure_zero_share": {
+     "mean": 0.131640625,
+     "median": 0.09596354166666667,
+     "sd": 0.16009906602399396
+    },
+    "later_first_b": {
+     "mean": 1004.1272321428571,
+     "median": 740.0714285714286,
+     "sd": 689.1781970941478
+    }
+   },
+   "gradient": {
+    "one_age1": 0.9033565915605303,
+    "one_age2": 0.9033372423709739,
+    "one_age4": 0.9098201976960635,
+    "eight_age1": 0.9206912218937782,
+    "eight_age2": 0.916979423956062,
+    "eight_age4": 0.9213321804385571
+   },
+   "nose_range": {
+    "on_route_noses": 4217396,
+    "in_range": 1079232,
+    "above": 95493,
+    "zero": 886018,
+    "occluded": 567430,
+    "in_range_share": 0.255900086214337,
+    "above_share": 0.022642644892725276,
+    "in_range_share_unoccluded": 0.2956827543051086,
+    "above_share_unoccluded": 0.026162709460855253,
+    "positive_unoccluded_after_trail": 3296772,
+    "quantiles_unoccluded_positive": {
+     "1": 1e-06,
+     "5": 1e-06,
+     "25": 2.951209226666384e-05,
+     "50": 0.001202264434617413,
+     "75": 0.014791083881682071,
+     "95": 0.2754228703338169,
+     "99": 0.48977881936844664
+    },
+    "qualified_inputs": 3296772,
+    "qualified_above_high": 95493,
+    "above_high_share_qualified": 0.028965606356763526
+   },
+   "checks": {
+    "live": true,
+    "gradient": true,
+    "high_cap": true,
+    "trail_effect": false
+   },
+   "passed": false
+  },
+  {
+   "setting": {
+    "mu": 0.02,
+    "lam": 0.04,
+    "delta": 0.15,
+    "d0": 0.571
+   },
+   "config_sha256": "a2ef52a65965571567ccad5e1c532457ca49fb5626c8d3abd865711d702e757e",
+   "follower_later_leg_rate": 4.227819842480534,
+   "trail_effect": {
+    "mean": 0.2836100738969007,
+    "lo95": -0.12168111982248231,
+    "hi95": 0.7170854418439555,
+    "n": 256
+   },
+   "follower_brief": {
+    "visits": {
+     "mean": 9.435546875,
+     "median": 6.875,
+     "sd": 9.896938083328859
+    },
+    "legs": {
+     "mean": 8.54443359375,
+     "median": 5.875,
+     "sd": 9.814631972537597
+    },
+    "later_leg_rate": {
+     "mean": 4.227819842480534,
+     "median": 2.8296640636139703,
+     "sd": 4.60846817564576
+    },
+    "unvisited_share": {
+     "mean": 0.10888671875,
+     "median": 0.0,
+     "sd": 0.2527721419470217
+    },
+    "first_discovery": {
+     "mean": 157.703125,
+     "median": 66.5,
+     "sd": 411.09159056508724
+    },
+    "occluded_share": {
+     "mean": 0.23892496744791666,
+     "median": 0.23716145833333335,
+     "sd": 0.026695717327512893
+    },
+    "exposure_mean": {
+     "mean": 0.02691749559935839,
+     "median": 0.008986964620814816,
+     "sd": 0.046838946410484694
+    },
+    "exposure_zero_share": {
+     "mean": 0.13429524739583334,
+     "median": 0.09802083333333332,
+     "sd": 0.1600605828023779
+    },
+    "later_first_b": {
+     "mean": 1010.2354910714287,
+     "median": 760.0714285714286,
+     "sd": 680.5273268030905
+    }
+   },
+   "gradient": {
+    "one_age1": 0.9033565915605303,
+    "one_age2": 0.9033372423709739,
+    "one_age4": 0.9098201976960635,
+    "eight_age1": 0.9206912218937782,
+    "eight_age2": 0.916979423956062,
+    "eight_age4": 0.9213321804385571
+   },
+   "nose_range": {
+    "on_route_noses": 4402004,
+    "in_range": 1346232,
+    "above": 184973,
+    "zero": 939550,
+    "occluded": 612010,
+    "in_range_share": 0.3058225299204635,
+    "above_share": 0.042020179899881965,
+    "in_range_share_unoccluded": 0.3552068947866408,
+    "above_share_unoccluded": 0.048805618161928487,
+    "positive_unoccluded_after_trail": 3424549,
+    "quantiles_unoccluded_positive": {
+     "1": 1e-06,
+     "5": 1e-06,
+     "25": 7.413102413009176e-05,
+     "50": 0.0026915348039269166,
+     "75": 0.037153522909717275,
+     "95": 0.3715352290971728,
+     "99": 0.8128305161640995
+    },
+    "qualified_inputs": 3424549,
+    "qualified_above_high": 184973,
+    "above_high_share_qualified": 0.05401382780623083
+   },
+   "checks": {
+    "live": true,
+    "gradient": true,
+    "high_cap": false,
+    "trail_effect": false
+   },
+   "passed": false
+  }
+ ],
+ "widened": null,
+ "stage_b_rates_equal": [
+  true,
+  true,
+  true,
+  true,
+  true,
+  true,
+  true,
+  true,
+  true,
+  true,
+  true,
+  true,
+  true,
+  true,
+  true,
+  true,
+  true,
+  true,
+  true,
+  true,
+  true,
+  true,
+  true,
+  true
+ ],
+ "resolved_config_note": "resolved_config is the frame's base configuration; each row's effective setting is its 'setting' and 'config_sha256'",
+ "chosen": null,
+ "polarity_reported": null,
+ "wording": "Stage B failed the registered behavioural polarity criterion. Gradient-sign qualification does not establish directional trail use; the amended stage reports behavioural polarity separately.",
+ "label": "adaptively selected: Amendment 1 was decided after seeing Stage B's data (D178)",
+ "seconds": 597.5396147998981
+}
