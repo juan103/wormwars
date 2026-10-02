@@ -4903,3 +4903,12 @@ inactive 0.059-0.068.
 - a dated correction of v2's budget.
 
 E3's ceiling is still the owner's to set.
+
+## D158 — E3's GPU ceiling: 30 GPU-hours (the owner)
+
+**The owner, 2026-10-02**, answering the request for E3's ceiling (D156, D157): "30 hours celling".
+- **Read as the ceiling for all of E3** (E3a, E3b and E3c), the question having been asked for E3.
+  E4s's ceiling (96 GPU-hours) was likewise set for the whole track.
+- **E3a's proposed cap stays 20 GPU-hours inside it** (design v2.1; about 13.3 h estimated), which
+  leaves about 10 for E3b and E3c. Their budgets come with their designs.
+- The owner can correct this reading. The pre-registration states the cap it binds.
