@@ -5,9 +5,10 @@ corridors and 1-cell walls: the grid is (4c + 1) × (4c + 1), `wall[y, x]` True 
 (i, j) (row i, column j) owns the open block of rows 1 + 4i .. 3 + 4i and columns 1 + 4j .. 3 + 4j; a tree
 edge opens the 3-wide gap in the wall between two neighbouring cells.
 
-`draw` redraws a maze until its placements exist: A and B at two distinct dead ends whose tree distance
-is in [⌈c/2⌉ + 1, 2c], and spawns at up to `n_spawns` other dead ends, each at least 2 maze cells from A
-and from B.
+`maze_for` keys the walls by (run seed, maze id) and the placements by (run seed, maze id, episode), so a
+placement never moves the walls. The placements are A and B at two distinct dead ends whose tree distance
+is in [⌈c/2⌉ + 1, 2c], drawn only among pairs that leave a spawn candidate, and spawns at up to `n_spawns`
+other dead ends, each at least 2 maze cells from A and from B. A maze with no eligible pair raises.
 """
 
 from __future__ import annotations
@@ -122,31 +123,40 @@ def generate(rng: np.random.Generator, c: int) -> Maze:
     return Maze(c, wall, edges)
 
 
-def place(rng: np.random.Generator, mz: Maze, n_spawns: int = 4) -> Placement | None:
-    """A, B and the spawns for a maze, or None when the rule cannot be met."""
+def eligible_pairs(mz: Maze) -> list:
+    """The (A, B) pairs of distinct dead ends with tree distance in [⌈c/2⌉ + 1, 2c] that leave at least
+    one spawn candidate (a dead end at least 2 maze cells from both)."""
     c = mz.c
     ends = mz.dead_ends()
     d = mz.tree_distance()
     lo, hi = math.ceil(c / 2) + 1, 2 * c
-    pairs = [(a, b) for a in ends for b in ends if a < b and lo <= d[a][b] <= hi]
+    out = []
+    for a in ends:
+        for b in ends:
+            if a < b and lo <= d[a][b] <= hi and any(s not in (a, b) and d[s][a] >= 2 and d[s][b] >= 2 for s in ends):
+                out.append((a, b))
+    return out
+
+
+def place(rng: np.random.Generator, mz: Maze, n_spawns: int = 4) -> Placement | None:
+    """A, B and the spawns, drawn only among eligible pairs; None if the maze has none."""
+    d = mz.tree_distance()
+    pairs = eligible_pairs(mz)
     if not pairs:
         return None
     a, b = pairs[int(rng.integers(len(pairs)))]
     if rng.random() < 0.5:
         a, b = b, a
-    cands = [s for s in ends if s not in (a, b) and d[s][a] >= 2 and d[s][b] >= 2]
-    if not cands:
-        return None
+    cands = [s for s in mz.dead_ends() if s not in (a, b) and d[s][a] >= 2 and d[s][b] >= 2]
     order = rng.permutation(len(cands))
     return Placement(a, b, tuple(cands[k] for k in order[:n_spawns]))
 
 
-def draw(maze_rng: np.random.Generator, place_rng: np.random.Generator, c: int, n_spawns: int = 4,
-         tries: int = 1000) -> tuple[Maze, Placement]:
-    """A maze and its placements; the maze is redrawn (from `maze_rng`) until placements exist."""
-    for _ in range(tries):
-        mz = generate(maze_rng, c)
-        p = place(place_rng, mz, n_spawns)
-        if p is not None:
-            return mz, p
-    raise ValueError(f"no maze of size {c} met the placement rule in {tries} tries")
+def maze_for(*, run_seed: int, maze_id: int, episode: int, c: int, n_spawns: int = 4) -> tuple[Maze, Placement]:
+    """The walls from (run seed, maze id) only, the placements from (run seed, maze id, episode); the
+    walls are never redrawn, and an infeasible maze raises (plan §1a)."""
+    mz = generate(np.random.default_rng([run_seed, maze_id, 0x3A11]), c)
+    p = place(np.random.default_rng([run_seed, maze_id, episode, 0x9ACE]), mz, n_spawns)
+    if p is None:
+        raise ValueError(f"maze {maze_id} (c={c}) has no eligible placement")
+    return mz, p

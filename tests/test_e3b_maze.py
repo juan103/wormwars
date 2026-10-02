@@ -76,7 +76,7 @@ def test_dead_ends_and_tree_distances():
 @pytest.mark.parametrize("c", [5, 6, 8])
 def test_placements_meet_the_rule(c):
     for seed in range(30):
-        mz, p = M.draw(np.random.default_rng(seed), np.random.default_rng(1000 + seed), c, n_spawns=4)
+        mz, p = M.maze_for(run_seed=1_179_000, maze_id=seed, episode=0, c=c)
         d = mz.tree_distance()
         ends = set(mz.dead_ends())
         assert p.a in ends and p.b in ends and p.a != p.b
@@ -94,3 +94,30 @@ def test_cell_centres_and_bfs_distance_on_free_cells():
     y, x = 2, 2  # the centre grid cell of maze cell (0, 0)
     assert dist[y, x] == 0 and np.isinf(dist[mz.wall]).all()
     assert np.isfinite(dist[~mz.wall]).all()
+
+
+def test_placement_never_redraws_walls_and_is_feasible_for_every_episode():
+    """The walls come from (run seed, maze id) only; placements from (run seed, maze id, episode); a
+    maze stays feasible across episode indices, the replay donors' (+1000) included (Fable, plan v2)."""
+    for maze_id in range(40):
+        walls = None
+        for ep in (0, 1, 2, 1000, 1001):
+            mz, p = M.maze_for(run_seed=1_179_000, maze_id=maze_id, episode=ep, c=5)
+            if walls is None:
+                walls = mz.wall.copy()
+            assert np.array_equal(mz.wall, walls)
+            assert p.spawns
+    a = M.maze_for(run_seed=1_179_000, maze_id=3, episode=0, c=6)[1]
+    b = M.maze_for(run_seed=1_179_000, maze_id=3, episode=1000, c=6)[1]
+    assert (a.a, a.b, a.spawns) != (b.a, b.b, b.spawns)
+
+
+def test_place_only_draws_pairs_with_a_spawn_candidate():
+    for k in range(50):
+        mz = M.generate(np.random.default_rng(k), 5)
+        d, ends = mz.tree_distance(), mz.dead_ends()
+        for a, b in M.eligible_pairs(mz):
+            assert any(s not in (a, b) and d[s][a] >= 2 and d[s][b] >= 2 for s in ends)
+        for s in range(20):
+            p = M.place(np.random.default_rng(s), mz)
+            assert p is not None and (min(p.a, p.b), max(p.a, p.b)) in M.eligible_pairs(mz)
