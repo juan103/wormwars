@@ -5459,3 +5459,30 @@ draws only eligible pairs, and never redraws walls.
 self-weight 1.5 and antisymmetric cross weights ±1, period about 9.9 ticks per unit of τ.
 
 Plan v3 takes every fix; its §10 maps them. Implementation follows.
+
+## D176 — E3b-0's engine pins: W2's resting turn, S3r3 rebuilt from its record
+
+Two implementation pins the plan (v3) left open, decided by Claude while building E3b-0's engine
+(2026-10-02). Neither changes a registered text; both are disclosed in E3b-0's results.
+
+**W2's resting turn.** The plan gives W2's reflex neurons bias −0.5 and "the carrier's turn bias at +0.4".
+A tanh neuron at bias −0.5 rests at tanh(−0.5) = −0.46, not 0:
+- in W1 the two sides' outputs (±3) cancel, so its resting turn is the carrier's 0.2;
+- in W2 (left ±3, right ±1.5) they leave a net push of +0.69 on each dorsal turn neuron (−0.69 on each
+  ventral), and the turn command would sit at the clamp (2 tanh(0.20 + 0.69) = 1.43).
+
+So the carrier's turn bias is set so that the **resting turn command** is the declared one: 0.4 for W2 and
+its M variants, 0.2 for W0, W1 and theirs (`maze_organisms.carrier_turn`; tested: the settled turn is
+0.2 or 0.4 within 0.002). That is the plan's evident intent, "a wall follower" curving left at 0.4.
+
+**S3r3 is rebuilt from the committed record,** not from a local genome file. Stage 3 changed only grafted
+parameters (47 edges, 9 neurons' τ and bias; the worm block is the carrier's, checked), so the grafted
+values in `champions-3.json`, set on E's carrier genome, give S3r3 exactly: its sha256 equals the record's
+(57414a22…). Anyone can rebuild it without a genome file.
+
+**Also pinned while building** (`wormwars/e3/maze_world.py`, tests in `tests/test_e3b_maze_world.py`):
+- the start headings come from their own stream keyed by (run seed, maze id, episode);
+- the supercover test treats each wall cell as a closed square, and the grid's outside as wall;
+- the scramble permutation comes from a stream keyed by (run seed, maze id, episode);
+- the scripted reflex used by the scripted controls is W1's steady-state turn on a silent carrier (next
+  commit).
