@@ -5004,3 +5004,35 @@ geometry sound, and the remaining problems repairable in text.
 - equal validation;
 - a 25% reserve on the projection;
 - dated corrections of v2.2's hold reference, its initial distribution and its geometry claim.
+
+## D162 — E3's design v2.3 reviewed (Fable: proceed with pins; Astra: revise); design v2.4
+
+**The review** (`docs/reviews/20261002-E3-design-v2.3/`).
+- **Fable:** "proceed to pre-registration", with three pins.
+- **Astra:** "revise". Astra rebuilt the engineered organism in `Brain.step` on the CPU; it passes
+  every component test (active K_D 31.60-35.63, inactive 0.0595-0.0675), startup and the hold.
+
+**Fable also found:**
+- **the 20-tick windows suit τ_q = 1 only;**
+- **a two-tick stimulus can fail a champion that works in the world;**
+- **generation 0's balance lasts one generation under untied 1× mutation.** A CL/CR mismatch δ adds a
+  turn of about 5.9δ;
+- **the start distribution contains no working selector,** so random sampling drawn from it is a
+  near-certain zero.
+
+**Astra also found:**
+- **the gain readout's 50-tick preconditioning let q drift;**
+- **"rest after 100 ticks" is not equilibrium for a slow q.** For w_qq 0.99, b_q 0.01, τ_q 20, q reaches
+  0.049 against an equilibrium of 0.282, rechecked here by the engine's update: confirmed;
+- **D was derived from the test worlds,** which must stay untouched;
+- **"zero turn offset" means the modules add none;** the total turn is the carrier's 0.2.
+
+**Design v2.4:**
+- a window of max(20, 10·τ_q);
+- the champion's own stimulus duration, with the two-tick result beside it;
+- q and the relays held during the readout;
+- the computed equilibrium as the release test's start;
+- calibration worlds (948M, checked unused);
+- random sampling as a blind search over the whole range, tied per module, with a dated correction;
+- generation 0's limits stated, with offsets logged;
+- the pulse-to-goal mapping, root finding, missing medians, reset timing and B-task's draws pinned.
