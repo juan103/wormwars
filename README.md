@@ -1,9 +1,5 @@
 # WormWars: *C. elegans* wiring vs. shuffled and random graphs
 
-> **This is the `roadmap` working branch.** The published record is `main`. This branch holds work
-> in progress beyond it until it is merged. Now: E4s, a hand-built stereo module, ahead of plan. E4s-0
-> and E4s-1 have run and been reviewed; they go to `main` together.
-
 Many parallel 2D worlds on one GPU. In each world, swarms of small creatures called **weys** forage
 and fight. Every wey's brain is a small continuous-time recurrent network whose wiring is the real
 *C. elegans* connectome (302 neurons, chemical synapses and gap junctions) used as a fixed sparsity
@@ -40,7 +36,7 @@ selection acts on team results.
 | [E4s](experiments/E4s-stereo-module/README.md) | After E2d's plateau, can a hand-built stereo module grafted onto N2 steer, and what does evolution do to it? (Ahead of plan; stereo sensing is a game-design choice, not worm biology) | E4s-0 exploratory, E4s-1 pre-registered and public before its run; both run, reviewed, corrected | E4s-1, "supports": with the 4-neuron graft's output, evolved brains end +5.19 targets per episode above the same brains evolved without it (16 of 16 pairs), and +3.79 above random signs fixed for the run. The selected brains use the module at both endpoints in 16 of 16 runs (7.14 on average). Part of the benefit is not stereo use, and transfer into the host was not shown |
 
 Next on the roadmap:
-- **Now:** E4s-0 and E4s-1 go to `main` together.
+- **Published 2026-10-02:** E4s-0 and E4s-1, together.
 - **Next in Track E:** E3's design.
   - It may start from E4s-0's frozen module, labelled as a hand-built circuit, or from E4s-1's run 10, a
     whole-brain artefact.
