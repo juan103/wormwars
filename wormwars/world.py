@@ -922,6 +922,7 @@ class World:
         signals = self._sensor_signals(sampled)
         if self.shuttle:
             signals.update(self._shuttle_signals(pts))
+        signals.update(self._extra_signals(pts))  # a subclass's own task (E3b's MazeWorld); none here
         self.last_signals = signals
         current = self._build_current(signals)
 
@@ -968,15 +969,7 @@ class World:
         gnorm = gsamp / gsamp.norm(dim=-1, keepdim=True).clamp_min(1e-6)
         push = -gnorm * (wcfg.crowd_push * torch.tanh(over)).unsqueeze(-1) * alive_f.unsqueeze(-1)
 
-        proposed = self.pos + step + push
-        proposed = proposed.clamp(1.02, self.side - 1.02)
-        blocked = (
-            sample_nearest(
-                self.fields[:, self.ch.WALL].unsqueeze(1), proposed.reshape(self.n_worlds, -1, 2)
-            )[:, 0].reshape(self.n_worlds, self.n_swarms, self.n_weys)
-            > 0
-        )
-        new_pos = torch.where(blocked.unsqueeze(-1), self.pos, proposed)
+        new_pos = self._resolve_move(self.pos + step + push)
         moved = (new_pos - self.pos).norm(dim=-1)
         self.pos = new_pos
         self._points = None
@@ -984,6 +977,7 @@ class World:
             self._advance_targets(moved)
         if self.shuttle:
             self._advance_shuttle(moved)
+        self._post_move(moved)  # a subclass's own task (E3b's MazeWorld); nothing here
 
         # 4. pay for living and moving (capped at remaining energy, so energy never goes negative)
         cost = (wcfg.metabolic_drain + wcfg.move_cost * moved) * alive_f
@@ -1020,6 +1014,26 @@ class World:
             self.ledger_rel_max = rel if self.ledger_rel_max is None else torch.maximum(self.ledger_rel_max, rel)
         if self.recorder is not None:
             self.recorder.record(self)
+
+    # ------------------------------------------------------------ hooks for subclassed tasks (E3b)
+
+    def _resolve_move(self, proposed: Tensor) -> Tensor:
+        """Where each head ends up, given its proposed position: clamped inside the ring, and kept in
+        place if the proposed cell is a wall."""
+        proposed = proposed.clamp(1.02, self.side - 1.02)
+        blocked = (
+            sample_nearest(
+                self.fields[:, self.ch.WALL].unsqueeze(1), proposed.reshape(self.n_worlds, -1, 2)
+            )[:, 0].reshape(self.n_worlds, self.n_swarms, self.n_weys)
+            > 0
+        )
+        return torch.where(blocked.unsqueeze(-1), self.pos, proposed)
+
+    def _extra_signals(self, pts: Tensor) -> dict:
+        return {}
+
+    def _post_move(self, moved: Tensor) -> None:
+        return None
 
     def _eat(self) -> None:
         wcfg = self.cfg.world

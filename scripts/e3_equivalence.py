@@ -49,7 +49,12 @@ def _import(root: Path):
     from wormwars.interface import load_interface
     from wormwars.world import World
     from wormwars.evo.rollout import rollout
-    return dict(rollout=rollout, G=G, Brain=Brain, BrainSpec=BrainSpec, Config=Config, load_connectome=load_connectome, EV=EV,
+    try:  # E3a's shuttle (present from 7048824 on; the E3b reference commit 84ff98a has it)
+        from wormwars.e3 import organism as O3
+        from wormwars.e3.task import shuttle_config
+    except ImportError:
+        O3 = shuttle_config = None
+    return dict(O3=O3, shuttle_config=shuttle_config, rollout=rollout, G=G, Brain=Brain, BrainSpec=BrainSpec, Config=Config, load_connectome=load_connectome, EV=EV,
                 task_n_config=task_n_config, A=A, C=C, load_interface=load_interface, World=World)
 
 
@@ -76,6 +81,17 @@ def _trace(M, cfg, iface, genome) -> dict:
         out["events"] = {k: hashlib.sha256(np.ascontiguousarray(v).tobytes()).hexdigest()
                          for k, v in world.target_events().items()}
     return out
+
+
+def _shuttle_case(M, con, l1) -> dict:
+    """E3a's engineered organism on the shuttle, 300 ticks (added for E3b-0, plan §1)."""
+    if M["O3"] is None:
+        return {}
+    cfg = M["shuttle_config"](horizon=TICKS)
+    e = M["O3"].engineered(l1)
+    ext = M["G"].graft_connectome(con, e)
+    g = M["C"].carrier_genome(ext, e, cfg.brain, forward=1.0, turn=0.2)
+    return {"shuttle_e3a_E": _trace(M, cfg, M["G"].graft_interface(ext, e), g)}
 
 
 def run(root: Path, cache: Path) -> dict:
@@ -105,6 +121,7 @@ def run(root: Path, cache: Path) -> dict:
         "forage_rollout_score": hashlib.sha256(np.ascontiguousarray(M["rollout"](forage, iface, g4f, np.asarray(IDS),
                                                                                   SEED).score).tobytes()).hexdigest(),
         "task_n_e4s1_m0_mean": _trace(M, taskn, M["G"].graft_interface(ext, l1, probe="mean"), gm),
+        **_shuttle_case(M, con, l1),
         "task_n_e4s1_m0_swapped": _trace(M, taskn, M["G"].graft_interface(ext, l1, probe="swapped"), gm),
         "graft": {"w": _h(gm.w), "tau": _h(gm.tau), "bias": _h(gm.bias), "g": _h(gm.g),
                   "module_entry": hashlib.sha256(repr(entry).encode()).hexdigest()},
@@ -115,7 +132,11 @@ def run(root: Path, cache: Path) -> dict:
 
 def compare(ref: dict, new: dict) -> dict:
     diffs = {}
-    for case in ("task_n_random", "task_n_e4s1_m0", "forage_random", "task_n_e4s1_m0_mean", "task_n_e4s1_m0_swapped"):
+    for case in ("task_n_random", "task_n_e4s1_m0", "forage_random", "task_n_e4s1_m0_mean", "task_n_e4s1_m0_swapped",
+                 "shuttle_e3a_E"):
+        if case not in ref:
+            diffs[case] = {"identical": False, "missing_in_reference": True}
+            continue
         a, b = ref[case], new[case]
         first = next((t for t, (x, y) in enumerate(zip(a["ticks"], b["ticks"])) if x != y), None)
         diffs[case] = {"identical": a == b, "first_differing_tick": first}
