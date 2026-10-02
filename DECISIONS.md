@@ -4963,3 +4963,44 @@ geometry sound, and the remaining problems repairable in text.
 - five reductions that reach the minimum;
 - the cap of 30 GPU-hours (D159);
 - dated corrections of v2.1's latch number, no-latch control, "start blind" label and neuron count.
+
+## D161 — E3's design v2.2 reviewed (Fable: proceed with four fixes; Astra: revise); design v2.3
+
+**The review** (`docs/reviews/20261002-E3-design-v2.2/`).
+
+**What both found:**
+- **The hold test took its reference as the head left the source, while q was still settling.** Astra,
+  in `Brain.step`: −3.05 after a two-tick level, −4.71 after a four-tick one, settling at −1.915. The
+  engineered organism therefore failed its own test.
+- **"Bistable" was conflated with "reachable by the levels".** Fable: a slow sweep passes a q that real
+  visits never switch. Astra: a bistable q with no input edges would be misclassed.
+- **Independent comparator biases broke the push-pull balance.** Astra, by an equilibrium calculation:
+  83.5% of generation-0 draws had a clipped turn at zero nose difference. So the claim "starts close
+  to the no-latch control" was false.
+
+**Fable also found:**
+- B had no spawn cap, so the clamp-to-B assay was at risk;
+- the GA and random sampling validated unequally;
+- the census check would touch the test worlds early;
+- S2-b needed an outcome for when neither arm finds a selector.
+
+**Astra also found:**
+- **the noses receive the scent scaled by `sense_scale_food` (0.35).** So v2.2's "0.0285 above m = 0.02"
+  compared different units: checked in `world.py`, confirmed;
+- the release test passed two zero gains.
+
+**Checked:** both sources capped at 16, by the committed script. Every sampled spawn accepts at least
+11.8% of draws (median 17.8%). The weakest scent at a spawn head is 0.0286, which the noses receive as
+0.0100.
+
+**Design v2.3:**
+- open-loop hold, settable and release assays on each champion's own states. These are exact, since
+  q's only inputs are the relays and itself;
+- the equilibrium structure classed independently;
+- the initial draw tied per module and the mutations independent, so generation 0 has zero offset by
+  antisymmetry;
+- both sources capped;
+- component tests down to m = 0.005;
+- equal validation;
+- a 25% reserve on the projection;
+- dated corrections of v2.2's hold reference, its initial distribution and its geometry claim.

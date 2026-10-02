@@ -4,17 +4,19 @@
    "ab_min": 8.0,
    "ab_max": 14.0,
    "spawn_min": 6.0,
-   "spawn_max_A": 16.0
+   "spawn_max_A": 16.0,
+   "spawn_max_B": 16.0
   },
   "spawns": 2000,
   "draws_per_spawn": 20000,
   "seed": 0,
   "acceptance_min": 0.1177,
-  "acceptance_median": 0.2015,
+  "acceptance_median": 0.177975,
   "spawns_with_zero_acceptance": 0,
-  "accepted_draws": 7845779,
+  "accepted_draws": 6960512,
   "accepted_with_head_beyond_square_support_of_A": 0,
-  "min_scent_of_A_at_spawn_head": 0.028565535615713462,
+  "min_scent_of_either_source_at_spawn_head": 0.028565525173395986,
+  "min_scent_at_spawn_head_as_the_noses_receive_it": 0.009997933810688595,
   "max_axis_distance_spawn_to_box": 18.69387174321789,
   "field_reach": 18,
   "spawn_extent": [
@@ -22,12 +24,13 @@
    22.69387174321789
   ]
  },
- "without_spawn_cap": {
+ "without_spawn_caps": {
   "rule": {
    "ab_min": 8.0,
    "ab_max": 14.0,
    "spawn_min": 6.0,
-   "spawn_max_A": 1000000000.0
+   "spawn_max_A": 1000000000.0,
+   "spawn_max_B": 1000000000.0
   },
   "spawns": 2000,
   "draws_per_spawn": 20000,
@@ -37,7 +40,8 @@
   "spawns_with_zero_acceptance": 0,
   "accepted_draws": 8801215,
   "accepted_with_head_beyond_square_support_of_A": 16373,
-  "min_scent_of_A_at_spawn_head": 0.0006165871561063003,
+  "min_scent_of_either_source_at_spawn_head": 0.0006137142047637822,
+  "min_scent_at_spawn_head_as_the_noses_receive_it": 0.00021479997166732375,
   "max_axis_distance_spawn_to_box": 18.69387174321789,
   "field_reach": 18,
   "spawn_extent": [

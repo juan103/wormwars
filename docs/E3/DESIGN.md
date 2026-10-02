@@ -1,7 +1,19 @@
-# E3: the minimal A/B organism (design v2.2, 2026-10-02)
+# E3: the minimal A/B organism (design v2.3, 2026-10-02)
 
-Status: v2.2, for a third confirmation round by Astra 6 and Fable 5.1. Nothing has run. A
+Status: v2.3, for a fourth confirmation round by Astra 6 and Fable 5.1. Nothing has run. A
 pre-registration follows only if both agree.
+- **v2.2** (0794db6; `docs/reviews/20261002-E3-design-v2.2/`; D161):
+  - **Fable:** "proceed to pre-registration", with four fixes carried into it.
+  - **Astra:** "revise".
+  - **Both found:**
+    - the hold test took its reference while q was still settling, so the engineered organism failed
+      it;
+    - "bistable" was conflated with "reachable by a visit";
+    - the initial distribution broke the comparators' balance. Astra computed that 83.5% of draws
+      start with a clipped turn.
+  - **Fable also found:** B had no spawn cap.
+  - **Astra also found:** the noses receive the scent scaled by 0.35.
+  - All are taken here, and mapped in the last section.
 - **v2.1** (af9b768): both said "revise", with text fixes only (`docs/reviews/20261002-E3-design-v2.1/`;
   D160). They found that the budget, the relays and the geometry hold. They also found problems, all
   taken here and mapped in the last section:
@@ -55,14 +67,18 @@ The roadmap gets a dated amendment saying so.
   - **The rule:**
     - 8 ≤ |A − B| ≤ 14;
     - both are at least 6 from the spawn;
-    - **|A − spawn| ≤ 16, Euclidean** (Fable).
-  - **The Euclidean cap** bounds the scent of A at the spawn head from below: exp(−16²/72) = 0.0285,
-    above the lowest level the component tests qualify (m = 0.02). v2.1's "16 along both axes" allowed
-    about 22.6 cells, where the scent is about 0.0008.
+    - **|A − spawn| ≤ 16 and |B − spawn| ≤ 16, Euclidean.** v2.2 capped A only (Fable).
+  - **The caps** bound each source's scent at the spawn head from below: exp(−16²/72) = 0.0285.
+    - **The noses receive it scaled** by `sense_scale_food` (0.35), so as about 0.0100.
+    - **Correction to v2.2 (2026-10-02):** v2.2 said 0.0285 was "above the lowest level the component
+      tests qualify (m = 0.02)". It compared the raw scent with a nose level (Astra). The component
+      tests now reach m = 0.005.
+    - That bound follows from the rule and cannot fail; the acceptance rate is the real check (Fable).
+  - v2.1's "16 along both axes" allowed about 22.6 cells, where the scent is about 0.0008.
 - **The check:** `scripts/e3_geometry_check.py`, writing `docs/E3/geometry-check.json`.
-  - Over the 2 000 sampled spawns, every one accepts at least 11.8% of draws; the median is 20%.
-  - The lowest scent of A at a spawn head is 0.0286.
-  - **Without the cap,** 16 373 of 8.8 million accepted draws (0.19%) put the head outside A's square
+  - Over the 2 000 sampled spawns, every one accepts at least 11.8% of draws; the median is 17.8%.
+  - The lowest scent of either source at a spawn head is 0.0286, which the noses receive as 0.0100.
+  - **Without the caps,** 16 373 of 8.8 million accepted draws (0.19%) put the head outside A's square
     support.
     - **Correction to v2.1 (2026-10-02):** v2.1 called these worlds ones that "would start blind". They
       are not a measure of sensory blindness, which also depends on the noses, the heading and the
@@ -161,7 +177,9 @@ interface gain of 3, which is within `input_max` = 5.
 **The registered component tests** (open loop on the carrier):
 - **The measurement:**
   - carrier turn 0.2, the qualifying condition for L1;
-  - noses fed L = m + d/2 and R = m − d/2, with d = ±0.001 and m in {0.02, 0.05, 0.1, 0.2, 0.35};
+  - noses fed L = m + d/2 and R = m − d/2, with d = ±0.001 and m in {0.005, 0.01, 0.02, 0.05, 0.1,
+    0.2, 0.35}. These are nose levels, after the 0.35 scaling: 0.35 at a source's centre, and 0.010 at
+    the spawn caps' distance;
   - the other module's noses at the same m with d = 0;
   - 50 ticks of preconditioning in the latch state, measured after the start cue;
   - K_D = Δu / (2d) at each m.
@@ -221,21 +239,38 @@ Every proposed threshold below is fixed in the pre-registration before Stage 0 r
     to 0". With the biases left at −1.914, that leaves both modules mostly off: K_D 2.63-2.97 against
     31.6-35.6 (Astra, in `Brain.step`; Fable by hand).
   - That construction is kept as a separately named, descriptive **q-zero ablation**.
-- **Memory, tested causally:**
+- **Memory, tested causally.** q's only inputs are the relays and itself. **Its retention can therefore
+  be tested open loop on the carrier, exactly as it behaves in the world with the levels at 0.** The
+  modules evolve in Stage 3, but no edge into q is added.
+  - **The probe** (wherever K_D is read below): the component tests' measurement at m = 0.05, applied
+    to a copy of the snapshotted state, so the state under test is never reset.
   - **Paired clamp assays:** the same worlds and starts, with q clamped to each of the organism's two
-    states. The first entry must be into the clamped goal in at least 90% of worlds for each state.
-  - **The hold test:**
-    - **Timing:** the levels are withheld from the first tick after the head leaves the source of the
-      first confirmed visit, to the end of the episode. Worlds without a confirmed visit are excluded,
-      and the test is not read if fewer than half of the worlds qualify.
-    - **What passes:** q stays within 10% of its value at the start of the hold, and the organism's own
-      active and inactive K_D at tick 600 are within 20% of their values at the start.
-  - **The release test:**
-    - the state is set by a two-tick level, not a clamp, and the levels are then withheld for D ticks;
-    - D is the engineered organism's median leg duration on Stage 1's test worlds, fixed when Stage 1
-      ends;
-    - it passes if the correct module dominates afterwards, with the inactive |K_D| at most 0.1 of the
-      active one, for both states.
+    states.
+    - For each state, the first entry must be into the clamped goal in at least 90% of all assay
+      worlds.
+    - A world with no entry within the episode counts as a failure.
+    - Both sources are within the spawn caps, so every world's first leg starts inside the sensed
+      range.
+  - **Settable:** from each stable state, settled, a two-tick level of the opposite visit signal moves
+    q to the other stable state within 20 ticks.
+  - **The hold test** (a consistency check for a bistable q):
+    - **The setup:** from each stable state, set by a two-tick level, wait 20 ticks to settle, take the
+      reference, then run 580 ticks with no levels.
+    - **What passes, for both states:**
+      - q at the end is within 10% of the reference and of its fixed point;
+      - the active module's K_D at the end is at least 0.8 of its value at the reference, and at least
+        15 (absolute);
+      - the inactive |K_D| is at most 0.1 of the active one.
+    - **Correction to v2.2 (2026-10-02):** v2.2 took the reference "at the start of the hold", as the
+      head left the first visit's source. q is still moving there (−3.05 after a two-tick level, −4.71
+      after a four-tick one, settling at −1.915), so the engineered organism failed its own test (both
+      reviewers).
+  - **The release test** (the memory test for a monostable q):
+    - **The setup:** from q's resting state (100 ticks with no levels), a two-tick level for goal X.
+      Then D ticks with no levels, where D is the engineered organism's median leg duration on Stage
+      1's test worlds, fixed when Stage 1 ends.
+    - **What passes, for both goals:** X's module has a K_D of at least 15, and the other's |K_D| is
+      at most 0.1 of it. Two zero gains therefore fail (Astra).
   - **The reset test:** q set to the wrong state mid-leg. The organism turns to the wrong source, and
     resumes alternating after its next confirmed visit.
 - **The mean-nose probe for each module:** the score with one module's noses fed their mean.
@@ -253,59 +288,82 @@ Every proposed threshold below is fixed in the pre-registration before Stage 0 r
   | the four comparator biases | 4 |
 
   That is 7 weights, 5 biases and 1 time constant. The relays and the interface gain stay fixed.
-- **The initial distribution, chosen to start near the ungated pair** (Fable: drawing uniformly over
-  the bounds makes a working selector about 10⁻⁶-10⁻⁵ likely):
-  - weights U[−0.5, 0.5];
-  - biases N(0, 0.5²), clipped to ±2 (the brain's `init_bias_std`);
-  - τ_q log-uniform over [0.5, 20].
-  - A run starts close to the no-latch control, and selection has to build the gate and the latch.
+- **The initial distribution: balanced within each module** (Fable, Astra). Drawing uniformly over the
+  bounds makes a working selector about 10⁻⁶-10⁻⁵ likely (Fable).
+  - **The draws:**
+    - **for each module,** one gate weight from U[−0.5, 0.5], given to both of its comparators, and
+      one comparator bias from N(0, 0.5²) clipped to ±2 (the brain's `init_bias_std`), given to both;
+    - w_qq, w_aq and w_bq from U[−0.5, 0.5];
+    - b_q from N(0, 0.5²), clipped;
+    - τ_q log-uniform over [0.5, 20].
+  - **The tie is only in the draw.** The 13 parameters mutate independently afterwards.
+  - **Why:** L1's output edges are exactly antisymmetric (±3), so equal inputs to CL and CR cancel. Every
+    generation-0 organism therefore has zero turn offset at zero nose difference.
+  - Generation 0 is an ungated pair with each module's operating point shifted. Selection has to build
+    the gate and the latch.
+  - **Correction to v2.2 (2026-10-02):** v2.2 drew the four biases independently and said "a run starts
+    close to the no-latch control". That broke the push-pull balance: 83.5% of draws had a clipped turn
+    at zero nose difference (Astra's equilibrium calculation).
+  - The census reports generation 0's K_D and turn offsets.
   - This is drawn by E3's own sampler (`Genome.random` draws differently), changing only the selector.
-  - **A 0-of-8 outcome reads:** "no working selector was found within this budget from this initial
-    distribution", never "cannot evolve".
+  - **Far in mutation units:** the engineered gate biases are about 38 sigmas from 0, and w_aq and w_bq
+    about 30 (Fable).
+  - **A 0-of-8 outcome reads:** "no working selector was found in 300 generations at 02's sigmas from
+    this initial distribution", never "cannot evolve".
   - The engineered w_aq and w_bq sit on the bound (±3), so no evolved drive can exceed the engineered
     one.
 - **The census:** 1 024 selectors from this distribution, and 1 024 drawn uniformly over the bounds
   (descriptive).
   - A selector qualifies if its 16-world score is at least 0.8 of the engineered organism's on the same
     worlds.
-  - Qualifiers get the full check below on the test worlds.
+  - Qualifiers get the full check below on the test worlds, after every champion is frozen.
 - **The mutation:** 02's sigmas at 1× on these 13 parameters and 0 elsewhere. E4s-1 observed no sign
   change at 0.25×; 1× makes crossing zero routine.
 - **The GA:** 02's (population 32, 3 elites, truncation 8), 16 worlds per genome, 300 generations, and
   validation every 25 generations on 256 worlds.
-- **The champion:** the genome with the best validation mean at the final checkpoint. The test worlds
-  are untouched until every champion is chosen.
+- **The champion:**
+  - **the GA** validates its whole final population (32) on the 256 validation worlds;
+  - **random sampling** validates its top 32 by selection score on the same worlds;
+  - in each, the best validation mean is the champion, with ties broken by the lower genome index.
+  - The test worlds are untouched until every champion is frozen.
 - **The comparators:**
   - **random sampling,** from the same distribution: 9 600 genomes (32 × 300) scored on selection
     worlds. The top 32 are validated on the same 256 worlds, and the best is its champion;
   - **the engineered organism.**
-- **Each champion's dynamical class:**
-  - **bistable:** its q equation, with the relays at rest, has three fixed points, and a hysteresis
-    sweep shows the levels reach both stable states;
-  - **monostable:** otherwise.
+- **Each champion's equilibrium structure,** classed independently of control (Astra):
+  - **bistable:** its q equation, with the relays at rest, has three fixed points;
+  - **monostable:** one fixed point.
 - **Its memory class:**
 
   | Class | Requires |
   |---|---|
-  | latch | bistable, and passes the hold test |
-  | bistable, fails hold | bistable, and fails the hold test |
+  | latch | bistable, settable both ways, and passes the hold test |
+  | bistable, not a latch | bistable, but not settable both ways or fails the hold test |
   | slow trace | monostable, and passes the release test |
   | no memory | monostable, and fails the release test |
 
-  - Every test uses the champion's own states, not the engineered organism's:
+  - **v2.2's hysteresis sweep is now descriptive.** A slow ramp passes a q that real 1-3 tick visits
+    never switch, so "settable" uses the two-tick level (Fable).
+  - **Every test uses the champion's own states,** not the engineered organism's:
     - its stable fixed points if it is bistable;
     - otherwise its median q in each goal phase on the test worlds.
+    - If those two medians differ by less than 0.1, the clamp assays are not applicable, and the
+      champion cannot be working.
   - A champion with the polarity mirrored (q < 0 meaning "go to A") counts as working.
+  - **The classes apply** to Stage 2's and Stage 3's champions.
 - **A working selector:** a champion whose test lower bound is at least 0.8 of the engineered
   organism's mean, and which passes the clamp assays at its own states.
 - **The proposed readings:**
   - **S2-a:** how many of the 8 runs reach a working selector, and each one's class.
   - **S2-b:** evolution against random sampling, by a run-level paired bootstrap of the champions' test
     scores, paired by seed index. The outcomes are ordered:
-    1. "evolution better": the lower bound is above 0.5 visits;
-    2. "random sampling better": the upper bound is below −0.5;
-    3. "as good": the interval lies within ±0.5;
-    4. "unclear".
+    1. "neither found a working selector", if no champion in either arm is working;
+    2. "evolution better": the lower bound is above 0.5 visits;
+    3. "random sampling better": the upper bound is below −0.5;
+    4. "as good": the interval lies within ±0.5;
+    5. "unclear".
+    - **If random sampling is reduced to 4 runs,** S2-b is labelled descriptive: with 4 pairs the
+      bootstrap is close to a range (Fable).
   - **S2-c:** the census's count of working selectors from each distribution. If at least 10 of 1 024
     (about 1%) come from the GA's distribution, Stage 2 is answered at generation 0, and the wording
     says so.
@@ -329,10 +387,17 @@ Every proposed threshold below is fixed in the pre-registration before Stage 0 r
     - all 121 edges among the 11 neurons;
     - the 9 non-relay neurons' τ and biases;
     - the 32 output edges, from the 4 comparator positions to the 8 turn neurons.
-  - It starts from Stage 2's initial distribution, applied to all of these. It evolves at 1×, with the
-    evaluations of Stage 2 and Stage 3 together.
+  - **That is 171 free parameters:** 121 + 32 weights, and 9 biases and 9 τ.
+    - There are no gap junctions.
+    - The relays may receive recurrent edges; only their own τ, bias and interface gain stay fixed
+      (Astra).
+  - **Its start:** Stage 2's draws, with the balance tie applied to each comparator pair's bias and to
+    the pair's edges from every other neuron.
+  - **Its training:** 1×, with the evaluations of Stage 2 and Stage 3 together, and Stage 2's champion
+    rule.
   - **The reading (descriptive):** B-task's champions against Stage 3's, by the run-level paired
-    bootstrap with S2-b's ordered outcomes.
+    bootstrap with S2-b's ordered outcomes. Under reduction step 1, against Stage 2's champions
+    instead (Fable).
   - **It matches neurons and inputs and outputs, not trainable capacity,** and is labelled so.
 
 **Worlds, seeds and statistics** (all pinned in the pre-registration):
@@ -367,14 +432,15 @@ Every proposed threshold below is fixed in the pre-registration before Stage 0 r
 | **Total** | | **about 13.4 h** |
 
 - **The cap is 30 GPU-hours for E3a, set by the owner** (D159).
-- **If the projection exceeds the cap,** reductions are decided once, from the projection, before any
-  training, in this order:
+- **If the projection, plus a 25% reserve, exceeds the cap,** reductions are decided once, from the
+  projection, before any training, in this order:
   1. B-task, to Stage 2's evaluations;
   2. B-task, dropped;
   3. Stage 3, to 4 runs;
   4. Stage 3, dropped;
   5. random sampling, to 4 runs, paired with GA runs 0-3.
-- **The minimum viable E3a** is Stage 2's 8 runs and 4 runs of random sampling.
+- **The minimum viable E3a** is Stage 2's 8 runs and 4 runs of random sampling. If even that exceeds
+  the cap, E3a does not start, and the owner is asked.
 - A stage stopped by the cap is reported as stopped, and is rerun only under the E2 stage frame's rule.
 
 ## What E3a cannot show
@@ -383,6 +449,26 @@ Every proposed threshold below is fixed in the pre-registration before Stage 0 r
 - Trails, mazes or colonies: that is E3b, which holds the roadmap's gate.
 - Whether modularity pays: that is E3c.
 - Gluing two whole N2 brains: that is E4.
+
+## Changes from v2.2
+
+| v2.2 review item | v2.3 |
+|---|---|
+| The hold test's reference taken mid-settling; the engineered organism failed it (both) | An open-loop assay: set by a two-tick level, 20 ticks to settle, 580 ticks held, both states; a dated correction |
+| Bistable conflated with reachable (Astra); reachability tested by a slow sweep (Fable) | Equilibrium structure classed alone; "settable" by a two-tick level; the sweep descriptive |
+| The release test passed two zero gains (Astra); its start unpinned for monostable q (Fable) | An absolute floor of 15; the start pinned to rest |
+| K_D "at tick 600" undefined in closed loop (Fable) | An open-loop probe on a copy of the snapshot; exact, since q's only inputs are the relays and itself |
+| Independent comparator biases broke the balance; 83.5% clipped (both) | The tie is only in the draw, per module; zero offset at generation 0 by antisymmetry; a dated correction |
+| How far the target lies in mutation units (Fable) | Stated; the 0-of-8 wording names 300 generations at 02's sigmas |
+| B uncapped, so the clamp-to-B assay is at risk (Fable) | Both sources capped at 16; acceptance rechecked |
+| Nose levels are scaled by 0.35 (Astra) | The component tests reach m = 0.005; a dated correction |
+| Unequal validation between the GA and random sampling (Fable) | Both validate 32; the tie-break stated |
+| The census check would touch the test worlds early (Fable) | Run after every champion is frozen |
+| S2-b when neither arm finds one; 4 pairs (Fable) | The first outcome; descriptive at 4 pairs |
+| Constant medians for monostable clamps (Astra) | Not applicable below a 0.1 difference |
+| B-task's gap junctions, relays and comparator under reduction (both) | Stated |
+| The reduction trigger; a minimum over the cap (both) | A 25% reserve; E3a does not start, and the owner is asked |
+| The scope of the classes (Fable) | Stage 2 and Stage 3 champions |
 
 ## Changes from v2.1
 

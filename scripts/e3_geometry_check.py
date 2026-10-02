@@ -1,4 +1,4 @@
-"""E3a's source geometry, checked against the real one-wey spawn (docs/E3/DESIGN.md, v2.2).
+"""E3a's source geometry, checked against the real one-wey spawn (docs/E3/DESIGN.md, v2.3).
 
     python scripts/e3_geometry_check.py     # writes docs/E3/geometry-check.json (CPU, seconds)
 
@@ -11,8 +11,9 @@ limit). A and B are drawn jointly and both redrawn on rejection, as the world's 
 
 "Head beyond the square support" counts the head's axis distance to A above 18; it is not a measure of
 sensory blindness, which also depends on the nose positions, heading and grid alignment (Astra, v2.1).
-The Euclidean cap on |A - spawn| bounds the scent at the spawn head from below: exp(-16^2 / 72) = 0.0285,
-above the lowest level the component tests qualify (m = 0.02).
+The Euclidean caps on |A - spawn| and |B - spawn| bound each source's scent at the spawn head from below:
+exp(-16^2 / 72) = 0.0285, which the noses receive scaled by `sense_scale_food` (0.35) as about 0.0100 (Astra,
+v2.2). That bound follows from the rule and cannot fail; the acceptance rate is the real check.
 """
 
 from __future__ import annotations
@@ -30,8 +31,9 @@ W = 24.0
 SPAWN_MARGIN, SPAWN_SPREAD = 3.0, 0.28   # config.py MapConfig defaults
 CLEARANCE = 3.0                          # Task N's wall clearance: the box 4..20
 SIGMA = 6.0
+SENSE_SCALE = 0.35                       # config.py WorldConfig.sense_scale_food
 REACH = math.ceil(3 * SIGMA)             # target_field's support along either axis
-RULE = {"ab_min": 8.0, "ab_max": 14.0, "spawn_min": 6.0, "spawn_max_A": 16.0}
+RULE = {"ab_min": 8.0, "ab_max": 14.0, "spawn_min": 6.0, "spawn_max_A": 16.0, "spawn_max_B": 16.0}
 
 
 def spawns(rng, n):
@@ -48,7 +50,7 @@ def accept(s, a, b, rule):
     da = np.hypot(*(a - s).T)
     db = np.hypot(*(b - s).T)
     return ((dab >= rule["ab_min"]) & (dab <= rule["ab_max"]) & (da >= rule["spawn_min"])
-            & (db >= rule["spawn_min"]) & (da <= rule["spawn_max_A"]))
+            & (db >= rule["spawn_min"]) & (da <= rule["spawn_max_A"]) & (db <= rule["spawn_max_B"]))
 
 
 def check(rule, n_spawn=2000, n_draw=20000, seed=0):
@@ -64,24 +66,25 @@ def check(rule, n_spawn=2000, n_draw=20000, seed=0):
         ok = accept(s, a, b, rule)
         rates[i] = ok.mean()
         axis_a = np.abs(a - s).max(1)[ok]
-        da = np.hypot(*(a - s).T)[ok]
+        far = np.maximum(np.hypot(*(a - s).T), np.hypot(*(b - s).T))[ok]
         acc_n += int(ok.sum())
         beyond_support += int((axis_a > REACH).sum())
         if ok.any():
-            min_scent = min(min_scent, float(np.exp(-(da.max() ** 2) / (2 * SIGMA ** 2))))
+            min_scent = min(min_scent, float(np.exp(-(far.max() ** 2) / (2 * SIGMA ** 2))))
     axis_far = np.abs(np.stack([np.array([lo, lo]), np.array([hi, hi])])[None] - S[:, None]).max((1, 2))
     return {"rule": rule, "spawns": n_spawn, "draws_per_spawn": n_draw, "seed": seed,
             "acceptance_min": float(rates.min()), "acceptance_median": float(np.median(rates)),
             "spawns_with_zero_acceptance": int((rates == 0).sum()),
             "accepted_draws": acc_n, "accepted_with_head_beyond_square_support_of_A": beyond_support,
-            "min_scent_of_A_at_spawn_head": min_scent,
+            "min_scent_of_either_source_at_spawn_head": min_scent,
+            "min_scent_at_spawn_head_as_the_noses_receive_it": min_scent * SENSE_SCALE,
             "max_axis_distance_spawn_to_box": float(axis_far.max()), "field_reach": REACH,
             "spawn_extent": [float(S.min()), float(S.max())]}
 
 
 def main():
     doc = {"with_rule": check(RULE),
-           "without_spawn_cap": check({**RULE, "spawn_max_A": 1e9})}
+           "without_spawn_caps": check({**RULE, "spawn_max_A": 1e9, "spawn_max_B": 1e9})}
     OUT.write_text(json.dumps(doc, indent=1) + "\n", encoding="utf-8", newline="\n")
     print(json.dumps(doc, indent=1))
 
