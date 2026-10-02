@@ -136,7 +136,8 @@ def test_the_polarity_test_takes_a_deadline_factor_a_trail_age_and_a_synthetic_t
     base = MR.polarity(cfg, iface, ids, run_seed=5, facing="toward")
     loose = MR.polarity(cfg, iface, ids, run_seed=5, facing="toward", limit_factor=4.0)
     assert (loose["pass_none"] >= base["pass_none"]).all()  # a later deadline only adds passes
-    assert (loose["first_tick_none"] == base["first_tick_none"]).all() or True
+    early = base["first_tick_none"] >= 0  # arrivals within the shorter run are the same arrivals
+    assert (loose["first_tick_none"][early] == base["first_tick_none"][early]).all()
     fresh = MR.polarity(cfg, iface, ids, run_seed=5, facing="toward", age_legs=0)
     assert fresh["age_legs"] == 0
     synth = MR.polarity(cfg, iface, ids, run_seed=5, facing="toward",
@@ -151,3 +152,23 @@ def test_the_nose_range_reports_quantiles_of_the_levels_met(iface):
     assert set(q) == {"1", "5", "25", "50", "75", "95", "99"}
     vals = [q[k] for k in ("1", "5", "25", "50", "75", "95", "99")]
     assert vals == sorted(vals) and vals[0] > 0
+
+
+def test_the_high_level_share_is_counted_exactly_among_qualified_inputs(iface):
+    cfg = _cfg(colony=2, horizon=300, d0=3.0)  # a heavy trail, so some inputs exceed 0.35
+    nr = MR.play(cfg, iface, lambda: MC.follower(iface, cfg), np.arange(3), run_seed=5, nose_range=True)["nose_range"]
+    assert nr["qualified_inputs"] == nr["positive_unoccluded_after_trail"] > 0
+    assert 0 < nr["above_high_share_qualified"] <= 1
+    assert nr["above_high_share_qualified"] == nr["qualified_above_high"] / nr["qualified_inputs"]
+
+
+
+def test_polarity_readings_report_censoring_instead_of_nan():
+    p = {"single_pass": np.ones(4), "oracle_ticks": np.array([10, 10, 10, 10]), "facing": "away", "age_legs": 1.0,
+         "synthetic": False}
+    for name in ("real", "none", "permuted"):
+        p[f"first_tick_{name}"] = np.array([5, -1, -1, -1])
+    r = MR.polarity_readings(p)
+    assert r["real_censored_share"] == 0.75
+    q = r["real_time_over_oracle_quartiles"]
+    assert q[0] == pytest.approx(0.6) and q[1] is None and q[2] is None  # beyond the run: censored, not NaN

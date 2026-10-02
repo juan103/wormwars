@@ -40,7 +40,7 @@ class NoseRange:
     """Counts goal-channel nose inputs on route-cell ticks (the head's cell when the tick sensed)."""
 
     def __init__(self):
-        self.on = self.inr = self.above = self.zero = self.occluded = 0
+        self.on = self.inr = self.above = self.zero = self.occluded = self.q_n = self.q_high = 0
 
     def attach(self, world) -> None:
         routes = np.stack([MM.route_cells(mz, pl.a, pl.b) for mz, pl in zip(world.mazes, world.placements)])
@@ -68,6 +68,8 @@ class NoseRange:
         self.zero += int((on & (g == 0)).sum())
         self.occluded += int((on & world.last_blocked).sum())
         keep = on & ~world.last_blocked & self.exists & (g > 0)
+        self.q_n += int(keep.sum())
+        self.q_high += int((keep & (g > NOSE_HIGH)).sum())
         self.hist += torch.bincount(torch.bucketize(g[keep], self.edges), minlength=len(_EDGES) + 1)
         self.prev = world.pos[:, 0].clone()
         self.exists = self._exists(world)
@@ -81,7 +83,9 @@ class NoseRange:
         return {"on_route_noses": self.on, "in_range": self.inr, "above": self.above, "zero": self.zero,
                 "occluded": self.occluded, "in_range_share": self.inr / n, "above_share": self.above / n,
                 "in_range_share_unoccluded": self.inr / m, "above_share_unoccluded": self.above / m,
-                "positive_unoccluded_after_trail": int(h.sum()), "quantiles_unoccluded_positive": q}
+                "positive_unoccluded_after_trail": int(h.sum()), "quantiles_unoccluded_positive": q,
+                "qualified_inputs": self.q_n, "qualified_above_high": self.q_high,
+                "above_high_share_qualified": self.q_high / max(self.q_n, 1)}
 
 
 def world(cfg, iface, brain, ids, run_seed, device="cpu", **kw) -> MW.MazeWorld:
@@ -270,4 +274,31 @@ def gradient(cfg, iface, ids, run_seed, device="cpu", ages=(1, 2, 4)) -> dict:
             sb = MM.gradient_share(aged[i, 1], mz, pl.b, route)
             shares.append((sa + sb) / 2)
         out[f"share_age{k}"] = np.asarray(shares)
+    return out
+
+
+def synthetic_slope(mz, pl, route) -> np.ndarray:
+    """A reference trail with a known slope: exp(−d / 8) on the route cells, d the free distance from A."""
+    d = mz.free_distance(pl.a)
+    return np.where(route, np.exp(-np.where(np.isfinite(d), d, 0.0) / 8.0), 0.0)
+
+
+def polarity_readings(p: dict) -> dict:
+    """A polarity run's passes within 2× and 4× the oracle's time (from its arrival ticks), the readings
+    real − max(none, permuted), and the arrival time over the oracle's, on the single-pass mazes."""
+    ok = p["single_pass"].astype(bool)
+    t = p["oracle_ticks"].astype(np.float64)
+    out = {"single_pass_mazes": int(ok.sum()), "facing": p["facing"], "age_legs": p["age_legs"],
+           "synthetic": p["synthetic"]}
+    for name in ("real", "none", "permuted"):
+        first = p[f"first_tick_{name}"]
+        arrived = first >= 0
+        for f in (2, 4):
+            out[f"{name}_within_{f}x"] = float(((arrived & (first + 1 <= np.ceil(f * t)))[ok]).mean())
+        ratio = np.where(arrived, (first + 1) / t, np.inf)[ok]
+        out[f"{name}_censored_share"] = float(np.mean(~np.isfinite(ratio))) if len(ratio) else float("nan")
+        qs = np.quantile(ratio, [0.25, 0.5, 0.75], method="inverted_cdf") if len(ratio) else [np.inf] * 3
+        out[f"{name}_time_over_oracle_quartiles"] = [float(x) if np.isfinite(x) else None for x in qs]  # None: censored
+    for f in (2, 4):
+        out[f"reading_{f}x"] = out[f"real_within_{f}x"] - max(out[f"none_within_{f}x"], out[f"permuted_within_{f}x"])
     return out

@@ -5533,3 +5533,65 @@ table carries a dated annotation. Criterion 2's headroom uses 0.22, the larger o
 window, and each use batches its segments into one call. One occlusion geometry now serves both the
 signal and the exposure reading. A tick at 256 worlds × 8 weys on the GPU fell from 114 ms to 8.9 ms. The
 maze tests pass unchanged.
+
+## D178 — E3b-0's Stage B chose no setting; diagnosed, reviewed twice, and amended (Amendment 1)
+
+**What happened (2026-10-02/03):**
+- **Stage A** (41fcb68) chose c = 5, H = 2 400. The four H = 1 200 candidates failed only on the
+  follower's median legs.
+- **Stage B** (4ac36b6) chose no setting:
+  - polarity read −0.06 to +0.02, against 0.3;
+  - the nose range read 0.26-0.46, against 0.9;
+  - the gradient passed in 22 of 24 settings. The two at μ 0.005, λ 0.01, δ 0.05 scored 0.797.
+- E3b-0 had used 0.74 of its 3 GPU-hours.
+
+**Claude's diagnosis and its errors.** Two CPU diagnoses (4004e4e, 85bdffc; `development-records/`) found
+that trails help the scripted follower, with a peer effect. At Stage B's highest-rate setting, in legs per
+1 000 ticks: shared − none +2.85 [1.83, 3.92], own − none +1.09 [0.39, 1.92], shared − own
++1.75 [0.93, 2.64]. Polarity and range failed on how the tests were defined. The reviewers corrected the
+claims as follows.
+- **"Cannot pass" was too strong** (both). The registered start was not passed on 64 mazes, even on a
+  reference slope: arrivals 9% at 2×, 42% at 4×, readings near 0.
+- **"Toward A" was mis-implemented** (both): away + π faced a wall where the route bends (45 of 64 mazes).
+  It now faces the route's previous cell.
+- **"The gradient passed everywhere" was wrong** (Astra): two settings scored 0.797. This is corrected in
+  9e5e02d's message.
+- **The 0.3 ceiling holds for the toward start only** (both).
+- **The diagnosis's reference slope has a centring ridge** (Fable).
+- **The draft's fixed wording claimed a mechanism** (Astra). It is replaced with a neutral sentence.
+
+**Bugs the reviews found, fixed test-first (9e5e02d):**
+- shared exposure was recorded as 0, which would have set the replay coefficient to 0 (Astra);
+- Stage C did not check that the recheck passed (Astra);
+- the polarity test's start is fixed as above.
+
+**The decision, by consensus.**
+- **First review** (`docs/reviews/20261002-E3b-0-stage-b/`): both said "amend and continue", not the
+  plan's nonlinear fallback. Nonlinear trails would not help a follower that does not turn round, and they
+  would break the linear peer controls. "Controller failures never change the trail rule" argues against
+  the fallback here, not against repairing the tests.
+- **Confirmation round** (`docs/reviews/20261003-E3b-0-amendment-1/`): both said "confirm with fixes",
+  with no further round. The plan's "Amendment 1, as confirmed" section carries every fix:
+  - the high-level cap (at most 5% of unoccluded positive on-route inputs above 0.35), on the follower and
+    then on the chosen seed;
+  - the pinned trail-effect gate;
+  - the widening limited to directions where the rate still rises;
+  - criterion 4 at the seed's measured quantiles, floored at 0.001, with one-nose checks;
+  - §6 reconciled: no fallback, a report and a redesign instead;
+  - the reuse of Stage A's and Stage B's records by hash, with `stage-b2`'s shared rates required to equal
+    Stage B's;
+  - per-row configuration hashes.
+
+**The expected outcome, recorded before `stage-b2` runs (Fable).** Under the cap, only the weakest trails
+qualify, and the expected winner is μ 0.02, λ 0.04, δ 0.05, d₀ 0.2855. Criterion 3 then probably fails, as
+a weak signal. The cap keeps the seeds' modules in their working range at the cost of the trail's signal.
+
+**The projection.** About 1.0-1.3 of the 2.26 GPU-hours left for `stage-b2` and everything after it.
+
+**Labels.** Everything chosen under Amendment 1 is adaptively selected (decided after seeing Stage B).
+
+**Who caught what:**
+- Fable: the saturation half of the range test is a real property of the trails; the cap's likely
+  selection; the record's base configuration; d₀'s invariance; the probe's floor.
+- Astra: the replay bug; the recheck guard; the seed-side cap; the reuse guard; the one-nose checks; the
+  wording.

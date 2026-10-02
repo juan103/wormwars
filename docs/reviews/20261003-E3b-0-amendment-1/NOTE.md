@@ -1,0 +1,1 @@
+Fable 5.1 at effort "high" (run 20261002-235512) and Astra 6 at "xhigh" with pinned settings (run 20261002-235514); the same prompt to both. Both verdicts: "confirm with fixes", no further round (D178).

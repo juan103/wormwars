@@ -541,3 +541,90 @@ So 0.35, the top of the modules' registered range, stays the cap.
    - the "toward" start is fixed.
 7. **If `stage-b2` qualifies no setting:** a report and a redesign, with the owner informed. There is no
    fallback.
+
+### Amendment 1, as confirmed (2026-10-03)
+
+**Both reviewers said "confirm with fixes", with no further round** (`docs/reviews/20261003-E3b-0-amendment-1/`;
+D178). Where this section differs from the draft above, this section holds.
+
+**Corrections to the draft's statements (both):**
+- **Polarity facing away:**
+  - the draft said "cannot be passed by this follower";
+  - the evidence is that it did not pass, on 64 mazes, at any setting;
+  - on the reference slope, facing-away arrivals rise from 9% at 2× to 42% at 4×, while the readings stay
+    near 0 (+0.02, +0.03).
+- **The reference slope** is exp(−d/8) with d a 4-connected breadth-first distance. It has a centring
+  ridge across the corridor as steep as its slope along it, so it is not a pure longitudinal slope.
+- **"0.3 was out of reach for any trail"** holds for the toward-facing start on these 64 mazes only
+  (ceiling 1 − 0.766 = 0.234). Facing away, the no-trail rate was 0.016, so there was room, and the
+  follower failed that test.
+- **The toward reading depends on the setting and the trail's age:**
+  - at the best-rate setting, +0.16 aged and +0.23 fresh;
+  - at the pilot, −0.08 aged and +0.12 fresh.
+- **The draft's fixed wording is replaced** with Astra's:
+  > "Stage B failed the registered behavioural polarity criterion. Gradient-sign qualification does not
+  > establish directional trail use; the amended stage reports behavioural polarity separately."
+
+  E3b-1's restriction on directional claims stands.
+
+**Fixes to the amendment:**
+1. **The high-level cap stays at 5% above 0.35.** It is stated as an engineering allowance, not a shown
+   harmless share. It is tied to the modules: E's active K_D is 31.6 at 0.35 and 28.0 at 0.5, and S3r3's
+   module A falls to 0 at 1.0.
+   - An empty count fails.
+   - **The same cap is applied to the chosen seed's own inputs** on the selection mazes, before any report
+     maze is opened (Astra). If it fails: a report and a redesign.
+2. **The trail-effect gate is pinned:** `world_ci`, a paired bootstrap over the 256 selection mazes,
+   10 000 resamples, seed 0, two-sided 95%; the lower end above 0.
+3. **The widening:**
+   - with two values of d₀ every winner sits on a d₀ edge, so a direction is widened only if the rate
+     still rises toward that edge (the winner's rate above that of the live row one grid step inside, its
+     other constants the same);
+   - this rule is fixed before `stage-b2` runs;
+   - no qualifying setting means no widening;
+   - the search stops after the one widening;
+   - a d₀-only widened setting reuses Stage B's gradient, since the gradient's signs do not depend on d₀
+     for linear trails (Fable);
+   - ties go to smaller μ, then λ, then d₀.
+4. **Criterion 4's levels:**
+   - 0.001, 0.003 and the boundary 0.35;
+   - the 5th, 25th, 50th, 75th, 95th and 99th percentiles of the chosen seed's unoccluded positive on-route
+     inputs (from its shared colony on the selection mazes, the chosen variant), floored at 0.001, since
+     the probe steps by ±0.0005;
+   - the quantiles are histogram bin bounds, so approximate.
+   - **Required at every level up to 0.35:**
+     - active K_D ≥ 30;
+     - with one nose at q and the other at 0, the active module turns toward the positive nose.
+   - **Reported:** the levels above 0.35, and the seed's own share above 0.35.
+   - **S3r3 is at risk, said now:** its module A read 29.3 at 0.35 in the diagnosis, below 30.
+5. **§6, reconciled with "no fallback":**
+   - every row that sends a failure to "the fallback" or to "Stage B's widening" now leads to a report and
+     a redesign, with the owner informed;
+   - so does criterion 4's "rescaled within Stage B's rule";
+   - criterion 3's branches otherwise stand: "weak signal" is reported as such.
+6. **The reuse of Stage A's and Stage B's records** (they ran on earlier code):
+   - a narrow transition checks their committed files by sha256 and the environment;
+   - the evidence that the reuse is sound: `stage-b2`'s shared rates must equal Stage B's rows exactly, on
+     every setting, or `stage-b2` stops;
+   - every later stage keeps the normal guards.
+7. **Recorded per row:** the effective setting and its configuration's sha256. Each record notes that its
+   `resolved_config` is the frame's base configuration.
+8. **Censored polarity arrivals** are reported as a censored share, not as NaN.
+
+**What the amendment is expected to select, said before it runs (Fable).** Stage B's recorded above-0.35
+shares, rescaled to the new count (about 0.77 of on-route noses), leave only the weakest trails under the
+cap: μ 0.02, λ 0.04, d₀ 0.2855, at δ 0.05 (rate 4.17) or 0.15 (3.78). Against a no-trail rate near 3.3,
+the expected winner is μ 0.02, λ 0.04, δ 0.05, d₀ 0.2855. By the widening rule, no direction is widened:
+the rate falls toward every edge it sits on. **Criterion 3 then probably fails, as a weak signal.** The cap
+trades the trail's signal for the modules' working range; that is the choice made here.
+
+**The compute, projected before the run.** 0.736 of 3 GPU-hours are used.
+
+| Stage | Projected GPU-hours |
+|---|---|
+| `stage-b2`: 25 follower runs at about 25 s each, 9 polarity runs at the winner, a widening only if the rule allows | about 0.3 |
+| The recheck | |
+| Stage C (at most 42 organism runs at about 30 s) | |
+| The report | |
+| The timing | |
+| **Total** | **about 1.0-1.3**, within the 2.26 left |

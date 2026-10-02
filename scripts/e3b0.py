@@ -73,7 +73,7 @@ GUARDED = ["wormwars", "scripts", "configs", "requirements.txt", PLAN,
            "experiments/E3-ab-organism/E3a/champions-3.json", "experiments/E4s-stereo-module/E4s-0/module.json",
            *E.E1_INPUTS]
 SMOKE = False
-STAGES = ["stage-a", "stage-b", "recheck-a", "stage-c", "report", "timing"]
+STAGES = ["stage-a", "stage-b", "stage-b2", "recheck-a", "stage-c", "report", "timing"]
 
 REGISTERED = {
     "maze_seed": 1_180_000, "colony": 8, "spawns": 4,
@@ -85,6 +85,17 @@ REGISTERED = {
     "criterion2": {"legs_median_min": 2.0, "mde": 0.22, "headroom_factor": 2.0, "lb_min": 0.0,
                    "mde_source": "power.json fine: 12 runs, t-test, CV 0.282, normal (the larger of the two shapes)"},
     "criterion3": {"rate_lb_min": 0.5},
+    # Amendment 1 (after Stage B, D178): stage-b2 reads Stage B's record
+    "stage_b2": {"gradient_min": 0.8, "high_level": 0.35, "high_share_max": 0.05, "trail_lb_min": 0.0,
+                 "d0_scale_edges": {"low": 0.25, "high": 2.0}, "component_quantiles": [5, 25, 50, 75, 95, 99],
+                 "component_floor": 0.001,
+                 "trail_effect_rule": "world_ci: paired bootstrap over mazes, 10 000 resamples, seed 0, two-sided 95%; "
+                                      "lower end above 0"},
+    # Stage A's and Stage B's records ran on earlier code; they are reused under a narrow transition: their
+    # committed files by hash, the environment unchanged, and stage-b2's shared rates equal to Stage B's
+    # (Astra, Fable; D178)
+    "historical": {"stage-a": "50187714b13f8d489fb112339bf4f3e1cb561b12ab8251741a80ba21dd40c80b",
+                   "stage-b": "71c8b2aada4756c6679a30729d0a1fd7597e4b3fe1525cc155beb337017e19b6"},
     "component_levels_fixed": [0.001, 0.003],
     "ids": {"selection": [0, 256], "report": [1000, 1256], "fresh": [2000, 2256]},
     "seeds": ["E", "S3r3"], "variants": list(MO.VARIANTS),
@@ -158,8 +169,50 @@ def load_npz(name: str) -> dict:
         return {k: z[k] for k in z.files}
 
 
+def check_historical(path: Path, sha256: str) -> dict:
+    rec_bytes = Path(path).read_bytes()
+    import hashlib as _h
+    if _h.sha256(rec_bytes).hexdigest() != sha256:
+        raise SystemExit(f"{Path(path).name}'s hash differs from the pinned one: not the record Amendment 1 reuses")
+    return json.loads(rec_bytes.decode("utf-8"))
+
+
+def require_historical(args, prov, stage: str) -> dict:
+    """Stage A's and Stage B's records, made on earlier code: completed, committed, the same file by hash,
+    and the same environment. Their code is not required to be the current code (D178)."""
+    path = E.record_path(stage)
+    if not path.exists():
+        raise SystemExit(f"{WHAT[stage]} has not run")
+    if E.formal(args) and not args.smoke:
+        E.require_committed(path)
+        rec = check_historical(path, REGISTERED["historical"][stage])
+        E.reg.require_same_env(rec["provenance_at_start"], prov)
+    else:
+        rec = json.loads(path.read_text(encoding="utf-8"))
+    if rec.get("outcome") != "completed":
+        raise SystemExit(f"{WHAT[stage]} did not complete")
+    return rec
+
+
 def require(args, prov, *stages):
-    return {s: E.require_earlier(args, prov, s) for s in stages}
+    return {s: (require_historical(args, prov, s) if s in ("stage-a", "stage-b") else E.require_earlier(args, prov, s))
+            for s in stages}
+
+
+def seed_cap(nr: dict) -> dict:
+    """The high-level cap on the chosen seed's own inputs (Astra, D178): an empty count fails."""
+    R = REGISTERED["stage_b2"]
+    ok = nr["qualified_inputs"] > 0 and nr["above_high_share_qualified"] <= R["high_share_max"]
+    return {"qualified_inputs": nr["qualified_inputs"], "above_high_share": nr["above_high_share_qualified"],
+            "max": R["high_share_max"], "passed": bool(ok)}
+
+
+def component_levels(quantiles: dict) -> list:
+    """Criterion 4's levels: 0.001, 0.003 and the boundary 0.35, and the seed's measured quantiles floored at
+    0.001 (the probe steps by ±0.0005, so a lower level would make a nose input negative)."""
+    R = REGISTERED["stage_b2"]
+    qs = [max(float(quantiles[str(q)]), R["component_floor"]) for q in R["component_quantiles"]]
+    return sorted(set(REGISTERED["component_levels_fixed"] + [R["high_level"]] + qs))
 
 
 def live(mu: float, lam: float) -> bool:
@@ -211,6 +264,28 @@ def carrier_variant(con, cfg, variant: str):
     ext = G.graft_connectome(con, carrier)
     sd = MO.Seed("carrier", carrier, ext, MO.C.carrier_genome(ext, carrier, cfg.brain, forward=1.0, turn=0.2))
     return MO.maze_organism(con, sd, variant, cfg.brain)
+
+
+def one_nose_checks(genome, pc, states: dict, levels: list) -> dict:
+    """The active module's response to one nose at q and the other at 0 (an occluded nose reads 0): its turn
+    must move toward the positive nose, (q, 0) above (0, 0) and (0, q) below, at every level up to 0.35
+    (Astra, D178). The other module's noses stay at 0."""
+    out, ok = {}, True
+    for goal, q in states.items():
+        st = pc.latch_state(genome, q)
+        zero = float(P._run(genome, pc, st, pc.noses(genome.n_strains, 0.0))[0])
+        for m in levels:
+            i, j = pc.pairs[goal]
+            left = pc.noses(genome.n_strains, 0.0)
+            left[..., i] = m
+            right = pc.noses(genome.n_strains, 0.0)
+            right[..., j] = m
+            ul, ur = float(P._run(genome, pc, st, left)[0]), float(P._run(genome, pc, st, right)[0])
+            good = ul > zero > ur
+            out[f"{goal}@{m}"] = {"u_left_only": ul, "u_none": zero, "u_right_only": ur, "toward_positive": good}
+            if m <= REGISTERED["stage_b2"]["high_level"]:
+                ok &= good
+    return {"values": out, "passed_up_to_high_level": bool(ok)}
 
 
 def latch_states(org) -> dict:
@@ -325,7 +400,8 @@ def choose(rows: list) -> dict | None:
     ok = [r for r in rows if r["passed"]]
     if not ok:
         return None
-    return sorted(ok, key=lambda r: (-r["follower_later_leg_rate"], r["setting"]["mu"], r["setting"]["lam"]))[0]
+    return sorted(ok, key=lambda r: (-r["follower_later_leg_rate"], r["setting"]["mu"], r["setting"]["lam"],
+                                     r["setting"].get("d0", 0.0)))[0]
 
 
 def cmd_stage_b(args):
@@ -371,12 +447,151 @@ def cmd_stage_b(args):
     return E.run_stage(args, "stage-b", lambda a, prov: require(a, prov, "stage-a"), body)
 
 
+# ============================================================================== stage B2 (Amendment 1)
+
+WORDING = ("Stage B failed the registered behavioural polarity criterion. Gradient-sign qualification does not "
+           "establish directional trail use; the amended stage reports behavioural polarity separately.")
+
+
+def b2_tag(s: dict) -> str:
+    return f"mu{s['mu']}-lam{s['lam']}-delta{s['delta']}-d0{s['d0']:.4f}"
+
+
+def b2_row(ctx, c, H, s, dev, none_rate, gradient=None, gradients_by_shape=None) -> dict:
+    """One setting under Amendment 1: the follower's shared colony with the nose recorder; the gradient
+    from Stage B's row, or measured here for a widened setting; the trail effect against the no-trail run."""
+    R = REGISTERED["stage_b2"]
+    cfg = cfg_for(c, H, mu=s["mu"], lam=s["lam"], delta=s["delta"], d0=s["d0"])
+    sel = ids("selection")
+    ev = run("measure", ctx.cap, lambda: MR.play(cfg, ctx.iface, makers(cfg, ctx.iface, dev)["follower"], sel, seed(),
+                                                 dev, access="shared", nose_range=True))
+    f = summary(ev, H)
+    arrays = flat("follower", f)
+    if gradient is None and gradients_by_shape:  # linear trails: the gradient's signs do not depend on d0
+        gradient = gradients_by_shape.get((s["mu"], s["lam"], s["delta"]))
+    if gradient is None:
+        one = cfg_for(c, H, mu=s["mu"], lam=s["lam"], delta=s["delta"], d0=s["d0"], colony=1)
+        g1 = run("measure", ctx.cap, lambda: MR.gradient(one, ctx.iface, sel, seed(), dev))
+        g8 = run("measure", ctx.cap, lambda: MR.gradient(cfg, ctx.iface, sel, seed(), dev))
+        gradient = {f"{n}_age{k}": float(np.nanmean(g[f"share_age{k}"])) for n, g in (("one", g1), ("eight", g8))
+                    for k in (1, 2, 4)}
+        arrays.update({**{f"gradient1.{k}": v for k, v in g1.items()}, **{f"gradient8.{k}": v for k, v in g8.items()}})
+    trail = MM.world_ci(f["later_leg_rate"], none_rate)
+    nr = ev["nose_range"]
+    checks = {"live": live(s["mu"], s["lam"]),
+              "gradient": bool(gradient["one_age1"] >= R["gradient_min"] and gradient["eight_age1"] >= R["gradient_min"]),
+              "high_cap": bool(nr["qualified_inputs"] > 0 and nr["above_high_share_qualified"] <= R["high_share_max"]),
+              "trail_effect": bool(trail["lo95"] > R["trail_lb_min"])}
+    save_npz(f"stage-b2-{b2_tag(s)}", arrays)
+    return {"setting": s, "config_sha256": E.config_sha256(cfg),
+            "follower_later_leg_rate": float(np.mean(f["later_leg_rate"])), "trail_effect": trail,
+            "follower_brief": brief(f), "gradient": gradient, "nose_range": nr, "checks": checks,
+            "passed": all(checks.values())}
+
+
+def b2_widening(win: dict, grid: dict, d0_pilot: float, rows: list | None = None):
+    """Every live setting that uses a value one factor of 2 beyond an edge the winner sits on, in mu, lambda or
+    d0, crossed with the rest of the grid and each other (Amendment 1). With `rows`, a direction is widened
+    only if the rate still rises toward that edge: the winner's rate exceeds that of the live row one grid step
+    inside, its other constants the same (fixed before stage-b2 ran; D178)."""
+    R = REGISTERED["stage_b2"]["d0_scale_edges"]
+    mus, lams, ks = list(grid["mu"]), list(grid["lam"]), list(grid["d0_scale"])
+    s = win["setting"]
+    new_mu = {mus[0]: mus[0] / 2, mus[-1]: mus[-1] * 2}.get(s["mu"])
+    new_lam = {lams[0]: lams[0] / 2, lams[-1]: lams[-1] * 2}.get(s["lam"])
+    k = round(s["d0"] / d0_pilot, 6)
+    new_k = {round(ks[0], 6): R["low"], round(ks[-1], 6): R["high"]}.get(k)
+    if rows is not None:
+        def rate_at(mu, lam, kk):
+            for r in rows:
+                t = r["setting"]
+                if (t["mu"] == mu and t["lam"] == lam and t["delta"] == s["delta"]
+                        and abs(t["d0"] - d0_pilot * kk) < 1e-12 and live(mu, lam)):
+                    return r["follower_later_leg_rate"]
+            return None
+
+        base = win.get("follower_later_leg_rate", rate_at(s["mu"], s["lam"], k))
+
+        def rising(inner):
+            return inner is not None and base > inner
+
+        if new_mu is not None and not rising(rate_at(mus[1] if s["mu"] == mus[0] else mus[-2], s["lam"], k)):
+            new_mu = None
+        if new_lam is not None and not rising(rate_at(s["mu"], lams[1] if s["lam"] == lams[0] else lams[-2], k)):
+            new_lam = None
+        if new_k is not None and not rising(rate_at(s["mu"], s["lam"], ks[1] if k == round(ks[0], 6) else ks[-2])):
+            new_k = None
+    out = []
+    for m, l_, d, kk in itertools.product(mus + ([new_mu] if new_mu else []), lams + ([new_lam] if new_lam else []),
+                                          grid["delta"], ks + ([new_k] if new_k else [])):
+        if (m == new_mu or l_ == new_lam or kk == new_k) and live(m, l_):
+            out.append({"mu": m, "lam": l_, "delta": d, "d0": d0_pilot * kk})
+    return out, {"mu": new_mu, "lam": new_lam, "d0_scale": new_k}
+
+
+def cmd_stage_b2(args):
+    def body(ctx):
+        dev, R = ctx.args.device, REGISTERED["stage_b"]
+        b = ctx.earlier["stage-b"]
+        c, H = b["c"], b["H"]
+        sel = ids("selection")
+        cfg0 = cfg_for(c, H, **REGISTERED["pilot"])
+        none = summary(run("measure", ctx.cap, lambda: MR.play(cfg0, ctx.iface, makers(cfg0, ctx.iface, dev)["follower"],
+                                                               sel, seed(), dev, access="none")), H)
+        save_npz("stage-b2-none", flat("follower_none", none))
+        rows, equal = [], []
+        for old in b["rows"]:
+            r = b2_row(ctx, c, H, old["setting"], dev, none["later_leg_rate"], gradient=old["gradient"])
+            same = r["follower_later_leg_rate"] == old["follower_later_leg_rate"]
+            equal.append(same)
+            print(f"stage-b2 {r['setting']}: rate {r['follower_later_leg_rate']:.2f} (Stage B equal: {same}) "
+                  f"{r['checks']}", flush=True)
+            if not same and not SMOKE:
+                raise SystemExit("stage-b2's shared rate differs from Stage B's on the same setting: the reuse of "
+                                 "Stage B's records is not supported (D178)")
+            rows.append(r)
+        shapes = {(r["setting"]["mu"], r["setting"]["lam"], r["setting"]["delta"]): r["gradient"] for r in rows}
+        win = choose(rows)
+        widened = None
+        if win is not None and not SMOKE:
+            extra, new = b2_widening(win, R, REGISTERED["pilot"]["d0"], rows)
+            if extra:
+                for s in extra:
+                    rows.append(b2_row(ctx, c, H, s, dev, none["later_leg_rate"], gradients_by_shape=shapes))
+                    r = rows[-1]
+                    print(f"stage-b2 widened {s}: rate {r['follower_later_leg_rate']:.2f} {r['checks']}", flush=True)
+                widened = {**new, "settings": len(extra)}
+                win = choose(rows)
+        polarity = None
+        if win is not None:
+            s = win["setting"]
+            one = cfg_for(c, H, mu=s["mu"], lam=s["lam"], delta=s["delta"], d0=s["d0"], colony=1)
+            polarity = {}
+            for facing in ("away", "toward", "random"):
+                for age_legs in (1.0, 0.0):
+                    p = run("measure", ctx.cap, lambda: MR.polarity(one, ctx.iface, sel, seed(), dev, facing=facing,
+                                                                    limit_factor=4.0, age_legs=age_legs))
+                    polarity[f"{facing}_age{int(age_legs)}"] = MR.polarity_readings(p)
+                p = run("measure", ctx.cap, lambda: MR.polarity(one, ctx.iface, sel, seed(), dev, facing=facing,
+                                                                limit_factor=4.0, synthetic=MR.synthetic_slope))
+                polarity[f"synthetic_{facing}"] = MR.polarity_readings(p)
+        return {"c": c, "H": H, "follower_none_brief": brief(none), "rows": rows, "widened": widened,
+                "stage_b_rates_equal": equal,
+                "resolved_config_note": "resolved_config is the frame's base configuration; each row's effective "
+                                        "setting is its 'setting' and 'config_sha256'",
+                "chosen": None if win is None else win["setting"], "polarity_reported": polarity, "wording": WORDING,
+                "label": "adaptively selected: Amendment 1 was decided after seeing Stage B's data (D178)"}
+
+    return E.run_stage(args, "stage-b2", lambda a, prov: require(a, prov, "stage-a", "stage-b"), body)
+
+
 # ============================================================================== Stage A's recheck
 
 def chosen_cfg(earlier: dict, colony: int | None = None):
-    b = earlier["stage-b"]
+    """The chosen trail setting: Stage B2's (Amendment 1; Stage B chose none)."""
+    b = earlier["stage-b2"]
     if not b.get("chosen"):
-        raise SystemExit("Stage B chose no setting: the fallback (§6) comes first")
+        raise SystemExit("Stage B2 qualified no setting: a report and a redesign (Amendment 1)")
     s = b["chosen"]
     return cfg_for(b["c"], b["H"], mu=s["mu"], lam=s["lam"], delta=s["delta"], d0=s["d0"], colony=colony), b["H"]
 
@@ -389,7 +604,7 @@ def cmd_recheck_a(args):
         sel = ids("selection")
         f = summary(run("measure", ctx.cap, lambda: MR.play(cfg, ctx.iface, mk["follower"], sel, seed(), dev, access="shared")), H)
         wk = summary(run("measure", ctx.cap, lambda: MR.play(cfg, ctx.iface, mk["walk"], sel, seed(), dev, access="none")), H)
-        o = load_npz(f"stage-a-c{ctx.earlier['stage-b']['c']}-H{H}")
+        o = load_npz(f"stage-a-c{ctx.earlier['stage-b2']['c']}-H{H}")
         oracle = {"visits": o["oracle.visits"]}
         cond = stage_a_conditions(oracle, f, None, wk, H)
         cond = {k: v for k, v in cond.items() if k[0] in "245"}
@@ -397,7 +612,7 @@ def cmd_recheck_a(args):
         return {"conditions": cond, "passed": all(v["passed"] for v in cond.values()),
                 "brief": {"follower": brief(f), "walk": brief(wk)}}
 
-    return E.run_stage(args, "recheck-a", lambda a, prov: require(a, prov, "stage-a", "stage-b"), body)
+    return E.run_stage(args, "recheck-a", lambda a, prov: require(a, prov, "stage-a", "stage-b", "stage-b2"), body)
 
 
 # ============================================================================== stage C
@@ -428,7 +643,7 @@ def cmd_stage_c(args):
         R2 = REGISTERED["criterion2"]
         rc = load_npz("recheck-a")
         walk = {"visits": rc["walk.visits"]}
-        oracle_visits = load_npz(f"stage-a-c{ctx.earlier['stage-b']['c']}-H{H}")["oracle.visits"]
+        oracle_visits = load_npz(f"stage-a-c{ctx.earlier['stage-b2']['c']}-H{H}")["oracle.visits"]
         out, choice = {}, {}
         variants = REGISTERED["variants"] if not SMOKE else REGISTERED["variants"][:2]
         for sname in REGISTERED["seeds"]:
@@ -474,7 +689,7 @@ def cmd_stage_c(args):
         return {"tried": out, "passed": choice, "seed": seed_choice,
                 "variant": None if seed_choice is None else passed[seed_choice]["variant"]}
 
-    return E.run_stage(args, "stage-c", lambda a, prov: require(a, prov, "stage-a", "stage-b", "recheck-a"), body)
+    return E.run_stage(args, "stage-c", lambda a, prov: require(a, prov, "stage-a", "stage-b", "stage-b2", "recheck-a"), body)
 
 
 # ============================================================================== report
@@ -548,6 +763,15 @@ def cmd_report(args):
         seed_make = lambda: Brain(g)  # noqa: E731
         mk = makers(cfg, ctx.iface, dev)
         out, arrays = {}, {}
+        # the high-level cap on the seed's own inputs, on the selection mazes, before any report maze (D178)
+        nr = run("measure", ctx.cap, lambda: MR.play(cfg, org.iface, seed_make, ids("selection"), seed(), dev,
+                                                     access="shared", nose_range=True))["nose_range"]
+        out["seed_nose_range_selection"] = nr
+        out["seed_high_cap"] = seed_cap(nr)
+        if not out["seed_high_cap"]["passed"]:
+            out["stopped_before_report_mazes"] = True
+            out["note"] = "the seed's own inputs exceed the high-level cap: a report and a redesign (Amendment 1)"
+            return out
         with acct.category("measure"):
             ctx.cap.check()
             coefs = {"seed": coefficient(cfg, org.iface, seed_make, dev, H),
@@ -586,23 +810,27 @@ def cmd_report(args):
         d = np.concatenate([np.diff(r[r >= 0]) for row in ev["visit_tick"] for r in row if (r >= 0).sum() > 1] or [np.array([])])
         out["seed_median_leg_ticks"] = float(np.median(d)) if len(d) else None
         # the component tests at the levels met (criterion 4)
-        nr = level_quantiles(cfg, ctx.iface, mk["follower"], dev)
-        out["nose_range_selection"] = nr
-        levels = sorted(set(REGISTERED["component_levels_fixed"] + [0.005, 0.01, 0.02, 0.05, 0.1, 0.2, 0.35]))
+        levels = component_levels(nr["quantiles_unoccluded_positive"])
         pc = P.ProbeContext(org.ext, org.iface, cfg, device="cpu")
         with acct.category("probe"):
             states = latch_states(org)
             comp = P.component_tests(org.genome, pc, states=states, levels=levels)
+            one_nose = one_nose_checks(org.genome, pc, states, levels)
         out["component_tests"] = {"levels": levels, "active": comp["active"], "inactive": comp["inactive"],
                                   "switching": comp["switching"]["passed"], "startup": comp["startup"]["passed"],
                                   "offset": comp["offset"]["passed"],
-                                  "active_passed": comp["active"]["passed"],
+                                  "active_passed_up_to_high_level": all(
+                                      v >= P.ACTIVE_MIN for k, v in comp["active"]["values"].items()
+                                      if float(k.split("@")[1]) <= REGISTERED["stage_b2"]["high_level"]),
+                                  "seed_level_quantiles": nr["quantiles_unoccluded_positive"],
+                                  "quantiles_note": "histogram bin upper bounds (bins 2.3% wide), approximate",
+                                  "one_nose": one_nose,
                                   "latch_states": states,
                                   "note": "the active K_D >= 30 is required; S3r3's inactive limit is reported only"}
         out["seed"], out["variant"] = c["seed"], c["variant"]
         return out
 
-    return E.run_stage(args, "report", lambda a, prov: require(a, prov, "stage-a", "stage-b", "recheck-a", "stage-c"), body)
+    return E.run_stage(args, "report", lambda a, prov: require(a, prov, "stage-a", "stage-b", "stage-b2", "recheck-a", "stage-c"), body)
 
 
 # ============================================================================== timing
@@ -659,7 +887,7 @@ def cmd_timing(args):
                              "note": "training only, linear in worlds; validation and evaluation come on top"}
         return out
 
-    return E.run_stage(args, "timing", lambda a, prov: require(a, prov, "stage-a", "stage-b", "stage-c"), body)
+    return E.run_stage(args, "timing", lambda a, prov: require(a, prov, "stage-a", "stage-b", "stage-b2", "stage-c"), body)
 
 
 # ============================================================================== smoke and main
@@ -674,6 +902,7 @@ def use_smoke(args) -> None:
                         discovery_share_of_H_max=1e9)
     R["stage_b"].update(polarity_min=-1.0, gradient_min=0.0, range_min=0.0, saturated_max=1.0)
     R["criterion2"].update(legs_median_min=0.0, mde=-1e9, lb_min=-1e9)
+    R["stage_b2"].update(gradient_min=0.0, high_share_max=1.0, trail_lb_min=-1e9)
     configure()
     for s in STAGES[STAGES.index(args.command):]:
         for f in (E.record_path(s), E.marker_path(s), E.partial_path(s)):
@@ -681,7 +910,7 @@ def use_smoke(args) -> None:
                 f.unlink(missing_ok=True)
 
 
-COMMANDS = {"stage-a": cmd_stage_a, "stage-b": cmd_stage_b, "recheck-a": cmd_recheck_a, "stage-c": cmd_stage_c,
+COMMANDS = {"stage-a": cmd_stage_a, "stage-b": cmd_stage_b, "stage-b2": cmd_stage_b2, "recheck-a": cmd_recheck_a, "stage-c": cmd_stage_c,
             "report": cmd_report, "timing": cmd_timing}
 
 
