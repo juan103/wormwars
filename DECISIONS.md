@@ -5099,3 +5099,34 @@ world blocks.
 - G-E's CPU genomes needed naming.
 
 **The second draft** takes every fix. The departures from the design are listed in its §12.
+
+## D165 — E3a's pre-registration bound (second draft reviewed: both "bind after fixes")
+
+**The review** (`docs/reviews/20261002-E3a-prereg-2/`): both said "bind after fixes" on the second
+draft (3a513e6). Fable confirmed every first-draft fix resolved; Astra confirmed most and listed four
+remaining gaps.
+
+**Fable's three pins:**
+- the state-to-goal rule covers census qualifiers;
+- "not applicable" clamp assays count as not passed;
+- reset worlds where no write happens stay in the denominator and fail.
+
+Optionally:
+- the registered evaluations run first in stage 14;
+- E's census-world mean is computed in stage 6;
+- compositions are recorded.
+
+**Astra's four gaps:**
+- **G1 depended on calibration that comes after it.** The calibration condition now applies only to
+  organisms whose states come from calibration.
+- **Stage 3's checkpoint skills had no calibration.** Module skill is now measured for Stage 2's and
+  Stage 3's champions only.
+- **The release test's monostable start could tie** (w_qq 1.0001, b_q 0: roots ±0.0173). It is now
+  the root with the most negative f′, ties to the lower q.
+- **The projection's workload was not fixed.** It now prices 64 qualifiers per census, caps the full
+  check at the 64 best-screened ("at least k" otherwise), recomputes after screening, and gives the
+  compositions.
+
+**Bound:** the final text takes every fix, as E4s-1's did after its review (D150). It binds when this
+commit is pushed, before any stage of E3a runs. Amendments go in its §13. This is a consensus
+decision; the owner is informed.

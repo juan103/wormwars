@@ -1,7 +1,8 @@
 # E3: the minimal A/B organism
 
-**Status (2026-10-02):** E3a's design is agreed (`docs/E3/DESIGN.md` v2.4, D163), and its
-pre-registration is drafted, for review (`E3a/PREREGISTRATION.md`). Nothing has run.
+**Status (2026-10-02):** E3a's design is agreed (`docs/E3/DESIGN.md` v2.4, D163). Its
+pre-registration is bound (`E3a/PREREGISTRATION.md`; two review rounds, D164 and D165), pushed before
+any stage runs. Implementation is under way; nothing has run.
 
 ## What it asks
 

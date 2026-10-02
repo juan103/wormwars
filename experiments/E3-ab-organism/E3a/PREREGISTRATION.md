@@ -1,8 +1,11 @@
 # E3a pre-registration: the shuttle, a two-module organism with a latch
 
-Status: **second draft**, 2026-10-02.
-- **Its review:** both reviewers said "bind after fixes" on the first draft (a7177e7;
-  `docs/reviews/20261002-E3a-prereg/`; D164). This draft takes every fix they listed.
+Status: **final**, 2026-10-02.
+- **Its reviews:**
+  - **The first draft** (a7177e7): both "bind after fixes" (`docs/reviews/20261002-E3a-prereg/`; D164).
+  - **The second draft** (3a513e6): both "bind after fixes" again
+    (`docs/reviews/20261002-E3a-prereg-2/`; D165).
+  - This text takes every fix from both rounds.
 - **Its design:** `docs/E3/DESIGN.md` v2.4, agreed by Astra 6 and Fable 5.1 (D163). The departures
   from it are listed in §12.
 - **Binding:** it binds when committed and pushed after both reviewers agree, before any stage of E3a
@@ -198,7 +201,7 @@ stated:
 3. **G0, Stage 0's gate;**
 4. **G1, Stage 1's gate;**
 5. **E's calibration** (D, and E's measured stimulus duration);
-6. **the censuses' screening scores;**
+6. **the censuses' screening scores,** with E's mean on the same 16 census worlds (Fable);
 7. **training batch 1:** Stage 2 GA, runs 0-7;
 8. **training batch 2:** random sampling, runs 0-7;
 9. **Stage 2's champions:** the GA's final populations and random sampling's top 32 validated, and the
@@ -207,7 +210,11 @@ stated:
 11. **training batch 4:** B-task, runs 0-7;
 12. **Stage 3's and B-task's champions:** validated and frozen;
 13. **calibration** of every champion and census qualifier;
-14. **evaluation on the test worlds:** scores, assays and classes, and the qualifiers' full check.
+14. **evaluation on the test worlds,** in this order:
+    1. the registered parts: E, Stage 2's and random sampling's champions, and the census qualifiers;
+    2. then the descriptive parts: Stage 3, B-task and B-shared.
+
+    Scores, assays, classes, and the qualifiers' full check.
 
 Every stage writes a record that is committed and pushed before the next starts.
 
@@ -220,6 +227,30 @@ Every stage writes a record that is committed and pushed before the next starts.
 - the probe: open loop.
 
 It records only timings.
+
+**The workload the projection prices:**
+- every stage at the shapes above, with these counts:
+  - E, the controls and B-shared once each;
+  - 8 champions per arm;
+  - **64 census qualifiers per census;**
+- the qualifiers' full check: calibration (256 worlds), the test worlds (256) and the clamp assays
+  (2 × 256), plus the open-loop assays;
+- **the cap on qualifiers:** if more than 64 qualify in a census, the 64 with the highest screening
+  score (ties to the lower index) get the full check. S2-c then reads "at least k", and names the
+  number left unchecked;
+- after stage 6, the evaluation's projection is recomputed with the actual count.
+
+**The compositions:**
+
+| Use | Strains per chunk × worlds |
+|---|---|
+| test-world and calibration scoring | 32 × 256 |
+| validation | 32 × 256 per run |
+| census screening | 256 × 16 |
+| gates | 1 padded × 1 024 |
+| assays | 1 padded × 256 |
+
+Every record states its composition (rule 6).
 
 **G-E, the engine check** (rule 7). The previous engine is the commit before E3a's code.
 - **On the GPU:** E2's formal GA batch for generations 0-25, with every generation's best-genome hash
@@ -315,14 +346,16 @@ It records only timings.
   - the scripted controls and L1-switch, which have no q.
 - **The states:**
   - **for a bistable q,** its two stable fixed points;
-  - **for a monostable q,** its calibration medians per goal phase. If its stable roots are several,
-    the release test starts at the one with the smallest |q|.
+  - **for a monostable q,** its calibration medians per goal phase.
+  - **The release test's start for a monostable q** is the root with the most negative f′, with ties
+    going to the lower q. This is defined whether or not any root meets the stability threshold
+    (Astra: w_qq 1.0001, b_q 0 has stable roots at ±0.0173, too close to count as bistable).
   - "The separation" s is the distance between the two states. A tolerance of 10% means within
     0.1·s.
 - **Which state is which goal:**
   - For E, q > 0 is A.
-  - For a champion, it is the one-to-one assignment of its two states to A and B under which both
-    clamp assays pass. If neither assignment passes, it is the one with the larger summed first-entry
+  - For a champion or a census qualifier, it is the one-to-one assignment of its two states to A and
+    B under which both clamp assays pass (Fable). If neither assignment passes, it is the one with the larger summed first-entry
     share, and if they tie, the one with the higher state as A.
   - The assignment is reported. It fixes the "active module" in the hold, so mirrored champions are
     tested correctly.
@@ -334,7 +367,10 @@ It records only timings.
   - assay worlds, 600 ticks, with q clamped to each state in turn;
   - each passes if the first entry is into that state's goal in at least 90% of the worlds;
   - a world with no entry is a failure;
-  - they are not applicable if s < 0.1, or if a goal phase never occurs on the calibration worlds.
+  - **They are not applicable** if s < 0.1, or, for an organism whose states come from calibration (a
+    monostable champion or qualifier), if a goal phase never occurs on the calibration worlds. E's
+    states are fixed, so its G1 assays never depend on calibration (Astra).
+  - **"Not applicable" counts as not passed,** so such an organism is not working (Fable).
 - **Settable** (bistable only): starting from each stable state, settled, with the relays at rest,
   the stimulus for the other goal leaves q within 10% of the other state at the end of W.
 - **The hold** (bistable only): starting from each stable state, settled, with the relays at rest,
@@ -352,6 +388,8 @@ It records only timings.
     often finds the head still inside A).
   - **What passes:** in at least 70% of the worlds with a first confirmed visit by tick 500, the next
     entry is into A, and a confirmed visit to B follows.
+  - **A world where the write never happens stays in the denominator and fails** (Fable). That
+    covers `at_a` never returning to 0, or returning within 10 ticks of the episode's end.
 - **The fixed points** of f(q) = −q + w_qq·tanh q + b_q, with the relays at rest:
   - **If w_qq > 1,** f's stationary points ±acosh(√w_qq) split the line into three monotone
     intervals. Otherwise the line is one interval.
@@ -390,8 +428,9 @@ A champion with mirrored polarity can be working.
 - each module's mean-nose probe: the score with that module's two noses fed their mean;
 - per-tick turn contributions;
 - generation 0's turn offsets and K_D, and each logged generation's offsets;
-- **each module's skill,** for the checkpoint candidates and the champions of Stage 3: the clamp
-  assays' first-entry share for that module's state, and its K_D at that state.
+- **each module's skill,** for Stage 2's and Stage 3's champions (not the checkpoint candidates, which
+  are not calibrated; Astra): the clamp assays' first-entry share for that module's state on the
+  assay worlds, and its K_D at that state.
 
 ## 7. Arms, masks, seeds, worlds
 
@@ -535,7 +574,7 @@ each champion's memory class.
 - **With 4 pairs** (reduction step 5), S2-b is descriptive.
 
 **S2-c (registered, descriptive in force):** each census's count of working selectors, of 1 024, with
-its Clopper-Pearson 95% interval.
+its Clopper-Pearson 95% interval, or "at least k" under the cap on qualifiers (§5).
 - **The screen:** the qualifiers are the selectors scoring at least 0.8 of E's mean on the 16 census
   worlds.
 - **The full check:** only the qualifiers get it (calibration, then the test worlds, after the
