@@ -1,0 +1,2641 @@
+{
+ "stage": "stage-b",
+ "attempt": 1,
+ "registered": {
+  "maze_seed": 1180000,
+  "colony": 8,
+  "spawns": 4,
+  "pilot": {
+   "mu": 0.01,
+   "lam": 0.03,
+   "delta": 0.15,
+   "d0": 0.571
+  },
+  "stage_a": {
+   "c": [
+    5,
+    6,
+    7,
+    8
+   ],
+   "H": [
+    1200,
+    2400
+   ],
+   "oracle_visits_min": 8.0,
+   "follower_legs_median_min": 4.0,
+   "w2_share_max": 0.5,
+   "walk_share_max": 0.25,
+   "discovery_share_of_H_max": 0.25
+  },
+  "stage_b": {
+   "mu": [
+    0.005,
+    0.01,
+    0.02
+   ],
+   "lam": [
+    0.01,
+    0.02,
+    0.04
+   ],
+   "delta": [
+    0.05,
+    0.15
+   ],
+   "d0_scale": [
+    0.5,
+    1.0
+   ],
+   "polarity_min": 0.3,
+   "gradient_min": 0.8,
+   "range_min": 0.9,
+   "saturated_max": 0.05
+  },
+  "criterion2": {
+   "legs_median_min": 2.0,
+   "mde": 0.22,
+   "headroom_factor": 2.0,
+   "lb_min": 0.0,
+   "mde_source": "power.json fine: 12 runs, t-test, CV 0.282, normal (the larger of the two shapes)"
+  },
+  "criterion3": {
+   "rate_lb_min": 0.5
+  },
+  "component_levels_fixed": [
+   0.001,
+   0.003
+  ],
+  "ids": {
+   "selection": [
+    0,
+    256
+   ],
+   "report": [
+    1000,
+    1256
+   ],
+   "fresh": [
+    2000,
+    2256
+   ]
+  },
+  "seeds": [
+   "E",
+   "S3r3"
+  ],
+  "variants": [
+   "W0",
+   "W1",
+   "W1+M40",
+   "W1+M80",
+   "W2",
+   "W2+M40",
+   "W2+M80"
+  ],
+  "cap_gpu_hours": 3.0,
+  "e3b1": {
+   "strains": 256,
+   "worlds_per_strain": 16,
+   "weys": 8,
+   "runs_per_arm": 12,
+   "population": 32,
+   "generations": 500,
+   "training_arms": 2,
+   "budget_hours": 24.0,
+   "reserve_factor": 1.25,
+   "note": "the projection's generations follow E3a's Stage 3 (500); E3b-1's design sets its own"
+  }
+ },
+ "provenance_at_start": {
+  "git_commit": "41fcb68ee191029f7c3c4e340ebec10e3f5ac776",
+  "branch": "roadmap",
+  "dirty": false,
+  "python": "3.13.3",
+  "numpy": "2.4.4",
+  "torch": "2.12.0+cu130",
+  "cuda": "13.0",
+  "gpu": "NVIDIA GeForce RTX 5080",
+  "connectome_cache_sha256": "43b87aa172a0042b9dce734b15bdf1c87efe3a33ac1cc0d9cd03255a60c96d4a",
+  "connectome_source_sha256": "1f4fdbf84746b69b49a8da0816f52787860ce349b638dce37924ba80f90c70c9"
+ },
+ "device": "cuda",
+ "resolved_config": {
+  "brain": {
+   "substeps": 32,
+   "tau_min": 0.5,
+   "tau_max": 20.0,
+   "w_max": 3.0,
+   "g_max": 2.0,
+   "b_max": 2.0,
+   "init_w_scale": 0.2,
+   "init_g_scale": 0.05,
+   "init_bias_std": 0.5,
+   "init_tau_log_uniform": true,
+   "init_chem_magnitude": "anatomical",
+   "init_gap_magnitude": "anatomical",
+   "init_permutation_seed": 0,
+   "dale": false,
+   "input_gain": 1.0,
+   "input_max": 5.0,
+   "chem_direction": "pre_to_post",
+   "pad_single_strain": true
+  },
+  "world": {
+   "n_swarms": 1,
+   "weys_per_swarm": 8,
+   "max_ticks": 1200,
+   "cells_per_wey": 0,
+   "min_side": 21,
+   "body_length": 2.4,
+   "max_speed": 0.35,
+   "reverse_fraction": 0.4,
+   "max_turn": 0.3,
+   "forward_gain": 4.0,
+   "turn_gain": 2.0,
+   "start_energy": 12.0,
+   "max_energy": 40.0,
+   "body_mass": 6.0,
+   "metabolic_drain": 0.0,
+   "move_cost": 0.0,
+   "hazard_damage": 0.0,
+   "eat_rate": 0.0,
+   "pheromone_deposit": 0.0,
+   "pheromone_decay": 0.93,
+   "pheromone_diffusion": 0.35,
+   "sense_scale_food": 0.35,
+   "sense_scale_pheromone": 0.0,
+   "sense_scale_hazard": 2.0,
+   "sense_scale_damage": 2.0,
+   "sense_scale_collision": 2.0,
+   "body_splat": 1.0,
+   "crowd_threshold": 0.8,
+   "crowd_resist": 0.0,
+   "crowd_push": 0.0,
+   "crowd_blur": 1,
+   "food_sensing": "stereo",
+   "food_probe": "real",
+   "food_odour_sigma": 0.0,
+   "food_probe_radius": 0.0,
+   "check_ledger_every_tick": false,
+   "food_probe_hold": 1,
+   "task": "maze_shuttle",
+   "target_sigma": 6.0,
+   "target_amplitude": 1.0,
+   "target_radius": 1.5,
+   "target_separation": 8.0,
+   "target_max_separation": 0.0,
+   "target_wall_clearance": 3.0,
+   "target_sequence_length": 64,
+   "shuttle_cue_ticks": 5,
+   "maze_cells": 5,
+   "maze_spawns": 4,
+   "maze_sliding": true,
+   "maze_trail_mu": 0.01,
+   "maze_trail_lambda": 0.03,
+   "maze_trail_delta": 0.15,
+   "maze_trail_d0": 0.571,
+   "maze_scent_sigma": 3.0,
+   "maze_scent_reach": 9,
+   "maze_trail_access": "shared"
+  },
+  "map": {
+   "food_patches": [
+    0,
+    0
+   ],
+   "food_patch_radius": [
+    2.5,
+    5.0
+   ],
+   "food_per_patch": [
+    70.0,
+    160.0
+   ],
+   "food_centre_bias": 0.62,
+   "hazard_patches": [
+    0,
+    0
+   ],
+   "hazard_radius": [
+    2.0,
+    4.0
+   ],
+   "hazard_strength": [
+    0.5,
+    1.0
+   ],
+   "hazard_spawn_clearance": 6.0,
+   "spawn_margin": 3.0,
+   "spawn_spread": 0.28,
+   "food_regen": 0.0,
+   "food_scales_with_headcount": true,
+   "food_reference_weys": 20
+  },
+  "combat": {
+   "attack_strength": 1.0,
+   "attack_offset": 0.9,
+   "attack_blur": 1,
+   "damage_k": 0.55,
+   "head_armor": 0.25,
+   "transfer_fraction": 0.5,
+   "max_flank_payback": 0.1,
+   "max_head_on_asymmetry": 1.5,
+   "pump_cost": 0.1
+  },
+  "mutation": {
+   "w_sigma": 0.08,
+   "g_sigma": 0.04,
+   "tau_sigma": 0.15,
+   "bias_sigma": 0.05,
+   "p_mutate": 1.0
+  },
+  "evo": {
+   "population": 32,
+   "generations": 40,
+   "elites": 3,
+   "truncation": 8,
+   "worlds_per_strain": 6,
+   "holdout_worlds": 24,
+   "islands": 1,
+   "migrate_every": 10,
+   "migrants": 1,
+   "chunk_worlds": 512,
+   "train_seed_base": 0,
+   "train_seed_span": 1000000,
+   "holdout_seed_base": 900000000,
+   "eval_ticks": 0,
+   "opponents_self": 3,
+   "opponents_hof": 2,
+   "coevo_worlds": 2,
+   "coevo_sizes": [
+    40,
+    40
+   ],
+   "coevo_lopsided": false,
+   "coevo_vary_sizes": false,
+   "coevo_size_range": [
+    50,
+    200
+   ],
+   "coevo_size_pairs": 2,
+   "coevo_lopsided_fraction": 0.5,
+   "hof_capacity": 12,
+   "suite_every": 5,
+   "suite_sizes": [
+    100,
+    100
+   ],
+   "suite_size": 6,
+   "suite_worlds": 8
+  }
+ },
+ "resolved_config_sha256": "4bce2d50ca0fbb6d92c55e6699c04a32058ede5d4bc38e7fb5b884b9f28c7e81",
+ "e1_inputs_sha256": {
+  "experiments/E1-navigation/freeze.json": "c5c48f83079a6bd0dd48bdeb13d02ab211a08eb64433fdc8372cbd6e74bcaae9",
+  "experiments/E1-navigation/gate.json": "a18b5a53845360107448527b2af038b9c613e4bf11fdfe843c328b7c2a01afa0"
+ },
+ "start_marker": "stage-b-started.json",
+ "rerun": null,
+ "outcome": "completed",
+ "c": 5,
+ "H": 2400,
+ "grid": [
+  {
+   "mu": 0.005,
+   "lam": 0.01,
+   "delta": 0.05,
+   "d0": 0.2855
+  },
+  {
+   "mu": 0.005,
+   "lam": 0.01,
+   "delta": 0.05,
+   "d0": 0.571
+  },
+  {
+   "mu": 0.005,
+   "lam": 0.01,
+   "delta": 0.15,
+   "d0": 0.2855
+  },
+  {
+   "mu": 0.005,
+   "lam": 0.01,
+   "delta": 0.15,
+   "d0": 0.571
+  },
+  {
+   "mu": 0.005,
+   "lam": 0.02,
+   "delta": 0.05,
+   "d0": 0.2855
+  },
+  {
+   "mu": 0.005,
+   "lam": 0.02,
+   "delta": 0.05,
+   "d0": 0.571
+  },
+  {
+   "mu": 0.005,
+   "lam": 0.02,
+   "delta": 0.15,
+   "d0": 0.2855
+  },
+  {
+   "mu": 0.005,
+   "lam": 0.02,
+   "delta": 0.15,
+   "d0": 0.571
+  },
+  {
+   "mu": 0.005,
+   "lam": 0.04,
+   "delta": 0.05,
+   "d0": 0.2855
+  },
+  {
+   "mu": 0.005,
+   "lam": 0.04,
+   "delta": 0.05,
+   "d0": 0.571
+  },
+  {
+   "mu": 0.005,
+   "lam": 0.04,
+   "delta": 0.15,
+   "d0": 0.2855
+  },
+  {
+   "mu": 0.005,
+   "lam": 0.04,
+   "delta": 0.15,
+   "d0": 0.571
+  },
+  {
+   "mu": 0.01,
+   "lam": 0.01,
+   "delta": 0.05,
+   "d0": 0.2855
+  },
+  {
+   "mu": 0.01,
+   "lam": 0.01,
+   "delta": 0.05,
+   "d0": 0.571
+  },
+  {
+   "mu": 0.01,
+   "lam": 0.01,
+   "delta": 0.15,
+   "d0": 0.2855
+  },
+  {
+   "mu": 0.01,
+   "lam": 0.01,
+   "delta": 0.15,
+   "d0": 0.571
+  },
+  {
+   "mu": 0.01,
+   "lam": 0.02,
+   "delta": 0.05,
+   "d0": 0.2855
+  },
+  {
+   "mu": 0.01,
+   "lam": 0.02,
+   "delta": 0.05,
+   "d0": 0.571
+  },
+  {
+   "mu": 0.01,
+   "lam": 0.02,
+   "delta": 0.15,
+   "d0": 0.2855
+  },
+  {
+   "mu": 0.01,
+   "lam": 0.02,
+   "delta": 0.15,
+   "d0": 0.571
+  },
+  {
+   "mu": 0.01,
+   "lam": 0.04,
+   "delta": 0.05,
+   "d0": 0.2855
+  },
+  {
+   "mu": 0.01,
+   "lam": 0.04,
+   "delta": 0.05,
+   "d0": 0.571
+  },
+  {
+   "mu": 0.01,
+   "lam": 0.04,
+   "delta": 0.15,
+   "d0": 0.2855
+  },
+  {
+   "mu": 0.01,
+   "lam": 0.04,
+   "delta": 0.15,
+   "d0": 0.571
+  },
+  {
+   "mu": 0.02,
+   "lam": 0.01,
+   "delta": 0.05,
+   "d0": 0.2855
+  },
+  {
+   "mu": 0.02,
+   "lam": 0.01,
+   "delta": 0.05,
+   "d0": 0.571
+  },
+  {
+   "mu": 0.02,
+   "lam": 0.01,
+   "delta": 0.15,
+   "d0": 0.2855
+  },
+  {
+   "mu": 0.02,
+   "lam": 0.01,
+   "delta": 0.15,
+   "d0": 0.571
+  },
+  {
+   "mu": 0.02,
+   "lam": 0.02,
+   "delta": 0.05,
+   "d0": 0.2855
+  },
+  {
+   "mu": 0.02,
+   "lam": 0.02,
+   "delta": 0.05,
+   "d0": 0.571
+  },
+  {
+   "mu": 0.02,
+   "lam": 0.02,
+   "delta": 0.15,
+   "d0": 0.2855
+  },
+  {
+   "mu": 0.02,
+   "lam": 0.02,
+   "delta": 0.15,
+   "d0": 0.571
+  },
+  {
+   "mu": 0.02,
+   "lam": 0.04,
+   "delta": 0.05,
+   "d0": 0.2855
+  },
+  {
+   "mu": 0.02,
+   "lam": 0.04,
+   "delta": 0.05,
+   "d0": 0.571
+  },
+  {
+   "mu": 0.02,
+   "lam": 0.04,
+   "delta": 0.15,
+   "d0": 0.2855
+  },
+  {
+   "mu": 0.02,
+   "lam": 0.04,
+   "delta": 0.15,
+   "d0": 0.571
+  }
+ ],
+ "skipped_not_live": [
+  {
+   "mu": 0.01,
+   "lam": 0.01,
+   "delta": 0.05,
+   "d0": 0.2855
+  },
+  {
+   "mu": 0.01,
+   "lam": 0.01,
+   "delta": 0.05,
+   "d0": 0.571
+  },
+  {
+   "mu": 0.01,
+   "lam": 0.01,
+   "delta": 0.15,
+   "d0": 0.2855
+  },
+  {
+   "mu": 0.01,
+   "lam": 0.01,
+   "delta": 0.15,
+   "d0": 0.571
+  },
+  {
+   "mu": 0.02,
+   "lam": 0.01,
+   "delta": 0.05,
+   "d0": 0.2855
+  },
+  {
+   "mu": 0.02,
+   "lam": 0.01,
+   "delta": 0.05,
+   "d0": 0.571
+  },
+  {
+   "mu": 0.02,
+   "lam": 0.01,
+   "delta": 0.15,
+   "d0": 0.2855
+  },
+  {
+   "mu": 0.02,
+   "lam": 0.01,
+   "delta": 0.15,
+   "d0": 0.571
+  },
+  {
+   "mu": 0.02,
+   "lam": 0.02,
+   "delta": 0.05,
+   "d0": 0.2855
+  },
+  {
+   "mu": 0.02,
+   "lam": 0.02,
+   "delta": 0.05,
+   "d0": 0.571
+  },
+  {
+   "mu": 0.02,
+   "lam": 0.02,
+   "delta": 0.15,
+   "d0": 0.2855
+  },
+  {
+   "mu": 0.02,
+   "lam": 0.02,
+   "delta": 0.15,
+   "d0": 0.571
+  }
+ ],
+ "rows": [
+  {
+   "setting": {
+    "mu": 0.005,
+    "lam": 0.01,
+    "delta": 0.05,
+    "d0": 0.2855
+   },
+   "follower_later_leg_rate": 6.444144583048075,
+   "follower_brief": {
+    "visits": {
+     "mean": 13.85791015625,
+     "median": 6.6875,
+     "sd": 13.17506607594899
+    },
+    "legs": {
+     "mean": 12.9501953125,
+     "median": 5.6875,
+     "sd": 13.100229565453644
+    },
+    "later_leg_rate": {
+     "mean": 6.444144583048075,
+     "median": 2.8511362557427633,
+     "sd": 6.201530172231496
+    },
+    "unvisited_share": {
+     "mean": 0.09228515625,
+     "median": 0.0,
+     "sd": 0.23890385451132354
+    },
+    "first_discovery": {
+     "mean": 157.703125,
+     "median": 66.5,
+     "sd": 411.09159056508724
+    },
+    "occluded_share": {
+     "mean": 0.25130493164062495,
+     "median": 0.25083333333333335,
+     "sd": 0.03671712702028645
+    },
+    "exposure_mean": {
+     "mean": 0.0,
+     "median": 0.0,
+     "sd": 0.0
+    },
+    "exposure_zero_share": {
+     "mean": 1.0,
+     "median": 1.0,
+     "sd": 0.0
+    },
+    "later_first_b": {
+     "mean": 990.2276785714286,
+     "median": 784.2857142857143,
+     "sd": 677.6554500508304
+    }
+   },
+   "polarity": {
+    "real": 0.01953125,
+    "none": 0.01171875,
+    "permuted": 0.04296875,
+    "reading": -0.0234375,
+    "single_pass_mazes": 256
+   },
+   "gradient": {
+    "one_age1": 0.797452665526236,
+    "one_age2": 0.8170043662244202,
+    "one_age4": 0.82073487119687,
+    "eight_age1": 0.8158073698372099,
+    "eight_age2": 0.832446113262033,
+    "eight_age4": 0.834966594542004
+   },
+   "nose_range": {
+    "on_route_noses": 5958784,
+    "in_range": 2292921,
+    "above": 1812033,
+    "in_range_share": 0.38479679746740275,
+    "above_share": 0.3040944259768436
+   },
+   "checks": {
+    "live": true,
+    "polarity": false,
+    "gradient": false,
+    "range": false
+   },
+   "passed": false
+  },
+  {
+   "setting": {
+    "mu": 0.005,
+    "lam": 0.01,
+    "delta": 0.05,
+    "d0": 0.571
+   },
+   "follower_later_leg_rate": 6.820750842598742,
+   "follower_brief": {
+    "visits": {
+     "mean": 14.59814453125,
+     "median": 7.1875,
+     "sd": 13.042307625968702
+    },
+    "legs": {
+     "mean": 13.68896484375,
+     "median": 6.25,
+     "sd": 12.967157715489044
+    },
+    "later_leg_rate": {
+     "mean": 6.820750842598742,
+     "median": 3.970611367065187,
+     "sd": 6.172563594386071
+    },
+    "unvisited_share": {
+     "mean": 0.0908203125,
+     "median": 0.0,
+     "sd": 0.23546722626431016
+    },
+    "first_discovery": {
+     "mean": 157.703125,
+     "median": 66.5,
+     "sd": 411.09159056508724
+    },
+    "occluded_share": {
+     "mean": 0.2612233479817708,
+     "median": 0.2585677083333333,
+     "sd": 0.04392101239335596
+    },
+    "exposure_mean": {
+     "mean": 0.0,
+     "median": 0.0,
+     "sd": 0.0
+    },
+    "exposure_zero_share": {
+     "mean": 1.0,
+     "median": 1.0,
+     "sd": 0.0
+    },
+    "later_first_b": {
+     "mean": 963.6344866071429,
+     "median": 773.7857142857142,
+     "sd": 652.5463959054645
+    }
+   },
+   "polarity": {
+    "real": 0.03515625,
+    "none": 0.01171875,
+    "permuted": 0.0703125,
+    "reading": -0.03515625,
+    "single_pass_mazes": 256
+   },
+   "gradient": {
+    "one_age1": 0.797452665526236,
+    "one_age2": 0.8170043662244202,
+    "one_age4": 0.82073487119687,
+    "eight_age1": 0.8158073698372099,
+    "eight_age2": 0.832446113262033,
+    "eight_age4": 0.834966594542004
+   },
+   "nose_range": {
+    "on_route_noses": 6209082,
+    "in_range": 1835368,
+    "above": 2640235,
+    "in_range_share": 0.2955940990954863,
+    "above_share": 0.4252214739634619
+   },
+   "checks": {
+    "live": true,
+    "polarity": false,
+    "gradient": false,
+    "range": false
+   },
+   "passed": false
+  },
+  {
+   "setting": {
+    "mu": 0.005,
+    "lam": 0.01,
+    "delta": 0.15,
+    "d0": 0.2855
+   },
+   "follower_later_leg_rate": 5.874507989036521,
+   "follower_brief": {
+    "visits": {
+     "mean": 12.640625,
+     "median": 7.1875,
+     "sd": 12.513855066583238
+    },
+    "legs": {
+     "mean": 11.73876953125,
+     "median": 6.1875,
+     "sd": 12.43628598763649
+    },
+    "later_leg_rate": {
+     "mean": 5.874507989036521,
+     "median": 3.0750963200812276,
+     "sd": 5.9211195340176435
+    },
+    "unvisited_share": {
+     "mean": 0.09814453125,
+     "median": 0.0,
+     "sd": 0.24065672935062546
+    },
+    "first_discovery": {
+     "mean": 157.703125,
+     "median": 66.5,
+     "sd": 411.09159056508724
+    },
+    "occluded_share": {
+     "mean": 0.2530564371744792,
+     "median": 0.2505208333333333,
+     "sd": 0.033410422846700136
+    },
+    "exposure_mean": {
+     "mean": 0.0,
+     "median": 0.0,
+     "sd": 0.0
+    },
+    "exposure_zero_share": {
+     "mean": 1.0,
+     "median": 1.0,
+     "sd": 0.0
+    },
+    "later_first_b": {
+     "mean": 1006.3655133928571,
+     "median": 788.4285714285714,
+     "sd": 679.3731491014165
+    }
+   },
+   "polarity": {
+    "real": 0.05078125,
+    "none": 0.01171875,
+    "permuted": 0.04296875,
+    "reading": 0.0078125,
+    "single_pass_mazes": 256
+   },
+   "gradient": {
+    "one_age1": 0.8163170023069536,
+    "one_age2": 0.8124761054747427,
+    "one_age4": 0.8122746363708726,
+    "eight_age1": 0.838983061527015,
+    "eight_age2": 0.8276696918709319,
+    "eight_age4": 0.8251694956005837
+   },
+   "nose_range": {
+    "on_route_noses": 5783526,
+    "in_range": 2498110,
+    "above": 1468306,
+    "in_range_share": 0.4319354663573744,
+    "above_share": 0.2538773059894604
+   },
+   "checks": {
+    "live": true,
+    "polarity": false,
+    "gradient": true,
+    "range": false
+   },
+   "passed": false
+  },
+  {
+   "setting": {
+    "mu": 0.005,
+    "lam": 0.01,
+    "delta": 0.15,
+    "d0": 0.571
+   },
+   "follower_later_leg_rate": 6.071442491894343,
+   "follower_brief": {
+    "visits": {
+     "mean": 13.2607421875,
+     "median": 7.375,
+     "sd": 12.604942107182758
+    },
+    "legs": {
+     "mean": 12.33984375,
+     "median": 6.375,
+     "sd": 12.541577299206061
+    },
+    "later_leg_rate": {
+     "mean": 6.071442491894343,
+     "median": 3.1662294782668123,
+     "sd": 5.943047860224601
+    },
+    "unvisited_share": {
+     "mean": 0.0791015625,
+     "median": 0.0,
+     "sd": 0.22680166129501006
+    },
+    "first_discovery": {
+     "mean": 157.703125,
+     "median": 66.5,
+     "sd": 411.09159056508724
+    },
+    "occluded_share": {
+     "mean": 0.2658725992838542,
+     "median": 0.26296875,
+     "sd": 0.04685867379720639
+    },
+    "exposure_mean": {
+     "mean": 0.0,
+     "median": 0.0,
+     "sd": 0.0
+    },
+    "exposure_zero_share": {
+     "mean": 1.0,
+     "median": 1.0,
+     "sd": 0.0
+    },
+    "later_first_b": {
+     "mean": 942.5569196428571,
+     "median": 693.6428571428571,
+     "sd": 670.2798162271981
+    }
+   },
+   "polarity": {
+    "real": 0.08984375,
+    "none": 0.01171875,
+    "permuted": 0.078125,
+    "reading": 0.01171875,
+    "single_pass_mazes": 256
+   },
+   "gradient": {
+    "one_age1": 0.8163170023069536,
+    "one_age2": 0.8124761054747427,
+    "one_age4": 0.8122746363708726,
+    "eight_age1": 0.838983061527015,
+    "eight_age2": 0.8276696918709319,
+    "eight_age4": 0.8251694956005837
+   },
+   "nose_range": {
+    "on_route_noses": 6055556,
+    "in_range": 1857304,
+    "above": 2551333,
+    "in_range_share": 0.30671072978269875,
+    "above_share": 0.42132101494891633
+   },
+   "checks": {
+    "live": true,
+    "polarity": false,
+    "gradient": true,
+    "range": false
+   },
+   "passed": false
+  },
+  {
+   "setting": {
+    "mu": 0.005,
+    "lam": 0.02,
+    "delta": 0.05,
+    "d0": 0.2855
+   },
+   "follower_later_leg_rate": 6.6552985027415685,
+   "follower_brief": {
+    "visits": {
+     "mean": 14.32421875,
+     "median": 7.6875,
+     "sd": 13.355751106641252
+    },
+    "legs": {
+     "mean": 13.43115234375,
+     "median": 6.6875,
+     "sd": 13.263813877194494
+    },
+    "later_leg_rate": {
+     "mean": 6.6552985027415685,
+     "median": 3.7759304551914155,
+     "sd": 6.268525206554904
+    },
+    "unvisited_share": {
+     "mean": 0.10693359375,
+     "median": 0.0,
+     "sd": 0.2538493290269377
+    },
+    "first_discovery": {
+     "mean": 157.703125,
+     "median": 66.5,
+     "sd": 411.09159056508724
+    },
+    "occluded_share": {
+     "mean": 0.24,
+     "median": 0.240078125,
+     "sd": 0.03078064675293336
+    },
+    "exposure_mean": {
+     "mean": 0.0,
+     "median": 0.0,
+     "sd": 0.0
+    },
+    "exposure_zero_share": {
+     "mean": 1.0,
+     "median": 1.0,
+     "sd": 0.0
+    },
+    "later_first_b": {
+     "mean": 998.8677455357142,
+     "median": 708.5714285714286,
+     "sd": 705.3248060290999
+    }
+   },
+   "polarity": {
+    "real": 0.03125,
+    "none": 0.01171875,
+    "permuted": 0.05078125,
+    "reading": -0.01953125,
+    "single_pass_mazes": 256
+   },
+   "gradient": {
+    "one_age1": 0.8634028500955679,
+    "one_age2": 0.8809363653240843,
+    "one_age4": 0.8861585750985703,
+    "eight_age1": 0.8747761054542291,
+    "eight_age2": 0.8900282371206467,
+    "eight_age4": 0.8941704580739663
+   },
+   "nose_range": {
+    "on_route_noses": 5666682,
+    "in_range": 2419925,
+    "above": 1134674,
+    "in_range_share": 0.4270444327032997,
+    "above_share": 0.2002360464201097
+   },
+   "checks": {
+    "live": true,
+    "polarity": false,
+    "gradient": true,
+    "range": false
+   },
+   "passed": false
+  },
+  {
+   "setting": {
+    "mu": 0.005,
+    "lam": 0.02,
+    "delta": 0.05,
+    "d0": 0.571
+   },
+   "follower_later_leg_rate": 7.4848461738783545,
+   "follower_brief": {
+    "visits": {
+     "mean": 16.10546875,
+     "median": 10.75,
+     "sd": 13.245841351637317
+    },
+    "legs": {
+     "mean": 15.1962890625,
+     "median": 9.9375,
+     "sd": 13.158392941479963
+    },
+    "later_leg_rate": {
+     "mean": 7.4848461738783545,
+     "median": 6.964596041299943,
+     "sd": 6.184744230736022
+    },
+    "unvisited_share": {
+     "mean": 0.0908203125,
+     "median": 0.0,
+     "sd": 0.23805525585604337
+    },
+    "first_discovery": {
+     "mean": 157.703125,
+     "median": 66.5,
+     "sd": 411.09159056508724
+    },
+    "occluded_share": {
+     "mean": 0.242069091796875,
+     "median": 0.23979166666666665,
+     "sd": 0.035272410048935166
+    },
+    "exposure_mean": {
+     "mean": 0.0,
+     "median": 0.0,
+     "sd": 0.0
+    },
+    "exposure_zero_share": {
+     "mean": 1.0,
+     "median": 1.0,
+     "sd": 0.0
+    },
+    "later_first_b": {
+     "mean": 939.42578125,
+     "median": 679.4285714285714,
+     "sd": 687.6534267247579
+    }
+   },
+   "polarity": {
+    "real": 0.0390625,
+    "none": 0.01171875,
+    "permuted": 0.09765625,
+    "reading": -0.05859375,
+    "single_pass_mazes": 256
+   },
+   "gradient": {
+    "one_age1": 0.8634028500955679,
+    "one_age2": 0.8809363653240843,
+    "one_age4": 0.8861585750985703,
+    "eight_age1": 0.8747761054542291,
+    "eight_age2": 0.8900282371206467,
+    "eight_age4": 0.8941704580739663
+   },
+   "nose_range": {
+    "on_route_noses": 6253562,
+    "in_range": 2096026,
+    "above": 2198211,
+    "in_range_share": 0.33517313812511973,
+    "above_share": 0.35151342546855696
+   },
+   "checks": {
+    "live": true,
+    "polarity": false,
+    "gradient": true,
+    "range": false
+   },
+   "passed": false
+  },
+  {
+   "setting": {
+    "mu": 0.005,
+    "lam": 0.02,
+    "delta": 0.15,
+    "d0": 0.2855
+   },
+   "follower_later_leg_rate": 6.014982296966133,
+   "follower_brief": {
+    "visits": {
+     "mean": 13.08447265625,
+     "median": 6.375,
+     "sd": 12.647531558558752
+    },
+    "legs": {
+     "mean": 12.19775390625,
+     "median": 5.375,
+     "sd": 12.549437231893691
+    },
+    "later_leg_rate": {
+     "mean": 6.014982296966133,
+     "median": 2.9286144537967504,
+     "sd": 5.922221371247977
+    },
+    "unvisited_share": {
+     "mean": 0.11328125,
+     "median": 0.0,
+     "sd": 0.25745621177278316
+    },
+    "first_discovery": {
+     "mean": 157.703125,
+     "median": 66.5,
+     "sd": 411.09159056508724
+    },
+    "occluded_share": {
+     "mean": 0.2404840087890625,
+     "median": 0.23903645833333334,
+     "sd": 0.028191271063873487
+    },
+    "exposure_mean": {
+     "mean": 0.0,
+     "median": 0.0,
+     "sd": 0.0
+    },
+    "exposure_zero_share": {
+     "mean": 1.0,
+     "median": 1.0,
+     "sd": 0.0
+    },
+    "later_first_b": {
+     "mean": 1033.6964285714284,
+     "median": 760.9285714285713,
+     "sd": 698.4118825901355
+    }
+   },
+   "polarity": {
+    "real": 0.0703125,
+    "none": 0.01171875,
+    "permuted": 0.046875,
+    "reading": 0.0234375,
+    "single_pass_mazes": 256
+   },
+   "gradient": {
+    "one_age1": 0.8852724172663701,
+    "one_age2": 0.8803376782102652,
+    "one_age4": 0.884645282025206,
+    "eight_age1": 0.8989470255923109,
+    "eight_age2": 0.8889540476564297,
+    "eight_age4": 0.8918521578570761
+   },
+   "nose_range": {
+    "on_route_noses": 5453108,
+    "in_range": 2481677,
+    "above": 882230,
+    "in_range_share": 0.455094049118411,
+    "above_share": 0.16178480235491394
+   },
+   "checks": {
+    "live": true,
+    "polarity": false,
+    "gradient": true,
+    "range": false
+   },
+   "passed": false
+  },
+  {
+   "setting": {
+    "mu": 0.005,
+    "lam": 0.02,
+    "delta": 0.15,
+    "d0": 0.571
+   },
+   "follower_later_leg_rate": 7.044911606931137,
+   "follower_brief": {
+    "visits": {
+     "mean": 15.234375,
+     "median": 12.8125,
+     "sd": 12.65309676889959
+    },
+    "legs": {
+     "mean": 14.32666015625,
+     "median": 11.8125,
+     "sd": 12.564082586989022
+    },
+    "later_leg_rate": {
+     "mean": 7.044911606931137,
+     "median": 6.1244887338360385,
+     "sd": 5.881698252370957
+    },
+    "unvisited_share": {
+     "mean": 0.09228515625,
+     "median": 0.0,
+     "sd": 0.2412011460935421
+    },
+    "first_discovery": {
+     "mean": 157.703125,
+     "median": 66.5,
+     "sd": 411.09159056508724
+    },
+    "occluded_share": {
+     "mean": 0.24327067057291668,
+     "median": 0.24127604166666666,
+     "sd": 0.0333695781547932
+    },
+    "exposure_mean": {
+     "mean": 0.0,
+     "median": 0.0,
+     "sd": 0.0
+    },
+    "exposure_zero_share": {
+     "mean": 1.0,
+     "median": 1.0,
+     "sd": 0.0
+    },
+    "later_first_b": {
+     "mean": 934.8303571428571,
+     "median": 674.0714285714286,
+     "sd": 686.0036054560351
+    }
+   },
+   "polarity": {
+    "real": 0.078125,
+    "none": 0.01171875,
+    "permuted": 0.06640625,
+    "reading": 0.01171875,
+    "single_pass_mazes": 256
+   },
+   "gradient": {
+    "one_age1": 0.8852724172663701,
+    "one_age2": 0.8803376782102652,
+    "one_age4": 0.884645282025206,
+    "eight_age1": 0.8989470255923109,
+    "eight_age2": 0.8889540476564297,
+    "eight_age4": 0.8918521578570761
+   },
+   "nose_range": {
+    "on_route_noses": 6184858,
+    "in_range": 2257038,
+    "above": 2014636,
+    "in_range_share": 0.3649296394517061,
+    "above_share": 0.32573682370718937
+   },
+   "checks": {
+    "live": true,
+    "polarity": false,
+    "gradient": true,
+    "range": false
+   },
+   "passed": false
+  },
+  {
+   "setting": {
+    "mu": 0.005,
+    "lam": 0.04,
+    "delta": 0.05,
+    "d0": 0.2855
+   },
+   "follower_later_leg_rate": 5.0263595163554236,
+   "follower_brief": {
+    "visits": {
+     "mean": 11.13232421875,
+     "median": 6.5,
+     "sd": 11.943376725869388
+    },
+    "legs": {
+     "mean": 10.24169921875,
+     "median": 5.5,
+     "sd": 11.862544735069655
+    },
+    "later_leg_rate": {
+     "mean": 5.0263595163554236,
+     "median": 2.6595940895072308,
+     "sd": 5.620993167820869
+    },
+    "unvisited_share": {
+     "mean": 0.109375,
+     "median": 0.0,
+     "sd": 0.2531662245539518
+    },
+    "first_discovery": {
+     "mean": 157.703125,
+     "median": 66.5,
+     "sd": 411.09159056508724
+    },
+    "occluded_share": {
+     "mean": 0.24046305338541668,
+     "median": 0.24070312500000002,
+     "sd": 0.026858381659586823
+    },
+    "exposure_mean": {
+     "mean": 0.0,
+     "median": 0.0,
+     "sd": 0.0
+    },
+    "exposure_zero_share": {
+     "mean": 1.0,
+     "median": 1.0,
+     "sd": 0.0
+    },
+    "later_first_b": {
+     "mean": 1007.1467633928571,
+     "median": 759.6428571428571,
+     "sd": 685.4695554649202
+    }
+   },
+   "polarity": {
+    "real": 0.02734375,
+    "none": 0.01171875,
+    "permuted": 0.04296875,
+    "reading": -0.015625,
+    "single_pass_mazes": 256
+   },
+   "gradient": {
+    "one_age1": 0.9283420959527016,
+    "one_age2": 0.9378535911458828,
+    "one_age4": 0.9391713916184845,
+    "eight_age1": 0.931957106335648,
+    "eight_age2": 0.9412933924500355,
+    "eight_age4": 0.9415770807566418
+   },
+   "nose_range": {
+    "on_route_noses": 4777844,
+    "in_range": 1732102,
+    "above": 378245,
+    "in_range_share": 0.3625279519381545,
+    "above_share": 0.07916646085556582
+   },
+   "checks": {
+    "live": true,
+    "polarity": false,
+    "gradient": true,
+    "range": false
+   },
+   "passed": false
+  },
+  {
+   "setting": {
+    "mu": 0.005,
+    "lam": 0.04,
+    "delta": 0.05,
+    "d0": 0.571
+   },
+   "follower_later_leg_rate": 6.164149380751748,
+   "follower_brief": {
+    "visits": {
+     "mean": 13.30859375,
+     "median": 7.3125,
+     "sd": 13.055015915874078
+    },
+    "legs": {
+     "mean": 12.419921875,
+     "median": 6.3125,
+     "sd": 12.96745770787926
+    },
+    "later_leg_rate": {
+     "mean": 6.164149380751748,
+     "median": 3.1588453058441255,
+     "sd": 6.176014293862644
+    },
+    "unvisited_share": {
+     "mean": 0.111328125,
+     "median": 0.0,
+     "sd": 0.25424550770126597
+    },
+    "first_discovery": {
+     "mean": 157.703125,
+     "median": 66.5,
+     "sd": 411.09159056508724
+    },
+    "occluded_share": {
+     "mean": 0.236923828125,
+     "median": 0.237109375,
+     "sd": 0.02863690313119891
+    },
+    "exposure_mean": {
+     "mean": 0.0,
+     "median": 0.0,
+     "sd": 0.0
+    },
+    "exposure_zero_share": {
+     "mean": 1.0,
+     "median": 1.0,
+     "sd": 0.0
+    },
+    "later_first_b": {
+     "mean": 1008.1908482142857,
+     "median": 766.4285714285713,
+     "sd": 701.1780466828735
+    }
+   },
+   "polarity": {
+    "real": 0.05078125,
+    "none": 0.01171875,
+    "permuted": 0.0703125,
+    "reading": -0.01953125,
+    "single_pass_mazes": 256
+   },
+   "gradient": {
+    "one_age1": 0.9283420959527016,
+    "one_age2": 0.9378535911458828,
+    "one_age4": 0.9391713916184845,
+    "eight_age1": 0.931957106335648,
+    "eight_age2": 0.9412933924500355,
+    "eight_age4": 0.9415770807566418
+   },
+   "nose_range": {
+    "on_route_noses": 5218610,
+    "in_range": 1960024,
+    "above": 843699,
+    "in_range_share": 0.37558353661223964,
+    "above_share": 0.1616712112995606
+   },
+   "checks": {
+    "live": true,
+    "polarity": false,
+    "gradient": true,
+    "range": false
+   },
+   "passed": false
+  },
+  {
+   "setting": {
+    "mu": 0.005,
+    "lam": 0.04,
+    "delta": 0.15,
+    "d0": 0.2855
+   },
+   "follower_later_leg_rate": 4.760024190818842,
+   "follower_brief": {
+    "visits": {
+     "mean": 10.5390625,
+     "median": 6.3125,
+     "sd": 11.397220270836252
+    },
+    "legs": {
+     "mean": 9.64990234375,
+     "median": 5.375,
+     "sd": 11.313515797324376
+    },
+    "later_leg_rate": {
+     "mean": 4.760024190818842,
+     "median": 2.6352635094335106,
+     "sd": 5.306245821938174
+    },
+    "unvisited_share": {
+     "mean": 0.11083984375,
+     "median": 0.0,
+     "sd": 0.2533736637164043
+    },
+    "first_discovery": {
+     "mean": 157.703125,
+     "median": 66.5,
+     "sd": 411.09159056508724
+    },
+    "occluded_share": {
+     "mean": 0.238863525390625,
+     "median": 0.23697916666666666,
+     "sd": 0.027177404213210878
+    },
+    "exposure_mean": {
+     "mean": 0.0,
+     "median": 0.0,
+     "sd": 0.0
+    },
+    "exposure_zero_share": {
+     "mean": 1.0,
+     "median": 1.0,
+     "sd": 0.0
+    },
+    "later_first_b": {
+     "mean": 1034.7611607142858,
+     "median": 819.0714285714286,
+     "sd": 683.3545818012692
+    }
+   },
+   "polarity": {
+    "real": 0.03515625,
+    "none": 0.01171875,
+    "permuted": 0.03515625,
+    "reading": 0.0,
+    "single_pass_mazes": 256
+   },
+   "gradient": {
+    "one_age1": 0.9395540907741642,
+    "one_age2": 0.9338383435313193,
+    "one_age4": 0.9335236498380748,
+    "eight_age1": 0.9434999050003745,
+    "eight_age2": 0.9354225908455658,
+    "eight_age4": 0.9349034528471416
+   },
+   "nose_range": {
+    "on_route_noses": 4696210,
+    "in_range": 1737962,
+    "above": 378803,
+    "in_range_share": 0.3700775731919995,
+    "above_share": 0.08066142698048
+   },
+   "checks": {
+    "live": true,
+    "polarity": false,
+    "gradient": true,
+    "range": false
+   },
+   "passed": false
+  },
+  {
+   "setting": {
+    "mu": 0.005,
+    "lam": 0.04,
+    "delta": 0.15,
+    "d0": 0.571
+   },
+   "follower_later_leg_rate": 5.843984056528152,
+   "follower_brief": {
+    "visits": {
+     "mean": 12.7578125,
+     "median": 6.625,
+     "sd": 12.582144308191543
+    },
+    "legs": {
+     "mean": 11.8671875,
+     "median": 5.625,
+     "sd": 12.494108905918068
+    },
+    "later_leg_rate": {
+     "mean": 5.843984056528152,
+     "median": 2.7757331923866584,
+     "sd": 5.956972034243338
+    },
+    "unvisited_share": {
+     "mean": 0.109375,
+     "median": 0.0,
+     "sd": 0.2538912844382916
+    },
+    "first_discovery": {
+     "mean": 157.703125,
+     "median": 66.5,
+     "sd": 411.09159056508724
+    },
+    "occluded_share": {
+     "mean": 0.23534423828125,
+     "median": 0.2359375,
+     "sd": 0.02943388707885113
+    },
+    "exposure_mean": {
+     "mean": 0.0,
+     "median": 0.0,
+     "sd": 0.0
+    },
+    "exposure_zero_share": {
+     "mean": 1.0,
+     "median": 1.0,
+     "sd": 0.0
+    },
+    "later_first_b": {
+     "mean": 1003.260044642857,
+     "median": 702.8571428571429,
+     "sd": 700.5012565177191
+    }
+   },
+   "polarity": {
+    "real": 0.0625,
+    "none": 0.01171875,
+    "permuted": 0.0546875,
+    "reading": 0.0078125,
+    "single_pass_mazes": 256
+   },
+   "gradient": {
+    "one_age1": 0.9395540907741642,
+    "one_age2": 0.9338383435313193,
+    "one_age4": 0.9335236498380748,
+    "eight_age1": 0.9434999050003745,
+    "eight_age2": 0.9354225908455658,
+    "eight_age4": 0.9349034528471416
+   },
+   "nose_range": {
+    "on_route_noses": 5161048,
+    "in_range": 2027341,
+    "above": 788626,
+    "in_range_share": 0.3928157614500001,
+    "above_share": 0.15280346162252317
+   },
+   "checks": {
+    "live": true,
+    "polarity": false,
+    "gradient": true,
+    "range": false
+   },
+   "passed": false
+  },
+  {
+   "setting": {
+    "mu": 0.01,
+    "lam": 0.02,
+    "delta": 0.05,
+    "d0": 0.2855
+   },
+   "follower_later_leg_rate": 5.812882400716617,
+   "follower_brief": {
+    "visits": {
+     "mean": 12.50390625,
+     "median": 6.25,
+     "sd": 12.733191895901166
+    },
+    "legs": {
+     "mean": 11.61572265625,
+     "median": 5.25,
+     "sd": 12.651395891565947
+    },
+    "later_leg_rate": {
+     "mean": 5.812882400716617,
+     "median": 2.7507448243058885,
+     "sd": 6.043436753863443
+    },
+    "unvisited_share": {
+     "mean": 0.11181640625,
+     "median": 0.0,
+     "sd": 0.25511343398646735
+    },
+    "first_discovery": {
+     "mean": 157.703125,
+     "median": 66.5,
+     "sd": 411.09159056508724
+    },
+    "occluded_share": {
+     "mean": 0.24004455566406252,
+     "median": 0.24080729166666667,
+     "sd": 0.02791844571467542
+    },
+    "exposure_mean": {
+     "mean": 0.0,
+     "median": 0.0,
+     "sd": 0.0
+    },
+    "exposure_zero_share": {
+     "mean": 1.0,
+     "median": 1.0,
+     "sd": 0.0
+    },
+    "later_first_b": {
+     "mean": 1017.1127232142858,
+     "median": 773.3571428571429,
+     "sd": 689.238688551846
+    }
+   },
+   "polarity": {
+    "real": 0.02734375,
+    "none": 0.01171875,
+    "permuted": 0.04296875,
+    "reading": -0.015625,
+    "single_pass_mazes": 256
+   },
+   "gradient": {
+    "one_age1": 0.8199868911920012,
+    "one_age2": 0.8438902021131759,
+    "one_age4": 0.8584346394598359,
+    "eight_age1": 0.8408597992765237,
+    "eight_age2": 0.8631420948018077,
+    "eight_age4": 0.8787280256419685
+   },
+   "nose_range": {
+    "on_route_noses": 5184294,
+    "in_range": 2350342,
+    "above": 468279,
+    "in_range_share": 0.4533581621721299,
+    "above_share": 0.09032647454021704
+   },
+   "checks": {
+    "live": true,
+    "polarity": false,
+    "gradient": true,
+    "range": false
+   },
+   "passed": false
+  },
+  {
+   "setting": {
+    "mu": 0.01,
+    "lam": 0.02,
+    "delta": 0.05,
+    "d0": 0.571
+   },
+   "follower_later_leg_rate": 6.823220260590914,
+   "follower_brief": {
+    "visits": {
+     "mean": 14.6826171875,
+     "median": 8.3125,
+     "sd": 13.117076528437268
+    },
+    "legs": {
+     "mean": 13.779296875,
+     "median": 7.375,
+     "sd": 13.03484662596764
+    },
+    "later_leg_rate": {
+     "mean": 6.823220260590914,
+     "median": 4.20163304761723,
+     "sd": 6.154227419555782
+    },
+    "unvisited_share": {
+     "mean": 0.0966796875,
+     "median": 0.0,
+     "sd": 0.23908262362438146
+    },
+    "first_discovery": {
+     "mean": 157.703125,
+     "median": 66.5,
+     "sd": 411.09159056508724
+    },
+    "occluded_share": {
+     "mean": 0.24038370768229167,
+     "median": 0.23947916666666666,
+     "sd": 0.03096367389261509
+    },
+    "exposure_mean": {
+     "mean": 0.0,
+     "median": 0.0,
+     "sd": 0.0
+    },
+    "exposure_zero_share": {
+     "mean": 1.0,
+     "median": 1.0,
+     "sd": 0.0
+    },
+    "later_first_b": {
+     "mean": 963.4151785714286,
+     "median": 701.0,
+     "sd": 691.0208942213688
+    }
+   },
+   "polarity": {
+    "real": 0.02734375,
+    "none": 0.01171875,
+    "permuted": 0.046875,
+    "reading": -0.01953125,
+    "single_pass_mazes": 256
+   },
+   "gradient": {
+    "one_age1": 0.8199868911920012,
+    "one_age2": 0.8438902021131759,
+    "one_age4": 0.8584346394598359,
+    "eight_age1": 0.8408597992765237,
+    "eight_age2": 0.8631420948018077,
+    "eight_age4": 0.8787280256419685
+   },
+   "nose_range": {
+    "on_route_noses": 5758374,
+    "in_range": 2341102,
+    "above": 1309343,
+    "in_range_share": 0.40655608683979194,
+    "above_share": 0.22738068072688575
+   },
+   "checks": {
+    "live": true,
+    "polarity": false,
+    "gradient": true,
+    "range": false
+   },
+   "passed": false
+  },
+  {
+   "setting": {
+    "mu": 0.01,
+    "lam": 0.02,
+    "delta": 0.15,
+    "d0": 0.2855
+   },
+   "follower_later_leg_rate": 4.95504084747704,
+   "follower_brief": {
+    "visits": {
+     "mean": 10.96533203125,
+     "median": 6.0625,
+     "sd": 11.84743009227249
+    },
+    "legs": {
+     "mean": 10.07861328125,
+     "median": 5.0625,
+     "sd": 11.764534570381663
+    },
+    "later_leg_rate": {
+     "mean": 4.95504084747704,
+     "median": 2.459017733651465,
+     "sd": 5.591509646419769
+    },
+    "unvisited_share": {
+     "mean": 0.11328125,
+     "median": 0.0,
+     "sd": 0.25745621177278316
+    },
+    "first_discovery": {
+     "mean": 157.703125,
+     "median": 66.5,
+     "sd": 411.09159056508724
+    },
+    "occluded_share": {
+     "mean": 0.2417401123046875,
+     "median": 0.24007812499999998,
+     "sd": 0.025223425034831146
+    },
+    "exposure_mean": {
+     "mean": 0.0,
+     "median": 0.0,
+     "sd": 0.0
+    },
+    "exposure_zero_share": {
+     "mean": 1.0,
+     "median": 1.0,
+     "sd": 0.0
+    },
+    "later_first_b": {
+     "mean": 1032.3370535714284,
+     "median": 779.3571428571429,
+     "sd": 681.3462348260865
+    }
+   },
+   "polarity": {
+    "real": 0.0546875,
+    "none": 0.01171875,
+    "permuted": 0.046875,
+    "reading": 0.0078125,
+    "single_pass_mazes": 256
+   },
+   "gradient": {
+    "one_age1": 0.8519178442557876,
+    "one_age2": 0.8535008483645914,
+    "one_age4": 0.8597765865218661,
+    "eight_age1": 0.878556740109828,
+    "eight_age2": 0.8715406319953212,
+    "eight_age4": 0.8772888768067233
+   },
+   "nose_range": {
+    "on_route_noses": 4866938,
+    "in_range": 2158604,
+    "above": 361609,
+    "in_range_share": 0.4435240391391877,
+    "above_share": 0.07429907675010448
+   },
+   "checks": {
+    "live": true,
+    "polarity": false,
+    "gradient": true,
+    "range": false
+   },
+   "passed": false
+  },
+  {
+   "setting": {
+    "mu": 0.01,
+    "lam": 0.02,
+    "delta": 0.15,
+    "d0": 0.571
+   },
+   "follower_later_leg_rate": 6.199595327477123,
+   "follower_brief": {
+    "visits": {
+     "mean": 13.25634765625,
+     "median": 7.0,
+     "sd": 12.584650479314247
+    },
+    "legs": {
+     "mean": 12.369140625,
+     "median": 6.0,
+     "sd": 12.495914620377128
+    },
+    "later_leg_rate": {
+     "mean": 6.199595327477123,
+     "median": 3.1524861439580123,
+     "sd": 5.98974791031565
+    },
+    "unvisited_share": {
+     "mean": 0.11279296875,
+     "median": 0.0,
+     "sd": 0.253958681426598
+    },
+    "first_discovery": {
+     "mean": 157.703125,
+     "median": 66.5,
+     "sd": 411.09159056508724
+    },
+    "occluded_share": {
+     "mean": 0.242647705078125,
+     "median": 0.24145833333333333,
+     "sd": 0.027259022190913744
+    },
+    "exposure_mean": {
+     "mean": 0.0,
+     "median": 0.0,
+     "sd": 0.0
+    },
+    "exposure_zero_share": {
+     "mean": 1.0,
+     "median": 1.0,
+     "sd": 0.0
+    },
+    "later_first_b": {
+     "mean": 996.3258928571429,
+     "median": 749.1428571428571,
+     "sd": 681.456636183697
+    }
+   },
+   "polarity": {
+    "real": 0.0625,
+    "none": 0.01171875,
+    "permuted": 0.0390625,
+    "reading": 0.0234375,
+    "single_pass_mazes": 256
+   },
+   "gradient": {
+    "one_age1": 0.8519178442557876,
+    "one_age2": 0.8535008483645914,
+    "one_age4": 0.8597765865218661,
+    "eight_age1": 0.878556740109828,
+    "eight_age2": 0.8715406319953212,
+    "eight_age4": 0.8772888768067233
+   },
+   "nose_range": {
+    "on_route_noses": 5578732,
+    "in_range": 2453565,
+    "above": 972946,
+    "in_range_share": 0.4398069310373755,
+    "above_share": 0.1744027137349491
+   },
+   "checks": {
+    "live": true,
+    "polarity": false,
+    "gradient": true,
+    "range": false
+   },
+   "passed": false
+  },
+  {
+   "setting": {
+    "mu": 0.01,
+    "lam": 0.04,
+    "delta": 0.05,
+    "d0": 0.2855
+   },
+   "follower_later_leg_rate": 4.500302750818509,
+   "follower_brief": {
+    "visits": {
+     "mean": 10.1044921875,
+     "median": 6.25,
+     "sd": 11.36949907220542
+    },
+    "legs": {
+     "mean": 9.21337890625,
+     "median": 5.25,
+     "sd": 11.29115844492566
+    },
+    "later_leg_rate": {
+     "mean": 4.500302750818509,
+     "median": 2.625806571931599,
+     "sd": 5.285118631105742
+    },
+    "unvisited_share": {
+     "mean": 0.10888671875,
+     "median": 0.0,
+     "sd": 0.25082536472139844
+    },
+    "first_discovery": {
+     "mean": 157.703125,
+     "median": 66.5,
+     "sd": 411.09159056508724
+    },
+    "occluded_share": {
+     "mean": 0.23918009440104165,
+     "median": 0.23867187499999998,
+     "sd": 0.026366528661557174
+    },
+    "exposure_mean": {
+     "mean": 0.0,
+     "median": 0.0,
+     "sd": 0.0
+    },
+    "exposure_zero_share": {
+     "mean": 1.0,
+     "median": 1.0,
+     "sd": 0.0
+    },
+    "later_first_b": {
+     "mean": 1004.4972098214286,
+     "median": 735.7142857142858,
+     "sd": 688.4711226673827
+    }
+   },
+   "polarity": {
+    "real": 0.015625,
+    "none": 0.01171875,
+    "permuted": 0.02734375,
+    "reading": -0.01171875,
+    "single_pass_mazes": 256
+   },
+   "gradient": {
+    "one_age1": 0.9093739097064487,
+    "one_age2": 0.9245600205885999,
+    "one_age4": 0.9319514031497553,
+    "eight_age1": 0.9180488181764699,
+    "eight_age2": 0.9293158317298975,
+    "eight_age4": 0.9370048039040251
+   },
+   "nose_range": {
+    "on_route_noses": 4513232,
+    "in_range": 1415409,
+    "above": 211428,
+    "in_range_share": 0.31361317122629634,
+    "above_share": 0.04684625120091323
+   },
+   "checks": {
+    "live": true,
+    "polarity": false,
+    "gradient": true,
+    "range": false
+   },
+   "passed": false
+  },
+  {
+   "setting": {
+    "mu": 0.01,
+    "lam": 0.04,
+    "delta": 0.05,
+    "d0": 0.571
+   },
+   "follower_later_leg_rate": 5.524407012907062,
+   "follower_brief": {
+    "visits": {
+     "mean": 11.982421875,
+     "median": 6.75,
+     "sd": 12.354915215972651
+    },
+    "legs": {
+     "mean": 11.095703125,
+     "median": 5.75,
+     "sd": 12.275034287470582
+    },
+    "later_leg_rate": {
+     "mean": 5.524407012907062,
+     "median": 2.864139232112218,
+     "sd": 5.905360503979419
+    },
+    "unvisited_share": {
+     "mean": 0.11328125,
+     "median": 0.0,
+     "sd": 0.25482476678044047
+    },
+    "first_discovery": {
+     "mean": 157.703125,
+     "median": 66.5,
+     "sd": 411.09159056508724
+    },
+    "occluded_share": {
+     "mean": 0.23773417154947918,
+     "median": 0.23645833333333333,
+     "sd": 0.02733979371396221
+    },
+    "exposure_mean": {
+     "mean": 0.0,
+     "median": 0.0,
+     "sd": 0.0
+    },
+    "exposure_zero_share": {
+     "mean": 1.0,
+     "median": 1.0,
+     "sd": 0.0
+    },
+    "later_first_b": {
+     "mean": 1000.6032366071429,
+     "median": 741.6428571428571,
+     "sd": 683.1071113045841
+    }
+   },
+   "polarity": {
+    "real": 0.0234375,
+    "none": 0.01171875,
+    "permuted": 0.04296875,
+    "reading": -0.01953125,
+    "single_pass_mazes": 256
+   },
+   "gradient": {
+    "one_age1": 0.9093739097064487,
+    "one_age2": 0.9245600205885999,
+    "one_age4": 0.9319514031497553,
+    "eight_age1": 0.9180488181764699,
+    "eight_age2": 0.9293158317298975,
+    "eight_age4": 0.9370048039040251
+   },
+   "nose_range": {
+    "on_route_noses": 4908494,
+    "in_range": 1831669,
+    "above": 435965,
+    "in_range_share": 0.3731631331320768,
+    "above_share": 0.08881848485502886
+   },
+   "checks": {
+    "live": true,
+    "polarity": false,
+    "gradient": true,
+    "range": false
+   },
+   "passed": false
+  },
+  {
+   "setting": {
+    "mu": 0.01,
+    "lam": 0.04,
+    "delta": 0.15,
+    "d0": 0.2855
+   },
+   "follower_later_leg_rate": 4.200972007819903,
+   "follower_brief": {
+    "visits": {
+     "mean": 9.49609375,
+     "median": 6.25,
+     "sd": 10.357115313761309
+    },
+    "legs": {
+     "mean": 8.60400390625,
+     "median": 5.25,
+     "sd": 10.276089994376932
+    },
+    "later_leg_rate": {
+     "mean": 4.200972007819903,
+     "median": 2.5871795018838704,
+     "sd": 4.8007188804392324
+    },
+    "unvisited_share": {
+     "mean": 0.10791015625,
+     "median": 0.0,
+     "sd": 0.25100470219479365
+    },
+    "first_discovery": {
+     "mean": 157.703125,
+     "median": 66.5,
+     "sd": 411.09159056508724
+    },
+    "occluded_share": {
+     "mean": 0.2384895833333333,
+     "median": 0.237734375,
+     "sd": 0.026693151150081147
+    },
+    "exposure_mean": {
+     "mean": 0.0,
+     "median": 0.0,
+     "sd": 0.0
+    },
+    "exposure_zero_share": {
+     "mean": 1.0,
+     "median": 1.0,
+     "sd": 0.0
+    },
+    "later_first_b": {
+     "mean": 1019.9073660714284,
+     "median": 754.8571428571429,
+     "sd": 687.138623207684
+    }
+   },
+   "polarity": {
+    "real": 0.01953125,
+    "none": 0.01171875,
+    "permuted": 0.03515625,
+    "reading": -0.015625,
+    "single_pass_mazes": 256
+   },
+   "gradient": {
+    "one_age1": 0.9313111992861758,
+    "one_age2": 0.9264963568110982,
+    "one_age4": 0.9287602866735571,
+    "eight_age1": 0.9389496282951418,
+    "eight_age2": 0.9307985667568106,
+    "eight_age4": 0.9325242858923924
+   },
+   "nose_range": {
+    "on_route_noses": 4410364,
+    "in_range": 1421180,
+    "above": 199884,
+    "in_range_share": 0.3222364412551889,
+    "above_share": 0.045321429251644535
+   },
+   "checks": {
+    "live": true,
+    "polarity": false,
+    "gradient": true,
+    "range": false
+   },
+   "passed": false
+  },
+  {
+   "setting": {
+    "mu": 0.01,
+    "lam": 0.04,
+    "delta": 0.15,
+    "d0": 0.571
+   },
+   "follower_later_leg_rate": 4.859556147915442,
+   "follower_brief": {
+    "visits": {
+     "mean": 10.84521484375,
+     "median": 6.625,
+     "sd": 11.66324476649071
+    },
+    "legs": {
+     "mean": 9.95654296875,
+     "median": 5.625,
+     "sd": 11.57908669491435
+    },
+    "later_leg_rate": {
+     "mean": 4.859556147915442,
+     "median": 2.7122227327561426,
+     "sd": 5.462822682118908
+    },
+    "unvisited_share": {
+     "mean": 0.111328125,
+     "median": 0.0,
+     "sd": 0.25616629431511334
+    },
+    "first_discovery": {
+     "mean": 157.703125,
+     "median": 66.5,
+     "sd": 411.09159056508724
+    },
+    "occluded_share": {
+     "mean": 0.23916849772135415,
+     "median": 0.23833333333333334,
+     "sd": 0.0267176267464609
+    },
+    "exposure_mean": {
+     "mean": 0.0,
+     "median": 0.0,
+     "sd": 0.0
+    },
+    "exposure_zero_share": {
+     "mean": 1.0,
+     "median": 1.0,
+     "sd": 0.0
+    },
+    "later_first_b": {
+     "mean": 1006.3091517857143,
+     "median": 746.6428571428571,
+     "sd": 701.4973519997742
+    }
+   },
+   "polarity": {
+    "real": 0.046875,
+    "none": 0.01171875,
+    "permuted": 0.03125,
+    "reading": 0.015625,
+    "single_pass_mazes": 256
+   },
+   "gradient": {
+    "one_age1": 0.9313111992861758,
+    "one_age2": 0.9264963568110982,
+    "one_age4": 0.9287602866735571,
+    "eight_age1": 0.9389496282951418,
+    "eight_age2": 0.9307985667568106,
+    "eight_age4": 0.9325242858923924
+   },
+   "nose_range": {
+    "on_route_noses": 4719486,
+    "in_range": 1707838,
+    "above": 384124,
+    "in_range_share": 0.36186949172007293,
+    "above_share": 0.08139106673904743
+   },
+   "checks": {
+    "live": true,
+    "polarity": false,
+    "gradient": true,
+    "range": false
+   },
+   "passed": false
+  },
+  {
+   "setting": {
+    "mu": 0.02,
+    "lam": 0.04,
+    "delta": 0.05,
+    "d0": 0.2855
+   },
+   "follower_later_leg_rate": 4.16935085902488,
+   "follower_brief": {
+    "visits": {
+     "mean": 9.39453125,
+     "median": 6.6875,
+     "sd": 9.799358941367784
+    },
+    "legs": {
+     "mean": 8.5048828125,
+     "median": 5.75,
+     "sd": 9.714520695286742
+    },
+    "later_leg_rate": {
+     "mean": 4.16935085902488,
+     "median": 2.7524247146230607,
+     "sd": 4.554553418937745
+    },
+    "unvisited_share": {
+     "mean": 0.1103515625,
+     "median": 0.0,
+     "sd": 0.25346669626441276
+    },
+    "first_discovery": {
+     "mean": 157.703125,
+     "median": 66.5,
+     "sd": 411.09159056508724
+    },
+    "occluded_share": {
+     "mean": 0.23915547688802086,
+     "median": 0.2371875,
+     "sd": 0.027224949319145604
+    },
+    "exposure_mean": {
+     "mean": 0.0,
+     "median": 0.0,
+     "sd": 0.0
+    },
+    "exposure_zero_share": {
+     "mean": 1.0,
+     "median": 1.0,
+     "sd": 0.0
+    },
+    "later_first_b": {
+     "mean": 1011.0976562499999,
+     "median": 701.9285714285714,
+     "sd": 701.6685420958205
+    }
+   },
+   "polarity": {
+    "real": 0.015625,
+    "none": 0.01171875,
+    "permuted": 0.015625,
+    "reading": 0.0,
+    "single_pass_mazes": 256
+   },
+   "gradient": {
+    "one_age1": 0.8653223635729603,
+    "one_age2": 0.8902477458438876,
+    "one_age4": 0.9079906548050363,
+    "eight_age1": 0.8818760478637694,
+    "eight_age2": 0.9051509044236252,
+    "eight_age4": 0.9218497803832695
+   },
+   "nose_range": {
+    "on_route_noses": 4362648,
+    "in_range": 1142891,
+    "above": 110134,
+    "in_range_share": 0.26197185745904783,
+    "above_share": 0.025244759604717136
+   },
+   "checks": {
+    "live": true,
+    "polarity": false,
+    "gradient": true,
+    "range": false
+   },
+   "passed": false
+  },
+  {
+   "setting": {
+    "mu": 0.02,
+    "lam": 0.04,
+    "delta": 0.05,
+    "d0": 0.571
+   },
+   "follower_later_leg_rate": 4.67487810491577,
+   "follower_brief": {
+    "visits": {
+     "mean": 10.4716796875,
+     "median": 6.75,
+     "sd": 11.412220561660117
+    },
+    "legs": {
+     "mean": 9.58154296875,
+     "median": 5.75,
+     "sd": 11.330015171498303
+    },
+    "later_leg_rate": {
+     "mean": 4.67487810491577,
+     "median": 2.7869387030834734,
+     "sd": 5.294892884592526
+    },
+    "unvisited_share": {
+     "mean": 0.10986328125,
+     "median": 0.0,
+     "sd": 0.2547641755746871
+    },
+    "first_discovery": {
+     "mean": 157.703125,
+     "median": 66.5,
+     "sd": 411.09159056508724
+    },
+    "occluded_share": {
+     "mean": 0.23888814290364582,
+     "median": 0.23875000000000002,
+     "sd": 0.025818523564525638
+    },
+    "exposure_mean": {
+     "mean": 0.0,
+     "median": 0.0,
+     "sd": 0.0
+    },
+    "exposure_zero_share": {
+     "mean": 1.0,
+     "median": 1.0,
+     "sd": 0.0
+    },
+    "later_first_b": {
+     "mean": 1004.8242187499999,
+     "median": 700.5714285714286,
+     "sd": 701.588207510185
+    }
+   },
+   "polarity": {
+    "real": 0.015625,
+    "none": 0.01171875,
+    "permuted": 0.01953125,
+    "reading": -0.00390625,
+    "single_pass_mazes": 256
+   },
+   "gradient": {
+    "one_age1": 0.8653223635729603,
+    "one_age2": 0.8902477458438876,
+    "one_age4": 0.9079906548050363,
+    "eight_age1": 0.8818760478637694,
+    "eight_age2": 0.9051509044236252,
+    "eight_age4": 0.9218497803832695
+   },
+   "nose_range": {
+    "on_route_noses": 4550310,
+    "in_range": 1407488,
+    "above": 212206,
+    "in_range_share": 0.30931694763653467,
+    "above_share": 0.04663550395467562
+   },
+   "checks": {
+    "live": true,
+    "polarity": false,
+    "gradient": true,
+    "range": false
+   },
+   "passed": false
+  },
+  {
+   "setting": {
+    "mu": 0.02,
+    "lam": 0.04,
+    "delta": 0.15,
+    "d0": 0.2855
+   },
+   "follower_later_leg_rate": 3.780607293969826,
+   "follower_brief": {
+    "visits": {
+     "mean": 8.66455078125,
+     "median": 6.75,
+     "sd": 8.48275128170189
+    },
+    "legs": {
+     "mean": 7.77392578125,
+     "median": 5.75,
+     "sd": 8.392798694116294
+    },
+    "later_leg_rate": {
+     "mean": 3.780607293969826,
+     "median": 2.75274331476866,
+     "sd": 3.8876993620083518
+    },
+    "unvisited_share": {
+     "mean": 0.109375,
+     "median": 0.0,
+     "sd": 0.25437350953458415
+    },
+    "first_discovery": {
+     "mean": 157.703125,
+     "median": 66.5,
+     "sd": 411.09159056508724
+    },
+    "occluded_share": {
+     "mean": 0.238477783203125,
+     "median": 0.23830729166666667,
+     "sd": 0.027535409045671633
+    },
+    "exposure_mean": {
+     "mean": 0.0,
+     "median": 0.0,
+     "sd": 0.0
+    },
+    "exposure_zero_share": {
+     "mean": 1.0,
+     "median": 1.0,
+     "sd": 0.0
+    },
+    "later_first_b": {
+     "mean": 1004.1272321428571,
+     "median": 740.0714285714286,
+     "sd": 689.1781970941478
+    }
+   },
+   "polarity": {
+    "real": 0.015625,
+    "none": 0.01171875,
+    "permuted": 0.015625,
+    "reading": 0.0,
+    "single_pass_mazes": 256
+   },
+   "gradient": {
+    "one_age1": 0.9033565915605303,
+    "one_age2": 0.9033372423709739,
+    "one_age4": 0.9098201976960635,
+    "eight_age1": 0.9206912218937782,
+    "eight_age2": 0.916979423956062,
+    "eight_age4": 0.9213321804385571
+   },
+   "nose_range": {
+    "on_route_noses": 4217396,
+    "in_range": 1079232,
+    "above": 95493,
+    "in_range_share": 0.255900086214337,
+    "above_share": 0.022642644892725276
+   },
+   "checks": {
+    "live": true,
+    "polarity": false,
+    "gradient": true,
+    "range": false
+   },
+   "passed": false
+  },
+  {
+   "setting": {
+    "mu": 0.02,
+    "lam": 0.04,
+    "delta": 0.15,
+    "d0": 0.571
+   },
+   "follower_later_leg_rate": 4.227819842480534,
+   "follower_brief": {
+    "visits": {
+     "mean": 9.435546875,
+     "median": 6.875,
+     "sd": 9.896938083328859
+    },
+    "legs": {
+     "mean": 8.54443359375,
+     "median": 5.875,
+     "sd": 9.814631972537597
+    },
+    "later_leg_rate": {
+     "mean": 4.227819842480534,
+     "median": 2.8296640636139703,
+     "sd": 4.60846817564576
+    },
+    "unvisited_share": {
+     "mean": 0.10888671875,
+     "median": 0.0,
+     "sd": 0.2527721419470217
+    },
+    "first_discovery": {
+     "mean": 157.703125,
+     "median": 66.5,
+     "sd": 411.09159056508724
+    },
+    "occluded_share": {
+     "mean": 0.23892496744791666,
+     "median": 0.23716145833333335,
+     "sd": 0.026695717327512893
+    },
+    "exposure_mean": {
+     "mean": 0.0,
+     "median": 0.0,
+     "sd": 0.0
+    },
+    "exposure_zero_share": {
+     "mean": 1.0,
+     "median": 1.0,
+     "sd": 0.0
+    },
+    "later_first_b": {
+     "mean": 1010.2354910714287,
+     "median": 760.0714285714286,
+     "sd": 680.5273268030905
+    }
+   },
+   "polarity": {
+    "real": 0.01953125,
+    "none": 0.01171875,
+    "permuted": 0.0234375,
+    "reading": -0.00390625,
+    "single_pass_mazes": 256
+   },
+   "gradient": {
+    "one_age1": 0.9033565915605303,
+    "one_age2": 0.9033372423709739,
+    "one_age4": 0.9098201976960635,
+    "eight_age1": 0.9206912218937782,
+    "eight_age2": 0.916979423956062,
+    "eight_age4": 0.9213321804385571
+   },
+   "nose_range": {
+    "on_route_noses": 4402004,
+    "in_range": 1346232,
+    "above": 184973,
+    "in_range_share": 0.3058225299204635,
+    "above_share": 0.042020179899881965
+   },
+   "checks": {
+    "live": true,
+    "polarity": false,
+    "gradient": true,
+    "range": false
+   },
+   "passed": false
+  }
+ ],
+ "widened": null,
+ "chosen": null,
+ "note": "the polarity null is the route-permuted trail (\u00a73b); \u00a74's 'flat' is a v2 leftover (D177)",
+ "seconds": 2359.5120225998107
+}
