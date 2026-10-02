@@ -1,0 +1,358 @@
+{
+ "stage": "g-e",
+ "attempt": 1,
+ "registered": {
+  "world_seed": 1171000,
+  "task_sigma": 6.0,
+  "horizon": 600,
+  "ga": {
+   "population": 32,
+   "elites": 3,
+   "truncation": 8,
+   "worlds_per_strain": 16,
+   "generations": 300,
+   "islands": 1,
+   "mutation": {
+    "w_sigma": 0.08,
+    "g_sigma": 0.04,
+    "tau_sigma": 0.15,
+    "bias_sigma": 0.05,
+    "p_mutate": 1.0
+   }
+  },
+  "generations": {
+   "ga": 300,
+   "rs": 300,
+   "stage3": 500,
+   "btask": 800
+  },
+  "runs": 8,
+  "checkpoint_every": 25,
+  "rerun_kill_tail_seconds": 900,
+  "cap_gpu_hours": 30.0,
+  "admit_hours": 28.0,
+  "reserve_factor": 1.25,
+  "seeds": {
+   "ga": 1170000,
+   "ga_init": 1172000,
+   "rs": 1173000,
+   "census_ga": 1174000,
+   "census_rs": 1174001,
+   "btask_init": 1175000,
+   "stage3": 1176000,
+   "btask": 1177000,
+   "projection": 1179000,
+   "equivalence": 1179500
+  },
+  "ids": {
+   "train": {
+    "base": 944000000,
+    "span": 500000
+   },
+   "validation": {
+    "first": 945000000,
+    "worlds": 256
+   },
+   "test": {
+    "first": 946000000,
+    "worlds": 256
+   },
+   "census": {
+    "first": 947000000,
+    "worlds": 16
+   },
+   "assays": {
+    "first": 947100000,
+    "worlds": 256
+   },
+   "gates": {
+    "first": 947200000,
+    "worlds": 1024
+   },
+   "calibration": {
+    "first": 948000000,
+    "worlds": 256
+   }
+  },
+  "census": {
+   "draws": 1024,
+   "screen": 0.8,
+   "cap": 64,
+   "projected_qualifiers": 64
+  },
+  "e_stimulus": 2,
+  "trace_worlds": 16,
+  "carrier": {
+   "forward": 1.0,
+   "turn": 0.2
+  },
+  "scripted": {
+   "s_shuttle_k32": {
+    "k": 32.0,
+    "speed": 1.0,
+    "turn": 0.2
+   },
+   "s_shuttle_k8192": {
+    "k": 8192.0,
+    "speed": 1.0,
+    "turn": 0.0
+   }
+  },
+  "batches": [
+   "ga",
+   "rs",
+   "stage3",
+   "btask"
+  ]
+ },
+ "provenance_at_start": {
+  "git_commit": "76adc34d57871050c35ffb73efc9e370fd894c9c",
+  "branch": "roadmap",
+  "dirty": false,
+  "python": "3.13.3",
+  "numpy": "2.4.4",
+  "torch": "2.12.0+cu130",
+  "cuda": "13.0",
+  "gpu": "NVIDIA GeForce RTX 5080",
+  "connectome_cache_sha256": "43b87aa172a0042b9dce734b15bdf1c87efe3a33ac1cc0d9cd03255a60c96d4a",
+  "connectome_source_sha256": "1f4fdbf84746b69b49a8da0816f52787860ce349b638dce37924ba80f90c70c9"
+ },
+ "device": "cuda",
+ "resolved_config": {
+  "brain": {
+   "substeps": 32,
+   "tau_min": 0.5,
+   "tau_max": 20.0,
+   "w_max": 3.0,
+   "g_max": 2.0,
+   "b_max": 2.0,
+   "init_w_scale": 0.2,
+   "init_g_scale": 0.05,
+   "init_bias_std": 0.5,
+   "init_tau_log_uniform": true,
+   "init_chem_magnitude": "anatomical",
+   "init_gap_magnitude": "anatomical",
+   "init_permutation_seed": 0,
+   "dale": false,
+   "input_gain": 1.0,
+   "input_max": 5.0,
+   "chem_direction": "pre_to_post",
+   "pad_single_strain": true
+  },
+  "world": {
+   "n_swarms": 1,
+   "weys_per_swarm": 1,
+   "max_ticks": 600,
+   "cells_per_wey": 24.0,
+   "min_side": 24,
+   "body_length": 2.4,
+   "max_speed": 0.35,
+   "reverse_fraction": 0.4,
+   "max_turn": 0.3,
+   "forward_gain": 4.0,
+   "turn_gain": 2.0,
+   "start_energy": 12.0,
+   "max_energy": 40.0,
+   "body_mass": 6.0,
+   "metabolic_drain": 0.0,
+   "move_cost": 0.0,
+   "hazard_damage": 0.0,
+   "eat_rate": 0.0,
+   "pheromone_deposit": 0.0,
+   "pheromone_decay": 0.93,
+   "pheromone_diffusion": 0.35,
+   "sense_scale_food": 0.35,
+   "sense_scale_pheromone": 0.0,
+   "sense_scale_hazard": 2.0,
+   "sense_scale_damage": 2.0,
+   "sense_scale_collision": 2.0,
+   "body_splat": 1.0,
+   "crowd_threshold": 0.8,
+   "crowd_resist": 0.6,
+   "crowd_push": 0.1,
+   "crowd_blur": 1,
+   "food_sensing": "stereo",
+   "food_probe": "real",
+   "food_odour_sigma": 0.0,
+   "food_probe_radius": 0.0,
+   "check_ledger_every_tick": false,
+   "food_probe_hold": 1,
+   "task": "shuttle",
+   "target_sigma": 6.0,
+   "target_amplitude": 1.0,
+   "target_radius": 1.5,
+   "target_separation": 8.0,
+   "target_max_separation": 0.0,
+   "target_wall_clearance": 3.0,
+   "target_sequence_length": 64,
+   "shuttle_separation_min": 8.0,
+   "shuttle_separation_max": 14.0,
+   "shuttle_spawn_min": 6.0,
+   "shuttle_spawn_max": 16.0,
+   "shuttle_cue_ticks": 5
+  },
+  "map": {
+   "food_patches": [
+    0,
+    0
+   ],
+   "food_patch_radius": [
+    2.5,
+    5.0
+   ],
+   "food_per_patch": [
+    70.0,
+    160.0
+   ],
+   "food_centre_bias": 0.62,
+   "hazard_patches": [
+    0,
+    0
+   ],
+   "hazard_radius": [
+    2.0,
+    4.0
+   ],
+   "hazard_strength": [
+    0.5,
+    1.0
+   ],
+   "hazard_spawn_clearance": 6.0,
+   "spawn_margin": 3.0,
+   "spawn_spread": 0.28,
+   "food_regen": 0.0,
+   "food_scales_with_headcount": true,
+   "food_reference_weys": 20
+  },
+  "combat": {
+   "attack_strength": 1.0,
+   "attack_offset": 0.9,
+   "attack_blur": 1,
+   "damage_k": 0.55,
+   "head_armor": 0.25,
+   "transfer_fraction": 0.5,
+   "max_flank_payback": 0.1,
+   "max_head_on_asymmetry": 1.5,
+   "pump_cost": 0.1
+  },
+  "mutation": {
+   "w_sigma": 0.08,
+   "g_sigma": 0.04,
+   "tau_sigma": 0.15,
+   "bias_sigma": 0.05,
+   "p_mutate": 1.0
+  },
+  "evo": {
+   "population": 32,
+   "generations": 300,
+   "elites": 3,
+   "truncation": 8,
+   "worlds_per_strain": 16,
+   "holdout_worlds": 24,
+   "islands": 1,
+   "migrate_every": 10,
+   "migrants": 1,
+   "chunk_worlds": 512,
+   "train_seed_base": 0,
+   "train_seed_span": 1000000,
+   "holdout_seed_base": 900000000,
+   "eval_ticks": 0,
+   "opponents_self": 3,
+   "opponents_hof": 2,
+   "coevo_worlds": 2,
+   "coevo_sizes": [
+    40,
+    40
+   ],
+   "coevo_lopsided": false,
+   "coevo_vary_sizes": false,
+   "coevo_size_range": [
+    50,
+    200
+   ],
+   "coevo_size_pairs": 2,
+   "coevo_lopsided_fraction": 0.5,
+   "hof_capacity": 12,
+   "suite_every": 5,
+   "suite_sizes": [
+    100,
+    100
+   ],
+   "suite_size": 6,
+   "suite_worlds": 8
+  }
+ },
+ "resolved_config_sha256": "24c8c705886b8402109d34192a464f54d31a09ccbd372bf842226600d4de6693",
+ "e1_inputs_sha256": {
+  "experiments/E1-navigation/freeze.json": "c5c48f83079a6bd0dd48bdeb13d02ab211a08eb64433fdc8372cbd6e74bcaae9",
+  "experiments/E1-navigation/gate.json": "a18b5a53845360107448527b2af038b9c613e4bf11fdfe843c328b7c2a01afa0"
+ },
+ "start_marker": "g-e-started.json",
+ "rerun": null,
+ "outcome": "completed",
+ "passed": true,
+ "cpu": {
+  "cases": {
+   "task_n_random": {
+    "identical": true,
+    "first_differing_tick": null
+   },
+   "task_n_e4s1_m0": {
+    "identical": true,
+    "first_differing_tick": null
+   },
+   "forage_random": {
+    "identical": true,
+    "first_differing_tick": null
+   },
+   "task_n_e4s1_m0_mean": {
+    "identical": true,
+    "first_differing_tick": null
+   },
+   "task_n_e4s1_m0_swapped": {
+    "identical": true,
+    "first_differing_tick": null
+   },
+   "forage_rollout_score": {
+    "identical": true
+   },
+   "graft": {
+    "identical": true
+   },
+   "configs": {
+    "identical": true
+   }
+  },
+  "passed": true,
+  "reference_sha256": "1dd0d7b9d5d38a9b38c70a79296e60c47c905a71f95e19dcc4edddb417d61cfd",
+  "engines": {
+   "reference": {
+    "package": "D:\\Claude\\random\\wormWars-ge\\wormwars\\__init__.py",
+    "commit": "989da99c9188c1dc5f793f40fd986d65ac81c140"
+   },
+   "compared": {
+    "package": "D:\\Claude\\random\\wormWars\\wormwars\\__init__.py",
+    "commit": "76adc34d57871050c35ffb73efc9e370fd894c9c"
+   }
+  }
+ },
+ "gpu": {
+  "all_match": true,
+  "matching_generations_per_run": [
+   26,
+   26,
+   26,
+   26,
+   26,
+   26,
+   26,
+   26
+  ],
+  "composition": [
+   256,
+   8,
+   1
+  ]
+ },
+ "seconds": 142.9484031999018
+}
