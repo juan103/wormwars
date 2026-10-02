@@ -37,24 +37,37 @@
    ],
    "default_category": "measure",
    "git_commit": "29d44e28770f4dfb87b5d7658d6b14611be44cdc"
+  },
+  {
+   "file": "20261002T230038Z-b6919d46.json",
+   "status": "completed",
+   "script": "e3b0_diagnose4",
+   "argv": [
+    "--part",
+    "seeds",
+    "--device",
+    "cuda"
+   ],
+   "default_category": "measure",
+   "git_commit": "ac0d6f36d798b523f16bec31932cb1edb88e4d54"
   }
  ],
  "failed_attempts": 0,
  "uncategorised": false,
  "categories": {
   "measure": {
-   "worlds_built": 60672,
-   "world_ticks": 85592064,
-   "neural_updates": 0,
-   "neural_padding": 0,
-   "seconds": 3246.751383599825
+   "worlds_built": 65280,
+   "world_ticks": 96651264,
+   "neural_updates": 5662310400,
+   "neural_padding": 2831155200,
+   "seconds": 3865.2136046998203
   }
  },
  "totals": {
-  "worlds_built": 60672,
-  "world_ticks": 85592064,
-  "neural_updates": 0,
-  "neural_padding": 0,
-  "seconds_timed": 3246.751383599825
+  "worlds_built": 65280,
+  "world_ticks": 96651264,
+  "neural_updates": 5662310400,
+  "neural_padding": 2831155200,
+  "seconds_timed": 3865.2136046998203
  }
 }
