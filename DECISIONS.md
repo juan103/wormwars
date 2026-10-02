@@ -4754,3 +4754,46 @@ starts from a clean, pushed tree.
 
 The results (`experiments/E4s-stereo-module/E4s-1/RESULTS.md`) go to Astra 6 and Fable 5.1 for review.
 On consensus, E4s-0 and E4s-1 go to `main` together (the owner's choice, 2026-10-01).
+
+## D154 — E4s-1's results reviewed (both "fix", text only) and corrected; a recording defect disclosed
+
+**The review** (`docs/reviews/20261002-E4s-1-results/`): both "fix", text only. Both re-derived the
+registered readings, and they hold. Astra reproduced all 240 endpoint scores and 5 152 world-level
+intervals from the per-world counts.
+
+**Corrected** (RESULTS.md's Corrections section, 15 items):
+- **"The steering stays in the graft" and "the host did not come to steer by the difference itself."**
+  H is a module-blind assay, uninformative in 8 of 16 runs, and §11 excludes transfer claims (both).
+- **Missing: part of M − N is not stereo use** (Fable). With the module's noses fed the mean, the final
+  brains keep 1.26 on average, and four keep 2.5-4.5.
+- **"Co-adapted, not a better module" was too categorical:** 5 evolved modules beat L1 alone on a
+  carrier, and 10 score 0 (Astra).
+- **Continuity claims beyond the two endpoints.**
+- **The F0 gain was a mean over a range of 9.6-428.**
+- **"Barely moved"** for weights that shrank 6.9%.
+- **Causal wording for F0 − M.**
+- **O1c's failed registered expectation:** the climb difference was +3.14, not negative.
+- **C2's G0 is one genome measured eight times.**
+- **The label punctuation.**
+- **An overbroad "every headline number was re-derived".**
+- **Registered reporting items missing:** R's final signs and its draws' gains, C's scores, the Mc
+  shares.
+- **O1b concerns random signs that could not change** (none changed in any arm).
+
+**A recording defect, disclosed under Deviations** (Astra). The endpoint stage cast every per-world
+array to int16, the fractional motor measures included.
+- All 1 440 stored motor arrays are zeros. The per-episode motor means in `eval-endpoints.json` are
+  intact.
+- No target count or registered outcome is affected.
+- The records are left as they are.
+
+**Correction to D153 (2026-10-02).** D153 said: "E3's artefact rule is met: run 10's F, with O2b 1.45.
+E3's own positive control is still required." §7 requires all three conditions. It now reads: the two
+E4s-1 conditions are met, and replacement remains conditional on E3's positive control (both). Run 10's
+module scores 0 alone on both carriers, so E3 would inherit a whole-brain artefact.
+
+**`e4s1_summary.py` and `e4s1_report.py`** now record every number the corrected text uses (rule 5),
+including M's climb interval, +4.48 to +5.20.
+
+**Publication:** both reviewers said "fix", text only, and every item is applied. On that consensus,
+E4s-0 and E4s-1 go to `main` together (the owner's choice), and the owner is told afterwards.

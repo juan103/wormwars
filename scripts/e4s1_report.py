@@ -54,6 +54,7 @@ def report(folder: Path, min_pairs: int = RD.MIN_PAIRS) -> dict:
     climb = np.array([arms["M"][k]["F"]["score"] - arms["M"][k]["G0"]["score"] for k in sorted(arms["M"])])
     climb_ci = RD.interval(climb, boot) if len(climb) else None
     o1["companion"] = RD.o1_companion(o1["label"], climb_ci["lo"], climb_ci["hi"]) if climb_ci else None
+    o1["M_climb_interval"] = climb_ci
     o1["sign_flip_p"] = D2.sign_flip_p(d) if len(d) else None
     o1["pairs_used"] = keys
     keys_b, db = paired(arms["M"], arms["R"], score_f)

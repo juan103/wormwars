@@ -1,21 +1,31 @@
 # E4s: a hand-built stereo module grafted onto N2
 
-**Status (2026-10-01):**
-- **E4s-0, the diagnostics,** has run and been reviewed (both "fix", text only; corrected, D147).
-- **E4s-1, the graft under evolution,** is pre-registered (`E4s-1/PREREGISTRATION.md`).
-  - It was bound at 023267d and public before any stage ran, and amended once before any stage ran
-    (D150, D152).
+**Status (2026-10-02):** E4s-0 and E4s-1 have run, and both have been reviewed and corrected.
+- **E4s-0, the diagnostics** (exploratory): reviewed by both ("fix", text only); corrected (D147).
+- **E4s-1, the graft under evolution** (confirmatory): pre-registered (`E4s-1/PREREGISTRATION.md`;
+  bound at 023267d, public before any stage ran; one amendment, also before any stage ran; D150,
+  D152).
   - **It ran** from 2026-10-01 13:22 to 2026-10-02 06:01: 16.61 of 24 GPU-hours, every gate passed,
-    every stage completed. The results are written and under review: [`E4s-1/RESULTS.md`](E4s-1/RESULTS.md).
-  - **O1 "supports":** the arm evolved with the graft's output ends +5.19 targets per episode above
-    the arm without it (90% interval +5.06 to +5.33; all 16 pairs positive).
-  - **O1b "supports":** designed signs beat random signs by +3.79.
-  - **All 16 main runs use the module at both endpoints,** and their final brains score 7.14 on
-    average, about three times the non-stereo plateau and 1.37 times L1 alone.
-  - **The steering stays in the graft,** co-adapted with its host. The host does not learn stereo by
-    itself, and silencing the module drops the brain to 0.11. The plan is
-[`docs/E4s/ROADMAP-PROPOSAL.md`](../../docs/E4s/ROADMAP-PROPOSAL.md) (v2.1, adopted, D144). The
-owner set a ceiling of 96 GPU-hours for all of E4s.
+    every stage completed. [`E4s-1/RESULTS.md`](E4s-1/RESULTS.md) was reviewed by both ("fix", text
+    only) and corrected (D154).
+
+**E4s-1's results.** Stereo sensing is a game-design choice, and the stereo computation starts in a
+4-neuron graft outside the N2 mask.
+- **O1 "supports":** the arm evolved with the graft's output ends +5.19 targets per episode above the
+  arm evolved without it (90% interval +5.06 to +5.33; all 16 pairs positive).
+- **O1b "supports":** the designed signs beat random signs by +3.79 (90% interval +3.32 to +4.25).
+  These are random signs that evolution could not repair: no sign changed in any arm.
+- **O2:** the selected main brains "use at both endpoints" in 16 of 16 runs, scoring 7.14 on average,
+  1.37 times L1 alone.
+- **Descriptive:**
+  - **Part of the benefit is not stereo use:** with the module's noses fed the mean, the final brains
+    keep 1.26 targets on average, and four keep 2.5-4.5.
+  - **The evolved brains depend on the graft:** silencing the module leaves 0.11, and restoring L1's
+    designed parameters leaves 0.72.
+  - **Transfer of the computation into the host was not shown.**
+
+The plan is [`docs/E4s/ROADMAP-PROPOSAL.md`](../../docs/E4s/ROADMAP-PROPOSAL.md) (v2.1, adopted, D144).
+The owner set a ceiling of 96 GPU-hours for all of E4s; E4s used 16.84.
 
 ## Why
 
@@ -87,8 +97,8 @@ python scripts/e4s0.py robustness
 
 ## Extend it
 
-- **E4s-1** grafts `E4s-0/module.json` onto random N2 and evolves the whole brain (pre-registered,
-  running).
+- **E4s-1** grafted `E4s-0/module.json` onto random N2 and evolved the whole brain (pre-registered;
+  run; results corrected).
   - **The arms:** M (main), N (no added output) and R (random signs) are confirmatory; F0 (frozen), U
     (02's mutation scale), S (half the module's scale) and C2 (04a run 2) are descriptive.
   - **The readings** come from `scripts/e4s1_report.py`.

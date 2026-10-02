@@ -8,6 +8,11 @@
   "label": "supports",
   "pairs": 16,
   "companion": null,
+  "M_climb_interval": {
+   "lo": 4.48094482421875,
+   "hi": 5.200570678710937,
+   "estimate": 4.84686279296875
+  },
   "sign_flip_p": 3.0517578125e-05,
   "pairs_used": [
    0,

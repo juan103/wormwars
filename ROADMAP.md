@@ -29,8 +29,14 @@
     - The 4-neuron comparator L1 qualified: 5.18 targets per episode, with a carrier turn bias.
     - It is used at generation 0 by all 16 simulated populations' bests, so E4s-1 runs on random N2.
   - **E4s-1 was pre-registered** (D148-D150): bound at 023267d, public before any stage ran, and
-    amended once before any stage ran (D152). Its formal run started on 2026-10-01: all three gates
-    passed, and training is under way (about 18 GPU-hours, cap 24).
+    amended once before any stage ran (D152).
+  - **E4s-1 ran on 2026-10-01 and 2026-10-02** (16.61 GPU-hours), and its results were reviewed and
+    corrected (D153, D154).
+    - O1 and O1b: "supports" (+5.19 against no graft output, +3.79 against random signs).
+    - The selected main brains use the module at both endpoints in 16 of 16 runs, reaching 7.14.
+    - Part of the benefit is not stereo use, and transfer into the host was not shown.
+  - **Next in Track E: E3's design,** from E4s-0's module or E4s-1's run 10 (a whole-brain artefact),
+    each needing E3's own positive control.
 
 - **Published on main:**
   - 02's D050 correction, as a Corrections entry (27 September, D063);
@@ -271,8 +277,8 @@ Track B continues in parallel: 03r, then the mechanism follow-up or closure, the
     M runs, and the chosen genome also needs O2b of at least 0.9.
 - **Status, 2026-10-01:**
   - **E4s-0 ran:** L1, a 4-neuron comparator, qualified (D147).
-  - **E4s-1 is pre-registered and running** (`experiments/E4s-stereo-module/E4s-1/PREREGISTRATION.md`;
-    D150, D152).
+  - **E4s-1 ran:** both confirmatory readings "supports"; the two E4s-1 conditions of E3's rule are
+    met (D153, D154; `experiments/E4s-stereo-module/E4s-1/RESULTS.md`).
 
 ### E3 / 04b: minimal A/B organism
 
