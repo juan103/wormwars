@@ -73,6 +73,18 @@
    ],
    "default_category": "measure",
    "git_commit": "c08fcb1c0521c679c6a812b1e6b855ff4f183773"
+  },
+  {
+   "file": "20261002T112344Z-eaed9c14.json",
+   "status": "completed",
+   "script": "e3a",
+   "argv": [
+    "train",
+    "--batch",
+    "2"
+   ],
+   "default_category": "measure",
+   "git_commit": "76f4e41266239ce04a7fe64dc9df2746c9b9b937"
   }
  ],
  "failed_attempts": 0,
@@ -83,14 +95,14 @@
    "world_ticks": 22128000,
    "neural_updates": 787046400,
    "neural_padding": 78950400,
-   "seconds": 142.7849060005974
+   "seconds": 149.65643819980323
   },
   "selection": {
-   "worlds_built": 1298432,
-   "world_ticks": 763084800,
-   "neural_updates": 24418713600,
+   "worlds_built": 2527232,
+   "world_ticks": 1500364800,
+   "neural_updates": 48011673600,
    "neural_padding": 0,
-   "seconds": 3281.775243599899
+   "seconds": 6396.01811380079
   },
   "holdout": {
    "worlds_built": 34816,
@@ -115,10 +127,10 @@
   }
  },
  "totals": {
-  "worlds_built": 1423104,
-  "world_ticks": 835972800,
-  "neural_updates": 26828544000,
+  "worlds_built": 2651904,
+  "world_ticks": 1573252800,
+  "neural_updates": 50421504000,
   "neural_padding": 169159680,
-  "seconds_timed": 3745.8676173996646
+  "seconds_timed": 6866.9820197997615
  }
 }
