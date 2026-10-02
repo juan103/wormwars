@@ -4,17 +4,17 @@
    "ab_min": 8.0,
    "ab_max": 14.0,
    "spawn_min": 6.0,
-   "spawn_axis_max_A": 16.0
+   "spawn_max_A": 16.0
   },
   "spawns": 2000,
   "draws_per_spawn": 20000,
   "seed": 0,
   "acceptance_min": 0.1177,
-  "acceptance_median": 0.213825,
+  "acceptance_median": 0.2015,
   "spawns_with_zero_acceptance": 0,
-  "accepted_draws": 8457792,
-  "accepted_with_A_beyond_field_reach": 0,
-  "accepted_with_A_axis_beyond_16": 0,
+  "accepted_draws": 7845779,
+  "accepted_with_head_beyond_square_support_of_A": 0,
+  "min_scent_of_A_at_spawn_head": 0.028565535615713462,
   "max_axis_distance_spawn_to_box": 18.69387174321789,
   "field_reach": 18,
   "spawn_extent": [
@@ -22,12 +22,12 @@
    22.69387174321789
   ]
  },
- "without_axis_limit": {
+ "without_spawn_cap": {
   "rule": {
    "ab_min": 8.0,
    "ab_max": 14.0,
    "spawn_min": 6.0,
-   "spawn_axis_max_A": 1000000000.0
+   "spawn_max_A": 1000000000.0
   },
   "spawns": 2000,
   "draws_per_spawn": 20000,
@@ -36,8 +36,8 @@
   "acceptance_median": 0.213825,
   "spawns_with_zero_acceptance": 0,
   "accepted_draws": 8801215,
-  "accepted_with_A_beyond_field_reach": 16373,
-  "accepted_with_A_axis_beyond_16": 343423,
+  "accepted_with_head_beyond_square_support_of_A": 16373,
+  "min_scent_of_A_at_spawn_head": 0.0006165871561063003,
   "max_axis_distance_spawn_to_box": 18.69387174321789,
   "field_reach": 18,
   "spawn_extent": [

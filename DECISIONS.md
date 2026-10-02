@@ -4922,3 +4922,44 @@ E3's ceiling is still the owner's to set.
 - **E3a's cap is 30 GPU-hours.** Design v2.1 estimated about 13.3. Its shrink order now applies only if
   the projection exceeds 30.
 - **E3b and E3c get about 30 each.** Each is fixed when its design is written.
+
+## D160 — E3's design v2.1 reviewed (both "revise", text only); design v2.2
+
+**The review** (`docs/reviews/20261002-E3-design-v2.1/`): both found the budget, the relays and the
+geometry sound, and the remaining problems repairable in text.
+
+**What both found:**
+- **The no-latch control was mis-built.** q clamped to 0 with the comparator biases left at −1.914
+  leaves both modules mostly off (Astra, in `Brain.step`: K_D 2.63-2.97 against 31.6-35.6), not
+  "both on".
+- **The memory classes misfiled real latches.** The hold test used the engineered organism's absolute
+  numbers. Astra gave a concrete working bistable selector (q* = ±1) that v2.1 would call "no
+  memory".
+
+**Fable also found:**
+- the champions' clamp values were undefined;
+- B-task had no reading;
+- drawing the selector uniformly over the bounds makes a working selector about 10⁻⁶-10⁻⁵ likely;
+- "16 along both axes" allows about 22.6 cells (a Euclidean cap is needed).
+
+**Astra also found:**
+- **the latch's quoted number (∓0.43) came from explicit Euler,** where `Brain.step` gives ∓0.2197.
+  Rechecked here in the engine's semi-implicit, simultaneous update: confirmed;
+- the "start blind" statistic was mislabelled;
+- E4s-1's carrier stepped 306 neurons, not 313;
+- the reduction order did not reach the stated minimum;
+- the startup was not tested.
+
+**Design v2.2:**
+- the no-latch control built "both on", with the q = 0 clamp kept as a named ablation;
+- a dynamical class separate from a memory class, with four classes and tests on each champion's own
+  states;
+- a release test;
+- the selector started near the ungated pair, with a uniform census as description and 0-of-8 wording;
+- B-task given its free parameters and a descriptive reading;
+- a Euclidean spawn cap of 16 (minimum scent at the spawn head 0.0286, rechecked by the committed
+  script);
+- a startup test;
+- five reductions that reach the minimum;
+- the cap of 30 GPU-hours (D159);
+- dated corrections of v2.1's latch number, no-latch control, "start blind" label and neuron count.
