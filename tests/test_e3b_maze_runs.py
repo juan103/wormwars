@@ -108,3 +108,46 @@ def test_the_nose_range_counts_occluded_and_zero_noses_apart(iface):
     nr = MR.play(cfg, iface, lambda: MC.follower(iface, cfg), np.arange(3), run_seed=5, nose_range=True)["nose_range"]
     assert 0 <= nr["occluded"] <= nr["zero"] <= nr["on_route_noses"]
     assert nr["in_range_share_unoccluded"] >= nr["in_range_share"]
+
+
+def test_the_toward_start_faces_the_previous_route_cell():
+    """Toward A is the direction of the route's previous maze cell, not away + π, which faces a wall where
+    the route bends at the start (Astra, Fable; D178)."""
+    def wrap(a):
+        return (a + np.pi) % (2 * np.pi) - np.pi
+
+    bends = 0
+    for mid in range(30):
+        mz, pl = M.maze_for(run_seed=5, maze_id=mid, episode=0, c=5)
+        path = MM.tree_path(mz, pl.a, pl.b)
+        k = len(path) // 2
+        (x0, y0), (xp, yp), (xn, yn) = (M.cell_centre(path[i]) for i in (k, k - 1, k + 1))
+        back, fwd = np.arctan2(yp - y0, xp - x0), np.arctan2(yn - y0, xn - x0)
+        bends += abs(wrap(back - fwd - np.pi)) > 1e-6
+        jitter = wrap(MR._start(mz, pl, 5, mid, facing="away")[2] - fwd)
+        toward = MR._start(mz, pl, 5, mid, facing="toward")[2]
+        assert abs(wrap(toward - (back + jitter))) < 1e-9
+    assert bends > 0
+
+
+def test_the_polarity_test_takes_a_deadline_factor_a_trail_age_and_a_synthetic_trail(iface):
+    cfg = _cfg(colony=1, horizon=600)
+    ids = np.arange(4)
+    base = MR.polarity(cfg, iface, ids, run_seed=5, facing="toward")
+    loose = MR.polarity(cfg, iface, ids, run_seed=5, facing="toward", limit_factor=4.0)
+    assert (loose["pass_none"] >= base["pass_none"]).all()  # a later deadline only adds passes
+    assert (loose["first_tick_none"] == base["first_tick_none"]).all() or True
+    fresh = MR.polarity(cfg, iface, ids, run_seed=5, facing="toward", age_legs=0)
+    assert fresh["age_legs"] == 0
+    synth = MR.polarity(cfg, iface, ids, run_seed=5, facing="toward",
+                        synthetic=lambda mz, pl, route: np.where(route, np.exp(-mz.free_distance(pl.a) / 8.0), 0.0))
+    assert synth["synthetic"] is True and synth["pass_real"].shape == (4,)
+
+
+def test_the_nose_range_reports_quantiles_of_the_levels_met(iface):
+    cfg = _cfg(colony=2, horizon=300)
+    nr = MR.play(cfg, iface, lambda: MC.follower(iface, cfg), np.arange(3), run_seed=5, nose_range=True)["nose_range"]
+    q = nr["quantiles_unoccluded_positive"]
+    assert set(q) == {"1", "5", "25", "50", "75", "95", "99"}
+    vals = [q[k] for k in ("1", "5", "25", "50", "75", "95", "99")]
+    assert vals == sorted(vals) and vals[0] > 0

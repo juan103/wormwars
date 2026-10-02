@@ -273,9 +273,12 @@ class MazeWorld(World):
 
     # -------------------------------------------------------------- trails as sensed
 
-    def _components(self) -> tuple[Tensor, Tensor]:
-        """(own part, other part), each [worlds, weys, 2, H, W]: what each wey senses of the trails under its
-        world's access mode is their sum (shared: the total; peers: total − own; none: nothing)."""
+    def _components(self) -> tuple[Tensor, Tensor, Tensor]:
+        """(base, other, exposed), each [worlds, weys, 2, H, W]. What each wey senses of the trails under its
+        world's access mode is base + other (shared: the total, exactly; peers: total − own; none: nothing).
+        `exposed` is the part that is not the wey's own, which the exposure reads: `other`, except under
+        shared, where it is the live peers' field total − own (D178: it was 0, which zeroed the replay
+        coefficient)."""
         own = self.trails
         total = own.sum(dim=1, keepdim=True)
         zero = torch.zeros_like(own)
@@ -285,8 +288,10 @@ class MazeWorld(World):
         if "own" in m or "replay" in m or "scramble" in m:
             keep = m.get("own", False) | m.get("replay", False) | m.get("scramble", False)
             base = torch.where(keep, own, zero)
+        exposed_shared = None
         if "shared" in m:
             base = torch.where(m["shared"], total.expand_as(own), base)
+            exposed_shared = total - own
         if "peers" in m:
             other = torch.where(m["peers"], total - own, other)
         if "replay" in m:
@@ -299,11 +304,12 @@ class MazeWorld(World):
             perm = torch.zeros_like(peers).scatter_(
                 -1, self._open_idx.view(self.n_worlds, 1, 1, n_open).expand(-1, self.n_weys, 2, -1), vals)
             other = torch.where(m["scramble"], perm.reshape(own.shape), other)
-        return base, other
+        exposed = other if exposed_shared is None else torch.where(m["shared"], exposed_shared, other)
+        return base, other, exposed
 
     def sensed_trails(self) -> Tensor:
         """[worlds, weys, 2, H, W]: the trails each wey senses under its world's access mode."""
-        base, other = self._components()
+        base, other, _ = self._components()
         return base + other
 
     # -------------------------------------------------------------- hooks
@@ -331,7 +337,7 @@ class MazeWorld(World):
         head = P[:, :, 0:1].expand(-1, -1, 2, -1).reshape(Wn * B, 2, 2)
         noses = P[:, :, [P_FRONT_L, P_FRONT_R]].reshape(Wn * B, 2, 2)
         occ = occlusion(self._wall_per_wey, head, noses)
-        base, other = self._components()
+        base, other, exposed = self._components()
         field = (base + other + self.scent.unsqueeze(1)).reshape(Wn * B, 2, H, W)
         read, blocked = read_occluded(field, noses, occ), occ["blocked"]  # [W*B, (A, B), (L, R)]
         sf = wcfg.sense_scale_food
@@ -343,7 +349,7 @@ class MazeWorld(World):
         if set(self._mode) <= {"own", "none"}:  # nothing but the wey's own trail is sensed
             self.last_exposure = torch.zeros(Wn, B, dtype=self.dtype, device=self.device)
         else:
-            ex = read_occluded(other.reshape(Wn * B, 2, H, W), noses, occ) * sf
+            ex = read_occluded(exposed.reshape(Wn * B, 2, H, W), noses, occ) * sf
             self.last_exposure = ex.reshape(Wn, B, 4).mean(-1)
         self._exposure += self.last_exposure.double()
         self._exposure_zero += (self.last_exposure == 0).long()

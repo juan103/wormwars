@@ -54,3 +54,9 @@ def test_the_headroom_uses_the_committed_minimum_detectable_effect(m):
     fine = p["fine"]["results"]
     worst = max(fine[f"12 runs, {shape}, CV 0.282"]["t"]["mde_80"] for shape in ("normal", "empirical"))
     assert m.REGISTERED["criterion2"]["mde"] == worst
+
+
+def test_stage_c_refuses_a_failed_recheck(m):
+    with pytest.raises(SystemExit, match="recheck"):
+        m.require_recheck_passed({"recheck-a": {"passed": False}})
+    m.require_recheck_passed({"recheck-a": {"passed": True}})

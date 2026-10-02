@@ -32,6 +32,8 @@ from . import maze_world as MW
 POLARITY_STREAM, PERMUTE_STREAM = 0x901A, 0x9E2B
 JITTER = 0.3
 NOSE_LOW, NOSE_HIGH = 0.005, 0.35
+QUANTILES = (1, 5, 25, 50, 75, 95, 99)
+_EDGES = np.geomspace(1e-6, 1e2, 801)  # the histogram of positive inputs: bins 2.3% wide
 
 
 class NoseRange:
@@ -44,6 +46,15 @@ class NoseRange:
         routes = np.stack([MM.route_cells(mz, pl.a, pl.b) for mz, pl in zip(world.mazes, world.placements)])
         self.routes = torch.from_numpy(routes).to(world.device)
         self.prev = world.pos[:, 0].clone()
+        self.edges = torch.as_tensor(_EDGES, dtype=world.dtype, device=world.device)
+        self.hist = torch.zeros(len(_EDGES) + 1, dtype=torch.long, device=world.device)
+        self.exists = self._exists(world)
+
+    @staticmethod
+    def _exists(world):
+        """[worlds, weys, 1]: whether any trail of the wey's current goal exists anywhere in its maze."""
+        mass = world.trails.sum(dim=(1, 3, 4))  # [worlds, (A, B)]
+        return (mass.gather(1, world.goal) > 0).unsqueeze(-1)
 
     def record(self, world) -> None:
         s = world.last_signals
@@ -56,13 +67,21 @@ class NoseRange:
         self.above += int((on & (g > NOSE_HIGH)).sum())
         self.zero += int((on & (g == 0)).sum())
         self.occluded += int((on & world.last_blocked).sum())
+        keep = on & ~world.last_blocked & self.exists & (g > 0)
+        self.hist += torch.bincount(torch.bucketize(g[keep], self.edges), minlength=len(_EDGES) + 1)
         self.prev = world.pos[:, 0].clone()
+        self.exists = self._exists(world)
 
     def result(self) -> dict:
         n, m = max(self.on, 1), max(self.on - self.occluded, 1)
+        h = self.hist.cpu().numpy()
+        cum = np.cumsum(h) / max(h.sum(), 1)
+        upper = np.concatenate([_EDGES, [np.inf]])
+        q = {str(p): float(upper[min(int(np.searchsorted(cum, p / 100)), len(upper) - 1)]) for p in QUANTILES}
         return {"on_route_noses": self.on, "in_range": self.inr, "above": self.above, "zero": self.zero,
                 "occluded": self.occluded, "in_range_share": self.inr / n, "above_share": self.above / n,
-                "in_range_share_unoccluded": self.inr / m, "above_share_unoccluded": self.above / m}
+                "in_range_share_unoccluded": self.inr / m, "above_share_unoccluded": self.above / m,
+                "positive_unoccluded_after_trail": int(h.sum()), "quantiles_unoccluded_positive": q}
 
 
 def world(cfg, iface, brain, ids, run_seed, device="cpu", **kw) -> MW.MazeWorld:
@@ -140,13 +159,15 @@ def _start(mz, pl, run_seed: int, maze_id: int, facing: str = "away"):
     source A, the registered start), toward A ("toward"), or uniform ("random", a further draw)."""
     path = MM.tree_path(mz, pl.a, pl.b)
     k = len(path) // 2
-    mid, nxt = path[k], path[k + 1]
+    mid, nxt, prv = path[k], path[k + 1], path[k - 1]
     x0, y0 = M.cell_centre(mid)
     x1, y1 = M.cell_centre(nxt)
     rng = np.random.default_rng([run_seed, maze_id, POLARITY_STREAM])
-    h = math.atan2(y1 - y0, x1 - x0) + rng.uniform(-JITTER, JITTER)
-    if facing == "toward":
-        h += math.pi
+    j = rng.uniform(-JITTER, JITTER)
+    h = math.atan2(y1 - y0, x1 - x0) + j
+    if facing == "toward":  # the route's previous cell, toward A (D178: not away + π, which can face a wall)
+        xp, yp = M.cell_centre(prv)
+        h = math.atan2(yp - y0, xp - x0) + j
     elif facing == "random":
         h = rng.uniform(0, 2 * math.pi)
     elif facing != "away":
@@ -154,7 +175,11 @@ def _start(mz, pl, run_seed: int, maze_id: int, facing: str = "away"):
     return mid, (x0, y0), h
 
 
-def polarity(cfg, iface, ids, run_seed, device="cpu", facing: str = "away") -> dict:
+def polarity(cfg, iface, ids, run_seed, device="cpu", facing: str = "away", limit_factor: float = 2.0,
+             age_legs: float = 1.0, synthetic=None) -> dict:
+    """See the module's docstring. Diagnostic options (D178): `facing`, the deadline as `limit_factor` × the
+    oracle's time, the trail's age in legs, and `synthetic(maze, placement, route)`, a field that replaces
+    the oracle's trail as the real condition."""
     from . import maze_controls as MC
     wcfg = cfg.world
     ids = np.asarray(ids)
@@ -172,7 +197,13 @@ def polarity(cfg, iface, ids, run_seed, device="cpu", facing: str = "away") -> d
             vt = w._visit_tick[:, 0]
             leg[new] = (vt[:, 1] - vt[:, 0])[new]
             done |= new
-    aged = age(snap, w._open, delta=wcfg.maze_trail_delta, mu=wcfg.maze_trail_mu, steps=leg)
+    aged = age(snap, w._open, delta=wcfg.maze_trail_delta, mu=wcfg.maze_trail_mu,
+               steps=torch.round(leg.double() * float(age_legs)).long())
+    if synthetic is not None:
+        aged = torch.from_numpy(np.stack([
+            np.asarray(synthetic(w.mazes[i], w.placements[i], MM.route_cells(w.mazes[i], w.placements[i].a,
+                                                                             w.placements[i].b)), dtype=np.float32)
+            for i in range(n)])).to(w.device, w.dtype)
     starts = [_start(w.mazes[i], w.placements[i], run_seed, int(ids[i]), facing) for i in range(n)]
     mids = torch.tensor([s[0] for s in starts], dtype=torch.long, device=w.device)
     pos = torch.tensor([s[1] for s in starts], dtype=w.dtype, device=w.device)
@@ -188,14 +219,15 @@ def polarity(cfg, iface, ids, run_seed, device="cpu", facing: str = "away") -> d
     # 2. the oracle's time from the start to A
     o = play(cfg, iface, lambda: MC.oracle(iface, cfg, device=device), ids, run_seed, device, access="none", setup=place)
     t_or = np.where(o["visit_tick"][:, 0, 0] >= 0, o["visit_tick"][:, 0, 0] + 1, H)
-    limit = 2 * t_or
+    limit = np.ceil(float(limit_factor) * t_or).astype(np.int64)
     # 3. the follower on the real, empty and route-permuted trails
     fields = {"real": aged.cpu().numpy(), "none": np.zeros_like(aged.cpu().numpy())}
     fields["permuted"] = np.stack([
         MM.route_permuted(fields["real"][i], MM.route_cells(w.mazes[i], w.placements[i].a, w.placements[i].b),
                           np.random.default_rng([run_seed, int(ids[i]), PERMUTE_STREAM])) for i in range(n)])
     out = {"oracle_ticks": t_or.astype(np.int64), "leg_ticks": leg.cpu().numpy(), "single_pass": done.cpu().numpy(),
-           "facing": facing}
+           "facing": facing, "limit_factor": float(limit_factor), "age_legs": float(age_legs),
+           "synthetic": synthetic is not None}
     for name, f in fields.items():
         trail = torch.from_numpy(f).to(device, w.dtype)
 
@@ -207,6 +239,7 @@ def polarity(cfg, iface, ids, run_seed, device="cpu", facing: str = "away") -> d
                   setup=setup, ticks=int(limit.max()))
         first = ev["visit_tick"][:, 0, 0]
         out[f"pass_{name}"] = ((first >= 0) & (first + 1 <= limit)).astype(np.float64)
+        out[f"first_tick_{name}"] = first
     return out
 
 

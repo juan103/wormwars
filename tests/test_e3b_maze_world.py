@@ -396,3 +396,17 @@ def test_scents_follow_path_distance_and_stop_at_the_reach(iface):
     expect = np.where(d <= 9, np.exp(-d ** 2 / (2 * 3.0 ** 2)), 0.0)
     expect[~np.isfinite(d)] = 0.0
     assert np.allclose(scent, expect, atol=1e-6)
+
+
+def test_shared_exposure_is_the_live_peers_field(iface):
+    """Exposure measures the part of the sensed trail that is not the wey's own: for shared, total − own
+    (Astra, D178: it was recorded as 0, which zeroed the replay coefficient)."""
+    cfg = MW.maze_config(**{**C5, "mu": 0.0, "delta": 0.0, "d0": 0.0})
+    world = _world(iface, np.arange(1), cfg=cfg, access="shared")
+    _set_trails(world, [1.0, 2.0])
+    world.tick()
+    assert torch.allclose(world.last_exposure[0], torch.tensor([2.0, 1.0]) * 0.35 / 2, atol=1e-5)
+    own = _world(iface, np.arange(1), cfg=cfg, access="own")
+    _set_trails(own, [1.0, 2.0])
+    own.tick()
+    assert float(own.last_exposure.abs().max()) == 0.0

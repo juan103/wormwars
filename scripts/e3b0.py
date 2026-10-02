@@ -412,8 +412,15 @@ def criterion2(seed_s, walk_s, oracle_visits, R) -> dict:
             "headroom": {"value": head, "min": need, "passed": head >= need}}
 
 
+def require_recheck_passed(earlier: dict) -> None:
+    """Stage C runs only after Stage A's recheck passed, not merely completed (Astra, D178)."""
+    if not earlier["recheck-a"].get("passed"):
+        raise SystemExit("Stage A's recheck failed: the next (c, H) with Stage B rerun comes first (§6)")
+
+
 def cmd_stage_c(args):
     def body(ctx):
+        require_recheck_passed(ctx.earlier)
         dev = ctx.args.device
         cfg, H = chosen_cfg(ctx.earlier)
         sel = ids("selection")
