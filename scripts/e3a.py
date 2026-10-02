@@ -293,6 +293,8 @@ def require_batch(args, prov, k: int) -> dict:
     """An earlier training batch, settled: completed or skipped (its record, committed), stopped finally
     (its record, committed), or refused. Anything else refuses."""
     st = batch_state(f"train-{k}")
+    if st == "absent" and any(batch_state(f"train-{j}") == "refused" for j in range(1, k)):
+        st = "refused"  # §9: once a batch is refused, no later batch starts
     if st not in TERMINAL:
         raise SystemExit(f"train-{k} is {st}: it must be settled first")
     if st == "refused":

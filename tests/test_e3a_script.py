@@ -154,3 +154,12 @@ def test_stage_three_needs_the_frozen_stage_two_champions(mod, tmp_path, monkeyp
     assert mod.batch_state("train-1") == "absent"
     with pytest.raises(SystemExit):
         mod.E.require_earlier(type("A", (), {"smoke": True, "guarded": False})(), {}, "champions-2")
+
+
+def test_batches_after_a_refusal_count_as_refused(mod, tmp_path, monkeypatch):
+    monkeypatch.setattr(mod.E, "EXP", tmp_path)
+    monkeypatch.setattr(mod.E, "OUT", tmp_path)
+    (tmp_path / "train-2-refused.json").write_text("{}", encoding="utf-8")
+    assert mod.require_batch(None, {}, 3) == {"state": "refused"}
+    with pytest.raises(SystemExit):
+        mod.require_batch(None, {}, 1)  # absent, with no earlier refusal
