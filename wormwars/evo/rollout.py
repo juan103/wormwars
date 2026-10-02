@@ -73,10 +73,14 @@ def _play(cfg, iface, brain, world_ids, run_seed, device, combat_stage=0, ticks=
         ids = world_ids.reshape(-1)
     else:
         ids = np.tile(world_ids, n_sub)
-    world = World(
+    cls = World
+    if cfg.world.task == "maze_shuttle":  # E3b's maze: its own world class (episode 0, the configured access)
+        from ..e3.maze_world import MazeWorld as cls
+    world = cls(
         cfg, iface, brain, strain_of, run_seed=run_seed, world_ids=ids,
         device=device, combat_stage=combat_stage,
-    )
+    ) if cls is World else cls(cfg, iface, brain, strain_of, run_seed=run_seed, world_ids=ids, device=device)
+    maze = cls is not World
     if recorder is not None:
         recorder.attach(world)
     food0 = world.fields[:, world.ch.FOOD].sum(dim=(1, 2)).clone()
@@ -85,19 +89,23 @@ def _play(cfg, iface, brain, world_ids, run_seed, device, combat_stage=0, ticks=
     shape = (n_sub, n_ids)
     # the score selector (E1): the energy score, or the number of targets reached
     # E3a's shuttle: the number of confirmed visits, with its own ledger
+    # E3b's maze shuttle: confirmed visits per wey, the colony's mean
     score = (world.targets_reached.to(torch.float32) if world.navigate
-             else world.shuttle_visits.to(torch.float32) if world.shuttle else foraging_score(world))
+             else world.shuttle_visits.to(torch.float32) if world.shuttle
+             else world.task_score() if maze else foraging_score(world))
     if world.navigate:
         events = {k: v.reshape(n_sub, n_ids, -1) for k, v in world.target_events().items()}
     elif world.shuttle:
         events = {k: v.reshape(n_sub, n_ids, *v.shape[1:]) for k, v in world.shuttle_events().items()}
+    elif maze:
+        events = {k: v.reshape(n_sub, n_ids, *v.shape[1:]) for k, v in world.task_events().items()}
     else:
         events = None
     return {
         "events": events,
         # the shuttle has no shaping: its progress is zero, so 04a's fitness is the visit count (E3a)
         "progress": (world.final_progress().reshape(shape).cpu().numpy() if world.navigate
-                     else np.zeros(shape, dtype=np.float32) if world.shuttle else None),
+                     else np.zeros(shape, dtype=np.float32) if world.shuttle or maze else None),
         "final_head": world.pos[:, 0, 0].reshape(n_sub, n_ids, 2).cpu().numpy() if world.navigate else None,
         "score": score.reshape(shape).cpu().numpy(),
         "energy": world.swarm_energy()[:, 0].reshape(shape).cpu().numpy(),

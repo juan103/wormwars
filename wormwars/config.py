@@ -171,6 +171,22 @@ class WorldConfig:
     shuttle_spawn_min: float | None = None  # |A - spawn| and |B - spawn|
     shuttle_spawn_max: float | None = None
     shuttle_cue_ticks: int | None = None
+    # --- E3b's maze shuttle (docs/E3/E3b-0-PLAN.md §1). "maze_shuttle": a colony in a tree maze of
+    # maze_cells x maze_cells cells (side 4c + 1), A and B at dead ends, each wey with its own goal;
+    # supercover movement (with per-axis sliding if maze_sliding); linear per-wey trails (evaporation
+    # mu, deposit d0 exp(-lambda t), flux diffusion delta); path-distance scents (sigma, zero beyond
+    # the reach); the trail access mode. Played by `wormwars.e3.maze_world.MazeWorld` only. Unset
+    # (None) by default and left out of `Config.to_dict` while unset, as the shuttle's fields are.
+    maze_cells: int | None = None
+    maze_spawns: int | None = None
+    maze_sliding: bool | None = None
+    maze_trail_mu: float | None = None
+    maze_trail_lambda: float | None = None
+    maze_trail_delta: float | None = None
+    maze_trail_d0: float | None = None
+    maze_scent_sigma: float | None = None
+    maze_scent_reach: int | None = None
+    maze_trail_access: str | None = None
 
 
 @dataclass
@@ -341,7 +357,10 @@ class Config:
 
 
 _OMITTED_WHILE_UNSET = ("shuttle_separation_min", "shuttle_separation_max", "shuttle_spawn_min",
-                        "shuttle_spawn_max", "shuttle_cue_ticks")
+                        "shuttle_spawn_max", "shuttle_cue_ticks",
+                        "maze_cells", "maze_spawns", "maze_sliding", "maze_trail_mu", "maze_trail_lambda",
+                        "maze_trail_delta", "maze_trail_d0", "maze_scent_sigma", "maze_scent_reach",
+                        "maze_trail_access")
 
 
 def _resolve(f: dataclasses.Field) -> type:

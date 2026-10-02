@@ -51,7 +51,7 @@ P_BODY_L, P_BODY_R = 8, 9
 N_POINTS = 10
 FOOD_SENSING = ("stereo", "mono")
 FOOD_PROBES = ("real", "constant", "mirrored", "jitter", "hold", "mean", "swapped")
-TASKS = ("forage", "navigate", "shuttle")
+TASKS = ("forage", "navigate", "shuttle", "maze_shuttle")  # the maze: MazeWorld only (E3b)
 _TARGET_STREAM = 0x5CE27  # the target sequence's own random stream, apart from the map's
 _SHUTTLE_STREAM = 0x5E3A  # E3a's sources' own stream (wormwars.e3.task.SHUTTLE_SOURCES_STREAM)
 _SHUTTLE_LEGS = 128  # legs tracked per world; running out is an error
@@ -210,6 +210,8 @@ def _mix32(x: int) -> int:
 
 
 class World:
+    _maze_task = False  # E3b's MazeWorld sets it
+
     def __init__(
         self,
         cfg: Config,
@@ -247,6 +249,8 @@ class World:
             raise ValueError(f"world.food_probe must be one of {FOOD_PROBES}, got {wcfg.food_probe!r}")
         if wcfg.task not in TASKS:
             raise ValueError(f"world.task must be one of {TASKS}, got {wcfg.task!r}")
+        if wcfg.task == "maze_shuttle" and not self._maze_task:
+            raise ValueError("the maze_shuttle task is played by wormwars.e3.maze_world.MazeWorld")
 
         strain_of = strain_of.to(self.device)
         self.n_worlds, self.n_swarms = int(strain_of.shape[0]), int(strain_of.shape[1])
