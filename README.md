@@ -37,14 +37,13 @@ selection acts on team results.
 | [03m](experiments/03m-p4-mechanism/README.md) | What drives 03's history dependence (P4)? | Exploratory; run, reviewed, corrected | N2's history fades more slowly than nearly all the shuffles'; its large food response depends on weight placement and on RIA and AIY; most weight permutations lower its P4, gap junctions narrow its lead, and no tested single or paired deletion removed it |
 | [E2](experiments/E2-optimizer-screen/README.md) | At equal simulator work, does OpenAI-ES find better Task N navigators than 02's GA, with random sampling as a floor? | Published; pre-registered, public before its run | "E2: keep 02's GA": the ES led by 0.12 targets per episode (0.5 needed). The floor fired: random sampling came within 0.36 of the GA, so Task N is diagnosed before E3 builds on it |
 | [E2d](experiments/E2d-taskn-diagnosis/README.md) | Why did random sampling come so close? Noise, the operators, budget and stereo use on Task N | Exploratory; plan and runner reviewed; run, reviewed, corrected | "A non-stereo plateau": no champion of 47 meets the "uses the left-right difference" criterion. No tested change (more worlds, gentler mutation, both, a smaller ES σ) leaves the plateau; gentler mutation improved all 8 paired runs but met the bar only with the failed run 2; the ES is budget-limited |
+| [E3](experiments/E3-ab-organism/README.md) | Can two hand-built stereo modules be composed, with a one-neuron latch remembering which source is next, into an organism that shuttles between two sources; and can evolution find the selector? (E3a, the shuttle; mazes and colonies are E3b) | E3a pre-registered and public before its run; run, reviewed, corrected | E3a: the engineered organism shuttles at 12.79 visits per episode (97% of a module fed the goal's scent). "Evolution found a working selector in 1 of 8 runs, not reliably"; a blind search over the whole range found working selectors in 7 of 8; the two scored "unclear" apart. Joint tuning added 2.36 visits |
 | [E4s](experiments/E4s-stereo-module/README.md) | After E2d's plateau, can a hand-built stereo module grafted onto N2 steer, and what does evolution do to it? (Ahead of plan; stereo sensing is a game-design choice, not worm biology) | E4s-0 exploratory, E4s-1 pre-registered and public before its run; both run, reviewed, corrected | E4s-1, "supports": with the 4-neuron graft's output, evolved brains end +5.19 targets per episode above the same brains evolved without it (16 of 16 pairs), and +3.79 above random signs fixed for the run. The selected brains use the module at both endpoints in 16 of 16 runs (7.14 on average). Part of the benefit is not stereo use, and transfer into the host was not shown |
 
 Next on the roadmap:
-- **Published 2026-10-02:** E4s-0 and E4s-1, together.
-- **Next in Track E:** E3's design.
-  - It may start from E4s-0's frozen module, labelled as a hand-built circuit, or from E4s-1's run 10, a
-    whole-brain artefact.
-  - Either way it needs E3's own positive control.
+- **Published 2026-10-02:** E4s-0 and E4s-1, together; then E3a.
+- **Next in Track E:** E3b's design: trails, branching mazes and the colony, which hold the roadmap's
+  E3 gate.
 - **In the biology track:** a confirmatory study of 03m's leads, then 03a's six-neuron proof of
   concept.
 

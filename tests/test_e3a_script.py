@@ -99,7 +99,9 @@ def test_random_samplings_champion_ties_go_to_the_lower_draw(mod):
     assert mod.champion_of(np.array([3.0, 3.0]), keys=[9, 2]) == 1
 
 
-def test_admission_prices_the_remaining_stages(mod):
+def test_admission_prices_the_remaining_stages(mod, monkeypatch):
+    # the qualifier count is pinned: after the formal census it would be read from its record
+    monkeypatch.setattr(mod, "census_checked", lambda: 128)
     p = {"btask_generations": 800, "stage3_runs": 8, "rs_runs": 8, "steps": []}
     proj = _proj()
     assert mod.batch_hours("btask", p, proj) == pytest.approx(4.5)

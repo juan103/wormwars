@@ -37,6 +37,21 @@
     - Part of the benefit is not stereo use, and transfer into the host was not shown.
   - **Next in Track E: E3's design,** from E4s-0's module or E4s-1's run 10 (a whole-brain artefact),
     each needing E3's own positive control.
+- **E3a, the shuttle** (2026-10-02; D156-D169; `experiments/E3-ab-organism/`).
+  - **The design** took five review rounds, and the pre-registration two. Both were agreed by both
+    reviewers. The owner set 30 GPU-hours for E3a, and about the same each for E3b and E3c (D159).
+  - **The run used 5.97 GPU-hours.** Its results were reviewed ("fix") and corrected (D169).
+  - **The engineered organism shuttles:** two L1 copies on the carrier, gated by a one-neuron latch,
+    reach 12.79 visits per episode. That is 97% of a module fed the goal's scent.
+  - **The registered readings:**
+    - S2-a: "evolution found a working selector in 1 of 8 runs, not reliably";
+    - S2-b, against a blind search over the whole range: "unclear";
+    - S2-c: none in either census;
+    - Stage 3, joint tuning: "better" (+2.36);
+    - B-task: "worse" than Stage 3.
+  - **Next in Track E: E3b's design** (trails, branching mazes, the colony; it holds the E3 gate). It
+    starts from E3a's engineered organism, or its best tuned organisms, each with E3b's own positive
+    control.
 
 - **Published on main:**
   - 02's D050 correction, as a Corrections entry (27 September, D063);

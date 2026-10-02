@@ -88,6 +88,20 @@ def main():
                        "b_shared_component_passed": ev["descriptive"]["b_shared_component_tests"]["passed"],
                        "b_shared_memory_class": ev["descriptive"]["b_shared_memory"]["class"],
                        "checkpoint_offsets_max_abs": {k: max(abs(x) for x in v) for k, v in ev["descriptive"]["checkpoint_offsets"].items()}}
+    out["stage3_champion_tau"] = {str(c["run"]): {k: v["tau"][0] for k, v in c["grafted"]["neurons"].items()}
+                                  for c in ch3["stage3"]["champions"]}
+    release = {}
+    for o in ev["organisms"]:
+        rd = o["memory"].get("release_detail")
+        if not rd:
+            continue
+        flat = rd if "A" in rd else {f"{f}/{g}": v for f, d_ in rd.items() for g, v in d_.items()}
+        release[f"{o['arm']}-{o['run']}"] = {k: {"K_D": v["K_D"], "other": v["other"], "ratio": abs(v["other"]) / v["K_D"]}
+                                             for k, v in flat.items()}
+    out["release_detail"] = release
+    out["two_tick_class"] = {f"{o['arm']}-{o['run']}": (o["two_tick"]["class"] if isinstance(o["two_tick"], dict) else o["class"])
+                             for o in ev["organisms"]}
+    out["training"]["ga"]["first_checkpoint"] = [r["checkpoints"][0]["validation_mean"] for r in rec("train-1")["records"]]
     comp_rec = json.loads((EXP / "compute-record.json").read_text(encoding="utf-8"))
     out["compute"] = comp_rec.get("totals", comp_rec)
     (EXP / "summary.json").write_text(json.dumps(out, indent=1, default=float) + "\n", encoding="utf-8", newline="\n")

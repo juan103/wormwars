@@ -5251,3 +5251,40 @@ statements were corrected by Claude in that check:
 - the explanation of "unclear".
 
 A results review by both follows.
+
+## D169 — E3a's results reviewed (both "fix"), corrected; published on main
+
+**The review** (`docs/reviews/20261002-E3a-results/`, of f70c949): both said "fix". Both found every
+registered reading correct by its rule and wording. Astra independently recomputed the readings, their
+intervals, the working flags, the census bound and the champion selections.
+
+**What both found:**
+- the inactive gain range (0.059 to 0.068, not 0.060 to 0.067);
+- rounded bounds below their maxima;
+- τ values not in `summary.json`;
+- "memory-less" overread: the release test cannot separate a faded q from a weak gate;
+- "every champion" included B-task's untested champions.
+
+**Fable also found:**
+- times given without a zone;
+- the push claim uncited;
+- the four partial gates' release failures and 2-tick results unreported;
+- the 1-against-7 contrast resting partly on the clamp assays;
+- "beat E" without a paired test, omitting GA run 4;
+- the deviations' gaps: Amendment 1 followed the peek, and the rewritten runner was never reviewed as
+  code;
+- registered descriptive measures not pointed to.
+
+**Astra also found:** G0's blind threshold misstated as 0.5 visits; it is 0.5 × L1-switch's mean.
+
+**Astra's first attempt failed** ("unable to review"). The pinned Codex settings
+(`--ignore-user-config`) had also dropped the owner's `windows.sandbox="elevated"`, so Codex refused even
+read-only commands. That setting is now pinned, a command-level connectivity check passed, and the
+review was rerun. Both attempts are archived.
+
+**Corrected:** 13 dated corrections in `RESULTS.md`, each quoting the first draft. `summary.json` now holds
+the Stage 3 time constants, the release-test ratios and the 2-tick classes. Claude's own checks of the
+new numbers before committing caught two errors in the drafted fixes (a 0.43 for 0.49, and 9 for 8).
+
+**Published on main** on both reviewers' "fix", by consensus (as E4s-1, D154-D155); the owner is
+informed.

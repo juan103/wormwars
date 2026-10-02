@@ -1,0 +1,1 @@
+Fable 5.1 at effort "high" (run 20261002-182402). Astra 6 at "xhigh": attempt 1 (run 20261002-182507) could not read the repository, because the pinned Codex settings had dropped the elevated Windows sandbox (D169); attempt 2 (run 20261002-182843), with that setting pinned, is the review. The same prompt for all three.

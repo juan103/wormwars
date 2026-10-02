@@ -47,6 +47,12 @@ led to several of the findings.
 | 27 | E4s-0's world ids were placed on 03's timing ids (990 million), then on 02's gate ids (970 million) | Claude Opus 5.5 | **Neither reviewer**: both said the ranges were disjoint. The script's own disjointness test caught it, because it carried E2's list of earlier ranges | Moved to 940 million; a sabotage that moves them back is caught | D145 |
 | 28 | E4s-0's results: a wrong small-k maximum; "a valley" without its five exceptions; the comparator's qualification without its dependence on the carrier's turn bias; a bimodal robustness hidden by its median | Claude Opus 5.5 | **Fable 5.1** (the turn bias, the exceptions, the bimodality) and **Astra 6** (re-derived every number; the pooled attenuation) | 15 dated corrections; a script derives every summary number | D147 |
 | 29 | E4s-1's runner: a gate could pass on NaN states (`max(0, NaN)` is 0); a batch stopped twice would have blocked all evaluation; some genome loads were unchecked | Claude Opus 5.5 | **Astra 6** (the NaN) and **Fable 5.1** (the stranded evaluation) | Fixed test-first and sabotage-checked; an amendment before any stage ran | D152 |
+| 30 | E3's design v1: the latch was to be switched by a one-tick visit pulse of weight 1, which cannot cross the latch's unstable point. The literature review it cited said so | Claude Opus 5.5 | **Fable 5.1** and **Astra 6**, independently | Simulated in the engine's update rule; the redesign uses visit levels at gain 3, rechecked in `Brain.step` | D156 |
+| 31 | E3's design v2.2: the hold test took its reference while q was still settling, so the engineered organism failed its own test; the selector's starting draws broke the comparators' push-pull balance | Claude Opus 5.5 | **Fable 5.1** and **Astra 6** (Astra computed that 83.5% of draws had a clipped turn) | Checked in `Brain.step`; the balance tied in the draw, with zero offset at generation 0 | D161 |
+| 32 | E3's agreed design counted fixed points on a 100 001-point grid, which can miss a pair of roots inside one cell | Claude Opus 5.5 | **Astra 6**, with a counterexample | Rechecked: the grid finds 1 root, bracketing at the stationary points finds 3; a test pins the case | D164 |
+| 33 | E3a's runner: random sampling's champion ties broken by list position, not draw number; census qualifiers rebuilt from rounded parameters; S2-b's "neither found" reading only paired runs | Claude Opus 5.5 | **Fable 5.1** and **Astra 6** (Astra reproduced a changed float32 parameter) | Fixed test-first before any stage, with sabotage checks | D167 |
+| 34 | E3a's implementation tests ran the engineered organism on registered assay and calibration worlds with the evaluation seed, before the run | Claude Opus 5.5 | **Claude Opus 5.5**, while writing the calibration test | Disclosed; the tests moved to smoke ids; a guard test fails on any registered E3a block in a test | D166 |
+| 35 | E3a's results draft: "memory-less" champions overread (the release test cannot separate a faded memory from a weak gate); "every champion" included untested ones; G0's blind threshold misstated | Claude Opus 5.5 | **Fable 5.1** (the confound, the scope) and **Astra 6** (the threshold; recomputed every reading) | 13 dated corrections; every number traced to `summary.json` | D169 |
 
 Episode 6 went unnoticed for a week, through a passing test suite, every milestone report, a
 publication audit, the first public release and Claude's own review of the roadmap on the day it
@@ -81,7 +87,7 @@ food response is 1.55-2.7 times the most responsive graph's, not 1.5-1.8).
   useful.
 - One error (episode 16) was caught by neither a person nor a reviewer but by running the tests on
   another operating system.
-- This is one project and twenty-nine episodes: an anecdote about multi-agent review, not a measurement
+- This is one project and thirty-five episodes: an anecdote about multi-agent review, not a measurement
   of it.
 
 ## In the history

@@ -4,7 +4,27 @@
 pre-registration is bound (`E3a/PREREGISTRATION.md`; two review rounds, D164 and D165; Amendment 1,
 D167), pushed before any stage ran.
 - **E3a ran** on 2026-10-02, using 5.97 of its 30 GPU-hours (D168).
-- **Its results draft** (`E3a/RESULTS.md`) is in review.
+- **Its results** (`E3a/RESULTS.md`) were reviewed by both ("fix") and corrected (D169).
+
+## E3a's results
+
+The registered readings:
+- **S2-a:** "evolution found a working selector in 1 of 8 runs, not reliably".
+- **S2-b:** evolution against random sampling is "unclear", −1.49 visits (90% −2.98 to +0.24).
+- **S2-c:** none of 1 024 draws in either census passed the screen and the full check (rate below
+  0.0036).
+- **Stage 3 (joint tuning):** "better", +2.36 visits.
+- **B-task:** "worse" than Stage 3, −3.73. It matches neurons, not capacity.
+
+Descriptive:
+- **The engineered organism** (two L1 copies, a one-neuron latch, saturation gating) shuttles at 12.79
+  visits per 600 ticks. That is 97% of L1-switch on the same worlds, and removing its latch costs 4.83.
+- **Random sampling's champions** are working selectors in 7 of 8 runs (5 latches).
+- **Four tuned organisms** scored above E's mean (up to 15.98).
+- **Four champions are "bistable, not a latch":** memories that hold, behind partial gates.
+- **Several high scorers are classed "no memory".** The release test cannot separate a faded q from a
+  weak gate, so that class is operational.
+
 
 ## What it asks
 
