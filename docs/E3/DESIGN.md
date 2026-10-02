@@ -1,7 +1,9 @@
 # E3: the minimal A/B organism (design v2.4, 2026-10-02)
 
-Status: v2.4, for a short confirmation round by Astra 6 and Fable 5.1. Nothing has run. A
-pre-registration follows only if both agree.
+Status: v2.4, agreed: both reviewers said "proceed to pre-registration" (2026-10-02;
+`docs/reviews/20261002-E3-design-v2.4/`; D163). Nothing has run.
+- **Editorial fixes after that round,** marked "(D163)" where they occur: the text inconsistencies both
+  reviewers named. Their remaining pins go into the pre-registration.
 - **v2.3** (9dc604e; `docs/reviews/20261002-E3-design-v2.3/`; D162):
   - **Fable:** "proceed to pre-registration", with pins.
   - **Astra:** "revise". Astra rebuilt the engineered organism in `Brain.step`; it passes every
@@ -81,7 +83,8 @@ The roadmap gets a dated amendment saying so.
     - both are at least 6 from the spawn;
     - **|A − spawn| ≤ 16 and |B − spawn| ≤ 16, Euclidean.** v2.2 capped A only (Fable).
   - **The caps** bound each source's scent at the spawn head from below: exp(−16²/72) = 0.0285.
-    - **The noses receive it scaled** by `sense_scale_food` (0.35), so as about 0.0100.
+    - **Scaled** by `sense_scale_food` (0.35), the head's scent is about 0.0100. The lowest bilateral
+      nose reading, sampled with interpolation, is about 0.007 (Astra; D163).
     - **Correction to v2.2 (2026-10-02):** v2.2 said 0.0285 was "above the lowest level the component
       tests qualify (m = 0.02)". It compared the raw scent with a nose level (Astra). The component
       tests now reach m = 0.005.
@@ -89,7 +92,8 @@ The roadmap gets a dated amendment saying so.
   - v2.1's "16 along both axes" allowed about 22.6 cells, where the scent is about 0.0008.
 - **The check:** `scripts/e3_geometry_check.py`, writing `docs/E3/geometry-check.json`.
   - Over the 2 000 sampled spawns, every one accepts at least 11.8% of draws; the median is 17.8%.
-  - The lowest scent of either source at a spawn head is 0.0286, which the noses receive as 0.0100.
+  - The lowest scent of either source at a spawn head is 0.0286, or 0.0100 scaled (the head's, not a
+    nose's; D163).
   - **Without the caps,** 16 373 of 8.8 million accepted draws (0.19%) put the head outside A's square
     support.
     - **Correction to v2.1 (2026-10-02):** v2.1 called these worlds ones that "would start blind". They
@@ -190,8 +194,8 @@ interface gain of 3, which is within `input_max` = 5.
 - **The measurement:**
   - carrier turn 0.2, the qualifying condition for L1;
   - noses fed L = m + d/2 and R = m − d/2, with d = ±0.001 and m in {0.005, 0.01, 0.02, 0.05, 0.1,
-    0.2, 0.35}. These are nose levels, after the 0.35 scaling: 0.35 at a source's centre, and 0.010 at
-    the spawn caps' distance;
+    0.2, 0.35}. These are nose levels, after the 0.35 scaling: 0.35 at a source's centre, and about
+    0.007 at the lowest nose reading at the spawn caps' distance (D163);
   - the other module's noses at the same m with d = 0;
   - 50 ticks of preconditioning in the latch state, measured after the start cue;
   - K_D = Δu / (2d) at each m.
@@ -261,8 +265,10 @@ Every proposed threshold below is fixed in the pre-registration before Stage 0 r
     claimed** (rule 6; Fable).
   - It does not hold for B-task, whose edges into q are free, and the classes exclude B-task.
 - **The probe** (wherever K_D is read below; Astra):
+  - It is the component tests' measurement at m = 0.05 (restored; D163).
   - It works on a copy of the state, with **q, RA and RB held at their saved values** throughout the
-    readout, including the component measurement's 50 ticks of preconditioning.
+    readout, including the component measurement's 50 ticks of preconditioning. The held state
+    replaces the start cue.
   - So the probe measures the gate at that moment, not after further drift.
 - **Calibration worlds** (block 948M, 256 worlds), separate from the test worlds, supply every
   quantity the assays need (Astra):
@@ -302,14 +308,20 @@ Every proposed threshold below is fixed in the pre-registration before Stage 0 r
 - **The release test** (the memory test for a monostable q; also run, descriptively, for any bistable
   champion that is not a latch, per Fable):
   - **The setup:** start at q's computed equilibrium with the relays at rest, not after a fixed number
-    of ticks. Astra: for w_qq 0.99, b_q 0.01 and τ_q 20, 100 ticks from 0 reach 0.049, where the
+    of ticks. For a bistable champion, it is run from each stable equilibrium with the opposite goal's
+    stimulus (D163). Astra: for w_qq 0.99, b_q 0.01 and τ_q 20, 100 ticks from 0 reach 0.049, where the
     equilibrium is 0.282. Then apply the stimulus for goal X, then D ticks with no levels.
   - **What passes, for both goals:** X's module has a K_D of at least 15, and the other's |K_D| is at
     most 0.1 of it. Two zero gains therefore fail.
 - **Fixed points:**
-  - roots of −q + w_qq·tanh q + b_q = 0, found as sign changes on a grid of 100 001 points over
-    |q| ≤ |w_qq| + |b_q| + 1, each refined by bisection to 1e-9;
-  - two roots closer than 1e-3 (near the fold) count as one, so the count errs toward monostable.
+  - roots of f(q) = −q + w_qq·tanh q + b_q, found on a grid of 100 001 points over
+    |q| ≤ |w_qq| + |b_q| + 1. Exact zeros on the grid count, as well as sign changes, and each is refined
+    by bisection to 1e-9.
+  - **A root is stable** if f′(q) = −1 + w_qq·sech²q < −1e-6. A tangency is not stable.
+  - **Bistable** means two stable roots at least 0.1 apart; otherwise the structure is monostable.
+  - **Correction (D163):** v2.4 merged roots closer than 1e-3. Astra showed that can leave two roots,
+    which neither class accepts (w_qq 2, b_q 0.5328…). Counting stable roots avoids it. Strict sign
+    changes also missed the engineered system's exact root at 0.
 - **The reset test:**
   - **The setup:** 10 ticks after the first confirmed visit (to A, so the goal is B), q is set to the
     "go to A" state.
@@ -406,10 +418,12 @@ Every proposed threshold below is fixed in the pre-registration before Stage 0 r
   | no memory | monostable, and fails the release test |
 
   - **v2.2's hysteresis sweep is now descriptive.** A slow ramp passes a q that real 1-3 tick visits
-    never switch, so "settable" uses the two-tick level (Fable).
+    never switch, so "settable" uses the registered stimulus: the champion's own median level duration
+    (Fable; D163, which corrects v2.4's leftover "two-tick level").
   - **Every test uses the champion's own states,** not the engineered organism's:
     - its stable fixed points if it is bistable;
-    - otherwise its median q in each goal phase on the test worlds.
+    - otherwise its median q in each goal phase on the calibration worlds (D163, which corrects v2.4's
+      leftover "test worlds").
     - If those two medians differ by less than 0.1, or a goal phase never occurs on the calibration
       worlds, the clamp assays are not applicable, and the champion cannot be working.
   - A champion with the polarity mirrored (q < 0 meaning "go to A") counts as working.

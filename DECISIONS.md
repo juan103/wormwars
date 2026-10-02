@@ -5036,3 +5036,31 @@ geometry sound, and the remaining problems repairable in text.
 - random sampling as a blind search over the whole range, tied per module, with a dated correction;
 - generation 0's limits stated, with offsets logged;
 - the pulse-to-goal mapping, root finding, missing medians, reset timing and B-task's draws pinned.
+
+## D163 — E3's design agreed at v2.4: both "proceed to pre-registration"
+
+**The review** (`docs/reviews/20261002-E3-design-v2.4/`): both said "proceed to pre-registration", the
+first agreement after five rounds (D156, D157, D160, D161, D162). This is a consensus decision; the
+owner is informed.
+
+**Editorial fixes made after the round,** marked "(D163)" in the design:
+- calibration worlds, not test worlds, for monostable champions' medians;
+- the registered stimulus, not a two-tick level, for "settable";
+- the head's scaled scent (0.0100) distinguished from the lowest bilateral nose reading (about 0.007);
+- the probe's m = 0.05 restored;
+- the release test's starting equilibria for bistable champions;
+- **fixed points counted as stable roots** (f′ < −1e-6), with exact grid zeros included. Astra showed
+  that v2.4's merging of near roots can leave two roots (w_qq 2, b_q 0.5328…), which neither class
+  accepted.
+
+**Carried into the pre-registration**, as both listed:
+- the world block for the Stage 0 and Stage 1 gates (not the test worlds);
+- tolerances against the separation of the stable states, read at the end of W;
+- the stimulus's fallback, rounding, pooling and censoring;
+- S2-c's wording for a census zero, with an interval on the hit rate;
+- S2-b's wording naming the different distributions and random sampling's permanent tie;
+- B-task's self and mutual comparator edges, output range and τ draws;
+- B-task's sensory-blind start named in its reading;
+- the reset as a one-time write;
+- which Stage 3 runs are kept under reduction;
+- every number still marked "proposed".
