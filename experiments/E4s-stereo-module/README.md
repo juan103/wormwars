@@ -5,12 +5,15 @@
 - **E4s-1, the graft under evolution,** is pre-registered (`E4s-1/PREREGISTRATION.md`).
   - It was bound at 023267d and public before any stage ran, and amended once before any stage ran
     (D150, D152).
-  - Its formal run started at 13:22 that day.
-  - **The three gates passed:**
-    - re-qualification: 5.19 targets per episode, lower bound 5.11;
-    - the CUDA state check: a largest difference of 2.7 × 10⁻⁶;
-    - the score check: identical counts in every world for all 24 champions.
-  - Training is under way. The plan is
+  - **It ran** from 2026-10-01 13:22 to 2026-10-02 06:01: 16.61 of 24 GPU-hours, every gate passed,
+    every stage completed. The results are written and under review: [`E4s-1/RESULTS.md`](E4s-1/RESULTS.md).
+  - **O1 "supports":** the arm evolved with the graft's output ends +5.19 targets per episode above
+    the arm without it (90% interval +5.06 to +5.33; all 16 pairs positive).
+  - **O1b "supports":** designed signs beat random signs by +3.79.
+  - **All 16 main runs use the module at both endpoints,** and their final brains score 7.14 on
+    average, about three times the non-stereo plateau and 1.37 times L1 alone.
+  - **The steering stays in the graft,** co-adapted with its host. The host does not learn stereo by
+    itself, and silencing the module drops the brain to 0.11. The plan is
 [`docs/E4s/ROADMAP-PROPOSAL.md`](../../docs/E4s/ROADMAP-PROPOSAL.md) (v2.1, adopted, D144). The
 owner set a ceiling of 96 GPU-hours for all of E4s.
 

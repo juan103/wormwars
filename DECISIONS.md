@@ -4725,3 +4725,32 @@ rule. It ran on the smoke records.
 
 Both reviewers said "fix then run". Every item is applied or settled by Amendment 1, so the formal run
 starts from a clean, pushed tree.
+
+## D153 — E4s-1 ran as registered (16.61 GPU-hours); its results written, for review
+
+**The run** (2026-10-01 13:22 to 2026-10-02 06:01):
+- the projection, the three gates (all passed), R's draws, ten training batches, and both evaluation
+  stages;
+- each stage committed and pushed before the next;
+- no stage refused, stopped or rerun; every end-of-run assertion passed; all 80 runs evaluated.
+
+**The registered readings** (`report.json`):
+- **O1 "supports"** (+5.19, 90% interval +5.06 to +5.33, 16 of 16 pairs positive).
+- **O1b "supports"** (+3.79). Neither companion sentence applies.
+- **M "uses at both endpoints"** in 16 of 16 runs, all with O2b ≥ 0.9. F0, U and S use it too, in 8 of
+  8 each; R has no label named.
+- **C2 goes from "harmful" to "uses"** in 8 of 8.
+- **E3's artefact rule is met:** run 10's F, with O2b 1.45. E3's own positive control is still
+  required.
+
+**Descriptive** (`summary.json`, from the new `scripts/e4s1_summary.py`):
+- **The steering stays in the graft:** H is "no material benefit" throughout, and silencing the module
+  leaves 0.11.
+- **The host co-adapts:** putting L1's designed parameters back leaves 0.72, and the evolved module
+  alone meets "uses" in only 5 of 16 runs.
+- **M climbs past the carrier's 5.2 by generation 100** and reaches 7.1. N stays near 1.6-1.9.
+
+**Every headline number** was re-derived from the per-world counts before writing.
+
+The results (`experiments/E4s-stereo-module/E4s-1/RESULTS.md`) go to Astra 6 and Fable 5.1 for review.
+On consensus, E4s-0 and E4s-1 go to `main` together (the owner's choice, 2026-10-01).
