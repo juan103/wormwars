@@ -1,0 +1,3724 @@
+{
+ "stage": "evaluate",
+ "attempt": 1,
+ "registered": {
+  "world_seed": 1171000,
+  "task_sigma": 6.0,
+  "horizon": 600,
+  "ga": {
+   "population": 32,
+   "elites": 3,
+   "truncation": 8,
+   "worlds_per_strain": 16,
+   "generations": 300,
+   "islands": 1,
+   "mutation": {
+    "w_sigma": 0.08,
+    "g_sigma": 0.04,
+    "tau_sigma": 0.15,
+    "bias_sigma": 0.05,
+    "p_mutate": 1.0
+   }
+  },
+  "generations": {
+   "ga": 300,
+   "rs": 300,
+   "stage3": 500,
+   "btask": 800
+  },
+  "runs": 8,
+  "checkpoint_every": 25,
+  "rerun_kill_tail_seconds": 900,
+  "cap_gpu_hours": 30.0,
+  "admit_hours": 28.0,
+  "reserve_factor": 1.25,
+  "seeds": {
+   "ga": 1170000,
+   "ga_init": 1172000,
+   "rs": 1173000,
+   "census_ga": 1174000,
+   "census_rs": 1174001,
+   "btask_init": 1175000,
+   "stage3": 1176000,
+   "btask": 1177000,
+   "projection": 1179000,
+   "equivalence": 1179500
+  },
+  "ids": {
+   "train": {
+    "base": 944000000,
+    "span": 500000
+   },
+   "validation": {
+    "first": 945000000,
+    "worlds": 256
+   },
+   "test": {
+    "first": 946000000,
+    "worlds": 256
+   },
+   "census": {
+    "first": 947000000,
+    "worlds": 16
+   },
+   "assays": {
+    "first": 947100000,
+    "worlds": 256
+   },
+   "gates": {
+    "first": 947200000,
+    "worlds": 1024
+   },
+   "calibration": {
+    "first": 948000000,
+    "worlds": 256
+   }
+  },
+  "census": {
+   "draws": 1024,
+   "screen": 0.8,
+   "cap": 64,
+   "projected_qualifiers": 64
+  },
+  "e_stimulus": 2,
+  "trace_worlds": 16,
+  "carrier": {
+   "forward": 1.0,
+   "turn": 0.2
+  },
+  "scripted": {
+   "s_shuttle_k32": {
+    "k": 32.0,
+    "speed": 1.0,
+    "turn": 0.2
+   },
+   "s_shuttle_k8192": {
+    "k": 8192.0,
+    "speed": 1.0,
+    "turn": 0.0
+   }
+  },
+  "batches": [
+   "ga",
+   "rs",
+   "stage3",
+   "btask"
+  ]
+ },
+ "provenance_at_start": {
+  "git_commit": "6402e029c44d2cf508d810764a4a29146864c54c",
+  "branch": "roadmap",
+  "dirty": false,
+  "python": "3.13.3",
+  "numpy": "2.4.4",
+  "torch": "2.12.0+cu130",
+  "cuda": "13.0",
+  "gpu": "NVIDIA GeForce RTX 5080",
+  "connectome_cache_sha256": "43b87aa172a0042b9dce734b15bdf1c87efe3a33ac1cc0d9cd03255a60c96d4a",
+  "connectome_source_sha256": "1f4fdbf84746b69b49a8da0816f52787860ce349b638dce37924ba80f90c70c9"
+ },
+ "device": "cuda",
+ "resolved_config": {
+  "brain": {
+   "substeps": 32,
+   "tau_min": 0.5,
+   "tau_max": 20.0,
+   "w_max": 3.0,
+   "g_max": 2.0,
+   "b_max": 2.0,
+   "init_w_scale": 0.2,
+   "init_g_scale": 0.05,
+   "init_bias_std": 0.5,
+   "init_tau_log_uniform": true,
+   "init_chem_magnitude": "anatomical",
+   "init_gap_magnitude": "anatomical",
+   "init_permutation_seed": 0,
+   "dale": false,
+   "input_gain": 1.0,
+   "input_max": 5.0,
+   "chem_direction": "pre_to_post",
+   "pad_single_strain": true
+  },
+  "world": {
+   "n_swarms": 1,
+   "weys_per_swarm": 1,
+   "max_ticks": 600,
+   "cells_per_wey": 24.0,
+   "min_side": 24,
+   "body_length": 2.4,
+   "max_speed": 0.35,
+   "reverse_fraction": 0.4,
+   "max_turn": 0.3,
+   "forward_gain": 4.0,
+   "turn_gain": 2.0,
+   "start_energy": 12.0,
+   "max_energy": 40.0,
+   "body_mass": 6.0,
+   "metabolic_drain": 0.0,
+   "move_cost": 0.0,
+   "hazard_damage": 0.0,
+   "eat_rate": 0.0,
+   "pheromone_deposit": 0.0,
+   "pheromone_decay": 0.93,
+   "pheromone_diffusion": 0.35,
+   "sense_scale_food": 0.35,
+   "sense_scale_pheromone": 0.0,
+   "sense_scale_hazard": 2.0,
+   "sense_scale_damage": 2.0,
+   "sense_scale_collision": 2.0,
+   "body_splat": 1.0,
+   "crowd_threshold": 0.8,
+   "crowd_resist": 0.6,
+   "crowd_push": 0.1,
+   "crowd_blur": 1,
+   "food_sensing": "stereo",
+   "food_probe": "real",
+   "food_odour_sigma": 0.0,
+   "food_probe_radius": 0.0,
+   "check_ledger_every_tick": false,
+   "food_probe_hold": 1,
+   "task": "shuttle",
+   "target_sigma": 6.0,
+   "target_amplitude": 1.0,
+   "target_radius": 1.5,
+   "target_separation": 8.0,
+   "target_max_separation": 0.0,
+   "target_wall_clearance": 3.0,
+   "target_sequence_length": 64,
+   "shuttle_separation_min": 8.0,
+   "shuttle_separation_max": 14.0,
+   "shuttle_spawn_min": 6.0,
+   "shuttle_spawn_max": 16.0,
+   "shuttle_cue_ticks": 5
+  },
+  "map": {
+   "food_patches": [
+    0,
+    0
+   ],
+   "food_patch_radius": [
+    2.5,
+    5.0
+   ],
+   "food_per_patch": [
+    70.0,
+    160.0
+   ],
+   "food_centre_bias": 0.62,
+   "hazard_patches": [
+    0,
+    0
+   ],
+   "hazard_radius": [
+    2.0,
+    4.0
+   ],
+   "hazard_strength": [
+    0.5,
+    1.0
+   ],
+   "hazard_spawn_clearance": 6.0,
+   "spawn_margin": 3.0,
+   "spawn_spread": 0.28,
+   "food_regen": 0.0,
+   "food_scales_with_headcount": true,
+   "food_reference_weys": 20
+  },
+  "combat": {
+   "attack_strength": 1.0,
+   "attack_offset": 0.9,
+   "attack_blur": 1,
+   "damage_k": 0.55,
+   "head_armor": 0.25,
+   "transfer_fraction": 0.5,
+   "max_flank_payback": 0.1,
+   "max_head_on_asymmetry": 1.5,
+   "pump_cost": 0.1
+  },
+  "mutation": {
+   "w_sigma": 0.08,
+   "g_sigma": 0.04,
+   "tau_sigma": 0.15,
+   "bias_sigma": 0.05,
+   "p_mutate": 1.0
+  },
+  "evo": {
+   "population": 32,
+   "generations": 300,
+   "elites": 3,
+   "truncation": 8,
+   "worlds_per_strain": 16,
+   "holdout_worlds": 24,
+   "islands": 1,
+   "migrate_every": 10,
+   "migrants": 1,
+   "chunk_worlds": 512,
+   "train_seed_base": 0,
+   "train_seed_span": 1000000,
+   "holdout_seed_base": 900000000,
+   "eval_ticks": 0,
+   "opponents_self": 3,
+   "opponents_hof": 2,
+   "coevo_worlds": 2,
+   "coevo_sizes": [
+    40,
+    40
+   ],
+   "coevo_lopsided": false,
+   "coevo_vary_sizes": false,
+   "coevo_size_range": [
+    50,
+    200
+   ],
+   "coevo_size_pairs": 2,
+   "coevo_lopsided_fraction": 0.5,
+   "hof_capacity": 12,
+   "suite_every": 5,
+   "suite_sizes": [
+    100,
+    100
+   ],
+   "suite_size": 6,
+   "suite_worlds": 8
+  }
+ },
+ "resolved_config_sha256": "24c8c705886b8402109d34192a464f54d31a09ccbd372bf842226600d4de6693",
+ "e1_inputs_sha256": {
+  "experiments/E1-navigation/freeze.json": "c5c48f83079a6bd0dd48bdeb13d02ab211a08eb64433fdc8372cbd6e74bcaae9",
+  "experiments/E1-navigation/gate.json": "a18b5a53845360107448527b2af038b9c613e4bf11fdfe843c328b7c2a01afa0"
+ },
+ "start_marker": "evaluate-started.json",
+ "rerun": null,
+ "outcome": "completed",
+ "organisms": [
+  {
+   "arm": "ga",
+   "run": 0,
+   "test_mean": 7.2890625,
+   "test_lower_bound": 6.890625,
+   "selector": [
+    0.9422332048416138,
+    -0.6652981042861938,
+    0.6944935321807861,
+    0.07846072316169739,
+    -0.16086697578430176,
+    1.4531210660934448,
+    0.33934304118156433,
+    -0.716690719127655,
+    0.21883144974708557,
+    -0.45598724484443665,
+    0.22034786641597748,
+    0.1229204535484314,
+    -0.41144365072250366
+   ],
+   "structure": "monostable",
+   "clamp": {
+    "applicable": false,
+    "passed": false
+   },
+   "memory": {
+    "structure": "monostable",
+    "window": 20,
+    "stimulus": 8,
+    "start": 0.4266815616816472,
+    "release_detail": {
+     "A": {
+      "K_D": 33.1876335144043,
+      "other": 33.349788665771484,
+      "passed": false
+     },
+     "B": {
+      "K_D": 33.34862518310547,
+      "other": 33.18549346923828,
+      "passed": false
+     }
+    },
+    "release": false,
+    "class": "no memory"
+   },
+   "two_tick": {
+    "structure": "monostable",
+    "window": 20,
+    "stimulus": 2,
+    "start": 0.4266815616816472,
+    "release_detail": {
+     "A": {
+      "K_D": 33.1876335144043,
+      "other": 33.349788665771484,
+      "passed": false
+     },
+     "B": {
+      "K_D": 33.34862518310547,
+      "other": 33.18549346923828,
+      "passed": false
+     }
+    },
+    "release": false,
+    "class": "no memory"
+   },
+   "class": "no memory",
+   "working": false,
+   "hysteresis": {
+    "q_after_a_ramp": 0.4256688058376312,
+    "a_crossing_drive": 0.0,
+    "q_after_b_ramp": 0.42717546224594116,
+    "b_crossing_drive": null
+   },
+   "module_skill": {},
+   "mean_nose": {
+    "A": 0.515625,
+    "B": 1.75
+   }
+  },
+  {
+   "arm": "ga",
+   "run": 1,
+   "test_mean": 7.9140625,
+   "test_lower_bound": 7.53515625,
+   "selector": [
+    1.5321842432022095,
+    1.1755263805389404,
+    -1.7430514097213745,
+    -0.5807362794876099,
+    -0.783806562423706,
+    0.05767084285616875,
+    0.3195543885231018,
+    -0.8683347702026367,
+    -0.9288878440856934,
+    0.14041247963905334,
+    0.33644160628318787,
+    -1.2011730670928955,
+    -1.1818978786468506
+   ],
+   "structure": "monostable",
+   "clamp": {
+    "applicable": false,
+    "passed": false
+   },
+   "memory": {
+    "structure": "monostable",
+    "window": 20,
+    "stimulus": 8,
+    "start": -2.9116442081594296,
+    "release_detail": {
+     "A": {
+      "K_D": 35.57646179199219,
+      "other": 32.6695556640625,
+      "passed": false
+     },
+     "B": {
+      "K_D": 32.6695556640625,
+      "other": 35.57646179199219,
+      "passed": false
+     }
+    },
+    "release": false,
+    "class": "no memory"
+   },
+   "two_tick": {
+    "structure": "monostable",
+    "window": 20,
+    "stimulus": 2,
+    "start": -2.9116442081594296,
+    "release_detail": {
+     "A": {
+      "K_D": 35.57646179199219,
+      "other": 32.6695556640625,
+      "passed": false
+     },
+     "B": {
+      "K_D": 32.6695556640625,
+      "other": 35.57646179199219,
+      "passed": false
+     }
+    },
+    "release": false,
+    "class": "no memory"
+   },
+   "class": "no memory",
+   "working": false,
+   "hysteresis": {
+    "q_after_a_ramp": -2.9308054447174072,
+    "a_crossing_drive": null,
+    "q_after_b_ramp": -2.925844192504883,
+    "b_crossing_drive": 0.0
+   },
+   "module_skill": {},
+   "mean_nose": {
+    "A": 0.96484375,
+    "B": 1.80859375
+   }
+  },
+  {
+   "arm": "ga",
+   "run": 2,
+   "test_mean": 11.203125,
+   "test_lower_bound": 10.75,
+   "selector": [
+    7.818077087402344,
+    0.6494850516319275,
+    0.051254432648420334,
+    1.5449917316436768,
+    -0.24508188664913177,
+    1.1880810260772705,
+    0.7877892851829529,
+    0.6840694546699524,
+    0.7619190812110901,
+    0.36369749903678894,
+    0.2617892324924469,
+    -0.8157472014427185,
+    -0.616012454032898
+   ],
+   "structure": "monostable",
+   "clamp": {
+    "applicable": true,
+    "assignment": {
+     "A": 0.13252994418144226,
+     "B": 0.6429896354675293
+    },
+    "passed": false,
+    "share": {
+     "A": 0.8203125,
+     "B": 0.921875
+    }
+   },
+   "memory": {
+    "structure": "monostable",
+    "window": 79,
+    "stimulus": 8,
+    "start": 0.14438244615832768,
+    "release_detail": {
+     "A": {
+      "K_D": 30.22407341003418,
+      "other": 24.370695114135742,
+      "passed": false
+     },
+     "B": {
+      "K_D": 27.77802085876465,
+      "other": 25.63729476928711,
+      "passed": false
+     }
+    },
+    "release": false,
+    "class": "no memory"
+   },
+   "two_tick": {
+    "structure": "monostable",
+    "window": 79,
+    "stimulus": 2,
+    "start": 0.14438244615832768,
+    "release_detail": {
+     "A": {
+      "K_D": 29.60382652282715,
+      "other": 24.85321044921875,
+      "passed": false
+     },
+     "B": {
+      "K_D": 26.5192928314209,
+      "other": 27.371356964111328,
+      "passed": false
+     }
+    },
+    "release": false,
+    "class": "no memory"
+   },
+   "class": "no memory",
+   "working": false,
+   "hysteresis": {
+    "q_after_a_ramp": -0.04821733385324478,
+    "a_crossing_drive": 0.0,
+    "q_after_b_ramp": 0.6904000639915466,
+    "b_crossing_drive": 0.0
+   },
+   "module_skill": {
+    "A": {
+     "first_entry_share": 0.8203125,
+     "K_D_at_state": 29.543222427368164
+    },
+    "B": {
+     "first_entry_share": 0.921875,
+     "K_D_at_state": 32.26010513305664
+    }
+   },
+   "mean_nose": {
+    "A": 0.2109375,
+    "B": 1.0
+   }
+  },
+  {
+   "arm": "ga",
+   "run": 3,
+   "test_mean": 12.12109375,
+   "test_lower_bound": 11.62109375,
+   "selector": [
+    2.7317724227905273,
+    1.1116998195648193,
+    0.04096535965800285,
+    -1.5112519264221191,
+    1.3710901737213135,
+    0.7758679986000061,
+    1.012091040611267,
+    0.6214427351951599,
+    0.9089419841766357,
+    -0.06842847168445587,
+    -0.4514545500278473,
+    0.21634818613529205,
+    0.6605535745620728
+   ],
+   "structure": "monostable",
+   "clamp": {
+    "applicable": true,
+    "assignment": {
+     "A": 0.8350595235824585,
+     "B": -0.7423232197761536
+    },
+    "passed": false,
+    "share": {
+     "A": 0.875,
+     "B": 0.8984375
+    }
+   },
+   "memory": {
+    "structure": "monostable",
+    "window": 28,
+    "stimulus": 8,
+    "start": 0.7411736107364844,
+    "release_detail": {
+     "A": {
+      "K_D": 31.543149948120117,
+      "other": 17.310976028442383,
+      "passed": false
+     },
+     "B": {
+      "K_D": 33.700889587402344,
+      "other": 24.653045654296875,
+      "passed": false
+     }
+    },
+    "release": false,
+    "class": "no memory"
+   },
+   "two_tick": {
+    "structure": "monostable",
+    "window": 28,
+    "stimulus": 2,
+    "start": 0.7411736107364844,
+    "release_detail": {
+     "A": {
+      "K_D": 31.557558059692383,
+      "other": 17.324893951416016,
+      "passed": false
+     },
+     "B": {
+      "K_D": 33.19175338745117,
+      "other": 26.145397186279297,
+      "passed": false
+     }
+    },
+    "release": false,
+    "class": "no memory"
+   },
+   "class": "no memory",
+   "working": false,
+   "hysteresis": {
+    "q_after_a_ramp": 0.9678482413291931,
+    "a_crossing_drive": 0.0,
+    "q_after_b_ramp": -0.8387174606323242,
+    "b_crossing_drive": 0.24120603015075376
+   },
+   "module_skill": {
+    "A": {
+     "first_entry_share": 0.875,
+     "K_D_at_state": 30.502363204956055
+    },
+    "B": {
+     "first_entry_share": 0.8984375,
+     "K_D_at_state": 33.9979362487793
+    }
+   },
+   "mean_nose": {
+    "A": 0.83203125,
+    "B": 1.03125
+   }
+  },
+  {
+   "arm": "ga",
+   "run": 4,
+   "test_mean": 14.984375,
+   "test_lower_bound": 14.59765625,
+   "selector": [
+    4.060408115386963,
+    1.3537211418151855,
+    -0.062122344970703125,
+    -1.1981220245361328,
+    1.2182940244674683,
+    0.9310724139213562,
+    1.1331583261489868,
+    1.6585731506347656,
+    1.0826340913772583,
+    -0.9150818586349487,
+    -0.9112605452537537,
+    0.8579992651939392,
+    0.46226194500923157
+   ],
+   "structure": "bistable",
+   "clamp": {
+    "applicable": true,
+    "assignment": {
+     "A": 0.9214997230496735,
+     "B": -1.1839355571050953
+    },
+    "passed": true,
+    "share": {
+     "A": 0.9296875,
+     "B": 0.94140625
+    }
+   },
+   "memory": {
+    "structure": "bistable",
+    "window": 41,
+    "stimulus": 8,
+    "states": {
+     "A": 0.9214997230496735,
+     "B": -1.1839355571050953
+    },
+    "settable_detail": {
+     "A": {
+      "q": 0.9296239018440247,
+      "passed": true
+     },
+     "B": {
+      "q": -1.1855216026306152,
+      "passed": true
+     }
+    },
+    "hold_detail": {
+     "A": {
+      "q": 0.921519935131073,
+      "K_D": 34.76361846923828,
+      "other": 6.161272048950195,
+      "K_D_at_fixed_point": 34.766822814941406,
+      "passed": false
+     },
+     "B": {
+      "q": -1.183957815170288,
+      "K_D": 28.793493270874023,
+      "other": 3.982983350753784,
+      "K_D_at_fixed_point": 28.798324584960938,
+      "passed": false
+     }
+    },
+    "settable": true,
+    "hold": false,
+    "class": "bistable, not a latch",
+    "release_detail": {
+     "from A": {
+      "A": {
+       "K_D": 34.87332534790039,
+       "other": 6.048834800720215,
+       "passed": false
+      },
+      "B": {
+       "K_D": 28.7696590423584,
+       "other": 3.977630138397217,
+       "passed": false
+      }
+     },
+     "from B": {
+      "A": {
+       "K_D": 34.81648254394531,
+       "other": 6.110021591186523,
+       "passed": false
+      },
+      "B": {
+       "K_D": 28.74945640563965,
+       "other": 3.9738378524780273,
+       "passed": false
+      }
+     }
+    },
+    "release": false
+   },
+   "two_tick": {
+    "structure": "bistable",
+    "window": 41,
+    "stimulus": 2,
+    "states": {
+     "A": 0.9214997230496735,
+     "B": -1.1839355571050953
+    },
+    "settable_detail": {
+     "A": {
+      "q": -1.1774311065673828,
+      "passed": false
+     },
+     "B": {
+      "q": -0.8236976861953735,
+      "passed": false
+     }
+    },
+    "hold_detail": {
+     "A": {
+      "q": 0.921519935131073,
+      "K_D": 34.76361846923828,
+      "other": 6.161272048950195,
+      "K_D_at_fixed_point": 34.766822814941406,
+      "passed": false
+     },
+     "B": {
+      "q": -1.183957815170288,
+      "K_D": 28.793493270874023,
+      "other": 3.982983350753784,
+      "K_D_at_fixed_point": 28.798324584960938,
+      "passed": false
+     }
+    },
+    "settable": false,
+    "hold": false,
+    "class": "bistable, not a latch",
+    "release_detail": {
+     "from A": {
+      "A": {
+       "K_D": 34.84258270263672,
+       "other": 6.079800128936768,
+       "passed": false
+      },
+      "B": {
+       "K_D": 32.46450424194336,
+       "other": 5.302726745605469,
+       "passed": false
+      }
+     },
+     "from B": {
+      "A": {
+       "K_D": 4.0018744468688965,
+       "other": 28.880720138549805,
+       "passed": false
+      },
+      "B": {
+       "K_D": 28.76429557800293,
+       "other": 3.976978063583374,
+       "passed": false
+      }
+     }
+    },
+    "release": false
+   },
+   "class": "bistable, not a latch",
+   "working": true,
+   "hysteresis": {
+    "q_after_a_ramp": 1.1662137508392334,
+    "a_crossing_drive": 0.46733668341708545,
+    "q_after_b_ramp": -1.3428877592086792,
+    "b_crossing_drive": 0.36180904522613067
+   },
+   "module_skill": {
+    "A": {
+     "first_entry_share": 0.9296875,
+     "K_D_at_state": 34.766822814941406
+    },
+    "B": {
+     "first_entry_share": 0.94140625,
+     "K_D_at_state": 28.798324584960938
+    }
+   },
+   "mean_nose": {
+    "A": 0.55078125,
+    "B": 1.8125
+   }
+  },
+  {
+   "arm": "ga",
+   "run": 5,
+   "test_mean": 8.09765625,
+   "test_lower_bound": 7.75390625,
+   "selector": [
+    0.7255882024765015,
+    -2.094902753829956,
+    0.7937533855438232,
+    0.13366210460662842,
+    0.21203778684139252,
+    0.8465351462364197,
+    0.08379129320383072,
+    0.49752479791641235,
+    1.7675576210021973,
+    -0.37207046151161194,
+    -0.1105223223567009,
+    -0.3170279264450073,
+    -0.708568811416626
+   ],
+   "structure": "monostable",
+   "clamp": {
+    "applicable": false,
+    "passed": false
+   },
+   "memory": {
+    "structure": "monostable",
+    "window": 20,
+    "stimulus": 7,
+    "start": 0.26034771326611994,
+    "release_detail": {
+     "A": {
+      "K_D": 35.00514221191406,
+      "other": 33.80706024169922,
+      "passed": false
+     },
+     "B": {
+      "K_D": 33.80706024169922,
+      "other": 35.00514221191406,
+      "passed": false
+     }
+    },
+    "release": false,
+    "class": "no memory"
+   },
+   "two_tick": {
+    "structure": "monostable",
+    "window": 20,
+    "stimulus": 2,
+    "start": 0.26034771326611994,
+    "release_detail": {
+     "A": {
+      "K_D": 35.00514221191406,
+      "other": 33.80706024169922,
+      "passed": false
+     },
+     "B": {
+      "K_D": 33.80706024169922,
+      "other": 35.00514221191406,
+      "passed": false
+     }
+    },
+    "release": false,
+    "class": "no memory"
+   },
+   "class": "no memory",
+   "working": false,
+   "hysteresis": {
+    "q_after_a_ramp": 0.2606815993785858,
+    "a_crossing_drive": 0.0,
+    "q_after_b_ramp": 0.260558158159256,
+    "b_crossing_drive": null
+   },
+   "module_skill": {},
+   "mean_nose": {
+    "A": 0.75390625,
+    "B": 1.94921875
+   }
+  },
+  {
+   "arm": "ga",
+   "run": 6,
+   "test_mean": 8.08984375,
+   "test_lower_bound": 7.6796875,
+   "selector": [
+    2.8357553482055664,
+    -2.3127427101135254,
+    0.0826193317770958,
+    0.25699353218078613,
+    0.11849968880414963,
+    -0.799391508102417,
+    2.129856824874878,
+    2.391402006149292,
+    -0.09877030551433563,
+    -0.23623107373714447,
+    -0.23549985885620117,
+    -0.29779505729675293,
+    -0.30351006984710693
+   ],
+   "structure": "monostable",
+   "clamp": {
+    "applicable": false,
+    "passed": false
+   },
+   "memory": {
+    "structure": "monostable",
+    "window": 29,
+    "stimulus": 8,
+    "start": 0.02494346830867272,
+    "release_detail": {
+     "A": {
+      "K_D": 33.980979919433594,
+      "other": 33.1361198425293,
+      "passed": false
+     },
+     "B": {
+      "K_D": 33.1361198425293,
+      "other": 33.980979919433594,
+      "passed": false
+     }
+    },
+    "release": false,
+    "class": "no memory"
+   },
+   "two_tick": {
+    "structure": "monostable",
+    "window": 29,
+    "stimulus": 2,
+    "start": 0.02494346830867272,
+    "release_detail": {
+     "A": {
+      "K_D": 33.980979919433594,
+      "other": 33.1361198425293,
+      "passed": false
+     },
+     "B": {
+      "K_D": 33.1361198425293,
+      "other": 33.980979919433594,
+      "passed": false
+     }
+    },
+    "release": false,
+    "class": "no memory"
+   },
+   "class": "no memory",
+   "working": false,
+   "hysteresis": {
+    "q_after_a_ramp": 0.025422191247344017,
+    "a_crossing_drive": 0.0,
+    "q_after_b_ramp": 0.02598169818520546,
+    "b_crossing_drive": null
+   },
+   "module_skill": {},
+   "mean_nose": {
+    "A": 0.9609375,
+    "B": 1.56640625
+   }
+  },
+  {
+   "arm": "ga",
+   "run": 7,
+   "test_mean": 8.1015625,
+   "test_lower_bound": 7.69140625,
+   "selector": [
+    2.09578275680542,
+    -1.9350488185882568,
+    -0.1315474808216095,
+    -0.22744536399841309,
+    -0.0033675730228424072,
+    -1.7062286138534546,
+    -1.2161837816238403,
+    -0.009577948600053787,
+    -0.9871953129768372,
+    -0.07125235348939896,
+    0.1903367042541504,
+    -0.15123029053211212,
+    -0.4300192892551422
+   ],
+   "structure": "monostable",
+   "clamp": {
+    "applicable": false,
+    "passed": false
+   },
+   "memory": {
+    "structure": "monostable",
+    "window": 21,
+    "stimulus": 8,
+    "start": -0.04483931680491645,
+    "release_detail": {
+     "A": {
+      "K_D": 34.78025817871094,
+      "other": 32.9893913269043,
+      "passed": false
+     },
+     "B": {
+      "K_D": 32.9893913269043,
+      "other": 34.78025817871094,
+      "passed": false
+     }
+    },
+    "release": false,
+    "class": "no memory"
+   },
+   "two_tick": {
+    "structure": "monostable",
+    "window": 21,
+    "stimulus": 2,
+    "start": -0.04483931680491645,
+    "release_detail": {
+     "A": {
+      "K_D": 34.78025817871094,
+      "other": 32.9893913269043,
+      "passed": false
+     },
+     "B": {
+      "K_D": 32.9893913269043,
+      "other": 34.78025817871094,
+      "passed": false
+     }
+    },
+    "release": false,
+    "class": "no memory"
+   },
+   "class": "no memory",
+   "working": false,
+   "hysteresis": {
+    "q_after_a_ramp": -0.044852256774902344,
+    "a_crossing_drive": null,
+    "q_after_b_ramp": -0.04571567475795746,
+    "b_crossing_drive": 0.0
+   },
+   "module_skill": {},
+   "mean_nose": {
+    "A": 0.90625,
+    "B": 1.7890625
+   }
+  },
+  {
+   "arm": "rs",
+   "run": 0,
+   "test_mean": 11.43359375,
+   "test_lower_bound": 11.08203125,
+   "selector": [
+    0.6383020281791687,
+    1.8804523944854736,
+    0.4245510399341583,
+    1.9766381978988647,
+    -1.94472074508667,
+    1.6733784675598145,
+    1.6733784675598145,
+    -0.9215370416641235,
+    -0.9215370416641235,
+    0.7920399904251099,
+    0.7920399904251099,
+    1.3643003702163696,
+    1.3643003702163696
+   ],
+   "structure": "bistable",
+   "clamp": {
+    "applicable": true,
+    "assignment": {
+     "A": -1.0330162807551537,
+     "B": 2.2648813623652586
+    },
+    "passed": true,
+    "share": {
+     "A": 0.94921875,
+     "B": 0.96875
+    }
+   },
+   "memory": {
+    "structure": "bistable",
+    "window": 20,
+    "stimulus": 6,
+    "states": {
+     "A": -1.0330162807551537,
+     "B": 2.2648813623652586
+    },
+    "settable_detail": {
+     "A": {
+      "q": -1.0335968732833862,
+      "passed": true
+     },
+     "B": {
+      "q": 2.264883518218994,
+      "passed": true
+     }
+    },
+    "hold_detail": {
+     "A": {
+      "q": -1.0330212116241455,
+      "K_D": 27.819133758544922,
+      "other": 2.1561903953552246,
+      "K_D_at_fixed_point": 27.828327178955078,
+      "passed": true
+     },
+     "B": {
+      "q": 2.264883518218994,
+      "K_D": 28.90892219543457,
+      "other": 1.0855271816253662,
+      "K_D_at_fixed_point": 28.911529541015625,
+      "passed": true
+     }
+    },
+    "settable": true,
+    "hold": true,
+    "class": "latch",
+    "release_detail": {
+     "from A": {
+      "A": {
+       "K_D": 27.819133758544922,
+       "other": 2.1561903953552246,
+       "passed": true
+      },
+      "B": {
+       "K_D": 28.90892219543457,
+       "other": 1.0855271816253662,
+       "passed": true
+      }
+     },
+     "from B": {
+      "A": {
+       "K_D": 27.819133758544922,
+       "other": 2.1561903953552246,
+       "passed": true
+      },
+      "B": {
+       "K_D": 28.90892219543457,
+       "other": 1.0855271816253662,
+       "passed": true
+      }
+     }
+    },
+    "release": true
+   },
+   "two_tick": {
+    "structure": "bistable",
+    "window": 20,
+    "stimulus": 2,
+    "states": {
+     "A": -1.0330162807551537,
+     "B": 2.2648813623652586
+    },
+    "settable_detail": {
+     "A": {
+      "q": -1.0335761308670044,
+      "passed": true
+     },
+     "B": {
+      "q": 2.264883518218994,
+      "passed": true
+     }
+    },
+    "hold_detail": {
+     "A": {
+      "q": -1.0330212116241455,
+      "K_D": 27.819133758544922,
+      "other": 2.1561903953552246,
+      "K_D_at_fixed_point": 27.828327178955078,
+      "passed": true
+     },
+     "B": {
+      "q": 2.264883518218994,
+      "K_D": 28.90892219543457,
+      "other": 1.0855271816253662,
+      "K_D_at_fixed_point": 28.911529541015625,
+      "passed": true
+     }
+    },
+    "settable": true,
+    "hold": true,
+    "class": "latch",
+    "release_detail": {
+     "from A": {
+      "A": {
+       "K_D": 27.819133758544922,
+       "other": 2.1561903953552246,
+       "passed": true
+      },
+      "B": {
+       "K_D": 28.90892219543457,
+       "other": 1.0855271816253662,
+       "passed": true
+      }
+     },
+     "from B": {
+      "A": {
+       "K_D": 27.819133758544922,
+       "other": 2.1561903953552246,
+       "passed": true
+      },
+      "B": {
+       "K_D": 28.90892219543457,
+       "other": 1.0855271816253662,
+       "passed": true
+      }
+     }
+    },
+    "release": true
+   },
+   "class": "latch",
+   "working": true,
+   "hysteresis": {
+    "q_after_a_ramp": -1.1661466360092163,
+    "a_crossing_drive": null,
+    "q_after_b_ramp": 2.288958787918091,
+    "b_crossing_drive": 0.0
+   },
+   "module_skill": {},
+   "mean_nose": {
+    "A": 1.2265625,
+    "B": 1.59375
+   }
+  },
+  {
+   "arm": "rs",
+   "run": 1,
+   "test_mean": 11.0234375,
+   "test_lower_bound": 10.71875,
+   "selector": [
+    1.851752519607544,
+    1.4843697547912598,
+    -0.10558044910430908,
+    2.2403504848480225,
+    -1.2533595561981201,
+    1.4087663888931274,
+    1.4087663888931274,
+    1.6771186590194702,
+    1.6771186590194702,
+    1.2613991498947144,
+    1.2613991498947144,
+    -0.7539747953414917,
+    -0.7539747953414917
+   ],
+   "structure": "bistable",
+   "clamp": {
+    "applicable": true,
+    "assignment": {
+     "A": -1.4287682912634483,
+     "B": 1.0614685862124162
+    },
+    "passed": true,
+    "share": {
+     "A": 0.94140625,
+     "B": 0.96875
+    }
+   },
+   "memory": {
+    "structure": "bistable",
+    "window": 20,
+    "stimulus": 6,
+    "states": {
+     "A": -1.4287682912634483,
+     "B": 1.0614685862124162
+    },
+    "settable_detail": {
+     "A": {
+      "q": -1.4298853874206543,
+      "passed": true
+     },
+     "B": {
+      "q": 1.07511305809021,
+      "passed": true
+     }
+    },
+    "hold_detail": {
+     "A": {
+      "q": -1.4287818670272827,
+      "K_D": 35.542842864990234,
+      "other": 1.5472098588943481,
+      "K_D_at_fixed_point": 35.54542922973633,
+      "passed": true
+     },
+     "B": {
+      "q": 1.0614876747131348,
+      "K_D": 26.247886657714844,
+      "other": 1.2229009866714478,
+      "K_D_at_fixed_point": 26.25284194946289,
+      "passed": true
+     }
+    },
+    "settable": true,
+    "hold": true,
+    "class": "latch",
+    "release_detail": {
+     "from A": {
+      "A": {
+       "K_D": 35.542842864990234,
+       "other": 1.5472098588943481,
+       "passed": true
+      },
+      "B": {
+       "K_D": 26.241994857788086,
+       "other": 1.2224241495132446,
+       "passed": true
+      }
+     },
+     "from B": {
+      "A": {
+       "K_D": 35.542842864990234,
+       "other": 1.5472098588943481,
+       "passed": true
+      },
+      "B": {
+       "K_D": 26.241994857788086,
+       "other": 1.2229009866714478,
+       "passed": true
+      }
+     }
+    },
+    "release": true
+   },
+   "two_tick": {
+    "structure": "bistable",
+    "window": 20,
+    "stimulus": 2,
+    "states": {
+     "A": -1.4287682912634483,
+     "B": 1.0614685862124162
+    },
+    "settable_detail": {
+     "A": {
+      "q": -1.4279965162277222,
+      "passed": true
+     },
+     "B": {
+      "q": 1.0684767961502075,
+      "passed": true
+     }
+    },
+    "hold_detail": {
+     "A": {
+      "q": -1.4287818670272827,
+      "K_D": 35.542842864990234,
+      "other": 1.5472098588943481,
+      "K_D_at_fixed_point": 35.54542922973633,
+      "passed": true
+     },
+     "B": {
+      "q": 1.0614876747131348,
+      "K_D": 26.247886657714844,
+      "other": 1.2229009866714478,
+      "K_D_at_fixed_point": 26.25284194946289,
+      "passed": true
+     }
+    },
+    "settable": true,
+    "hold": true,
+    "class": "latch",
+    "release_detail": {
+     "from A": {
+      "A": {
+       "K_D": 35.542842864990234,
+       "other": 1.5472098588943481,
+       "passed": true
+      },
+      "B": {
+       "K_D": 26.242948532104492,
+       "other": 1.2226625680923462,
+       "passed": true
+      }
+     },
+     "from B": {
+      "A": {
+       "K_D": 35.54308319091797,
+       "other": 1.546256184577942,
+       "passed": true
+      },
+      "B": {
+       "K_D": 26.241994857788086,
+       "other": 1.22147798538208,
+       "passed": true
+      }
+     }
+    },
+    "release": true
+   },
+   "class": "latch",
+   "working": true,
+   "hysteresis": {
+    "q_after_a_ramp": -1.4951486587524414,
+    "a_crossing_drive": null,
+    "q_after_b_ramp": 1.2505921125411987,
+    "b_crossing_drive": 0.0
+   },
+   "module_skill": {},
+   "mean_nose": {
+    "A": 1.2421875,
+    "B": 1.58984375
+   }
+  },
+  {
+   "arm": "rs",
+   "run": 2,
+   "test_mean": 11.83203125,
+   "test_lower_bound": 11.51171875,
+   "selector": [
+    2.458446979522705,
+    1.305908441543579,
+    -0.08119381964206696,
+    2.0608980655670166,
+    -2.8641085624694824,
+    1.2674849033355713,
+    1.2674849033355713,
+    2.535727024078369,
+    2.535727024078369,
+    1.6577385663986206,
+    1.6577385663986206,
+    -1.8498390913009644,
+    -1.8498390913009644
+   ],
+   "structure": "bistable",
+   "clamp": {
+    "applicable": true,
+    "assignment": {
+     "A": -1.148422386302729,
+     "B": 0.7419444513816617
+    },
+    "passed": true,
+    "share": {
+     "A": 0.94140625,
+     "B": 0.97265625
+    }
+   },
+   "memory": {
+    "structure": "bistable",
+    "window": 25,
+    "stimulus": 6,
+    "states": {
+     "A": -1.148422386302729,
+     "B": 0.7419444513816617
+    },
+    "settable_detail": {
+     "A": {
+      "q": -1.155227780342102,
+      "passed": true
+     },
+     "B": {
+      "q": 0.8053839802742004,
+      "passed": true
+     }
+    },
+    "hold_detail": {
+     "A": {
+      "q": -1.148433804512024,
+      "K_D": 24.69221305847168,
+      "other": 0.055007632821798325,
+      "K_D_at_fixed_point": 24.700454711914062,
+      "passed": true
+     },
+     "B": {
+      "q": 0.7419605255126953,
+      "K_D": 33.38447189331055,
+      "other": 1.0288878679275513,
+      "K_D_at_fixed_point": 33.38941192626953,
+      "passed": true
+     }
+    },
+    "settable": true,
+    "hold": true,
+    "class": "latch",
+    "release_detail": {
+     "from A": {
+      "A": {
+       "K_D": 24.695037841796875,
+       "other": 0.05524605140089989,
+       "passed": true
+      },
+      "B": {
+       "K_D": 33.76483154296875,
+       "other": 1.0040923357009888,
+       "passed": true
+      }
+     },
+     "from B": {
+      "A": {
+       "K_D": 24.699039459228516,
+       "other": 0.05524605140089989,
+       "passed": true
+      },
+      "B": {
+       "K_D": 33.7775764465332,
+       "other": 1.003861427307129,
+       "passed": true
+      }
+     }
+    },
+    "release": true
+   },
+   "two_tick": {
+    "structure": "bistable",
+    "window": 25,
+    "stimulus": 2,
+    "states": {
+     "A": -1.148422386302729,
+     "B": 0.7419444513816617
+    },
+    "settable_detail": {
+     "A": {
+      "q": -1.1524577140808105,
+      "passed": true
+     },
+     "B": {
+      "q": 0.7718990445137024,
+      "passed": true
+     }
+    },
+    "hold_detail": {
+     "A": {
+      "q": -1.148433804512024,
+      "K_D": 24.69221305847168,
+      "other": 0.055007632821798325,
+      "K_D_at_fixed_point": 24.700454711914062,
+      "passed": true
+     },
+     "B": {
+      "q": 0.7419605255126953,
+      "K_D": 33.38447189331055,
+      "other": 1.0288878679275513,
+      "K_D_at_fixed_point": 33.38941192626953,
+      "passed": true
+     }
+    },
+    "settable": true,
+    "hold": true,
+    "class": "latch",
+    "release_detail": {
+     "from A": {
+      "A": {
+       "K_D": 24.69432258605957,
+       "other": 0.055007632821798325,
+       "passed": true
+      },
+      "B": {
+       "K_D": 33.57841491699219,
+       "other": 1.01707124710083,
+       "passed": true
+      }
+     },
+     "from B": {
+      "A": {
+       "K_D": 24.693845748901367,
+       "other": 0.05548446998000145,
+       "passed": true
+      },
+      "B": {
+       "K_D": 33.74126434326172,
+       "other": 1.0057389736175537,
+       "passed": true
+      }
+     }
+    },
+    "release": true
+   },
+   "class": "latch",
+   "working": true,
+   "hysteresis": {
+    "q_after_a_ramp": -1.3680715560913086,
+    "a_crossing_drive": null,
+    "q_after_b_ramp": 1.0787466764450073,
+    "b_crossing_drive": 0.0
+   },
+   "module_skill": {},
+   "mean_nose": {
+    "A": 0.8671875,
+    "B": 1.5703125
+   }
+  },
+  {
+   "arm": "rs",
+   "run": 3,
+   "test_mean": 10.74609375,
+   "test_lower_bound": 10.48046875,
+   "selector": [
+    3.582953691482544,
+    1.0325274467468262,
+    -0.014348430559039116,
+    2.6371946334838867,
+    -0.7652949690818787,
+    2.264281988143921,
+    2.264281988143921,
+    2.766817808151245,
+    2.766817808151245,
+    1.5099725723266602,
+    1.5099725723266602,
+    -1.008442997932434,
+    -1.008442997932434
+   ],
+   "structure": "monostable",
+   "clamp": {
+    "applicable": true,
+    "assignment": {
+     "A": -0.6078354716300964,
+     "B": 0.5857223272323608
+    },
+    "passed": true,
+    "share": {
+     "A": 0.9609375,
+     "B": 0.96484375
+    }
+   },
+   "memory": {
+    "structure": "monostable",
+    "window": 36,
+    "stimulus": 6,
+    "start": -0.4498064263164671,
+    "release_detail": {
+     "A": {
+      "K_D": 29.653913497924805,
+      "other": 1.3309940099716187,
+      "passed": true
+     },
+     "B": {
+      "K_D": 35.091182708740234,
+      "other": 1.0883584022521973,
+      "passed": true
+     }
+    },
+    "release": true,
+    "class": "slow trace"
+   },
+   "two_tick": {
+    "structure": "monostable",
+    "window": 36,
+    "stimulus": 2,
+    "start": -0.4498064263164671,
+    "release_detail": {
+     "A": {
+      "K_D": 29.00402069091797,
+      "other": 1.419283390045166,
+      "passed": true
+     },
+     "B": {
+      "K_D": 35.481727600097656,
+      "other": 1.22147798538208,
+      "passed": true
+     }
+    },
+    "release": true,
+    "class": "slow trace"
+   },
+   "class": "slow trace",
+   "working": true,
+   "hysteresis": {
+    "q_after_a_ramp": -0.7610592246055603,
+    "a_crossing_drive": null,
+    "q_after_b_ramp": 0.9687905311584473,
+    "b_crossing_drive": 0.0
+   },
+   "module_skill": {},
+   "mean_nose": {
+    "A": 1.53515625,
+    "B": 1.84765625
+   }
+  },
+  {
+   "arm": "rs",
+   "run": 4,
+   "test_mean": 10.80859375,
+   "test_lower_bound": 10.51953125,
+   "selector": [
+    1.6476632356643677,
+    2.3023548126220703,
+    -0.017248598858714104,
+    2.846078634262085,
+    -1.4967355728149414,
+    2.0025904178619385,
+    2.0025904178619385,
+    -1.206682562828064,
+    -1.206682562828064,
+    1.381322979927063,
+    1.381322979927063,
+    1.7735775709152222,
+    1.7735775709152222
+   ],
+   "structure": "bistable",
+   "clamp": {
+    "applicable": true,
+    "assignment": {
+     "A": -2.2710781514725857,
+     "B": 2.232759873065014
+    },
+    "passed": true,
+    "share": {
+     "A": 0.953125,
+     "B": 0.96484375
+    }
+   },
+   "memory": {
+    "structure": "bistable",
+    "window": 20,
+    "stimulus": 6,
+    "states": {
+     "A": -2.2710781514725857,
+     "B": 2.232759873065014
+    },
+    "settable_detail": {
+     "A": {
+      "q": -2.2711284160614014,
+      "passed": true
+     },
+     "B": {
+      "q": 2.232917070388794,
+      "passed": true
+     }
+    },
+    "hold_detail": {
+     "A": {
+      "q": -2.2710936069488525,
+      "K_D": 25.856143951416016,
+      "other": 0.3830864727497101,
+      "K_D_at_fixed_point": 25.860389709472656,
+      "passed": true
+     },
+     "B": {
+      "q": 2.2327780723571777,
+      "K_D": 25.44291877746582,
+      "other": 0.17821042239665985,
+      "K_D_at_fixed_point": 25.451637268066406,
+      "passed": true
+     }
+    },
+    "settable": true,
+    "hold": true,
+    "class": "latch",
+    "release_detail": {
+     "from A": {
+      "A": {
+       "K_D": 25.856143951416016,
+       "other": 0.3830864727497101,
+       "passed": true
+      },
+      "B": {
+       "K_D": 25.44291877746582,
+       "other": 0.17821042239665985,
+       "passed": true
+      }
+     },
+     "from B": {
+      "A": {
+       "K_D": 25.856143951416016,
+       "other": 0.3830864727497101,
+       "passed": true
+      },
+      "B": {
+       "K_D": 25.44291877746582,
+       "other": 0.17821042239665985,
+       "passed": true
+      }
+     }
+    },
+    "release": true
+   },
+   "two_tick": {
+    "structure": "bistable",
+    "window": 20,
+    "stimulus": 2,
+    "states": {
+     "A": -2.2710781514725857,
+     "B": 2.232759873065014
+    },
+    "settable_detail": {
+     "A": {
+      "q": 2.2326154708862305,
+      "passed": false
+     },
+     "B": {
+      "q": 2.2327840328216553,
+      "passed": true
+     }
+    },
+    "hold_detail": {
+     "A": {
+      "q": -2.2710936069488525,
+      "K_D": 25.856143951416016,
+      "other": 0.3830864727497101,
+      "K_D_at_fixed_point": 25.860389709472656,
+      "passed": true
+     },
+     "B": {
+      "q": 2.2327780723571777,
+      "K_D": 25.44291877746582,
+      "other": 0.17821042239665985,
+      "K_D_at_fixed_point": 25.451637268066406,
+      "passed": true
+     }
+    },
+    "settable": false,
+    "hold": true,
+    "class": "bistable, not a latch",
+    "release_detail": {
+     "from A": {
+      "A": {
+       "K_D": 25.856143951416016,
+       "other": 0.3830864727497101,
+       "passed": true
+      },
+      "B": {
+       "K_D": 25.44291877746582,
+       "other": 0.17821042239665985,
+       "passed": true
+      }
+     },
+     "from B": {
+      "A": {
+       "K_D": 0.17821042239665985,
+       "other": 25.447166442871094,
+       "passed": false
+      },
+      "B": {
+       "K_D": 25.44291877746582,
+       "other": 0.17821042239665985,
+       "passed": true
+      }
+     }
+    },
+    "release": false
+   },
+   "class": "latch",
+   "working": true,
+   "hysteresis": {
+    "q_after_a_ramp": -2.3168418407440186,
+    "a_crossing_drive": null,
+    "q_after_b_ramp": 2.319575786590576,
+    "b_crossing_drive": 0.0
+   },
+   "module_skill": {},
+   "mean_nose": {
+    "A": 0.9765625,
+    "B": 1.69140625
+   }
+  },
+  {
+   "arm": "rs",
+   "run": 5,
+   "test_mean": 11.96875,
+   "test_lower_bound": 11.62890625,
+   "selector": [
+    1.081015944480896,
+    1.882354974746704,
+    0.17678150534629822,
+    -1.914833426475525,
+    2.575812339782715,
+    -1.0286204814910889,
+    -1.0286204814910889,
+    1.793436884880066,
+    1.793436884880066,
+    1.320870280265808,
+    1.320870280265808,
+    1.343650460243225,
+    1.343650460243225
+   ],
+   "structure": "bistable",
+   "clamp": {
+    "applicable": true,
+    "assignment": {
+     "A": 1.990093491183865,
+     "B": -1.5402234835947701
+    },
+    "passed": true,
+    "share": {
+     "A": 0.96875,
+     "B": 0.96875
+    }
+   },
+   "memory": {
+    "structure": "bistable",
+    "window": 20,
+    "stimulus": 6,
+    "states": {
+     "A": 1.990093491183865,
+     "B": -1.5402234835947701
+    },
+    "settable_detail": {
+     "A": {
+      "q": 1.9900968074798584,
+      "passed": true
+     },
+     "B": {
+      "q": -1.5402424335479736,
+      "passed": true
+     }
+    },
+    "hold_detail": {
+     "A": {
+      "q": 1.9900968074798584,
+      "K_D": 31.93514633178711,
+      "other": 0.3037676215171814,
+      "K_D_at_fixed_point": 31.940540313720703,
+      "passed": true
+     },
+     "B": {
+      "q": -1.5402250289916992,
+      "K_D": 32.66996765136719,
+      "other": 1.5165208578109741,
+      "K_D_at_fixed_point": 32.67513656616211,
+      "passed": true
+     }
+    },
+    "settable": true,
+    "hold": true,
+    "class": "latch",
+    "release_detail": {
+     "from A": {
+      "A": {
+       "K_D": 31.93514633178711,
+       "other": 0.3037676215171814,
+       "passed": true
+      },
+      "B": {
+       "K_D": 32.66996765136719,
+       "other": 1.5165208578109741,
+       "passed": true
+      }
+     },
+     "from B": {
+      "A": {
+       "K_D": 31.93514633178711,
+       "other": 0.3037676215171814,
+       "passed": true
+      },
+      "B": {
+       "K_D": 32.66996765136719,
+       "other": 1.5165208578109741,
+       "passed": true
+      }
+     }
+    },
+    "release": true
+   },
+   "two_tick": {
+    "structure": "bistable",
+    "window": 20,
+    "stimulus": 2,
+    "states": {
+     "A": 1.990093491183865,
+     "B": -1.5402234835947701
+    },
+    "settable_detail": {
+     "A": {
+      "q": 1.9900968074798584,
+      "passed": true
+     },
+     "B": {
+      "q": -1.5402328968048096,
+      "passed": true
+     }
+    },
+    "hold_detail": {
+     "A": {
+      "q": 1.9900968074798584,
+      "K_D": 31.93514633178711,
+      "other": 0.3037676215171814,
+      "K_D_at_fixed_point": 31.940540313720703,
+      "passed": true
+     },
+     "B": {
+      "q": -1.5402250289916992,
+      "K_D": 32.66996765136719,
+      "other": 1.5165208578109741,
+      "K_D_at_fixed_point": 32.67513656616211,
+      "passed": true
+     }
+    },
+    "settable": true,
+    "hold": true,
+    "class": "latch",
+    "release_detail": {
+     "from A": {
+      "A": {
+       "K_D": 31.93514633178711,
+       "other": 0.3037676215171814,
+       "passed": true
+      },
+      "B": {
+       "K_D": 32.66996765136719,
+       "other": 1.5165208578109741,
+       "passed": true
+      }
+     },
+     "from B": {
+      "A": {
+       "K_D": 31.93514633178711,
+       "other": 0.3037676215171814,
+       "passed": true
+      },
+      "B": {
+       "K_D": 32.66996765136719,
+       "other": 1.5165208578109741,
+       "passed": true
+      }
+     }
+    },
+    "release": true
+   },
+   "class": "latch",
+   "working": true,
+   "hysteresis": {
+    "q_after_a_ramp": 2.0466036796569824,
+    "a_crossing_drive": 0.22613065326633164,
+    "q_after_b_ramp": -1.6024837493896484,
+    "b_crossing_drive": 0.46733668341708545
+   },
+   "module_skill": {},
+   "mean_nose": {
+    "A": 1.01171875,
+    "B": 1.49609375
+   }
+  },
+  {
+   "arm": "rs",
+   "run": 6,
+   "test_mean": 10.25,
+   "test_lower_bound": 9.9609375,
+   "selector": [
+    0.5130690932273865,
+    1.8737499713897705,
+    0.37208491563796997,
+    0.351785808801651,
+    -1.2798709869384766,
+    2.9768664836883545,
+    2.9768664836883545,
+    -1.171061635017395,
+    -1.171061635017395,
+    1.7416040897369385,
+    1.7416040897369385,
+    1.9739676713943481,
+    1.9739676713943481
+   ],
+   "structure": "bistable",
+   "clamp": {
+    "applicable": true,
+    "assignment": {
+     "A": -1.1759539241107761,
+     "B": 2.2004214042074333
+    },
+    "passed": true,
+    "share": {
+     "A": 0.94921875,
+     "B": 0.94921875
+    }
+   },
+   "memory": {
+    "structure": "bistable",
+    "window": 20,
+    "stimulus": 4,
+    "states": {
+     "A": -1.1759539241107761,
+     "B": 2.2004214042074333
+    },
+    "settable_detail": {
+     "A": {
+      "q": -1.1759593486785889,
+      "passed": true
+     },
+     "B": {
+      "q": 2.2004234790802,
+      "passed": true
+     }
+    },
+    "hold_detail": {
+     "A": {
+      "q": -1.1759593486785889,
+      "K_D": 22.073305130004883,
+      "other": 0.39324161410331726,
+      "K_D_at_fixed_point": 22.08106803894043,
+      "passed": true
+     },
+     "B": {
+      "q": 2.2004234790802,
+      "K_D": 19.05000877380371,
+      "other": 0.012986361049115658,
+      "K_D_at_fixed_point": 19.055879592895508,
+      "passed": true
+     }
+    },
+    "settable": true,
+    "hold": true,
+    "class": "latch",
+    "release_detail": {
+     "from A": {
+      "A": {
+       "K_D": 22.073305130004883,
+       "other": 0.39324161410331726,
+       "passed": true
+      },
+      "B": {
+       "K_D": 19.05000877380371,
+       "other": 0.012986361049115658,
+       "passed": true
+      }
+     },
+     "from B": {
+      "A": {
+       "K_D": 22.073305130004883,
+       "other": 0.39324161410331726,
+       "passed": true
+      },
+      "B": {
+       "K_D": 19.05000877380371,
+       "other": 0.012986361049115658,
+       "passed": true
+      }
+     }
+    },
+    "release": true
+   },
+   "two_tick": {
+    "structure": "bistable",
+    "window": 20,
+    "stimulus": 2,
+    "states": {
+     "A": -1.1759539241107761,
+     "B": 2.2004214042074333
+    },
+    "settable_detail": {
+     "A": {
+      "q": -1.1759593486785889,
+      "passed": true
+     },
+     "B": {
+      "q": 2.2004234790802,
+      "passed": true
+     }
+    },
+    "hold_detail": {
+     "A": {
+      "q": -1.1759593486785889,
+      "K_D": 22.073305130004883,
+      "other": 0.39324161410331726,
+      "K_D_at_fixed_point": 22.08106803894043,
+      "passed": true
+     },
+     "B": {
+      "q": 2.2004234790802,
+      "K_D": 19.05000877380371,
+      "other": 0.012986361049115658,
+      "K_D_at_fixed_point": 19.055879592895508,
+      "passed": true
+     }
+    },
+    "settable": true,
+    "hold": true,
+    "class": "latch",
+    "release_detail": {
+     "from A": {
+      "A": {
+       "K_D": 22.073305130004883,
+       "other": 0.39324161410331726,
+       "passed": true
+      },
+      "B": {
+       "K_D": 19.05000877380371,
+       "other": 0.012986361049115658,
+       "passed": true
+      }
+     },
+     "from B": {
+      "A": {
+       "K_D": 22.073305130004883,
+       "other": 0.39324161410331726,
+       "passed": true
+      },
+      "B": {
+       "K_D": 19.05000877380371,
+       "other": 0.012986361049115658,
+       "passed": true
+      }
+     }
+    },
+    "release": true
+   },
+   "class": "latch",
+   "working": false,
+   "hysteresis": {
+    "q_after_a_ramp": -1.2269223928451538,
+    "a_crossing_drive": null,
+    "q_after_b_ramp": 2.2040529251098633,
+    "b_crossing_drive": 0.0
+   },
+   "module_skill": {},
+   "mean_nose": {
+    "A": 0.9609375,
+    "B": 1.7578125
+   }
+  },
+  {
+   "arm": "rs",
+   "run": 7,
+   "test_mean": 11.65625,
+   "test_lower_bound": 11.30859375,
+   "selector": [
+    0.972183108329773,
+    1.8131070137023926,
+    0.17902293801307678,
+    2.409844160079956,
+    -2.297760009765625,
+    0.8399816155433655,
+    0.8399816155433655,
+    1.4600328207015991,
+    1.4600328207015991,
+    0.5961988568305969,
+    0.5961988568305969,
+    -1.2554728984832764,
+    -1.2554728984832764
+   ],
+   "structure": "bistable",
+   "clamp": {
+    "applicable": true,
+    "assignment": {
+     "A": -1.4421184066688628,
+     "B": 1.9150930136043152
+    },
+    "passed": true,
+    "share": {
+     "A": 0.95703125,
+     "B": 0.96875
+    }
+   },
+   "memory": {
+    "structure": "bistable",
+    "window": 20,
+    "stimulus": 6,
+    "states": {
+     "A": -1.4421184066688628,
+     "B": 1.9150930136043152
+    },
+    "settable_detail": {
+     "A": {
+      "q": -1.4421312808990479,
+      "passed": true
+     },
+     "B": {
+      "q": 1.9150938987731934,
+      "passed": true
+     }
+    },
+    "hold_detail": {
+     "A": {
+      "q": -1.4421201944351196,
+      "K_D": 34.7042350769043,
+      "other": 0.837199330329895,
+      "K_D_at_fixed_point": 34.707054138183594,
+      "passed": true
+     },
+     "B": {
+      "q": 1.9150938987731934,
+      "K_D": 34.830448150634766,
+      "other": 7.672734260559082,
+      "K_D_at_fixed_point": 34.833770751953125,
+      "passed": false
+     }
+    },
+    "settable": true,
+    "hold": false,
+    "class": "bistable, not a latch",
+    "release_detail": {
+     "from A": {
+      "A": {
+       "K_D": 34.7042350769043,
+       "other": 0.837199330329895,
+       "passed": true
+      },
+      "B": {
+       "K_D": 34.830448150634766,
+       "other": 7.672734260559082,
+       "passed": false
+      }
+     },
+     "from B": {
+      "A": {
+       "K_D": 34.7042350769043,
+       "other": 0.837199330329895,
+       "passed": true
+      },
+      "B": {
+       "K_D": 34.830448150634766,
+       "other": 7.672734260559082,
+       "passed": false
+      }
+     }
+    },
+    "release": false
+   },
+   "two_tick": {
+    "structure": "bistable",
+    "window": 20,
+    "stimulus": 2,
+    "states": {
+     "A": -1.4421184066688628,
+     "B": 1.9150930136043152
+    },
+    "settable_detail": {
+     "A": {
+      "q": -1.4421286582946777,
+      "passed": true
+     },
+     "B": {
+      "q": 1.9150938987731934,
+      "passed": true
+     }
+    },
+    "hold_detail": {
+     "A": {
+      "q": -1.4421201944351196,
+      "K_D": 34.7042350769043,
+      "other": 0.837199330329895,
+      "K_D_at_fixed_point": 34.707054138183594,
+      "passed": true
+     },
+     "B": {
+      "q": 1.9150938987731934,
+      "K_D": 34.830448150634766,
+      "other": 7.672734260559082,
+      "K_D_at_fixed_point": 34.833770751953125,
+      "passed": false
+     }
+    },
+    "settable": true,
+    "hold": false,
+    "class": "bistable, not a latch",
+    "release_detail": {
+     "from A": {
+      "A": {
+       "K_D": 34.7042350769043,
+       "other": 0.837199330329895,
+       "passed": true
+      },
+      "B": {
+       "K_D": 34.830448150634766,
+       "other": 7.672734260559082,
+       "passed": false
+      }
+     },
+     "from B": {
+      "A": {
+       "K_D": 34.7042350769043,
+       "other": 0.837199330329895,
+       "passed": true
+      },
+      "B": {
+       "K_D": 34.830448150634766,
+       "other": 7.672734260559082,
+       "passed": false
+      }
+     }
+    },
+    "release": false
+   },
+   "class": "bistable, not a latch",
+   "working": true,
+   "hysteresis": {
+    "q_after_a_ramp": -1.5167280435562134,
+    "a_crossing_drive": null,
+    "q_after_b_ramp": 1.9646109342575073,
+    "b_crossing_drive": 0.0
+   },
+   "module_skill": {},
+   "mean_nose": {
+    "A": 1.12890625,
+    "B": 2.046875
+   }
+  },
+  {
+   "arm": "stage3",
+   "run": 0,
+   "test_mean": 8.921875,
+   "test_lower_bound": 8.5546875,
+   "selector": [
+    1.4439611434936523,
+    -0.9673941731452942,
+    0.8251910209655762,
+    0.4695073962211609,
+    -0.46936628222465515,
+    1.571427822113037,
+    0.4342039227485657,
+    -1.0082924365997314,
+    -0.08293606340885162,
+    -0.7580474615097046,
+    0.2279776632785797,
+    -0.12099026888608932,
+    -0.06291840970516205
+   ],
+   "structure": "monostable",
+   "clamp": {
+    "applicable": false,
+    "passed": false
+   },
+   "memory": {
+    "structure": "monostable",
+    "window": 20,
+    "stimulus": 8,
+    "start": 0.43170669770222964,
+    "release_detail": {
+     "A": {
+      "K_D": 26.892154693603516,
+      "other": 22.525785446166992,
+      "passed": false
+     },
+     "B": {
+      "K_D": 22.525861740112305,
+      "other": 26.894121170043945,
+      "passed": false
+     }
+    },
+    "release": false,
+    "class": "no memory"
+   },
+   "two_tick": {
+    "structure": "monostable",
+    "window": 20,
+    "stimulus": 2,
+    "start": 0.43170669770222964,
+    "release_detail": {
+     "A": {
+      "K_D": 26.892154693603516,
+      "other": 22.525785446166992,
+      "passed": false
+     },
+     "B": {
+      "K_D": 22.525861740112305,
+      "other": 26.894121170043945,
+      "passed": false
+     }
+    },
+    "release": false,
+    "class": "no memory"
+   },
+   "class": "no memory",
+   "working": false,
+   "hysteresis": {
+    "q_after_a_ramp": 0.4284340441226959,
+    "a_crossing_drive": 0.0,
+    "q_after_b_ramp": 0.4349990785121918,
+    "b_crossing_drive": null
+   },
+   "module_skill": {},
+   "mean_nose": {
+    "A": 0.06640625,
+    "B": 0.98828125
+   }
+  },
+  {
+   "arm": "stage3",
+   "run": 1,
+   "test_mean": 8.77734375,
+   "test_lower_bound": 8.48828125,
+   "selector": [
+    1.6084927320480347,
+    1.3425456285476685,
+    -1.8372541666030884,
+    -1.1159539222717285,
+    -1.5825603008270264,
+    0.047411296516656876,
+    0.28709641098976135,
+    -1.0822482109069824,
+    -1.1715565919876099,
+    -0.08257370442152023,
+    0.3494698405265808,
+    -1.0666632652282715,
+    -1.1448488235473633
+   ],
+   "structure": "monostable",
+   "clamp": {
+    "applicable": false,
+    "passed": false
+   },
+   "memory": {
+    "structure": "monostable",
+    "window": 20,
+    "stimulus": 8,
+    "start": -3.1751189093455094,
+    "release_detail": {
+     "A": {
+      "K_D": 28.095781326293945,
+      "other": 29.283164978027344,
+      "passed": false
+     },
+     "B": {
+      "K_D": 29.283164978027344,
+      "other": 28.095781326293945,
+      "passed": false
+     }
+    },
+    "release": false,
+    "class": "no memory"
+   },
+   "two_tick": {
+    "structure": "monostable",
+    "window": 20,
+    "stimulus": 2,
+    "start": -3.1751189093455094,
+    "release_detail": {
+     "A": {
+      "K_D": 28.095781326293945,
+      "other": 29.283164978027344,
+      "passed": false
+     },
+     "B": {
+      "K_D": 29.283164978027344,
+      "other": 28.095781326293945,
+      "passed": false
+     }
+    },
+    "release": false,
+    "class": "no memory"
+   },
+   "class": "no memory",
+   "working": false,
+   "hysteresis": {
+    "q_after_a_ramp": -3.2152957916259766,
+    "a_crossing_drive": null,
+    "q_after_b_ramp": -3.203463077545166,
+    "b_crossing_drive": 0.0
+   },
+   "module_skill": {},
+   "mean_nose": {
+    "A": 0.69921875,
+    "B": 1.2734375
+   }
+  },
+  {
+   "arm": "stage3",
+   "run": 2,
+   "test_mean": 14.67578125,
+   "test_lower_bound": 14.43740234375,
+   "selector": [
+    4.91237735748291,
+    0.9486095905303955,
+    0.002186345402151346,
+    1.2175110578536987,
+    -0.5514979958534241,
+    1.333140254020691,
+    1.3087760210037231,
+    1.0650155544281006,
+    0.8911548256874084,
+    0.3139898478984833,
+    0.23016253113746643,
+    -0.704283595085144,
+    -0.5819676518440247
+   ],
+   "structure": "monostable",
+   "clamp": {
+    "applicable": true,
+    "assignment": {
+     "A": -0.3899632394313812,
+     "B": 0.7406812310218811
+    },
+    "passed": true,
+    "share": {
+     "A": 0.921875,
+     "B": 0.91015625
+    }
+   },
+   "memory": {
+    "structure": "monostable",
+    "window": 50,
+    "stimulus": 10,
+    "start": 0.04208551481619721,
+    "release_detail": {
+     "A": {
+      "K_D": 31.720863342285156,
+      "other": 14.35483169555664,
+      "passed": false
+     },
+     "B": {
+      "K_D": 26.808320999145508,
+      "other": 17.876625061035156,
+      "passed": false
+     }
+    },
+    "release": false,
+    "class": "no memory"
+   },
+   "two_tick": {
+    "structure": "monostable",
+    "window": 50,
+    "stimulus": 2,
+    "start": 0.04208551481619721,
+    "release_detail": {
+     "A": {
+      "K_D": 32.1944694519043,
+      "other": 17.75270652770996,
+      "passed": false
+     },
+     "B": {
+      "K_D": 25.84552574157715,
+      "other": 20.501434326171875,
+      "passed": false
+     }
+    },
+    "release": false,
+    "class": "no memory"
+   },
+   "class": "no memory",
+   "working": true,
+   "hysteresis": {
+    "q_after_a_ramp": -0.5978013873100281,
+    "a_crossing_drive": 0.0,
+    "q_after_b_ramp": 0.7705478072166443,
+    "b_crossing_drive": 0.0
+   },
+   "module_skill": {
+    "A": {
+     "first_entry_share": 0.921875,
+     "K_D_at_state": 30.867094039916992
+    },
+    "B": {
+     "first_entry_share": 0.91015625,
+     "K_D_at_state": 28.86563491821289
+    }
+   },
+   "mean_nose": {
+    "A": 0.98046875,
+    "B": 1.3828125
+   }
+  },
+  {
+   "arm": "stage3",
+   "run": 3,
+   "test_mean": 15.98046875,
+   "test_lower_bound": 15.7109375,
+   "selector": [
+    1.3901207447052002,
+    1.2340317964553833,
+    -0.04034814238548279,
+    -1.5871691703796387,
+    1.2961595058441162,
+    0.7128595113754272,
+    0.9644227027893066,
+    0.9255588054656982,
+    0.969194233417511,
+    -0.13299286365509033,
+    -0.5405912399291992,
+    0.5274341702461243,
+    0.7470184564590454
+   ],
+   "structure": "bistable",
+   "clamp": {
+    "applicable": true,
+    "assignment": {
+     "A": 0.7239480302464241,
+     "B": -0.95734533012318
+    },
+    "passed": true,
+    "share": {
+     "A": 0.97265625,
+     "B": 0.953125
+    }
+   },
+   "memory": {
+    "structure": "bistable",
+    "window": 20,
+    "stimulus": 6,
+    "states": {
+     "A": 0.7239480302464241,
+     "B": -0.95734533012318
+    },
+    "settable_detail": {
+     "A": {
+      "q": 0.7454496622085571,
+      "passed": true
+     },
+     "B": {
+      "q": -0.9601261019706726,
+      "passed": true
+     }
+    },
+    "hold_detail": {
+     "A": {
+      "q": 0.7239640951156616,
+      "K_D": 31.185922622680664,
+      "other": 9.296699523925781,
+      "K_D_at_fixed_point": 31.190998077392578,
+      "passed": false
+     },
+     "B": {
+      "q": -0.9573553800582886,
+      "K_D": 30.79738998413086,
+      "other": 14.931499481201172,
+      "K_D_at_fixed_point": 30.808813095092773,
+      "passed": false
+     }
+    },
+    "settable": true,
+    "hold": false,
+    "class": "bistable, not a latch",
+    "release_detail": {
+     "from A": {
+      "A": {
+       "K_D": 31.181304931640625,
+       "other": 9.281039237976074,
+       "passed": false
+      },
+      "B": {
+       "K_D": 30.79738998413086,
+       "other": 14.931499481201172,
+       "passed": false
+      }
+     },
+     "from B": {
+      "A": {
+       "K_D": 31.180343627929688,
+       "other": 9.279667854309082,
+       "passed": false
+      },
+      "B": {
+       "K_D": 30.79738998413086,
+       "other": 14.931499481201172,
+       "passed": false
+      }
+     }
+    },
+    "release": false
+   },
+   "two_tick": {
+    "structure": "bistable",
+    "window": 20,
+    "stimulus": 2,
+    "states": {
+     "A": 0.7239480302464241,
+     "B": -0.95734533012318
+    },
+    "settable_detail": {
+     "A": {
+      "q": 0.7397788166999817,
+      "passed": true
+     },
+     "B": {
+      "q": -0.9594873189926147,
+      "passed": true
+     }
+    },
+    "hold_detail": {
+     "A": {
+      "q": 0.7239640951156616,
+      "K_D": 31.185922622680664,
+      "other": 9.296699523925781,
+      "K_D_at_fixed_point": 31.190998077392578,
+      "passed": false
+     },
+     "B": {
+      "q": -0.9573553800582886,
+      "K_D": 30.79738998413086,
+      "other": 14.931499481201172,
+      "K_D_at_fixed_point": 30.808813095092773,
+      "passed": false
+     }
+    },
+    "settable": true,
+    "hold": false,
+    "class": "bistable, not a latch",
+    "release_detail": {
+     "from A": {
+      "A": {
+       "K_D": 31.181743621826172,
+       "other": 9.281575202941895,
+       "passed": false
+      },
+      "B": {
+       "K_D": 30.79738998413086,
+       "other": 14.931499481201172,
+       "passed": false
+      }
+     },
+     "from B": {
+      "A": {
+       "K_D": 31.182720184326172,
+       "other": 9.282960891723633,
+       "passed": false
+      },
+      "B": {
+       "K_D": 30.79738998413086,
+       "other": 14.931499481201172,
+       "passed": false
+      }
+     }
+    },
+    "release": false
+   },
+   "class": "bistable, not a latch",
+   "working": true,
+   "hysteresis": {
+    "q_after_a_ramp": 0.9041541814804077,
+    "a_crossing_drive": 0.24120603015075376,
+    "q_after_b_ramp": -1.0739988088607788,
+    "b_crossing_drive": 0.1658291457286432
+   },
+   "module_skill": {
+    "A": {
+     "first_entry_share": 0.97265625,
+     "K_D_at_state": 31.190998077392578
+    },
+    "B": {
+     "first_entry_share": 0.953125,
+     "K_D_at_state": 30.808813095092773
+    }
+   },
+   "mean_nose": {
+    "A": 1.28515625,
+    "B": 1.921875
+   }
+  },
+  {
+   "arm": "stage3",
+   "run": 4,
+   "test_mean": 15.7734375,
+   "test_lower_bound": 15.3359375,
+   "selector": [
+    3.3816728591918945,
+    1.423325777053833,
+    -0.10232700407505035,
+    -1.3096868991851807,
+    1.3568987846374512,
+    1.0920960903167725,
+    1.2852976322174072,
+    1.8799551725387573,
+    0.7412256598472595,
+    -1.0209920406341553,
+    -0.8580496907234192,
+    0.8196387887001038,
+    0.4453558027744293
+   ],
+   "structure": "bistable",
+   "clamp": {
+    "applicable": true,
+    "assignment": {
+     "A": 0.951754113520511,
+     "B": -1.344549868528702
+    },
+    "passed": true,
+    "share": {
+     "A": 0.9296875,
+     "B": 0.9609375
+    }
+   },
+   "memory": {
+    "structure": "bistable",
+    "window": 34,
+    "stimulus": 7,
+    "states": {
+     "A": 0.951754113520511,
+     "B": -1.344549868528702
+    },
+    "settable_detail": {
+     "A": {
+      "q": 0.9632709622383118,
+      "passed": true
+     },
+     "B": {
+      "q": -1.3456404209136963,
+      "passed": true
+     }
+    },
+    "hold_detail": {
+     "A": {
+      "q": 0.9517698884010315,
+      "K_D": 31.84792709350586,
+      "other": 10.695512771606445,
+      "K_D_at_fixed_point": 31.855443954467773,
+      "passed": false
+     },
+     "B": {
+      "q": -1.3445671796798706,
+      "K_D": 24.996578216552734,
+      "other": 2.4773030281066895,
+      "K_D_at_fixed_point": 25.00139808654785,
+      "passed": true
+     }
+    },
+    "settable": true,
+    "hold": false,
+    "class": "bistable, not a latch",
+    "release_detail": {
+     "from A": {
+      "A": {
+       "K_D": 31.879587173461914,
+       "other": 10.654277801513672,
+       "passed": false
+      },
+      "B": {
+       "K_D": 24.99390983581543,
+       "other": 2.4761035442352295,
+       "passed": true
+      }
+     },
+     "from B": {
+      "A": {
+       "K_D": 31.865413665771484,
+       "other": 10.6731538772583,
+       "passed": false
+      },
+      "B": {
+       "K_D": 24.99428939819336,
+       "other": 2.47590970993042,
+       "passed": true
+      }
+     }
+    },
+    "release": false
+   },
+   "two_tick": {
+    "structure": "bistable",
+    "window": 34,
+    "stimulus": 2,
+    "states": {
+     "A": 0.951754113520511,
+     "B": -1.344549868528702
+    },
+    "settable_detail": {
+     "A": {
+      "q": -1.3402632474899292,
+      "passed": false
+     },
+     "B": {
+      "q": -1.3336899280548096,
+      "passed": true
+     }
+    },
+    "hold_detail": {
+     "A": {
+      "q": 0.9517698884010315,
+      "K_D": 31.84792709350586,
+      "other": 10.695512771606445,
+      "K_D_at_fixed_point": 31.855443954467773,
+      "passed": false
+     },
+     "B": {
+      "q": -1.3445671796798706,
+      "K_D": 24.996578216552734,
+      "other": 2.4773030281066895,
+      "K_D_at_fixed_point": 25.00139808654785,
+      "passed": true
+     }
+    },
+    "settable": false,
+    "hold": false,
+    "class": "bistable, not a latch",
+    "release_detail": {
+     "from A": {
+      "A": {
+       "K_D": 31.87275505065918,
+       "other": 10.664440155029297,
+       "passed": false
+      },
+      "B": {
+       "K_D": 25.01038360595703,
+       "other": 2.480149269104004,
+       "passed": true
+      }
+     },
+     "from B": {
+      "A": {
+       "K_D": 2.477243423461914,
+       "other": 25.001108169555664,
+       "passed": false
+      },
+      "B": {
+       "K_D": 24.991579055786133,
+       "other": 2.475388288497925,
+       "passed": true
+      }
+     }
+    },
+    "release": false
+   },
+   "class": "bistable, not a latch",
+   "working": true,
+   "hysteresis": {
+    "q_after_a_ramp": 1.186036229133606,
+    "a_crossing_drive": 0.46733668341708545,
+    "q_after_b_ramp": -1.4696364402770996,
+    "b_crossing_drive": 0.3165829145728643
+   },
+   "module_skill": {
+    "A": {
+     "first_entry_share": 0.9296875,
+     "K_D_at_state": 31.855443954467773
+    },
+    "B": {
+     "first_entry_share": 0.9609375,
+     "K_D_at_state": 25.00139808654785
+    }
+   },
+   "mean_nose": {
+    "A": 0.4453125,
+    "B": 1.6875
+   }
+  },
+  {
+   "arm": "stage3",
+   "run": 5,
+   "test_mean": 8.52734375,
+   "test_lower_bound": 8.03125,
+   "selector": [
+    0.8466856479644775,
+    -2.3764636516571045,
+    0.7083566188812256,
+    -0.19233471155166626,
+    0.6824744939804077,
+    1.061540961265564,
+    0.086709164083004,
+    0.3924367427825928,
+    2.247730016708374,
+    -0.6501713991165161,
+    -0.22039489448070526,
+    -0.25975167751312256,
+    -0.8651911020278931
+   ],
+   "structure": "monostable",
+   "clamp": {
+    "applicable": false,
+    "passed": false
+   },
+   "memory": {
+    "structure": "monostable",
+    "window": 20,
+    "stimulus": 8,
+    "start": 0.21198802502966269,
+    "release_detail": {
+     "A": {
+      "K_D": 26.425926208496094,
+      "other": 28.568073272705078,
+      "passed": false
+     },
+     "B": {
+      "K_D": 28.569026947021484,
+      "other": 26.42467498779297,
+      "passed": false
+     }
+    },
+    "release": false,
+    "class": "no memory"
+   },
+   "two_tick": {
+    "structure": "monostable",
+    "window": 20,
+    "stimulus": 2,
+    "start": 0.21198802502966269,
+    "release_detail": {
+     "A": {
+      "K_D": 26.42595672607422,
+      "other": 28.568073272705078,
+      "passed": false
+     },
+     "B": {
+      "K_D": 28.569026947021484,
+      "other": 26.42467498779297,
+      "passed": false
+     }
+    },
+    "release": false,
+    "class": "no memory"
+   },
+   "class": "no memory",
+   "working": false,
+   "hysteresis": {
+    "q_after_a_ramp": 0.2129921168088913,
+    "a_crossing_drive": 0.0,
+    "q_after_b_ramp": 0.21170522272586823,
+    "b_crossing_drive": null
+   },
+   "module_skill": {},
+   "mean_nose": {
+    "A": 0.08203125,
+    "B": 1.05078125
+   }
+  },
+  {
+   "arm": "stage3",
+   "run": 6,
+   "test_mean": 9.54296875,
+   "test_lower_bound": 9.12890625,
+   "selector": [
+    3.106203079223633,
+    -2.58998966217041,
+    0.2167462408542633,
+    0.7599259614944458,
+    -0.19938665628433228,
+    -0.6956408619880676,
+    1.9597485065460205,
+    2.1347110271453857,
+    -0.29316258430480957,
+    -0.04475432634353638,
+    -0.33110979199409485,
+    -0.3417132496833801,
+    -0.45031502842903137
+   ],
+   "structure": "monostable",
+   "clamp": {
+    "applicable": false,
+    "passed": false
+   },
+   "memory": {
+    "structure": "monostable",
+    "window": 32,
+    "stimulus": 9,
+    "start": 0.06042815812067996,
+    "release_detail": {
+     "A": {
+      "K_D": 29.307140350341797,
+      "other": 24.978845596313477,
+      "passed": false
+     },
+     "B": {
+      "K_D": 24.978919982910156,
+      "other": 29.306425094604492,
+      "passed": false
+     }
+    },
+    "release": false,
+    "class": "no memory"
+   },
+   "two_tick": {
+    "structure": "monostable",
+    "window": 32,
+    "stimulus": 2,
+    "start": 0.06042815812067996,
+    "release_detail": {
+     "A": {
+      "K_D": 29.307140350341797,
+      "other": 24.978845596313477,
+      "passed": false
+     },
+     "B": {
+      "K_D": 24.978919982910156,
+      "other": 29.306425094604492,
+      "passed": false
+     }
+    },
+    "release": false,
+    "class": "no memory"
+   },
+   "class": "no memory",
+   "working": false,
+   "hysteresis": {
+    "q_after_a_ramp": 0.05967472493648529,
+    "a_crossing_drive": 0.0,
+    "q_after_b_ramp": 0.0633016973733902,
+    "b_crossing_drive": null
+   },
+   "module_skill": {},
+   "mean_nose": {
+    "A": 0.1015625,
+    "B": 0.1484375
+   }
+  },
+  {
+   "arm": "stage3",
+   "run": 7,
+   "test_mean": 14.5,
+   "test_lower_bound": 13.875,
+   "selector": [
+    1.860390543937683,
+    -2.2564892768859863,
+    0.13699717819690704,
+    -0.5622701644897461,
+    -0.37704572081565857,
+    -1.6751112937927246,
+    -1.1794512271881104,
+    0.5563916563987732,
+    -0.7470384240150452,
+    -0.35279083251953125,
+    0.45674481987953186,
+    -0.1537373661994934,
+    -0.3858552575111389
+   ],
+   "structure": "monostable",
+   "clamp": {
+    "applicable": false,
+    "passed": false
+   },
+   "memory": {
+    "structure": "monostable",
+    "window": 20,
+    "stimulus": 8,
+    "start": 0.04208618449625732,
+    "release_detail": {
+     "A": {
+      "K_D": 28.25634002685547,
+      "other": 27.613847732543945,
+      "passed": false
+     },
+     "B": {
+      "K_D": 27.613847732543945,
+      "other": 28.25634002685547,
+      "passed": false
+     }
+    },
+    "release": false,
+    "class": "no memory"
+   },
+   "two_tick": {
+    "structure": "monostable",
+    "window": 20,
+    "stimulus": 2,
+    "start": 0.04208618449625732,
+    "release_detail": {
+     "A": {
+      "K_D": 28.25634002685547,
+      "other": 27.613847732543945,
+      "passed": false
+     },
+     "B": {
+      "K_D": 27.613847732543945,
+      "other": 28.25634002685547,
+      "passed": false
+     }
+    },
+    "release": false,
+    "class": "no memory"
+   },
+   "class": "no memory",
+   "working": false,
+   "hysteresis": {
+    "q_after_a_ramp": 0.041023142635822296,
+    "a_crossing_drive": 0.0,
+    "q_after_b_ramp": 0.04050102457404137,
+    "b_crossing_drive": 0.271356783919598
+   },
+   "module_skill": {},
+   "mean_nose": {
+    "A": 4.13671875,
+    "B": 5.80078125
+   }
+  }
+ ],
+ "btask_means": {
+  "0": 8.390625,
+  "1": 9.875,
+  "2": 6.89453125,
+  "3": 8.71875,
+  "4": 7.140625,
+  "5": 9.4765625,
+  "6": 7.42578125,
+  "7": 8.9375
+ },
+ "descriptive": {
+  "E": {
+   "mean": 12.7890625,
+   "no_latch": {
+    "mean": 4.828125,
+    "lo95": 4.45703125,
+    "hi95": 5.20703125
+   },
+   "one_module": {
+    "mean": 11.046875,
+    "lo95": 10.72265625,
+    "hi95": 11.375
+   },
+   "q_zero": {
+    "mean": 11.44921875,
+    "lo95": 11.09375,
+    "hi95": 11.804785156249999
+   },
+   "E_mean_A": {
+    "mean": 11.94140625,
+    "lo95": 11.5234375,
+    "hi95": 12.359375
+   },
+   "E_mean_B": {
+    "mean": 11.1640625,
+    "lo95": 10.77724609375,
+    "hi95": 11.5546875
+   }
+  },
+  "b_shared_mean": 12.3046875,
+  "l1_switch_mean": 13.125,
+  "b_shared_component_tests": {
+   "active": {
+    "values": {
+     "A@0.005": 35.63227462768555,
+     "A@0.01": 35.62942886352539,
+     "A@0.02": 35.61787033081055,
+     "A@0.05": 35.54566955566406,
+     "A@0.1": 35.27667999267578,
+     "A@0.2": 34.240325927734375,
+     "A@0.35": 31.594141006469727,
+     "B@0.005": 35.63227462768555,
+     "B@0.01": 35.62921142578125,
+     "B@0.02": 35.61787033081055,
+     "B@0.05": 35.545196533203125,
+     "B@0.1": 35.27688980102539,
+     "B@0.2": 34.239864349365234,
+     "B@0.35": 31.595325469970703
+    },
+    "passed": true
+   },
+   "inactive": {
+    "values": {
+     "A@0.005": 0.06795674562454224,
+     "A@0.01": 0.07056444883346558,
+     "A@0.02": 0.07056444883346558,
+     "A@0.05": 0.07413327693939209,
+     "A@0.1": 0.081419937312603,
+     "A@0.2": 0.10079144686460495,
+     "A@0.35": 0.1350119709968567,
+     "B@0.005": 0.06797164678573608,
+     "B@0.01": 0.07056444883346558,
+     "B@0.02": 0.07056444883346558,
+     "B@0.05": 0.07531791925430298,
+     "B@0.1": 0.081419937312603,
+     "B@0.2": 0.09962915629148483,
+     "B@0.35": 0.13381987810134888
+    },
+    "passed": true
+   },
+   "offset": {
+    "values": {
+     "A@0.005": [
+      0.20000120997428894,
+      0.19999979436397552
+     ],
+     "A@0.01": [
+      0.19999836385250092,
+      0.19999979436397552
+     ],
+     "A@0.02": [
+      0.20000025629997253,
+      0.19999979436397552
+     ],
+     "A@0.05": [
+      0.19999884068965912,
+      0.19999979436397552
+     ],
+     "A@0.1": [
+      0.19999884068965912,
+      0.19999979436397552
+     ],
+     "A@0.2": [
+      0.19999884068965912,
+      0.19999979436397552
+     ],
+     "A@0.35": [
+      0.20000168681144714,
+      0.20000025629997253
+     ],
+     "B@0.005": [
+      0.19999836385250092,
+      0.19999979436397552
+     ],
+     "B@0.01": [
+      0.19999836385250092,
+      0.19999979436397552
+     ],
+     "B@0.02": [
+      0.20000025629997253,
+      0.19999979436397552
+     ],
+     "B@0.05": [
+      0.19999931752681732,
+      0.19999979436397552
+     ],
+     "B@0.1": [
+      0.19999931752681732,
+      0.19999979436397552
+     ],
+     "B@0.2": [
+      0.19999931752681732,
+      0.19999979436397552
+     ],
+     "B@0.35": [
+      0.19999884068965912,
+      0.20000025629997253
+     ]
+    },
+    "passed": true
+   },
+   "switching": {
+    "values": {
+     "A": {
+      "settled": 35.54566955566406,
+      "after_level": [
+       35.003421783447266,
+       35.08815002441406,
+       35.266746520996094,
+       35.41518020629883,
+       35.48880386352539,
+       35.52136993408203,
+       35.53432846069336,
+       35.53976821899414,
+       35.53998947143555,
+       35.54118347167969
+      ],
+      "passed": true
+     },
+     "B": {
+      "settled": 35.545196533203125,
+      "after_level": [
+       35.003868103027344,
+       35.087650299072266,
+       35.266510009765625,
+       35.414703369140625,
+       35.48880386352539,
+       35.52090835571289,
+       35.53432846069336,
+       35.540252685546875,
+       35.54094314575195,
+       35.54212951660156
+      ],
+      "passed": true
+     }
+    },
+    "passed": true
+   },
+   "startup": {
+    "values": {
+     "5": 34.97937774658203,
+     "6": 35.04022216796875,
+     "7": 35.21840286254883,
+     "8": 35.388519287109375,
+     "9": 35.476295471191406,
+     "10": 35.5171012878418,
+     "11": 35.53268814086914,
+     "12": 35.538597106933594,
+     "13": 35.53998947143555,
+     "14": 35.541175842285156,
+     "15": 35.542606353759766
+    },
+    "passed": true
+   },
+   "passed": true
+  },
+  "b_shared_memory": {
+   "structure": "bistable",
+   "window": 20,
+   "stimulus": 2,
+   "states": {
+    "A": 1.9150080481545375,
+    "B": -1.9150080481545375
+   },
+   "settable_detail": {
+    "A": {
+     "q": 1.9150104522705078,
+     "passed": true
+    },
+    "B": {
+     "q": -1.9150104522705078,
+     "passed": true
+    }
+   },
+   "hold_detail": {
+    "A": {
+     "q": 1.9150104522705078,
+     "K_D": 35.542606353759766,
+     "other": 0.07389485836029053,
+     "K_D_at_fixed_point": 35.54566955566406,
+     "passed": true
+    },
+    "B": {
+     "q": -1.9150104522705078,
+     "K_D": 35.54307556152344,
+     "other": 0.07507950067520142,
+     "K_D_at_fixed_point": 35.545196533203125,
+     "passed": true
+    }
+   },
+   "settable": true,
+   "hold": true,
+   "class": "latch",
+   "release_detail": {
+    "from A": {
+     "A": {
+      "K_D": 35.542606353759766,
+      "other": 0.07389485836029053,
+      "passed": true
+     },
+     "B": {
+      "K_D": 35.54307556152344,
+      "other": 0.07507950067520142,
+      "passed": true
+     }
+    },
+    "from B": {
+     "A": {
+      "K_D": 35.542606353759766,
+      "other": 0.07389485836029053,
+      "passed": true
+     },
+     "B": {
+      "K_D": 35.54307556152344,
+      "other": 0.07507950067520142,
+      "passed": true
+     }
+    }
+   },
+   "release": true
+  },
+  "checkpoint_offsets": {
+   "0": [
+    -2.086162567138672e-07,
+    0.020538076758384705,
+    -0.15963882207870483,
+    -0.06609752774238586,
+    0.007622644305229187,
+    0.06044177711009979,
+    -0.40962153673171997,
+    -9.417533874511719e-06,
+    0.054538801312446594,
+    -0.5522130131721497,
+    0.00238722562789917,
+    -0.3820061683654785,
+    -0.07577868551015854
+   ],
+   "1": [
+    -2.086162567138672e-07,
+    0.21492989361286163,
+    -0.4929019808769226,
+    -0.440314918756485,
+    -0.20864732563495636,
+    -0.5439397692680359,
+    -0.3670068383216858,
+    -0.2439173460006714,
+    -0.06157636642456055,
+    -0.3033028542995453,
+    -0.4535083770751953,
+    -0.047664105892181396,
+    -0.5361186861991882
+   ],
+   "2": [
+    -2.086162567138672e-07,
+    -0.08594199270009995,
+    -0.4544036388397217,
+    -0.09988297522068024,
+    -0.12973538041114807,
+    -0.02315656840801239,
+    -0.12108742445707321,
+    -0.15014632046222687,
+    -0.2737833857536316,
+    -0.5746279358863831,
+    -0.15045645833015442,
+    0.10050748288631439,
+    -0.06270721554756165
+   ],
+   "3": [
+    -2.086162567138672e-07,
+    -0.3866347670555115,
+    0.010143667459487915,
+    -0.5361962914466858,
+    0.2387668937444687,
+    -0.4719344973564148,
+    -0.43429386615753174,
+    -0.4110070765018463,
+    -0.6006269454956055,
+    0.03783988952636719,
+    0.03783988952636719,
+    -0.5073058605194092,
+    -0.51938396692276
+   ],
+   "4": [
+    -2.086162567138672e-07,
+    0.06478677690029144,
+    -0.4030015468597412,
+    -0.27383852005004883,
+    -0.11984655261039734,
+    -0.2018056958913803,
+    0.04536581039428711,
+    -0.14577479660511017,
+    -0.27538540959358215,
+    -0.2188069224357605,
+    -0.2481725513935089,
+    -0.39765074849128723,
+    -0.28147953748703003
+   ],
+   "5": [
+    -2.086162567138672e-07,
+    -0.44705864787101746,
+    0.17404721677303314,
+    -0.1788901686668396,
+    0.1790017932653427,
+    -0.032274216413497925,
+    -0.2725743353366852,
+    -0.3056023120880127,
+    -0.459522008895874,
+    0.09389488399028778,
+    0.040707752108573914,
+    -0.37647148966789246,
+    -0.07230505347251892
+   ],
+   "6": [
+    -2.086162567138672e-07,
+    -0.3713947832584381,
+    -0.027273908257484436,
+    -0.02446770668029785,
+    -0.09259726852178574,
+    -0.6087064743041992,
+    0.07528813183307648,
+    -0.512913167476654,
+    0.14072085916996002,
+    -0.05922219157218933,
+    -0.6076024174690247,
+    -0.12816882133483887,
+    -0.3182404637336731
+   ],
+   "7": [
+    -2.086162567138672e-07,
+    -0.4030247926712036,
+    -0.22818031907081604,
+    -0.08359140902757645,
+    -0.12898436188697815,
+    -0.29520732164382935,
+    -0.31013619899749756,
+    -0.05978304147720337,
+    -0.39062392711639404,
+    -0.2523948550224304,
+    0.034664586186409,
+    -0.4358792304992676,
+    -0.10021950304508209
+   ]
+  }
+ },
+ "readings": {
+  "S2-a": {
+   "working": 1,
+   "read": 8,
+   "wording": "evolution found a working selector in 1 of 8 runs, not reliably",
+   "classes": {
+    "0": "no memory",
+    "1": "no memory",
+    "2": "no memory",
+    "3": "no memory",
+    "4": "bistable, not a latch",
+    "5": "no memory",
+    "6": "no memory",
+    "7": "no memory"
+   }
+  },
+  "S2-b": {
+   "pairs": 8,
+   "descriptive": false,
+   "wording": "evolution from a start near the ungated pair, with untied mutation, against a blind search over the whole range with the comparator pairs permanently tied",
+   "estimate": -1.48974609375,
+   "lo": -2.97998046875,
+   "hi": 0.24267578125,
+   "label": "unclear"
+  },
+  "S2-c": {
+   "ga": {
+    "count": 0,
+    "n": 1024,
+    "lo": 0.0,
+    "hi": 0.0035959404068344786,
+    "unchecked": 0,
+    "wording": "none of 1024 draws passed the screen and the full check; that rate is below 0.0036",
+    "generation_zero": false
+   },
+   "rs": {
+    "count": 0,
+    "n": 1024,
+    "lo": 0.0,
+    "hi": 0.0035959404068344786,
+    "unchecked": 0,
+    "wording": "none of 1024 draws passed the screen and the full check; that rate is below 0.0036",
+    "generation_zero": false
+   }
+  },
+  "stage3": {
+   "estimate": 2.3623046875,
+   "lo": 1.3154296875,
+   "hi": 3.517578125,
+   "pairs": 8,
+   "label": "better",
+   "wording": "joint tuning"
+  },
+  "btask": {
+   "estimate": -3.72998046875,
+   "lo": -5.95849609375,
+   "hi": -1.5517578125,
+   "pairs": 8,
+   "label": "worse",
+   "against": "Stage 3",
+   "wording": "the same neurons, inputs and outputs, not the same trainable capacity"
+  }
+ },
+ "D": 39,
+ "e_test_mean": 12.7890625,
+ "composition": {
+  "scores": [
+   32,
+   256,
+   1
+  ],
+  "assays": [
+   1,
+   256,
+   1
+  ],
+  "traces": [
+   32,
+   16,
+   1
+  ]
+ },
+ "seconds": 499.86607119999826
+}
