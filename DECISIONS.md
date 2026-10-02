@@ -5064,3 +5064,38 @@ owner is informed.
 - the reset as a one-time write;
 - which Stage 3 runs are kept under reduction;
 - every number still marked "proposed".
+
+## D164 — E3a's pre-registration, first draft reviewed (both "bind after fixes"); second draft
+
+**The review** (`docs/reviews/20261002-E3a-prereg/`): both said "bind after fixes". Both confirmed the
+S-shuttle correction (k 8192 overall, k 32 among gains up to 32, from `freeze.json`), the seeds and the
+world blocks.
+
+**What both found:**
+- the inactive module's offset test was one-sided (|u| − |u|, not |u_with − u_without|);
+- B-task's nose pairs lacked the within-pair symmetry its comparators had, so generation 0 could have
+  an offset;
+- B-task's τ range was missing;
+- B-task's comparison inherited a "working" branch it cannot have;
+- the integer rule for S-oracle's reference was missing;
+- the stage order could not work: calibration came before the champions existed, and Stage 3 needed
+  frozen Stage 2 champions (Astra);
+- the checkpoint schedule was missing.
+
+**Fable also found:**
+- **the reset, timed 10 ticks after the visit, often finds the head still inside A,** where the relay
+  overrides the write. It is now timed from the level's end;
+- the state-to-goal assignment for a bistable champion was undefined, and mirrored champions are
+  allowed;
+- small pins: the random walk's seed, B-shared's routing and ablation, and admission's reserve.
+
+**Astra also found:**
+- **the design's root grid can miss a pair of roots inside one cell.** Example: w_qq 1.0119999647,
+  b_q 0.0008732175. Rechecked here: the grid finds 1 root, and bracketing at f's stationary points
+  finds 3, including a stable root at −0.10934 (f′ −2.7e−6);
+- the census interval bounds passing the screen and the full check, not being a working selector;
+- the reference is "straight-run", not a strict maximum;
+- incomplete runs needed arm-level rules;
+- G-E's CPU genomes needed naming.
+
+**The second draft** takes every fix. The departures from the design are listed in its §12.

@@ -1,6 +1,8 @@
 # E3a pre-registration: the shuttle, a two-module organism with a latch
 
-Status: **first draft, for review**, 2026-10-02.
+Status: **second draft**, 2026-10-02.
+- **Its review:** both reviewers said "bind after fixes" on the first draft (a7177e7;
+  `docs/reviews/20261002-E3a-prereg/`; D164). This draft takes every fix they listed.
 - **Its design:** `docs/E3/DESIGN.md` v2.4, agreed by Astra 6 and Fable 5.1 (D163). The departures
   from it are listed in §12.
 - **Binding:** it binds when committed and pushed after both reviewers agree, before any stage of E3a
@@ -110,6 +112,9 @@ support (zero beyond 18 cells along either axis).
 | `at_a` | E3_RA | 3 |
 | `at_b` | E3_RB | 3 |
 
+For B-shared: `a_left` → E3_S_AL, `a_right` → E3_S_AR, `b_left` → E3_S_BL and `b_right` → E3_S_BR,
+each at gain 1. For L1-switch: `goal_left` → E4S_NL and `goal_right` → E4S_NR, each at gain 1.
+
 None of these signals reaches a worm neuron. ALM, AVM and every N2 sensor are untouched.
 
 **Dtypes:**
@@ -167,7 +172,7 @@ stated:
   - k 8192, speed 1, turn 0 (E1's best overall).
 - **Blind:**
   - constant motion (speed 0.8, turn 0.1);
-  - a persistent random walk (speed 1, rate 1, persistence 0.5);
+  - a persistent random walk (speed 1, rate 1, persistence 0.5, seed 0);
   - the carrier's circle (the carrier, no graft).
 
 **B-shared** (engineered, descriptive; 9 grafted neurons):
@@ -183,59 +188,93 @@ stated:
   - the gate: q → A's noses +2, q → B's noses −2.
 - **Why it works:** an inactive nose pair sits near tanh(−3.83) ≈ −0.999, and equal values on its two
   noses cancel in the push-pull.
-- It passes the component tests of §6 with "module" read as "nose pair".
+- It passes the component tests of §6 with "module" read as "nose pair". To ablate a nose pair, its
+  4 nose-to-comparator edges are set to 0.
 
 ## 5. The stages, in order (each writes a record committed and pushed before the next starts)
 
 1. **Projection** (timings only; smoke ids 0-9 999, seed base 1 179 000);
 2. **G-E, the engine check;**
 3. **G0, Stage 0's gate;**
-4. **G1, Stage 1's gate** with the memory assays, then calibration;
-5. **The censuses;**
-6. **Training batches,** each its own stage:
-   1. Stage 2 GA, runs 0-7;
-   2. random sampling, runs 0-7;
-   3. Stage 3, runs 0-7;
-   4. B-task, runs 0-7;
-7. **Final-population validation and champion choice;**
-8. **Evaluation on the test worlds,** with the classes and the census qualifiers' full check.
+4. **G1, Stage 1's gate;**
+5. **E's calibration** (D, and E's measured stimulus duration);
+6. **the censuses' screening scores;**
+7. **training batch 1:** Stage 2 GA, runs 0-7;
+8. **training batch 2:** random sampling, runs 0-7;
+9. **Stage 2's champions:** the GA's final populations and random sampling's top 32 validated, and the
+   champions frozen;
+10. **training batch 3:** Stage 3, runs 0-7, from the frozen Stage 2 champions;
+11. **training batch 4:** B-task, runs 0-7;
+12. **Stage 3's and B-task's champions:** validated and frozen;
+13. **calibration** of every champion and census qualifier;
+14. **evaluation on the test worlds:** scores, assays and classes, and the qualifiers' full check.
+
+Every stage writes a record that is committed and pushed before the next starts.
+
+**The projection** times each shape twice, using the second timing:
+- training: a 4-generation `evolve_batch` of 8 runs at 256 × 16;
+- validation: 32 × 256, one run's final population;
+- census screening: 256 × 16;
+- a single organism: 1 padded × 1 024;
+- assays: 1 padded × 256;
+- the probe: open loop.
+
+It records only timings.
 
 **G-E, the engine check** (rule 7). The previous engine is the commit before E3a's code.
 - **On the GPU:** E2's formal GA batch for generations 0-25, with every generation's best-genome hash
   equal to `experiments/E2-optimizer-screen/train-ga.json`. This is `scripts/e4s_equivalence.py`'s
   check, rerun.
-- **On the CPU:** Task N and foraging, 300 ticks on smoke ids 0-15 (run seed 1 179 500):
-  - every per-tick state, event and score identical between the two engines;
-  - E4s-1's grafted L1 genome rebuilt by the generalised `graft.py` bit-identical to the old build.
+- **On the CPU,** every per-tick state, event and score identical between the two engines:
+  - **Task N:** 300 ticks on smoke ids 0-15 (world seed 1 179 500), for 4 random N2 genomes
+    (`initial_population`, run seed 1 179 500) and for E4s-1's M run 0 generation-0 genome (L1 on
+    random N2, `embedded_population` with run seed 1 160 000, strain 0);
+  - **foraging:** 300 ticks on the same ids, under the default configuration, for the same 4 random
+    genomes.
+- **The graft:** E4s-1's grafted genome rebuilt by the generalised `graft.py`, bit-identical to the
+  old build, with its `MODULES` registration unchanged.
 - **The test:** all identical. A failure stops E3a until the code is fixed, and G-E is rerun.
 
 **G0, Stage 0's gate** (gate worlds, 1 024; one padded strain per controller):
-- S-oracle's mean is at least 0.6 of the mean geometric maximum. Per world, that maximum is the number
-  of legs an ideal mover completes in 600 ticks:
-  - the first leg takes (|A − spawn| − R) / 0.35 ticks;
-  - each later leg takes (|A − B| − 2R) / 0.35 + π / 0.30 ticks: a straight run at full speed, plus a
-    half-turn at the full turn rate.
+- S-oracle's mean is at least 0.6 of the mean **straight-run reference.**
+  - **Per world:** with t₁ = (|A − spawn| − R) / 0.35 and t_leg = (|A − B| − 2R) / 0.35 + π / 0.30,
+    unrounded, the reference is 0 if t₁ > 600, else 1 + ⌊(600 − t₁) / t_leg⌋.
+  - **It models** a straight run at full speed plus a stationary half-turn at the full turn rate per
+    reversal. It is not a strict bound: the engine turns and moves in the same tick, and reversal
+    angles vary (Astra).
+  - **The threshold of 0.6** is a new choice, made before any run. It is a loose sanity check; Fable
+    estimates the oracle near 0.8-0.9 of it.
 - S-shuttle at k 8192 reaches at least 0.5 of S-oracle's mean.
 - L1-switch's lower bound is at least 0.5 of S-shuttle's mean at k 32.
 - Every blind control's mean is at most 0.25 of L1-switch's mean, and its 90th-percentile world at
   most 0.5 of it.
 
-**G1, Stage 1's gate** (the same gate worlds):
+**G1, Stage 1's gate** (the same gate worlds, except where an assay names its own):
 - E's lower bound is at least 0.8 of L1-switch's mean;
 - `classify`(E against no-latch, E against one-module) gives "uses";
 - E passes every component test (§6);
-- E passes every memory assay (§6): the clamp assays, settable, the hold and the reset.
+- **E passes these memory assays,** at its stable states q* = ±1.91501 (q > 0 is A), with a stimulus
+  of 2 ticks and W = 20:
+  - the clamp assays;
+  - settable;
+  - the hold;
+  - the reset.
 
-**Calibration** (after G1 passes; calibration worlds), for each organism the assays need:
-- **D:** E's median leg duration over completed legs after the first confirmed visit, rounded to the
-  nearest tick (half up). Legs cut off by the episode's end are excluded.
-- **Each champion's stimulus duration:** the median, pooled over A and B, of the number of
-  consecutive ticks of its visited source's level starting at each confirmed entry.
+  E's release test needs D, so it is reported after calibration and does not gate.
+
+**E's calibration** (after G1 passes; calibration worlds):
+- **D:** E's median leg duration over completed legs after the first confirmed visit, rounded half up.
+  Legs cut off by the episode's end are excluded.
+- **E's measured stimulus duration,** reported. E's assays use 2 ticks by design; the real level is
+  probably longer (Fable estimates 6-10 ticks).
+
+**Champions' and qualifiers' calibration** (stage 13; calibration worlds):
+- **The stimulus duration:** the median, pooled over A and B, of the number of consecutive ticks of
+  the visited source's level, starting at each confirmed entry.
   - Rounded half up, at least 1.
   - Levels cut off by the episode's end are excluded.
-  - It is 2 for E and every control; 2 is also the fallback for a champion without a confirmed
-    visit.
-- **Each monostable champion's median q** in each goal phase.
+  - If the pool is empty, it is 2.
+- **For a monostable champion:** its median q in each goal phase.
 
 **Gate failures and reruns** (E4s-1's rules):
 - **A gate that completes and fails its test is final.** E3a stops for redesign, and the failure is
@@ -256,48 +295,74 @@ stated:
   toward its source has K_D > 0.
 - m = 0.05 unless a test names others.
 
-**The component tests** (E, B-shared, the controls where stated):
+**The component tests** (E and B-shared):
 
 | Test | Requirement |
 |---|---|
 | the active module's K_D, at m in {0.005, 0.01, 0.02, 0.05, 0.1, 0.2, 0.35}, from each stable state | at least 30 |
 | the inactive module's | \|K_D\| at most 0.3 at every m |
-| the inactive module's offset: \|u\| with it, minus \|u\| with its 16 output edges at 0, at d = 0 | below 0.02 at every m |
+| the inactive module's offset: \|u_with − u_without\|, where u_without has the inactive module's 16 output edges at 0 (B-shared: its 4 nose-to-comparator edges), at d = 0 | below 0.02 at every m |
 | switching and recovery: after a two-tick level for the other goal, the newly active module's K_D, probed each tick | reaches 90% of its settled value within 10 ticks of the level's end |
 | startup: from tick 0 with the cue, A's K_D probed at ticks 5-15 | at least 30 from tick 10 |
 
-**The memory assays** (§1-§4's organisms, and every Stage 2 and Stage 3 champion):
+**The memory assays.**
+- **Where they apply:**
+  - E (G1);
+  - every Stage 2, random-sampling and Stage 3 champion;
+  - every census qualifier (stage 14).
+- **Where they do not:**
+  - B-task, whose recurrent inputs into q break the scalar q equation;
+  - the scripted controls and L1-switch, which have no q.
 - **The states:**
-  - for a bistable q, its two stable fixed points;
-  - for a monostable q, its calibration medians per goal phase.
+  - **for a bistable q,** its two stable fixed points;
+  - **for a monostable q,** its calibration medians per goal phase. If its stable roots are several,
+    the release test starts at the one with the smallest |q|.
   - "The separation" s is the distance between the two states. A tolerance of 10% means within
     0.1·s.
+- **Which state is which goal:**
+  - For E, q > 0 is A.
+  - For a champion, it is the one-to-one assignment of its two states to A and B under which both
+    clamp assays pass. If neither assignment passes, it is the one with the larger summed first-entry
+    share, and if they tie, the one with the higher state as A.
+  - The assignment is reported. It fixes the "active module" in the hold, so mirrored champions are
+    tested correctly.
 - **The stimulus for goal X:** the level of the other source (`at_b` for goal A, `at_a` for goal B),
   for the organism's stimulus duration.
-- **The window:** W = max(20, 10·τ_q) ticks, read at its end.
+- **The window:** W = max(20, ⌈10·τ_q⌉) ticks, starting at the stimulus's last tick and read at its
+  end.
 - **The clamp assays:**
   - assay worlds, 600 ticks, with q clamped to each state in turn;
   - each passes if the first entry is into that state's goal in at least 90% of the worlds;
   - a world with no entry is a failure;
   - they are not applicable if s < 0.1, or if a goal phase never occurs on the calibration worlds.
-- **Settable** (bistable only): from each stable state, the stimulus for the other goal leaves q
-  within 10% of the other state at the end of W.
-- **The hold** (bistable only): from each stable state, set by its stimulus, wait W, then run 580
-  ticks with no levels. It passes, for both states, if:
+- **Settable** (bistable only): starting from each stable state, settled, with the relays at rest,
+  the stimulus for the other goal leaves q within 10% of the other state at the end of W.
+- **The hold** (bistable only): starting from each stable state, settled, with the relays at rest,
+  apply its own goal's stimulus, wait W, then run 580 ticks with no levels. It passes, for both
+  states, if:
   - q at the end is within 10% of its fixed point;
   - the active module's K_D is at least 15, and at least 0.8 of its value at the fixed point;
   - the inactive |K_D| is at most 0.1 of the active one.
-- **The release test:** from q's computed equilibrium (each stable one, for a bistable q), the
-  stimulus for goal X, then D ticks with no levels. It passes, for both goals, if X's module has a
-  K_D of at least 15, and the other's |K_D| is at most 0.1 of it.
-- **The reset** (E, in G1): a one-time write of q to E's "go to A" state, 10 ticks after the first
-  confirmed visit. It passes if, in at least 70% of the assay worlds with a first confirmed visit by
-  tick 500, the next entry is into A and a confirmed visit to B follows.
+- **The release test:** from q's computed equilibrium (each stable one, for a bistable q), with the
+  relays at rest, the stimulus for goal X, then D ticks with no levels. It passes, for both goals,
+  if X's module has a K_D of at least 15, and the other's |K_D| is at most 0.1 of it.
+- **The reset** (E, in G1):
+  - **The setup:** on the assay worlds, a one-time write of q to E's "go to A" state, 10 ticks after
+    `at_a` returns to 0 following the first confirmed visit (Fable: 10 ticks after the visit itself
+    often finds the head still inside A).
+  - **What passes:** in at least 70% of the worlds with a first confirmed visit by tick 500, the next
+    entry is into A, and a confirmed visit to B follows.
 - **The fixed points** of f(q) = −q + w_qq·tanh q + b_q, with the relays at rest:
-  - found on a grid of 100 001 points over |q| ≤ |w_qq| + |b_q| + 1, counting exact zeros and sign
-    changes, each refined by bisection to 1e-9;
-  - a root is stable if f′(q) = −1 + w_qq·sech²q < −1e-6;
-  - **bistable** means two stable roots at least 0.1 apart; otherwise the structure is monostable.
+  - **If w_qq > 1,** f's stationary points ±acosh(√w_qq) split the line into three monotone
+    intervals. Otherwise the line is one interval.
+  - Each interval, bounded by |q| ≤ |w_qq| + |b_q| + 1, holds at most one root. It is found by
+    bisection to 1e-12 when the interval's ends differ in sign or one is exactly 0.
+  - A stationary point where |f| < 1e-12 is a tangent root, and is not stable.
+  - **A root is stable** if f′(q) = −1 + w_qq·sech²q < −1e-6.
+  - **Bistable** means two stable roots at least 0.1 apart; otherwise the structure is monostable.
+  - **Correction of the design (D164):** the design's grid of 100 001 points can miss a pair of roots
+    inside one cell. Astra's example, rechecked: w_qq 1.0119999647, b_q 0.0008732175 has a missed
+    stable root at −0.10934, with f′ −2.7e−6.
 
 **The memory class** (Stage 2 and Stage 3 champions; operational, so "no memory" means these assays
 failed):
@@ -314,7 +379,8 @@ failed):
 - The hysteresis sweep (the relay drive ramped from 0 to 3 and back over 200 ticks each way) is
   descriptive.
 
-**A working selector:** a champion is working if both hold:
+**A working selector:** a Stage 2, random-sampling or Stage 3 champion, or a census qualifier, is
+working if both hold:
 - its test-world lower bound is at least 0.8 of E's test-world mean;
 - both of its clamp assays pass.
 
@@ -323,7 +389,9 @@ A champion with mirrored polarity can be working.
 **Also measured, on the test worlds** (descriptive):
 - each module's mean-nose probe: the score with that module's two noses fed their mean;
 - per-tick turn contributions;
-- generation 0's turn offsets and K_D, and each logged generation's offsets.
+- generation 0's turn offsets and K_D, and each logged generation's offsets;
+- **each module's skill,** for the checkpoint candidates and the champions of Stage 3: the clamp
+  assays' first-entry share for that module's state, and its K_D at that state.
 
 ## 7. Arms, masks, seeds, worlds
 
@@ -333,6 +401,12 @@ A champion with mirrored polarity can be working.
 | **Random sampling** | — | — | 8, paired with the GA's | 9 600 draws | registered |
 | Stage 3 | 32 copies of run i's Stage 2 champion | the 11 neurons' existing edges, τ and biases, except the relays' τ and bias, 0.25× | 8 | 500 | descriptive |
 | B-task | 32 draws from B-task's distribution | its 171 parameters, 1× | 8 | 800 | descriptive |
+
+**Checkpoints:** every arm runs `evolve_batch` with selection and validation at the world seed
+1 171 000.
+- Validation runs every 25 generations (`checkpoint_every` 25), from generation 0 to the last.
+- Checkpoints describe the trajectory. They never choose a champion: `RunRecord.champion_index` is not
+  used.
 
 **The selector's 13 parameters:**
 - τ_q, w_qq and b_q;
@@ -357,24 +431,28 @@ The tie is in the draw only: mutation is untied.
 That is 9 independent coordinates.
 
 **Random sampling's search:**
-- Draw j (0-9 599) of run i is scored on the GA run i's selection worlds of generation ⌊j / 32⌋.
-- The top 32 by that score (ties to the lower j) go to final-population validation.
+- Draw j (0-9 599) of run i is scored on the GA run i's selection worlds of generation ⌊j / 32⌋:
+  `train_ids(1 170 000 + i, ⌊j / 32⌋, 16, 944 000 000, 500 000)` at the world seed 1 171 000.
+- The top 32 by that score (ties to the lower j) go to validation; the champion's ties also go to the
+  lower j.
 
 **B-task's 11 neurons** keep E's names and routing; its genome has all 121 edges among them plus 32
 output edges.
 - **What mutates:** all 153 edges, and the τ and bias of the 9 non-relay neurons. There are no gap
   junctions.
 - **Its draws:**
-  - **each nose pair:** one τ (log-uniform) and one bias (N(0, 0.5²), clipped), and each edge into
-    it from another neuron one value given to both noses;
-  - **each comparator pair:** one τ and one bias as for the noses;
+  - **each nose pair:**
+    - one τ, log-uniform over [0.5, 20], and one bias, N(0, 0.5²) clipped to ±2;
+    - each edge into it from another neuron, one value given to both noses;
+    - NL → NL = NR → NR, and NL → NR = NR → NL;
+  - **each comparator pair:** one τ and one bias, drawn as for the noses;
     - its own module's nose edges in L1's pattern, with one magnitude a ~ U[−0.5, 0.5] (left nose →
       CL +a, → CR −a; right nose → CR +a, → CL −a);
     - from every other neuron, one value for both comparators;
     - CL → CL = CR → CR, and CL → CR = CR → CL;
   - **each comparator pair's outputs:** one value per turn neuron, from U[−0.5, 0.5], with opposite
     signs for CL and CR;
-  - **E3_Q:** its τ log-uniform, its bias N(0, 0.5²), clipped;
+  - **E3_Q:** its τ log-uniform over [0.5, 20], its bias N(0, 0.5²) clipped to ±2;
   - **every other edge:** U[−0.5, 0.5].
 - **The result:** generation 0 adds no turn at zero nose difference, and each module senses with gain
   a.
@@ -382,8 +460,9 @@ output edges.
 **Generation 0's limits** (from the design):
 - The balance holds at generation 0 only: untied 1× mutation unbalances most children from generation
   1.
-- The GA distribution contains no working selector: q is monostable, and the gate moves a comparator
-  by about 1 at most.
+- The GA distribution is not expected to contain a working selector. Its q is monostable (|w_qq| ≤
+  0.5), and its gate moves a comparator by about 1 at most. That is an expectation, not a claim; S2-c
+  measures it.
 
 **Seeds** (numpy `default_rng`; torch generators as `evolve_batch` takes them):
 
@@ -410,7 +489,7 @@ output edges.
 | G0 and G1 | 947 200 000-947 201 023 |
 | calibration | 948 000 000-948 000 255 |
 
-**The test worlds are read only in stage 8,** after every champion is frozen.
+**The test worlds are read only in stage 14,** after every champion is frozen.
 
 **End-of-run assertions:**
 - in Stage 2, every non-selector parameter is bit-identical to E's;
@@ -421,9 +500,18 @@ A failure makes that batch "not read".
 
 ## 8. Outcomes
 
-**The champions:** in each arm, every final population member (for random sampling, its top 32) is
+**The champions:** in each arm, every final-population member (for random sampling, its top 32) is
 validated on the 256 validation worlds. The best validation mean is the champion, ties to the lower
-index.
+index (for random sampling, the lower j).
+- The runner implements this rule itself; `evolve_batch`'s checkpoint champion is not used.
+- Stage 2's and random sampling's champions are frozen before Stage 3 starts. Stage 3 run i starts
+  from run i's Stage 2 champion, working or not.
+
+**Incomplete runs:**
+- a run whose batch stopped finally, or whose measures did not complete, is "not read";
+- S2-a then reads "k of n read";
+- S2-b uses the complete pairs, and is descriptive below 8;
+- if batch 1 or 2 stopped finally, S2-b is not read.
 
 **S2-a (registered):** the number of Stage 2 runs, of 8, whose champion is a working selector, with
 each champion's memory class.
@@ -448,12 +536,16 @@ each champion's memory class.
 
 **S2-c (registered, descriptive in force):** each census's count of working selectors, of 1 024, with
 its Clopper-Pearson 95% interval.
-- The qualifiers are the selectors scoring at least 0.8 of E's mean on the census worlds. Only they
-  get the full check on the test worlds, after the champions are frozen.
+- **The screen:** the qualifiers are the selectors scoring at least 0.8 of E's mean on the 16 census
+  worlds.
+- **The full check:** only the qualifiers get it (calibration, then the test worlds, after the
+  champions are frozen).
+- **The estimand is the probability of passing the screen and the full check,** not of being a
+  working selector. The screen's false negatives are not checked (Astra).
 - **If the GA distribution's count is at least 10,** the wording adds: "Stage 2 is answered at
   generation 0".
-- **A zero** reads "none found in 1 024 draws; the hit rate is below [the upper bound]", never "the
-  distribution holds none".
+- **A zero** reads "none of 1 024 draws passed the screen and the full check; that rate is below [the
+  upper bound]", never "the distribution holds none".
 
 **Stage 3 (descriptive):**
 - each run's champion against its Stage 2 champion, with S2-b's estimand, interval and ordered
@@ -461,7 +553,9 @@ its Clopper-Pearson 95% interval.
 - each module's skill (single-source navigation with q clamped) at the checkpoints and endpoints;
 - each champion's memory class.
 
-**B-task (descriptive):** its champions against Stage 3's, by S2-b's procedure.
+**B-task (descriptive):** its champions against Stage 3's, by S2-b's estimand and interval and its
+rules 2-5. There is no "working" branch: B-task has no memory assays, so this is a comparison of
+performance only.
 - Under reduction step 1, they are compared against Stage 2's instead.
 - **The wording** names the match: "the same neurons, inputs and outputs, not the same trainable
   capacity".
@@ -488,13 +582,15 @@ read" for that run, and the run is named.
   3. Stage 3, to runs 0-3;
   4. Stage 3, dropped;
   5. random sampling, to runs 0-3.
-- **If the minimum** (the gates, the censuses, Stage 2's 8 runs and random sampling's 4) still
-  exceeds 30, E3a does not start, and the owner is asked.
+- **If the minimum still exceeds 30,** E3a does not start, and the owner is asked. The minimum is the
+  gates, calibration, the censuses, Stage 2's 8 runs, random sampling's 4, their validation, and
+  their evaluation.
 - The reductions are recorded before any training.
 
 **Admission:**
 - Each training batch is admitted, in order, if the hours spent, plus its projected time, plus the
-  projected evaluation × 1.25, are within 28 h (a 2 h general reserve).
+  projected time of every remaining non-training stage × 1.25, are within 28 h (a 2 h general
+  reserve). The × 1.25 applies to the remaining non-training stages alone.
 - Once one is refused, no later batch starts.
 - Evaluation is admitted if the hours spent plus its projected time are within 30.
 
@@ -547,7 +643,19 @@ generations. It is scaled linearly; the projection replaces it.
 13. **The mutation factors and the end-of-run assertions,** for every arm.
 14. **On synthetic inputs:** S2-a's, S2-b's and S2-c's rules, with every outcome reached.
 15. The world ranges, against every earlier block.
-16. A smoke of every stage.
+16. **The stage dependencies:**
+    - Stage 3 refuses to start without frozen Stage 2 champions;
+    - calibration refuses champions not yet frozen;
+    - the test worlds are refused before stage 14.
+17. **Admission, refusal and the reductions,** on synthetic projections.
+18. **Missing outcomes:** "not read" runs, "k of n read", and S2-b below 8 pairs.
+19. **The census screen:** the estimand's bookkeeping, with a false negative constructed.
+20. **The fixed-point finder on Astra's missed-root case** (w_qq 1.0119999647, b_q 0.0008732175),
+    which the grid misses.
+21. **B-task's draws:** the nose pairs' and comparator pairs' full within-pair blocks, with zero added
+    turn at zero nose difference.
+22. **The champion rule:** final-population validation, the tie-breaks, and `champion_index` unused.
+23. A smoke of every stage.
 
 ## 12. Departures from design v2.4
 
@@ -560,6 +668,11 @@ generations. It is scaled linearly; the projection replaces it.
 - **B-task's nose edges are drawn in L1's pattern** with one magnitude per module, so it starts with
   weak sensing rather than blind (both reviewers noted the blind start).
 - **D is taken over legs after the first confirmed visit,** the legs that need memory.
+- **The reset is timed from the level's end:** 10 ticks after `at_a` returns to 0, not 10 ticks after
+  the visit (Fable).
+- **The fixed points are bracketed by f's stationary points.** The design's grid could miss a pair of
+  roots (Astra).
+- **E's release test reports and does not gate:** it needs D, which comes after G1.
 - **The blind controls use E1's tuned parameters.**
 - **The world seed for evaluation (1 171 000) and the per-use seeds** are new, as are the block spans.
 
