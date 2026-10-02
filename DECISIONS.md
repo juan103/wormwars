@@ -5130,3 +5130,27 @@ Optionally:
 **Bound:** the final text takes every fix, as E4s-1's did after its review (D150). It binds when this
 commit is pushed, before any stage of E3a runs. Amendments go in its §13. This is a consensus
 decision; the owner is informed.
+
+## D166 — Disclosure: E3a's implementation tests ran the engineered organism on registered worlds
+
+**What happened (2026-10-02, during implementation, before any stage of E3a):**
+- The tests of the memory assays, committed in 2bd8107 ("E3a implementation, part 2a"), ran
+  the engineered organism E with E3a's registered evaluation world seed (1 171 000) on registered
+  blocks:
+  - the clamp assays and the reset on assay worlds 947 100 000-947 100 015 (16 of G1's 256);
+  - calibration on calibration worlds 948 000 000-948 000 007.
+- An exploratory check by Claude then ran E's calibration on calibration worlds
+  948 000 000-948 000 015.
+- **What was seen:**
+  - E's clamp assays and reset passed on those 16 assay worlds;
+  - on 16 calibration worlds, E's median level duration was 7 ticks, its median leg after the first
+    visit 39 ticks, and its median q in each goal phase ±1.915.
+- No champion, control or selector was run on a registered block. No decision, threshold or rule
+  depended on what was seen: E, the gates and every rule were fixed in the bound pre-registration
+  (989da99) before these runs.
+
+**What changed:**
+- The tests now use smoke ids (0-9 999) and a smoke seed (1 179 000).
+- A new guard test (`tests/test_e3_hygiene.py`) fails if any E3 test names a registered E3a block or the
+  evaluation seed. It was seen failing on the committed version of the assay tests.
+- Found by Claude while writing the calibration test. Reported in E3a's results as a deviation.

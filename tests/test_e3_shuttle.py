@@ -198,3 +198,18 @@ def test_the_shuttle_refuses_unset_settings(iface):
     cfg.world.task = "shuttle"
     with pytest.raises(ValueError):
         _world(iface, [1], cfg=cfg)
+
+
+def test_the_ledger_records_each_visits_level_duration(iface):
+    """For calibration (§5): the number of consecutive ticks inside the visited source from each
+    confirmed visit's tick; -2 where the episode ends first (censored)."""
+    world = _world(iface, [3], cfg=shuttle_config(horizon=12))
+    a, b = world.shuttle_sources[0, 0].clone(), world.shuttle_sources[0, 1].clone()
+    far = (a + b) / 2
+    for t in range(12):
+        _put(world, a if t in (1, 2, 3) else b if t >= 9 else far)
+        world.tick()
+    ev = world.shuttle_events()
+    assert ev["visit_tick"][0][:2].tolist() == [1, 9]
+    assert ev["visit_level_ticks"][0][:2].tolist() == [3, -2]
+    assert ev["visit_level_ticks"].dtype == np.int64

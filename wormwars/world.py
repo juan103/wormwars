@@ -637,6 +637,7 @@ class World:
         inside = self._sh_inside_log.cpu().numpy()
         prev = np.concatenate([np.zeros_like(inside[:, :1]), inside[:, :-1]], axis=1)
         entry = inside & ~prev
+        T = inside.shape[1]
 
         def ticks(mask):
             out = np.full(mask.shape, -1, dtype=np.int64)
@@ -646,8 +647,21 @@ class World:
             return out
 
         src = self.shuttle_sources.cpu().numpy()
+        visits = ticks(self._sh_visit_log.cpu().numpy())
+        goal = self._sh_goal_log.cpu().numpy()
+        run = min(self.tick_count, T)
+        level = np.full(visits.shape, -1, dtype=np.int64)  # ticks inside the visited source from the visit
+        for w in range(visits.shape[0]):
+            for k, tv in enumerate(visits[w]):
+                if tv < 0:
+                    break
+                src_ix = int(goal[w, tv])  # the goal in force at the visit is the source visited
+                n = 0
+                while tv + n < run and inside[w, tv + n, src_ix]:
+                    n += 1
+                level[w, k] = -2 if tv + n >= run else n  # -2: cut off by the episode's end
         return {"entry_a": ticks(entry[..., 0]), "entry_b": ticks(entry[..., 1]),
-                "visit_tick": ticks(self._sh_visit_log.cpu().numpy()),
+                "visit_tick": visits, "visit_level_ticks": level,
                 "goal": self._sh_goal_log.cpu().numpy(), "path_length": self._sh_path.cpu().numpy(),
                 "a_x": src[:, 0, 0], "a_y": src[:, 0, 1], "b_x": src[:, 1, 0], "b_y": src[:, 1, 1]}
 

@@ -207,3 +207,51 @@ def reset_test(genome, ext, iface, cfg, *, go_to_a: float, world_ids, run_seed: 
     passed_n = labels.count("passed")
     return {"eligible": eligible, "passed_worlds": passed_n, "per_world": labels,
             "passed": eligible > 0 and passed_n >= RESET_SHARE * eligible}
+
+
+# ------------------------------------------------------------------ calibration (stage 5 and 13)
+
+def stimulus_from(durations, fallback: int = 2) -> int:
+    """The median level duration at confirmed visits, rounded half up, at least 1; the fallback if the
+    pool is empty."""
+    d = [int(x) for x in durations]
+    if not d:
+        return int(fallback)
+    return max(1, int(math.floor(float(np.median(d)) + 0.5)))
+
+
+def calibrate(genome, ext, iface, cfg, *, world_ids, run_seed: int, device="cpu") -> dict:
+    """One organism on the calibration worlds: its median q in each goal phase (None where the phase
+    never occurs), its pooled level durations at confirmed visits (censored ones excluded), the
+    stimulus they give, and its leg durations after the first confirmed visit."""
+    ids = np.asarray(world_ids)
+    n = len(ids)
+    world = World(cfg, iface, Brain(genome.select([0])), torch.zeros(n, 1, dtype=torch.long, device=device),
+                  run_seed=run_seed, world_ids=ids, device=device)
+    q = ext.index("E3_Q")
+    rows = world.assigns[0].slot_of.reshape(-1)
+    qs, goals = [], []
+    for _ in range(int(cfg.world.max_ticks)):
+        goals.append(world.shuttle_goal.clone().cpu())
+        world.tick()
+        qs.append(world.v[0][0, rows, q].clone().cpu())
+    qs, goals = torch.stack(qs).numpy(), torch.stack(goals).numpy()
+    med = {}
+    for name, g in (("A", 0), ("B", 1)):
+        sel = qs[goals == g]
+        med[name] = float(np.median(sel)) if sel.size else None
+    ev = world.shuttle_events()
+    pool = [int(x) for x in ev["visit_level_ticks"].reshape(-1) if x >= 0]
+    legs = []
+    for w in range(n):
+        v = [int(t) for t in ev["visit_tick"][w] if t >= 0]
+        legs += [b - a for a, b in zip(v[:-1], v[1:])]
+    return {"median_q": med, "pool": len(pool), "stimulus": stimulus_from(pool), "durations": pool,
+            "legs_after_first_visit": legs, "visits": int(world.shuttle_visits.sum())}
+
+
+def leg_median(legs) -> int:
+    """D: the median completed leg after the first confirmed visit, rounded half up."""
+    if not legs:
+        raise ValueError("no completed leg after a first confirmed visit: D is undefined")
+    return int(math.floor(float(np.median(legs)) + 0.5))

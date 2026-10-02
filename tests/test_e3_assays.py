@@ -23,6 +23,9 @@ from wormwars.e3.task import shuttle_config
 from wormwars.e4s import comparator as C
 from wormwars.e4s.arms import load_l1
 
+# smoke ids and seed only: the registered blocks are read only by the formal stages (D166)
+SMOKE_SEED = 1_179_000
+
 
 @pytest.fixture(scope="module")
 def ctx():
@@ -84,9 +87,9 @@ def test_the_window_scales_with_tau():
 # ------------------------------------------------------------------ in the world
 
 def test_es_clamp_assays_and_its_assignment(ctx):
-    ids = np.arange(947_100_000, 947_100_016)
+    ids = np.arange(0, 16)
     r = A.clamp_assays(ctx["E"], ctx["ext"], ctx["iface"], ctx["cfg"], states=(-O.Q_STAR, O.Q_STAR),
-                       world_ids=ids, run_seed=1_171_000)
+                       world_ids=ids, run_seed=SMOKE_SEED)
     assert r["assignment"] == {"A": O.Q_STAR, "B": -O.Q_STAR}
     assert r["share"]["A"] >= 0.9 and r["share"]["B"] >= 0.9 and r["passed"]
 
@@ -110,9 +113,18 @@ def test_not_applicable_clamp_assays_do_not_pass():
 
 
 def test_es_reset(ctx):
-    ids = np.arange(947_100_000, 947_100_016)
+    ids = np.arange(0, 16)
     r = A.reset_test(ctx["E"], ctx["ext"], ctx["iface"], ctx["cfg"], go_to_a=O.Q_STAR, world_ids=ids,
-                     run_seed=1_171_000)
+                     run_seed=SMOKE_SEED)
     assert r["eligible"] >= 8 and r["passed"]
     # a world where the write never happens fails: a q pinned at "go to B" cannot be reset
     assert set(r["per_world"]) <= {"passed", "failed", "unwritten", "not eligible"}
+
+
+def test_calibration_medians_and_stimulus_duration(ctx):
+    ids = np.arange(100, 108)
+    cal = A.calibrate(ctx["E"], ctx["ext"], ctx["iface"], ctx["cfg"], world_ids=ids, run_seed=SMOKE_SEED)
+    assert cal["median_q"]["A"] > 1.5 and cal["median_q"]["B"] < -1.5
+    assert cal["stimulus"] >= 1 and cal["pool"] > 0
+    assert A.stimulus_from([], fallback=2) == 2
+    assert A.stimulus_from([3, 4, 6], fallback=2) == 4 and A.stimulus_from([3, 4], fallback=2) == 4  # half up
