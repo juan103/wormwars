@@ -4912,3 +4912,13 @@ E3's ceiling is still the owner's to set.
 - **E3a's proposed cap stays 20 GPU-hours inside it** (design v2.1; about 13.3 h estimated), which
   leaves about 10 for E3b and E3c. Their budgets come with their designs.
 - The owner can correct this reading. The pre-registration states the cap it binds.
+
+## D159 — E3's ceilings corrected by the owner: 30 GPU-hours for E3a, about the same for E3b and E3c
+
+**The owner, 2026-10-02**, on D158: "E3a 30, something similar for the other 2".
+- **Correction to D158 (dated 2026-10-02).** D158 read the owner's "30 hours celling" as "the ceiling
+  for all of E3 (E3a, E3b and E3c)", with "E3a's proposed cap [staying] 20 GPU-hours inside it". That
+  reading was wrong. D158 stands as written, corrected here.
+- **E3a's cap is 30 GPU-hours.** Design v2.1 estimated about 13.3. Its shrink order now applies only if
+  the projection exceeds 30.
+- **E3b and E3c get about 30 each.** Each is fixed when its design is written.
