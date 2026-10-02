@@ -1,0 +1,35 @@
+**Verdict: revise.** E3a is a reasonable intermediate experiment, but the proposed visit pulse cannot switch the specified latch. The controls also need to distinguish navigation, switching, and persistent memory.
+
+I checked the `roadmap` checkout, the cited results and implementation, and numerically evaluated the scalar recurrence used by `Brain.step`. I made no edits.
+
+The must-fix changes are:
+
+1. **Task / Stage 1 — fix pulse strength, timing and initialization.** With unit input, a settled latch needs approximately **3.19 ticks at τ = 1**, or **1.66 ticks at the minimum τ = 0.5**, to cross zero under the 32-substep recurrence. One tick fails. Increase the current or explicitly stretch the pulse, then test both directions. Initialize `q` explicitly: `Brain.initial_state()` returns zero, which leaves this symmetric latch at its unstable equilibrium. The quoted **0.53 is a sustained-input bifurcation threshold**, not a guarantee that a short pulse switches. The [literature review already warns about this](D:/Claude/random/wormWars/docs/reviews/20261001-literature-review/astra.review.md:454).
+
+2. **Task — define an executable event contract.** “A one-tick pulse when within the radius” is ambiguous between entry detection and repeated occupancy signals. Specify entry, rearming/hysteresis, movement-to-sensing latency, repeated arrivals and simultaneous inputs. Keep the scorer’s alternating goal separate from sensory events. Start at A; a randomized hidden starting goal requires a corresponding initialization cue or state.
+
+3. **Stage 1 — specify the gate mathematically and correct its semantics.** Saturation is plausible, but suppression is approximate and depends on input range and history. Actual synaptic drive is `g*tanh(q)`. For example, `g = 2` and comparator biases near `−1.915` give approximately zero offset in the active pair and `−3.83` in the inactive pair at settled latch states, within existing bounds. This is a candidate to test, not a validated gate. Require an absolute active-gain floor, inactive leakage limit, motor-offset limit and switching/recovery latency. **Changing comparator voltages is not merely gating unchanged outputs.** Declare those bias changes as part of the selector interface. [Design passage](D:/Claude/random/wormWars/docs/E3/DESIGN.md:92).
+
+4. **Stage 0 / Stage 1 gates — add a hard-selected L1 reference.** Use the same L1 and carrier with a scripted selector driven by the declared arrival events. This separates failure of L1 on the new geometry from failure of the neural selector. S-const is a useful benchmark, not an established ceiling for all stereo controllers. E4s-0 found L1’s gain near 36 and substantial dependence on the carrier’s turn bias; comparing it only with the stronger scripted steerer can impose an inappropriate gate.
+
+5. **Measures / baselines — test memory causally.** Alternating travel between two fixed sources does not by itself establish persistent neural goal memory; position, heading and sensorimotor dynamics may sustain alternation. Add latch clamping/reset interventions and paired assays with identical current observations and body state but opposite remembered goals. Require correct retention and switching as well as score. Both-on and A-only controls are insufficient. Define B-shared’s bit as controller-owned state, with no access to the scorer’s goal; B-task must receive the same information.
+
+6. **Stages 2–3 — freeze parameter ownership explicitly.** State which weights, biases, time constants and carrier parameters evolve, how random selectors initialize, and how component retention is assessed. Reusing [`arm_scales`](D:/Claude/random/wormWars/wormwars/e4s/arms.py:72) unchanged would mutate the silent host at factor 1. “Everything evolves” would therefore change the experiment. Match B-task’s interface, trainable capacity and search budget—not just neuron count.
+
+7. **Budget / registration / equivalence — replace unsupported assurances with specified checks.** A silent carrier still executes the full grafted brain; fewer evolving parameters do not make rollouts proportionately cheaper. Project the actual 600-tick compositions before accepting 12 hours. Specify independent evolution replicates, paired comparisons, stage gates, disjoint selection/test worlds and stopping rules. Also narrow “every earlier task is bit-identical”: E2 hashes plus two Task N score checks do not establish that universal claim. Compare old and new engines on declared states, events and outputs at fixed compositions.
+
+My answers to the seven questions:
+
+1. **Staging:** approve E3a → E3b → E3c. Keep trails and mazes out of E3a. Preserve the roadmap’s unseen-maze gate explicitly for E3b.
+2. **Task:** separate scents are appropriate. Use an explicit distance interval, such as `12 ≤ distance(A,B) ≤ 18`, and spawn clearance ≥8. Start at A. Treat 600 ticks and “5–10 legs” as pilot assumptions.
+3. **Interface:** avoid an active N2 host in E3a. ALML/ALMR and AVM already receive collision signals; adding arrival signals there would mix channels. AVM is a single neuron.
+4. **Latch/gate:** the latch equation is sound; its proposed pulse is not. Saturation merits a bounded component test. Retain a hard-selector engineering reference before adding more circuitry.
+5. **Gates/baselines:** add the controls above. B-shared is well posed once its neural memory, input routing and parameter budget are explicit. It may solve this task just as well.
+6. **Starting artifact:** use L1. The [E4s-1 result](D:/Claude/random/wormWars/experiments/E4s-stereo-module/E4s-1/RESULTS.md:124) confirms that run 10’s extracted module scores zero on both carriers; its qualification belongs to the whole brain.
+7. **Trivial outcomes:** zero initialization, inadequate pulses, over-saturated active comparators or inadequate long-distance steering can cause trivial failure. Goal leakage, occupancy-based repeated counting, or a sensorimotor shuttle requiring no persistent latch can produce misleading success.
+
+For reuse and interpretation:
+
+- **Reuse existing machinery.** “No visit events” is incorrect: [`_advance_targets` and `target_events`](D:/Claude/random/wormWars/wormwars/world.py:540) already record arrivals, activation times, paths and endpoints. Extend that ledger. `graft_interface` also needs generalization: its mean/swapped probes currently hard-code the food pair.
+- **Carry forward E4s’s diagnostic lessons.** Preserve and report the carrier bias; measure signed stereo-probe effects and motor offsets separately. E4s showed that graft-dependent performance can include substantial benefit unrelated to stereo use.
+- **Keep literature claims precise.** The continuous-time one-cell latch is the review’s proposed adaptation of Hülse–Pasemann, not their published parameterization. [Agmon and Beer](https://journals.sagepub.com/doi/abs/10.1177/1059712313511649) supports examining transient sensorimotor modes; it does not establish that this restricted selector architecture will exhibit them. Log each module’s proposed motor contribution and test hysteresis independently of successful shuttle trajectories.

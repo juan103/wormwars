@@ -4817,3 +4817,44 @@ at `a0fe94a`, plus one commit removing its banner. It carries:
 - the identity check: no email in tracked files, the noreply identity on every commit.
 
 `roadmap` continues from `main` with its banner. Next in Track E: E3's design.
+
+## D156 — E3's design v1 reviewed (both "revise"); design v2
+
+**The owner, 2026-10-02:** "Start it" (E3's design, after E4s's publication).
+
+**Design v1** (`docs/E3/DESIGN.md`) staged E3:
+- **E3a:** the shuttle;
+- **E3b:** trails, mazes and the colony;
+- **E3c:** the assembly comparison.
+
+E3a used two copies of L1 and a one-neuron latch on the silent carrier.
+
+**The review** (`docs/reviews/20261002-E3-design/`): both "revise". Both agree with the staging and with
+L1 rather than E4s-1's run 10. Both found:
+- **The latch cannot switch on a one-tick pulse of weight 1.** It needs about 3 τ_q to cross zero. The
+  literature review I cited says so explicitly ("A one-tick pulse is insufficient"), and v1
+  contradicted it.
+- **The latch starts on its unstable point:** the brain's initial state is zeros.
+- **The gate needs the comparator-bias shift,** and `b_max` = 2 caps its weight at about 2.
+- **L1 needs its own positive control** (a scripted switch), to separate module from latch failures.
+- **No N2 interface:** ALM and AVM carry live collision signals.
+- **Stage 3 must not evolve the silent host.**
+- **The budget must be itemised:** the carrier costs what N2 costs.
+
+Astra also found:
+- **memory must be tested causally** (clamped-latch paired assays);
+- **an executable event contract** is needed;
+- **"no visit events" was wrong:** Task N's ledger exists and extends;
+- **the engine claim** needs narrowing.
+
+Fable also found:
+- **Stage 2 cannot start from random at 0.25×,** since E4s-1 showed no sign flips;
+- **random sampling** is needed as a comparator;
+- **12-18 cells** puts the far scent at its truncation edge;
+- **`graft.py`'s limits:** food-only noses, one module per graft.
+
+**Checked:** the geometry by simulation. 8-14 apart with the spawn at least 6 from both is feasible
+for every spawn, and so is v1's 12-18 with 8.
+
+**Design v2** takes every must-fix; its last section maps them. It proposes a 20 GPU-hour cap for
+E3a, pending the owner's ceiling for E3.
