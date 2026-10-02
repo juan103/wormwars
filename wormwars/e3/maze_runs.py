@@ -33,6 +33,7 @@ POLARITY_STREAM, PERMUTE_STREAM = 0x901A, 0x9E2B
 JITTER = 0.3
 NOSE_LOW, NOSE_HIGH = 0.005, 0.35
 QUANTILES = (1, 5, 25, 50, 75, 95, 99)
+PAIR_GAIN, PAIR_TURN = 32.0, 0.3  # a pair "turn-relevant" if the follower's gain × |L − R| reaches 0.3
 _EDGES = np.geomspace(1e-6, 1e2, 801)  # the histogram of positive inputs: bins 2.3% wide
 
 
@@ -41,6 +42,8 @@ class NoseRange:
 
     def __init__(self):
         self.on = self.inr = self.above = self.zero = self.occluded = self.q_n = self.q_high = 0
+        self.steer_all = self.steer_on = self.wey_ticks = self.wey_ticks_on = 0
+        self.pairs = self.pairs_relevant = 0
 
     def attach(self, world) -> None:
         routes = np.stack([MM.route_cells(mz, pl.a, pl.b) for mz, pl in zip(world.mazes, world.placements)])
@@ -48,6 +51,7 @@ class NoseRange:
         self.prev = world.pos[:, 0].clone()
         self.edges = torch.as_tensor(_EDGES, dtype=world.dtype, device=world.device)
         self.hist = torch.zeros(len(_EDGES) + 1, dtype=torch.long, device=world.device)
+        self.diff_hist = torch.zeros(len(_EDGES) + 1, dtype=torch.long, device=world.device)
         self.exists = self._exists(world)
 
     @staticmethod
@@ -67,6 +71,18 @@ class NoseRange:
         self.above += int((on & (g > NOSE_HIGH)).sum())
         self.zero += int((on & (g == 0)).sum())
         self.occluded += int((on & world.last_blocked).sum())
+        # the follower's branch (max(L, R) >= 0.005) and the unoccluded pairs' differences (D179)
+        steer = g.max(-1).values >= NOSE_LOW  # [worlds, weys]
+        on1 = on[..., 0]
+        self.wey_ticks += int(steer.numel())
+        self.wey_ticks_on += int(on1.sum())
+        self.steer_all += int(steer.sum())
+        self.steer_on += int((steer & on1).sum())
+        pair = on1 & ~world.last_blocked.any(-1) & self.exists[..., 0]
+        d = (g[..., 0] - g[..., 1]).abs()[pair]
+        self.pairs += int(pair.sum())
+        self.pairs_relevant += int((d * PAIR_GAIN >= PAIR_TURN).sum())
+        self.diff_hist += torch.bincount(torch.bucketize(d[d > 0], self.edges), minlength=len(_EDGES) + 1)
         keep = on & ~world.last_blocked & self.exists & (g > 0)
         self.q_n += int(keep.sum())
         self.q_high += int((keep & (g > NOSE_HIGH)).sum())
@@ -85,7 +101,18 @@ class NoseRange:
                 "in_range_share_unoccluded": self.inr / m, "above_share_unoccluded": self.above / m,
                 "positive_unoccluded_after_trail": int(h.sum()), "quantiles_unoccluded_positive": q,
                 "qualified_inputs": self.q_n, "qualified_above_high": self.q_high,
-                "above_high_share_qualified": self.q_high / max(self.q_n, 1)}
+                "above_high_share_qualified": self.q_high / max(self.q_n, 1),
+                "steering_share_all": self.steer_all / max(self.wey_ticks, 1),
+                "steering_share_on_route": self.steer_on / max(self.wey_ticks_on, 1),
+                "pairs_unoccluded": self.pairs, "pairs_turn_relevant_share": self.pairs_relevant / max(self.pairs, 1),
+                "pair_abs_difference_quantiles": self._quantiles(self.diff_hist, (25, 50, 75, 95))}
+
+    @staticmethod
+    def _quantiles(hist, ps) -> dict:
+        h = hist.cpu().numpy()
+        cum = np.cumsum(h) / max(h.sum(), 1)
+        upper = np.concatenate([_EDGES, [np.inf]])
+        return {str(p): float(upper[min(int(np.searchsorted(cum, p / 100)), len(upper) - 1)]) for p in ps}
 
 
 def world(cfg, iface, brain, ids, run_seed, device="cpu", **kw) -> MW.MazeWorld:

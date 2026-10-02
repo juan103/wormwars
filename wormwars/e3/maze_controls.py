@@ -58,11 +58,17 @@ def w2_turn(cl, cr, cfg):
 
 
 class TrailFollower:
-    def __init__(self, k: float = FOLLOW_K, threshold: float = FOLLOW_THRESHOLD):
-        self.k, self.threshold = float(k), float(threshold)
+    """`symmetric_occlusion` (a diagnostic variant, D179): where exactly one nose is occluded (reading 0),
+    both sides read the other nose, so occlusion alone gives no turn."""
+
+    def __init__(self, k: float = FOLLOW_K, threshold: float = FOLLOW_THRESHOLD, symmetric_occlusion: bool = False):
+        self.k, self.threshold, self.symmetric = float(k), float(threshold), bool(symmetric_occlusion)
 
     def __call__(self, sig, cfg):
         left, right = sig["goal_left"], sig["goal_right"]
+        if self.symmetric and "_blocked" in sig:
+            bl, br = sig["_blocked"][..., 0], sig["_blocked"][..., 1]
+            left, right = torch.where(bl & ~br, right, left), torch.where(br & ~bl, left, right)
         cl, cr = sig["collision_front_left"], sig["collision_front_right"]
         steer = self.k * (left - right) + w1_reflex(cl, cr, cfg)
         turn = torch.where(torch.maximum(left, right) >= self.threshold, steer, w2_turn(cl, cr, cfg))
@@ -103,7 +109,10 @@ class WorldScripted(ScriptedBrain):
         return self.world.assigns[0].to_brain(x[:, 0].unsqueeze(-1))[..., 0]
 
     def commands(self):
-        return self.world_policy(self.world.last_signals, self.cfg)
+        sig = self.world.last_signals
+        if getattr(self.world, "last_blocked", None) is not None:
+            sig = {**sig, "_blocked": self.world.last_blocked.unsqueeze(1)}  # [worlds, 1, weys, (L, R)]
+        return self.world_policy(sig, self.cfg)
 
     def step(self, v, current):
         fwd, turn = self.commands()

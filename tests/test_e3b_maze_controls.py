@@ -136,3 +136,26 @@ def test_the_blind_baselines_run(iface):
         world = _world(iface, cfg, brain, np.arange(4))
         world.run()
         assert world.task_events()["visits"].shape == (4, 4)
+
+
+def test_the_occlusion_symmetric_follower_ignores_a_blocked_nose():
+    """Diagnostic variant (D179): when exactly one nose is occluded it reads 0, which the plain follower turns
+    away from; the symmetric variant reads the other nose on both sides instead."""
+    cfg = shuttle_config()
+    z = torch.zeros(1)
+    sig = {"goal_left": torch.tensor([0.0]), "goal_right": torch.tensor([0.2]),
+           "collision_front_left": z, "collision_front_right": z,
+           "_blocked": torch.tensor([[True, False]])}
+    _, plain = MC.TrailFollower()(sig, cfg)
+    _, sym = MC.TrailFollower(symmetric_occlusion=True)(sig, cfg)
+    assert float(plain[0]) < -0.5 and abs(float(sym[0])) < 1e-6
+
+
+def test_a_zero_gain_follower_only_switches_its_policy():
+    cfg = shuttle_config()
+    z = torch.zeros(2)
+    sig = {"goal_left": torch.tensor([0.3, 0.001]), "goal_right": torch.tensor([0.0, 0.0]),
+           "collision_front_left": z, "collision_front_right": z}
+    _, turn = MC.TrailFollower(k=0.0)(sig, cfg)
+    assert abs(float(turn[0])) < 1e-6  # on a trail: W1's reflex alone, at rest 0
+    assert float(turn[1]) == pytest.approx(float(MC.w2_turn(z[:1], z[:1], cfg)), abs=1e-6)  # off: W2

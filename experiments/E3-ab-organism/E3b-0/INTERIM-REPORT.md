@@ -88,3 +88,32 @@ the sensing side, or the trail claims go.
 - **2026-10-03:** commit 95a6bdc's message says that under the cap the follower's trail effect is "+0.15 to
   +0.52 legs per 1 000 ticks". The record (`stage-b2-diagnosis.json`) gives −0.31 to +0.52: the d₀/16 rows
   are −0.31 and −0.28. Every interval includes 0, as stated.
+- **2026-10-03, after the redesign review** (`docs/reviews/20261003-E3b-0-redesign/`). The reviewers
+  corrected six statements above.
+  - **"Trails strong enough to help push the seeds' inputs out of their modules' working range" misreads
+    K_D** (Fable). K_D is the response to a fixed absolute difference, and along a linear trail the
+    difference grows with the level. The relevant quantity is K_D × level, the response to a relative
+    difference. For E it is:
+
+    | Level | 0.35 | 0.5 | 0.7 | 1.0 | 1.5 | 2.0 |
+    |---|---|---|---|---|---|---|
+    | E: K_D × level | 11.1 | 14.0 | 15.8 | 15.0 | 9.7 | 5.0 |
+
+    So E's steering does not collapse above 0.35. S3r3's module A does, at 1.0. The option "qualifying the
+    modules at higher levels, where their steering collapses" was dismissed on that misreading.
+  - **The hypothesis is not established** (both). Several things are unmeasured:
+    - the follower's 0.005 switch between steering and exploring;
+    - the turn it makes when one nose is occluded;
+    - the joint left-right levels and differences;
+    - the scent's share of the readings.
+
+    "No choice of trail constants alone can qualify" is withdrawn. It is a hypothesis.
+  - **"Both lower bounds are below criterion 3's 0.5, so these would fail later anyway" overreaches**
+    (Astra). Criterion 3 is read on the untouched report mazes.
+  - **The light-trail row at μ 0.01, d₀ 0.143 does not exclude a useful effect:** +0.52 [−0.13, 1.28]
+    (Astra).
+  - **The no-trail baselines differ by more than the maze set** (Astra). On the GPU (`stage-b2-none.npz`)
+    they are 3.944 on 256 mazes and 3.251 on mazes 0-63; on the CPU, 3.327 on the same 64. The backend and
+    batch differ too. Each diagnosis pairs with its own baseline, so its contrasts stand.
+  - **"with a peer effect" (finding 1) is too strong** (Astra). shared − own in the later-leg rate is not
+    the registered peer measure, the first-B time of later discoverers.
