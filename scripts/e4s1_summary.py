@@ -26,7 +26,7 @@ def stats(x) -> dict:
 def main():
     ev = json.loads((EXP / "eval-endpoints.json").read_text(encoding="utf-8"))
     tr = json.loads((EXP / "eval-training.json").read_text(encoding="utf-8"))
-    counts = np.load(EXP / "eval-endpoints-counts.npz")
+    counts = np.load(EXP / "eval-endpoints-counts.npz", allow_pickle=False)
     runs = ev["runs"]
     arms = sorted({v["arm"] for v in runs.values()})
     out = {"references": {k: v["score"] for k, v in ev["references"].items()}, "arms": {}}
