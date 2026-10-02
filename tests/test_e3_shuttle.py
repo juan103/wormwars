@@ -213,3 +213,18 @@ def test_the_ledger_records_each_visits_level_duration(iface):
     assert ev["visit_tick"][0][:2].tolist() == [1, 9]
     assert ev["visit_level_ticks"][0][:2].tolist() == [3, -2]
     assert ev["visit_level_ticks"].dtype == np.int64
+
+
+def test_e1s_checked_config_converts_to_the_shuttle():
+    """The runner starts from E1's Task N configuration, checked against E1's gate record, and changes
+    only the shuttle's settings (PREREGISTRATION §2)."""
+    import importlib.util
+    from pathlib import Path
+    from wormwars.e3.task import to_shuttle
+    spec = importlib.util.spec_from_file_location("e2_for_e3_test", Path(__file__).resolve().parents[1] / "scripts" / "e2.py")
+    m = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(m)
+    got = to_shuttle(m.task_config()).to_dict()
+    want = shuttle_config().to_dict()
+    for section in ("world", "map", "brain"):
+        assert got[section] == want[section], section

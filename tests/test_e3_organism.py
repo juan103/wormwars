@@ -140,3 +140,9 @@ def test_the_controls_do_not_overwrite_es_registration(l1):
     O.no_latch(l1)
     O.one_module(l1)
     assert G.MODULES[e.name] == e
+
+
+def test_the_carrier_alone_has_no_grafted_neuron(con):
+    m = O.carrier_only()
+    ext = G.graft_connectome(con, m)
+    assert ext.n == con.n and len(m.neurons) == 0

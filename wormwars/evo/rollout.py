@@ -95,7 +95,9 @@ def _play(cfg, iface, brain, world_ids, run_seed, device, combat_stage=0, ticks=
         events = None
     return {
         "events": events,
-        "progress": world.final_progress().reshape(shape).cpu().numpy() if world.navigate else None,
+        # the shuttle has no shaping: its progress is zero, so 04a's fitness is the visit count (E3a)
+        "progress": (world.final_progress().reshape(shape).cpu().numpy() if world.navigate
+                     else np.zeros(shape, dtype=np.float32) if world.shuttle else None),
         "final_head": world.pos[:, 0, 0].reshape(n_sub, n_ids, 2).cpu().numpy() if world.navigate else None,
         "score": score.reshape(shape).cpu().numpy(),
         "energy": world.swarm_energy()[:, 0].reshape(shape).cpu().numpy(),

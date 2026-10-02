@@ -26,11 +26,18 @@ SMOKE_IDS = np.arange(0, 10_000)
 EVALUATION_WORLD_SEED = 1_171_000
 
 
-def shuttle_config(base: Config | None = None, *, horizon: int = 600) -> Config:
-    c = task_n_config(base, sigma=6.0, amplitude=1.0, radius=1.5, separation=8.0, horizon=horizon)
+def to_shuttle(cfg: Config, *, horizon: int = 600) -> Config:
+    """A Task N configuration (E1's, as checked against its gate record) turned into the shuttle: only
+    the task, the horizon and the shuttle's settings change."""
+    c = cfg.copy()
     w = c.world
-    w.task = "shuttle"
+    w.task, w.max_ticks = "shuttle", int(horizon)
     w.shuttle_separation_min, w.shuttle_separation_max = 8.0, 14.0
     w.shuttle_spawn_min, w.shuttle_spawn_max = 6.0, 16.0
     w.shuttle_cue_ticks = 5
     return c
+
+
+def shuttle_config(base: Config | None = None, *, horizon: int = 600) -> Config:
+    return to_shuttle(task_n_config(base, sigma=6.0, amplitude=1.0, radius=1.5, separation=8.0, horizon=horizon),
+                      horizon=horizon)

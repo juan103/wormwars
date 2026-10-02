@@ -120,3 +120,8 @@ def l1_switch(l1: G.Module) -> G.Module:
     noses = {n: (sides[G.nose_entry(l1, n)[0]], G.nose_entry(l1, n)[1]) for n in l1.noses}
     return _register(G.Module("e3-l1-switch", l1.neurons, l1.synapses, dict(l1.tau), dict(l1.bias), noses,
                               1.0, l1.neuron_class))
+
+
+def carrier_only() -> G.Module:
+    """The carrier with no graft: the blind circle (forward 1.0, turn 0.2)."""
+    return _register(G.Module("e3-carrier", (), ()))

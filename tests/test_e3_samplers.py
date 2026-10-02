@@ -154,3 +154,22 @@ def test_b_task_scales(ctx):
     assert int((sc["tau"] != 0).sum()) == 9 and int((sc["bias"] != 0).sum()) == 9
     for r in O.RELAYS:
         assert sc["tau"][ext.index(r)] == 0
+
+
+def test_evolve_batch_runs_the_shuttle_with_the_selector_mask(ctx):
+    """02's GA on the shuttle, Stage 2's start and mask: the shuttle gives zero progress (no shaping),
+    and only the selector changes."""
+    from wormwars.e04a import evolve as EV
+    from wormwars.brain import BrainSpec
+    cfg = shuttle_config(horizon=30)
+    cfg.evo.population, cfg.evo.elites, cfg.evo.truncation, cfg.evo.worlds_per_strain = 4, 1, 2, 2
+    ext, iface = ctx["ext"], ctx["iface"]
+    recs = EV.evolve_batch(cfg, iface, BrainSpec.from_connectome(ext), [EV.RunSpec(0, 1_179_001, 0.0)], generations=3,
+                           checkpoint_every=2, validation_ids=np.arange(50, 54), world_seed=1_179_000, id_base=0,
+                           id_span=1000, initial=lambda r: S.with_selector(ctx["base"], ext, S.ga_draw(np.random.default_rng(1), 4)),
+                           mutation_scales=lambda r: S.stage2_scales(ext))
+    final = recs[0].final
+    m = S.selector_masks(ext)
+    assert torch.equal(final.w[:, ~m["w"]], ctx["base"].w[:, ~m["w"]].expand(4, -1))
+    assert torch.equal(final.bias[:, ~m["bias"]], ctx["base"].bias[:, ~m["bias"]].expand(4, -1))
+    assert len(recs[0].checkpoints) == 2
