@@ -5595,3 +5595,65 @@ a weak signal. The cap keeps the seeds' modules in their working range at the co
   selection; the record's base configuration; d₀'s invariance; the probe's floor.
 - Astra: the replay bug; the recheck guard; the seed-side cap; the reuse guard; the one-nose checks; the
   wording.
+
+## D179 — E3b-0: `stage-b2` qualified nothing; diagnosed with the seeds; Amendment 2 (the cap on the seed, at 1.0)
+
+**What happened (2026-10-03):**
+- `stage-b2` (19a1b12) qualified no setting under Amendment 1's cap: at most 5% of the follower's inputs
+  above 0.35, with a positive trail effect.
+- Claude's interim report (9b4ea2e) proposed compressed sensing, on a gain-mismatch hypothesis.
+
+**The redesign review** (`docs/reviews/20261003-E3b-0-redesign/`):
+- **Fable, "something else":**
+  - the 0.35 cap misread K_D. K_D is the response to a fixed absolute difference; along a linear trail what
+    matters is K_D × level, which for E stays at 11-16 up to 1.0;
+  - so test the seeds first.
+- **Astra, "compressed sensing, with fixes",** after a pinned diagnostic. She corrected the baselines (3.944
+  and 3.251 on the GPU against 3.327 on the CPU) and several overreaching statements.
+- **Both:** the hypothesis was not established.
+- **Not adopted:** compressed sensing. There was no consensus, and it would change the organisms' sensing,
+  which would go to the owner first.
+
+**Diagnosis 4** (db509aa):
+- **The seeds:**
+
+  | E + W2 | No trail | Best-rate setting | Medium setting |
+  |---|---|---|---|
+  | Later-leg rate | 1.77 | +1.27 [1.01, 1.53] | +0.53 [0.34, 0.75] |
+
+  E + W0, E + W1 and S3r3 with every variant tested barely move through the maze. S3r3 + W2 circles, with a
+  turn bias of −0.76.
+- **The follower:** its effect is steering on the trail. With the occluded nose ignored it gives +3.42; at
+  gain 128 on trails laid 4× lighter, +3.02.
+
+**Amendment 2,** drafted (fa259f0), reviewed (`docs/reviews/20261003-E3b-0-amendment-2/`), and confirmed by
+both with fixes and no further round:
+- the high level is 1.0, from E's K_D × level;
+- **the cap is measured on the seed E + W2** (Fable's design; Astra also prefers the seed);
+- criterion 4 above 0.35 requires K_D × level ≥ 10.5 (30 × 0.35), and runs before the report mazes;
+- one retry was proposed by Fable; there is none, after Astra.
+
+**Fixes:**
+- **The M oscillator never started** in the maze runner: all-zero initial state, zero biases, no inputs
+  (Astra). `maze_organisms.brain` now starts M1 at 0.1, tested failing first.
+- **The reuse evidence is now per maze:** `stage-b2`'s behavioural arrays equal Stage B's on all 24
+  settings; only exposure differs, as its fix requires.
+- **`stage-b2`'s record** joins the hash-checked transition.
+
+**Corrections** to Claude's statements, now in `INTERIM-REPORT.md`:
+- the K_D misreading;
+- "no setting can qualify";
+- the near misses;
+- the light row;
+- the baselines;
+- "peer effect";
+- the effect range in 95a6bdc's message (−0.31 to +0.52, not +0.15 to +0.52).
+
+**Labels.** Everything chosen under Amendment 2 is adaptively selected.
+
+**Projection.** About 2.4-2.6 of the 3 GPU-hours in all.
+
+**Who caught what:**
+- Fable: the K_D × level reading; the seed-side cap; 10.5; the gain-0 wording; the widening's cost.
+- Astra: the oscillator bug; criterion 4 before the report mazes; per-maze equivalence; the baselines; the
+  narrower conclusion.

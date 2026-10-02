@@ -33,7 +33,8 @@ POLARITY_STREAM, PERMUTE_STREAM = 0x901A, 0x9E2B
 JITTER = 0.3
 NOSE_LOW, NOSE_HIGH = 0.005, 0.35
 QUANTILES = (1, 5, 25, 50, 75, 95, 99)
-PAIR_GAIN, PAIR_TURN = 32.0, 0.3  # a pair "turn-relevant" if the follower's gain × |L − R| reaches 0.3
+PAIR_GAIN, PAIR_TURN = 32.0, 0.3
+HIGH_LEVELS = (0.35, 1.0)  # the caps' levels: Amendment 1 (0.35) and Amendment 2 (1.0)  # a pair "turn-relevant" if the follower's gain × |L − R| reaches 0.3
 _EDGES = np.geomspace(1e-6, 1e2, 801)  # the histogram of positive inputs: bins 2.3% wide
 
 
@@ -44,6 +45,7 @@ class NoseRange:
         self.on = self.inr = self.above = self.zero = self.occluded = self.q_n = self.q_high = 0
         self.steer_all = self.steer_on = self.wey_ticks = self.wey_ticks_on = 0
         self.pairs = self.pairs_relevant = 0
+        self.q_above = {h: 0 for h in HIGH_LEVELS}
 
     def attach(self, world) -> None:
         routes = np.stack([MM.route_cells(mz, pl.a, pl.b) for mz, pl in zip(world.mazes, world.placements)])
@@ -86,6 +88,8 @@ class NoseRange:
         keep = on & ~world.last_blocked & self.exists & (g > 0)
         self.q_n += int(keep.sum())
         self.q_high += int((keep & (g > NOSE_HIGH)).sum())
+        for h in HIGH_LEVELS:
+            self.q_above[h] += int((keep & (g > h)).sum())
         self.hist += torch.bincount(torch.bucketize(g[keep], self.edges), minlength=len(_EDGES) + 1)
         self.prev = world.pos[:, 0].clone()
         self.exists = self._exists(world)
@@ -102,6 +106,7 @@ class NoseRange:
                 "positive_unoccluded_after_trail": int(h.sum()), "quantiles_unoccluded_positive": q,
                 "qualified_inputs": self.q_n, "qualified_above_high": self.q_high,
                 "above_high_share_qualified": self.q_high / max(self.q_n, 1),
+                "above_share_qualified_by_level": {str(h): v / max(self.q_n, 1) for h, v in self.q_above.items()},
                 "steering_share_all": self.steer_all / max(self.wey_ticks, 1),
                 "steering_share_on_route": self.steer_on / max(self.wey_ticks_on, 1),
                 "pairs_unoccluded": self.pairs, "pairs_turn_relevant_share": self.pairs_relevant / max(self.pairs, 1),

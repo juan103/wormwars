@@ -173,3 +173,24 @@ def test_the_maze_modules_are_registered(con, seeds):
     org = MO.maze_organism(con, seeds["S3r3"], "W2+M80", shuttle_config().brain)
     assert G.MODULES[org.module.name] == org.module
     assert org.module.name == "e3b-e3-organism-E-W2+M80"
+
+
+def test_the_maze_runner_starts_the_oscillator(con, seeds):
+    """Brain.initial_state is all zeros, and M has zero biases and no inputs, so it would sit at exactly 0 for
+    ever (Astra, D179). The organism's brain starts M1 at 0.1, deterministically, on every path."""
+    from wormwars.e3 import maze_runs as MR
+    from wormwars.e3 import maze_world as MW
+    cfg = MW.maze_config(c=5, horizon=200, colony=2, mu=0.01, lam=0.03, delta=0.15, d0=0.571)
+    org = MO.maze_organism(con, seeds["E"], "W1+M40", cfg.brain)
+    k = org.ext.index("E3B_M1")
+    plain = MR.world(cfg, org.iface, Brain(org.genome), np.arange(2), 7)
+    plain.run()
+    assert float(plain.v[0][..., k].abs().max()) == 0.0  # the bug: never starts
+    w = MR.world(cfg, org.iface, MO.brain(org), np.arange(2), 7)
+    trace = []
+    for _ in range(200):
+        w.tick()
+        trace.append(float(torch.tanh(w.v[0][0, 0, k])))
+    assert max(trace) > 0.5 and min(trace) < -0.5  # it oscillates
+    plain_w0 = MO.maze_organism(con, seeds["E"], "W0", cfg.brain)
+    assert MO.brain(plain_w0).start == {}

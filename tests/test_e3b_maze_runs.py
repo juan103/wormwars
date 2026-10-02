@@ -180,3 +180,11 @@ def test_the_recorder_reports_branch_occupancy_and_pair_differences(iface):
     assert 0 <= nr["steering_share_on_route"] <= 1 and 0 <= nr["steering_share_all"] <= 1
     assert nr["pairs_unoccluded"] > 0 and 0 <= nr["pairs_turn_relevant_share"] <= 1
     assert set(nr["pair_abs_difference_quantiles"]) == {"25", "50", "75", "95"}
+
+
+def test_the_recorder_counts_exactly_above_each_high_level(iface):
+    cfg = _cfg(colony=2, horizon=300, d0=3.0)
+    nr = MR.play(cfg, iface, lambda: MC.follower(iface, cfg), np.arange(3), run_seed=5, nose_range=True)["nose_range"]
+    by = nr["above_share_qualified_by_level"]
+    assert set(by) == {"0.35", "1.0"}
+    assert by["0.35"] == nr["above_high_share_qualified"] >= by["1.0"] >= 0

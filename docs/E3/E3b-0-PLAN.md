@@ -702,3 +702,74 @@ selected. Amendment 1's text stands.
    - S3r3 will probably fail every variant.
 7. **Compute:** 1.07 of 3 GPU-hours are used. `stage-b3` takes about 0.2; the recheck, Stage C, the report
    and the timing about 0.7-0.9 more.
+
+### Amendment 2, as confirmed (2026-10-03)
+
+**Both reviewers said "confirm with fixes", with no further round** (`docs/reviews/20261003-E3b-0-amendment-2/`;
+D179). Where this section differs from the draft above, this section holds.
+
+1. **The cap is measured on the seed, not the follower** (Fable; Astra also prefers the seed).
+   - **Why:** the follower's inputs run 2.1-2.3 times the seed's (95th percentiles 2.0 against 0.95 at the
+     best-rate setting, and 0.69 against 0.30 at the medium one). So a follower-side cap at 1.0 would be a
+     seed-side cap near 0.45.
+   - **How `stage-b3` works:**
+     - it runs E + W2's own shared colony at each setting, with the nose recorder;
+     - the cap is at most 5% of its unoccluded, positive, on-route goal inputs (once the goal's trail
+       exists) strictly above 1.0. An empty count fails;
+     - the ranking (the follower's later-leg rate) and the gradient come from Stage B's rows, and the
+       follower's trail-effect gate from `stage-b2`'s rows (hash-pinned);
+     - E + W2's own trail effect against its no-trail run is reported for every setting;
+     - a widened setting runs the follower against `stage-b2`'s no-trail run, and measures its gradient if
+       its (μ, λ, δ) is new.
+   - **Why E + W2:** it is the only seed and variant that moves through the maze, and its exposure is the
+     highest of those tested (95th percentiles W0 0.62, W1 0.13, W2 0.95 at the best-rate setting).
+   - **The chosen seed and variant are checked again** in the report, before any report maze: the same cap
+     and criterion 4. If either fails, E3b-0 ends with a report, with no retry (Astra: no unbounded retries).
+     Fable suggested one retry at the next-ranked setting; it is not adopted, to keep the search bounded.
+2. **Criterion 4:**
+   - at levels up to 0.35: active K_D ≥ 30, as registered;
+   - at levels in (0.35, 1.0]: K_D × level ≥ 10.5, the registered rule's value at 0.35 (30 × 0.35). That
+     threshold is independent of the seed (Fable). It replaces the draft's 11.06, read off E, and is an
+     engineering choice: the piecewise rule is stricter just above 0.35 (Astra);
+   - the one-nose checks at every level up to 1.0;
+   - all of this runs **before the report mazes**, on the chosen seed and variant at its own selection-maze
+     levels, and a failure stops the stage there (Astra).
+   - **S3r3's K_D of 0 at 1.0** is the motor output's clip at its operating point, not shown to be sensory
+     collapse (Astra). S3r3 fails criterion 4 at the 1.0 boundary, which is always among the levels.
+3. **The oscillator now starts** (Astra found the bug):
+   - `Brain.initial_state` is all zeros, and M has zero biases and no inputs, so M sat at exactly 0 in the
+     maze runner. The organism test had nudged M1 by hand;
+   - `maze_organisms.brain` now starts M1 at 0.1 on every path (`StartedBrain`). It is tested through the
+     maze world, failing first;
+   - no formal stage had run an M variant.
+4. **The reuse evidence, per maze** (Astra):
+   - `stage-b2`'s per-maze follower arrays equal Stage B's on all 24 settings, for visits, legs, the
+     later-leg rate, unvisited share, first discovery, occlusion and later first-B;
+   - only the exposure arrays differ, as the exposure fix (9e5e02d) requires: Stage B recorded shared
+     exposure as 0.
+5. **Wording:**
+   - **the gain-0 follower** is not "the switch alone": with gain 0 its no-trail baseline loses W2's
+     exploration near the sources (1.08 against 3.33). The row shows that losing it hurts, not that the
+     switch contributes nothing (Fable);
+   - **"S3r3 (all variants)"** becomes "S3r3 with the three variants tested". The M variants were not
+     tested;
+   - **"no seed is qualified above 1.0"** is withdrawn. S3r3 simply fails at 1.0;
+   - **the medium setting's legs median** for E + W2 is 1.94, below criterion 2's 2 (both). The conclusion
+     is narrower than the draft's: usable trail information exists for E + W2, while qualification for the
+     task is still to be shown. Neither directional trail use nor the registered peer effect follows.
+6. **S3r3 + W2 circles** (an exploratory CPU look at 4 smoke mazes, 600 ticks).
+   - Its mean turn is −0.76, against E + W2's −0.04, and its path spans 12.5 cells against 23.7.
+   - It makes 0.19 visits per wey against 1.19.
+   - Its evolved, asymmetric outputs leave a net turn bias that W2's resting +0.4 does not cancel (Astra
+     computed this analytically). That is a property of the organism, not a wiring bug.
+7. **Expected, and the compute.**
+   - **Selection:** from E + W2's 95th percentile of 0.95, the best-rate setting (μ 0.005, λ 0.02, δ 0.05,
+     d₀ 0.571) is likely to pass the seed cap and win.
+   - **Widening:** it would then fire in μ (down to 0.0025) and in d₀ (up to 2 × the pilot). That is about
+     30 settings, with fresh gradients for the new μ shapes.
+   - **Compute:**
+     - used: 1.07 GPU-hours;
+     - `stage-b3`: about 0.5-0.7;
+     - the recheck, Stage C (now including the started M variants), the report and the timing: about 0.8;
+     - **total about 2.4-2.6, under the cap of 3.**
+   - If the cap clock is reached, E3b-0 stops and reports what it has (§6).

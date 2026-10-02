@@ -64,8 +64,9 @@ def test_stage_c_refuses_a_failed_recheck(m):
 
 def test_stage_b2_follows_stage_b_and_every_later_stage_reads_it(m):
     assert m.STAGES.index("stage-b2") == m.STAGES.index("stage-b") + 1
-    with pytest.raises(SystemExit, match="Stage B2"):
+    with pytest.raises(SystemExit, match="qualified no setting"):
         m.chosen_cfg({"stage-b2": {"chosen": None}})
+    assert m.STAGES.index("stage-b3") == m.STAGES.index("stage-b2") + 1
 
 
 def test_the_widening_goes_one_factor_of_two_beyond_each_edge_the_winner_sits_on(m):
@@ -116,9 +117,13 @@ def test_the_historical_records_are_checked_by_hash(m, tmp_path):
 
 
 def test_the_seed_cap_fails_on_an_empty_count_or_a_share_above_5_percent(m):
-    assert not m.seed_cap({"qualified_inputs": 0, "above_high_share_qualified": 0.0})["passed"]
-    assert not m.seed_cap({"qualified_inputs": 100, "above_high_share_qualified": 0.06})["passed"]
-    assert m.seed_cap({"qualified_inputs": 100, "above_high_share_qualified": 0.05})["passed"]
+    def nr(n, a035, a1):
+        return {"qualified_inputs": n, "above_share_qualified_by_level": {"0.35": a035, "1.0": a1}}
+    assert not m.seed_cap(nr(0, 0.0, 0.0))["passed"]
+    assert not m.seed_cap(nr(100, 0.06, 0.0))["passed"]
+    assert m.seed_cap(nr(100, 0.05, 0.0))["passed"]
+    assert m.seed_cap(nr(100, 0.30, 0.05), "stage_b3")["passed"]  # Amendment 2: the level is 1.0
+    assert not m.seed_cap(nr(100, 0.30, 0.06), "stage_b3")["passed"]
 
 
 def test_criterion_4_levels_are_floored_and_include_the_boundary(m):
@@ -145,3 +150,24 @@ def test_the_one_nose_check_holds_for_e_and_catches_a_reversed_turn(m):
     flipped = P.ProbeContext(org.ext, org.iface, cfg)
     flipped.pairs = {k: (j, i) for k, (i, j) in pc.pairs.items()}  # left and right noses exchanged
     assert not m.one_nose_checks(org.genome, flipped, states, [0.01, 0.1])["passed_up_to_high_level"]
+
+
+
+def test_the_amended_stage_in_force_is_b3_when_it_ran(m):
+    assert m.amended({"stage-b2": {"x": 2}})[0] == "stage_b2"
+    assert m.amended({"stage-b2": {"x": 2}, "stage-b3": {"x": 3}}) == ("stage_b3", {"x": 3})
+
+
+def test_criterion_4_extends_by_the_relative_response_under_amendment_2(m):
+    good = {"A@0.1": 35.0, "A@0.35": 31.6, "A@0.7": 22.6, "A@1.0": 15.0, "A@2.0": 2.5}
+    assert m.active_passes(good, "stage_b3")  # 22.6 x 0.7 = 15.8 and 15 x 1 = 15 >= 10.5; 2.0 is above the level
+    assert not m.active_passes({**good, "A@1.0": 10.0}, "stage_b3")  # 10 x 1.0 < 10.5
+    assert not m.active_passes({**good, "A@0.35": 29.3}, "stage_b3")  # K_D >= 30 still holds up to 0.35
+    assert m.active_passes({"A@0.1": 35.0, "A@0.7": 1.0}, "stage_b2")  # Amendment 1: above 0.35 only reported
+    assert 1.0 in m.component_levels({"5": 0.01, "25": 0.02, "50": 0.1, "75": 0.3, "95": 0.6, "99": 1.4}, "stage_b3")
+
+
+def test_the_relative_minimum_is_the_registered_k_d_rule_at_0_35(m):
+    assert m.REGISTERED["stage_b3"]["relative_min"] == 30 * 0.35  # seed-independent (Fable, D179)
+    assert m.active_passes({"A@0.35": 30.0, "A@0.5": 21.0}, "stage_b3")  # 21 x 0.5 = 10.5
+    assert not m.active_passes({"A@0.35": 30.0, "A@0.5": 20.9}, "stage_b3")

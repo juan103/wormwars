@@ -27,7 +27,7 @@ from pathlib import Path
 import torch
 
 from .. import graft as G
-from ..brain import BrainSpec, Genome
+from ..brain import Brain, BrainSpec, Genome
 from ..connectome import load_connectome
 from ..e4s import comparator as C
 from ..evo.genomes import genome_hash
@@ -36,6 +36,7 @@ from . import organism as O
 VARIANTS = ("W0", "W1", "W1+M40", "W1+M80", "W2", "W2+M40", "W2+M80")
 REFLEX_BIAS, REFLEX_TAU, REFLEX_W, W2_RIGHT_W = -0.5, 0.5, 3.0, 1.5
 M_SELF, M_CROSS, M_OUT = 1.5, 1.0, 0.5
+M_START = 0.1  # M1's initial state: at rest M sits at its unstable fixed point 0 for ever (Astra, D179)
 M_TAU = {"M40": 4.0, "M80": 8.0}
 CARRIER_FORWARD = 1.0
 REST_TURN = {"W0": 0.2, "W1": 0.2, "W2": 0.4}
@@ -61,6 +62,28 @@ class Organism:
     ext: object
     iface: object
     genome: Genome
+
+
+class StartedBrain(Brain):
+    """A Brain whose initial state sets the given neurons, the same on every row: the organism's own start."""
+
+    def __init__(self, genome: Genome, start: dict):
+        super().__init__(genome)
+        self.start = dict(start)
+
+    def initial_state(self, n_weys: int):
+        v = super().initial_state(n_weys)
+        for k, x in self.start.items():
+            v[..., k] = x
+        return v
+
+
+def brain(org: "Organism", device="cpu") -> StartedBrain:
+    """The organism's brain on `device`, with M1 started at M_START when the variant has M."""
+    from ..e04a.evolve import moved
+    g = org.genome if str(device) == "cpu" else moved(org.genome, device)
+    start = {org.ext.index("E3B_M1"): M_START} if "E3B_M1" in org.ext.names else {}
+    return StartedBrain(g, start)
 
 
 def _register(m: G.Module) -> G.Module:
