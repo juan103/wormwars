@@ -1,8 +1,10 @@
-# E3b-0's plan: the engine, the controls and the task's feasibility (v2, 2026-10-02)
+# E3b-0's plan: the engine, the controls and the task's feasibility (v3, 2026-10-02)
 
-Status: v2, for a confirmation round by Astra 6 and Fable 5.1. Nothing has run.
+Status: **v3, agreed.** Both reviewers said "fix then run" on v2 (`docs/reviews/20261002-E3b-0-plan-v2/`;
+D175), and Fable said no further round was needed. v3 takes every fix (§10). Nothing has run except the
+power simulation (§5, criterion 6) and the maze generator's tests.
 - **v1** (f6d3532): both said "fix then run" (`docs/reviews/20261002-E3b-0-plan/`; D174). v2 takes every
-  fix; §9 maps them.
+  fix; §9 maps them; v3's changes are in §10.
 - **The owner, 2026-10-02:** add E3a's best tuned organism, Stage 3 run 3 (15.98 on E3a's test worlds), as a
   second candidate seed beside E (§2c).
 - **The design:** `docs/E3/E3b-DESIGN.md` v2, agreed (D173).
@@ -28,12 +30,13 @@ Status: v2, for a confirmation round by Astra 6 and Fable 5.1. Nothing has run.
   - It is already built and tested (00fa5d5).
   - **The measured dead-end share** is 0.29 to 0.32 for c = 5-8, over 200 mazes each. Depth-first search
     gave far fewer, as both reviewers expected.
-- **Two streams,** so placement never moves the walls (Astra):
-  - the walls from (run seed, maze id, "walls");
-  - the placements from (run seed, maze id, episode index, "place").
+- **Two streams,** so placement never moves the walls (Astra; `maze.maze_for`, 60d0de9):
+  - the walls from (run seed, maze id);
+  - the placements from (run seed, maze id, episode).
 
-  Placement uses only the placement stream and never redraws the walls. At c = 5-8 it was feasible for
-  all 200 mazes per size. An infeasible maze raises an error.
+  The A-B pair is drawn only among eligible pairs, those leaving at least one spawn candidate. So
+  feasibility depends on the walls alone, and a maze feasible at episode 0 is feasible at episode 1000
+  (Fable). A maze with no eligible pair raises; 0 of 2 000 mazes at c = 5-8 did.
 - **Placements** (at dead ends):
   - A and B, with their tree distance in [⌈c/2⌉ + 1, 2c];
   - the spawns at up to 4 other dead ends, each at least 2 maze cells from A and from B;
@@ -107,16 +110,22 @@ Status: v2, for a confirmation round by Astra 6 and Fable 5.1. Nothing has run.
     so they fire near walls;
   - each drives the 4 dorsal and 4 ventral turn neurons away from its side at weight ±3;
   - the carrier's +0.2 turn bias remains.
-- **W2, a one-sided reflex (a wall follower made of neurons):** W1 with the right-side gain at 1.5 and
-  the left at 3, plus a constant extra turn of +0.2 when neither neuron fires (+0.4 in total).
+- **W2, a one-sided reflex (a wall follower made of neurons):**
+  - W1 with the right-side reflex neuron's output weights at ±1.5, while the left's stay at ±3. Its input
+    gain stays at 1, as W1's;
+  - the carrier's turn bias at +0.4 instead of +0.2, always on. There is no "fires" condition (Fable,
+    Astra).
   - Its coverage and dead-end escape are measured, not assumed (Astra).
   - Trails can help it, but can also misdirect or trap it.
-- **M, an oscillator:** a CTRNN oscillator within the genome's bounds (|w| ≤ 3, τ ∈ [0.5, 20], |b| ≤ 2),
-  producing a turn bias of period about 40 or 80 ticks.
-  - The engine has no adaptation state (Astra), so M must be found and verified on the CPU before
-    E3b-0's searches: a 2- or 3-neuron circuit with a measured period and amplitude.
-  - **If none is found within the bounds,** M is dropped and the variants below lose it. That is recorded
-    as a result.
+- **M, an oscillator:** a CTRNN oscillator within the genome's bounds (|w| ≤ 3, τ ∈ [0.5, 20], |b| ≤ 2).
+  - **Found on the CPU** in the engine's update rule:
+    - two neurons, each with a self-weight of 1.5, coupled by +1 and −1 (antisymmetric), bias 0;
+    - the resting state is an unstable spiral, bounded by tanh into a limit cycle, so no adaptation is
+      needed;
+    - the measured period is about 9.9 ticks per unit of τ, so τ = 4 gives about 40 ticks and τ = 8
+      about 80, with a swing of ±0.92.
+  - **Its output:** the first neuron drives the dorsal turn neurons at +0.5 and the ventral at −0.5. The
+    implementation's test confirms the period and amplitude.
 - **The variants,** in order of how engineered they are (§2b): W0, W1, W1+M40, W1+M80, W2, W2+M40,
   W2+M80. That is 7 (Astra, Fable).
 
@@ -141,9 +150,17 @@ The carrier with each variant is reported as a blind baseline.
 - **Both get the same wiring (§1d),** and each its own variant under §2b. Their variants may differ: E3b-1
   keeps the chosen seed's.
 - **The seed rule** (on the selection mazes):
-  - the candidate passing §2b with the higher later-leg rate per wey (§3c) with shared trails;
-  - ties within 0.25 legs per 1 000 remaining ticks go to E.
+  - **First, the less engineered variant wins** (§2a's order). A seed passing with W0 beats one needing
+    W2, whatever their rates, because the wall follower would do the work (Fable).
+  - **Only between equal variants:** the higher later-leg rate with shared trails. If the paired
+    `world_ci` on the difference includes 0, the tie goes to E.
   - If only one passes, it is the seed. If neither passes, criterion 2 fails (§6).
+  - **If the chosen seed then fails a criterion on the report mazes,** the other is not tried (Fable).
+- **Component qualification** tests each candidate's actual modules.
+  - The active K_D ≥ 30 is required at the levels met.
+  - S3r3's inactive-module limit is reported, not required: its partial gate was known (Astra).
+- **If S3r3 is chosen,** E3b-1's variance assumption (from runs started at E) may not transfer, and it
+  is said so (Fable).
 - **The choice is labelled exploratory:** S3r3 was added after E3a's results were seen.
 
 ## 3. The controls and the measurements
@@ -177,9 +194,17 @@ The carrier with each variant is reported as a blind baseline.
     leg, built by 1 contributor, facing away from the source, with a heading jitter uniform in ±0.3 rad.
     256 placements.
   - **A pass:** it enters the source within 2 × the oracle's leg time from that point.
-  - **The conditions:** the real trail; the same with no trail; and a no-polarity trail (λ = m, a flat
-    single-pass profile).
-  - **The reading:** pass(real) − max(pass(none), pass(flat)).
+  - **The trail:** a single pass of an oracle wey, at age 1 oracle leg. The follower's goal is the trail's
+    source. One placement per selection maze (256).
+  - **The conditions:**
+    - the real trail;
+    - no trail;
+    - **a route-permuted trail:** the same on-route values, permuted at random along the route, so the
+      intensity distribution is kept and the slope destroyed.
+
+    The v2 "flat" trail (λ = m) is not established as flat, given diffusion and unequal residence times
+    (Astra, Fable). Its measured gradient share is reported, but it is not the null.
+  - **The reading:** pass(real) − max(pass(none), pass(permuted)).
 - **The nose range:**
   - the share of on-trail ticks whose nose input lies in [0.005, 0.35], and the share above 0.35;
   - L1's component tests rerun at m = 0.001 and 0.003, and at the trail levels met.
@@ -190,9 +215,13 @@ The carrier with each variant is reported as a blind baseline.
 - **Raw entries,** including wrong and repeated ones.
 - **Confirmed visits per wey.**
 - **The later-leg rate:** legs per 1 000 ticks after each wey's first confirmed visit, so the time left is
-  accounted for (Fable).
-- **The first-B time of later discoverers:**
-  - weys that confirm B after the first wey in the colony has, censored at H;
+  accounted for (Fable). Weys with no first visit are counted separately (their share), not given a
+  rate.
+- **The first-B time of later discoverers** (pinned; Astra, Fable):
+  - the colony's first-B times, nonarrivals at H, sorted. The summary is the mean of order statistics 2
+    to 8, which excludes the colony's earliest whoever it is;
+  - a colony in which no wey reaches B scores H;
+  - reported with its difference as a share of own's;
   - compared paired across interventions on the same mazes and placements (Astra);
   - this is the primary peer measure (§5, criterion 3). On a goal's first discovery, own ≡ none.
 - **Peer controls** (scripted follower and seed):
@@ -201,14 +230,20 @@ The carrier with each variant is reported as a blind baseline.
   - **Replay:**
     - **the donor:** a lockstep donor colony of the same controller, on the same walls (maze id), with
       placements from episode index + 1000;
-    - **what the recipient senses:** its own live field, plus the donor's total field scaled by a single
-      factor. The factor makes the recipient's mean nose exposure to it equal its exposure to live peers
-      in the shared condition;
-    - **reported:** the route overlap (the share of the recipient's A-B route cells on the donor's) and
-      the scaling factor.
-  - **Scramble:** the live peers' field (shared − own), with its open-cell values permuted by a fixed
-    random permutation per episode. The recipient's own field stays live. Exposure is matched as in
-    replay.
+    - **the donor's endpoints:** at least one of A or B must differ from the recipient's. The donor's
+      episode index is advanced until one does, and the exceptions are reported (Astra);
+    - **what the recipient senses:** its own live field, plus the donor's total field × a frozen
+      coefficient;
+    - **the coefficient:** one pre-pass on the selection mazes, at coefficient 1, gives the ratio of mean
+      nose exposure to live peers (shared) against exposure to the donor. That ratio is frozen, with no
+      iteration (both);
+    - **reported on the report mazes:** the residual mismatch in exposure, zero-exposure cases included,
+      and the route overlap.
+  - **Scramble:**
+    - the live peers' field (shared − own), with its open-cell values permuted by a fixed random
+      permutation per episode;
+    - the recipient's own field stays live;
+    - no scaling, since a permutation keeps the mass (Fable). Its exposure is reported.
   - **Read beside own:** replay below own means misleading peers, not helpful live ones (Fable, Astra).
 - **The sabotage test (free; Fable):** for the scripted follower, own and none give bitwise identical
   trajectories on the CPU until each wey's first confirmed B visit. For a seed, any difference is reported
@@ -216,8 +251,7 @@ The carrier with each variant is reported as a blind baseline.
 
 ## 4. The searches (bounded; nested; selection rules fixed)
 
-**Pilot constants** for the (c, H) stage: μ = 0.01, λ = 0.03, δ = 0.15, d₀ such that the first deposit
-reads 0.2 at the noses after scaling. These are inside the feasible region by Fable's arithmetic (§9).
+**Pilot constants** for the (c, H) stage: μ = 0.01, λ = 0.03, δ = 0.15, d₀ = 0.571. These are inside the feasible region by Fable's arithmetic (§9).
 
 **Stage A, maze size and horizon** (scripted controls only). The candidates are c ∈ {5, 6, 7, 8} ×
 H ∈ {1 200, 2 400}, in order of c·H, then c. The first that meets all of these is chosen:
@@ -230,13 +264,18 @@ H ∈ {1 200, 2 400}, in order of c·H, then c. The first that meets all of thes
 The colony mean is over its weys. Conditions use the mean, or the median where stated, over the 256
 selection mazes. Each candidate has one episode per maze.
 
+**Stage A's recheck:** after Stage B, conditions 2, 4 and 5 are re-evaluated at the chosen constants
+(Fable). A failure moves to the next (c, H) of Stage A, with Stage B rerun there.
+
 **Stage B, trail constants,** on the chosen (c, H), with the scripted follower:
 - **The grid:**
   - μ ∈ {0.005, 0.01, 0.02} × λ ∈ {0.01, 0.02, 0.04}, decoupled (Fable);
   - δ ∈ {0.05, 0.15};
   - d₀ at {0.5, 1} × the pilot scale.
 
-  That is 36 settings.
+  That is 36 settings. The condition λ > m removes 3 of the 9 (μ, λ) pairs, so 24 are live (Fable).
+- **d₀'s pilot value is a number:** 0.2 / 0.35 = 0.571 field units per deposit. It is not tied to where a
+  head sits in its cell (Fable).
 - **The rule:** the setting maximising the follower's later-leg rate with shared trails, among those
   meeting all of these. Ties go to smaller μ, then smaller λ.
   - λ > m;
@@ -274,8 +313,11 @@ selection mazes. Each candidate has one episode per maze.
    - **the peer effect:** shared − own in the first-B time of later discoverers has a `world_ci` interval
      wholly below 0, so shared is faster.
    - **If shared = own,** peer feasibility fails (§6), even with shared > none (Astra).
-   - For each seed, shared − none, own − none and shared − own are reported. Replay and scramble against
-     own are reported with route overlap and scaling.
+   - **The chosen seed:** shared − none in later-leg rate must have a `world_ci` lower bound above 0 on the
+     report mazes. §2b's up to 14 tries on the selection mazes do not count (Fable).
+   - For each seed, own − none and shared − own are reported, as are replay and scramble against own,
+     with route overlap and exposure.
+   - **Single-wey evaluations** (a colony of 1) are reported for the seed and the follower (Astra).
 4. **Frozen settings:**
    - (c, H), the colony size, the trail constants, the scents, the variant and the seed;
    - L1's component tests at trail levels and below 0.005. **These can fail:** an active K_D below 30 at a
@@ -285,16 +327,30 @@ selection mazes. Each candidate has one episode per maze.
    - timings and peak memory at E3b-1's composition (256 strains × 16 worlds per strain × 8 weys),
      including the diffusion buffers and the lockstep replay donors;
    - a projected E3b-1 of at most 24 hours with a 25% reserve, for every arm planned.
-6. **Power for the gate:**
-   - **The test:** a paired run-level bootstrap at 90% (one-sided 5%) with 8 runs, for a true effect δ,
-     at 80% power, simulated.
-   - **The variance assumption:** the run-to-run coefficient of variation of tuned colonies' means is
-     taken as E3a's Stage 3 champions' 0.267 (3.41 / 12.79). It comes from 8 single-wey, open-arena runs,
-     so it is weak (Fable).
-   - **Sensitivity** at 0.15 and 0.40 is reported.
-   - **The pass:** the minimum detectable effect at a CV of 0.267 is at most 0.25 of the seed's mean.
-     Astra's normal approximation gives 23.4% at 80% power, so this is close and is simulated. The
-     scripted peer effect shows measurement sensitivity only.
+6. **Power for the gate** (simulated first, on the CPU: `scripts/e3b0_power.py`, `E3b-0/power.json`,
+   60d0de9).
+   - **The comparison:** each tuned run's test-maze mean against the frozen seed's on the same mazes.
+     The seed is one fixed organism, so the 8 differences are one sample, and their spread is the tuned
+     runs' (Fable).
+   - **The rule for E3b-1:** a test of calibrated size, either a one-sided t-test or the exact sign-flip
+     test at 5%. Not the 90% percentile bootstrap, which rejected 7-9% under the null in the simulation
+     (Astra found 7.9%).
+   - **The spread:** a CV of 0.267 is a chosen scaling (SD relative to E's mean); the champions' own CV is
+     0.282 (Astra, Fable). The empirical two-cluster shape of E3a's Stage 3 means is simulated as well as
+     the normal.
+   - **The result,** for the minimum effect detected with 80% power, as a share of the seed's mean, under
+     the t-test:
+
+     | Runs | Effect |
+     |---|---|
+     | 8 | 0.25 to 0.28 |
+     | 12 | 0.20 to 0.22 |
+     | 16 | 0.17 to 0.19 |
+
+   - **The criterion:** at most 0.25 at a CV of 0.282 with the calibrated test. **Eight runs fail it, and
+     twelve pass.** So E3b-1 is designed with 12 runs per gate arm, and criterion 5's projection uses 12.
+   - The assumption comes from 8 single-wey, open-arena runs, so it is weak (Fable). E3b-0's own
+     between-maze SD is reported beside it.
 
 ## 6. If a criterion fails
 
@@ -306,12 +362,15 @@ selection mazes. Each candidate has one episode per maze.
 | Stage B, winner on the grid's edge | one widening (§4) |
 | 2, the seed fails "above" or "legs" | the variant search widens once (M at periods 20 and 160, if M exists), with every later number from the fresh report mazes; then a report and a redesign |
 | 2, headroom | E3b-1's gate and its power re-examined; the reading set out before any registration |
-| 3, the trail effect null for the follower | Stage B's widening, then the fallback |
-| 3, the trail effect null for the seed | it is the variant rule's input (§2b); if no variant passes, as row 2 |
-| 3, the peer effect null (shared = own) | the peer claims leave E3b-1, with the 2 × 2 and the gate kept; the owner informed |
+| 3, the follower's trail effect: positive but below 0.5 legs per 1 000 ticks | Stage B's widening once; then recorded as a weak signal, with E3b-1's trail claims sized to it |
+| 3, the follower's trail effect: harmful or inconclusive | Stage B's widening, then the fallback |
+| 3, the seed's trail effect on the report mazes not above 0 | the variant search widens once, with fresh report mazes; then E3b-1's trail claims leave, with the gate kept; the owner informed |
+| 3, the peer effect: shared not faster (equal, slower, or inconclusive) | branch on what was found: "equal" drops the peer claims; "slower" (harmful peers) is reported, and the peer controls are redesigned before E3b-1; "inconclusive" is reported, with a power note. Each informs the owner |
+| Stage A's recheck fails | the next (c, H), with Stage B rerun |
+| Any change to the horizon, d₀ or the trail chemistry | every downstream qualification is rerun (polarity, range, component tests, the seed's criteria), not only the report (Astra) |
 | 4, component qualification | the trail levels are rescaled (d₀ down) within Stage B's rule, or a report |
 | 5, over budget | the agreed cut order: generations, then worlds per genome, then horizon; the no-trails arm made descriptive. Fewer weys changes the peer task and needs E3b-0 requalified. If the gate alone exceeds 24 h, the owner is asked |
-| 6, power | E3b-1 is redesigned (more runs, or a narrower gate) before registration. Longer tuning alone is not a remedy (Astra) |
+| 6, power | met with 12 runs per gate arm. If criterion 5 cannot fit 12 runs in 24 hours, E3b-1's scope is cut elsewhere first; then the owner is asked. Longer tuning alone is not a remedy (Astra) |
 | GPU budget exhausted | E3b-0 stops and reports what it has |
 
 **After any retry,** reported numbers come from the fresh report mazes. If those are exhausted, the
@@ -358,3 +417,24 @@ intervals are labelled adaptively selected.
 | The equivalence reference for the shuttle (Fable) | Produced at 84ff98a by the extended script |
 | Linearity "bitwise" was tautological (Fable) | Against a separately evolved field, 10⁻⁵ relative |
 | — (the owner) | S3r3 as a second candidate seed, with its risks stated and a fixed rule |
+
+## 10. Changes from v2
+
+| v2 review item | v3 |
+|---|---|
+| The seed rule reopened "highest score picks W2" (Fable) | The less engineered variant first; rate only between equal variants; a `world_ci` tie to E |
+| The seed's trail effect tested only on the selection mazes (Fable) | Required on the report mazes, with a branch |
+| Power underspecified: comparison, size, shape, CV (both) | Simulated first: one-sample against the fixed seed; calibrated tests; both shapes; both CVs; 12 runs needed |
+| `maze.py` redrew walls (both) | `maze_for`: walls keyed by maze, placements by episode, eligible pairs only, never redrawn (60d0de9) |
+| Stage A not rechecked after Stage B (Fable) | The recheck, with its branch |
+| The "flat" null not established (both) | A route-permuted null keeping the intensities; the λ = m profile reported only |
+| Exposure matching circular (both) | One frozen pre-pass on the selection mazes; residual mismatch reported; scramble unscaled |
+| Donor endpoints could coincide (Astra) | Enforced different, exceptions reported |
+| Failure handling by what fails (Astra) | Rows for weak, harmful and inconclusive results; requalification after any change |
+| The peer endpoint (both) | Order statistics 2-8 of first-B times, nonarrivals at H, no-discovery colonies at H |
+| Rates for weys without a visit (Astra) | Counted separately |
+| W2's change and M's output (both) | Pinned; M found within bounds (two neurons, self 1.5, cross ±1) |
+| d₀ as a number; the live settings (Fable) | 0.571 field units; 24 of 36 live |
+| The polarity pins (Fable) | A single-pass oracle trail at age 1 leg; the follower's goal is its source; one placement per selection maze |
+| Single-wey evaluations (both) | Reported |
+| The second seed's qualification and fallback (both) | Its actual modules; its inactive limit reported; the other candidate not tried after a report-maze failure |

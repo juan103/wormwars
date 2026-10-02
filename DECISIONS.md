@@ -5421,3 +5421,41 @@ seeds with ties to E. The choice is labelled exploratory. Its risks are stated i
 gate, tuning to the open arena, and a winner's curse.
 
 **Plan v2** takes every fix; its §9 maps them. A confirmation round follows.
+
+## D175 — E3b-0's plan agreed at v3 (both "fix then run" on v2); the gate's power computed first
+
+**The review** (`docs/reviews/20261002-E3b-0-plan-v2/`): both said "fix then run". Fable said no further
+round was needed, and Astra's verdict also permits running after the fixes. A consensus decision; the
+owner is informed.
+
+**What both found:**
+- the power criterion's comparison, test size and variance shape were unstated;
+- the "flat" polarity null was not established;
+- exposure matching was circular;
+- `maze.py` redrew walls, contrary to the plan.
+
+**Fable also found:**
+- the seed rule reopened "highest score picks W2";
+- the seed's trail effect was tested only on the selection mazes;
+- Stage A was not rechecked;
+- the CV divides by E's mean (also Astra: 0.282 against 0.267).
+
+**Astra also found:**
+- the 90% bootstrap is anticonservative (7.9% under the null);
+- failure handling must branch on what actually fails, and requalify after changes;
+- the donors' endpoints must differ.
+
+**The power, simulated first** (`scripts/e3b0_power.py`):
+- one-sample run differences against the fixed seed, two shapes, CVs 0.15-0.40, three rules;
+- the bootstrap rejected 7-9% under the null; the t-test and sign-flip test were near 5%;
+- with a calibrated test, the minimum effect detected with 80% power is 0.25-0.28 of the seed's mean for
+  8 runs, 0.20-0.22 for 12, and 0.17-0.19 for 16;
+- so E3b-1's gate needs 12 runs per arm and a calibrated test.
+
+**Code fix** (60d0de9, test-first): `maze_for` keys the walls by maze and the placements by episode,
+draws only eligible pairs, and never redraws walls.
+
+**The oscillator M was found within the genome's bounds** in the engine's update rule: two neurons with
+self-weight 1.5 and antisymmetric cross weights ±1, period about 9.9 ticks per unit of τ.
+
+Plan v3 takes every fix; its §10 maps them. Implementation follows.
