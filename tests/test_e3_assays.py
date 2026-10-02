@@ -1,0 +1,118 @@
+"""E3a's memory assays and classes (PREREGISTRATION §6; test 11).
+
+Constructed organisms land in their classes:
+- E: bistable, settable both ways, holds: "latch";
+- E with w_aq = w_bq = 0: bistable, but the stimulus cannot switch it: "bistable, not a latch";
+- a slow monostable trace (τ_q 20, w_qq 0.95, biases −1.55): passes the release test: "slow trace";
+- E with w_qq 0 and τ_q 0.5: monostable, forgets at once: "no memory".
+The clamp assays and the reset run in the world.
+"""
+
+from __future__ import annotations
+
+import numpy as np
+import pytest
+
+from wormwars import graft as G
+from wormwars.connectome import load_connectome
+from wormwars.e3 import assays as A
+from wormwars.e3 import organism as O
+from wormwars.e3 import probe as P
+from wormwars.e3 import samplers as S
+from wormwars.e3.task import shuttle_config
+from wormwars.e4s import comparator as C
+from wormwars.e4s.arms import load_l1
+
+
+@pytest.fixture(scope="module")
+def ctx():
+    con, l1, cfg = load_connectome(), load_l1(), shuttle_config()
+    e = O.engineered(l1)
+    ext = G.graft_connectome(con, e)
+    iface = G.graft_interface(ext, e)
+    base = C.carrier_genome(ext, e, cfg.brain, forward=1.0, turn=0.2)
+    return {"cfg": cfg, "ext": ext, "iface": iface, "pc": P.ProbeContext(ext, iface, cfg), "E": base}
+
+
+def _variant(ctx, **kw):
+    p = S.read_selector(ctx["E"], ctx["ext"])
+    for k, v in kw.items():
+        if k in ("gate", "bias"):
+            for mod in ("A", "B"):
+                for side in ("CL", "CR"):
+                    name = f"{k}_{mod}_{side}"
+                    p[0, S.SELECTOR_INDEX[name]] = (v if mod == "A" else -v) if k == "gate" else v
+        else:
+            p[0, S.SELECTOR_INDEX[k]] = v
+    return S.with_selector(ctx["E"], ctx["ext"], p)
+
+
+def _classify(ctx, genome, stim=2, D=60):
+    sel = S.read_selector(genome, ctx["ext"])[0]
+    return A.memory_assays(genome, ctx["pc"], w_qq=sel[S.SELECTOR_INDEX["w_qq"]], b_q=sel[S.SELECTOR_INDEX["b_q"]],
+                           tau_q=sel[S.SELECTOR_INDEX["tau_q"]], stim=stim, D=D, assignment=None)
+
+
+def test_e_is_a_latch(ctx):
+    r = _classify(ctx, ctx["E"])
+    assert r["structure"] == "bistable" and r["settable"] and r["hold"] and r["class"] == "latch"
+
+
+def test_a_latch_without_drive_is_bistable_but_not_a_latch(ctx):
+    g = _variant(ctx, w_aq=0.0, w_bq=0.0)
+    r = _classify(ctx, g)
+    assert r["structure"] == "bistable" and not r["settable"] and r["class"] == "bistable, not a latch"
+    assert "release" in r  # run descriptively on bistable non-latches
+
+
+def test_a_slow_trace(ctx):
+    g = _variant(ctx, tau_q=20.0, w_qq=0.95, gate=2.0, bias=-1.55)
+    r = _classify(ctx, g, stim=8, D=60)
+    assert r["structure"] == "monostable" and r["release"] and r["class"] == "slow trace"
+
+
+def test_no_memory(ctx):
+    g = _variant(ctx, tau_q=0.5, w_qq=0.0)
+    r = _classify(ctx, g)
+    assert r["structure"] == "monostable" and not r["release"] and r["class"] == "no memory"
+
+
+def test_the_window_scales_with_tau():
+    assert A.window(1.0) == 20 and A.window(4.0) == 40 and A.window(2.05) == 21
+
+
+# ------------------------------------------------------------------ in the world
+
+def test_es_clamp_assays_and_its_assignment(ctx):
+    ids = np.arange(947_100_000, 947_100_016)
+    r = A.clamp_assays(ctx["E"], ctx["ext"], ctx["iface"], ctx["cfg"], states=(-O.Q_STAR, O.Q_STAR),
+                       world_ids=ids, run_seed=1_171_000)
+    assert r["assignment"] == {"A": O.Q_STAR, "B": -O.Q_STAR}
+    assert r["share"]["A"] >= 0.9 and r["share"]["B"] >= 0.9 and r["passed"]
+
+
+def test_the_assignment_rule():
+    # both assignments cannot pass; the passing one wins
+    assert A.assign((-1.0, 1.0), {(-1.0, "A"): 0.1, (-1.0, "B"): 0.95, (1.0, "A"): 0.92, (1.0, "B"): 0.05}) == \
+        ({"A": 1.0, "B": -1.0}, True)
+    # mirrored polarity
+    assert A.assign((-1.0, 1.0), {(-1.0, "A"): 0.97, (-1.0, "B"): 0.0, (1.0, "A"): 0.0, (1.0, "B"): 0.96}) == \
+        ({"A": -1.0, "B": 1.0}, True)
+    # neither passes: the larger summed share; a tie gives the higher state to A
+    assert A.assign((-1.0, 1.0), {(-1.0, "A"): 0.5, (-1.0, "B"): 0.5, (1.0, "A"): 0.5, (1.0, "B"): 0.5}) == \
+        ({"A": 1.0, "B": -1.0}, False)
+
+
+def test_not_applicable_clamp_assays_do_not_pass():
+    assert A.working(lower_bound=9.0, e_mean=5.0, clamp={"applicable": False, "passed": False}) is False
+    assert A.working(lower_bound=4.0, e_mean=5.0, clamp={"applicable": True, "passed": True}) is True
+    assert A.working(lower_bound=3.9, e_mean=5.0, clamp={"applicable": True, "passed": True}) is False
+
+
+def test_es_reset(ctx):
+    ids = np.arange(947_100_000, 947_100_016)
+    r = A.reset_test(ctx["E"], ctx["ext"], ctx["iface"], ctx["cfg"], go_to_a=O.Q_STAR, world_ids=ids,
+                     run_seed=1_171_000)
+    assert r["eligible"] >= 8 and r["passed"]
+    # a world where the write never happens fails: a q pinned at "go to B" cannot be reset
+    assert set(r["per_world"]) <= {"passed", "failed", "unwritten", "not eligible"}
