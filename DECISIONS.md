@@ -5294,3 +5294,24 @@ informed.
 `main` was fast-forwarded to the reviewed `roadmap` tip (62bd626), and the working-branch banner
 removed there (7048824). `roadmap` continues from `main` with its banner, which now names E3b's design
 as next. A consensus publication (D169); the owner is informed.
+
+## D171 — E3b's design started (v1, for review)
+
+**The owner, 2026-10-02:** "start E3b's design" (after E3a's publication). The old-engine worktree
+(989da99) was removed at the owner's request.
+
+**Design v1** (`docs/E3/E3b-DESIGN.md`) proposes staging E3b as E4s was:
+- **E3b-0:** exploratory, at most 3 GPU-hours. The engine changes (mazes, two wall-masked trails,
+  per-wey goals and deposit timers, wall sliding), the scripted controls, and the seed design's
+  feasibility in the maze.
+- **E3b-1:** pre-registered, about 25 GPU-hours. Joint tuning of the seed in colonies against the seed
+  on unseen mazes (the roadmap's gate), with the peer-signal controls.
+
+**An engine survey** found that the engine lacks all of these:
+- interior walls and mazes;
+- more than one trail per swarm, and walls that block diffusion;
+- shuttle colonies (one wey per world);
+- per-wey timers.
+
+**Seven questions** go to the reviewers, including whether a literature check on two-pheromone
+trail models (cited from memory, unverified) must come first (D143's standard).
