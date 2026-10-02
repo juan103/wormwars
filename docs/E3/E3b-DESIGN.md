@@ -1,6 +1,8 @@
 # E3b: trails, branching mazes and the colony (design v2, 2026-10-02)
 
-Status: v2, for a confirmation round by Astra 6 and Fable 5.1. Nothing has run.
+Status: v2, **agreed**: both reviewers said "proceed to E3b-0's plan" (2026-10-02;
+`docs/reviews/20261002-E3b-design-v2/`; D173). Nothing has run. Their pins go into E3b-0's plan
+(`docs/E3/E3b-0-PLAN.md`).
 - **v1** (ea06ce4) was reviewed (`docs/reviews/20261002-E3b-design/`; D172):
   - **Fable:** "proceed to E3b-0's plan", with fixes.
   - **Astra:** "revise". Keep the staging, but tighten the controls, the measures and the feasibility
@@ -75,8 +77,9 @@ current engine: Task N, foraging, E3a's shuttle, and E4s-1's graft.
      deposited before its first.
    - **The trail points toward its source only if λ exceeds μ.** Otherwise it is flat or reversed (both
      reviewers derived this).
-   - E3b-0 measures the gradient's direction along routes, across delays and junctions. A trail alone
-     carries no polarity in real ants (Jackson et al. 2004), so it is not assumed here.
+   - E3b-0 measures the gradient's direction along routes, across delays and junctions. Jackson et
+     al. 2004 found no evidence that ants read polarity from pheromone alone (corrected 2026-10-02,
+     D173), so it is not assumed here.
    - **The fallback:** a Panait-Luke-style adjustment that gives a gradient by construction, labelled as
      more engineered (`E3b-LITERATURE.md`).
 5. **The colony on the shuttle.**

@@ -63,3 +63,24 @@ standard for literature (D143): citations made from memory were checked before t
    - Nothing found replicates E3b's design. The search was bounded, so this is not a claim of novelty.
 5. **Trails help on alternating, branching routes in real ants** (Czaczkes et al. 2013). This is
    motivation for E3b's tree mazes, not evidence about E3b.
+
+## Corrections
+
+**2026-10-02, after the design v2 review** (`docs/reviews/20261002-E3b-design-v2/`; D173).
+
+1. **Item 2:** "A pheromone trail alone carries no direction in real ants (Jackson et al.)."
+   - **The source says:** "previous research has found no evidence that ants can detect polarity from the
+     pheromone trail alone". That is an absence of evidence, in one species (Pharaoh's ants).
+   - **Read as:** no evidence was found that ants read polarity from pheromone alone, per Jackson et al.
+     (both reviewers).
+2. **Item 1:** "Two trails, one per direction, is established practice." Two abstracts and a
+   one-pheromone counterexample (StarLogo) support "has precedent", not "established" (Fable).
+3. **Item 4:** "Their comparisons rest on single runs." Jimenez-Romero et al. report one evolutionary
+   trajectory per pheromone condition, and 100 evaluation trials (Astra; their §3.1). AntFarm is
+   unverified, and the claim does not extend to it.
+4. **Panait & Luke's rule.** Astra read the full text (author-hosted). It tops up toward the neighbouring
+   maximum minus a constant. That supports the fallback's motivation, not a guarantee of navigable
+   gradients. The fallback is nonlinear, so if it is ever adopted, shared ≠ the sum of per-wey fields and
+   the peer controls need redesign (Fable).
+5. **Item 5:** in Czaczkes et al. 2013, "alternating routes" means left-right turns at successive
+   bifurcations, not alternating destinations (Astra).

@@ -5356,3 +5356,31 @@ both and decides on evidence.
 
 **Design v2** (`docs/E3/E3b-DESIGN.md`) takes every point, with a dated correction. E3b-0 now has six
 exit criteria before E3b-1 is designed and pre-registered.
+
+## D173 — E3b's design agreed at v2: both "proceed to E3b-0's plan"
+
+**The review** (`docs/reviews/20261002-E3b-design-v2/`): both said "proceed". Astra also read the sources
+again. This is a consensus decision; the owner is informed.
+
+**Literature corrections** (dated, in `docs/E3/E3b-LITERATURE.md`). D172 said:
+- "pheromone trails alone carry no polarity in real ants". It is an absence of evidence, in one species;
+- two trails per direction are "established practice". They "have precedent";
+- Jimenez-Romero et al.'s comparisons are "single-run". There is one evolutionary run per condition, with
+  100 evaluation trials.
+
+Both reviewers caught the first; Fable the second; Astra the third. D172 stands as written, corrected
+here.
+
+**Pins carried into E3b-0's plan:**
+- the seed cannot explore (Fable: the carrier circles within about ±6 cells), so the "maze-ready"
+  additions are listed, labelled and given to every arm;
+- the wall follower is a ceiling, not a bar;
+- sensing leaks through walls (Astra: a nose inside a wall cell interpolates the far side);
+- the fallback trail rule breaks the linear peer controls;
+- the trail's range is tight against L1's 70× window;
+- a behavioural polarity test (turning round on a trail);
+- "own only" cannot improve first discovery, so shared > own > none is read on repeated trips;
+- the gate's power, not only the scripted follower's;
+- failure branches;
+- the update order, the rate conventions and the inequality's assumptions;
+- the equivalence tolerances.
