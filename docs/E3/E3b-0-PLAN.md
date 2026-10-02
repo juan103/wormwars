@@ -628,3 +628,77 @@ trades the trail's signal for the modules' working range; that is the choice mad
 | The report | |
 | The timing | |
 | **Total** | **about 1.0-1.3**, within the 2.26 left |
+
+## Amendment 2 (2026-10-03, after `stage-b2` and diagnosis 4; draft for review)
+
+**Status: draft, for both reviewers. Decided after seeing data;** everything chosen under it is adaptively
+selected. Amendment 1's text stands.
+
+### What happened
+- `stage-b2` qualified no setting (19a1b12). The interim report (`INTERIM-REPORT.md`) and the redesign
+  review followed (`docs/reviews/20261003-E3b-0-redesign/`).
+  - Fable advised testing the seeds first. The 0.35 cap read K_D, a response to a fixed absolute
+    difference, where along linear trails the response to a relative difference, K_D × level, is what
+    matters.
+  - Astra advised a pinned diagnostic before any change to sensing.
+- **Diagnosis 4** (db509aa; `development-records/diagnosis-4-*.json`).
+  - **The seeds,** on the 256 selection mazes:
+
+    | Seed | No trail | Trail effect, best-rate setting | Trail effect, medium setting |
+    |---|---|---|---|
+    | E + W2 | 1.77 | +1.27 [1.01, 1.53] | +0.53 [0.34, 0.75] |
+
+    The best-rate setting is μ 0.005, λ 0.02, δ 0.05, d₀ 0.571; the medium one is μ 0.01, λ 0.04, δ 0.05,
+    d₀ 0.571. At the medium setting only 4% of E + W2's own inputs exceed 0.35. E + W0, E + W1 and S3r3
+    (all variants) barely move through the maze, so Stage C will judge them under criterion 2.
+  - **The follower** (mazes 0-63):
+
+    | Variant | Trail effect |
+    |---|---|
+    | Gain 0 | −0.35 |
+    | Occluded nose ignored | +3.42 |
+    | Gain 128 on trails laid 4× lighter | +3.02 |
+
+    Its effect is steering on the trail, scaling with gain × difference. Its inputs run about twice the
+    seed's at the same setting (95th percentile 2.0 against 0.95).
+- **Conclusion:** the trails are usable by the seed E without any change to sensing. Amendment 1's cap was
+  set at a level and on an agent that did not fit.
+
+### The amendment
+1. **The high level becomes 1.0.**
+   - **E's K_D × level:**
+
+     | Level | 0.35 | 0.5 | 0.7 | 1.0 | 1.5 | 2.0 |
+     |---|---|---|---|---|---|---|
+     | E: K_D × level | 11.1 | 14.0 | 15.8 | 15.0 | 9.7 | 5.0 |
+
+   - So E's response to a relative difference stays at or above its value at 0.35 up to 1.0, and falls
+     below it by 1.5 (`stage-b-diagnosis-2.json`).
+   - S3r3's module A is 0 at 1.0, so no seed is qualified above 1.0.
+   - **The cap:** at most 5% of the unoccluded, positive, on-route goal inputs (once the goal's trail
+     exists) above 1.0.
+2. **A new stage, `stage-b3`,** applies Amendment 1's rule with that cap. It reads Stage B's record:
+   - the guard: shared rates equal to Stage B's;
+   - the gradient from Stage B's rows;
+   - the trail-effect gate as in Amendment 1;
+   - the widening rule as in Amendment 1;
+   - the reported polarity as in Amendment 1.
+
+   It reruns the follower's 24 shared colonies (about 0.2 GPU-hours).
+3. **The seed-side cap** in the report applies the same level, 1.0: at most 5% of the chosen seed's own
+   inputs above it, before any report maze.
+4. **Criterion 4:**
+   - at levels up to 0.35, active K_D ≥ 30, as registered;
+   - at levels in (0.35, 1.0], K_D × level of at least E's value at 0.35 (11.1);
+   - the one-nose checks at every level up to 1.0.
+   - The levels are as in Amendment 1, with the boundary at 1.0 added.
+5. **Unchanged:** Stage C and its variant and seed rules; the recheck; criteria 2, 3, 5 and 6; the report
+   mazes; no fallback. If `stage-b3` qualifies no setting: a report, with the owner informed. E3b-0 then
+   ends.
+6. **Expected, written before the run:**
+   - from the recorded quantiles, settings with a 95th percentile near or below 1.0 should qualify, with
+     follower effects around +2;
+   - in Stage C, W0 and W1 will probably fail criterion 2 for E, and the M variants are untested;
+   - S3r3 will probably fail every variant.
+7. **Compute:** 1.07 of 3 GPU-hours are used. `stage-b3` takes about 0.2; the recheck, Stage C, the report
+   and the timing about 0.7-0.9 more.
