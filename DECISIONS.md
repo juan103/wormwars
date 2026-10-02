@@ -5315,3 +5315,44 @@ as next. A consensus publication (D169); the owner is informed.
 
 **Seven questions** go to the reviewers, including whether a literature check on two-pheromone
 trail models (cited from memory, unverified) must come first (D143's standard).
+
+## D172 — E3b's design v1 reviewed (Fable: proceed with fixes; Astra: revise); a bounded literature check; design v2
+
+**The review** (`docs/reviews/20261002-E3b-design/`): both kept the staging.
+
+**What both found:**
+- E3b-1's budget was not credible: about 47 h for two training arms by E3a's measured rate;
+- a time-decaying deposit points toward its source only if it decays faster than evaporation;
+- replay on the same tree maze keeps route information;
+- the seed has no exploration mechanism;
+- own trails need exact per-wey fields;
+- trees first;
+- a literature check before fixing the trail rule.
+
+**Fable also found:**
+- a tuned seed could win by locomotion alone (hence a 2 × 2 of trail-evolved and no-trail-evolved
+  colonies, each evaluated with trails on and off);
+- bodies as a second peer channel, and the spawn crowding;
+- peers become redundant after a round trip;
+- the v1 geometry was inconsistent;
+- the boundary already slides per axis.
+
+**Astra also found:**
+- confirmed visits alternate by construction;
+- the +2.36 misattributed to "against E";
+- identical mechanics are needed across arms;
+- several engine assumptions (one score per world, Task N disabling pheromones).
+- Astra also checked two of my from-memory citations and found them different from the design.
+
+**They disagreed** on the wall reflex. Fable: sliding first. Astra: an engineered reflex. E3b-0 builds
+both and decides on evidence.
+
+**The literature check** (`docs/E3/E3b-LITERATURE.md`), bounded and verified:
+- two direction-specific trails are established practice (Panait & Luke 2004), but their update rule is
+  a dynamic-programming-like adjustment, not an additive deposit;
+- pheromone trails alone carry no polarity in real ants (Jackson et al. 2004), so E3b's direction must be
+  engineered and measured;
+- evolved neural agents with pheromone exist (Jimenez-Romero et al., full text: single-run comparisons).
+
+**Design v2** (`docs/E3/E3b-DESIGN.md`) takes every point, with a dated correction. E3b-0 now has six
+exit criteria before E3b-1 is designed and pre-registered.
