@@ -4797,3 +4797,23 @@ including M's climb interval, +4.48 to +5.20.
 
 **Publication:** both reviewers said "fix", text only, and every item is applied. On that consensus,
 E4s-0 and E4s-1 go to `main` together (the owner's choice), and the owner is told afterwards.
+
+## D155 — E4s-0 and E4s-1 published on main
+
+Under the owner's rule (both reviewers' fixes applied, D147 and D154), and as the owner chose
+(2026-10-01: both together), `main` was fast-forwarded from `df50f6a` to `9f0ea31`: the roadmap branch
+at `a0fe94a`, plus one commit removing its banner. It carries:
+- **E4s's planning:** the literature review, the roadmap proposal and its reviews, the superseded
+  designs, D139-D155;
+- **E4s-0:** its plan, code, records, results and corrections;
+- **E4s-1:** its design, pre-registration with Amendment 1, code and tests, every stage record, the
+  per-world counts, the report and summary, results and corrections;
+- **the engine changes:** per-parameter mutation scales and `evolve_batch` hooks, GPU-checked;
+- **the front page, roadmap, AGENTS.md and review trail** (episodes 25-29).
+
+**Checks:**
+- the full suite, locally;
+- CI green on `a0fe94a`. `51f3dfa` failed the hygiene guard, which `e9e62a7` fixed, as recorded;
+- the identity check: no email in tracked files, the noreply identity on every commit.
+
+`roadmap` continues from `main` with its banner. Next in Track E: E3's design.
