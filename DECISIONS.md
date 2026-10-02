@@ -5288,3 +5288,9 @@ new numbers before committing caught two errors in the drafted fixes (a 0.43 for
 
 **Published on main** on both reviewers' "fix", by consensus (as E4s-1, D154-D155); the owner is
 informed.
+
+## D170 — E3a published on main
+
+`main` was fast-forwarded to the reviewed `roadmap` tip (62bd626), and the working-branch banner
+removed there (7048824). `roadmap` continues from `main` with its banner, which now names E3b's design
+as next. A consensus publication (D169); the owner is informed.
