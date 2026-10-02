@@ -5384,3 +5384,40 @@ here.
 - failure branches;
 - the update order, the rate conventions and the inequality's assumptions;
 - the equivalence tolerances.
+
+## D174 — E3b-0's plan v1 reviewed (both "fix then run"); plan v2, with a second candidate seed
+
+**The review** (`docs/reviews/20261002-E3b-0-plan/`): both said "fix then run".
+
+**What both found:**
+- the polarity test needs nulls;
+- replay and scramble were unpinned;
+- the seed under own trails was missing;
+- unpinned numbers;
+- the power criterion was not a power calculation;
+- depth-first-search mazes branch little. That was measured: 4-7 dead ends. It is fixed with Wilson's
+  algorithm, at 0.29-0.32 (00fa5d5).
+
+**Fable also found:**
+- the trail grid barely reached the feasible region (λ was tied to μ);
+- the equal-split diffusion ridges corridors at 3:4:3;
+- the maze search used trail constants not yet chosen;
+- "highest score" would pick the wall-follower variant;
+- the later-leg confound;
+- the headroom was too thin for the power target.
+
+**Astra also found:**
+- the oscillator cannot exist without adaptation state;
+- corners leak in sensing and movement;
+- "round trip" was mislabelled;
+- shared = own could pass;
+- retries reused the report mazes;
+- the failure handling was incomplete;
+- the power target decides the pass (23.4% at 80% power, 27.6% at 90%).
+
+**The owner, 2026-10-02:** "yes, add it as a second candidate". E3a's Stage 3 run 3 (15.98) joins E as a
+candidate seed. It gets its own variant under the least-engineered rule, and a fixed choice between
+seeds with ties to E. The choice is labelled exploratory. Its risks are stated in advance: a partial
+gate, tuning to the open arena, and a winner's curse.
+
+**Plan v2** takes every fix; its §9 maps them. A confirmation round follows.
