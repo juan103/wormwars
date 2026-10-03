@@ -6052,3 +6052,51 @@ will say so.
 - **No third review round:** Fable confirmed the rest, and Astra confirmed every other finding. These three
   fixes are what Astra asked for, each pinned by a test.
 - **Consensus on starting:** both reviewers' conditions are met.
+
+## D190 — E3b-1 Amendment 1: infeasible mazes redraw their walls (both "adopt with changes")
+
+**What happened.** E3b-1's first formal stage, `project`, stopped about 1 second in (no world tick, no
+neural update). Maze 9585, at the projection seed, has no eligible A/B placement, and `maze_for` raised, as
+it was written to.
+
+**The audit** (`scripts/e3b1_maze_audit.py`):
+- about 0.08% of mazes at c = 5 are infeasible;
+- the test block holds one (6073); the validation, learning-curve and calibration blocks hold none;
+- the registered training schedules hold 37 in 36 (run, generation) pairs;
+- E3b-0's unplayed "fresh" block holds two;
+- **every registered arm would have crashed,** deterministically, and §5 would have made them final with
+  every run failed.
+
+**The proposal** (Claude): redraw infeasible walls, keyed by the id, never the episode. The alternative was
+to skip to the next id. Both reviewers accepted the amendment as the instrument and preferred the redraw.
+
+**Changes taken from the reviews:**
+- **Disclose the timing** (Astra): after formal work started, and after a geometry-only reading of the test
+  block's walls.
+- **The exact streams** (both): k = 0 unchanged; `[seed, id, 0x3A11, k]` for k ≥ 1; the first feasible
+  walls accepted; at most 64 redraws; a redraw only on empty eligibility.
+- **A committed, script-generated predicted redraw list** (Fable), and the redrawn ids in every stage's
+  record (Astra), from a pre-flight that builds every maze before the stage starts (Fable).
+- **The pre-flight refuses a stage whose donor search exhausts** (Astra): `replay_donors` returned an
+  unchecked episode. None does in E3b-1's blocks.
+- **A real maze equivalence check** (both). Claude's proposal had said `g-e` covered it, which was wrong:
+  `e3_equivalence.py` has no maze case. The check is now bitwise hashes of walls, edges, placements and donors
+  over E3b-0's and E3b-1's blocks, every training id set and `project`'s ids, plus a 300-tick CPU trace,
+  against a reference written at 171fcc5. Result: all identical; no infeasible maze left; 41 redraws, all at
+  k = 1.
+- **E3b-0's records untouched** (both): its played blocks hold no infeasible maze. A dated correction sits
+  beside its plan's "0 of 2 000".
+- **`project`'s attempt 1 kept** (both); the rerun is its one rerun, on the amended commit.
+- **The projection-seed clarification** (Fable).
+
+**Corrections to Claude's statements in this episode:**
+- "the first [crash] is T-A run 1, generation 97": the batch is lockstep, so it is run 7, generation 50
+  (Astra);
+- "statistically equivalent": the skip maps ids deterministically and over-weights some feasible ids, so
+  only the redraw is rejection sampling (Astra);
+- "36 training": it is 37 ids in 36 (run, generation) pairs.
+
+**Noted for later** (Fable): §5's "attempt 2 unchanged" leaves a deterministic setup bug no remedy but an
+amendment. To be weighed in E3b-2's design.
+
+**Tests:** 5 new, each seen failing first: 3 for the maze, 2 for the pre-flight.

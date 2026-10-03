@@ -713,3 +713,29 @@ def test_readings_without_a_champions_record_are_not_read(m, tmp_path, monkeypat
     monkeypatch.setattr(m, "EXP", tmp_path)
     r = m.readings_on_disk({"plan": m.default_plan()})
     assert all(r[k]["label"] == "not read" for k in ("G", "S-gen", "S-trail", "S-peer"))
+
+
+# ------------------------------------------------------------------ Amendment 1: the maze pre-flight (D190)
+
+def test_each_stage_knows_every_maze_it_will_play(m):
+    plan = m.default_plan()
+    ta = m.stage_mazes("train-ta", plan)
+    assert len(ta) == 8 * 125 * 16 + 128 and all(seed == m.seed() and not donors for seed, _, donors in ta)
+    assert (m.seed(), 10_732_730, False) in ta  # the first maze that would have crashed T-A (Astra)
+    assert len(m.stage_mazes("train-tf", plan)) == 8 * 300 * 8 + 128
+    plan["G"]["tf"] = 250
+    assert len(m.stage_mazes("train-tf", plan)) == 8 * 250 * 8 + 128
+    assert len(m.stage_mazes("champions", plan)) == 128
+    ev = m.stage_mazes("evaluate", plan)
+    assert len(ev) == 512 and all(donors for _, _, donors in ev)
+    assert all(seed == m.REGISTERED["projection"]["seed"] for seed, _, _ in m.stage_mazes("project", plan))
+
+
+def test_the_pre_flight_lists_redraws_and_refuses_a_donor_exhaustion(m, monkeypatch):
+    out = m.preflight([(m.seed(), 6073, True), (m.seed(), 6000, False)])
+    assert out["checked"] == 2 and out["redrawn"] == [{"seed": m.seed(), "id": 6073, "k": 1}]
+    assert out["donor_exceptions"] == []
+    from wormwars.e3 import maze_runs as MR
+    monkeypatch.setattr(MR, "replay_donors", lambda ids, seed, c: (np.array([1064]), [int(ids[0])]))
+    with pytest.raises(SystemExit, match="donor"):
+        m.preflight([(m.seed(), 6000, True)])

@@ -121,3 +121,36 @@ def test_place_only_draws_pairs_with_a_spawn_candidate():
         for s in range(20):
             p = M.place(np.random.default_rng(s), mz)
             assert p is not None and (min(p.a, p.b), max(p.a, p.b)) in M.eligible_pairs(mz)
+
+
+# ------------------------------------------------------------------ E3b-1 Amendment 1: infeasible walls are redrawn (D190)
+
+def test_an_infeasible_maze_redraws_its_walls_keyed_by_the_id_only():
+    import numpy as np
+    from wormwars.e3 import maze as M
+    seed = 1_180_000
+    mz, k = M.walls_for(run_seed=seed, maze_id=6073, c=5)
+    assert k >= 1 and M.eligible_pairs(mz)
+    walls = [M.maze_for(run_seed=seed, maze_id=6073, episode=e, c=5)[0].wall for e in (0, 7, 1000)]
+    assert all(np.array_equal(w, mz.wall) for w in walls)  # never redrawn by the episode
+    plain = M.generate(np.random.default_rng([seed, 6000, 0x3A11]), 5)
+    mz0, k0 = M.walls_for(run_seed=seed, maze_id=6000, c=5)
+    assert k0 == 0 and np.array_equal(mz0.wall, plain.wall)  # a feasible maze is unchanged
+
+
+def test_the_redraw_does_not_depend_on_call_order():
+    import numpy as np
+    from wormwars.e3 import maze as M
+    a, ka = M.walls_for(run_seed=1_180_000, maze_id=6073, c=5)
+    for mid in (6000, 2067, 9585):
+        M.walls_for(run_seed=1_180_000, maze_id=mid, c=5)
+    b, kb = M.walls_for(run_seed=1_180_000, maze_id=6073, c=5)
+    assert ka == kb and np.array_equal(a.wall, b.wall)
+
+
+def test_the_redraw_is_bounded(monkeypatch):
+    import pytest
+    from wormwars.e3 import maze as M
+    monkeypatch.setattr(M, "eligible_pairs", lambda mz: [])
+    with pytest.raises(ValueError, match="64 redraws"):
+        M.walls_for(run_seed=1, maze_id=1, c=5)

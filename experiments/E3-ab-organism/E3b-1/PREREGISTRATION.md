@@ -484,6 +484,88 @@ That is 21.4 with the training × 1.25.
 
 None.
 
+### Amendment 1 (2026-10-03): infeasible mazes
+
+Added after binding, beside the registered text, which is unchanged. Reviewed by both reviewers ("adopt with
+changes", every change taken; `docs/reviews/20261003-E3b-1-amendment-1/`; D190).
+
+**When, and what had been seen.**
+- **The trigger:** E3b-1's first formal stage, `project`, stopped about 1 second in. Maze 9585, at the
+  projection seed, has no eligible A/B placement, and `maze.maze_for` raised, as written.
+- **What had run:** that stopped attempt is recorded, with no world tick and no neural update. No score of
+  E3b-1 has been read.
+- **Timing:** the amendment therefore comes after formal work started, and after a feasibility audit. The
+  audit read the walls of every maze E3b-1 uses, including the test block's. That is a geometry-only exception
+  to §4's "opened only in the evaluation stage": no organism played on those mazes, and nothing about any
+  organism was seen.
+- **Why it is needed:** feasibility depends on the walls alone, so the registered schedules were certain to
+  fail, deterministically. The test block contains one infeasible id (6073). The registered training
+  schedules contain 37 infeasible ids in 36 (run, generation) pairs; T-A would first crash at run 7,
+  generation 50 (Astra). Under §5, attempt 2 "unchanged" would crash identically and leave the arm final,
+  with every run "failed".
+- **What it changes:** established behaviour. `maze_for`'s documented rule was that an infeasible maze
+  raises.
+
+**The rule.** A maze whose walls admit no eligible A/B pair has its walls redrawn:
+- **k = 0** is the original wall stream `[run seed, maze id, 0x3A11]`, unchanged;
+- **for k = 1, 2, …** the stream is `[run seed, maze id, 0x3A11, k]`. The first walls with an eligible pair
+  are accepted, judged by eligibility alone;
+- **at most 64 redraws;** beyond that, the maze raises;
+- **only an empty eligibility** triggers a redraw. Any other error raises as before;
+- **the placement stream** `[run seed, maze id, episode, 0x9ACE]` is unchanged, applied to the accepted walls;
+- **walls are keyed by the id** and never redrawn by the episode, so they are fixed across episodes, the
+  replay donors' included;
+- **it is implemented in `maze.walls_for`,** called by `maze_for`. So it applies to every use: training,
+  validation, the learning curve, the replay calibration and donors, the test block, and the projection's
+  and smoke ids.
+
+**What it means for the readings.**
+- Every block keeps its registered ids and size.
+- Statistically, the redraw is rejection sampling from the feasible-maze distribution (Wilson trees
+  conditional on feasibility, then the unchanged placement rule).
+- Test maze 6073's geometry is the redrawn one, so inference stays conditional on the 256 test mazes as
+  they now are.
+
+**The predicted redraws, committed before the rerun:** `maze-redraws.json`, from
+`scripts/e3b1_maze_audit.py`. Every redraw is accepted at k = 1:
+- test id 6073;
+- 37 training ids;
+- 9585 at the projection seed;
+- E3b-0's unplayed ids 2067 and 2183.
+
+**Each stage's record lists the redrawn ids it plays** (`mazes.redrawn`), from a pre-flight that builds
+every maze of the stage before it starts. A stage's attempts share its record; a stopped attempt's record
+keeps the list.
+
+**Two further rules:**
+- **The pre-flight refuses a stage** whose replay-donor search exhausts its 64 candidates. §6 requires a donor
+  whose A or B differs; until now the search returned an unchecked episode instead (Astra). No maze in the
+  calibration or test block exhausts it.
+- **`project` draws its mazes at the projection seed 1 190 900,** not at §4's 1 180 000. This is a
+  clarification of §9: `project` uses only smoke ids.
+
+**The equivalence check (rule 7),** with tolerance bitwise, against the generator at 171fcc5 (the last commit
+before the change):
+- **the audit's reference** (`maze-reference.json`, written at 171fcc5) covers E3b-0's three blocks, E3b-1's
+  four blocks, every registered training id set, and `project`'s ids. Each maze's walls, tree edges and
+  episode-0 placement are hashed, plus the replay donors' episodes and placements on the calibration and test
+  blocks;
+- **after the change,** every maze that was feasible before is identical, and so is a 300-tick CPU
+  maze-world trace of the seed on three mazes. No infeasible maze remains;
+- **new tests:** the redraw, episode invariance, independence of call order, and the bound;
+- **what is not claimed:** this is a check on a finite corpus, not a proof for every feasible maze.
+
+**E3b-0's records are untouched.**
+- Its played blocks (0-255 for selection, 1000-1255 for the report) contain no infeasible maze.
+- Its "fresh" block (2000-2255) contains two, but it was never played; it appears only in configuration
+  echoes.
+- So its published results, and §2's fixed inputs, are unaffected.
+- A dated correction beside E3b-0's plan notes that its "0 of 2 000" was a sample: the rate at c = 5 is about
+  0.08%.
+
+**`project`:** attempt 1's record and compute charge stay. The rerun is its one rerun under §5, on the amended
+commit, which is the provenance of every later stage.
+
 ## 15. Changes from draft 1 (the reviews, D184)
 
 | Point (who) | Draft 2 |

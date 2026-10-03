@@ -1,0 +1,1 @@
+Astra 6 at "xhigh" with pinned settings and Fable 5.1 at "high" (run 20261003-120420), the same prompt to both, after the formal `project` stage stopped on an infeasible maze. Both: "adopt with changes"; every change taken (D190).

@@ -504,6 +504,63 @@ def completed_runs(trained: dict) -> dict:
                   if (trained.get(f"train-{arm}") or {}).get("outcome") == "completed"] for arm in ARMS}
 
 
+# ============================================================================== the maze pre-flight (Amendment 1)
+
+PROJECT_COMPOSITIONS = (("ta", "ta", None), ("tf", "tf", None), ("n", "n", None), ("n4", "n", 4), ("r", "r", None))
+
+
+def stage_mazes(stage: str, plan: dict) -> list:
+    """Every maze a stage will play, as (maze run seed, id, needs replay donors), from the registered schedules
+    (Amendment 1, D190)."""
+    R = REGISTERED
+    if stage == "project":
+        PR = R["projection"]
+        out = [(PR["seed"], PR["ids_first"] + k, True) for k in range(n_test())]
+        for j, (key, arm, n_runs) in enumerate(PROJECT_COMPOSITIONS):
+            W = R["arms"][arm]["W"]
+            for k in range(n_runs or R["arms"][arm]["runs"]):
+                for g in range(2):
+                    out += [(PR["seed"], int(x), False)
+                            for x in EV.train_ids(PR["seed"] + 100 * j + k, g, W, PR["train_base"], PR["train_span"])]
+        return out
+    if stage.startswith("train-"):
+        arm = stage.split("-")[1]
+        W, t = R["arms"][arm]["W"], R["train"]
+        out = [(seed(), int(x), False) for i in range(plan["runs"][arm]) for g in range(plan["G"][arm])
+               for x in EV.train_ids(run_seed(arm, i), g, W, t["base"], t["span"])]
+        return out + [(seed(), int(x), False) for x in range(*R["ids"]["learning"])]
+    if stage == "champions":
+        return [(seed(), int(x), False) for x in range(*R["ids"]["validation"])]
+    if stage == "evaluate":
+        return [(seed(), int(x), True) for key in ("test", "calibration") for x in range(*R["ids"][key])]
+    return []
+
+
+def preflight(mazes: list) -> dict:
+    """Builds every maze before the stage starts: its walls (with any redraw, Amendment 1), its episode-0
+    placement and, where replay is played, its donor. A donor search that exhausts refuses the stage (§6 needs
+    a donor whose A or B differs; Astra, D190). Returns the redrawn ids for the stage's record."""
+    from wormwars.e3 import maze as M
+    c, spawns = REGISTERED["c"], REGISTERED["spawns"]
+    redrawn, exceptions, seen = [], [], set()
+    for sd, mid, donors in mazes:
+        key = (sd, mid)
+        if key in seen and not donors:
+            continue
+        seen.add(key)
+        _, k = M.walls_for(run_seed=sd, maze_id=mid, c=c)
+        M.maze_for(run_seed=sd, maze_id=mid, episode=0, c=c, n_spawns=spawns)
+        if k:
+            redrawn.append({"seed": sd, "id": mid, "k": k})
+        if donors:
+            _, exc = MR.replay_donors(np.array([mid]), sd, c)
+            exceptions += exc
+    if exceptions:
+        raise SystemExit(f"the replay donor search exhausted for mazes {exceptions}: refusing to start (Amendment 1)")
+    return {"checked": len(seen), "redrawn": sorted(redrawn, key=lambda r: (r["seed"], r["id"])),
+            "donor_exceptions": exceptions}
+
+
 # ============================================================================== stage: project
 
 def time_second(fn, dev) -> float:
@@ -524,6 +581,7 @@ def cmd_project(args):
     def body(ctx):
         t_start = time.perf_counter()
         inputs = check_inputs()
+        ctx.doc["mazes"] = ctx.earlier["mazes"]
         dev = ctx.args.device
         cfg = cfg_for("shared")
         cx = context(cfg)
@@ -531,7 +589,7 @@ def cmd_project(args):
         smoke_ids = lambda n: np.arange(PR["ids_first"], PR["ids_first"] + n)  # noqa: E731
         n_val, n_test_ = len(ids("validation")), n_test()
         timing = {"training": {}}
-        for key, arm, n_runs in (("ta", "ta", None), ("tf", "tf", None), ("n", "n", None), ("n4", "n", 4), ("r", "r", None)):
+        for key, arm, n_runs in PROJECT_COMPOSITIONS:
             a = REGISTERED["arms"][arm]
             n_runs = n_runs or a["runs"]
             cfga = arm_cfg(arm)
@@ -576,9 +634,11 @@ def cmd_project(args):
             timing["probes"] = time_second(lambda: probe_organism(cx["seed"].genome, cx, cfg), "cpu")
         plan = apply_cuts(timing, spent_hours(t_start))
         return {"timing": timing, "plan": plan, "fixed_inputs": inputs,
-                "note": "timings only, on smoke ids from 9 500 with the projection seed; no score is read"}
+                "note": "timings only, on smoke ids from 9 500 at the projection seed 1 190 900 (the projection's "
+                        "maze run seed, not §4's 1 180 000); no score is read"}
 
-    return E.run_stage(args, "project", lambda a, prov: {}, body)
+    return E.run_stage(args, "project", lambda a, prov: {"mazes": preflight(stage_mazes("project", default_plan()))},
+                       body)
 
 
 # ============================================================================== stage: g-e
@@ -742,10 +802,12 @@ def cmd_train(args, arm: str):
             refuse(stage, {"spent_hours": spent, "projected_hours": proj, "provenance": prov, "attempt": "stage"})
             raise SystemExit(f"{stage} not admitted under §10 (spent {spent:.2f} h)")
         held["plan"], held["proj"] = p, proj
+        out["mazes"] = preflight(stage_mazes(stage, p))
         return out
 
     def body(ctx):
         check_inputs()
+        ctx.doc["mazes"] = ctx.earlier.get("mazes")
         dev = ctx.args.device
         p = held["plan"]
         a = REGISTERED["arms"][arm]
@@ -857,10 +919,12 @@ def cmd_champions(args):
         proj = projections(out["project"]["timing"], plan_of(out), done)
         if not SMOKE and not admit_champions(E.clock().spent_hours(), proj):
             raise SystemExit("champions not admitted: champions and evaluate together would exceed the cap (§10)")
+        out["mazes"] = preflight(stage_mazes("champions", plan_of(out)))
         return out
 
     def body(ctx):
         check_inputs()
+        ctx.doc["mazes"] = ctx.earlier.get("mazes")
         dev = ctx.args.device
         trained = ctx.earlier["trained"]
         champs = []
@@ -1081,10 +1145,12 @@ def cmd_evaluate(args):
         proj = projections(out["project"]["timing"], plan_of(out), done)
         if not SMOKE and not admit_evaluate(E.clock().spent_hours(), proj):
             raise SystemExit("evaluate not admitted (§10)")
+        out["mazes"] = preflight(stage_mazes("evaluate", plan_of(out)))
         return out
 
     def body(ctx):
         check_inputs()
+        ctx.doc["mazes"] = ctx.earlier.get("mazes")
         dev = ctx.args.device
         cfg = cfg_for("shared")
         cx = context(cfg)

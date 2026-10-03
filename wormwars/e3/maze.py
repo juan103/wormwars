@@ -152,11 +152,30 @@ def place(rng: np.random.Generator, mz: Maze, n_spawns: int = 4) -> Placement | 
     return Placement(a, b, tuple(cands[k] for k in order[:n_spawns]))
 
 
-def maze_for(*, run_seed: int, maze_id: int, episode: int, c: int, n_spawns: int = 4) -> tuple[Maze, Placement]:
-    """The walls from (run seed, maze id) only, the placements from (run seed, maze id, episode); the
-    walls are never redrawn, and an infeasible maze raises (plan §1a)."""
+REDRAW_MAX = 64
+
+
+def walls_for(*, run_seed: int, maze_id: int, c: int) -> tuple[Maze, int]:
+    """The maze's walls and their redraw index k. k = 0 is the original stream [run seed, maze id, 0x3A11],
+    unchanged. Walls with no eligible A/B pair are redrawn from [run seed, maze id, 0x3A11, k] for
+    k = 1, 2, …, and the first walls with an eligible pair are accepted. The redraw is keyed by the id, never
+    by the episode, and beyond REDRAW_MAX redraws it raises (E3b-1's Amendment 1, D190; before it, an
+    infeasible maze raised)."""
     mz = generate(np.random.default_rng([run_seed, maze_id, 0x3A11]), c)
+    k = 0
+    while not eligible_pairs(mz):
+        k += 1
+        if k > REDRAW_MAX:
+            raise ValueError(f"maze {maze_id} (c={c}) has no feasible walls within {REDRAW_MAX} redraws")
+        mz = generate(np.random.default_rng([run_seed, maze_id, 0x3A11, k]), c)
+    return mz, k
+
+
+def maze_for(*, run_seed: int, maze_id: int, episode: int, c: int, n_spawns: int = 4) -> tuple[Maze, Placement]:
+    """The walls from (run seed, maze id) only (`walls_for`: never redrawn by the episode), the placements from
+    (run seed, maze id, episode) on those walls (plan §1a)."""
+    mz, _ = walls_for(run_seed=run_seed, maze_id=maze_id, c=c)
     p = place(np.random.default_rng([run_seed, maze_id, episode, 0x9ACE]), mz, n_spawns)
-    if p is None:
+    if p is None:  # unreachable: walls_for accepts only walls with an eligible pair
         raise ValueError(f"maze {maze_id} (c={c}) has no eligible placement")
     return mz, p

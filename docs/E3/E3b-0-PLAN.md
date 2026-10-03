@@ -37,6 +37,10 @@ power simulation (§5, criterion 6) and the maze generator's tests.
   The A-B pair is drawn only among eligible pairs, those leaving at least one spawn candidate. So
   feasibility depends on the walls alone, and a maze feasible at episode 0 is feasible at episode 1000
   (Fable). A maze with no eligible pair raises; 0 of 2 000 mazes at c = 5-8 did.
+
+  *Correction, 2026-10-03 (D190):* "0 of 2 000" was a sample, not evidence that infeasibility
+  cannot happen. At c = 5 about 0.08% of ids are infeasible; this plan's "fresh" block (2000-2255)
+  contains two (2067, 2183), but it was never played. E3b-1's Amendment 1 now redraws such walls.
 - **Placements** (at dead ends):
   - A and B, with their tree distance in [⌈c/2⌉ + 1, 2c];
   - the spawns at up to 4 other dead ends, each at least 2 maze cells from A and from B;
