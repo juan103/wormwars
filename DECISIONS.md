@@ -5922,3 +5922,31 @@ pushed before any stage of E3b-1 runs (rule 2).
   - the runner `scripts/e3b1.py`;
 - a code review by both;
 - then `project` and `g-e`.
+
+## D187 — main brought up to date before E3b-1 runs (the owner's choice); the READMEs and review trail completed
+
+**The owner, 2026-10-03,** asked whether anything was pending for GitHub, "every section". Then, offered
+the choice, said: "2a. Also check if the readme s are up to date".
+
+**The check:**
+- `main` and `roadmap` matched GitHub;
+- five older local branches were fully merged;
+- there were no stashes and no uncommitted work. The untracked `runs/` folders are local smoke and
+  equivalence outputs, as intended.
+
+**Found and fixed** (1de8cef, 46f6787):
+- `docs/REVIEW_TRAIL.md` stopped at E3a; entries 36-43 now cover E3b's episodes;
+- `AGENTS.md`'s layout lacked `wormwars/e3/`;
+- **the top README:**
+  - its detailed "Newest" section was still E2's, and is now E3b-0's;
+  - its roadmap list still said E3b-1's budget had to be cut from 71 hours;
+  - "How this was made" stopped at E4s;
+- **the experiment READMEs:**
+  - E2d's and E4s's status lines lacked their publication on main;
+  - the E3 README's status covered only E3a;
+  - E3b-0's README had no status line.
+
+**Publication (option 2a).** `main` is fast-forwarded to `roadmap`, with the working-branch banner removed
+there. That brings to main the completed documentation and E3b-1's design and bound pre-registration,
+before any stage of E3b-1 runs. The pre-registration was already public on `roadmap`; on main it is
+public on the published record as well. `roadmap` continues from main with its banner.
