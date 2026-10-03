@@ -1,0 +1,2443 @@
+{
+ "stage": "stage-c",
+ "attempt": 1,
+ "registered": {
+  "maze_seed": 1180000,
+  "colony": 8,
+  "spawns": 4,
+  "pilot": {
+   "mu": 0.01,
+   "lam": 0.03,
+   "delta": 0.15,
+   "d0": 0.571
+  },
+  "stage_a": {
+   "c": [
+    5,
+    6,
+    7,
+    8
+   ],
+   "H": [
+    1200,
+    2400
+   ],
+   "oracle_visits_min": 8.0,
+   "follower_legs_median_min": 4.0,
+   "w2_share_max": 0.5,
+   "walk_share_max": 0.25,
+   "discovery_share_of_H_max": 0.25
+  },
+  "stage_b": {
+   "mu": [
+    0.005,
+    0.01,
+    0.02
+   ],
+   "lam": [
+    0.01,
+    0.02,
+    0.04
+   ],
+   "delta": [
+    0.05,
+    0.15
+   ],
+   "d0_scale": [
+    0.5,
+    1.0
+   ],
+   "polarity_min": 0.3,
+   "gradient_min": 0.8,
+   "range_min": 0.9,
+   "saturated_max": 0.05
+  },
+  "criterion2": {
+   "legs_median_min": 2.0,
+   "mde": 0.22,
+   "headroom_factor": 2.0,
+   "lb_min": 0.0,
+   "mde_source": "power.json fine: 12 runs, t-test, CV 0.282, normal (the larger of the two shapes)"
+  },
+  "criterion3": {
+   "rate_lb_min": 0.5
+  },
+  "stage_b2": {
+   "gradient_min": 0.8,
+   "high_level": 0.35,
+   "high_share_max": 0.05,
+   "trail_lb_min": 0.0,
+   "d0_scale_edges": {
+    "low": 0.25,
+    "high": 2.0
+   },
+   "component_quantiles": [
+    5,
+    25,
+    50,
+    75,
+    95,
+    99
+   ],
+   "component_floor": 0.001,
+   "trail_effect_rule": "world_ci: paired bootstrap over mazes, 10 000 resamples, seed 0, two-sided 95%; lower end above 0"
+  },
+  "historical": {
+   "stage-a": "50187714b13f8d489fb112339bf4f3e1cb561b12ab8251741a80ba21dd40c80b",
+   "stage-b": "71c8b2aada4756c6679a30729d0a1fd7597e4b3fe1525cc155beb337017e19b6",
+   "stage-b2": "023018f4c6d863298e26a7eef6956389d782a3e7a389dc807f4c264301c743df"
+  },
+  "stage_b3": {
+   "gradient_min": 0.8,
+   "high_level": 1.0,
+   "high_share_max": 0.05,
+   "trail_lb_min": 0.0,
+   "d0_scale_edges": {
+    "low": 0.25,
+    "high": 2.0
+   },
+   "component_quantiles": [
+    5,
+    25,
+    50,
+    75,
+    95,
+    99
+   ],
+   "component_floor": 0.001,
+   "relative_min": 10.5,
+   "cap_seed": [
+    "E",
+    "W2"
+   ],
+   "trail_effect_rule": "world_ci: paired bootstrap over mazes, 10 000 resamples, seed 0, two-sided 95%; lower end above 0"
+  },
+  "component_levels_fixed": [
+   0.001,
+   0.003
+  ],
+  "ids": {
+   "selection": [
+    0,
+    256
+   ],
+   "report": [
+    1000,
+    1256
+   ],
+   "fresh": [
+    2000,
+    2256
+   ]
+  },
+  "seeds": [
+   "E",
+   "S3r3"
+  ],
+  "variants": [
+   "W0",
+   "W1",
+   "W1+M40",
+   "W1+M80",
+   "W2",
+   "W2+M40",
+   "W2+M80"
+  ],
+  "cap_gpu_hours": 3.0,
+  "e3b1": {
+   "strains": 256,
+   "worlds_per_strain": 16,
+   "weys": 8,
+   "runs_per_arm": 12,
+   "population": 32,
+   "generations": 500,
+   "training_arms": 2,
+   "budget_hours": 24.0,
+   "reserve_factor": 1.25,
+   "note": "the projection's generations follow E3a's Stage 3 (500); E3b-1's design sets its own"
+  }
+ },
+ "provenance_at_start": {
+  "git_commit": "6c7dd17b31f2a596e6f3c9e46b3f39699c0216d8",
+  "branch": "roadmap",
+  "dirty": false,
+  "python": "3.13.3",
+  "numpy": "2.4.4",
+  "torch": "2.12.0+cu130",
+  "cuda": "13.0",
+  "gpu": "NVIDIA GeForce RTX 5080",
+  "connectome_cache_sha256": "43b87aa172a0042b9dce734b15bdf1c87efe3a33ac1cc0d9cd03255a60c96d4a",
+  "connectome_source_sha256": "1f4fdbf84746b69b49a8da0816f52787860ce349b638dce37924ba80f90c70c9"
+ },
+ "device": "cuda",
+ "resolved_config": {
+  "brain": {
+   "substeps": 32,
+   "tau_min": 0.5,
+   "tau_max": 20.0,
+   "w_max": 3.0,
+   "g_max": 2.0,
+   "b_max": 2.0,
+   "init_w_scale": 0.2,
+   "init_g_scale": 0.05,
+   "init_bias_std": 0.5,
+   "init_tau_log_uniform": true,
+   "init_chem_magnitude": "anatomical",
+   "init_gap_magnitude": "anatomical",
+   "init_permutation_seed": 0,
+   "dale": false,
+   "input_gain": 1.0,
+   "input_max": 5.0,
+   "chem_direction": "pre_to_post",
+   "pad_single_strain": true
+  },
+  "world": {
+   "n_swarms": 1,
+   "weys_per_swarm": 8,
+   "max_ticks": 1200,
+   "cells_per_wey": 0,
+   "min_side": 21,
+   "body_length": 2.4,
+   "max_speed": 0.35,
+   "reverse_fraction": 0.4,
+   "max_turn": 0.3,
+   "forward_gain": 4.0,
+   "turn_gain": 2.0,
+   "start_energy": 12.0,
+   "max_energy": 40.0,
+   "body_mass": 6.0,
+   "metabolic_drain": 0.0,
+   "move_cost": 0.0,
+   "hazard_damage": 0.0,
+   "eat_rate": 0.0,
+   "pheromone_deposit": 0.0,
+   "pheromone_decay": 0.93,
+   "pheromone_diffusion": 0.35,
+   "sense_scale_food": 0.35,
+   "sense_scale_pheromone": 0.0,
+   "sense_scale_hazard": 2.0,
+   "sense_scale_damage": 2.0,
+   "sense_scale_collision": 2.0,
+   "body_splat": 1.0,
+   "crowd_threshold": 0.8,
+   "crowd_resist": 0.0,
+   "crowd_push": 0.0,
+   "crowd_blur": 1,
+   "food_sensing": "stereo",
+   "food_probe": "real",
+   "food_odour_sigma": 0.0,
+   "food_probe_radius": 0.0,
+   "check_ledger_every_tick": false,
+   "food_probe_hold": 1,
+   "task": "maze_shuttle",
+   "target_sigma": 6.0,
+   "target_amplitude": 1.0,
+   "target_radius": 1.5,
+   "target_separation": 8.0,
+   "target_max_separation": 0.0,
+   "target_wall_clearance": 3.0,
+   "target_sequence_length": 64,
+   "shuttle_cue_ticks": 5,
+   "maze_cells": 5,
+   "maze_spawns": 4,
+   "maze_sliding": true,
+   "maze_trail_mu": 0.01,
+   "maze_trail_lambda": 0.03,
+   "maze_trail_delta": 0.15,
+   "maze_trail_d0": 0.571,
+   "maze_scent_sigma": 3.0,
+   "maze_scent_reach": 9,
+   "maze_trail_access": "shared"
+  },
+  "map": {
+   "food_patches": [
+    0,
+    0
+   ],
+   "food_patch_radius": [
+    2.5,
+    5.0
+   ],
+   "food_per_patch": [
+    70.0,
+    160.0
+   ],
+   "food_centre_bias": 0.62,
+   "hazard_patches": [
+    0,
+    0
+   ],
+   "hazard_radius": [
+    2.0,
+    4.0
+   ],
+   "hazard_strength": [
+    0.5,
+    1.0
+   ],
+   "hazard_spawn_clearance": 6.0,
+   "spawn_margin": 3.0,
+   "spawn_spread": 0.28,
+   "food_regen": 0.0,
+   "food_scales_with_headcount": true,
+   "food_reference_weys": 20
+  },
+  "combat": {
+   "attack_strength": 1.0,
+   "attack_offset": 0.9,
+   "attack_blur": 1,
+   "damage_k": 0.55,
+   "head_armor": 0.25,
+   "transfer_fraction": 0.5,
+   "max_flank_payback": 0.1,
+   "max_head_on_asymmetry": 1.5,
+   "pump_cost": 0.1
+  },
+  "mutation": {
+   "w_sigma": 0.08,
+   "g_sigma": 0.04,
+   "tau_sigma": 0.15,
+   "bias_sigma": 0.05,
+   "p_mutate": 1.0
+  },
+  "evo": {
+   "population": 32,
+   "generations": 40,
+   "elites": 3,
+   "truncation": 8,
+   "worlds_per_strain": 6,
+   "holdout_worlds": 24,
+   "islands": 1,
+   "migrate_every": 10,
+   "migrants": 1,
+   "chunk_worlds": 512,
+   "train_seed_base": 0,
+   "train_seed_span": 1000000,
+   "holdout_seed_base": 900000000,
+   "eval_ticks": 0,
+   "opponents_self": 3,
+   "opponents_hof": 2,
+   "coevo_worlds": 2,
+   "coevo_sizes": [
+    40,
+    40
+   ],
+   "coevo_lopsided": false,
+   "coevo_vary_sizes": false,
+   "coevo_size_range": [
+    50,
+    200
+   ],
+   "coevo_size_pairs": 2,
+   "coevo_lopsided_fraction": 0.5,
+   "hof_capacity": 12,
+   "suite_every": 5,
+   "suite_sizes": [
+    100,
+    100
+   ],
+   "suite_size": 6,
+   "suite_worlds": 8
+  }
+ },
+ "resolved_config_sha256": "4bce2d50ca0fbb6d92c55e6699c04a32058ede5d4bc38e7fb5b884b9f28c7e81",
+ "e1_inputs_sha256": {
+  "experiments/E1-navigation/freeze.json": "c5c48f83079a6bd0dd48bdeb13d02ab211a08eb64433fdc8372cbd6e74bcaae9",
+  "experiments/E1-navigation/gate.json": "a18b5a53845360107448527b2af038b9c613e4bf11fdfe843c328b7c2a01afa0"
+ },
+ "start_marker": "stage-c-started.json",
+ "rerun": null,
+ "outcome": "completed",
+ "tried": {
+  "E": [
+   {
+    "variant": "W0",
+    "criterion2": {
+     "above_walk": {
+      "mean": -1.5126953125,
+      "lo95": -1.66456298828125,
+      "hi95": -1.34423828125,
+      "n": 256,
+      "passed": false
+     },
+     "legs_median": {
+      "value": 0.0,
+      "min": 2.0,
+      "passed": false
+     },
+     "headroom": {
+      "value": 33.31689453125,
+      "min": 0.16435546875,
+      "passed": true
+     }
+    },
+    "trail_effect": {
+     "mean": 0.052176120081672904,
+     "lo95": -0.035525803591369295,
+     "hi95": 0.15997962686769143,
+     "n": 256,
+     "passed": false
+    },
+    "passed": false,
+    "brief": {
+     "shared": {
+      "visits": {
+       "mean": 0.37353515625,
+       "median": 0.0625,
+       "sd": 1.1447601438705337
+      },
+      "legs": {
+       "mean": 0.1796875,
+       "median": 0.0,
+       "sd": 1.0636311740964552
+      },
+      "later_leg_rate": {
+       "mean": 0.19039457795284362,
+       "median": 0.0,
+       "sd": 1.1143473469502263
+      },
+      "unvisited_share": {
+       "mean": 0.80615234375,
+       "median": 0.9375,
+       "sd": 0.249182467662883
+      },
+      "first_discovery": {
+       "mean": 1237.453125,
+       "median": 1329.0,
+       "sd": 1165.4138731941255
+      },
+      "occluded_share": {
+       "mean": 0.8230940755208334,
+       "median": 0.8220572916666666,
+       "sd": 0.048599679928194216
+      },
+      "exposure_mean": {
+       "mean": 0.002350516242793337,
+       "median": 1.7695167177812796e-11,
+       "sd": 0.009682143169534873
+      },
+      "exposure_zero_share": {
+       "mean": 0.7749210611979167,
+       "median": 0.8616927083333333,
+       "sd": 0.2307560904233715
+      },
+      "later_first_b": {
+       "mean": 2346.79296875,
+       "median": 2400.0,
+       "sd": 206.92442599755415
+      }
+     },
+     "none": {
+      "visits": {
+       "mean": 0.25634765625,
+       "median": 0.0625,
+       "sd": 0.7116132185245009
+      },
+      "legs": {
+       "mean": 0.09130859375,
+       "median": 0.0,
+       "sd": 0.6605294567390432
+      },
+      "later_leg_rate": {
+       "mean": 0.1382184578711707,
+       "median": 0.0,
+       "sd": 0.9550202630561997
+      },
+      "unvisited_share": {
+       "mean": 0.8349609375,
+       "median": 0.9375,
+       "sd": 0.2097112824755717
+      },
+      "first_discovery": {
+       "mean": 1237.453125,
+       "median": 1329.0,
+       "sd": 1165.4138731941255
+      },
+      "occluded_share": {
+       "mean": 0.8252396647135416,
+       "median": 0.824296875,
+       "sd": 0.046850046844061286
+      },
+      "exposure_mean": {
+       "mean": 0.0,
+       "median": 0.0,
+       "sd": 0.0
+      },
+      "exposure_zero_share": {
+       "mean": 1.0,
+       "median": 1.0,
+       "sd": 0.0
+      },
+      "later_first_b": {
+       "mean": 2376.671875,
+       "median": 2400.0,
+       "sd": 117.1895990088128
+      }
+     },
+     "carrier_with_variant": {
+      "visits": {
+       "mean": 0.0517578125,
+       "median": 0.0,
+       "sd": 0.11925765457202153
+      },
+      "legs": {
+       "mean": 0.0,
+       "median": 0.0,
+       "sd": 0.0
+      },
+      "later_leg_rate": {
+       "mean": 0.0,
+       "median": 0.0,
+       "sd": 0.0
+      },
+      "unvisited_share": {
+       "mean": 0.9482421875,
+       "median": 1.0,
+       "sd": 0.11925765457202153
+      },
+      "first_discovery": {
+       "mean": 1942.14453125,
+       "median": 2400.0,
+       "sd": 920.1950084295192
+      },
+      "occluded_share": {
+       "mean": 0.8263663736979168,
+       "median": 0.8258854166666667,
+       "sd": 0.0450788638972166
+      },
+      "exposure_mean": {
+       "mean": 0.0,
+       "median": 0.0,
+       "sd": 0.0
+      },
+      "exposure_zero_share": {
+       "mean": 1.0,
+       "median": 1.0,
+       "sd": 0.0
+      },
+      "later_first_b": {
+       "mean": 2400.0,
+       "median": 2400.0,
+       "sd": 0.0
+      }
+     }
+    }
+   },
+   {
+    "variant": "W1",
+    "criterion2": {
+     "above_walk": {
+      "mean": -1.3935546875,
+      "lo95": -1.501953125,
+      "hi95": -1.2861328125,
+      "n": 256,
+      "passed": false
+     },
+     "legs_median": {
+      "value": 0.0,
+      "min": 2.0,
+      "passed": false
+     },
+     "headroom": {
+      "value": 33.19775390625,
+      "min": 0.21677734375,
+      "passed": true
+     }
+    },
+    "trail_effect": {
+     "mean": 0.0007247341057864294,
+     "lo95": -0.054561578897443515,
+     "hi95": 0.05437594197568046,
+     "n": 256,
+     "passed": false
+    },
+    "passed": false,
+    "brief": {
+     "shared": {
+      "visits": {
+       "mean": 0.49267578125,
+       "median": 0.375,
+       "sd": 0.4985346845755844
+      },
+      "legs": {
+       "mean": 0.1826171875,
+       "median": 0.0,
+       "sd": 0.38552305434165873
+      },
+      "later_leg_rate": {
+       "mean": 0.21842855689856916,
+       "median": 0.0,
+       "sd": 0.4718128466734297
+      },
+      "unvisited_share": {
+       "mean": 0.68994140625,
+       "median": 0.75,
+       "sd": 0.20973582002215943
+      },
+      "first_discovery": {
+       "mean": 428.25390625,
+       "median": 98.5,
+       "sd": 769.6204526655667
+      },
+      "occluded_share": {
+       "mean": 0.7644755045572916,
+       "median": 0.765390625,
+       "sd": 0.08679672933484406
+      },
+      "exposure_mean": {
+       "mean": 0.002243988561605045,
+       "median": 0.001004214230754487,
+       "sd": 0.003312596790615919
+      },
+      "exposure_zero_share": {
+       "mean": 0.7074586995442709,
+       "median": 0.7057291666666667,
+       "sd": 0.1811676592869121
+      },
+      "later_first_b": {
+       "mean": 2330.6383928571427,
+       "median": 2400.0,
+       "sd": 170.17611143624544
+      }
+     },
+     "none": {
+      "visits": {
+       "mean": 0.4287109375,
+       "median": 0.375,
+       "sd": 0.39394423119480587
+      },
+      "legs": {
+       "mean": 0.1435546875,
+       "median": 0.0,
+       "sd": 0.28913742735853104
+      },
+      "later_leg_rate": {
+       "mean": 0.21770382279278275,
+       "median": 0.0,
+       "sd": 0.47736685587698574
+      },
+      "unvisited_share": {
+       "mean": 0.71484375,
+       "median": 0.75,
+       "sd": 0.1904184633287187
+      },
+      "first_discovery": {
+       "mean": 428.25390625,
+       "median": 98.5,
+       "sd": 769.6204526655667
+      },
+      "occluded_share": {
+       "mean": 0.7563732910156251,
+       "median": 0.76515625,
+       "sd": 0.0937707621279727
+      },
+      "exposure_mean": {
+       "mean": 0.0,
+       "median": 0.0,
+       "sd": 0.0
+      },
+      "exposure_zero_share": {
+       "mean": 1.0,
+       "median": 1.0,
+       "sd": 0.0
+      },
+      "later_first_b": {
+       "mean": 2335.296875,
+       "median": 2400.0,
+       "sd": 158.18293501946584
+      }
+     },
+     "carrier_with_variant": {
+      "visits": {
+       "mean": 0.1767578125,
+       "median": 0.125,
+       "sd": 0.16570359770284612
+      },
+      "legs": {
+       "mean": 0.02294921875,
+       "median": 0.0,
+       "sd": 0.06750594279848808
+      },
+      "later_leg_rate": {
+       "mean": 0.05496291803719259,
+       "median": 0.0,
+       "sd": 0.15981966444948167
+      },
+      "unvisited_share": {
+       "mean": 0.84619140625,
+       "median": 0.875,
+       "sd": 0.1317776145275203
+      },
+      "first_discovery": {
+       "mean": 868.109375,
+       "median": 287.5,
+       "sd": 996.143660277856
+      },
+      "occluded_share": {
+       "mean": 0.7495625813802084,
+       "median": 0.7523697916666667,
+       "sd": 0.09953683190319167
+      },
+      "exposure_mean": {
+       "mean": 0.0,
+       "median": 0.0,
+       "sd": 0.0
+      },
+      "exposure_zero_share": {
+       "mean": 1.0,
+       "median": 1.0,
+       "sd": 0.0
+      },
+      "later_first_b": {
+       "mean": 2398.806361607143,
+       "median": 2400.0,
+       "sd": 19.098214285714278
+      }
+     }
+    }
+   },
+   {
+    "variant": "W1+M40",
+    "criterion2": {
+     "above_walk": {
+      "mean": 1.099609375,
+      "lo95": 0.70361328125,
+      "hi95": 1.5434692382812498,
+      "n": 256,
+      "passed": true
+     },
+     "legs_median": {
+      "value": 1.0,
+      "min": 2.0,
+      "passed": false
+     },
+     "headroom": {
+      "value": 30.70458984375,
+      "min": 1.31376953125,
+      "passed": true
+     }
+    },
+    "trail_effect": {
+     "mean": 0.7652717415491901,
+     "lo95": 0.5490349533346344,
+     "hi95": 1.001842405461411,
+     "n": 256,
+     "passed": true
+    },
+    "passed": false,
+    "brief": {
+     "shared": {
+      "visits": {
+       "mean": 2.98583984375,
+       "median": 1.875,
+       "sd": 3.479823803536776
+      },
+      "legs": {
+       "mean": 2.19677734375,
+       "median": 1.0,
+       "sd": 3.4228237490260063
+      },
+      "later_leg_rate": {
+       "mean": 1.6128749143954102,
+       "median": 0.8140207984072745,
+       "sd": 2.212927701974589
+      },
+      "unvisited_share": {
+       "mean": 0.2109375,
+       "median": 0.125,
+       "sd": 0.20487322718131393
+      },
+      "first_discovery": {
+       "mean": 195.1953125,
+       "median": 120.5,
+       "sd": 233.53787310417044
+      },
+      "occluded_share": {
+       "mean": 0.34330586751302083,
+       "median": 0.3455989583333333,
+       "sd": 0.016524303841588206
+      },
+      "exposure_mean": {
+       "mean": 0.041732285048072436,
+       "median": 0.017192295215158596,
+       "sd": 0.0863693652876463
+      },
+      "exposure_zero_share": {
+       "mean": 0.16748433430989584,
+       "median": 0.13669270833333333,
+       "sd": 0.09934709315560872
+      },
+      "later_first_b": {
+       "mean": 1884.2522321428573,
+       "median": 1956.3571428571427,
+       "sd": 409.2724854445224
+      }
+     },
+     "none": {
+      "visits": {
+       "mean": 1.7978515625,
+       "median": 1.625,
+       "sd": 0.9138934557529872
+      },
+      "legs": {
+       "mean": 1.04345703125,
+       "median": 0.875,
+       "sd": 0.828049125963666
+      },
+      "later_leg_rate": {
+       "mean": 0.8476031728462199,
+       "median": 0.652877402892619,
+       "sd": 0.6734317619504351
+      },
+      "unvisited_share": {
+       "mean": 0.24560546875,
+       "median": 0.25,
+       "sd": 0.20422672092212357
+      },
+      "first_discovery": {
+       "mean": 195.1953125,
+       "median": 120.5,
+       "sd": 233.53787310417044
+      },
+      "occluded_share": {
+       "mean": 0.3482017008463542,
+       "median": 0.3479427083333333,
+       "sd": 0.010408046785097174
+      },
+      "exposure_mean": {
+       "mean": 0.0,
+       "median": 0.0,
+       "sd": 0.0
+      },
+      "exposure_zero_share": {
+       "mean": 1.0,
+       "median": 1.0,
+       "sd": 0.0
+      },
+      "later_first_b": {
+       "mean": 2007.0736607142858,
+       "median": 2069.0714285714284,
+       "sd": 329.2726897218758
+      }
+     },
+     "carrier_with_variant": {
+      "visits": {
+       "mean": 1.0224609375,
+       "median": 1.0,
+       "sd": 0.4670342373534237
+      },
+      "legs": {
+       "mean": 0.40380859375,
+       "median": 0.25,
+       "sd": 0.36375310319325194
+      },
+      "later_leg_rate": {
+       "mean": 0.43608354522354764,
+       "median": 0.3229263565192556,
+       "sd": 0.41978728429914725
+      },
+      "unvisited_share": {
+       "mean": 0.38134765625,
+       "median": 0.375,
+       "sd": 0.191155516798047
+      },
+      "first_discovery": {
+       "mean": 314.8203125,
+       "median": 199.5,
+       "sd": 322.2706190447863
+      },
+      "occluded_share": {
+       "mean": 0.3454915364583333,
+       "median": 0.34567708333333336,
+       "sd": 0.010512465428296418
+      },
+      "exposure_mean": {
+       "mean": 0.0,
+       "median": 0.0,
+       "sd": 0.0
+      },
+      "exposure_zero_share": {
+       "mean": 1.0,
+       "median": 1.0,
+       "sd": 0.0
+      },
+      "later_first_b": {
+       "mean": 2259.279017857143,
+       "median": 2338.9285714285716,
+       "sd": 191.36601206909782
+      }
+     }
+    }
+   },
+   {
+    "variant": "W1+M80",
+    "criterion2": {
+     "above_walk": {
+      "mean": 0.6865234375,
+      "lo95": 0.3759765625,
+      "hi95": 1.0234497070312498,
+      "n": 256,
+      "passed": true
+     },
+     "legs_median": {
+      "value": 1.0,
+      "min": 2.0,
+      "passed": false
+     },
+     "headroom": {
+      "value": 31.11767578125,
+      "min": 1.13201171875,
+      "passed": true
+     }
+    },
+    "trail_effect": {
+     "mean": 0.6117205326293281,
+     "lo95": 0.4269629962448002,
+     "hi95": 0.8144332394891921,
+     "n": 256,
+     "passed": true
+    },
+    "passed": false,
+    "brief": {
+     "shared": {
+      "visits": {
+       "mean": 2.57275390625,
+       "median": 1.875,
+       "sd": 2.665505384516535
+      },
+      "legs": {
+       "mean": 1.80322265625,
+       "median": 1.0,
+       "sd": 2.599521423759135
+      },
+      "later_leg_rate": {
+       "mean": 1.4047720883510046,
+       "median": 0.7717730867262709,
+       "sd": 1.930975678619501
+      },
+      "unvisited_share": {
+       "mean": 0.23046875,
+       "median": 0.125,
+       "sd": 0.21830311495716226
+      },
+      "first_discovery": {
+       "mean": 194.77734375,
+       "median": 115.5,
+       "sd": 246.9994388228423
+      },
+      "occluded_share": {
+       "mean": 0.35410196940104166,
+       "median": 0.355390625,
+       "sd": 0.012382822829196378
+      },
+      "exposure_mean": {
+       "mean": 0.029784974780488076,
+       "median": 0.014770654111021355,
+       "sd": 0.0576459307294623
+      },
+      "exposure_zero_share": {
+       "mean": 0.1609039306640625,
+       "median": 0.12736979166666668,
+       "sd": 0.10500134962381821
+      },
+      "later_first_b": {
+       "mean": 1904.993861607143,
+       "median": 1968.0714285714284,
+       "sd": 402.1494201222095
+      }
+     },
+     "none": {
+      "visits": {
+       "mean": 1.732421875,
+       "median": 1.625,
+       "sd": 0.9529667780920061
+      },
+      "legs": {
+       "mean": 0.98291015625,
+       "median": 0.8125,
+       "sd": 0.8488102560171946
+      },
+      "later_leg_rate": {
+       "mean": 0.7930515557216764,
+       "median": 0.6093155256941027,
+       "sd": 0.6505047274107638
+      },
+      "unvisited_share": {
+       "mean": 0.25048828125,
+       "median": 0.25,
+       "sd": 0.2226450966848779
+      },
+      "first_discovery": {
+       "mean": 194.77734375,
+       "median": 115.5,
+       "sd": 246.9994388228423
+      },
+      "occluded_share": {
+       "mean": 0.35746317545572914,
+       "median": 0.35716145833333335,
+       "sd": 0.008918371254217572
+      },
+      "exposure_mean": {
+       "mean": 0.0,
+       "median": 0.0,
+       "sd": 0.0
+      },
+      "exposure_zero_share": {
+       "mean": 1.0,
+       "median": 1.0,
+       "sd": 0.0
+      },
+      "later_first_b": {
+       "mean": 1999.6160714285716,
+       "median": 2064.857142857143,
+       "sd": 331.49733385495153
+      }
+     },
+     "carrier_with_variant": {
+      "visits": {
+       "mean": 0.94287109375,
+       "median": 0.875,
+       "sd": 0.461875395921054
+      },
+      "legs": {
+       "mean": 0.35986328125,
+       "median": 0.25,
+       "sd": 0.3180869298795088
+      },
+      "later_leg_rate": {
+       "mean": 0.40220449631092825,
+       "median": 0.319679389544612,
+       "sd": 0.3562844480185465
+      },
+      "unvisited_share": {
+       "mean": 0.4169921875,
+       "median": 0.375,
+       "sd": 0.22266068429536984
+      },
+      "first_discovery": {
+       "mean": 366.578125,
+       "median": 218.5,
+       "sd": 423.2609746906492
+      },
+      "occluded_share": {
+       "mean": 0.3566440836588542,
+       "median": 0.35624999999999996,
+       "sd": 0.008949233051070309
+      },
+      "exposure_mean": {
+       "mean": 0.0,
+       "median": 0.0,
+       "sd": 0.0
+      },
+      "exposure_zero_share": {
+       "mean": 1.0,
+       "median": 1.0,
+       "sd": 0.0
+      },
+      "later_first_b": {
+       "mean": 2277.97265625,
+       "median": 2358.714285714286,
+       "sd": 172.30314669045157
+      }
+     }
+    }
+   },
+   {
+    "variant": "W2",
+    "criterion2": {
+     "above_walk": {
+      "mean": 3.35498046875,
+      "lo95": 2.8925537109375,
+      "hi95": 3.82569580078125,
+      "n": 256,
+      "passed": true
+     },
+     "legs_median": {
+      "value": 3.1875,
+      "min": 2.0,
+      "passed": true
+     },
+     "headroom": {
+      "value": 28.44921875,
+      "min": 2.3061328125,
+      "passed": true
+     }
+    },
+    "trail_effect": {
+     "mean": 0.7617492957304564,
+     "lo95": 0.5464751271269269,
+     "hi95": 0.9757598118107009,
+     "n": 256,
+     "passed": true
+    },
+    "passed": true,
+    "brief": {
+     "shared": {
+      "visits": {
+       "mean": 5.2412109375,
+       "median": 4.125,
+       "sd": 3.818145004184354
+      },
+      "legs": {
+       "mean": 4.3486328125,
+       "median": 3.1875,
+       "sd": 3.7471771186804412
+      },
+      "later_leg_rate": {
+       "mean": 2.529977414680417,
+       "median": 1.813354834968052,
+       "sd": 2.0789274782179175
+      },
+      "unvisited_share": {
+       "mean": 0.107421875,
+       "median": 0.0,
+       "sd": 0.199099920106148
+      },
+      "first_discovery": {
+       "mean": 148.39453125,
+       "median": 94.0,
+       "sd": 216.07042381688166
+      },
+      "occluded_share": {
+       "mean": 0.3318800862630208,
+       "median": 0.33075520833333333,
+       "sd": 0.026899476206394716
+      },
+      "exposure_mean": {
+       "mean": 0.09384035784473457,
+       "median": 0.04071251634172423,
+       "sd": 0.12564933838908146
+      },
+      "exposure_zero_share": {
+       "mean": 0.15186442057291666,
+       "median": 0.12921875,
+       "sd": 0.09345079406528196
+      },
+      "later_first_b": {
+       "mean": 1374.6478794642858,
+       "median": 1350.4285714285716,
+       "sd": 568.3163564838745
+      }
+     },
+     "none": {
+      "visits": {
+       "mean": 3.70361328125,
+       "median": 2.5,
+       "sd": 3.8581920904388465
+      },
+      "legs": {
+       "mean": 2.869140625,
+       "median": 1.625,
+       "sd": 3.7844288614793697
+      },
+      "later_leg_rate": {
+       "mean": 1.7682281189499602,
+       "median": 1.1322280994899079,
+       "sd": 2.0351348044332775
+      },
+      "unvisited_share": {
+       "mean": 0.16552734375,
+       "median": 0.125,
+       "sd": 0.2233449263183123
+      },
+      "first_discovery": {
+       "mean": 148.39453125,
+       "median": 94.0,
+       "sd": 216.07042381688166
+      },
+      "occluded_share": {
+       "mean": 0.34102701822916665,
+       "median": 0.33661458333333333,
+       "sd": 0.027138521916823238
+      },
+      "exposure_mean": {
+       "mean": 0.0,
+       "median": 0.0,
+       "sd": 0.0
+      },
+      "exposure_zero_share": {
+       "mean": 1.0,
+       "median": 1.0,
+       "sd": 0.0
+      },
+      "later_first_b": {
+       "mean": 1577.94140625,
+       "median": 1628.2142857142858,
+       "sd": 538.2607664838501
+      }
+     },
+     "carrier_with_variant": {
+      "visits": {
+       "mean": 1.5126953125,
+       "median": 1.375,
+       "sd": 0.9742820186678546
+      },
+      "legs": {
+       "mean": 0.82861328125,
+       "median": 0.625,
+       "sd": 0.8109145955245111
+      },
+      "later_leg_rate": {
+       "mean": 0.6997317582429152,
+       "median": 0.5773873138606307,
+       "sd": 0.6185765494537386
+      },
+      "unvisited_share": {
+       "mean": 0.31591796875,
+       "median": 0.25,
+       "sd": 0.25865041345750867
+      },
+      "first_discovery": {
+       "mean": 290.8984375,
+       "median": 166.5,
+       "sd": 417.08416115664846
+      },
+      "occluded_share": {
+       "mean": 0.34352254231770835,
+       "median": 0.3383333333333333,
+       "sd": 0.02759856111469248
+      },
+      "exposure_mean": {
+       "mean": 0.0,
+       "median": 0.0,
+       "sd": 0.0
+      },
+      "exposure_zero_share": {
+       "mean": 1.0,
+       "median": 1.0,
+       "sd": 0.0
+      },
+      "later_first_b": {
+       "mean": 2058.861049107143,
+       "median": 2159.857142857143,
+       "sd": 365.6069044043161
+      }
+     }
+    }
+   }
+  ],
+  "S3r3": [
+   {
+    "variant": "W0",
+    "criterion2": {
+     "above_walk": {
+      "mean": -1.71142578125,
+      "lo95": -1.80322265625,
+      "hi95": -1.62060546875,
+      "n": 256,
+      "passed": false
+     },
+     "legs_median": {
+      "value": 0.0,
+      "min": 2.0,
+      "passed": false
+     },
+     "headroom": {
+      "value": 33.515625,
+      "min": 0.0769140625,
+      "passed": true
+     }
+    },
+    "trail_effect": {
+     "mean": -0.022467843619692444,
+     "lo95": -0.04698100291357971,
+     "hi95": -0.002860978033853205,
+     "n": 256,
+     "passed": false
+    },
+    "passed": false,
+    "brief": {
+     "shared": {
+      "visits": {
+       "mean": 0.1748046875,
+       "median": 0.0,
+       "sd": 0.2516318524241551
+      },
+      "legs": {
+       "mean": 0.0302734375,
+       "median": 0.0,
+       "sd": 0.09228325659906791
+      },
+      "later_leg_rate": {
+       "mean": 0.04475550755863699,
+       "median": 0.0,
+       "sd": 0.12586347655631255
+      },
+      "unvisited_share": {
+       "mean": 0.85546875,
+       "median": 1.0,
+       "sd": 0.19953223485216126
+      },
+      "first_discovery": {
+       "mean": 1412.9921875,
+       "median": 2400.0,
+       "sd": 1148.9511568047787
+      },
+      "occluded_share": {
+       "mean": 0.7633839925130208,
+       "median": 0.7622135416666667,
+       "sd": 0.0610555643260668
+      },
+      "exposure_mean": {
+       "mean": 0.005134455243920003,
+       "median": 0.0,
+       "sd": 0.011312262714647693
+      },
+      "exposure_zero_share": {
+       "mean": 0.767822265625,
+       "median": 1.0,
+       "sd": 0.2749386671824479
+      },
+      "later_first_b": {
+       "mean": 2383.323660714286,
+       "median": 2400.0,
+       "sd": 86.45345797108445
+      }
+     },
+     "none": {
+      "visits": {
+       "mean": 0.1787109375,
+       "median": 0.0,
+       "sd": 0.3026369377904754
+      },
+      "legs": {
+       "mean": 0.0439453125,
+       "median": 0.0,
+       "sd": 0.1895491579302288
+      },
+      "later_leg_rate": {
+       "mean": 0.06722335117832944,
+       "median": 0.0,
+       "sd": 0.2519258978050239
+      },
+      "unvisited_share": {
+       "mean": 0.865234375,
+       "median": 1.0,
+       "sd": 0.18564234998470347
+      },
+      "first_discovery": {
+       "mean": 1412.9921875,
+       "median": 2400.0,
+       "sd": 1148.9511568047787
+      },
+      "occluded_share": {
+       "mean": 0.7720766194661459,
+       "median": 0.7731510416666667,
+       "sd": 0.059883162089096637
+      },
+      "exposure_mean": {
+       "mean": 0.0,
+       "median": 0.0,
+       "sd": 0.0
+      },
+      "exposure_zero_share": {
+       "mean": 1.0,
+       "median": 1.0,
+       "sd": 0.0
+      },
+      "later_first_b": {
+       "mean": 2373.9603794642853,
+       "median": 2400.0,
+       "sd": 115.57252280667174
+      }
+     },
+     "carrier_with_variant": {
+      "visits": {
+       "mean": 0.0517578125,
+       "median": 0.0,
+       "sd": 0.11925765457202153
+      },
+      "legs": {
+       "mean": 0.0,
+       "median": 0.0,
+       "sd": 0.0
+      },
+      "later_leg_rate": {
+       "mean": 0.0,
+       "median": 0.0,
+       "sd": 0.0
+      },
+      "unvisited_share": {
+       "mean": 0.9482421875,
+       "median": 1.0,
+       "sd": 0.11925765457202153
+      },
+      "first_discovery": {
+       "mean": 1942.14453125,
+       "median": 2400.0,
+       "sd": 920.1950084295192
+      },
+      "occluded_share": {
+       "mean": 0.8263663736979168,
+       "median": 0.8258854166666667,
+       "sd": 0.0450788638972166
+      },
+      "exposure_mean": {
+       "mean": 0.0,
+       "median": 0.0,
+       "sd": 0.0
+      },
+      "exposure_zero_share": {
+       "mean": 1.0,
+       "median": 1.0,
+       "sd": 0.0
+      },
+      "later_first_b": {
+       "mean": 2400.0,
+       "median": 2400.0,
+       "sd": 0.0
+      }
+     }
+    }
+   },
+   {
+    "variant": "W1",
+    "criterion2": {
+     "above_walk": {
+      "mean": -1.60498046875,
+      "lo95": -1.6982421875,
+      "hi95": -1.5151245117187502,
+      "n": 256,
+      "passed": false
+     },
+     "legs_median": {
+      "value": 0.0,
+      "min": 2.0,
+      "passed": false
+     },
+     "headroom": {
+      "value": 33.4091796875,
+      "min": 0.12375,
+      "passed": true
+     }
+    },
+    "trail_effect": {
+     "mean": 0.0014023193871594815,
+     "lo95": -0.0003031397468239031,
+     "hi95": 0.004216967189728871,
+     "n": 256,
+     "passed": false
+    },
+    "passed": false,
+    "brief": {
+     "shared": {
+      "visits": {
+       "mean": 0.28125,
+       "median": 0.25,
+       "sd": 0.21777619380509727
+      },
+      "legs": {
+       "mean": 0.00244140625,
+       "median": 0.0,
+       "sd": 0.02056544990461944
+      },
+      "later_leg_rate": {
+       "mean": 0.003955263005030284,
+       "median": 0.0,
+       "sd": 0.03486989747661838
+      },
+      "unvisited_share": {
+       "mean": 0.72119140625,
+       "median": 0.75,
+       "sd": 0.21599665593901735
+      },
+      "first_discovery": {
+       "mean": 615.640625,
+       "median": 121.0,
+       "sd": 907.7137385362474
+      },
+      "occluded_share": {
+       "mean": 0.6389473470052083,
+       "median": 0.6323697916666666,
+       "sd": 0.09296193996184071
+      },
+      "exposure_mean": {
+       "mean": 0.008721357432779454,
+       "median": 0.0035588397684393424,
+       "sd": 0.01278109911721097
+      },
+      "exposure_zero_share": {
+       "mean": 0.5564296468098958,
+       "median": 0.4915885416666667,
+       "sd": 0.26789845275022545
+      },
+      "later_first_b": {
+       "mean": 2399.1261160714284,
+       "median": 2400.0,
+       "sd": 13.982142857142861
+      }
+     },
+     "none": {
+      "visits": {
+       "mean": 0.26806640625,
+       "median": 0.25,
+       "sd": 0.20526948209317192
+      },
+      "legs": {
+       "mean": 0.0009765625,
+       "median": 0.0,
+       "sd": 0.011026858364564083
+      },
+      "later_leg_rate": {
+       "mean": 0.0025529436178708025,
+       "median": 0.0,
+       "sd": 0.03031999952296615
+      },
+      "unvisited_share": {
+       "mean": 0.73291015625,
+       "median": 0.75,
+       "sd": 0.20535342020663722
+      },
+      "first_discovery": {
+       "mean": 615.640625,
+       "median": 121.0,
+       "sd": 907.7137385362474
+      },
+      "occluded_share": {
+       "mean": 0.6567923990885417,
+       "median": 0.6535937500000001,
+       "sd": 0.08777380058757128
+      },
+      "exposure_mean": {
+       "mean": 0.0,
+       "median": 0.0,
+       "sd": 0.0
+      },
+      "exposure_zero_share": {
+       "mean": 1.0,
+       "median": 1.0,
+       "sd": 0.0
+      },
+      "later_first_b": {
+       "mean": 2400.0,
+       "median": 2400.0,
+       "sd": 0.0
+      }
+     },
+     "carrier_with_variant": {
+      "visits": {
+       "mean": 0.1767578125,
+       "median": 0.125,
+       "sd": 0.16570359770284612
+      },
+      "legs": {
+       "mean": 0.02294921875,
+       "median": 0.0,
+       "sd": 0.06750594279848808
+      },
+      "later_leg_rate": {
+       "mean": 0.05496291803719259,
+       "median": 0.0,
+       "sd": 0.15981966444948167
+      },
+      "unvisited_share": {
+       "mean": 0.84619140625,
+       "median": 0.875,
+       "sd": 0.1317776145275203
+      },
+      "first_discovery": {
+       "mean": 868.109375,
+       "median": 287.5,
+       "sd": 996.143660277856
+      },
+      "occluded_share": {
+       "mean": 0.7495625813802084,
+       "median": 0.7523697916666667,
+       "sd": 0.09953683190319167
+      },
+      "exposure_mean": {
+       "mean": 0.0,
+       "median": 0.0,
+       "sd": 0.0
+      },
+      "exposure_zero_share": {
+       "mean": 1.0,
+       "median": 1.0,
+       "sd": 0.0
+      },
+      "later_first_b": {
+       "mean": 2398.806361607143,
+       "median": 2400.0,
+       "sd": 19.098214285714278
+      }
+     }
+    }
+   },
+   {
+    "variant": "W1+M40",
+    "criterion2": {
+     "above_walk": {
+      "mean": -1.03515625,
+      "lo95": -1.13428955078125,
+      "hi95": -0.9374877929687502,
+      "n": 256,
+      "passed": false
+     },
+     "legs_median": {
+      "value": 0.125,
+      "min": 2.0,
+      "passed": false
+     },
+     "headroom": {
+      "value": 32.83935546875,
+      "min": 0.37447265625,
+      "passed": true
+     }
+    },
+    "trail_effect": {
+     "mean": -0.1182119981896633,
+     "lo95": -0.1520151075084033,
+     "hi95": -0.08699132956771777,
+     "n": 256,
+     "passed": false
+    },
+    "passed": false,
+    "brief": {
+     "shared": {
+      "visits": {
+       "mean": 0.85107421875,
+       "median": 0.875,
+       "sd": 0.3350099769649464
+      },
+      "legs": {
+       "mean": 0.142578125,
+       "median": 0.125,
+       "sd": 0.19125128155408117
+      },
+      "later_leg_rate": {
+       "mean": 0.11102255319887136,
+       "median": 0.055469600443618955,
+       "sd": 0.15610030810468886
+      },
+      "unvisited_share": {
+       "mean": 0.29150390625,
+       "median": 0.25,
+       "sd": 0.22343921396572838
+      },
+      "first_discovery": {
+       "mean": 209.96875,
+       "median": 120.0,
+       "sd": 244.2960575316151
+      },
+      "occluded_share": {
+       "mean": 0.40971537272135417,
+       "median": 0.40838541666666667,
+       "sd": 0.022519434841309832
+      },
+      "exposure_mean": {
+       "mean": 0.04067827576106445,
+       "median": 0.03910877352698122,
+       "sd": 0.024431259998591758
+      },
+      "exposure_zero_share": {
+       "mean": 0.16028279622395836,
+       "median": 0.12088541666666666,
+       "sd": 0.11005848191777069
+      },
+      "later_first_b": {
+       "mean": 2366.2583705357147,
+       "median": 2400.0,
+       "sd": 93.36464015943261
+      }
+     },
+     "none": {
+      "visits": {
+       "mean": 0.99560546875,
+       "median": 0.875,
+       "sd": 0.5250282201653311
+      },
+      "legs": {
+       "mean": 0.29248046875,
+       "median": 0.125,
+       "sd": 0.4059479339856657
+      },
+      "later_leg_rate": {
+       "mean": 0.22923455138853466,
+       "median": 0.1229388370878477,
+       "sd": 0.3208176064610689
+      },
+      "unvisited_share": {
+       "mean": 0.296875,
+       "median": 0.25,
+       "sd": 0.21579765395152098
+      },
+      "first_discovery": {
+       "mean": 209.96875,
+       "median": 120.0,
+       "sd": 244.2960575316151
+      },
+      "occluded_share": {
+       "mean": 0.3926108805338541,
+       "median": 0.391953125,
+       "sd": 0.017326041810368016
+      },
+      "exposure_mean": {
+       "mean": 0.0,
+       "median": 0.0,
+       "sd": 0.0
+      },
+      "exposure_zero_share": {
+       "mean": 1.0,
+       "median": 1.0,
+       "sd": 0.0
+      },
+      "later_first_b": {
+       "mean": 2294.3526785714284,
+       "median": 2400.0,
+       "sd": 199.97893361440805
+      }
+     },
+     "carrier_with_variant": {
+      "visits": {
+       "mean": 1.0224609375,
+       "median": 1.0,
+       "sd": 0.4670342373534237
+      },
+      "legs": {
+       "mean": 0.40380859375,
+       "median": 0.25,
+       "sd": 0.36375310319325194
+      },
+      "later_leg_rate": {
+       "mean": 0.43608354522354764,
+       "median": 0.3229263565192556,
+       "sd": 0.41978728429914725
+      },
+      "unvisited_share": {
+       "mean": 0.38134765625,
+       "median": 0.375,
+       "sd": 0.191155516798047
+      },
+      "first_discovery": {
+       "mean": 314.8203125,
+       "median": 199.5,
+       "sd": 322.2706190447863
+      },
+      "occluded_share": {
+       "mean": 0.3454915364583333,
+       "median": 0.34567708333333336,
+       "sd": 0.010512465428296418
+      },
+      "exposure_mean": {
+       "mean": 0.0,
+       "median": 0.0,
+       "sd": 0.0
+      },
+      "exposure_zero_share": {
+       "mean": 1.0,
+       "median": 1.0,
+       "sd": 0.0
+      },
+      "later_first_b": {
+       "mean": 2259.279017857143,
+       "median": 2338.9285714285716,
+       "sd": 191.36601206909782
+      }
+     }
+    }
+   },
+   {
+    "variant": "W1+M80",
+    "criterion2": {
+     "above_walk": {
+      "mean": -1.16162109375,
+      "lo95": -1.25635986328125,
+      "hi95": -1.06884765625,
+      "n": 256,
+      "passed": false
+     },
+     "legs_median": {
+      "value": 0.0,
+      "min": 2.0,
+      "passed": false
+     },
+     "headroom": {
+      "value": 32.9658203125,
+      "min": 0.318828125,
+      "passed": true
+     }
+    },
+    "trail_effect": {
+     "mean": -0.08512432550641286,
+     "lo95": -0.1139907131680451,
+     "hi95": -0.05718807307489571,
+     "n": 256,
+     "passed": false
+    },
+    "passed": false,
+    "brief": {
+     "shared": {
+      "visits": {
+       "mean": 0.724609375,
+       "median": 0.75,
+       "sd": 0.3016943066364739
+      },
+      "legs": {
+       "mean": 0.0927734375,
+       "median": 0.0,
+       "sd": 0.1535894816069581
+      },
+      "later_leg_rate": {
+       "mean": 0.08427345126130485,
+       "median": 0.0,
+       "sd": 0.15108433420282757
+      },
+      "unvisited_share": {
+       "mean": 0.3681640625,
+       "median": 0.375,
+       "sd": 0.2215744650589875
+      },
+      "first_discovery": {
+       "mean": 261.45703125,
+       "median": 144.0,
+       "sd": 344.0576874073491
+      },
+      "occluded_share": {
+       "mean": 0.4148978678385417,
+       "median": 0.41304687500000004,
+       "sd": 0.021585520811539274
+      },
+      "exposure_mean": {
+       "mean": 0.03256271355332235,
+       "median": 0.028733635070624347,
+       "sd": 0.021916934924930864
+      },
+      "exposure_zero_share": {
+       "mean": 0.17235148111979165,
+       "median": 0.12598958333333332,
+       "sd": 0.14357434240296152
+      },
+      "later_first_b": {
+       "mean": 2377.072544642857,
+       "median": 2400.0,
+       "sd": 74.97070842401477
+      }
+     },
+     "none": {
+      "visits": {
+       "mean": 0.8193359375,
+       "median": 0.75,
+       "sd": 0.39954281279038295
+      },
+      "legs": {
+       "mean": 0.1875,
+       "median": 0.125,
+       "sd": 0.27025768386167026
+      },
+      "later_leg_rate": {
+       "mean": 0.16939777676771772,
+       "median": 0.07170147018088696,
+       "sd": 0.25942200872948695
+      },
+      "unvisited_share": {
+       "mean": 0.3681640625,
+       "median": 0.375,
+       "sd": 0.21823073873971638
+      },
+      "first_discovery": {
+       "mean": 261.45703125,
+       "median": 144.0,
+       "sd": 344.0576874073491
+      },
+      "occluded_share": {
+       "mean": 0.4035316975911458,
+       "median": 0.40184895833333334,
+       "sd": 0.020009698813044964
+      },
+      "exposure_mean": {
+       "mean": 0.0,
+       "median": 0.0,
+       "sd": 0.0
+      },
+      "exposure_zero_share": {
+       "mean": 1.0,
+       "median": 1.0,
+       "sd": 0.0
+      },
+      "later_first_b": {
+       "mean": 2328.1199776785716,
+       "median": 2400.0,
+       "sd": 177.56049449798806
+      }
+     },
+     "carrier_with_variant": {
+      "visits": {
+       "mean": 0.94287109375,
+       "median": 0.875,
+       "sd": 0.461875395921054
+      },
+      "legs": {
+       "mean": 0.35986328125,
+       "median": 0.25,
+       "sd": 0.3180869298795088
+      },
+      "later_leg_rate": {
+       "mean": 0.40220449631092825,
+       "median": 0.319679389544612,
+       "sd": 0.3562844480185465
+      },
+      "unvisited_share": {
+       "mean": 0.4169921875,
+       "median": 0.375,
+       "sd": 0.22266068429536984
+      },
+      "first_discovery": {
+       "mean": 366.578125,
+       "median": 218.5,
+       "sd": 423.2609746906492
+      },
+      "occluded_share": {
+       "mean": 0.3566440836588542,
+       "median": 0.35624999999999996,
+       "sd": 0.008949233051070309
+      },
+      "exposure_mean": {
+       "mean": 0.0,
+       "median": 0.0,
+       "sd": 0.0
+      },
+      "exposure_zero_share": {
+       "mean": 1.0,
+       "median": 1.0,
+       "sd": 0.0
+      },
+      "later_first_b": {
+       "mean": 2277.97265625,
+       "median": 2358.714285714286,
+       "sd": 172.30314669045157
+      }
+     }
+    }
+   },
+   {
+    "variant": "W2",
+    "criterion2": {
+     "above_walk": {
+      "mean": -1.5478515625,
+      "lo95": -1.642578125,
+      "hi95": -1.4560546875,
+      "n": 256,
+      "passed": false
+     },
+     "legs_median": {
+      "value": 0.0,
+      "min": 2.0,
+      "passed": false
+     },
+     "headroom": {
+      "value": 33.35205078125,
+      "min": 0.14888671875,
+      "passed": true
+     }
+    },
+    "trail_effect": {
+     "mean": 0.0002270019758251976,
+     "lo95": 0.0,
+     "hi95": 0.0006810059274755928,
+     "n": 256,
+     "passed": false
+    },
+    "passed": false,
+    "brief": {
+     "shared": {
+      "visits": {
+       "mean": 0.33837890625,
+       "median": 0.375,
+       "sd": 0.24741647230731242
+      },
+      "legs": {
+       "mean": 0.00048828125,
+       "median": 0.0,
+       "sd": 0.0078125
+      },
+      "later_leg_rate": {
+       "mean": 0.0002270019758251976,
+       "median": 0.0,
+       "sd": 0.0036320316132031623
+      },
+      "unvisited_share": {
+       "mean": 0.662109375,
+       "median": 0.625,
+       "sd": 0.24597713059247966
+      },
+      "first_discovery": {
+       "mean": 573.25390625,
+       "median": 117.5,
+       "sd": 870.1145980330243
+      },
+      "occluded_share": {
+       "mean": 0.4543699137369792,
+       "median": 0.45440104166666667,
+       "sd": 0.03185583503400164
+      },
+      "exposure_mean": {
+       "mean": 0.013808543776202133,
+       "median": 0.0076242904474138245,
+       "sd": 0.016820315756321973
+      },
+      "exposure_zero_share": {
+       "mean": 0.30978088378906254,
+       "median": 0.14557291666666666,
+       "sd": 0.3374560142342653
+      },
+      "later_first_b": {
+       "mean": 2400.0,
+       "median": 2400.0,
+       "sd": 0.0
+      }
+     },
+     "none": {
+      "visits": {
+       "mean": 0.33935546875,
+       "median": 0.375,
+       "sd": 0.2465675634436219
+      },
+      "legs": {
+       "mean": 0.0,
+       "median": 0.0,
+       "sd": 0.0
+      },
+      "later_leg_rate": {
+       "mean": 0.0,
+       "median": 0.0,
+       "sd": 0.0
+      },
+      "unvisited_share": {
+       "mean": 0.66064453125,
+       "median": 0.625,
+       "sd": 0.2465675634436219
+      },
+      "first_discovery": {
+       "mean": 573.25390625,
+       "median": 117.5,
+       "sd": 870.1145980330243
+      },
+      "occluded_share": {
+       "mean": 0.44812662760416666,
+       "median": 0.4500520833333333,
+       "sd": 0.03388802570096723
+      },
+      "exposure_mean": {
+       "mean": 0.0,
+       "median": 0.0,
+       "sd": 0.0
+      },
+      "exposure_zero_share": {
+       "mean": 1.0,
+       "median": 1.0,
+       "sd": 0.0
+      },
+      "later_first_b": {
+       "mean": 2400.0,
+       "median": 2400.0,
+       "sd": 0.0
+      }
+     },
+     "carrier_with_variant": {
+      "visits": {
+       "mean": 1.5126953125,
+       "median": 1.375,
+       "sd": 0.9742820186678546
+      },
+      "legs": {
+       "mean": 0.82861328125,
+       "median": 0.625,
+       "sd": 0.8109145955245111
+      },
+      "later_leg_rate": {
+       "mean": 0.6997317582429152,
+       "median": 0.5773873138606307,
+       "sd": 0.6185765494537386
+      },
+      "unvisited_share": {
+       "mean": 0.31591796875,
+       "median": 0.25,
+       "sd": 0.25865041345750867
+      },
+      "first_discovery": {
+       "mean": 290.8984375,
+       "median": 166.5,
+       "sd": 417.08416115664846
+      },
+      "occluded_share": {
+       "mean": 0.34352254231770835,
+       "median": 0.3383333333333333,
+       "sd": 0.02759856111469248
+      },
+      "exposure_mean": {
+       "mean": 0.0,
+       "median": 0.0,
+       "sd": 0.0
+      },
+      "exposure_zero_share": {
+       "mean": 1.0,
+       "median": 1.0,
+       "sd": 0.0
+      },
+      "later_first_b": {
+       "mean": 2058.861049107143,
+       "median": 2159.857142857143,
+       "sd": 365.6069044043161
+      }
+     }
+    }
+   },
+   {
+    "variant": "W2+M40",
+    "criterion2": {
+     "above_walk": {
+      "mean": -1.00048828125,
+      "lo95": -1.10302734375,
+      "hi95": -0.900390625,
+      "n": 256,
+      "passed": false
+     },
+     "legs_median": {
+      "value": 0.125,
+      "min": 2.0,
+      "passed": false
+     },
+     "headroom": {
+      "value": 32.8046875,
+      "min": 0.3897265625,
+      "passed": true
+     }
+    },
+    "trail_effect": {
+     "mean": -0.17426936559348805,
+     "lo95": -0.2298952347613756,
+     "hi95": -0.12517414400031623,
+     "n": 256,
+     "passed": false
+    },
+    "passed": false,
+    "brief": {
+     "shared": {
+      "visits": {
+       "mean": 0.8857421875,
+       "median": 0.875,
+       "sd": 0.4229991377378455
+      },
+      "legs": {
+       "mean": 0.205078125,
+       "median": 0.125,
+       "sd": 0.2728455602623982
+      },
+      "later_leg_rate": {
+       "mean": 0.1538160394958345,
+       "median": 0.06507026818375382,
+       "sd": 0.20464394995791363
+      },
+      "unvisited_share": {
+       "mean": 0.3193359375,
+       "median": 0.25,
+       "sd": 0.23394977766208125
+      },
+      "first_discovery": {
+       "mean": 234.65625,
+       "median": 132.0,
+       "sd": 345.7078090175087
+      },
+      "occluded_share": {
+       "mean": 0.3917173258463542,
+       "median": 0.38888020833333337,
+       "sd": 0.02039430819626846
+      },
+      "exposure_mean": {
+       "mean": 0.04177530316002692,
+       "median": 0.038973889413561995,
+       "sd": 0.029426387936022924
+      },
+      "exposure_zero_share": {
+       "mean": 0.1705322265625,
+       "median": 0.12731770833333333,
+       "sd": 0.14476518123033894
+      },
+      "later_first_b": {
+       "mean": 2305.681919642857,
+       "median": 2400.0,
+       "sd": 184.7508118892783
+      }
+     },
+     "none": {
+      "visits": {
+       "mean": 1.0927734375,
+       "median": 0.875,
+       "sd": 0.8329527700269616
+      },
+      "legs": {
+       "mean": 0.41015625,
+       "median": 0.125,
+       "sd": 0.7151096001285946
+      },
+      "later_leg_rate": {
+       "mean": 0.32808540508932255,
+       "median": 0.1367335742284344,
+       "sd": 0.5128906755498142
+      },
+      "unvisited_share": {
+       "mean": 0.3173828125,
+       "median": 0.25,
+       "sd": 0.2337368764010204
+      },
+      "first_discovery": {
+       "mean": 234.65625,
+       "median": 132.0,
+       "sd": 345.7078090175087
+      },
+      "occluded_share": {
+       "mean": 0.37576639811197915,
+       "median": 0.37390625,
+       "sd": 0.02177108209068647
+      },
+      "exposure_mean": {
+       "mean": 0.0,
+       "median": 0.0,
+       "sd": 0.0
+      },
+      "exposure_zero_share": {
+       "mean": 1.0,
+       "median": 1.0,
+       "sd": 0.0
+      },
+      "later_first_b": {
+       "mean": 2201.229910714286,
+       "median": 2400.0,
+       "sd": 345.8281254495371
+      }
+     },
+     "carrier_with_variant": {
+      "visits": {
+       "mean": 1.15087890625,
+       "median": 1.125,
+       "sd": 0.4932154492678084
+      },
+      "legs": {
+       "mean": 0.5107421875,
+       "median": 0.375,
+       "sd": 0.38683207576503564
+      },
+      "later_leg_rate": {
+       "mean": 0.5448700638099084,
+       "median": 0.45861072175349327,
+       "sd": 0.4596904215353822
+      },
+      "unvisited_share": {
+       "mean": 0.35986328125,
+       "median": 0.375,
+       "sd": 0.19976182106761542
+      },
+      "first_discovery": {
+       "mean": 279.02734375,
+       "median": 188.5,
+       "sd": 282.86054770056865
+      },
+      "occluded_share": {
+       "mean": 0.3350087483723958,
+       "median": 0.33375,
+       "sd": 0.012659706947285413
+      },
+      "exposure_mean": {
+       "mean": 0.0,
+       "median": 0.0,
+       "sd": 0.0
+      },
+      "exposure_zero_share": {
+       "mean": 1.0,
+       "median": 1.0,
+       "sd": 0.0
+      },
+      "later_first_b": {
+       "mean": 2223.1149553571427,
+       "median": 2282.142857142857,
+       "sd": 190.18133808366193
+      }
+     }
+    }
+   },
+   {
+    "variant": "W2+M80",
+    "criterion2": {
+     "above_walk": {
+      "mean": -1.0107421875,
+      "lo95": -1.11134033203125,
+      "hi95": -0.91259765625,
+      "n": 256,
+      "passed": false
+     },
+     "legs_median": {
+      "value": 0.25,
+      "min": 2.0,
+      "passed": false
+     },
+     "headroom": {
+      "value": 32.81494140625,
+      "min": 0.38521484375,
+      "passed": true
+     }
+    },
+    "trail_effect": {
+     "mean": -0.2110280179135414,
+     "lo95": -0.25906873156420596,
+     "hi95": -0.16529492776671487,
+     "n": 256,
+     "passed": false
+    },
+    "passed": false,
+    "brief": {
+     "shared": {
+      "visits": {
+       "mean": 0.87548828125,
+       "median": 0.875,
+       "sd": 0.3950518157369161
+      },
+      "legs": {
+       "mean": 0.24267578125,
+       "median": 0.25,
+       "sd": 0.2485399884174064
+      },
+      "later_leg_rate": {
+       "mean": 0.2183380387696184,
+       "median": 0.16944642952094202,
+       "sd": 0.2332639051075941
+      },
+      "unvisited_share": {
+       "mean": 0.3671875,
+       "median": 0.375,
+       "sd": 0.23260565804997682
+      },
+      "first_discovery": {
+       "mean": 248.04296875,
+       "median": 141.0,
+       "sd": 372.723177135387
+      },
+      "occluded_share": {
+       "mean": 0.39648315429687503,
+       "median": 0.39630208333333333,
+       "sd": 0.018864569139525677
+      },
+      "exposure_mean": {
+       "mean": 0.03875887024901996,
+       "median": 0.03375483030542421,
+       "sd": 0.026211471861934267
+      },
+      "exposure_zero_share": {
+       "mean": 0.17084676106770832,
+       "median": 0.12333333333333332,
+       "sd": 0.15443425748472706
+      },
+      "later_first_b": {
+       "mean": 2286.0959821428573,
+       "median": 2398.285714285714,
+       "sd": 196.53808720675278
+      }
+     },
+     "none": {
+      "visits": {
+       "mean": 1.07568359375,
+       "median": 1.0,
+       "sd": 0.5855255905095388
+      },
+      "legs": {
+       "mean": 0.43896484375,
+       "median": 0.375,
+       "sd": 0.44666279198024017
+      },
+      "later_leg_rate": {
+       "mean": 0.4293660566831598,
+       "median": 0.3312136880488516,
+       "sd": 0.4530942810525041
+      },
+      "unvisited_share": {
+       "mean": 0.36328125,
+       "median": 0.375,
+       "sd": 0.23454038282664796
+      },
+      "first_discovery": {
+       "mean": 248.04296875,
+       "median": 141.0,
+       "sd": 372.723177135387
+      },
+      "occluded_share": {
+       "mean": 0.38702758789062497,
+       "median": 0.3852864583333333,
+       "sd": 0.023587502178859982
+      },
+      "exposure_mean": {
+       "mean": 0.0,
+       "median": 0.0,
+       "sd": 0.0
+      },
+      "exposure_zero_share": {
+       "mean": 1.0,
+       "median": 1.0,
+       "sd": 0.0
+      },
+      "later_first_b": {
+       "mean": 2145.423549107143,
+       "median": 2260.857142857143,
+       "sd": 322.8067473476054
+      }
+     },
+     "carrier_with_variant": {
+      "visits": {
+       "mean": 1.48291015625,
+       "median": 1.375,
+       "sd": 0.7770535271481037
+      },
+      "legs": {
+       "mean": 0.7568359375,
+       "median": 0.625,
+       "sd": 0.6573134182722016
+      },
+      "later_leg_rate": {
+       "mean": 0.6531250097743148,
+       "median": 0.5740868992276312,
+       "sd": 0.49209543655721805
+      },
+      "unvisited_share": {
+       "mean": 0.27392578125,
+       "median": 0.25,
+       "sd": 0.20881626777064513
+      },
+      "first_discovery": {
+       "mean": 264.00390625,
+       "median": 192.0,
+       "sd": 267.02872722078416
+      },
+      "occluded_share": {
+       "mean": 0.3259220377604166,
+       "median": 0.32609375,
+       "sd": 0.007624072620795485
+      },
+      "exposure_mean": {
+       "mean": 0.0,
+       "median": 0.0,
+       "sd": 0.0
+      },
+      "exposure_zero_share": {
+       "mean": 1.0,
+       "median": 1.0,
+       "sd": 0.0
+      },
+      "later_first_b": {
+       "mean": 2105.4079241071427,
+       "median": 2170.1428571428573,
+       "sd": 294.6164038582313
+      }
+     }
+    }
+   }
+  ]
+ },
+ "passed": {
+  "E": {
+   "variant": "W2",
+   "rank": 4
+  },
+  "S3r3": null
+ },
+ "seed": "E",
+ "variant": "W2",
+ "seconds": 1111.1500726998784
+}
