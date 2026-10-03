@@ -166,3 +166,60 @@ def test_a_non_finite_validation_count_stops_the_batch(spec):
 
     with pytest.raises(FloatingPointError, match="validation"):
         _evolve(spec, _runs(), bad_validation, generations=2, every=1)
+
+
+# ------------------------------------------------------------------ E3b-1's hooks (PREREGISTRATION §5, §12 tests 3-4)
+
+class Recorder(FakeRollout):
+    """Also keeps every training rollout's genome, so a snapshot can be compared with what was evaluated."""
+
+    def __init__(self):
+        super().__init__()
+        self.genomes = []
+
+    def __call__(self, cfg, iface, genome, ids, world_seed, device, chunk_worlds=None):
+        if np.asarray(ids).ndim == 2:
+            self.genomes.append(genome.clone())
+        return super().__call__(cfg, iface, genome, ids, world_seed, device, chunk_worlds)
+
+
+def test_the_snapshot_is_the_population_evaluated_at_its_index_before_breeding(spec):
+    fake = Recorder()
+    recs = E.evolve_batch(_cfg(), None, spec, _runs(), generations=5, checkpoint_every=2, validation_ids=np.arange(4),
+                          world_seed=7, id_base=500, id_span=1000, rollout_fn=fake, snapshot_at=(2,))
+    P = _cfg().evo.population
+    evaluated = fake.genomes[2]  # generation index 2's training rollout: both runs' populations, stacked
+    for i, rec in enumerate(recs):
+        snap = rec.snapshots[2]
+        assert snap.n_strains == P
+        assert all(torch.equal(a, b) for a, b in zip(snap.params().values(),
+                                                       evaluated.select(list(range(i * P, (i + 1) * P))).params().values())
+                   if a is not None)
+    assert set(recs[0].snapshots) == {2}
+
+
+def test_the_snapshot_hook_changes_nothing_else(spec):
+    a = _evolve(spec, _runs(), FakeRollout())
+    b = E.evolve_batch(_cfg(), None, spec, _runs(), generations=5, checkpoint_every=2, validation_ids=np.arange(4),
+                       world_seed=7, id_base=500, id_span=1000, rollout_fn=FakeRollout(), snapshot_at=(1, 3))
+    for x, y in zip(a, b):
+        assert [g["best_sha256"] for g in x.log] == [g["best_sha256"] for g in y.log]
+        assert all(torch.equal(p, q) for p, q in zip(x.final.params().values(), y.final.params().values()) if p is not None)
+        assert x.checkpoints == y.checkpoints
+
+
+def test_a_non_finite_score_names_its_runs(spec):
+    good = FakeRollout()
+    P = _cfg().evo.population
+
+    def bad_run_1(cfg, iface, genome, ids, world_seed, device, chunk_worlds=None):
+        r = good(cfg, iface, genome, ids, world_seed, device, chunk_worlds)
+        if np.asarray(ids).ndim == 2:
+            r.score = r.score.copy()
+            r.score[P + 2] = np.nan  # a strain of the second run
+        return r
+
+    with pytest.raises(FloatingPointError) as err:
+        _evolve(spec, _runs(), bad_run_1)
+    assert err.value.runs == [1]
+    assert "run 1" in str(err.value)

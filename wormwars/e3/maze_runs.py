@@ -46,6 +46,7 @@ class NoseRange:
         self.steer_all = self.steer_on = self.wey_ticks = self.wey_ticks_on = 0
         self.pairs = self.pairs_relevant = 0
         self.q_above = {h: 0 for h in HIGH_LEVELS}
+        self.q_world = None  # per world: the qualified inputs, and those above each level (E3b-1)
 
     def attach(self, world) -> None:
         routes = np.stack([MM.route_cells(mz, pl.a, pl.b) for mz, pl in zip(world.mazes, world.placements)])
@@ -55,6 +56,8 @@ class NoseRange:
         self.hist = torch.zeros(len(_EDGES) + 1, dtype=torch.long, device=world.device)
         self.diff_hist = torch.zeros(len(_EDGES) + 1, dtype=torch.long, device=world.device)
         self.exists = self._exists(world)
+        self.q_world = torch.zeros(world.n_worlds, dtype=torch.long, device=world.device)
+        self.q_above_world = {h: torch.zeros(world.n_worlds, dtype=torch.long, device=world.device) for h in HIGH_LEVELS}
 
     @staticmethod
     def _exists(world):
@@ -90,6 +93,8 @@ class NoseRange:
         self.q_high += int((keep & (g > NOSE_HIGH)).sum())
         for h in HIGH_LEVELS:
             self.q_above[h] += int((keep & (g > h)).sum())
+            self.q_above_world[h] += (keep & (g > h)).sum(dim=(1, 2))
+        self.q_world += keep.sum(dim=(1, 2))
         self.hist += torch.bincount(torch.bucketize(g[keep], self.edges), minlength=len(_EDGES) + 1)
         self.prev = world.pos[:, 0].clone()
         self.exists = self._exists(world)
@@ -107,6 +112,8 @@ class NoseRange:
                 "qualified_inputs": self.q_n, "qualified_above_high": self.q_high,
                 "above_high_share_qualified": self.q_high / max(self.q_n, 1),
                 "above_share_qualified_by_level": {str(h): v / max(self.q_n, 1) for h, v in self.q_above.items()},
+                "per_world": {"qualified": self.q_world.cpu().numpy(),
+                              "above": {str(h): v.cpu().numpy() for h, v in self.q_above_world.items()}},
                 "steering_share_all": self.steer_all / max(self.wey_ticks, 1),
                 "steering_share_on_route": self.steer_on / max(self.wey_ticks_on, 1),
                 "pairs_unoccluded": self.pairs, "pairs_turn_relevant_share": self.pairs_relevant / max(self.pairs, 1),
@@ -333,4 +340,41 @@ def polarity_readings(p: dict) -> dict:
         out[f"{name}_time_over_oracle_quartiles"] = [float(x) if np.isfinite(x) else None for x in qs]  # None: censored
     for f in (2, 4):
         out[f"reading_{f}x"] = out[f"real_within_{f}x"] - max(out[f"none_within_{f}x"], out[f"permuted_within_{f}x"])
+    return out
+
+
+def play_batch(cfg, iface, brain, strains, ids, run_seed, device="cpu", *, access: str = "shared", donor_episodes=None,
+               replay_coef=None, nose_range: bool = False, ticks=None) -> dict:
+    """E3b-1's evaluation chunks: every strain in `strains` (indices into `brain`'s strains) plays every maze
+    id at episode 0 under `access`, in one batch. Under "replay", each recipient world has a lockstep donor
+    world of the same strain on the same walls at `donor_episodes[k]`, playing with shared trails, and the
+    strain's coefficient from `replay_coef`. Event arrays come back as [strains, mazes, ...]; with
+    `nose_range`, `nose_range` holds per-world counts as [strains, mazes]."""
+    strains, ids = np.asarray(strains, dtype=np.int64), np.asarray(ids)
+    S, n = len(strains), len(ids)
+    N = S * n
+    strain_of = torch.as_tensor(np.repeat(strains, n), device=device).view(-1, 1)
+    world_ids = np.tile(ids, S)
+    kw = {"access": access}
+    if access == "replay":
+        strain_of = torch.cat([strain_of, strain_of])
+        world_ids = np.concatenate([world_ids, world_ids])
+        kw = {"episodes": np.concatenate([np.zeros(N, dtype=np.int64), np.tile(np.asarray(donor_episodes), S)]),
+              "access": ["replay"] * N + ["shared"] * N, "donors": np.concatenate([np.arange(N, 2 * N), np.full(N, -1)]),
+              "replay_coef": np.concatenate([np.repeat(np.asarray(replay_coef, dtype=np.float64), n), np.zeros(N)])}
+    w = MW.MazeWorld(cfg, iface, brain, strain_of, run_seed=run_seed, world_ids=world_ids, device=device, **kw)
+    rec = None
+    if nose_range:
+        rec = NoseRange()
+        rec.attach(w)
+        w.recorder = rec
+    w.run(ticks)
+    ev = w.task_events()
+    out = {k: (v[:N].reshape(S, n, *v.shape[1:]) if isinstance(v, np.ndarray) and v.shape[:1] == (len(world_ids),) else v)
+           for k, v in ev.items()}
+    if rec is not None:
+        r = rec.result()
+        pw = r["per_world"]
+        out["nose_range"] = {"qualified": pw["qualified"][:N].reshape(S, n),
+                             "above": {h: v[:N].reshape(S, n) for h, v in pw["above"].items()}}
     return out

@@ -94,6 +94,7 @@ class RunRecord:
     candidates: list = field(default_factory=list)  # one single-strain Genome per checkpoint (CPU)
     generation0: dict = field(default_factory=dict)  # per-genome, per-world counts and progress
     final: Genome | None = None  # the last generation's population (CPU)
+    snapshots: dict = field(default_factory=dict)  # generation index -> its evaluated population (CPU; E3b-1)
 
     def champion_index(self) -> int:
         """The first checkpoint with the highest validation mean."""
@@ -108,7 +109,7 @@ def _stack_ids(per_run: list[np.ndarray], population: int) -> np.ndarray:
 def evolve_batch(cfg, iface, spec: BrainSpec, runs: list[RunSpec], *, generations: int, checkpoint_every: int,
                  validation_ids: np.ndarray, world_seed: int, id_base: int, id_span: int, device="cpu",
                  rollout_fn=rollout, check=None, category=None, on_checkpoint=None, initial=None,
-                 mutation_scales=None) -> list[RunRecord]:
+                 mutation_scales=None, snapshot_at=()) -> list[RunRecord]:
     """Evolve every run in `runs` for `generations` generations, in lockstep.
 
     `check()` is called before every rollout (the cap); `category(name)` returns a context manager
@@ -118,7 +119,11 @@ def evolve_batch(cfg, iface, spec: BrainSpec, runs: list[RunSpec], *, generation
     E4s's hooks, both optional, and the defaults are unchanged: `initial(run_spec)` returns a run's
     generation-0 population (`population` strains) in place of `initial_population`;
     `mutation_scales(run_spec)` returns that run's per-parameter factors on the mutation sigmas
-    (`Genome.mutate`), or None."""
+    (`Genome.mutate`), or None.
+
+    E3b-1's hooks: `snapshot_at` lists generation indices whose evaluated population (before that
+    generation's selection and mutation) each record keeps in `snapshots`, on the CPU; empty by default,
+    which changes nothing. A non-finite score names its runs: the `FloatingPointError` carries `runs`."""
     if len({r.run for r in runs}) != len(runs) or len({r.run_seed for r in runs}) != len(runs):
         raise ValueError("every run in a batch needs its own run number and run seed")
     P, W = cfg.evo.population, cfg.evo.worlds_per_strain
@@ -145,7 +150,12 @@ def evolve_batch(cfg, iface, spec: BrainSpec, runs: list[RunSpec], *, generation
                              chunk_worlds=R * P * W)
         count, progress = res.score, res.progress
         if not (np.isfinite(count).all() and np.isfinite(progress).all()):
-            raise FloatingPointError(f"generation {g}: non-finite count or progress")
+            bad = [runs[i].run for i in range(R)
+                   if not (np.isfinite(count[i * P:(i + 1) * P]).all() and np.isfinite(progress[i * P:(i + 1) * P]).all())]
+            err = FloatingPointError(f"generation {g}: non-finite count or progress in "
+                                     + ", ".join(f"run {r}" for r in bad))
+            err.runs = bad
+            raise err
         fits = []
         for i, rec in enumerate(records):
             c_i, p_i = count[i * P:(i + 1) * P], progress[i * P:(i + 1) * P]
@@ -161,6 +171,10 @@ def evolve_batch(cfg, iface, spec: BrainSpec, runs: list[RunSpec], *, generation
             if g == 0:
                 rec.generation0 = {"train_ids": ids[i].tolist(), "counts": c_i.astype(int).tolist(),
                                    "progress": p_i.round(6).tolist()}
+
+        if g in snapshot_at:
+            for i, rec in enumerate(records):
+                rec.snapshots[g] = moved(pops[i].clone(), "cpu")
 
         if g % checkpoint_every == 0 or g == generations - 1:
             cands = [pops[i].select([int(np.argmax(fits[i]))]) for i in range(R)]
