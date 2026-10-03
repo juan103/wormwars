@@ -37,17 +37,45 @@ selection acts on team results.
 | [03m](experiments/03m-p4-mechanism/README.md) | What drives 03's history dependence (P4)? | Exploratory; run, reviewed, corrected | N2's history fades more slowly than nearly all the shuffles'; its large food response depends on weight placement and on RIA and AIY; most weight permutations lower its P4, gap junctions narrow its lead, and no tested single or paired deletion removed it |
 | [E2](experiments/E2-optimizer-screen/README.md) | At equal simulator work, does OpenAI-ES find better Task N navigators than 02's GA, with random sampling as a floor? | Published; pre-registered, public before its run | "E2: keep 02's GA": the ES led by 0.12 targets per episode (0.5 needed). The floor fired: random sampling came within 0.36 of the GA, so Task N is diagnosed before E3 builds on it |
 | [E2d](experiments/E2d-taskn-diagnosis/README.md) | Why did random sampling come so close? Noise, the operators, budget and stereo use on Task N | Exploratory; plan and runner reviewed; run, reviewed, corrected | "A non-stereo plateau": no champion of 47 meets the "uses the left-right difference" criterion. No tested change (more worlds, gentler mutation, both, a smaller ES σ) leaves the plateau; gentler mutation improved all 8 paired runs but met the bar only with the failed run 2; the ES is budget-limited |
-| [E3](experiments/E3-ab-organism/README.md) | Can two hand-built stereo modules be composed, with a one-neuron latch remembering which source is next, into an organism that shuttles between two sources; and can evolution find the selector? (E3a, the shuttle; mazes and colonies are E3b) | E3a pre-registered and public before its run; run, reviewed, corrected. E3b-0 exploratory; run, reviewed, corrected | E3a: the engineered organism shuttles at 12.79 visits per episode (97% of a module fed the goal's scent). "Evolution found a working selector in 1 of 8 runs, not reliably"; a blind search over the whole range found working selectors in 7 of 8; the two scored "unclear" apart. Joint tuning added 2.36 visits. E3b-0: in 5 × 5 tree mazes, linear trails help a scripted follower (+3.57 legs per 1 000 ticks) and the seed with a wall reflex (+0.69); peers' trails speed later discoverers; trail direction is not shown to be used; the trail constants are adaptively selected |
+| [E3](experiments/E3-ab-organism/README.md) | Can two hand-built stereo modules be composed, with a one-neuron latch remembering which source is next, into an organism that shuttles between two sources; and can evolution find the selector? (E3a, the shuttle; mazes and colonies are E3b) | E3a pre-registered and public before its run; run, reviewed, corrected. E3b-0 exploratory; run, reviewed, corrected. E3b-1 pre-registered (bound 2026-10-03), not yet run | E3a: the engineered organism shuttles at 12.79 visits per episode (97% of a module fed the goal's scent). "Evolution found a working selector in 1 of 8 runs, not reliably"; a blind search over the whole range found working selectors in 7 of 8; the two scored "unclear" apart. Joint tuning added 2.36 visits. E3b-0: in 5 × 5 tree mazes, linear trails help a scripted follower (+3.57 legs per 1 000 ticks) and the seed with a wall reflex (+0.69); peers' trails speed later discoverers; trail direction is not shown to be used; the trail constants are adaptively selected |
 | [E4s](experiments/E4s-stereo-module/README.md) | After E2d's plateau, can a hand-built stereo module grafted onto N2 steer, and what does evolution do to it? (Ahead of plan; stereo sensing is a game-design choice, not worm biology) | E4s-0 exploratory, E4s-1 pre-registered and public before its run; both run, reviewed, corrected | E4s-1, "supports": with the 4-neuron graft's output, evolved brains end +5.19 targets per episode above the same brains evolved without it (16 of 16 pairs), and +3.79 above random signs fixed for the run. The selected brains use the module at both endpoints in 16 of 16 runs (7.14 on average). Part of the benefit is not stereo use, and transfer into the host was not shown |
 
 Next on the roadmap:
 - **Published 2026-10-02:** E4s-0 and E4s-1, together; then E3a. **2026-10-03:** E3b-0.
-- **Next in Track E:** E3b-1's design, the roadmap's E3 gate: the tuned colony against the frozen seed in
-  mazes. Its budget must first be cut from about 71 GPU-hours.
+- **Next in Track E:** E3b-1, the roadmap's E3 gate: the tuned colony against the frozen seed in mazes.
+  It is pre-registered and bound (D186), at about 21 GPU-hours under a cap of 24. Its implementation is
+  next.
 - **In the biology track:** a confirmatory study of 03m's leads, then 03a's six-neuron proof of
   concept.
 
-## Newest: which optimizer for the next stage? (E2)
+## Newest: mazes, trails and colonies (E3b-0)
+
+**On 256 untouched tree mazes, colonies of 8 weys shuttling between two dead ends do better with shared
+linear trails.**
+- **The gain, in legs per 1 000 ticks,** shared trails against none:
+  - a scripted trail follower: +3.57 [2.97, 4.19];
+  - the engineered seed (E3a's organism E, plus a one-sided wall reflex): +0.69 [0.44, 0.93].
+- **Peers' trails help:** later discoverers reach the second source 7% sooner (follower) and 13% sooner
+  (seed) with shared trails than with their own only.
+- **Peer fields the colony did not lay hurt:** a donor colony's trails replayed from another episode on
+  the same walls, or the peers' trails scrambled.
+
+**Not shown:**
+- that the weys follow a trail's direction;
+- that the seed's ability is its own. Most of it comes from the reflex: it makes only +1.09 visits per wey
+  over the reflex alone, of 5.78.
+
+**E3a's best tuned organism circles in the maze.**
+
+**The trail constants are adaptively selected.** The search stalled twice, and the qualification rule
+changed twice, each change reviewed by both reviewers before it ran.
+
+It is exploratory, at 2.62 GPU-hours. Read
+[`experiments/E3-ab-organism/E3b-0/RESULTS.md`](experiments/E3-ab-organism/E3b-0/RESULTS.md), with its
+corrections. Its successor, E3b-1, asks whether evolution improves the seed in these mazes. It is
+pre-registered.
+
+## Which optimizer for the next stage? (E2)
 
 **At equal simulator work, an evolution strategy did not beat experiment 02's genetic algorithm by
 the margin fixed in advance, and random sampling came close enough to both that the task itself is
@@ -385,6 +413,8 @@ python scripts/bench_scaling.py --showcase           # wey-ticks/s and peak VRAM
 python scripts/showcase.py --a A.npz --b B.npz --size 2000
 python scripts/e1.py pilot --smoke                   # E1's pipeline at tiny sizes, on smoke worlds
 python scripts/e04a.py project --smoke               # 04a's pipeline at tiny sizes (then train, evaluate)
+python scripts/e3a.py project --smoke                # E3a's pipeline at tiny sizes (then g-e, g0, ...)
+python scripts/e3b0.py stage-a --smoke --device cpu  # E3b-0's maze pipeline at tiny sizes (then stage-b, ...)
 ```
 
 The evolution scripts (`evolve_forage`, `coevolve`, `experiment`, `exp02`) write a run bundle (config, dataset hashes, package versions, git commit, seed
@@ -471,7 +501,7 @@ This project was designed and built almost entirely by AI models, directed by a 
 - Claude Fable 5.1 (Anthropic), in conversation: turned those ideas into the experimental design and
   specification, and reviewed the results. Later, consulted read-only, it reviewed experiment 01b
   before publication (D033), and since then every design, pre-registration and write-up: 02, 03,
-  03r, T0, T1, E1, 04a, 03m, E2, E2d and E4s.
+  03r, T0, T1, E1, 04a, 03m, E2, E2d, E4s, E3a, E3b-0 and E3b-1.
 - Astra 6 (a GPT model from OpenAI): adversarial review of the specification, which produced the
   statistical design, the resource accounting rules and the numerical stability requirements.
   Reviewing the roadmap, it found that the chemical synapses of experiment 01 ran backwards (D031),
@@ -483,7 +513,8 @@ This project was designed and built almost entirely by AI models, directed by a 
   the reversed synapses, ran experiment 01b, and acted on its review. It also designed,
   pre-registered, ran and wrote up experiment 02, which the owner delegated to it end to end,
   with the two reviewers standing in for approval at each stage; then, with the roadmap delegated,
-  03, 03r, the engineering work (T0, T1), E1, 04a, 03m, E2, E2d and E4s.
+  03, 03r, the engineering work (T0, T1), E1, 04a, 03m, E2, E2d, E4s, E3a, E3b-0 and E3b-1's design and
+  pre-registration.
 - Claude Sonnet 5.5 (Anthropic), through the Claude CLI: a literature report for E4s's first designs.
   Most of its sources were search snippets and nobody checked its claims. It was wrongly called "a
   deep research" (corrected, D143).

@@ -1,10 +1,17 @@
 # E3: the minimal A/B organism
 
-**Status (2026-10-03):** E3a's design is agreed (`docs/E3/DESIGN.md` v2.4, D163). Its
-pre-registration is bound (`E3a/PREREGISTRATION.md`; two review rounds, D164 and D165; Amendment 1,
-D167), pushed before any stage ran.
-- **E3a ran** on 2026-10-02, using 5.97 of its 30 GPU-hours (D168).
-- **Its results** (`E3a/RESULTS.md`) were reviewed by both ("fix") and corrected (D169).
+**Status (2026-10-03):**
+- **E3a: published on main** (2026-10-02, D170).
+  - Its design was agreed (`docs/E3/DESIGN.md` v2.4, D163).
+  - Its pre-registration was bound before any stage ran (`E3a/PREREGISTRATION.md`; D164, D165; Amendment
+    1, D167).
+  - It ran on 2026-10-02, using 5.97 of its 30 GPU-hours (D168).
+  - Its results were reviewed by both ("fix") and corrected (D169).
+- **E3b-0: published on main** (2026-10-03, D180). It is exploratory, at 2.62 of 3 GPU-hours: the maze
+  engine, the controls and the task's feasibility (`E3b-0/README.md`).
+- **E3b-1: pre-registered and bound** (2026-10-03, D181-D186; `E3b-1/PREREGISTRATION.md`), and not yet run.
+  It is the roadmap's E3 gate: the tuned colony against the frozen seed in mazes, with a cap of 24
+  GPU-hours.
 
 ## E3a's results
 
@@ -59,7 +66,7 @@ silent worm, outside the N2 mask. Nothing here is about worm behaviour.
 
 - **E3a, the shuttle:** one wey, an open arena, two fixed sources. This folder's first experiment.
 - **E3b:** trails, branching mazes and the colony. It holds the roadmap's E3 gate. E3b-0, the engine and
-  feasibility, is done; E3b-1, the gate, is next.
+  feasibility, is published; E3b-1, the gate, is pre-registered.
 - **E3c:** the assembly comparison.
 
 **The owner's ceilings:** 30 GPU-hours for E3a, and about the same for each of E3b and E3c (D159).

@@ -1,6 +1,6 @@
 # E2d: diagnosing Task N after E2's floor fired
 
-**Status: run and reviewed (2026-09-29).** Exploratory. The plan ([`PLAN.md`](PLAN.md), v4) was agreed
+**Status: run and reviewed (2026-09-29); published on main on 2026-09-30 (D138).** Exploratory. The plan ([`PLAN.md`](PLAN.md), v4) was agreed
 after four versions and three reviews (D127-D131), and the runner after three code reviews
 (D132-D135). The formal stages ran once each on 2026-09-29: 3.90 of a 7 GPU-hour cap, with no stop,
 rerun or amendment. Both reviewers checked the results ("fix", text only); read

@@ -1,6 +1,7 @@
 # E4s: a hand-built stereo module grafted onto N2
 
-**Status (2026-10-02):** E4s-0 and E4s-1 have run, and both have been reviewed and corrected.
+**Status (2026-10-02):** E4s-0 and E4s-1 have run, both have been reviewed and corrected, and they were
+published on main together on 2026-10-02 (D155).
 - **E4s-0, the diagnostics** (exploratory): reviewed by both ("fix", text only); corrected (D147).
 - **E4s-1, the graft under evolution** (confirmatory): pre-registered (`E4s-1/PREREGISTRATION.md`;
   bound at 023267d, public before any stage ran; one amendment, also before any stage ran; D150,

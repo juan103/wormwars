@@ -1,5 +1,8 @@
 # E3b-0: mazes, trails and colonies (exploratory)
 
+**Status:** published on main on 2026-10-03 (D180). It used 2.62 of its 3 GPU-hours, and its results were
+reviewed by both reviewers ("fix then publish") and corrected.
+
 **The question:** before E3b-1 tests whether evolution improves a colony in mazes with trails, is there a
 usable task and a usable signal at all? E3b-0 tunes nothing.
 
@@ -68,8 +71,9 @@ python scripts/e3b0_diagnose5.py
   (`docs/REPRODUCIBILITY.md`).
 
 ## Extend it
-- **E3b-1 is next:** the tuned colony against the frozen seed E + W2 on untouched mazes. Its budget must
-  be cut first (`RESULTS.md`, criterion 5).
+- **E3b-1 follows:** the tuned colony against the frozen seed E + W2 on untouched mazes. It is
+  pre-registered and bound (`../E3b-1/PREREGISTRATION.md`, D186), its budget resized to about 21 GPU-hours
+  under a cap of 24.
 - **Open questions:**
   - whether a controller that compares readings over time can use the trails' slope;
   - why replayed and scrambled peer fields hurt;
