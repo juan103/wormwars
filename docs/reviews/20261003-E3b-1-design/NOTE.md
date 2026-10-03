@@ -1,0 +1,1 @@
+Fable 5.1 at effort "high" (run 20261003-080002) and Astra 6 at "xhigh" with pinned settings (run 20261003-080004); the same prompt to both. Verdicts: Fable "proceed to the pre-registration, with fixes"; Astra "revise" (D182).

@@ -1,149 +1,222 @@
-# E3b-1's design: the E3 gate in mazes (v1, 2026-10-03, for review)
+# E3b-1's design: the E3 gate in mazes (v2, 2026-10-03, for confirmation)
 
-**Status: v1, for both reviewers.** E3b-1 is confirmatory. A pre-registration follows this design, is
-reviewed, bound and pushed before any run (rule 2).
+**Status: v2, for both reviewers' confirmation.**
+- **v1** (12289a7): Fable said "proceed to the pre-registration, with fixes"; Astra said "revise"
+  (`docs/reviews/20261003-E3b-1-design/`; D182). v2 takes every point; §8 maps them.
+- **E3b-1 is confirmatory.** A pre-registration follows this design, is reviewed, bound and pushed before
+  any run (rule 2).
+- **It builds on** E3b-0's published results (D180) and the E3b design v2 (D173).
+- **The owner's schedule decision** is recorded in D181.
 
-**It builds on:**
-- E3b-0's results, published on main (D180; `experiments/E3-ab-organism/E3b-0/RESULTS.md`);
-- the E3b design v2 (`docs/E3/E3b-DESIGN.md`, D173).
+## 1. The question and the claim
 
-**The owner's decision on the schedule (2026-10-03, D181):** both reviewers' training proposals run side by
-side in the trails arm, with a check at generation 125.
+Does joint tuning of the maze-ready seed improve the colony's shuttling in branching mazes with shared trails?
+"Better" means the tuned colony against the frozen seed, on untouched mazes, under identical mechanics.
 
-## 1. The question
+**The registered claim covers tuning under the two schedules run, as an average.** A pooled "better"
+establishes neither schedule on its own, and each schedule's effect is reported beside it (both).
 
-Does joint tuning of the maze-ready seed improve the colony's shuttling in branching mazes with shared
-trails, and does the tuned colony use the trails more than the seed does? **"Better" means the tuned colony
-against the frozen seed** (E3b design v2), on untouched mazes, under identical mechanics.
-
-E3b-1 makes **no claim of directional trail use**: behavioural polarity was not shown in E3b-0.
+**Not claimed:**
+- directional trail use: behavioural polarity was not shown in E3b-0;
+- that the null holds for every optimiser. A null is about this initialisation, this GA and this affordable
+  effort (Astra).
 
 ## 2. Fixed by E3b-0 (not reopened)
 
 - **The task:**
   - 5 × 5 tree mazes (Wilson's algorithm), a colony of 8 weys on up to 4 spawns, H = 2 400 ticks;
-  - A and B at dead ends, with per-wey goals;
-  - supercover movement with sliding, occlusion, and crowding off.
+  - per-wey goals; supercover movement with sliding, occlusion, and crowding off.
 - **Trails:** linear; μ 0.01, λ 0.02, δ 0.05, d₀ 1.142.
 - **Scents:** σ 3 path cells, zero beyond 9. The nose scale is 0.35.
-- **The seed:** E3a's engineered E with W2 (a one-sided wall reflex, resting turn +0.4, D176), on the
-  silent carrier.
-- **The peer controls:**
-  - own, peers, none and scramble;
-  - replay, from a donor at episode + 1000 with different endpoints, its coefficient frozen from a
-    selection pre-pass. Each champion's coefficient is re-derived on its own selection-maze pre-pass,
-    because its exposure differs (Fable).
-- **The peer measure:** the first-B time of later discoverers, the mean of order statistics 2-8.
-- **The power:** a calibrated one-sided test (t, with the exact sign-flip test beside it), 5%.
-  - At 12 runs and a CV of 0.282 it detects 0.20-0.22 of the seed's mean; at 16 runs, 0.17-0.19
-    (`power.json`).
-  - The run-level CV in mazes is unknown until these runs.
+- **The seed:** E3a's engineered E with W2 (resting turn +0.4, D176), on the silent carrier.
+- **The peer controls and the peer measure:** as in E3b-0, with each champion's replay coefficient
+  re-derived on its own pre-pass (§4).
 
-## 3. The arms and the schedule
+## 3. The arms
 
-**T, tuned with shared trails: 16 runs.**
-- **T-A** (Astra's proposal): 8 runs of 125 generations, 16 mazes per genome per generation.
-- **T-F** (Fable's proposal): 8 runs of 300 generations, 8 mazes per genome, with a champion also taken at
-  generation 125.
+| Arm | Runs | Generations | Mazes per genome per generation | Role |
+|---|---|---|---|---|
+| T-A | 8 | 125 | 16 | gate (Astra's proposal) |
+| T-F | 8 | 300, with a read at 125 | 8 | gate (Fable's proposal) |
+| N | 6 | 125 | 16 | without trails; secondary |
+| R | 2 | 125 | 16 | the recovery control; descriptive |
 
-**N, tuned without trails** (the access mode "none": trails are laid but not sensed): 6 runs of 125
-generations at 16 mazes. It is secondary and descriptive; the owner's ceiling does not allow more.
+- **T-A and T-F** are tuned with shared trails.
+- **N** is tuned with the access mode "none".
+  - Trails are laid but not sensed, so every wey behaves exactly as with deposit off. A test with mutated
+    genomes confirms this.
+  - Under N, E's trail-sensing edges drift without selection, which is what makes N a control (Fable).
+  - **N is read against T-A,** whose schedule it matches (Astra).
+- **R, the optimiser's recovery control** (Astra). It starts from a deliberately degraded seed: E's
+  no-latch variant plus W2, with the gate weights and comparator biases at 0 on E's own mask.
+  - It asks whether this GA, in these mazes, recovers performance it was given the means to recover.
+  - Descriptive.
+- **The read at generation 125 in T-F is read-only.** T-F runs to 300 whatever it shows, and no compute is
+  moved between arms (both).
 
-**The GA:** E3a's Stage 3 (population 32, elites 3, truncation 8).
-- **Mutated:** every grafted edge and grafted neuron (τ and bias) of E's modules and selector, except the
-  relays' τ and bias, at 0.25 × the base sigmas.
-- **Frozen:**
+**The GA** is E3a's Stage 3: population 32, elites 3, truncation 8, mutation at 0.25 × the base sigmas.
+- **The initial population** is 32 copies of the start organism (the seed, or for R the degraded seed).
+- **Mutated:** every grafted edge, τ and bias of E's modules and selector, except the relays' τ and bias.
+- **Frozen by a new mask** (`stage3_scales` would otherwise mutate them; both):
   - W2's two neurons and their 16 output edges;
-  - the carrier, so the worm block stays silent;
-  - E3a's relay settings.
-- **Every run starts from the seed.**
-- **The fitness:** a genome's colony mean of visits per wey, averaged over its training mazes, the same
-  mazes for every genome of a generation (common random numbers).
-- **Training mazes** come from a new block, drawn per generation as in E3a.
+  - the carrier.
 
-**The champions:**
-- **Selection:** at generation 125 (every run) and at the end (T-F's generation 300), the top 4 genomes by
-  their last 5 generations' training fitness are scored on 128 validation mazes. The best validation mean
-  is the champion; ties go to the lower index.
-- **Why this departs from E3a:** E3a validated every checkpoint's whole population, which would cost about
-  12 GPU-hours here.
-- **The champions to read:**
-  - T-A: 8, at generation 125;
-  - T-F: 8 at generation 300, and 8 at generation 125;
-  - N: 6.
+  An end-of-run assertion checks that the frozen parameters are bitwise unchanged.
+- **The fitness:** the colony's mean of visits per wey, over its training mazes. Every genome of a
+  generation plays the same mazes (common random numbers).
+- **Each run has its own training stream,** keyed by its run seed.
+
+**The maze blocks,** all disjoint, and disjoint from E3b-0's (0-255, 1000-1255, 2000-2255, and the smoke
+block 9000+):
+
+| Use | Maze ids |
+|---|---|
+| Training | 10 000 000 to 19 999 999, drawn per run and generation |
+| Validation | 4 000-4 127 |
+| The learning curve | 4 500-4 627 |
+| Replay calibration | 5 000-5 255 |
+| Test | 6 000-6 255, opened once, after every champion is frozen |
+
+The seed is re-evaluated on the test block. E3b-0's numbers are not carried over.
+
+**Champions** (Astra's rule, as in E3a):
+- at each read point (generation 125 in every run, and 300 in T-F), all 32 genomes of the population are
+  scored on the 128 validation mazes;
+- the champion is the best validation mean, with ties going to the lower population index.
+
+**The learning curve** (Fable): every 25 generations, the generation's best genome is scored on the 128
+learning-curve mazes. It is descriptive.
 
 ## 4. The readings
 
-**The registered gate (G):**
-- **The champions:** the 16 final T champions (T-A at generation 125, T-F at 300), pooled.
-- **The statistic, per run:** the champion's mean visits per wey on the test mazes, with shared trails,
-  minus the seed's on the same mazes.
-- **The test:** a one-sided t-test on the 16 differences.
+**The gate (G), registered.**
+- **The estimand:** Δ = (mean d_A + mean d_F) / 2. Here d is a final champion's mean visits per wey on the
+  test mazes, with shared trails, minus the seed's on the same mazes, as a share of the seed's mean.
+- **The test:** a one-sided Welch t-test with variance from within each schedule (Satterthwaite degrees of
+  freedom), at 5%.
 - **The labels:**
-  - "better" if p ≤ 0.05 and the exact sign-flip test agrees;
-  - "worse" if the mirror test passes;
+  - "better" if p ≤ 0.05;
+  - "worse" if the mirror test has p ≤ 0.05;
   - otherwise "unclear".
-- **The margin** is an open question (§6).
 
-**Secondary readings (registered, labelled underpowered where they are):**
-- **S-gen, the effect of generations at 8 mazes:** T-F's 300 against its own 125 champion, paired within
-  the 8 runs.
-- **S-worlds, the effect of mazes per genome at 125 generations:** T-A against T-F's 125 champions, 8
-  against 8, independent runs, descriptive. The fourth cell (300 generations, 16 mazes) is not run.
-- **S-trail, does tuning raise trail use?**
-  - Each T champion is played with trails on and off. Its (on − off) is compared with the seed's
-    (on − off), over the 16 runs.
-  - The N arm's (on − off), and T against N with trails on, are descriptive.
-- **S-peer, on the 16 T champions:**
-  - shared − own on the peer measure;
-  - replay − own and scramble − own on the later-leg rate.
-  - These are reported beside the seed's values in E3b-0.
+  The two directions together allow about 10% under a symmetric null, as intended.
+- **The interpretation scale, fixed in advance, with no shifted null** (Fable, Astra):
+  - reported: the one-sided 95% lower bound of Δ;
+  - "and at least 10%" is added if that lower bound is ≥ 0.10;
+  - Δ is also reported in units of E's contribution over W2 (1.09 visits per wey in E3b-0, re-measured on
+    the test block) and of the seed-follower gap.
+- **The sensitivity checks, reported:**
+  - the pooled one-sided t-test;
+  - the exact sign-flip test over 2^16 patterns.
+
+  They do not decide the label.
+- **A repeated-journey condition** (the E3b design's "minimum repeated-journey criterion"; both). If fewer
+  than half of the 16 champions reach a median of at least 2 legs per wey on the test mazes, "better" is
+  reported as "better, but concentrated".
+  - **Reported:** raw entries, and the share of weys completing at least one round trip (2 legs).
+- **Inference is conditional on the fixed test panel of 256 mazes.** Uncertainty over mazes is not part of
+  the run-level test (Astra).
+- **If the observed run-level CV exceeds 0.282,** "unclear" is read as underpowered (Fable).
+
+**Secondary readings, registered, with Holm's correction across the three tests at 5%** (Astra):
+- **S-gen, the effect of generations at 8 mazes:** T-F's 300 champion against its own 125 champion,
+  paired, one-sided.
+- **S-trail, trail dependence:**
+  - **The test:** whether tuning raises trail dependence, (T on − T off) − (seed on − seed off), in visits
+    per wey, over the 16 champions, one-sided.
+  - **Reported:** all four means (T and the seed, with trails on and off), and the exact decomposition
+    (T on − seed on) = (T off − seed off) + [(T on − T off) − (seed on − seed off)], locomotion plus trail
+    dependence (Fable).
+  - **The wording:** a larger on − off can arise from a worse off, so it is called "increased trail
+    dependence", not better trail use (Astra).
+  - **Secondary measure:** the later-leg rate.
+- **S-peer, the peer measure:** shared − own on the 16 T champions, one-sided, beside the seed's on the
+  same test mazes.
 
 **Descriptive:**
-- the training curves;
-- the champions' component tests at E3b-0's levels, and whether their latch survives (E3a's
-  classification);
+- S-worlds: T-A against T-F's 125 champions, 8 against 8;
+- N against T-A, with trails on and off;
+- R's recovery;
+- replay − own and scramble − own on the champions, with exposure reported;
+- the learning curves;
+- the champions' component tests at the levels E3b-0 met;
+- the memory assays at D = 141, where a champion's latch has two stable roots, with E3a's latch
+  classification;
 - each champion's share of inputs above 1.0;
-- the run-level CV, read against the power assumption.
+- the observed run-level CV.
 
-## 5. The compute
+## 5. Power (simulated as the gate is computed: `scripts/e3b1_power.py`, `E3b-1/power.json`)
 
-From E3b-0's timing (0.057 s per tick at 4 096 worlds, assumed linear in worlds), at H = 2 400:
+4 000 trials per point. Effects are shares of the seed's mean.
+
+| Scenario | False positives, Welch | Minimum detectable effect at 80% |
+|---|---|---|
+| Equal effects, CV 0.282 | 4.9-5.2% | 0.18-0.19 |
+| Equal effects, CV 0.40 | 4.6-4.8% | 0.25-0.27 |
+| Unequal spreads (0.15 and 0.40) | 4.8-5.3% | 0.20-0.21 |
+| Schedule means ± 0.10 | 4.5-5.1% | 0.18-0.19 |
+| Opposite effects averaging zero | 4.4-5.0% (calibrated for the estimand) | — |
+
+- **The pooled t-test and the sign-flip test** keep 5.0-5.5% false positives with equal effects. They
+  reject only 2.9-3.4% in the opposite-effects case: they are conservative there.
+- **Against a shifted null at 10%,** the minimum detectable effect would be 0.28-0.31. That is why the 10%
+  is a descriptor, not the test.
+- **In visits:** 0.18-0.19 of E3b-0's seed mean (5.78) is about 1.0-1.1 visits per wey, the size of E's
+  whole contribution over the blind W2 (Fable). The gate detects a gain of that size, not a modest
+  refinement, and the results will say so.
+
+## 6. The compute
+
+From E3b-0's timing: 0.057 s per tick at 4 096 worlds, assumed linear, H = 2 400.
 
 | Item | GPU-hours |
 |---|---|
-| T-A: 8 × 125 × 16 mazes | 4.7 |
-| T-F: 8 × 300 × 8 mazes | 5.7 |
-| N: 6 × 125 × 16 mazes | 3.5 |
-| Training | 13.9 |
-| With the 25% reserve | 17.4 |
-| Validation (about 30 champion selections × 4 genomes × 128 mazes) | about 0.2 |
-| Test evaluation, on and off, peer controls with replay donors, for about 31 organisms × 256 test mazes | about 0.5 |
-| The owed GPU equivalence leg and a retiming at the actual compositions (T-A 4 096 worlds, T-F 2 048, N 3 072) | about 0.3 |
-| **Total** | **about 18.4** |
+| Training: T-A 4.71, T-F 5.65, N 3.53, R 1.18 | 15.1 |
+| Training with the 25% reserve | 18.8 |
+| Champion validation (32 read points × 32 genomes × 128 mazes) | 1.2 |
+| The learning curves | 0.2 |
+| Replay-coefficient pre-passes (16 champions and the seed) | 0.1 |
+| The test evaluation (about 33 organisms, on and off, peer controls with replay donors, chunked) | 0.5 |
+| The GPU equivalence leg, the benchmark, assays | 0.4 |
+| **Total** | **about 21.2** |
 
-About 27.4 hours remain of the owner's E3b ceiling (30 less E3b-0's 2.62). **The plan's limit of 24 hours
-holds.**
+That is within the plan's 24 and the roughly 27.4 left of the owner's E3b ceiling.
 
-**The retiming comes first.** If the actual compositions project above 24 hours, the cut order is:
-- N to 4 runs;
-- then T-F's maze count stays and its generations fall to 250;
-- then the owner is asked.
+- **Before any training, a benchmark** times complete generations at each arm's real composition (T-A 4 096
+  worlds, T-F 2 048, N 3 072, R 1 024), validation and the chunked evaluation. The projection is registered
+  from that benchmark (both).
+- **If it exceeds 24 hours, the cuts are, in order:**
+  1. N to 4 runs;
+  2. R dropped;
+  3. T-F's generations to 250;
+  4. the owner asked.
 
-## 6. Open questions for the reviewers
+  This departs openly from E3b-0's plan order (generations, worlds, horizon), because N and R are
+  secondary.
 
-1. **The pooled gate.** Is pooling two schedules into one 16-run gate sound, given that its mixture of
-   run distributions may be bimodal? Or should the gate be T-A alone, with only 8 runs? Is the exact
-   sign-flip agreement the right guard?
-2. **A margin for "better".** Should there be one, for example 0.10 × the seed's mean, or the MDE (0.22)?
-   What is a meaningful improvement when the seed's visits are mostly the reflex's (E3b-0: +1.09 over W2
-   alone, of 5.78)?
-3. **The champion rule.** The top 4 by recent training fitness, on 128 validation mazes, at two points
-   only. Is that adequate, given the between-maze CV of 0.74?
-4. **N as "none" access, not deposit off.** With "none" the colony still lays trails it cannot sense.
-   For the seed's behaviour this is identical; is it right for the arm?
-5. **S-trail's measure:** visits per wey, or the later-leg rate (E3b-0's trail measure)?
-6. **Is anything missing:**
-   - memory assays at D = 141;
-   - a positive control for tuning in mazes;
-   - the no-trails-from-start arm of the E3b design v2, which N approximates?
+## 7. Before the pre-registration
+
+- **The GPU equivalence leg** (E2's GA generations 0-25, hashed), owed since E3b-0.
+- **The new freezing mask,** test-first, with the end-of-run assertion.
+- **"None" equals deposit-off** with mutated genomes, test-first.
+- **The runner's read points,** the population snapshot at 125, and the learning-curve hook.
+
+## 8. Changes from v1 (the reviews)
+
+| Point (who) | v2 |
+|---|---|
+| The pooled gate (both) | The estimand is the equal-weight mean of two schedules, tested by a Welch t-test within schedules (Astra). The pooled t and the sign-flip are sensitivity checks, not a conjunction (Astra). Each schedule is reported (both) |
+| The power claims (both) | 0.18-0.19 at CV 0.282, not 0.17-0.19. The gate is now simulated as computed, including unequal spreads, different means and opposite effects (Astra), and the 16-run sign-flip (Fable) |
+| A margin (both) | None in the test. The lower bound and a 10% descriptor, with units of E's contribution (Fable, Astra) |
+| The champion rule was undefined (both) | All 32 genomes validated at each read point, as E3a did (Astra). v1's claim that E3a validated whole populations was wrong (Astra) |
+| The learning curve (Fable) | Every 25 generations, on its own block |
+| "None" access (both) | Kept, and tested with mutated genomes. Read against T-A (Astra) |
+| S-trail (both) | Visits per wey, with the decomposition (Fable), the four means and "trail dependence" (Astra) |
+| Multiplicity (Astra) | Holm across three secondary tests |
+| The repeated-journey criterion (both) | A condition on "better", with round trips reported |
+| The maze blocks (both) | Named and disjoint. The test block is not E3b-0's report block. The seed is re-evaluated |
+| The read at 125 (both) | Read-only |
+| The W2 freeze (both) | A new mask and an assertion |
+| The recovery control (Astra) and the memory assays (Astra) | R arm (2 runs); assays descriptive |
+| Inference scope (Astra) | Conditional on the test panel |
+| The budget (both) | A benchmark of complete generations at the real compositions first; every item listed; the cut order with its departure stated |

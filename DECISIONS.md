@@ -5742,3 +5742,41 @@ roughly 27.4 left of the owner's E3b ceiling. It goes to both reviewers. Six que
 - the no-trails arm's mode;
 - the trail measure;
 - what is missing.
+
+## D182 — E3b-1's design v1 reviewed (Fable: proceed with fixes; Astra: revise); v2, with the gate simulated as computed
+
+**The review** (`docs/reviews/20261003-E3b-1-design/`). Fable said "proceed to the pre-registration, with
+fixes"; Astra said "revise". Without a consensus, a v2 follows (`docs/E3/E3b-1-DESIGN.md`), taking every
+point. Its §8 maps them.
+
+**Errors in v1 that the reviewers caught:**
+- **The champion rule was undefined** (both). `evolve_batch` keeps no per-genome history.
+- **v1's statement that E3a validated whole populations at every checkpoint was wrong** (Astra). E3a
+  validated one winner per checkpoint, and chose its champion from the final population.
+- **The 16-run power figure,** 0.17-0.19, is 0.18-0.19 at CV 0.282 (both).
+- **W2 would have been mutated** by the existing mask (both).
+
+**The gate, simulated as computed** (`scripts/e3b1_power.py`, `experiments/E3-ab-organism/E3b-1/power.json`):
+- **The rule:** the equal-weight mean of the two schedules, tested by a one-sided Welch t-test within
+  schedules.
+- **False positives:** 4.4-5.3% in every scenario, including opposite effects averaging zero.
+- **The minimum detectable effect:** 0.18-0.19 at CV 0.282, 0.20-0.21 with unequal spreads, and 0.25-0.27
+  at CV 0.40.
+- **The pooled t-test and the sign-flip test** keep about 5% with equal effects, and are conservative
+  (about 3%) with opposite effects. They are reported as sensitivity checks.
+
+**v2's other changes:**
+- no margin in the test: a lower bound and a 10% descriptor instead;
+- all 32 genomes validated at each read point;
+- a learning curve;
+- a recovery-control arm R (2 runs);
+- named, disjoint maze blocks, with a new test block and the seed re-evaluated;
+- a read-only check at generation 125;
+- a repeated-journey condition on "better";
+- Holm's correction across three secondary tests;
+- "trail dependence";
+- a benchmark before training.
+
+**The compute:** about 21.2 GPU-hours, within the plan's 24 and the roughly 27.4 left.
+
+**Next:** both reviewers' confirmation of v2, then the pre-registration.
