@@ -5816,3 +5816,43 @@ simulated 0.935 × the nominal CV: 0.264 for 0.282.
 
 **Next:** the pre-registration, reviewed by both, bound and pushed before any run. Then the implementation,
 the GPU equivalence leg and the benchmark.
+
+## D184 — E3b-1's pre-registration draft 1 reviewed (Fable: bind after fixes; Astra: revise); draft 2
+
+**The review** (`docs/reviews/20261003-E3b-1-prereg/`):
+- **Both confirmed:** the gate's complete-data formula, the read points against `evolve_batch`, all nine
+  fixed-input hashes, and the budget arithmetic.
+- **Fable said "bind after fixes"; Astra said "revise".** Without a consensus, draft 2 follows. Its §15
+  maps every point.
+
+**Draft 1's gaps:**
+- the gate's standard error hardcoded 8 runs per schedule, though runs can fail;
+- no deterministic rule separated a failed run from a failed stage, though `evolve_batch` aborts the whole
+  lockstep batch on any non-finite score;
+- "not read" was all or nothing, so a failed replay could have voided the gate;
+- shrinking Holm's family was an unlisted departure;
+- cut 3 left the final read at index 299;
+- the admission formula put the reserve on non-training stages, against the design's pin 11, and did not
+  require `g-e` to pass;
+- the access mode for validating champions was unstated (N could have been selected on trails it does not
+  sense);
+- several denominators were implicit;
+- E3a's memory assays were promised without the stimulus calibration they need;
+- the power section and the design's scope caveat were missing;
+- the learning curve has 200 points, not 176 (both; Astra corrected her own earlier figure).
+
+**Draft 2's answers:**
+- n_A and n_F throughout, with ν in full and SE = 0 handled;
+- deterministic reruns, with no population taken from a stopped attempt;
+- a table of what each reading needs, and a fixed order of evaluation blocks, so partial blocks still count;
+- Holm stays at three tests, an unread test entering at p = 1;
+- G_F − 1 throughout;
+- one admission formula, with × 1.25 on training only, and `g-e` required to pass;
+- each arm validated under its own access;
+- every denominator pinned;
+- the latch structure, with component tests at its stable states, in place of the memory assays;
+- §8 for power, with the scope of the CV and of the shifted null.
+
+**The budget:** about 17.6 GPU-hours, 21.4 with the training reserve; the cap is 24.
+
+**Next:** both reviewers' confirmation, then binding.
