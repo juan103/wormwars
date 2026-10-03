@@ -1,0 +1,1 @@
+Astra 6 at "xhigh" with pinned settings and Fable 5.1 at "high" (run 20261003-113226), the same prompt to both, on the fixes at 78f78a5. Fable: "start the formal stages". Astra: three failure-path fixes first (D189).

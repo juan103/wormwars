@@ -674,3 +674,42 @@ def test_distinct_organisms_in_one_chunk_play_as_their_own(m, monkeypatch):
     for i, n in enumerate(("seed", "mut")):
         assert np.array_equal(both["visits"][i], alone[n]["visits"][0]) and np.array_equal(both["legs"][i], alone[n]["legs"][0])
     assert not np.array_equal(both["exposure_mean"][0], both["exposure_mean"][1])
+
+
+# ------------------------------------------------------------------ the confirmation pass (D189)
+
+def test_settling_an_exhausted_stage_is_not_an_attempt_and_needs_no_admission(m):
+    nf_then_kill = [{"attempt": 1, "outcome": "non-finite", "runs": [2]}, {"attempt": 2, "outcome": None}]
+    assert m.settle_only(nf_then_kill)
+    assert m.settle_only([{"outcome": "non-finite", "runs": [1]}, {"outcome": "non-finite", "runs": [3]},
+                          {"outcome": None}])
+    assert not m.settle_only([{"attempt": 1, "outcome": None}])  # a rerun after one kill is a new attempt
+    assert not m.settle_only([])
+
+
+def test_an_in_stage_refusal_records_its_runs_as_not_run(m):
+    err = m.not_admitted_error([{"attempt": 2, "outcome": "not admitted"}])
+    assert m.unmade_label(err) == "not_run_runs"
+    assert "attempt 2" in str(err)
+
+
+def test_the_training_progress_record_carries_attempts_and_failed_runs_from_the_start(m, tmp_path, monkeypatch):
+    from types import SimpleNamespace
+    monkeypatch.setattr(m.E, "EXP", tmp_path)
+    monkeypatch.setattr(m, "EXP", tmp_path)
+    entries = [{"attempt": 1, "outcome": None}]
+    write = m.training_progress("train-ta", entries=entries, runs_all=list(range(8)))
+    doc = json.loads(m.E.partial_path("train-ta").read_text(encoding="utf-8"))  # written before any checkpoint
+    assert doc["attempts"] == entries and doc["failed_runs"] == list(range(8)) and doc["generation"] is None
+    entries[0]["outcome"] = "non-finite"
+    entries.append({"attempt": 2, "outcome": None})
+    write([SimpleNamespace(spec=SimpleNamespace(run=i)) for i in range(8)], 25)
+    doc = json.loads(m.E.partial_path("train-ta").read_text(encoding="utf-8"))
+    assert doc["generation"] == 25 and len(doc["attempts"]) == 2 and doc["failed_runs"] == list(range(8))
+
+
+def test_readings_without_a_champions_record_are_not_read(m, tmp_path, monkeypatch):
+    monkeypatch.setattr(m.E, "EXP", tmp_path)
+    monkeypatch.setattr(m, "EXP", tmp_path)
+    r = m.readings_on_disk({"plan": m.default_plan()})
+    assert all(r[k]["label"] == "not read" for k in ("G", "S-gen", "S-trail", "S-peer"))

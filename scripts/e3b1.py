@@ -384,9 +384,24 @@ def refuse(stage: str, info: dict) -> None:
                                                      "runs of this and every later training stage are not run"})
 
 
+class NotAdmitted(RuntimeError):
+    """A later attempt inside a running training stage refused under §10: its runs are not run."""
+
+
+def not_admitted_error(entries: list) -> NotAdmitted:
+    return NotAdmitted(f"attempt {entries[-1]['attempt']} was not admitted under §10: the stage ends, its runs not run")
+
+
 def unmade_label(exc) -> str:
-    """The runs a stopped training stage did not make: "not run" when the cap stopped it, "failed" otherwise (§5)."""
-    return "not_run_runs" if isinstance(exc, reg.CapReached) else "failed_runs"
+    """The runs a stopped training stage did not make: "not run" when the cap stopped it or §10 refused an
+    attempt, "failed" otherwise (§5)."""
+    return "not_run_runs" if isinstance(exc, (reg.CapReached, NotAdmitted)) else "failed_runs"
+
+
+def settle_only(entries: list) -> bool:
+    """§5 allows no further attempt: the stage's rerun only writes its final record, runs nothing, and so is not
+    an attempt to admit under §10 (Astra, D189)."""
+    return bool(entries) and attempts_final(entries)
 
 
 def stage_admit(stage: str, proj: dict, t_start: float | None):
@@ -402,12 +417,20 @@ def admission_projection(timing: dict, plan: dict, completed: dict, stage: str) 
     return projections(timing, plan, done)
 
 
-def training_progress(stage: str):
-    """`evolve_batch`'s on_checkpoint: a durable progress record, so a kill is charged to its last checkpoint."""
+def training_progress(stage: str, entries: list | None = None, runs_all: list | None = None):
+    """A durable progress record, written at once and then as `evolve_batch`'s on_checkpoint, so a kill is
+    charged to its last write. It carries the attempts and the stage's runs, so a final record built from it
+    after a killed rerun (E2's `final_killed_record`) states them as failed (§5; Astra, D189)."""
+    def doc(g, runs):
+        return {"stage": stage, "generation": g, "runs_in_batch": runs,
+                "attempts": [dict(e) for e in (entries or [])], "failed_runs": list(runs_all or []),
+                "failed_note": "the stage's runs, failed if the stage ends here finally (§5)",
+                "utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())}
+
+    E.write_atomic(E.partial_path(stage), doc(None, None))
+
     def write(records, g):
-        E.write_atomic(E.partial_path(stage), {"stage": stage, "generation": int(g),
-                                               "runs_in_batch": [r.spec.run for r in records],
-                                               "utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())})
+        E.write_atomic(E.partial_path(stage), doc(int(g), [r.spec.run for r in records]))
     return write
 
 
@@ -714,7 +737,8 @@ def cmd_train(args, arm: str):
         completed = completed_runs({f"train-{k}": v for k, v in earlier.items()})
         proj = admission_projection(out["project"]["timing"], p, completed, stage)
         spent = spent_hours()
-        if p["runs"][arm] > 0 and not SMOKE and not admit_training(stage, spent, proj):
+        settle = settle_only(read_attempts(stage))
+        if p["runs"][arm] > 0 and not SMOKE and not settle and not admit_training(stage, spent, proj):
             refuse(stage, {"spent_hours": spent, "projected_hours": proj, "provenance": prov, "attempt": "stage"})
             raise SystemExit(f"{stage} not admitted under §10 (spent {spent:.2f} h)")
         held["plan"], held["proj"] = p, proj
@@ -734,7 +758,13 @@ def cmd_train(args, arm: str):
         start = start_genome(cx, arm)
         snap = tuple(s for s in a["snapshot"] if s < G)
         entries = read_attempts(stage)
-        save = lambda e: E.write_atomic(attempts_path(stage), e)  # noqa: E731
+        progress = training_progress(stage, entries, runs_all)
+
+        def save(e):
+            E.write_atomic(attempts_path(stage), e)
+            E.write_atomic(E.partial_path(stage), {**json.loads(E.partial_path(stage).read_text(encoding="utf-8")),
+                                                   "attempts": [dict(x) for x in e]})
+
         ctx.salvage = lambda: {"attempts": entries, "final": attempts_final(entries),
                                unmade_label(sys.exc_info()[1]): runs_all}
 
@@ -746,17 +776,16 @@ def cmd_train(args, arm: str):
                                    id_span=REGISTERED["train"]["span"], device=dev, check=ctx.cap.check,
                                    category=acct.category, initial=lambda r: Genome.cat([start] * cfg.evo.population),
                                    mutation_scales=lambda r: T.scales(cx["seed"].ext), snapshot_at=snap,
-                                   on_checkpoint=training_progress(stage))
+                                   on_checkpoint=progress)
 
         admit = (lambda k: True) if SMOKE else stage_admit(stage, held["proj"], ctx.cap.t_start)
         res = train_attempts(entries, runs_all, run_batch, save, admit=admit)
         if res.get("not_admitted"):
             refuse(stage, {"spent_hours": spent_hours(ctx.cap.t_start), "projected_hours": held["proj"],
                            "attempt": res["entries"][-1]["attempt"]})
-            raise RuntimeError(f"attempt {res['entries'][-1]['attempt']} was not admitted under §10: the stage ends, "
-                               "its runs not run")
+            raise not_admitted_error(res["entries"])
         if res["final"]:
-            raise RuntimeError("every attempt §5 allows ended with a non-finite score: every run failed")
+            raise RuntimeError("no further attempt is allowed (§5): the stage is final and every run failed")
         out_runs = []
         for rec in res["records"]:
             i = rec.spec.run
@@ -1351,10 +1380,15 @@ def readings_from(champions_rec: dict, project_rec: dict, blocks: dict) -> dict:
     return compute_readings(blocks, champions_rec["champions"], plan, n_mazes=n_test())
 
 
+def readings_on_disk(project_rec: dict) -> dict:
+    path = E.record_path("champions")
+    champ = json.loads(path.read_text(encoding="utf-8")) if path.exists() else {"outcome": "absent"}
+    return readings_from(champ, project_rec, load_blocks())
+
+
 def cmd_readings(args):
-    champ = json.loads(E.record_path("champions").read_text(encoding="utf-8"))
     proj = json.loads(E.record_path("project").read_text(encoding="utf-8"))
-    out = readings_from(champ, proj, load_blocks())
+    out = readings_on_disk(proj)
     E.write_atomic(EXP / "readings.json", out)
     print(json.dumps({"G": out["G"].get("label"),
                       **{k: {"read": out[k].get("label"), "holm_rejected": out[k].get("holm_rejected"),

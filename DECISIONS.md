@@ -6012,3 +6012,43 @@ bug was in `requires`, and the distinct-organisms test. Three new sabotage check
 
 **Next:** the full suite, a confirmation pass by both on the fixes, then the GPU stages (`project`, `g-e`)
 after telling the owner.
+
+## D189 — E3b-1's confirmation pass: Fable "start", Astra three failure-path fixes; fixed
+
+**The review** (`docs/reviews/20261003-E3b-1-code-recheck/`): the fixes at 78f78a5, same prompt to both.
+- **Fable 5.1:** "start the formal stages", with every blocking finding of both reviews confirmed in the
+  code, and five non-blocking points.
+- **Astra 6:** three problems remain in failure recovery and recording. Astra ran 100 tests and reproduced
+  each problem with in-memory stand-ins for the files. All other findings were confirmed fixed.
+
+**D188 said "every blocking finding fixed".** That was premature: Astra found that three paths of findings 1,
+2 and 4 were only partly fixed. This entry corrects it.
+
+**Fixed, test-first:**
+1. **Settling an exhausted stage needed admission** (Astra; Fable had judged the same path compliant with
+   §10's letter, but conservative). After a kill inside attempt 2 or 3, the rerun runs nothing and only writes
+   the final record. If admission failed, it became a refusal: "not run" instead of "failed", and later
+   training was blocked. Ruling: settlement is not an attempt, so it is not admitted (`settle_only`).
+   - **Cost if wrong:** none in compute, since the settlement plays nothing; the frame still checks the cap.
+2. **An in-stage refusal recorded its runs as "failed"** (Astra). It now raises `NotAdmitted`, which the
+   salvage records as "not run".
+3. **A killed rerun's final training record lacked the attempts and the failed runs** (Astra; Fable
+   non-blocking). E2's frame builds that record from the progress record. The progress record is now written
+   when the stage body starts, and again after every attempt and checkpoint. It carries the attempts and the
+   stage's runs, labelled as failed if the stage ends there finally.
+
+**Also fixed** (Fable, non-blocking):
+- the final error text no longer says "non-finite" when a kill ended the sequence;
+- `readings` with no champions record reads every reading as "not read".
+
+**Not changed** (Fable, non-blocking): a kill is charged up to its last progress write plus E2's
+registered 900 s tail. For T-A, a checkpoint interval is near an hour, so a kill could be undercharged by up
+to about 40 minutes. The progress writes now also follow every attempt, but the bound stands. The results
+will say so.
+
+**Tests:** 4 new, each seen failing first.
+
+**Next:** the full suite; then the formal stages, after telling the owner.
+- **No third review round:** Fable confirmed the rest, and Astra confirmed every other finding. These three
+  fixes are what Astra asked for, each pinned by a test.
+- **Consensus on starting:** both reviewers' conditions are met.
