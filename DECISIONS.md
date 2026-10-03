@@ -5717,3 +5717,28 @@ Two missing records were added:
   They differ on how far: about 125 generations at 16 worlds (Astra), or 250-300 at 8 worlds with 6
   no-trail runs (Fable). E3a's slow climbers gained after generation 375.
 - **Owed before its runs:** the GPU leg of the equivalence check.
+
+## D181 — E3b-1's schedule (the owner's decision); design v1, for review
+
+**The owner, 2026-10-03.** Asked whether both reviewers' training proposals could run side by side, the owner
+proposed: "8 at 125 and other 8 at 300 but with a check at 125 … diagnostic coverage for both proposal at a
+50% budget increase". After Claude's arithmetic, the owner said "Sure".
+
+**The arithmetic.** Per training arm:
+- Astra's 12 runs × 125 generations × 16 mazes: 7.1 GPU-hours;
+- the owner's mix, 8 × (125, 16) plus 8 × (300, 8) with a champion at 125: 10.4 GPU-hours, or +47%.
+
+**Two consequences of the mix:**
+- **Each half has 8 runs,** which is below the power criterion (25-28% of the seed's mean detectable at
+  80% power). So the registered gate pools all 16 final champions, which detect about 17-19%, and the
+  schedule comparisons are secondary.
+- **The no-trails arm stays small** (6 runs) to fit the owner's ceiling.
+
+**Design v1** (`docs/E3/E3b-1-DESIGN.md`) projects about 18.4 GPU-hours in all, within the plan's 24 and the
+roughly 27.4 left of the owner's E3b ceiling. It goes to both reviewers. Six questions are open:
+- the pooled gate;
+- a margin;
+- the champion rule;
+- the no-trails arm's mode;
+- the trail measure;
+- what is missing.
