@@ -1,0 +1,1 @@
+Fable 5.1 at effort "high" (run 20261003-083021) and Astra 6 at "xhigh" with pinned settings (run 20261003-083024); the same prompt to both. Verdicts: Fable "bind" with last fixes; Astra "revise" (D185).

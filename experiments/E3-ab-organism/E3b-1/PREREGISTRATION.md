@@ -1,12 +1,15 @@
 # E3b-1 pre-registration: the E3 gate in mazes
 
-Status: **draft 2, 2026-10-03, for both reviewers.** Nothing of E3b-1 has run.
+Status: **draft 3, 2026-10-03, for both reviewers.** Nothing of E3b-1 has run.
 - **Draft 1** (95800aa): Fable said "bind after fixes"; Astra said "revise"
-  (`docs/reviews/20261003-E3b-1-prereg/`; D184). Draft 2 takes every fix; §14 maps them.
+  (`docs/reviews/20261003-E3b-1-prereg/`; D184).
+- **Draft 2** (6d251fd): Fable said "bind", with last fixes; Astra said "revise"
+  (`docs/reviews/20261003-E3b-1-prereg-2/`; D185).
+- **Draft 3 takes every fix from both rounds.** §15 and §16 map them.
 - **Its design:** `docs/E3/E3b-1-DESIGN.md` v2, confirmed by both reviewers (D183). The pins in its "v2, as
-  confirmed" are carried here. §12 lists the departures.
+  confirmed" are carried here. §13 lists the departures.
 - **Binding:** it binds when committed and pushed after both reviewers agree, before any stage of E3b-1 runs
-  (rule 2). From then on the text is never changed; amendments go in §13, dated.
+  (rule 2). From then on the text is never changed; amendments go in §14, dated.
 - **The cap:** 24 GPU-hours (§9), within the owner's ceiling of about 30 for all of E3b, of which E3b-0 used
   2.62 (D159, D181).
 - **The numbers below that come from a run** are E3b-0's (published, D180) and the gate's power simulation
@@ -92,8 +95,8 @@ An end-of-run assertion checks that every frozen parameter is bitwise equal to t
 **Training mazes:** `train_ids(run seed, generation, n, base 10 000 000, span 10 000 000)`. Every genome of
 a generation plays the same mazes, at episode 0.
 
-**"None" access** is the tested equivalent of deposit-off (§11): every wey senses no trail, while trails are
-still laid.
+**"None" access** is the tested equivalent of deposit-off (§12, test 2): every wey senses no trail, while trails
+are still laid.
 
 ## 4. The maze blocks
 
@@ -132,18 +135,33 @@ generation-best genome is scored on the 128 learning-curve mazes, with the arm's
 the learning curve. It is descriptive, and selects nothing.
 
 **Failures:**
-- **A stage stopped by a crash or a kill** is rerun once, unchanged. A second stop is final, and its runs
-  are "failed".
-- **A training stage stopped by a non-finite score,** which `evolve_batch` raises for the whole lockstep
-  batch:
-  1. it is rerun once, unchanged;
-  2. if that fails again, it is rerun once more without the runs the record names as non-finite, and
-     those runs are "failed". The record states the batch's new composition;
-  3. if that fails again, the stage is final, and all its runs are "failed".
 
-  No population from a stopped attempt is used.
-- **A stage stopped by the cap** is not rerun. Its runs are "not run".
-- **Every rerun is admitted under §10 like any stage.**
+**Training stages** are atomic: a run's populations come only from a completed attempt. A training stage
+has at most three attempts:
+1. **The first attempt.** Then:
+   - a crash or kill: attempt 2, unchanged;
+   - a non-finite score: attempt 2, unchanged. `evolve_batch` aborts the whole lockstep batch, so it first
+     writes the non-finite runs' numbers to the record;
+2. **The second attempt.** Then:
+   - a crash or kill: the stage is final, and all its runs are "failed";
+   - a non-finite score: attempt 3, without the runs named non-finite in attempts 1 and 2. Those runs are
+     "failed", and the record states the batch's new composition;
+3. **The third attempt.** Any further stop makes the stage final, and all its remaining runs are "failed".
+
+**The other stages** (`project`, `g-e`, `champions`, `evaluate`) are rerun once after a crash or kill. A
+second stop is final.
+- **`evaluate`** saves each chunk's per-maze arrays when the chunk completes. The chunks are fixed in
+  advance: the blocks in their order (§6), and within a block the organisms in the order of §6's table,
+  with the arms in the order T-A, T-F, N, R and the runs by index.
+- A rerun of `evaluate` resumes at the first chunk that did not complete. Every observation comes from the
+  first attempt that completed its chunk.
+- **A reading is computed from every completed chunk it needs** (§7), whatever happened later. A stopped
+  `champions` or `evaluate` never makes a run "failed".
+
+**A stage stopped by the cap** is not rerun. Training runs it stopped are "not run", and the chunks it did
+not complete are missing.
+
+**Every attempt is admitted under §10** like its stage.
 
 ## 6. Champions and the evaluation
 
@@ -172,8 +190,11 @@ arrays are saved when it completes.
 | 6 | the N and R champions, R's degraded start, W2 alone on the carrier, and the scripted follower: shared and none; the oracle and the random walk: none | descriptive and the descriptors |
 | 7 | the probes (component tests and latch structure, CPU) | descriptive |
 
-- **The composition:** chunks of 16 organisms × 256 mazes (4 096 worlds), or 8 × 256 with replay donors
-  (8 192 worlds). Every record states it.
+- **The composition:** chunks of 16 organisms × 256 mazes (4 096 worlds). With replay donors, chunks of
+  8 organisms × 256 mazes, plus their 8 × 256 donors (4 096 worlds). A block's last chunk holds whatever
+  organisms remain. Every record states the composition.
+- **The nose recorder** runs for every organism in block 1. Each organism's record gives the qualified
+  inputs' count and the count above 1.0.
 - **Replay** follows E3b-0's rule: a lockstep donor colony of the same organism at episode + 1 000,
   advanced until A or B differs, playing with shared trails.
   - **Its coefficient** is the organism's own: the ratio of its mean nose exposure to live peers (shared)
@@ -193,10 +214,13 @@ arrays are saved when it completes.
 **The probes (block 7, descriptive):**
 - **Each champion's latch structure** comes from its own q self-weight and bias (`latch.structure`).
 - **If it is bistable:**
-  - the component tests at its two stable states, the upper for goal A, at E3b-0's levels (0.001, 0.003,
-    0.0398, 0.229, 0.35, 0.891, 1.0, 1.82), against E3b-0's thresholds (K_D ≥ 30 up to 0.35; K_D × level
-    ≥ 10.5 up to 1.0);
-  - the one-nose checks up to 1.0.
+  - the component tests at its two stable states, the upper for goal A;
+  - **the levels** are E3b-0's, taken at full precision from `report.json`
+    (`component_tests.levels`: 0.001, 0.003, 0.039810717055349776, 0.22908676527677746, 0.35,
+    0.8912509381337459, 1.0, 1.8197008586099825);
+  - **E3b-0's thresholds:** active K_D ≥ 30 at levels m ≤ 0.35; K_D × m ≥ 10.5 at 0.35 < m ≤ 1.0;
+    above 1.0, reported only;
+  - the one-nose checks at every level up to 1.0.
 - **If it is monostable:** the structure is reported, and the component tests are not run.
 - **E3a's memory assays are not run.** They need a stimulus calibration that maze runs do not record
   (Astra).
@@ -217,7 +241,8 @@ d = (the mean over the 256 mazes of c's visits per wey − the same for s) / s's
   - **"better"** if p ≤ 0.05 for Δ > 0;
   - **"worse"** if p ≤ 0.05 for Δ < 0;
   - **"unclear"** otherwise.
-  - **If SE = 0:** "better" if Δ > 0, "worse" if Δ < 0, otherwise "unclear".
+  - **If SE = 0:** "better" if Δ > 0, "worse" if Δ < 0, otherwise "unclear". The lower bound is then Δ
+    itself.
 
   Together the labels allow about 10% under a symmetric null, as intended.
 - **The descriptors,** fixed in advance, all under shared trails on the test block:
@@ -230,7 +255,9 @@ d = (the mean over the 256 mazes of c's visits per wey − the same for s) / s's
   "better, but concentrated".
 - **The sensitivity checks** (reported, not deciding):
   - the pooled one-sided t-test on the n_A + n_F differences;
-  - the exact sign-flip test over 2^(n_A + n_F) patterns;
+  - the exact sign-flip test over 2^(n_A + n_F) patterns. Its statistic is the estimand itself, with
+    the flipped signs: (mean of the flipped d over T-A + mean of the flipped d over T-F) / 2. Its one-sided
+    p is the share of patterns whose statistic is ≥ the observed one;
   - each schedule's mean d, with its own two-sided 95% t interval.
 - **The run-level spread:** √((s_A² + s_F²) / 2), the pooled within-schedule SD of d in units of the
   seed's mean. It is reported against the assumed 0.282 with the uncertainty of Δ against the 10%
@@ -238,7 +265,12 @@ d = (the mean over the 256 mazes of c's visits per wey − the same for s) / s's
 - **Inference is conditional on the 256 test mazes.**
 
 **The secondary tests (registered; Holm's correction over the three at 5%; a test that is not read enters
-Holm with p = 1):**
+Holm with p = 1).**
+
+**Zero spread and zero denominators, for every registered test (G, S-gen, S-trail, S-peer):**
+- if its standard error is 0, its one-sided p is 0 when the estimate lies strictly in the alternative's
+  direction, and 1 otherwise. Its interval is the point estimate;
+- a reading whose normalising denominator (the seed's mean) is 0 is "not read".
 - **S-gen:**
   - the measure, per T-F run: its champion at G_F − 1 against its own champion at index 124, as the paired
     difference in test visits per wey under shared trails, divided by the seed's shared mean;
@@ -297,7 +329,7 @@ Effects are shares of the seed's mean, with 8 runs per schedule.
   detectable effect is nearer 0.22-0.23. The CV-0.40 row brackets this.
 - **The sensitivity checks,** at CV 0.282 with equal effects: the pooled t-test and the sign-flip test keep
   5.0-5.5% false positives. With opposite effects averaging zero they reject 2.9-3.6%.
-- **A shifted null at 10%** would need an effect of 0.28-0.31 at CV 0.282 or with unequal spreads, and
+- **A shifted null at 10%** would need an effect of 0.29-0.31 at CV 0.282 or with unequal spreads, and
   0.36-0.37 at CV 0.40. The 10% is therefore a descriptor, not the test.
 - **In visits:** 0.19 of E3b-0's seed mean (5.78) is about 1.1 visits per wey, about E's whole
   contribution over the blind W2 in E3b-0. The gate detects a gain of that size, not a modest refinement,
@@ -306,19 +338,24 @@ Effects are shares of the seed's mean, with 8 runs per schedule.
 ## 9. The benchmark (`project`)
 
 On smoke ids, with projection seed 1 190 900, it times the second of two repeats of each of these:
-- **training:** 2 complete generations of each composition, checkpoint included:
+- **training:** 2 complete generations of each composition. The time of a generation's rollout and
+  breeding (t_gen) and that of one checkpoint's validation (t_ckpt) are recorded separately:
   - T-A at 8 × 32 × 16 (4 096 worlds);
   - T-F at 8 × 32 × 8 (2 048);
   - N at 6 × 32 × 16 (3 072), and at 4 × 32 × 16 under cut 1;
   - R at 2 × 32 × 16 (1 024);
 - **validation:** 32 genomes on 128 mazes;
-- **the evaluation:** one chunk of 16 × 256 and one of 8 × 256 with replay donors;
+- **the evaluation:** one chunk of 16 × 256 (4 096 worlds), and one of 8 × 256 with its 8 × 256 donors
+  (4 096 worlds);
 - **the probes,** on one organism.
 
 **The projection** is computed from those times, without reserve:
-- a training stage: its generations × its time per generation, plus its checkpoints;
-- `champions`: the read points × one validation;
-- `evaluate`: its chunks, plus its pre-passes, plus the probes.
+- **a training stage:** G × t_gen + (its number of checkpoints) × t_ckpt. The checkpoints are index 0,
+  every multiple of 25, and the last index;
+- **`champions`:** the read points × one validation;
+- **`evaluate`:** its chunks × their timed chunk, plus its pre-passes (one chunk with donors per 8
+  organisms), plus the probes;
+- **`g-e`:** a fixed allowance of 0.3 GPU-hours, since it runs after `project`.
 
 **The planned total** is the hours spent, plus every training stage's projection × 1.25, plus every other
 stage's projection.
@@ -343,7 +380,9 @@ stage's projection.
 - **Each training stage is admitted,** in order, if: the hours spent + its projection × 1.25 + the
   projection of every remaining non-training stage ≤ 22 (a 2-hour general reserve).
 - Once one is refused, no later training stage starts, and its runs are "not run".
-- **`champions` and `evaluate`** are admitted if the hours spent + their projection ≤ 24.
+- **`champions`** is admitted if the hours spent + the projections of `champions` and `evaluate` ≤ 24, so
+  that no champion is validated that cannot then be evaluated.
+- **`evaluate`** is admitted if the hours spent + its projection ≤ 24.
 - **A rerun** is admitted by the same formula as its stage.
 
 ## 11. Budget
@@ -375,9 +414,11 @@ That is 21.4 with the training × 1.25.
    - it saves the population evaluated at index 124, before breeding;
    - off, it leaves `evolve_batch` bit-identical on E2's CPU smoke.
 4. **The failure rules:**
-   - a non-finite score in one run stops the batch;
-   - the second rerun excludes the named runs;
-   - no population from a stopped attempt is used.
+   - a non-finite score in one run stops the batch, and the record names that run before the abort;
+   - attempt 3 excludes the named runs;
+   - at most three attempts;
+   - no population from a stopped attempt is used;
+   - `evaluate` resumes at the first incomplete chunk, and keeps the first attempt's completed chunks.
 5. **The champion rule:** all 32 validated under the arm's access, with ties to the lower index; the
    checkpoint champion unused.
 6. **The degraded start:** the gate weights and comparator biases at 0, on E's mask, with W2 as in the
@@ -396,7 +437,11 @@ That is 21.4 with the training × 1.25.
 13. **Admission, refusal and the cuts,** on synthetic projections, with cut 3's index 249 carried into
     every reading.
 14. **The fixed inputs' hashes** are refused when changed.
-15. **A smoke of every stage.**
+15. **`g-e` fails** when a generation's hash differs from `train-ga.json` (a sabotage of one hash).
+16. **The probes' thresholds:** K_D ≥ 30 applies only at m ≤ 0.35, and K_D × m ≥ 10.5 only at
+    0.35 < m ≤ 1.0. E3b-0's published seed passes at its full-precision levels.
+17. **The nose recorder's counts** are present for every organism in block 1.
+18. **A smoke of every stage.**
 
 ## 13. Departures from design v2
 
@@ -408,6 +453,9 @@ That is 21.4 with the training × 1.25.
   selection block, which is spent.
 - **E3a's memory assays are replaced** by each champion's latch structure, with the component tests at its
   stable states. The assays need a stimulus calibration that maze runs do not record.
+- **The failure rules elaborate design pin 10** (one rerun of a run): `evolve_batch` aborts a whole lockstep
+  batch on any non-finite score, so a run cannot be rerun alone. §5's rules work at the level of a stage,
+  with at most three attempts.
 
 ## 14. Amendments
 
@@ -431,3 +479,22 @@ None.
 | §12's oracle departure was wrong (Astra) | Removed; the replay calibration block added (Fable) |
 | The later-leg rate beside S-trail (Fable) | Reported descriptively |
 | The benchmark's composition and arithmetic (Astra) | §9 |
+
+## 16. Changes from draft 2 (the reviews, D185)
+
+| Point (who) | Draft 3 |
+|---|---|
+| Zero spread beyond G's label; Holm needs numbers (both) | §7: for every registered test, p 0 or 1 by direction at SE = 0, with a point interval; a zero denominator is "not read" |
+| The sign-flip statistic with unequal n (Astra) | The estimand itself, under flipped signs |
+| The benchmark double-counted checkpoints (Astra) | t_gen and t_ckpt recorded separately, with the formula stated; `g-e`'s allowance stated |
+| The donor chunk's worlds (Astra) | 8 × 256 plus 8 × 256 donors = 4 096 |
+| Partial evaluation and attempt precedence (Astra, Fable) | Arrays saved per chunk; a fixed chunk order; a rerun resumes; the first completed chunk wins; completed readings kept |
+| Training attempts (Fable) | At most three, with the paths stated |
+| The record must name non-finite runs (both) | Required, and tested |
+| `g-e` must fail on a mismatch (Fable) | Test 15 |
+| The probes' thresholds and levels (Astra) | K_D ≥ 30 at m ≤ 0.35; K_D × m ≥ 10.5 at 0.35 < m ≤ 1.0; levels at full precision from `report.json` |
+| The nose recorder's counts (Astra) | Required for block 1, per organism |
+| `champions`' admission (Fable) | Requires that `evaluate` also fits |
+| Stale cross-references (Fable) | Corrected |
+| The shifted null's range (Fable) | 0.29-0.31, not 0.28-0.31 (0.28 is the CV-0.267 row). The design's §5 carries the same slip, noted in D185 |
+| The stage-level failure rule as a departure (Fable) | §13 |

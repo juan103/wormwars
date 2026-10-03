@@ -1,0 +1,17 @@
+**Verdict: revise.** Draft 2 resolves most of my earlier points, but “every rule fully specified” is still false.
+
+The unequal-sample Welch formula, validation access, generation-249 cut, three-test Holm family, power qualification and replacement of memory assays are resolved. All nine hashes match the committed files at `6d251fd`.
+
+Before binding:
+
+1. **Finish the statistical edge cases.** [§7](/D:/Claude/random/wormWars/experiments/E3-ab-organism/E3b-1/PREREGISTRATION.md:206) handles SE = 0 only for G’s label. Its degrees of freedom remain 0/0, leaving the lower confidence bound undefined; secondary tests still need numeric p-values for Holm, particularly when every S-gen difference is zero. Specify, for example, a point interval at zero SE and directional p = 0 only for an effect strictly in the alternative, otherwise 1. Also mark normalized readings “not read” when their seed denominator is zero. Pin the sign-flip statistic and weighting when schedule sample sizes differ.
+
+2. **Correct the benchmark arithmetic.** [§9](/D:/Claude/random/wormWars/experiments/E3-ab-organism/E3b-1/PREREGISTRATION.md:306) times generations **including checkpoints**, then multiplies that time by every generation **and adds checkpoints again**. Record training and checkpoint times separately and specify the projection formula. This affects cuts and admission. Also, eight organisms × 256 mazes plus matching donors is **4,096 worlds**, not §6’s 8,192. Specify the outstanding `g-e` allowance used in the post-`project` total.
+
+3. **Resolve partial evaluation and retry precedence.** [§5](/D:/Claude/random/wormWars/experiments/E3-ab-organism/E3b-1/PREREGISTRATION.md:134) marks a stopped stage’s runs failed/not run, while §7 allows readings from completed conditions. Explicitly preserve completed readings after later failures, and specify which attempt supplies observations when both attempts contain them. Arrays are currently promised only after an entire block completes; D184’s assertion that “partial blocks still count” therefore needs a finer save rule or correction. Fix organism order and final-chunk handling if partial blocks can contribute.
+
+4. **Correct the component-test threshold interval.** [§6](/D:/Claude/random/wormWars/experiments/E3-ab-organism/E3b-1/PREREGISTRATION.md:193) says \(K_Dm \ge 10.5\) “up to 1.0”. E3b-0 applies that only for **\(0.35<m\le1.0\)**; lower levels use \(K_D\ge30\). Applied literally at 0.001, the new wording fails even the published seed. Also specify whether the rounded listed levels or the full-precision `report.json` levels are authoritative.
+
+5. **Make the recording requirements explicit.** The promised qualified-input share above 1.0 requires the optional `NoseRange` recorder; ordinary `MazeWorld.task_events()` does not contain it. Require per-organism numerator and denominator counts. Likewise, the non-finite retry rule needs offending run IDs recorded before abort: current [`evolve_batch`](/D:/Claude/random/wormWars/wormwars/e04a/evolve.py:147) reports only the generation.
+
+These are specification gaps, not objections to the central design. The projection and partial-failure rules still affect what runs and what enters the analysis.

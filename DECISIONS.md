@@ -5856,3 +5856,36 @@ the GPU equivalence leg and the benchmark.
 **The budget:** about 17.6 GPU-hours, 21.4 with the training reserve; the cap is 24.
 
 **Next:** both reviewers' confirmation, then binding.
+
+## D185 — E3b-1's pre-registration draft 2 reviewed (Fable: bind, with last fixes; Astra: revise); draft 3
+
+**The review** (`docs/reviews/20261003-E3b-1-prereg-2/`):
+- **Fable said "bind", with last fixes.** Astra said "revise".
+- **Astra confirmed** all nine hashes at 6d251fd, the unequal-n Welch formula, the validation access, the
+  index-249 cut, the three-test Holm family and the power qualification.
+
+**Specification gaps both found:**
+- zero spread was handled only for G's label, while Holm needs numeric p-values;
+- the sign-flip statistic with unequal n was undefined;
+- the benchmark's arithmetic counted checkpoints twice;
+- the donor chunk is 4 096 worlds, not 8 192;
+- partial evaluation: which attempt supplies an observation, and the save granularity (per chunk, not per
+  block). D184's "partial blocks still count" was not yet true;
+- training attempts needed a cap and defined paths;
+- `evolve_batch` must name the non-finite runs before it aborts;
+- `g-e` must fail on a mismatch;
+- the probes' threshold: K_D × m ≥ 10.5 applies only at 0.35 < m ≤ 1.0. As drafted it would have failed
+  the published seed at 0.001;
+- the levels are taken at full precision;
+- the nose recorder's counts are required;
+- `champions` is admitted only if `evaluate` also fits;
+- stale cross-references;
+- the stage-level failure rule is a departure.
+
+**A slip carried from an earlier review.** The shifted null at CV 0.282 needs 0.29-0.31, not 0.28-0.31;
+0.28 is the CV-0.267 row (Fable, whose own draft-1 review introduced the figure). The same slip is in the
+design's §5 and in "v2, as confirmed". Those texts stand as they are, and this entry is their correction.
+
+**Draft 3** takes every fix. Its §16 maps them.
+
+**Next:** both reviewers' confirmation, then binding.
