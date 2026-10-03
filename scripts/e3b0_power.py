@@ -22,6 +22,13 @@ this file's first output (8 runs, a 0.05 grid). `fine` now holds, for 8, 12 and 
 the exact sign-flip test's power on a 0.01 grid of effects (sign-flip for 8 and 12 only: 16 needs 65 536
 patterns per trial), the bootstrap's false-positive rate, and the minimum detectable effects read from it.
 The first output (`results`) is unchanged.
+
+**Correction, 2026-10-03 (Astra, D183):** the empirical shape is standardised with the sample SD (ddof 1)
+and then resampled with replacement, which gives variance 7/8, not 1. Its rows therefore simulate an
+effective CV of 0.935 × the nominal one (0.264 for 0.282; 0.250 for 0.267; 0.374 for 0.40), so the
+empirical minimum detectable effects are slightly optimistic. The normal rows, which set the 12-run decision
+and the 0.22 used for criterion 2's headroom, are unaffected. The script is left as it was so that the
+committed `power.json` reproduces; E3b-1's power script uses ddof 0.
 """
 
 from __future__ import annotations

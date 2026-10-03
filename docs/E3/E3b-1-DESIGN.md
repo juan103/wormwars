@@ -1,6 +1,8 @@
 # E3b-1's design: the E3 gate in mazes (v2, 2026-10-03, for confirmation)
 
-**Status: v2, for both reviewers' confirmation.**
+**Status: v2, confirmed by both reviewers ("proceed to the pre-registration, with fixes; no further design
+round"; `docs/reviews/20261003-E3b-1-design-v2/`; D183).** The fixes are in "v2, as confirmed" at the end; the
+pre-registration carries them.
 - **v1** (12289a7): Fable said "proceed to the pre-registration, with fixes"; Astra said "revise"
   (`docs/reviews/20261003-E3b-1-design/`; D182). v2 takes every point; §8 maps them.
 - **E3b-1 is confirmatory.** A pre-registration follows this design, is reviewed, bound and pushed before
@@ -151,16 +153,20 @@ learning-curve mazes. It is descriptive.
 
 | Scenario | False positives, Welch | Minimum detectable effect at 80% |
 |---|---|---|
-| Equal effects, CV 0.282 | 4.9-5.2% | 0.18-0.19 |
-| Equal effects, CV 0.40 | 4.6-4.8% | 0.25-0.27 |
-| Unequal spreads (0.15 and 0.40) | 4.8-5.3% | 0.20-0.21 |
-| Schedule means ± 0.10 | 4.5-5.1% | 0.18-0.19 |
+| Equal effects, CV 0.282 | 4.9-5.2% | 0.19 |
+| Equal effects, CV 0.40 | 4.6-4.8% | 0.27 |
+| Unequal spreads (0.15 and 0.40) | 4.8-5.3% | 0.21 |
+| Schedule means ± 0.10 | 4.5-5.1% | 0.19 |
 | Opposite effects averaging zero | 4.4-5.0% (calibrated for the estimand) | — |
 
-- **The pooled t-test and the sign-flip test** keep 5.0-5.5% false positives with equal effects. They
-  reject only 2.9-3.4% in the opposite-effects case: they are conservative there.
-- **Against a shifted null at 10%,** the minimum detectable effect would be 0.28-0.31. That is why the 10%
-  is a descriptor, not the test.
+*Correction, 2026-10-03 (Astra, D183):* this table first gave 0.18-0.19, 0.25-0.27, 0.20-0.21 and 0.18-0.19.
+The empirical-shape rows were simulated with variance 7/8 of the nominal (a ddof error). After the fix
+(ddof 0, `power.json` regenerated), both shapes give the values above. The normal-shape rows did not change.
+
+- **The pooled t-test and the sign-flip test** keep 5.0-5.5% false positives with equal effects at CV
+  0.282. They reject only 2.9-3.6% in the opposite-effects case: they are conservative there.
+- **Against a shifted null at 10%,** the minimum detectable effect would be 0.28-0.31 at CV 0.282 and with
+  unequal spreads, and 0.36-0.37 at CV 0.40. That is why the 10% is a descriptor, not the test.
 - **In visits:** 0.18-0.19 of E3b-0's seed mean (5.78) is about 1.0-1.1 visits per wey, the size of E's
   whole contribution over the blind W2 (Fable). The gate detects a gain of that size, not a modest
   refinement, and the results will say so.
@@ -220,3 +226,43 @@ That is within the plan's 24 and the roughly 27.4 left of the owner's E3b ceilin
 | The recovery control (Astra) and the memory assays (Astra) | R arm (2 runs); assays descriptive |
 | Inference scope (Astra) | Conditional on the test panel |
 | The budget (both) | A benchmark of complete generations at the real compositions first; every item listed; the cut order with its departure stated |
+
+## v2, as confirmed (2026-10-03; D183)
+
+Both reviewers said "proceed to the pre-registration, with fixes; no further design round". The
+pre-registration pins these.
+
+1. **The power.** The empirical-shape scaling is fixed (Astra), and §5 is corrected. Fable adds that the
+   simulation treats 0.282 as the SD of d at every effect. If instead the CV holds at the tuned mean, the
+   SD of d at Δ 0.19 is about 0.34, and the minimum detectable effect is nearer 0.22-0.23. The CV-0.40
+   rows bracket this.
+2. **The maze run seed is 1 180 000, E3b-0's,** so disjoint ids are disjoint mazes (`maze_for` keys the
+   walls by (run seed, maze id); Fable).
+3. **W2's freeze covers** its two neurons' τ and bias and their 16 output edges. Its inputs come through the
+   interface, not through graft edges (Fable).
+4. **Every secondary test is pinned:**
+   - **S-gen:** a one-sided paired t-test on T-F's 8 pairs (generation 300 against generation 125), the
+     alternative being "300 is higher";
+   - **S-trail:** the gate's stratified Welch estimator on the per-run differences
+     [(T on − T off) − (seed on − seed off)], the alternative being "greater";
+   - **S-peer:** the same estimator on shared − own, the alternative being "less than 0", since a shorter
+     first-B time is better;
+   - Holm's correction is applied across the three.
+5. **The evaluation roster on the test block:**
+   - the 16 final T champions and T-F's 8 champions at generation 125;
+   - the 6 N champions and the 2 R champions;
+   - the seed E + W2, and R's degraded start;
+   - W2 alone on the carrier, the scripted follower, the oracle and the random walk.
+6. **The read at generation 125** is the population of 32 genomes evaluated at generation index 124 (the
+   125th generation), before that generation's selection and mutation. Its validation scores do not feed
+   back into T-F's continuation. The end of T-F is generation index 299.
+7. **The run-level spread** is the pooled within-schedule SD of d, in units of the seed's mean, matching
+   the Welch variance. An observed value above 0.282 is reported with the uncertainty of Δ against the
+   10% reference. It is not read automatically as "underpowered" (Astra).
+8. **"Trails off" means the access mode "none" throughout,** the tested equivalent of deposit-off.
+9. **The repeated-journey median,** as E3b-0 computed it: per champion, the median over the 256 test mazes
+   of the colony's mean legs per wey (Astra). "Better, but concentrated" applies if fewer than 8 of the
+   16 champions reach 2.
+10. **A crashed or non-finite run** is rerun once on the same seed. If it fails again, it is reported as
+    failed, and the gate is computed on the remaining runs with that stated (Fable).
+11. **The 25% reserve covers training only.** The benchmark sizes the rest.

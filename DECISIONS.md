@@ -5780,3 +5780,39 @@ point. Its §8 maps them.
 **The compute:** about 21.2 GPU-hours, within the plan's 24 and the roughly 27.4 left.
 
 **Next:** both reviewers' confirmation of v2, then the pre-registration.
+
+## D183 — E3b-1's design v2 confirmed by both; the power scripts' empirical scaling corrected
+
+**The review** (`docs/reviews/20261003-E3b-1-design-v2/`): both said "proceed to the pre-registration, with
+fixes; no further design round". The design is agreed. The fixes are listed in "v2, as confirmed", at the
+end of `docs/E3/E3b-1-DESIGN.md`:
+- the maze run seed;
+- W2's freeze in full;
+- every secondary test's statistic and direction;
+- the evaluation roster;
+- the read at generation 125 (index 124, before selection);
+- the run-level spread as the within-schedule SD;
+- "trails off" as access none;
+- the legs median as a median over mazes of colony means;
+- a rule for crashed runs.
+
+**A bug Astra found, confirmed.** Both power scripts standardised E3a's eight Stage 3 means with the sample
+SD (ddof 1) and then resampled them with replacement. That gives variance 7/8, so the "empirical" rows
+simulated 0.935 × the nominal CV: 0.264 for 0.282.
+- **E3b-1** (not yet registered): `scripts/e3b1_power.py` now uses ddof 0, and `power.json` is regenerated.
+  The empirical rows' minimum detectable effects rise:
+
+  | Scenario | Before | After |
+  |---|---|---|
+  | CV 0.282 | 0.18 | 0.19 |
+  | CV 0.40 | 0.25 | 0.27 |
+  | Unequal spreads | 0.20 | 0.21 |
+
+  They now match the normal rows. The design's §5 carries a dated correction.
+- **E3b-0:** `scripts/e3b0_power.py` is left as it was, so that its committed `power.json` reproduces, with
+  a dated correction in its docstring. Its empirical rows were slightly optimistic. The normal rows are
+  unaffected, and those set the 12-run decision and the 0.22 used in criterion 2's headroom. E3b-0's
+  conclusions stand. Its RESULTS.md gains a correction entry.
+
+**Next:** the pre-registration, reviewed by both, bound and pushed before any run. Then the implementation,
+the GPU equivalence leg and the benchmark.

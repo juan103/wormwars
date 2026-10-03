@@ -32,7 +32,9 @@ from scipy import stats
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "experiments" / "E3-ab-organism" / "E3b-1" / "power.json"
 STAGE3 = np.array([8.92, 8.78, 14.68, 15.98, 15.77, 8.53, 9.54, 14.50])  # E3a summary.json, test means
-Z = (STAGE3 - STAGE3.mean()) / STAGE3.std(ddof=1)
+# the empirical shape, resampled with replacement: standardised by the population SD (ddof 0), so that the
+# resampled values have unit variance (Astra, D183; ddof 1 gave variance 7/8)
+Z = (STAGE3 - STAGE3.mean()) / STAGE3.std(ddof=0)
 SIGNS16 = np.array(list(itertools.product((1.0, -1.0), repeat=16)), dtype=np.float32)  # 65 536 x 16
 N = 8
 

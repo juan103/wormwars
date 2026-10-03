@@ -258,3 +258,7 @@ mazes 0-255. The report mazes were opened once, after every choice was frozen.
   - criterion 6 is "conditional";
   - the selection-maze scope of criterion 4's levels is stated;
   - the seed-versus-W2 comparison was added to the summary.
+- **2026-10-03, after E3b-1's design review** (Astra, D183): `scripts/e3b0_power.py` standardised its empirical
+  shape with the sample SD (ddof 1) before resampling. Its "empirical" rows therefore simulated about
+  0.935 × the stated CV, and their minimum detectable effects are slightly optimistic. Criterion 6's 12 runs
+  and criterion 2's 0.22 come from the normal rows, which are unaffected.

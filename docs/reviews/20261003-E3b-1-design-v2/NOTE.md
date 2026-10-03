@@ -1,0 +1,1 @@
+Fable 5.1 at effort "high" (run 20261003-080935) and Astra 6 at "xhigh" with pinned settings (run 20261003-080937); the same prompt to both. Both: "proceed to the pre-registration, with fixes; no further design round" (D183).
