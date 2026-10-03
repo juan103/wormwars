@@ -49,9 +49,25 @@
     - S2-c: none in either census;
     - Stage 3, joint tuning: "better" (+2.36);
     - B-task: "worse" than Stage 3.
-  - **Next in Track E: E3b's design** (trails, branching mazes, the colony; it holds the E3 gate). It
-    starts from E3a's engineered organism, or its best tuned organisms, each with E3b's own positive
-    control.
+- **E3b-0, mazes, trails and the colony** (exploratory, 2026-10-02/03; D171-D180;
+  `experiments/E3-ab-organism/E3b-0/`).
+  - **It used 2.62 of its 3 GPU-hours.** The trail search stalled twice. Two amendments, each reviewed by
+    both reviewers before it ran, changed the qualification rule. The trail constants are therefore
+    adaptively selected.
+  - **On 256 untouched mazes:**
+    - linear trails help a scripted follower (+3.57 legs per 1 000 ticks) and the engineered seed E with a
+      one-sided wall reflex (+0.69);
+    - peers' trails speed later discoverers;
+    - peer fields not laid by the colony itself hurt.
+  - **Not shown:** that weys use the trail's direction.
+  - **Also found:** E3a's best tuned organism (S3r3) fails the maze, and most of the seed's performance
+    comes from the reflex.
+  - **Next in Track E: E3b-1's design,** the E3 gate.
+    - **Its budget:** two training arms at 12 runs, 500 generations and H = 2 400 project to about 71
+      GPU-hours, against the owner's ceiling of about 30. Both reviewers would cut generations first.
+      They differ on how far: about 125 generations at 16 worlds (Astra), or 250-300 at 8 worlds with 6
+      no-trail runs (Fable).
+    - **Owed before its runs:** the GPU leg of the engine's equivalence check.
 
 - **Published on main:**
   - 02's D050 correction, as a Corrections entry (27 September, D063);
@@ -60,7 +76,11 @@
   - E1, with its pre-registration, results and corrections (28 September, D102);
   - 04a, with its pre-registration, results and corrections (29 September, D112);
   - 03m, exploratory, with a replaced flaky test (29 September, D116);
-  - E2, with its design, pre-registration, results and corrections (29 September, D126).
+  - E2, with its design, pre-registration, results and corrections (29 September, D126);
+  - E2d, exploratory (30 September, D138);
+  - E4s-0 and E4s-1 together (2 October, D155);
+  - E3a, with its pre-registration, results and corrections (2 October, D170);
+  - E3b-0, exploratory, with its amendments, results and corrections (3 October, D180).
 - **T0 (correctness) is closed** (D083). On CUDA, results repeated exactly for the same batch
   composition in the tested configurations; exact reproduction is guaranteed only inside
   `replay_mode()`. A chunk holding a single strain can differ from the same strain in a larger

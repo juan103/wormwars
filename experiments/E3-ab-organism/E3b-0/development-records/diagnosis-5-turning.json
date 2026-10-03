@@ -1,0 +1,38 @@
+{
+ "note": "    python scripts/e3b0_diagnose5.py    # writes experiments/E3-ab-organism/E3b-0/development-records/diagnosis-5-turning.json",
+ "maze_ids": [
+  9000,
+  9004
+ ],
+ "ticks": 600,
+ "setting": {
+  "mu": 0.01,
+  "lam": 0.02,
+  "delta": 0.05,
+  "d0": 1.142
+ },
+ "rows": {
+  "S3r3+W2": {
+   "mean_turn": -0.7564435601234436,
+   "mean_abs_turn": 0.8517274260520935,
+   "mean_forward": 0.9991227984428406,
+   "path_bbox_diagonal": 12.593510627746582,
+   "visits_per_wey": 0.21875,
+   "entries_a_b": [
+    18,
+    76
+   ]
+  },
+  "E+W2": {
+   "mean_turn": -0.020807670429348946,
+   "mean_abs_turn": 0.7619451284408569,
+   "mean_forward": 0.9991227984428406,
+   "path_bbox_diagonal": 22.939788818359375,
+   "visits_per_wey": 1.1875,
+   "entries_a_b": [
+    39,
+    21
+   ]
+  }
+ }
+}

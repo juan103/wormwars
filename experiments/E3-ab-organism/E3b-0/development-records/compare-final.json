@@ -1,0 +1,49 @@
+{
+ "cases": {
+  "task_n_random": {
+   "identical": true,
+   "first_differing_tick": null
+  },
+  "task_n_e4s1_m0": {
+   "identical": true,
+   "first_differing_tick": null
+  },
+  "forage_random": {
+   "identical": true,
+   "first_differing_tick": null
+  },
+  "task_n_e4s1_m0_mean": {
+   "identical": true,
+   "first_differing_tick": null
+  },
+  "task_n_e4s1_m0_swapped": {
+   "identical": true,
+   "first_differing_tick": null
+  },
+  "shuttle_e3a_E": {
+   "identical": true,
+   "first_differing_tick": null
+  },
+  "forage_rollout_score": {
+   "identical": true
+  },
+  "graft": {
+   "identical": true
+  },
+  "configs": {
+   "identical": true
+  }
+ },
+ "passed": true,
+ "engines": {
+  "reference": {
+   "package": "D:\\Claude\\random\\wormWars-e3b-ref\\wormwars\\__init__.py",
+   "commit": "84ff98a0da7a017c826e40d01dc7f8c8957b408a"
+  },
+  "compared": {
+   "package": "D:\\Claude\\random\\wormWars\\wormwars\\__init__.py",
+   "commit": "7b65b754b0a166f0ae9a36257faf3dde7ea75229"
+  }
+ },
+ "reference_sha256": "6b63496a27f7ce91fb04e35691fdf1de41ab36283a3746c756bc8a70b4d514ce"
+}

@@ -1,6 +1,6 @@
 # E3: the minimal A/B organism
 
-**Status (2026-10-02):** E3a's design is agreed (`docs/E3/DESIGN.md` v2.4, D163). Its
+**Status (2026-10-03):** E3a's design is agreed (`docs/E3/DESIGN.md` v2.4, D163). Its
 pre-registration is bound (`E3a/PREREGISTRATION.md`; two review rounds, D164 and D165; Amendment 1,
 D167), pushed before any stage ran.
 - **E3a ran** on 2026-10-02, using 5.97 of its 30 GPU-hours (D168).
@@ -26,6 +26,26 @@ Descriptive:
   weak gate, so that class is operational.
 
 
+## E3b-0's results (exploratory; `E3b-0/README.md`, `E3b-0/RESULTS.md`)
+
+E3b-0 ran on 2026-10-02/03 and used 2.62 of its 3 GPU-hours. Both reviewers reviewed it ("fix then
+publish"), and it was corrected (D175-D180). It tunes nothing.
+
+**On 256 untouched mazes** (5 × 5 trees, colonies of 8, 2 400 ticks):
+- **Linear trails help** a scripted follower (+3.57 legs per 1 000 ticks) and the engineered seed E with a
+  one-sided wall reflex (+0.69).
+- **Peers' trails speed later discoverers** (7% and 13%).
+- **Peer fields not laid by the colony itself hurt.**
+
+**Not shown:** that weys use the trail's direction.
+
+**Also found:**
+- E3a's best tuned organism, S3r3, fails the maze;
+- most of the seed's maze performance comes from the reflex;
+- the trail constants are adaptively selected.
+
+**E3b-1 must be resized:** about 71 GPU-hours as first planned.
+
 ## What it asks
 
 Can two hand-built stereo modules, one per scent, be composed into an organism that shuttles between
@@ -38,7 +58,8 @@ silent worm, outside the N2 mask. Nothing here is about worm behaviour.
 ## Its parts
 
 - **E3a, the shuttle:** one wey, an open arena, two fixed sources. This folder's first experiment.
-- **E3b:** trails, branching mazes and the colony. It holds the roadmap's E3 gate.
+- **E3b:** trails, branching mazes and the colony. It holds the roadmap's E3 gate. E3b-0, the engine and
+  feasibility, is done; E3b-1, the gate, is next.
 - **E3c:** the assembly comparison.
 
 **The owner's ceilings:** 30 GPU-hours for E3a, and about the same for each of E3b and E3c (D159).

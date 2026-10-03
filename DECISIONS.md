@@ -5657,3 +5657,63 @@ both with fixes and no further round:
 - Fable: the K_D × level reading; the seed-side cap; 10.5; the gain-0 wording; the widening's cost.
 - Astra: the oscillator bug; criterion 4 before the report mazes; per-maze equivalence; the baselines; the
   narrower conclusion.
+
+## D180 — E3b-0 completed, its results reviewed (both "fix then publish") and corrected; published on main
+
+**The run** (2026-10-03). After Amendment 2 (D179):
+- `stage-b3` chose μ 0.01, λ 0.02, δ 0.05, d₀ 1.142 (ab5cdbe);
+- the recheck passed (6c7dd17);
+- Stage C chose the seed E with W2 (82fb7e0). S3r3 failed with all seven variants;
+- the report passed both pre-checks on the selection mazes: the seed cap and criterion 4 (b55e32e);
+- the timing ran (c769a49).
+
+E3b-0 used **2.62 of its 3 GPU-hours.** `stage-b3` cost about 1.0, against the 0.5-0.7 projected, because
+its 30 widened settings each needed new runs.
+
+**The results** (`experiments/E3-ab-organism/E3b-0/RESULTS.md`, 7b65b75), on the report mazes 1000-1255.
+Legs per 1 000 ticks:
+
+| Contrast | Follower | Seed E + W2 |
+|---|---|---|
+| shared − none | +3.57 [2.97, 4.19] | +0.69 [0.44, 0.93] |
+| own − none | +2.06 [1.54, 2.61] | +0.43 [0.28, 0.59] |
+| First-B time of later discoverers, shared − own | −61 ticks [−107, −18] | −196 ticks [−242, −150] |
+
+- **Replay and scramble fall below own and below none.**
+- **Behavioural polarity** was not passed.
+- **The criteria:**
+  - criteria 2-4 passed;
+  - criterion 5 failed as sized: E3b-1 projects to about 71 GPU-hours;
+  - criterion 6 holds conditionally on the assumed run-level spread.
+
+**The review** (`docs/reviews/20261003-E3b-0-results/`): both said "fix then publish". Every number checked
+against the records. The fixes made before publication are listed in RESULTS.md's Corrections. Among them:
+- "exposure matched" held for replay only, and only approximately;
+- a mechanism claim for replay and scramble was withdrawn;
+- polarity's scope is limited to the settings tested;
+- criterion 1 is "incomplete";
+- K_D × level at 0.89 is 15.2;
+- the seed versus W2 alone (+1.09 visits per wey of 5.78) is now in the summary.
+
+Two missing records were added:
+- **The final-code CPU equivalence** (`development-records/compare-final.json`, at 7b65b75): every earlier
+  task is bitwise identical to 84ff98a (Fable).
+- **S3r3's turning,** as a committed diagnosis (`development-records/diagnosis-5-turning.json`).
+
+**Who caught what:**
+- Fable: the stale equivalence record; the exposure of scramble; the seed versus W2; the polarity scope;
+  the `active.passed` flag.
+- Astra: the reviving of withdrawn claims ("could not", "no effect", "before it affected"); the exposure
+  percentages; the conditional power.
+
+**Publication.** By consensus (both reviewers), under the owner's rule for main pushes (D112, as extended on
+2026-09-29), with the owner informed afterwards:
+- `main` is fast-forwarded to `roadmap`;
+- the working-branch banner is removed there;
+- `roadmap` continues from `main` with its banner.
+
+**Next: E3b-1's design.**
+- **Its budget must be cut.** Both reviewers would cut generations first and keep 12 runs per gate arm.
+  They differ on how far: about 125 generations at 16 worlds (Astra), or 250-300 at 8 worlds with 6
+  no-trail runs (Fable). E3a's slow climbers gained after generation 375.
+- **Owed before its runs:** the GPU leg of the equivalence check.
