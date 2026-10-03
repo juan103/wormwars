@@ -1,0 +1,1094 @@
+{
+ "stage": "report",
+ "attempt": 1,
+ "registered": {
+  "maze_seed": 1180000,
+  "colony": 8,
+  "spawns": 4,
+  "pilot": {
+   "mu": 0.01,
+   "lam": 0.03,
+   "delta": 0.15,
+   "d0": 0.571
+  },
+  "stage_a": {
+   "c": [
+    5,
+    6,
+    7,
+    8
+   ],
+   "H": [
+    1200,
+    2400
+   ],
+   "oracle_visits_min": 8.0,
+   "follower_legs_median_min": 4.0,
+   "w2_share_max": 0.5,
+   "walk_share_max": 0.25,
+   "discovery_share_of_H_max": 0.25
+  },
+  "stage_b": {
+   "mu": [
+    0.005,
+    0.01,
+    0.02
+   ],
+   "lam": [
+    0.01,
+    0.02,
+    0.04
+   ],
+   "delta": [
+    0.05,
+    0.15
+   ],
+   "d0_scale": [
+    0.5,
+    1.0
+   ],
+   "polarity_min": 0.3,
+   "gradient_min": 0.8,
+   "range_min": 0.9,
+   "saturated_max": 0.05
+  },
+  "criterion2": {
+   "legs_median_min": 2.0,
+   "mde": 0.22,
+   "headroom_factor": 2.0,
+   "lb_min": 0.0,
+   "mde_source": "power.json fine: 12 runs, t-test, CV 0.282, normal (the larger of the two shapes)"
+  },
+  "criterion3": {
+   "rate_lb_min": 0.5
+  },
+  "stage_b2": {
+   "gradient_min": 0.8,
+   "high_level": 0.35,
+   "high_share_max": 0.05,
+   "trail_lb_min": 0.0,
+   "d0_scale_edges": {
+    "low": 0.25,
+    "high": 2.0
+   },
+   "component_quantiles": [
+    5,
+    25,
+    50,
+    75,
+    95,
+    99
+   ],
+   "component_floor": 0.001,
+   "trail_effect_rule": "world_ci: paired bootstrap over mazes, 10 000 resamples, seed 0, two-sided 95%; lower end above 0"
+  },
+  "historical": {
+   "stage-a": "50187714b13f8d489fb112339bf4f3e1cb561b12ab8251741a80ba21dd40c80b",
+   "stage-b": "71c8b2aada4756c6679a30729d0a1fd7597e4b3fe1525cc155beb337017e19b6",
+   "stage-b2": "023018f4c6d863298e26a7eef6956389d782a3e7a389dc807f4c264301c743df"
+  },
+  "stage_b3": {
+   "gradient_min": 0.8,
+   "high_level": 1.0,
+   "high_share_max": 0.05,
+   "trail_lb_min": 0.0,
+   "d0_scale_edges": {
+    "low": 0.25,
+    "high": 2.0
+   },
+   "component_quantiles": [
+    5,
+    25,
+    50,
+    75,
+    95,
+    99
+   ],
+   "component_floor": 0.001,
+   "relative_min": 10.5,
+   "cap_seed": [
+    "E",
+    "W2"
+   ],
+   "trail_effect_rule": "world_ci: paired bootstrap over mazes, 10 000 resamples, seed 0, two-sided 95%; lower end above 0"
+  },
+  "component_levels_fixed": [
+   0.001,
+   0.003
+  ],
+  "ids": {
+   "selection": [
+    0,
+    256
+   ],
+   "report": [
+    1000,
+    1256
+   ],
+   "fresh": [
+    2000,
+    2256
+   ]
+  },
+  "seeds": [
+   "E",
+   "S3r3"
+  ],
+  "variants": [
+   "W0",
+   "W1",
+   "W1+M40",
+   "W1+M80",
+   "W2",
+   "W2+M40",
+   "W2+M80"
+  ],
+  "cap_gpu_hours": 3.0,
+  "e3b1": {
+   "strains": 256,
+   "worlds_per_strain": 16,
+   "weys": 8,
+   "runs_per_arm": 12,
+   "population": 32,
+   "generations": 500,
+   "training_arms": 2,
+   "budget_hours": 24.0,
+   "reserve_factor": 1.25,
+   "note": "the projection's generations follow E3a's Stage 3 (500); E3b-1's design sets its own"
+  }
+ },
+ "provenance_at_start": {
+  "git_commit": "82fb7e016ef28e7bf395a5a1fcf2db3742f90ec1",
+  "branch": "roadmap",
+  "dirty": false,
+  "python": "3.13.3",
+  "numpy": "2.4.4",
+  "torch": "2.12.0+cu130",
+  "cuda": "13.0",
+  "gpu": "NVIDIA GeForce RTX 5080",
+  "connectome_cache_sha256": "43b87aa172a0042b9dce734b15bdf1c87efe3a33ac1cc0d9cd03255a60c96d4a",
+  "connectome_source_sha256": "1f4fdbf84746b69b49a8da0816f52787860ce349b638dce37924ba80f90c70c9"
+ },
+ "device": "cuda",
+ "resolved_config": {
+  "brain": {
+   "substeps": 32,
+   "tau_min": 0.5,
+   "tau_max": 20.0,
+   "w_max": 3.0,
+   "g_max": 2.0,
+   "b_max": 2.0,
+   "init_w_scale": 0.2,
+   "init_g_scale": 0.05,
+   "init_bias_std": 0.5,
+   "init_tau_log_uniform": true,
+   "init_chem_magnitude": "anatomical",
+   "init_gap_magnitude": "anatomical",
+   "init_permutation_seed": 0,
+   "dale": false,
+   "input_gain": 1.0,
+   "input_max": 5.0,
+   "chem_direction": "pre_to_post",
+   "pad_single_strain": true
+  },
+  "world": {
+   "n_swarms": 1,
+   "weys_per_swarm": 8,
+   "max_ticks": 1200,
+   "cells_per_wey": 0,
+   "min_side": 21,
+   "body_length": 2.4,
+   "max_speed": 0.35,
+   "reverse_fraction": 0.4,
+   "max_turn": 0.3,
+   "forward_gain": 4.0,
+   "turn_gain": 2.0,
+   "start_energy": 12.0,
+   "max_energy": 40.0,
+   "body_mass": 6.0,
+   "metabolic_drain": 0.0,
+   "move_cost": 0.0,
+   "hazard_damage": 0.0,
+   "eat_rate": 0.0,
+   "pheromone_deposit": 0.0,
+   "pheromone_decay": 0.93,
+   "pheromone_diffusion": 0.35,
+   "sense_scale_food": 0.35,
+   "sense_scale_pheromone": 0.0,
+   "sense_scale_hazard": 2.0,
+   "sense_scale_damage": 2.0,
+   "sense_scale_collision": 2.0,
+   "body_splat": 1.0,
+   "crowd_threshold": 0.8,
+   "crowd_resist": 0.0,
+   "crowd_push": 0.0,
+   "crowd_blur": 1,
+   "food_sensing": "stereo",
+   "food_probe": "real",
+   "food_odour_sigma": 0.0,
+   "food_probe_radius": 0.0,
+   "check_ledger_every_tick": false,
+   "food_probe_hold": 1,
+   "task": "maze_shuttle",
+   "target_sigma": 6.0,
+   "target_amplitude": 1.0,
+   "target_radius": 1.5,
+   "target_separation": 8.0,
+   "target_max_separation": 0.0,
+   "target_wall_clearance": 3.0,
+   "target_sequence_length": 64,
+   "shuttle_cue_ticks": 5,
+   "maze_cells": 5,
+   "maze_spawns": 4,
+   "maze_sliding": true,
+   "maze_trail_mu": 0.01,
+   "maze_trail_lambda": 0.03,
+   "maze_trail_delta": 0.15,
+   "maze_trail_d0": 0.571,
+   "maze_scent_sigma": 3.0,
+   "maze_scent_reach": 9,
+   "maze_trail_access": "shared"
+  },
+  "map": {
+   "food_patches": [
+    0,
+    0
+   ],
+   "food_patch_radius": [
+    2.5,
+    5.0
+   ],
+   "food_per_patch": [
+    70.0,
+    160.0
+   ],
+   "food_centre_bias": 0.62,
+   "hazard_patches": [
+    0,
+    0
+   ],
+   "hazard_radius": [
+    2.0,
+    4.0
+   ],
+   "hazard_strength": [
+    0.5,
+    1.0
+   ],
+   "hazard_spawn_clearance": 6.0,
+   "spawn_margin": 3.0,
+   "spawn_spread": 0.28,
+   "food_regen": 0.0,
+   "food_scales_with_headcount": true,
+   "food_reference_weys": 20
+  },
+  "combat": {
+   "attack_strength": 1.0,
+   "attack_offset": 0.9,
+   "attack_blur": 1,
+   "damage_k": 0.55,
+   "head_armor": 0.25,
+   "transfer_fraction": 0.5,
+   "max_flank_payback": 0.1,
+   "max_head_on_asymmetry": 1.5,
+   "pump_cost": 0.1
+  },
+  "mutation": {
+   "w_sigma": 0.08,
+   "g_sigma": 0.04,
+   "tau_sigma": 0.15,
+   "bias_sigma": 0.05,
+   "p_mutate": 1.0
+  },
+  "evo": {
+   "population": 32,
+   "generations": 40,
+   "elites": 3,
+   "truncation": 8,
+   "worlds_per_strain": 6,
+   "holdout_worlds": 24,
+   "islands": 1,
+   "migrate_every": 10,
+   "migrants": 1,
+   "chunk_worlds": 512,
+   "train_seed_base": 0,
+   "train_seed_span": 1000000,
+   "holdout_seed_base": 900000000,
+   "eval_ticks": 0,
+   "opponents_self": 3,
+   "opponents_hof": 2,
+   "coevo_worlds": 2,
+   "coevo_sizes": [
+    40,
+    40
+   ],
+   "coevo_lopsided": false,
+   "coevo_vary_sizes": false,
+   "coevo_size_range": [
+    50,
+    200
+   ],
+   "coevo_size_pairs": 2,
+   "coevo_lopsided_fraction": 0.5,
+   "hof_capacity": 12,
+   "suite_every": 5,
+   "suite_sizes": [
+    100,
+    100
+   ],
+   "suite_size": 6,
+   "suite_worlds": 8
+  }
+ },
+ "resolved_config_sha256": "4bce2d50ca0fbb6d92c55e6699c04a32058ede5d4bc38e7fb5b884b9f28c7e81",
+ "e1_inputs_sha256": {
+  "experiments/E1-navigation/freeze.json": "c5c48f83079a6bd0dd48bdeb13d02ab211a08eb64433fdc8372cbd6e74bcaae9",
+  "experiments/E1-navigation/gate.json": "a18b5a53845360107448527b2af038b9c613e4bf11fdfe843c328b7c2a01afa0"
+ },
+ "start_marker": "report-started.json",
+ "rerun": null,
+ "outcome": "completed",
+ "seed_nose_range_selection": {
+  "on_route_noses": 4494076,
+  "in_range": 1660973,
+  "above": 576798,
+  "zero": 1133518,
+  "occluded": 795816,
+  "in_range_share": 0.369591657995993,
+  "above_share": 0.1283462940991652,
+  "in_range_share_unoccluded": 0.4491228307366167,
+  "above_share_unoccluded": 0.15596469691152054,
+  "positive_unoccluded_after_trail": 3326317,
+  "quantiles_unoccluded_positive": {
+   "1": 1e-06,
+   "5": 1e-06,
+   "25": 0.0009549925860214359,
+   "50": 0.039810717055349776,
+   "75": 0.22908676527677746,
+   "95": 0.8912509381337459,
+   "99": 1.8197008586099825
+  },
+  "qualified_inputs": 3326317,
+  "qualified_above_high": 576798,
+  "above_high_share_qualified": 0.1734043989192852,
+  "above_share_qualified_by_level": {
+   "0.35": 0.1734043989192852,
+   "1.0": 0.04023639358485676
+  },
+  "steering_share_all": 0.2937388102213542,
+  "steering_share_on_route": 0.5700709111283387,
+  "pairs_unoccluded": 1429383,
+  "pairs_turn_relevant_share": 0.4842187153478109,
+  "pair_abs_difference_quantiles": {
+   "25": 0.00021877616239495518,
+   "50": 0.008317637711026709,
+   "75": 0.05623413251903491,
+   "95": 0.2754228703338169
+  }
+ },
+ "seed_high_cap": {
+  "qualified_inputs": 3326317,
+  "high_level": 1.0,
+  "above_high_share": 0.04023639358485676,
+  "max": 0.05,
+  "passed": true
+ },
+ "component_tests": {
+  "levels": [
+   0.001,
+   0.003,
+   0.039810717055349776,
+   0.22908676527677746,
+   0.35,
+   0.8912509381337459,
+   1.0,
+   1.8197008586099825
+  ],
+  "active": {
+   "values": {
+    "A@0.001": 34.556968688964844,
+    "A@0.003": 34.556968688964844,
+    "A@0.039810717055349776": 34.5034294128418,
+    "A@0.22908676527677746": 32.8106575012207,
+    "A@0.35": 30.645458221435547,
+    "A@0.8912509381337459": 17.04490089416504,
+    "A@1.0": 14.509960174560547,
+    "A@1.8197008586099825": 3.446951389312744,
+    "B@0.001": 34.55649185180664,
+    "B@0.003": 34.55649185180664,
+    "B@0.039810717055349776": 34.5034294128418,
+    "B@0.22908676527677746": 32.8106575012207,
+    "B@0.35": 30.645458221435547,
+    "B@0.8912509381337459": 17.04490089416504,
+    "B@1.0": 14.509960174560547,
+    "B@1.8197008586099825": 3.446951389312744
+   },
+   "passed": false
+  },
+  "inactive": {
+   "values": {
+    "A@0.001": 0.06502866744995117,
+    "A@0.003": 0.06502866744995117,
+    "A@0.039810717055349776": 0.06502866744995117,
+    "A@0.22908676527677746": 0.06179511174559593,
+    "A@0.35": 0.05768239125609398,
+    "A@0.8912509381337459": 0.032007694244384766,
+    "A@1.0": 0.026986001059412956,
+    "A@1.8197008586099825": 0.0064224000088870525,
+    "B@0.001": 0.06502866744995117,
+    "B@0.003": 0.06502866744995117,
+    "B@0.039810717055349776": 0.06502866744995117,
+    "B@0.22908676527677746": 0.06179511174559593,
+    "B@0.35": 0.05768239125609398,
+    "B@0.8912509381337459": 0.032007694244384766,
+    "B@1.0": 0.026986001059412956,
+    "B@1.8197008586099825": 0.0064224000088870525
+   },
+   "passed": true
+  },
+  "switching": true,
+  "startup": true,
+  "offset": true,
+  "active_passed_up_to_high_level": true,
+  "seed_level_quantiles": {
+   "1": 1e-06,
+   "5": 1e-06,
+   "25": 0.0009549925860214359,
+   "50": 0.039810717055349776,
+   "75": 0.22908676527677746,
+   "95": 0.8912509381337459,
+   "99": 1.8197008586099825
+  },
+  "quantiles_note": "histogram bin upper bounds (bins 2.3% wide), approximate",
+  "one_nose": {
+   "values": {
+    "A@0.001": {
+     "u_left_only": 0.4344303011894226,
+     "u_none": 0.399997740983963,
+     "u_right_only": 0.36531636118888855,
+     "toward_positive": true
+    },
+    "A@0.003": {
+     "u_left_only": 0.5024681687355042,
+     "u_none": 0.399997740983963,
+     "u_right_only": 0.295292466878891,
+     "toward_positive": true
+    },
+    "A@0.039810717055349776": {
+     "u_left_only": 1.0,
+     "u_none": 0.399997740983963,
+     "u_right_only": -0.9400407075881958,
+     "toward_positive": true
+    },
+    "A@0.22908676527677746": {
+     "u_left_only": 1.0,
+     "u_none": 0.399997740983963,
+     "u_right_only": -1.0,
+     "toward_positive": true
+    },
+    "A@0.35": {
+     "u_left_only": 1.0,
+     "u_none": 0.399997740983963,
+     "u_right_only": -1.0,
+     "toward_positive": true
+    },
+    "A@0.8912509381337459": {
+     "u_left_only": 1.0,
+     "u_none": 0.399997740983963,
+     "u_right_only": -1.0,
+     "toward_positive": true
+    },
+    "A@1.0": {
+     "u_left_only": 1.0,
+     "u_none": 0.399997740983963,
+     "u_right_only": -1.0,
+     "toward_positive": true
+    },
+    "A@1.8197008586099825": {
+     "u_left_only": 1.0,
+     "u_none": 0.399997740983963,
+     "u_right_only": -1.0,
+     "toward_positive": true
+    },
+    "B@0.001": {
+     "u_left_only": 0.4344303011894226,
+     "u_none": 0.399997740983963,
+     "u_right_only": 0.36531731486320496,
+     "toward_positive": true
+    },
+    "B@0.003": {
+     "u_left_only": 0.5024681687355042,
+     "u_none": 0.399997740983963,
+     "u_right_only": 0.295292466878891,
+     "toward_positive": true
+    },
+    "B@0.039810717055349776": {
+     "u_left_only": 1.0,
+     "u_none": 0.399997740983963,
+     "u_right_only": -0.9400407075881958,
+     "toward_positive": true
+    },
+    "B@0.22908676527677746": {
+     "u_left_only": 1.0,
+     "u_none": 0.399997740983963,
+     "u_right_only": -1.0,
+     "toward_positive": true
+    },
+    "B@0.35": {
+     "u_left_only": 1.0,
+     "u_none": 0.399997740983963,
+     "u_right_only": -1.0,
+     "toward_positive": true
+    },
+    "B@0.8912509381337459": {
+     "u_left_only": 1.0,
+     "u_none": 0.399997740983963,
+     "u_right_only": -1.0,
+     "toward_positive": true
+    },
+    "B@1.0": {
+     "u_left_only": 1.0,
+     "u_none": 0.399997740983963,
+     "u_right_only": -1.0,
+     "toward_positive": true
+    },
+    "B@1.8197008586099825": {
+     "u_left_only": 1.0,
+     "u_none": 0.399997740983963,
+     "u_right_only": -1.0,
+     "toward_positive": true
+    }
+   },
+   "passed_up_to_high_level": true
+  },
+  "latch_states": {
+   "A": 1.9150080481549399,
+   "B": -1.9150080481549399
+  },
+  "note": "required: active K_D >= 30 up to 0.35, K_D x level >= the registered minimum above it up to the high level, and the one-nose checks; S3r3's inactive limit is reported only"
+ },
+ "criterion2": {
+  "above_walk": {
+   "mean": 3.7080078125,
+   "lo95": 3.21727294921875,
+   "hi95": 4.22999267578125,
+   "n": 256,
+   "passed": true
+  },
+  "legs_median": {
+   "value": 3.5625,
+   "min": 2.0,
+   "passed": true
+  },
+  "headroom": {
+   "value": 28.6943359375,
+   "min": 2.54396484375,
+   "passed": true
+  },
+  "seed_vs_w2": {
+   "mean": 1.09375,
+   "lo95": 0.44432373046875,
+   "hi95": 1.76904296875,
+   "n": 256
+  },
+  "seed_vs_follower": {
+   "mean": -11.6484375,
+   "lo95": -12.95706787109375,
+   "hi95": -10.36815185546875,
+   "n": 256
+  }
+ },
+ "criterion3": {
+  "follower": {
+   "shared_minus_none": {
+    "mean": 3.573208539076435,
+    "lo95": 2.9704949811381063,
+    "hi95": 4.186562268041191,
+    "n": 256,
+    "passed_0.5": true
+   },
+   "own_minus_none": {
+    "mean": 2.0582008724530634,
+    "lo95": 1.538665151104729,
+    "hi95": 2.6104057308685062,
+    "n": 256,
+    "passed_0.5": true
+   },
+   "shared_minus_own": {
+    "mean": 1.5150076666233712,
+    "lo95": 1.031870241354299,
+    "hi95": 1.9804437169541185,
+    "n": 256
+   },
+   "peers_minus_none": {
+    "mean": 3.1367945276366767,
+    "lo95": 2.586056974555884,
+    "hi95": 3.7148318923778327,
+    "n": 256
+   },
+   "replay_minus_own": {
+    "mean": -3.582809250844212,
+    "lo95": -4.1837169611514,
+    "hi95": -3.0187948068473127,
+    "n": 256
+   },
+   "scramble_minus_own": {
+    "mean": -4.132134456972858,
+    "lo95": -4.727427369063621,
+    "hi95": -3.555264314922514,
+    "n": 256
+   },
+   "peer_first_b_shared_minus_own": {
+    "mean": -60.81305803571429,
+    "lo95": -106.59820033482144,
+    "hi95": -17.55224609375003,
+    "n": 256,
+    "share_of_own": -0.06585552599153126,
+    "faster": true
+   },
+   "exposure": {
+    "shared": {
+     "mean": 0.44173408977792816,
+     "zero_share": 0.13713968912760416
+    },
+    "peers": {
+     "mean": 0.4093521929692603,
+     "zero_share": 0.13652750651041667
+    },
+    "replay": {
+     "mean": 0.423600607537026,
+     "zero_share": 0.11867411295572916
+    },
+    "scramble": {
+     "mean": 0.0313653868113354,
+     "zero_share": 0.12063618977864585
+    },
+    "replay_residual_vs_shared": -0.018133482240902166
+   },
+   "route_overlap": {
+    "mean": 0.3724938399807337,
+    "median": 0.3548387096774194
+   },
+   "donor_exceptions": []
+  },
+  "seed": {
+   "shared_minus_none": {
+    "mean": 0.6865456011581479,
+    "lo95": 0.4384413639543739,
+    "hi95": 0.9312492823027855,
+    "n": 256,
+    "passed_0.5": false
+   },
+   "own_minus_none": {
+    "mean": 0.4277437115684238,
+    "lo95": 0.2805597133896906,
+    "hi95": 0.5857778292165602,
+    "n": 256,
+    "passed_0.5": false
+   },
+   "shared_minus_own": {
+    "mean": 0.2588018895897241,
+    "lo95": 0.0008921302540330456,
+    "hi95": 0.5017398517495336,
+    "n": 256
+   },
+   "peers_minus_none": {
+    "mean": 0.6200348197322749,
+    "lo95": 0.3810788807221589,
+    "hi95": 0.8643285306522702,
+    "n": 256
+   },
+   "replay_minus_own": {
+    "mean": -1.0551104693646225,
+    "lo95": -1.3172209164167605,
+    "hi95": -0.813303016823579,
+    "n": 256
+   },
+   "scramble_minus_own": {
+    "mean": -1.2377782471467147,
+    "lo95": -1.5253667447804637,
+    "hi95": -0.9706266915902512,
+    "n": 256
+   },
+   "peer_first_b_shared_minus_own": {
+    "mean": -195.63169642857144,
+    "lo95": -241.5282645089286,
+    "hi95": -149.5787806919643,
+    "n": 256,
+    "share_of_own": -0.12721560994160896,
+    "faster": true
+   },
+   "exposure": {
+    "shared": {
+     "mean": 0.10837443757912438,
+     "zero_share": 0.14439188639322917
+    },
+    "peers": {
+     "mean": 0.10267799394861059,
+     "zero_share": 0.1444215901692708
+    },
+    "replay": {
+     "mean": 0.1013013164509581,
+     "zero_share": 0.11698811848958333
+    },
+    "scramble": {
+     "mean": 0.019087683919224295,
+     "zero_share": 0.13111368815104166
+    },
+    "replay_residual_vs_shared": -0.007073121128166271
+   },
+   "route_overlap": {
+    "mean": 0.3724938399807337,
+    "median": 0.3548387096774194
+   },
+   "donor_exceptions": []
+  },
+  "seed_trail_effect_above_0": true
+ },
+ "replay_coefficients": {
+  "seed": {
+   "coef": 0.6429776098137889,
+   "exposure_shared": 0.09384035784473457,
+   "exposure_donor_at_1": 0.14594654061423917,
+   "donor_exceptions": []
+  },
+  "follower": {
+   "coef": 0.7971097717955569,
+   "exposure_shared": 0.399051738813475,
+   "exposure_donor_at_1": 0.5006233180589135,
+   "donor_exceptions": []
+  }
+ },
+ "single_wey": {
+  "seed": {
+   "visits": {
+    "mean": 5.25390625,
+    "median": 3.0,
+    "sd": 6.615044082300912
+   },
+   "legs": {
+    "mean": 4.39453125,
+    "median": 2.0,
+    "sd": 6.511272982899975
+   },
+   "later_leg_rate": {
+    "mean": 2.3403783685728987,
+    "median": 0.9896361135180916,
+    "sd": 3.257124678918818
+   },
+   "unvisited_share": {
+    "mean": 0.140625,
+    "median": 0.0,
+    "sd": 0.34831527300961795
+   },
+   "first_discovery": {
+    "mean": 841.5234375,
+    "median": 552.0,
+    "sd": 813.250273465473
+   },
+   "occluded_share": {
+    "mean": 0.3362272135416667,
+    "median": 0.33208333333333334,
+    "sd": 0.039502689043963986
+   },
+   "exposure_mean": {
+    "mean": 0.0,
+    "median": 0.0,
+    "sd": 0.0
+   },
+   "exposure_zero_share": {
+    "mean": 1.0,
+    "median": 1.0,
+    "sd": 0.0
+   }
+  },
+  "follower": {
+   "visits": {
+    "mean": 14.328125,
+    "median": 8.0,
+    "sd": 13.632492543228347
+   },
+   "legs": {
+    "mean": 13.40625,
+    "median": 7.0,
+    "sd": 13.552476077940048
+   },
+   "later_leg_rate": {
+    "mean": 6.278220484329375,
+    "median": 3.3783789808616183,
+    "sd": 6.270078684531756
+   },
+   "unvisited_share": {
+    "mean": 0.078125,
+    "median": 0.0,
+    "sd": 0.2688938853314211
+   },
+   "first_discovery": {
+    "mean": 452.98046875,
+    "median": 220.5,
+    "sd": 641.2298627418535
+   },
+   "occluded_share": {
+    "mean": 0.23068196614583333,
+    "median": 0.22625,
+    "sd": 0.02952235516605143
+   },
+   "exposure_mean": {
+    "mean": 0.0,
+    "median": 0.0,
+    "sd": 0.0
+   },
+   "exposure_zero_share": {
+    "mean": 1.0,
+    "median": 1.0,
+    "sd": 0.0
+   }
+  }
+ },
+ "baselines": {
+  "oracle": {
+   "visits": {
+    "mean": 34.47607421875,
+    "median": 32.25,
+    "sd": 9.259420286260216
+   },
+   "legs": {
+    "mean": 33.47607421875,
+    "median": 31.25,
+    "sd": 9.259420286260216
+   },
+   "later_leg_rate": {
+    "mean": 14.441022806156742,
+    "median": 13.456717845494621,
+    "sd": 4.001907011860538
+   },
+   "unvisited_share": {
+    "mean": 0.0,
+    "median": 0.0,
+    "sd": 0.0
+   },
+   "first_discovery": {
+    "mean": 47.8671875,
+    "median": 46.0,
+    "sd": 22.689332759656715
+   },
+   "occluded_share": {
+    "mean": 0.11674519856770835,
+    "median": 0.10924479166666667,
+    "sd": 0.02990709155836737
+   },
+   "exposure_mean": {
+    "mean": 0.0,
+    "median": 0.0,
+    "sd": 0.0
+   },
+   "exposure_zero_share": {
+    "mean": 1.0,
+    "median": 1.0,
+    "sd": 0.0
+   },
+   "later_first_b": {
+    "mean": 159.3671875,
+    "median": 157.92857142857144,
+    "sd": 29.829271075826945
+   }
+  },
+  "w2": {
+   "visits": {
+    "mean": 4.68798828125,
+    "median": 5.375,
+    "sd": 3.3970683375608166
+   },
+   "legs": {
+    "mean": 3.84228515625,
+    "median": 4.375,
+    "sd": 3.2148882444416924
+   },
+   "later_leg_rate": {
+    "mean": 1.9291234969687394,
+    "median": 2.1554883534963762,
+    "sd": 1.4805116796322488
+   },
+   "unvisited_share": {
+    "mean": 0.154296875,
+    "median": 0.0,
+    "sd": 0.3105515235424064
+   },
+   "first_discovery": {
+    "mean": 258.4296875,
+    "median": 99.0,
+    "sd": 542.8536968771929
+   },
+   "occluded_share": {
+    "mean": 0.2313824462890625,
+    "median": 0.22872395833333334,
+    "sd": 0.026736344708020506
+   },
+   "exposure_mean": {
+    "mean": 0.0,
+    "median": 0.0,
+    "sd": 0.0
+   },
+   "exposure_zero_share": {
+    "mean": 1.0,
+    "median": 1.0,
+    "sd": 0.0
+   },
+   "later_first_b": {
+    "mean": 1277.6802455357142,
+    "median": 978.0714285714286,
+    "sd": 758.7718452357312
+   }
+  },
+  "walk": {
+   "visits": {
+    "mean": 2.07373046875,
+    "median": 1.875,
+    "sd": 0.8776198033458893
+   },
+   "legs": {
+    "mean": 1.24853515625,
+    "median": 1.125,
+    "sd": 0.8073257128336297
+   },
+   "later_leg_rate": {
+    "mean": 0.9542732415590797,
+    "median": 0.7770515700294626,
+    "sd": 0.6073304522767103
+   },
+   "unvisited_share": {
+    "mean": 0.1748046875,
+    "median": 0.125,
+    "sd": 0.15286467467094844
+   },
+   "first_discovery": {
+    "mean": 183.28125,
+    "median": 125.5,
+    "sd": 166.80915183902502
+   },
+   "occluded_share": {
+    "mean": 0.36017415364583333,
+    "median": 0.36130208333333336,
+    "sd": 0.017695197018138088
+   },
+   "exposure_mean": {
+    "mean": 0.0,
+    "median": 0.0,
+    "sd": 0.0
+   },
+   "exposure_zero_share": {
+    "mean": 1.0,
+    "median": 1.0,
+    "sd": 0.0
+   },
+   "later_first_b": {
+    "mean": 1908.6261160714287,
+    "median": 1933.7142857142858,
+    "sd": 300.05578412719404
+   }
+  },
+  "carrier_with_variant": {
+   "visits": {
+    "mean": 1.4921875,
+    "median": 1.375,
+    "sd": 0.7933933697830392
+   },
+   "legs": {
+    "mean": 0.76611328125,
+    "median": 0.625,
+    "sd": 0.6790251308261755
+   },
+   "later_leg_rate": {
+    "mean": 0.6918403821813551,
+    "median": 0.5605179381699601,
+    "sd": 0.6378339150754901
+   },
+   "unvisited_share": {
+    "mean": 0.27392578125,
+    "median": 0.25,
+    "sd": 0.22382880003448496
+   },
+   "first_discovery": {
+    "mean": 247.03125,
+    "median": 153.0,
+    "sd": 267.8301755612621
+   },
+   "occluded_share": {
+    "mean": 0.34602172851562496,
+    "median": 0.3436197916666667,
+    "sd": 0.02609975272029277
+   },
+   "exposure_mean": {
+    "mean": 0.0,
+    "median": 0.0,
+    "sd": 0.0
+   },
+   "exposure_zero_share": {
+    "mean": 1.0,
+    "median": 1.0,
+    "sd": 0.0
+   },
+   "later_first_b": {
+    "mean": 2110.6160714285716,
+    "median": 2185.285714285714,
+    "sd": 296.42158406938063
+   }
+  }
+ },
+ "seed_brief": {
+  "visits": {
+   "mean": 5.78173828125,
+   "median": 4.5,
+   "sd": 4.3044415052839495
+  },
+  "legs": {
+   "mean": 4.86328125,
+   "median": 3.5625,
+   "sd": 4.264147085601886
+  },
+  "later_leg_rate": {
+   "mean": 2.850636248047745,
+   "median": 1.957246117586793,
+   "sd": 2.4869908184759715
+  },
+  "unvisited_share": {
+   "mean": 0.08154296875,
+   "median": 0.0,
+   "sd": 0.15966773744792714
+  },
+  "first_discovery": {
+   "mean": 136.51171875,
+   "median": 83.0,
+   "sd": 203.5661665794634
+  },
+  "occluded_share": {
+   "mean": 0.3322163899739583,
+   "median": 0.33182291666666663,
+   "sd": 0.028171179188398596
+  },
+  "exposure_mean": {
+   "mean": 0.10837443757912438,
+   "median": 0.044536911490945436,
+   "sd": 0.13831536289148474
+  },
+  "exposure_zero_share": {
+   "mean": 0.14439188639322917,
+   "median": 0.12151041666666666,
+   "sd": 0.08543243593040724
+  },
+  "later_first_b": {
+   "mean": 1342.1646205357142,
+   "median": 1295.5714285714284,
+   "sd": 556.9632870898708
+  }
+ },
+ "between_maze_cv": 0.744489165004774,
+ "occluded_share": {
+  "seed": 0.3322163899739583,
+  "follower": 0.243751220703125
+ },
+ "seed_median_leg_ticks": 141.0,
+ "seed": "E",
+ "variant": "W2",
+ "seconds": 647.7833175000269
+}
