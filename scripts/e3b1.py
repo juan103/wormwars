@@ -67,6 +67,7 @@ OUT = ROOT / "runs" / "e3b1"
 PREREG = "experiments/E3-ab-organism/E3b-1/PREREGISTRATION.md"
 EQ_REFERENCE = "experiments/E3-ab-organism/E3b-0/development-records/reference.json"  # the engine at 84ff98a
 REPORT_B0 = "experiments/E3-ab-organism/E3b-0/report.json"
+MAZE_REFERENCE = "experiments/E3-ab-organism/E3b-1/maze-reference.json"  # the generator at 171fcc5 (Amendment 1)
 FIXED = {  # §2: every fixed input, checked at load
     "experiments/E4s-stereo-module/E4s-0/module.json": "9613cd155a20ed2cfb891c1bd10fed16814f24a04f912a1940524f2378e877d4",
     "experiments/E3-ab-organism/E3b-0/stage-b3.json": "a54003cfbdf4a00e4e4ff72203258211877d62d96c2f431e458ab14401e600e9",
@@ -78,7 +79,7 @@ FIXED = {  # §2: every fixed input, checked at load
     "experiments/E1-navigation/gate.json": "a18b5a53845360107448527b2af038b9c613e4bf11fdfe843c328b7c2a01afa0",
     "experiments/E2-optimizer-screen/train-ga.json": "88a3ed88de2f89042970c11fc8e4de49b8432e533a2e9e802de3e1333e538d7c",
 }
-GUARDED = ["wormwars", "scripts", "configs", "requirements.txt", PREREG, EQ_REFERENCE, *FIXED]
+GUARDED = ["wormwars", "scripts", "configs", "requirements.txt", PREREG, EQ_REFERENCE, MAZE_REFERENCE, *FIXED]
 SMOKE = False
 TEST_OPEN = False  # the test block is opened only inside `evaluate` (§4)
 
@@ -417,14 +418,14 @@ def admission_projection(timing: dict, plan: dict, completed: dict, stage: str) 
     return projections(timing, plan, done)
 
 
-def training_progress(stage: str, entries: list | None = None, runs_all: list | None = None):
+def training_progress(stage: str, entries: list | None = None, runs_all: list | None = None, mazes: dict | None = None):
     """A durable progress record, written at once and then as `evolve_batch`'s on_checkpoint, so a kill is
     charged to its last write. It carries the attempts and the stage's runs, so a final record built from it
     after a killed rerun (E2's `final_killed_record`) states them as failed (§5; Astra, D189)."""
     def doc(g, runs):
         return {"stage": stage, "generation": g, "runs_in_batch": runs,
                 "attempts": [dict(e) for e in (entries or [])], "failed_runs": list(runs_all or []),
-                "failed_note": "the stage's runs, failed if the stage ends here finally (§5)",
+                "failed_note": "the stage's runs, failed if the stage ends here finally (§5)", "mazes": mazes,
                 "utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())}
 
     E.write_atomic(E.partial_path(stage), doc(None, None))
@@ -432,6 +433,12 @@ def training_progress(stage: str, entries: list | None = None, runs_all: list | 
     def write(records, g):
         E.write_atomic(E.partial_path(stage), doc(int(g), [r.spec.run for r in records]))
     return write
+
+
+def start_progress(stage: str, mazes: dict | None) -> None:
+    """The durable progress record at a stage's start, with its pre-flight (D191)."""
+    E.write_atomic(E.partial_path(stage), {"stage": stage, "mazes": mazes,
+                                           "utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())})
 
 
 def note_progress(stage: str, item: str, key: str = "completed_chunks") -> None:
@@ -537,6 +544,25 @@ def stage_mazes(stage: str, plan: dict) -> list:
 
 
 def preflight(mazes: list) -> dict:
+    out = scan_mazes(mazes)
+    if out["donor_exceptions"]:
+        raise SystemExit(f"the replay donor search exhausted for mazes {out['donor_exceptions']}: refusing to start "
+                         "(Amendment 1)")
+    return out
+
+
+def stage_preflight(stage: str, mazes: list) -> dict:
+    """The pre-flight in a stage's `requires`. A refusal leaves `<stage>-preflight-refused.json` (Fable, D191); it
+    is not an admission refusal under §10."""
+    out = scan_mazes(mazes)
+    if out["donor_exceptions"]:
+        E.write_atomic(EXP / f"{stage}-preflight-refused.json",
+                       {**out, "stage": stage, "decision": "refused before starting: a replay donor search exhausted "
+                                                           "(Amendment 1)"})
+    return preflight(mazes) if out["donor_exceptions"] else out
+
+
+def scan_mazes(mazes: list) -> dict:
     """Builds every maze before the stage starts: its walls (with any redraw, Amendment 1), its episode-0
     placement and, where replay is played, its donor. A donor search that exhausts refuses the stage (§6 needs
     a donor whose A or B differs; Astra, D190). Returns the redrawn ids for the stage's record."""
@@ -555,8 +581,6 @@ def preflight(mazes: list) -> dict:
         if donors:
             _, exc = MR.replay_donors(np.array([mid]), sd, c)
             exceptions += exc
-    if exceptions:
-        raise SystemExit(f"the replay donor search exhausted for mazes {exceptions}: refusing to start (Amendment 1)")
     return {"checked": len(seen), "redrawn": sorted(redrawn, key=lambda r: (r["seed"], r["id"])),
             "donor_exceptions": exceptions}
 
@@ -637,7 +661,7 @@ def cmd_project(args):
                 "note": "timings only, on smoke ids from 9 500 at the projection seed 1 190 900 (the projection's "
                         "maze run seed, not §4's 1 180 000); no score is read"}
 
-    return E.run_stage(args, "project", lambda a, prov: {"mazes": preflight(stage_mazes("project", default_plan()))},
+    return E.run_stage(args, "project", lambda a, prov: {"mazes": stage_preflight("project", stage_mazes("project", default_plan()))},
                        body)
 
 
@@ -649,10 +673,19 @@ def ge_verdict(got, want, composition) -> dict:
             "composition": composition}
 
 
-def ge_passed(cpu: dict, gpu: dict, hook: dict, smoke: bool | None = None) -> bool:
+def ge_passed(cpu: dict, gpu: dict, hook: dict, mazes: dict, smoke: bool | None = None) -> bool:
     smoke = SMOKE if smoke is None else smoke
     gpu_ok = bool(gpu.get("all_match")) or (smoke and "skipped" in gpu)
-    return bool(cpu.get("passed")) and bool(hook.get("identical")) and gpu_ok
+    return bool(cpu.get("passed")) and bool(hook.get("identical")) and bool(mazes.get("passed")) and gpu_ok
+
+
+def maze_leg() -> dict:
+    """Amendment 1's maze equivalence (rule 7): the generator against its reference at 171fcc5, bitwise. Smoke
+    checks two blocks without the trace."""
+    AUD = _load("e3b1_maze_audit_for_ge", "e3b1_maze_audit.py")
+    ref = json.loads((ROOT / MAZE_REFERENCE).read_text(encoding="utf-8"))
+    out = AUD.compare(ref, sets=["validation", "calibration"], with_trace=False) if SMOKE else AUD.compare(ref)
+    return {**out, "reference_sha256": E.sha256_bytes(ROOT / MAZE_REFERENCE), "smoke_subset": SMOKE}
 
 
 def gpu_leg(dev, cap) -> dict:
@@ -703,12 +736,14 @@ def cmd_ge(args):
         with acct.category("calibration"):
             new = EQ.run(ROOT, Path(ROOT / "data" / "cache" / "cook2019_herm.npz"))
             hook = hook_leg(ctx.cap)
+            mazes = maze_leg()
         cpu = EQ.compare(ref, new)
         cpu["reference_sha256"] = E.sha256_bytes(ref_path)
         cpu["engines"] = {"reference": ref.get("engine"), "compared": new.get("engine")}
         with acct.category("calibration"):
             gpu = {"skipped": "smoke"} if SMOKE else gpu_leg(ctx.args.device, ctx.cap)
-        return {"passed": ge_passed(cpu, gpu, hook), "cpu": cpu, "gpu": gpu, "snapshot_hook": hook}
+        return {"passed": ge_passed(cpu, gpu, hook, mazes), "cpu": cpu, "gpu": gpu, "snapshot_hook": hook,
+                "mazes": mazes}
 
     return E.run_stage(args, "g-e", require_plan, body)
 
@@ -802,7 +837,7 @@ def cmd_train(args, arm: str):
             refuse(stage, {"spent_hours": spent, "projected_hours": proj, "provenance": prov, "attempt": "stage"})
             raise SystemExit(f"{stage} not admitted under §10 (spent {spent:.2f} h)")
         held["plan"], held["proj"] = p, proj
-        out["mazes"] = preflight(stage_mazes(stage, p))
+        out["mazes"] = stage_preflight(stage, stage_mazes(stage, p))
         return out
 
     def body(ctx):
@@ -820,7 +855,7 @@ def cmd_train(args, arm: str):
         start = start_genome(cx, arm)
         snap = tuple(s for s in a["snapshot"] if s < G)
         entries = read_attempts(stage)
-        progress = training_progress(stage, entries, runs_all)
+        progress = training_progress(stage, entries, runs_all, mazes=ctx.doc["mazes"])
 
         def save(e):
             E.write_atomic(attempts_path(stage), e)
@@ -919,12 +954,13 @@ def cmd_champions(args):
         proj = projections(out["project"]["timing"], plan_of(out), done)
         if not SMOKE and not admit_champions(E.clock().spent_hours(), proj):
             raise SystemExit("champions not admitted: champions and evaluate together would exceed the cap (§10)")
-        out["mazes"] = preflight(stage_mazes("champions", plan_of(out)))
+        out["mazes"] = stage_preflight("champions", stage_mazes("champions", plan_of(out)))
         return out
 
     def body(ctx):
         check_inputs()
         ctx.doc["mazes"] = ctx.earlier.get("mazes")
+        start_progress("champions", ctx.doc["mazes"])
         dev = ctx.args.device
         trained = ctx.earlier["trained"]
         champs = []
@@ -1145,12 +1181,13 @@ def cmd_evaluate(args):
         proj = projections(out["project"]["timing"], plan_of(out), done)
         if not SMOKE and not admit_evaluate(E.clock().spent_hours(), proj):
             raise SystemExit("evaluate not admitted (§10)")
-        out["mazes"] = preflight(stage_mazes("evaluate", plan_of(out)))
+        out["mazes"] = stage_preflight("evaluate", stage_mazes("evaluate", plan_of(out)))
         return out
 
     def body(ctx):
         check_inputs()
         ctx.doc["mazes"] = ctx.earlier.get("mazes")
+        start_progress("evaluate", ctx.doc["mazes"])
         dev = ctx.args.device
         cfg = cfg_for("shared")
         cx = context(cfg)

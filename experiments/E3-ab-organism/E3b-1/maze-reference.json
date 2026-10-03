@@ -4,6 +4,7 @@
  "sets": {
   "calibration": {
    "digest_of_feasible": "18d406d304d3731efb939fd20688fa5c652b31e07ecd74c1d606f2a785ff9c4a",
+   "donor_exceptions": [],
    "infeasible": [],
    "n": 256,
    "per_id": {
@@ -1206,6 +1207,7 @@
   },
   "test": {
    "digest_of_feasible": "17056e624f47b03faa7360156f985bb101ccdcc87ce7aa27891e4f4910878d59",
+   "donor_exceptions": [],
    "infeasible": [
     6073
    ],
@@ -1675,5 +1677,10 @@
    "seed": 1180000
   }
  },
- "trace_sha256": "2c01290fa7e4aea60d72b1181f70031034a9ac666fb962008fefa41c740d6563"
+ "trace_ids": [
+  9900,
+  9901,
+  9902
+ ],
+ "trace_sha256": "86ff356d1407c2400e082c96d57840e90c616efbc69bdc27c8139281d968d43e"
 }

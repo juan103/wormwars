@@ -8,7 +8,9 @@ edge opens the 3-wide gap in the wall between two neighbouring cells.
 `maze_for` keys the walls by (run seed, maze id) and the placements by (run seed, maze id, episode), so a
 placement never moves the walls. The placements are A and B at two distinct dead ends whose tree distance
 is in [⌈c/2⌉ + 1, 2c], drawn only among pairs that leave a spawn candidate, and spawns at up to `n_spawns`
-other dead ends, each at least 2 maze cells from A and from B. A maze with no eligible pair raises.
+other dead ends, each at least 2 maze cells from A and from B. Walls with no eligible pair are
+redrawn, keyed by the id and never by the episode (`walls_for`; E3b-1's Amendment 1, D190); beyond
+64 redraws the maze raises.
 """
 
 from __future__ import annotations

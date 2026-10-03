@@ -6100,3 +6100,30 @@ to skip to the next id. Both reviewers accepted the amendment as the instrument 
 amendment. To be weighed in E3b-2's design.
 
 **Tests:** 5 new, each seen failing first: 3 for the maze, 2 for the pre-flight.
+
+## D191 — Amendment 1's confirmation: an organism had played a test maze; disclosed and fixed
+
+**The review** (`docs/reviews/20261003-E3b-1-amendment-1-check/`): Amendment 1 as committed. **Fable 5.1:**
+"rerun project", with three non-blocking points. **Astra 6:** four fixes.
+
+**The serious one (Astra; Fable did not see it).** The audit's CPU equivalence trace played the frozen seed
+for 300 ticks on test maze 6000, twice. Amendment 1's "no organism played on those mazes" was false.
+- **What was exposed:** only a hash of positions and events was computed; no score or behaviour was read.
+  The organism is the frozen comparator, so no tuning could be affected.
+- **Disclosure:** a dated correction now follows Amendment 1 in §14. It is a breach of §4's "opened only in
+  the evaluation stage", made by Claude when writing the audit, and it is reported as such.
+- **Fix:** the trace moves to mazes 9900-9902, outside every block, with a test. The reference was rewritten
+  with the generator at 171fcc5, in a temporary worktree. The comparison passes, with the same 41 redraws.
+
+**The other fixes, each with a test seen failing first:**
+- **`g-e` runs the maze comparison** as a leg of its verdict, with a sabotaged-reference test (Astra; Fable
+  had asked for it in D190, and D190's "every change taken" overstated this);
+- **the redrawn ids survive a kill** in the durable progress records (Astra);
+- **a pre-flight refusal leaves a record** (Fable);
+- **the audit reports donor exceptions** (Fable);
+- **`maze.py`'s module docstring** no longer says an infeasible maze raises (both).
+
+**Tests:** 5 new.
+
+**Next:** the full suite, then `project`'s rerun on the GPU. Fable said "rerun project"; Astra's fixes are
+all taken as asked, so there is no further round.

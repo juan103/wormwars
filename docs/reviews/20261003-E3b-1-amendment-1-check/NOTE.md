@@ -1,0 +1,1 @@
+Astra 6 at "xhigh" with pinned settings and Fable 5.1 at "high" (run 20261003-123508), the same prompt to both, on Amendment 1 as committed (72382c3, fd9205c). Fable: "rerun project", three non-blocking points. Astra: four fixes, including that the audit trace had played test maze 6000 (D191).

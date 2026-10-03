@@ -2,7 +2,13 @@
  "identical_feasible": true,
  "differences": [],
  "trace_identical": true,
+ "trace_ids": [
+  9900,
+  9901,
+  9902
+ ],
  "infeasible_after": {},
+ "donor_exceptions": {},
  "redraws": [
   {
    "set": "e3b0-fresh",

@@ -413,12 +413,12 @@ def test_g_e_fails_when_one_generations_hash_differs(m):
 
 
 def test_g_e_requires_every_leg(m):
-    assert m.ge_passed({"passed": True}, {"all_match": True}, {"identical": True})
-    assert not m.ge_passed({"passed": True}, {"all_match": True}, {"identical": False})
-    assert not m.ge_passed({"passed": False}, {"all_match": True}, {"identical": True})
-    assert not m.ge_passed({"passed": True}, {"all_match": False}, {"identical": True})
-    assert not m.ge_passed({"passed": True}, {"skipped": "smoke"}, {"identical": True}, smoke=False)
-    assert m.ge_passed({"passed": True}, {"skipped": "smoke"}, {"identical": True}, smoke=True)
+    assert m.ge_passed({"passed": True}, {"all_match": True}, {"identical": True}, {"passed": True})
+    assert not m.ge_passed({"passed": True}, {"all_match": True}, {"identical": False}, {"passed": True})
+    assert not m.ge_passed({"passed": False}, {"all_match": True}, {"identical": True}, {"passed": True})
+    assert not m.ge_passed({"passed": True}, {"all_match": False}, {"identical": True}, {"passed": True})
+    assert not m.ge_passed({"passed": True}, {"skipped": "smoke"}, {"identical": True}, {"passed": True}, smoke=False)
+    assert m.ge_passed({"passed": True}, {"skipped": "smoke"}, {"identical": True}, {"passed": True}, smoke=True)
 
 
 # ------------------------------------------------------------------ test 16: the probes' thresholds
@@ -739,3 +739,62 @@ def test_the_pre_flight_lists_redraws_and_refuses_a_donor_exhaustion(m, monkeypa
     monkeypatch.setattr(MR, "replay_donors", lambda ids, seed, c: (np.array([1064]), [int(ids[0])]))
     with pytest.raises(SystemExit, match="donor"):
         m.preflight([(m.seed(), 6000, True)])
+
+
+# ------------------------------------------------------------------ Amendment 1's confirmation (D191)
+
+def _audit():
+    s = importlib.util.spec_from_file_location("audit_under_test", ROOT / "scripts" / "e3b1_maze_audit.py")
+    mod = importlib.util.module_from_spec(s)
+    s.loader.exec_module(mod)
+    return mod
+
+
+def test_the_audit_trace_plays_no_registered_maze():
+    aud = _audit()
+    used = {int(x) for name, (seed, ids, _) in aud.corpus().items() if seed == aud.SEED and not name.startswith("train-")
+            for x in ids}
+    assert aud.TRACE_IDS and not set(aud.TRACE_IDS) & used
+    assert not set(aud.TRACE_IDS) & set(range(4000, 6256))
+
+
+def test_the_audit_reports_donor_exceptions_and_catches_a_sabotaged_reference(tmp_path):
+    aud = _audit()
+    ref = aud.audit(sets=["validation", "calibration"], with_trace=False)
+    assert ref["sets"]["calibration"]["donor_exceptions"] == []
+    assert aud.compare(ref, sets=["validation", "calibration"], with_trace=False)["passed"]
+    bad = json.loads(json.dumps(ref))
+    bad["sets"]["validation"]["per_id"]["4000"] = "0" * 64
+    r = aud.compare(bad, sets=["validation", "calibration"], with_trace=False)
+    assert not r["passed"] and ("validation", "4000") in [tuple(d) for d in r["differences"]]
+
+
+def test_g_e_requires_the_maze_comparison(m):
+    assert not m.ge_passed({"passed": True}, {"all_match": True}, {"identical": True}, {"passed": False})
+    assert m.ge_passed({"passed": True}, {"all_match": True}, {"identical": True}, {"passed": True})
+
+
+def test_the_redrawn_mazes_survive_in_the_progress_records(m, tmp_path, monkeypatch):
+    from types import SimpleNamespace
+    monkeypatch.setattr(m.E, "EXP", tmp_path)
+    monkeypatch.setattr(m, "EXP", tmp_path)
+    mazes = {"checked": 3, "redrawn": [{"seed": 1, "id": 2, "k": 1}], "donor_exceptions": []}
+    write = m.training_progress("train-ta", entries=[], runs_all=[0], mazes=mazes)
+    write([SimpleNamespace(spec=SimpleNamespace(run=0))], 25)
+    assert json.loads(m.E.partial_path("train-ta").read_text(encoding="utf-8"))["mazes"] == mazes
+    m.start_progress("evaluate", mazes)
+    m.note_progress("evaluate", "eval-b1-shared-c00.npz")
+    doc = json.loads(m.E.partial_path("evaluate").read_text(encoding="utf-8"))
+    assert doc["mazes"] == mazes and doc["completed_chunks"] == ["eval-b1-shared-c00.npz"]
+
+
+def test_a_pre_flight_refusal_leaves_a_record(m, tmp_path, monkeypatch):
+    monkeypatch.setattr(m.E, "EXP", tmp_path)
+    monkeypatch.setattr(m, "EXP", tmp_path)
+    from wormwars.e3 import maze_runs as MR
+    monkeypatch.setattr(MR, "replay_donors", lambda ids, seed, c: (np.array([1064]), [int(ids[0])]))
+    with pytest.raises(SystemExit, match="donor"):
+        m.stage_preflight("evaluate", [(m.seed(), 6000, True)])
+    doc = json.loads((tmp_path / "evaluate-preflight-refused.json").read_text(encoding="utf-8"))
+    assert doc["donor_exceptions"] == [6000]
+    assert m.stage_state("evaluate") != "refused"  # not an admission refusal (§10)

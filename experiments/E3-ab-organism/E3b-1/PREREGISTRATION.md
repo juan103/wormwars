@@ -566,6 +566,26 @@ before the change):
 **`project`:** attempt 1's record and compute charge stay. The rerun is its one rerun under §5, on the amended
 commit, which is the provenance of every later stage.
 
+**Correction, 2026-10-03 (D191).** The text above says the audit was "a geometry-only exception to §4 … no
+organism played on those mazes". **That is wrong** (Astra caught it).
+- **What ran:** the audit's equivalence trace, as committed at 72382c3, played the frozen seed E + W2 for 300
+  CPU ticks on three mazes, one of them **test maze 6000** (with 4000 and 4001). It ran twice, for the
+  reference and for the comparison.
+- **What was seen:** only a sha256 of the positions and events was computed and compared. No score, count or
+  behaviour was read or shown. The seed is the frozen comparator, not a tuned organism.
+- **What changed:**
+  - the trace now plays mazes 9900-9902, outside every block;
+  - the reference was rewritten with the generator at 171fcc5; the earlier reference stays in 72382c3;
+  - the comparison passes as before: every feasible maze identical, the trace identical, 41 redraws.
+
+**Also added after the confirmation pass (D191):**
+- **`g-e` now runs the maze comparison** against `maze-reference.json`, and the comparison is a leg of its
+  verdict. "Every change taken" (D190) had overstated this.
+- **The pre-flight's redrawn ids are kept in the stage's durable progress record,** so a killed attempt's
+  final record keeps them.
+- **A pre-flight refusal leaves `<stage>-preflight-refused.json`.** It is not an admission refusal under §10.
+- **The audit reports the donor search's exceptions.** The calibration and test blocks have none.
+
 ## 15. Changes from draft 1 (the reviews, D184)
 
 | Point (who) | Draft 2 |
