@@ -1,8 +1,8 @@
 {
  "stage": "project",
- "attempt": 2,
+ "attempt": 1,
  "provenance": {
-  "git_commit": "da59a6be8530ad489a50d85b8e4f4ba2cd54085c",
+  "git_commit": "171fcc59d3efca316ad19e5594437c624a6afb65",
   "branch": "roadmap",
   "dirty": false,
   "python": "3.13.3",
@@ -13,5 +13,5 @@
   "connectome_cache_sha256": "43b87aa172a0042b9dce734b15bdf1c87efe3a33ac1cc0d9cd03255a60c96d4a",
   "connectome_source_sha256": "1f4fdbf84746b69b49a8da0816f52787860ce349b638dce37924ba80f90c70c9"
  },
- "started_utc": "2026-10-03T11:02:08Z"
+ "started_utc": "2026-10-03T10:02:22Z"
 }

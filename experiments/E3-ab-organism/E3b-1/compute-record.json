@@ -13,6 +13,21 @@
    ],
    "default_category": "measure",
    "git_commit": "171fcc59d3efca316ad19e5594437c624a6afb65"
+  },
+  {
+   "file": "20261003T110205Z-2d1ba692.json",
+   "status": "completed",
+   "script": "e3b1",
+   "argv": [
+    "project",
+    "--device",
+    "cuda",
+    "--rerun",
+    "--reason",
+    "attempt 1 stopped on infeasible maze 9585 (about 1 s, no world tick); rerun under Amendment 1 (D190, D191), the stage's one rerun under section 5"
+   ],
+   "default_category": "measure",
+   "git_commit": "da59a6be8530ad489a50d85b8e4f4ba2cd54085c"
   }
  ],
  "failed_attempts": 1,
@@ -23,21 +38,42 @@
    "world_ticks": 0,
    "neural_updates": 0,
    "neural_padding": 0,
-   "seconds": 0.9959667001385242
+   "seconds": 3.6922421993222088
   },
   "holdout": {
+   "worlds_built": 29696,
+   "world_ticks": 71270400,
+   "neural_updates": 18245222400,
+   "neural_padding": 0,
+   "seconds": 1317.5303412997164
+  },
+  "selection": {
+   "worlds_built": 49152,
+   "world_ticks": 117964800,
+   "neural_updates": 30198988800,
+   "neural_padding": 0,
+   "seconds": 1748.8557063010521
+  },
+  "final": {
+   "worlds_built": 16896,
+   "world_ticks": 40550400,
+   "neural_updates": 10695475200,
+   "neural_padding": 314572800,
+   "seconds": 653.8282224999275
+  },
+  "probe": {
    "worlds_built": 0,
    "world_ticks": 0,
-   "neural_updates": 0,
-   "neural_padding": 0,
-   "seconds": 0.13245559995993972
+   "neural_updates": 1510400,
+   "neural_padding": 755200,
+   "seconds": 27.6581232000608
   }
  },
  "totals": {
-  "worlds_built": 0,
-  "world_ticks": 0,
-  "neural_updates": 0,
-  "neural_padding": 0,
-  "seconds_timed": 1.128422300098464
+  "worlds_built": 95744,
+  "world_ticks": 229785600,
+  "neural_updates": 59141196800,
+  "neural_padding": 315328000,
+  "seconds_timed": 3751.564635500079
  }
 }

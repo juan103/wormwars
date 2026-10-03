@@ -1,0 +1,12 @@
+{
+ "stage": "project",
+ "how_the_first_attempt_ended": "stopped",
+ "reason": "attempt 1 stopped on infeasible maze 9585 (about 1 s, no world tick); rerun under Amendment 1 (D190, D191), the stage's one rerun under section 5",
+ "reconciled_compute": null,
+ "status": "applied",
+ "archived": {
+  "project.json": "project-attempt1.json",
+  "project-started.json": "project-started-attempt1.json"
+ },
+ "written_utc": "2026-10-03T11:02:08Z"
+}

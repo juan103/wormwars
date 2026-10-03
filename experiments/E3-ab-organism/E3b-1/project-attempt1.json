@@ -1,6 +1,6 @@
 {
  "stage": "project",
- "attempt": 2,
+ "attempt": 1,
  "registered": {
   "maze_seed": 1180000,
   "c": 5,
@@ -115,7 +115,7 @@
   "rerun_kill_tail_seconds": 900
  },
  "provenance_at_start": {
-  "git_commit": "da59a6be8530ad489a50d85b8e4f4ba2cd54085c",
+  "git_commit": "171fcc59d3efca316ad19e5594437c624a6afb65",
   "branch": "roadmap",
   "dirty": false,
   "python": "3.13.3",
@@ -303,143 +303,9 @@
   "experiments/E1-navigation/gate.json": "a18b5a53845360107448527b2af038b9c613e4bf11fdfe843c328b7c2a01afa0"
  },
  "start_marker": "project-started.json",
- "rerun": {
-  "stage": "project",
-  "how_the_first_attempt_ended": "stopped",
-  "reason": "attempt 1 stopped on infeasible maze 9585 (about 1 s, no world tick); rerun under Amendment 1 (D190, D191), the stage's one rerun under section 5",
-  "reconciled_compute": null,
-  "status": "applied",
-  "archived": {
-   "project.json": "project-attempt1.json",
-   "project-started.json": "project-started-attempt1.json"
-  },
-  "written_utc": "2026-10-03T11:02:08Z"
- },
- "mazes": {
-  "checked": 1022,
-  "redrawn": [
-   {
-    "seed": 1190900,
-    "id": 9585,
-    "k": 1
-   }
-  ],
-  "donor_exceptions": []
- },
- "outcome": "completed",
- "timing": {
-  "training": {
-   "ta": {
-    "t_gen": 143.4785076000262,
-    "t_ckpt": 42.11700109997764,
-    "composition": [
-     256,
-     16,
-     8
-    ],
-    "batch_seconds": [
-     185.58748240000568,
-     185.603535000002
-    ]
-   },
-   "tf": {
-    "t_gen": 74.10304405004717,
-    "t_ckpt": 40.768414499936625,
-    "composition": [
-     256,
-     8,
-     8
-    ],
-    "batch_seconds": [
-     114.76517300005071,
-     114.97774409991689
-    ]
-   },
-   "n": {
-    "t_gen": 104.48672024998814,
-    "t_ckpt": 34.48841860005632,
-    "composition": [
-     192,
-     16,
-     8
-    ],
-    "batch_seconds": [
-     138.97023630002514,
-     138.98004140006378
-    ]
-   },
-   "n4": {
-    "t_gen": 71.59162144991569,
-    "t_ckpt": 29.553152800071985,
-    "composition": [
-     128,
-     16,
-     8
-    ],
-    "batch_seconds": [
-     101.18675399990752,
-     101.10279450006783
-    ]
-   },
-   "r": {
-    "t_gen": 42.69577515008859,
-    "t_ckpt": 25.614285100018606,
-    "composition": [
-     64,
-     16,
-     8
-    ],
-    "batch_seconds": [
-     68.2715256002266,
-     68.3485948999878
-    ]
-   }
-  },
-  "validation_32": 141.94556360016577,
-  "eval_plain": 148.5126173000317,
-  "eval_donor": 143.69856249983422,
-  "eval_single": 34.94898860016838,
-  "probes": 13.931810399983078
- },
- "plan": {
-  "runs": {
-   "ta": 8,
-   "tf": 8,
-   "n": 4,
-   "r": 2
-  },
-  "G": {
-   "ta": 125,
-   "tf": 300,
-   "n": 125,
-   "r": 125
-  },
-  "cuts": [
-   "n to runs 0-3"
-  ],
-  "projected_hours": {
-   "train-ta": 5.052087626834206,
-   "train-tf": 6.322472945420369,
-   "train-n": 2.5350754438999705,
-   "train-r": 1.525182667878107,
-   "champions": 1.1828796966680482,
-   "evaluate": 1.0326469105833287,
-   "g-e": 0.3
-  },
-  "planned_total": 22.850562609931156,
-  "fits": true
- },
- "fixed_inputs": {
-  "experiments/E4s-stereo-module/E4s-0/module.json": "9613cd155a20ed2cfb891c1bd10fed16814f24a04f912a1940524f2378e877d4",
-  "experiments/E3-ab-organism/E3b-0/stage-b3.json": "a54003cfbdf4a00e4e4ff72203258211877d62d96c2f431e458ab14401e600e9",
-  "experiments/E3-ab-organism/E3b-0/stage-c.json": "c3861dec78d8015902aff233f63cac331dd4594fe651c79c15f04d64dd6a082b",
-  "experiments/E3-ab-organism/E3b-0/report.json": "af82e1c9573b0f2b73d228d065c277f9bb46310f2fd8d395439a557e359d7df8",
-  "experiments/E3-ab-organism/E3b-0/timing.json": "c4cb4df44a6bdcf81b6f506103d2fe40f4d8991a1d97cb8dc8df9849921c7afd",
-  "experiments/E3-ab-organism/E3b-1/power.json": "2b4e618e884dc678170e5d7ac8f569c0907609638e5086cd3b6e82df45129145",
-  "experiments/E1-navigation/freeze.json": "c5c48f83079a6bd0dd48bdeb13d02ab211a08eb64433fdc8372cbd6e74bcaae9",
-  "experiments/E1-navigation/gate.json": "a18b5a53845360107448527b2af038b9c613e4bf11fdfe843c328b7c2a01afa0",
-  "experiments/E2-optimizer-screen/train-ga.json": "88a3ed88de2f89042970c11fc8e4de49b8432e533a2e9e802de3e1333e538d7c"
- },
- "note": "timings only, on smoke ids from 9 500 at the projection seed 1 190 900 (the projection's maze run seed, not \u00a74's 1 180 000); no score is read",
- "seconds": 3748.3199809999205
+ "rerun": null,
+ "final": false,
+ "outcome": "E3b-1: not completed (the run stopped)",
+ "error": "ValueError: maze 9585 (c=5) has no eligible placement",
+ "seconds": 0.18547450006008148
 }
