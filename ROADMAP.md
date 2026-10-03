@@ -68,6 +68,13 @@
       They differ on how far: about 125 generations at 16 worlds (Astra), or 250-300 at 8 worlds with 6
       no-trail runs (Fable).
     - **Owed before its runs:** the GPU leg of the engine's equivalence check.
+  - **E3b-1 is pre-registered and bound** (2026-10-03, D181-D186;
+    `experiments/E3-ab-organism/E3b-1/PREREGISTRATION.md`).
+    - **The design:** the owner's schedule, 8 runs × 125 generations × 16 mazes and 8 × 300 × 8, with a
+      read at generation 125, plus a no-trails arm (6 runs) and a recovery control (2).
+    - **The gate:** a stratified Welch test on the 16 final champions against the frozen seed.
+    - **The cap:** 24 GPU-hours.
+    - **Next:** implementation, a code review, then the runs.
 
 - **Published on main:**
   - 02's D050 correction, as a Corrections entry (27 September, D063);

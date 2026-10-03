@@ -1,11 +1,13 @@
 # E3b-1 pre-registration: the E3 gate in mazes
 
-Status: **draft 3, 2026-10-03, for both reviewers.** Nothing of E3b-1 has run.
+Status: **final, 2026-10-03.** Nothing of E3b-1 has run.
 - **Draft 1** (95800aa): Fable said "bind after fixes"; Astra said "revise"
   (`docs/reviews/20261003-E3b-1-prereg/`; D184).
 - **Draft 2** (6d251fd): Fable said "bind", with last fixes; Astra said "revise"
   (`docs/reviews/20261003-E3b-1-prereg-2/`; D185).
-- **Draft 3 takes every fix from both rounds.** §15 and §16 map them.
+- **Draft 3** (1c86190): both said "bind", with last fixes and no further round
+  (`docs/reviews/20261003-E3b-1-prereg-3/`; D186).
+- **This text takes every fix from the three rounds.** §15, §16 and §17 map them.
 - **Its design:** `docs/E3/E3b-1-DESIGN.md` v2, confirmed by both reviewers (D183). The pins in its "v2, as
   confirmed" are carried here. §13 lists the departures.
 - **Binding:** it binds when committed and pushed after both reviewers agree, before any stage of E3b-1 runs
@@ -150,6 +152,13 @@ has at most three attempts:
 
 **The other stages** (`project`, `g-e`, `champions`, `evaluate`) are rerun once after a crash or kill. A
 second stop is final.
+- **`champions` is atomic:** its rerun restarts it, and no partial validation is used.
+- **`evaluate` requires a completed `champions`.** If `champions` stops finally, every reading is "not read",
+  and no training run is relabelled "failed".
+- **A non-finite attempt costs a stage.** Attempt 2 after a non-finite score is unchanged. If the stage is
+  exact on this GPU at its composition, attempt 2 reproduces the same non-finite score, and only attempt 3
+  drops the run. That can cost up to a second full training stage against the cap. The rule stands, and its
+  cost is accepted (Fable).
 - **`evaluate`** saves each chunk's per-maze arrays when the chunk completes. The chunks are fixed in
   advance: the blocks in their order (§6), and within a block the organisms in the order of §6's table,
   with the arms in the order T-A, T-F, N, R and the runs by index.
@@ -193,13 +202,17 @@ arrays are saved when it completes.
 - **The composition:** chunks of 16 organisms × 256 mazes (4 096 worlds). With replay donors, chunks of
   8 organisms × 256 mazes, plus their 8 × 256 donors (4 096 worlds). A block's last chunk holds whatever
   organisms remain. Every record states the composition.
-- **The nose recorder** runs for every organism in block 1. Each organism's record gives the qualified
-  inputs' count and the count above 1.0.
+- **The nose recorder** runs for every organism under shared trails in blocks 1, 4 and 6. Each organism's
+  record gives the qualified inputs' count and the count above 1.0. An empty count makes that organism's
+  share "not read".
 - **Replay** follows E3b-0's rule: a lockstep donor colony of the same organism at episode + 1 000,
   advanced until A or B differs, playing with shared trails.
-  - **Its coefficient** is the organism's own: the ratio of its mean nose exposure to live peers (shared)
-    to its exposure to the donor at coefficient 1, from one pre-pass on the replay-calibration block,
-    frozen, with no iteration.
+  - **Its coefficient** is the organism's own: the ratio of its mean nose exposure to live peers to its
+    exposure to the donor. Both come from a pre-pass on the replay-calibration block with two legs:
+    - a shared pass at episode 0, which gives the numerator;
+    - a replay pass at coefficient 1, with the donors as above, which gives the denominator.
+
+    The coefficient is frozen, with no iteration.
   - **If the donor exposure is 0,** replay is "not read" for that organism.
 
 **The measures,** per maze and colony:
@@ -328,7 +341,9 @@ Effects are shares of the seed's mean, with 8 runs per schedule.
   effect. If instead the CV holds at the tuned mean, the SD of d at Δ 0.19 is about 0.34, and the minimum
   detectable effect is nearer 0.22-0.23. The CV-0.40 row brackets this.
 - **The sensitivity checks,** at CV 0.282 with equal effects: the pooled t-test and the sign-flip test keep
-  5.0-5.5% false positives. With opposite effects averaging zero they reject 2.9-3.6%.
+  5.0-5.5% false positives. With opposite effects averaging zero they reject 2.9-3.6%. The simulation's
+  sign-flip uses the pooled mean of all 16, which equals the registered statistic (§7) only when
+  n_A = n_F. The simulation never had unequal n.
 - **A shifted null at 10%** would need an effect of 0.29-0.31 at CV 0.282 or with unequal spreads, and
   0.36-0.37 at CV 0.40. The 10% is therefore a descriptor, not the test.
 - **In visits:** 0.19 of E3b-0's seed mean (5.78) is about 1.1 visits per wey, about E's whole
@@ -353,12 +368,16 @@ On smoke ids, with projection seed 1 190 900, it times the second of two repeats
 - **a training stage:** G × t_gen + (its number of checkpoints) × t_ckpt. The checkpoints are index 0,
   every multiple of 25, and the last index;
 - **`champions`:** the read points × one validation;
-- **`evaluate`:** its chunks × their timed chunk, plus its pre-passes (one chunk with donors per 8
-  organisms), plus the probes;
+- **`evaluate`:** its chunks × their timed chunk, plus the probes, plus the pre-passes. For K organisms
+  with replay, the pre-passes cost ⌈K / 16⌉ × t_plain for the shared leg plus ⌈K / 8⌉ × t_donor for the
+  replay leg;
 - **`g-e`:** a fixed allowance of 0.3 GPU-hours, since it runs after `project`.
 
 **The planned total** is the hours spent, plus every training stage's projection × 1.25, plus every other
 stage's projection.
+
+**After a refusal or failed runs,** the projections for `champions` and `evaluate` are recomputed over the
+runs that completed. The read points and organisms of the others are left out.
 
 ## 10. The cap, admission and cuts
 
@@ -440,8 +459,12 @@ That is 21.4 with the training × 1.25.
 15. **`g-e` fails** when a generation's hash differs from `train-ga.json` (a sabotage of one hash).
 16. **The probes' thresholds:** K_D ≥ 30 applies only at m ≤ 0.35, and K_D × m ≥ 10.5 only at
     0.35 < m ≤ 1.0. E3b-0's published seed passes at its full-precision levels.
-17. **The nose recorder's counts** are present for every organism in block 1.
-18. **A smoke of every stage.**
+17. **The nose recorder's counts** are present for every organism under shared trails in blocks 1, 4 and 6.
+    An empty count is "not read".
+18. **`champions`:** a stopped attempt restarts whole, and `evaluate` refuses to start without a completed
+    `champions`.
+19. **The replay pre-pass's two legs,** and their projection.
+20. **A smoke of every stage.**
 
 ## 13. Departures from design v2
 
@@ -498,3 +521,14 @@ None.
 | Stale cross-references (Fable) | Corrected |
 | The shifted null's range (Fable) | 0.29-0.31, not 0.28-0.31 (0.28 is the CV-0.267 row). The design's §5 carries the same slip, noted in D185 |
 | The stage-level failure rule as a departure (Fable) | §13 |
+
+## 17. Changes from draft 3 (the reviews, D186)
+
+| Point (who) | Final |
+|---|---|
+| The replay pre-pass has two legs (both) | §6 states both legs; §9 projects ⌈K / 16⌉ × t_plain + ⌈K / 8⌉ × t_donor |
+| Projections after a refusal (Fable) | §9: `champions` and `evaluate` are recomputed over completed runs |
+| The power script's sign-flip with unequal n (Fable) | §8 states that it equals the registered statistic only when n_A = n_F |
+| `champions`' terminal failure (Astra) | §5: atomic; `evaluate` requires it; no run relabelled |
+| The recorder's coverage (Astra) | Blocks 1, 4 and 6, under shared; an empty count is "not read"; test 17 |
+| The cost of an unchanged attempt 2 (Fable, noted) | §5 states it |

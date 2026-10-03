@@ -5889,3 +5889,36 @@ design's §5 and in "v2, as confirmed". Those texts stand as they are, and this 
 **Draft 3** takes every fix. Its §16 maps them.
 
 **Next:** both reviewers' confirmation, then binding.
+
+## D186 — E3b-1's pre-registration bound
+
+**The review of draft 3** (`docs/reviews/20261003-E3b-1-prereg-3/`): both said "bind", with last fixes and no
+further round. A consensus.
+- **Astra confirmed** the nine hashes at 1c86190, the power figures against `power.json`, and that the
+  corrected probe thresholds pass E3b-0's published seed.
+- **Fable confirmed** the read points against `evolve_batch` (no breeding at the last generation) and every
+  helper the text relies on.
+
+**The last fixes, applied:**
+- the replay pre-pass's two legs, in the text and in the projection;
+- the projections recomputed over completed runs;
+- the power script's sign-flip equals the registered statistic only at equal n;
+- `champions` atomic, and required by `evaluate`;
+- the nose recorder covering every champion under shared trails;
+- the cost of an unchanged second attempt after a non-finite score, stated.
+
+**Binding.** `experiments/E3-ab-organism/E3b-1/PREREGISTRATION.md` is final and binds with this commit,
+pushed before any stage of E3b-1 runs (rule 2).
+- **The cap:** 24 GPU-hours, within the owner's E3b ceiling.
+- **The gate:** a stratified one-sided Welch test on the 16 final champions of the owner's two schedules
+  (D181).
+
+**Next, before any formal stage:**
+- the implementation, test-first, to §12's twenty tests:
+  - the freezing mask;
+  - the snapshot hook;
+  - the failure rules, with non-finite runs named;
+  - the champion rule;
+  - the runner `scripts/e3b1.py`;
+- a code review by both;
+- then `project` and `g-e`.
