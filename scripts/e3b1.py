@@ -32,6 +32,7 @@ from scipy import stats
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from wormwars import accounting as acct  # noqa: E402
+from wormwars import registration as reg  # noqa: E402
 from wormwars.brain import Brain, BrainSpec, Genome  # noqa: E402
 from wormwars.connectome import load_connectome  # noqa: E402
 from wormwars.e04a import evolve as EV  # noqa: E402
@@ -109,6 +110,7 @@ REGISTERED = {
     "chunk": 16, "chunk_replay": 8, "min_runs": T.MIN_RUNS,
     "probe": {"k_d_min": 30.0, "relative_min": 10.5, "low": 0.35, "high": 1.0},
     "cuts": ["n to runs 0-3", "r dropped", "tf to 250 generations"],
+    "rerun_kill_tail_seconds": 900,  # E2's frame charges it beyond a killed attempt's last file write (D107)
 }
 RECORD = {s: s for s in STAGES}
 WHAT = {s: f"E3b-1's {s}" for s in STAGES}
@@ -357,14 +359,66 @@ def refused_path(stage: str) -> Path:
     return EXP / f"{stage}-refused.json"
 
 
-def check_order(stage: str, state_of) -> None:
-    """§10: every earlier training stage settled; none refused (a refusal stops every later training stage)."""
+def check_order(stage: str, state_of, require=None) -> None:
+    """§10: every earlier training stage settled; none refused (a refusal stops every later training stage).
+    `require(earlier)` checks each settled stage's record is published (§5: committed and pushed first)."""
     for earlier in TRAINING[:TRAINING.index(stage)]:
         st = state_of(earlier)
         if st == "refused":
             raise SystemExit(f"{earlier} was refused: no later training stage starts (§10)")
         if st not in SETTLED:
             raise SystemExit(f"{earlier} is {st}: it must be settled first")
+        if require is not None:
+            require(earlier)
+
+
+def published(stage: str) -> None:
+    """A settled stage's record, committed and unchanged (with the frame's HEAD-pushed check)."""
+    E.require_committed(E.record_path(stage))
+
+
+def refuse(stage: str, info: dict) -> None:
+    """§10's refusal, durable: no later training stage starts, and the stage's runs are not run."""
+    E.write_atomic(refused_path(stage), {**info, "stage": stage, "admit_hours": REGISTERED["admit_hours"],
+                                         "decision": "not admitted (§10); no later training stage starts, and the "
+                                                     "runs of this and every later training stage are not run"})
+
+
+def unmade_label(exc) -> str:
+    """The runs a stopped training stage did not make: "not run" when the cap stopped it, "failed" otherwise (§5)."""
+    return "not_run_runs" if isinstance(exc, reg.CapReached) else "failed_runs"
+
+
+def stage_admit(stage: str, proj: dict, t_start: float | None):
+    """Admission of a later attempt inside a running stage, on the hours spent including this process's (§5, §10)."""
+    return lambda k: admit_training(stage, spent_hours(t_start), proj)
+
+
+def admission_projection(timing: dict, plan: dict, completed: dict, stage: str) -> dict:
+    """§9: `champions` and `evaluate` projected over the runs that completed in earlier training stages, and the
+    planned runs of this and later ones."""
+    later = [s.split("-")[1] for s in TRAINING[TRAINING.index(stage):]]
+    done = {arm: (plan["runs"][arm] if arm in later else len(completed.get(arm, []))) for arm in ARMS}
+    return projections(timing, plan, done)
+
+
+def training_progress(stage: str):
+    """`evolve_batch`'s on_checkpoint: a durable progress record, so a kill is charged to its last checkpoint."""
+    def write(records, g):
+        E.write_atomic(E.partial_path(stage), {"stage": stage, "generation": int(g),
+                                               "runs_in_batch": [r.spec.run for r in records],
+                                               "utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())})
+    return write
+
+
+def note_progress(stage: str, item: str, key: str = "completed_chunks") -> None:
+    """A durable progress record for `champions` and `evaluate` (what a kill's reconciliation reads)."""
+    path = E.partial_path(stage)
+    doc = json.loads(path.read_text(encoding="utf-8")) if path.exists() else {"stage": stage}
+    if item not in doc.setdefault(key, []):
+        doc[key].append(item)
+    doc["utc"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+    E.write_atomic(path, doc)
 
 
 def require_champions_state(state: str) -> None:
@@ -410,7 +464,13 @@ def trained_records(args, prov) -> dict:
         elif st in ("completed", "skipped"):
             out[stage] = E.require_earlier(args, prov, stage)
         elif st in ("final-stopped", "cap-stopped"):
-            out[stage] = json.loads(E.record_path(stage).read_text(encoding="utf-8"))
+            rec = json.loads(E.record_path(stage).read_text(encoding="utf-8"))
+            if E.formal(args):
+                if not args.smoke:
+                    E.require_committed(E.record_path(stage))
+                reg.require_same_code(rec["provenance_at_start"]["git_commit"], GUARDED)
+                reg.require_same_env(rec["provenance_at_start"], prov)
+            out[stage] = rec
         else:
             raise SystemExit(f"{stage} is {st}: every training stage must be settled first")
     return out
@@ -477,7 +537,7 @@ def cmd_project(args):
         pop32 = Genome.cat([cx["seed"].genome] * REGISTERED["ga"]["population"])
         with acct.category("holdout"):
             timing["validation_32"] = time_second(lambda: rollout(cfg, cx["seed"].iface, on(pop32, dev), smoke_ids(n_val),
-                                                                  PR["seed"], dev), dev)
+                                                                  PR["seed"], dev, chunk_worlds=pop32.n_strains * n_val), dev)
         names16 = ["seed"] * REGISTERED["chunk"]
         names8 = ["seed"] * REGISTERED["chunk_replay"]
         mazes = smoke_ids(n_test_)
@@ -547,7 +607,9 @@ def hook_leg(cap) -> dict:
                and [genome_hash(a.final, k) for k in range(a.final.n_strains)]
                == [genome_hash(b.final, k) for k in range(b.final.n_strains)]
                and a.checkpoints == b.checkpoints for a, b in zip(off, with_hook))
-    return {"identical": bool(same), "composition": [len(runs) * 4, 2, 1], "device": "cpu"}
+    return {"identical": bool(same), "composition": [len(runs) * 4, 2, 1], "device": "cpu",
+            "compared": "the hook off against the hook on (snapshot_at=(1,)) in this code, on an E2-sized CPU smoke "
+                        "batch; the code change itself is checked by the GPU leg against train-ga.json"}
 
 
 def cmd_ge(args):
@@ -643,20 +705,19 @@ def cmd_train(args, arm: str):
 
     def requires(a, prov):
         out = require_ge_passed(a, prov)
-        check_order(stage, stage_state)
-        entries = read_attempts(stage)
-        if entries and attempts_final(entries):
-            raise SystemExit(f"{stage} has used every attempt §5 allows: it is final")
+        check_order(stage, stage_state, require=published if (E.formal(a) and not a.smoke) else None)
+        # an exhausted attempt sequence is not refused here: the stage runs, `train_attempts` ends it at once,
+        # and the frame writes its final record (§5)
         p = plan_of(out)
-        proj = p["projected_hours"]
+        earlier = {s.split("-")[1]: json.loads(E.record_path(s).read_text(encoding="utf-8"))
+                   for s in TRAINING[:TRAINING.index(stage)] if E.record_path(s).exists()}
+        completed = completed_runs({f"train-{k}": v for k, v in earlier.items()})
+        proj = admission_projection(out["project"]["timing"], p, completed, stage)
         spent = spent_hours()
         if p["runs"][arm] > 0 and not SMOKE and not admit_training(stage, spent, proj):
-            E.write_atomic(refused_path(stage), {
-                "stage": stage, "spent_hours": spent, "projected_hours": proj, "admit_hours": REGISTERED["admit_hours"],
-                "provenance": prov, "decision": "not admitted (§10); no later training stage starts, and their runs "
-                                                "are not run"})
+            refuse(stage, {"spent_hours": spent, "projected_hours": proj, "provenance": prov, "attempt": "stage"})
             raise SystemExit(f"{stage} not admitted under §10 (spent {spent:.2f} h)")
-        held["plan"] = p
+        held["plan"], held["proj"] = p, proj
         return out
 
     def body(ctx):
@@ -674,7 +735,8 @@ def cmd_train(args, arm: str):
         snap = tuple(s for s in a["snapshot"] if s < G)
         entries = read_attempts(stage)
         save = lambda e: E.write_atomic(attempts_path(stage), e)  # noqa: E731
-        ctx.salvage = lambda: {"attempts": entries, "final": attempts_final(entries), "failed_runs": runs_all}
+        ctx.salvage = lambda: {"attempts": entries, "final": attempts_final(entries),
+                               unmade_label(sys.exc_info()[1]): runs_all}
 
         def run_batch(runs):
             specs = [EV.RunSpec(i, run_seed(arm, i), 0.0) for i in runs]
@@ -683,11 +745,14 @@ def cmd_train(args, arm: str):
                                    world_seed=seed(), id_base=REGISTERED["train"]["base"],
                                    id_span=REGISTERED["train"]["span"], device=dev, check=ctx.cap.check,
                                    category=acct.category, initial=lambda r: Genome.cat([start] * cfg.evo.population),
-                                   mutation_scales=lambda r: T.scales(cx["seed"].ext), snapshot_at=snap)
+                                   mutation_scales=lambda r: T.scales(cx["seed"].ext), snapshot_at=snap,
+                                   on_checkpoint=training_progress(stage))
 
-        admit = lambda k: SMOKE or admit_training(stage, spent_hours(), p["projected_hours"])  # noqa: E731
+        admit = (lambda k: True) if SMOKE else stage_admit(stage, held["proj"], ctx.cap.t_start)
         res = train_attempts(entries, runs_all, run_batch, save, admit=admit)
         if res.get("not_admitted"):
+            refuse(stage, {"spent_hours": spent_hours(ctx.cap.t_start), "projected_hours": held["proj"],
+                           "attempt": res["entries"][-1]["attempt"]})
             raise RuntimeError(f"attempt {res['entries'][-1]['attempt']} was not admitted under §10: the stage ends, "
                                "its runs not run")
         if res["final"]:
@@ -749,7 +814,8 @@ def validate_read_point(pop: Genome, arm: str, dev, rollout_fn=rollout):
     """All 32 genomes on the 128 validation mazes with the arm's own access, at episode 0 (§6)."""
     cfg = arm_cfg(arm)
     cx = context(cfg)
-    r = rollout_fn(cfg, cx["seed"].iface, on(pop, dev), ids("validation"), seed(), dev)
+    r = rollout_fn(cfg, cx["seed"].iface, on(pop, dev), ids("validation"), seed(), dev,
+                   chunk_worlds=pop.n_strains * len(ids("validation")))
     means = np.asarray(r.score, dtype=np.float64).mean(axis=1)
     return champion_index(means), means
 
@@ -782,6 +848,7 @@ def cmd_champions(args):
                 k, means = validate_read_point(pop, arm, dev)
             ch = pop.select([k])
             save_population(genomes_file(arm, i, f"champion-{read}"), ch, cfg=cfg, run=i, read=read, index=k)
+            note_progress("champions", f"{arm}:{i}:{read}", key="completed_read_points")
             champs.append({"arm": arm, "run": i, "read": read, "index": k, "sha256": genome_hash(ch, 0),
                            "validation_mean": float(means[k]), "validation_means": [float(x) for x in means],
                            "access": REGISTERED["arms"][arm]["access"]})
@@ -1014,6 +1081,7 @@ def cmd_evaluate(args):
                 run_chunk(path, names, lambda nm: timed(ctx.cap, lambda: play_names(
                     nm, cond, maze_ids, cx, dev, coefs=None if coefs is None else np.ones(len(nm)),
                     donor_eps=calib_eps if cond == "replay" else None)))
+                note_progress("evaluate", path.name)
                 with np.load(path, allow_pickle=False) as z:
                     return {"exposure_mean": z["exposure_mean"]}
             calib_play.k = {"shared": 0, "replay": 0}
@@ -1026,11 +1094,12 @@ def cmd_evaluate(args):
             probes = {name_of(c): probe_organism(org_genome(name_of(c), cx, cfg), cx, cfg) for c in champs}
         plan = plan_of(ctx.earlier)
         readings = compute_readings(load_blocks(), champs, plan, n_mazes=n_test())
+        ov = route_overlap(test, test_eps)
         out.update(replay_coefficients=coefs, donor_exceptions={"calibration": calib_exc, "test": test_exc},
+                   route_overlap={"mean": float(ov.mean()), "median": float(np.median(ov)), "per_maze": ov.tolist()},
                    probes=probes, readings=readings, wording=wording(plan),
-                   composition={"plain": [REGISTERED["chunk"], n_test(), REGISTERED["colony"]],
-                                "replay": [2 * REGISTERED["chunk_replay"], n_test(), REGISTERED["colony"]],
-                                "single": [1, n_test(), REGISTERED["colony"]]})
+                   chunks=chunk_compositions(eval_plan(champs, coefs), n_test()),
+                   composition={"note": "each chunk's (organisms, with replay donors; mazes; weys) is in `chunks`"})
         return out
 
     return E.run_stage(args, "evaluate", requires, body)
@@ -1051,6 +1120,28 @@ def run_planned(c: dict, test, cx, dev, cap, coefs=None, donor_eps=None) -> None
     else:
         play = lambda nm: timed(cap, lambda: play_names(nm, c["cond"], test, cx, dev, recorder=c["recorder"]))  # noqa: E731
     run_chunk(chunk_path(c), c["names"], play)
+    note_progress("evaluate", chunk_path(c).name)
+
+
+def chunk_compositions(plan: list, n_mazes: int) -> list:
+    """Every chunk's composition (§6): organisms (doubled by their donors under replay), mazes, weys."""
+    return [{"chunk": chunk_path(c).name,
+             "composition": [len(c["names"]) * (2 if c["kind"] == "replay" else 1), n_mazes, REGISTERED["colony"]]}
+            for c in plan]
+
+
+def route_overlap(maze_ids, donor_eps) -> np.ndarray:
+    """Per maze: the share of the recipient's A-B route cells on the donor's route (E3b-0's descriptor)."""
+    from wormwars.e3 import maze as M
+    out = []
+    for mid, ep in zip(np.asarray(maze_ids), np.asarray(donor_eps)):
+        mz0, p0 = M.maze_for(run_seed=seed(), maze_id=int(mid), episode=0, c=REGISTERED["c"],
+                             n_spawns=REGISTERED["spawns"])
+        mz1, p1 = M.maze_for(run_seed=seed(), maze_id=int(mid), episode=int(ep), c=REGISTERED["c"],
+                             n_spawns=REGISTERED["spawns"])
+        r, d = MM.route_cells(mz0, p0.a, p0.b), MM.route_cells(mz1, p1.a, p1.b)
+        out.append(float((r & d).sum() / r.sum()))
+    return np.asarray(out)
 
 
 # ============================================================================== readings (§7)
@@ -1076,21 +1167,39 @@ def _mean(block: dict, name: str, measure: str, n_mazes: int):
     return float(x.mean()) if len(x) == n_mazes else None
 
 
+def secondary(res: dict, alternative: str, rejected_wording: str, holm_row: dict) -> dict:
+    """A secondary test (§7): read or not; its direction, raw p, Holm-adjusted p and conclusion; its one-sided
+    bound in the alternative's direction (the point estimate at zero spread). No better/worse label."""
+    out = {k: v for k, v in res.items() if k not in ("label", "lower_bound_95")}
+    out["alternative"] = alternative
+    if res.get("label") == "not read":
+        return {**out, "label": "not read", "holm_rejected": False, "conclusion": "not read"}
+    est, se, df = res["estimate"], res.get("se", 0.0), res.get("df")
+    if df is None and "n" in res:
+        df = res["n"] - 1
+    q = 0.0 if not se else float(stats.t.ppf(0.95, df))
+    if alternative == "greater":
+        out["lower_bound_95"] = float(est - q * se)
+    else:
+        out["upper_bound_95"] = float(est + q * se)
+    out.update(label="read", p_holm=holm_row["p_holm"], holm_rejected=bool(holm_row["rejected"]),
+               conclusion=rejected_wording if holm_row["rejected"] else "not shown (Holm, 5%)")
+    return out
+
+
 def compute_readings(blocks: dict, champs: list, plan: dict, *, n_mazes: int) -> dict:
-    """§7's registered readings, their descriptors and the descriptive ones, from whatever blocks completed."""
+    """§7's registered readings, their descriptors and the descriptive ones, from whatever blocks completed. Each
+    reading checks its own needs and denominator, and is otherwise "not read" without affecting the others."""
     sh, no, own = blocks.get("b1-shared", {}), blocks.get("b2-none", {}), blocks.get("b3-own", {})
-    b4, b6s, b6n = blocks.get("b4-shared", {}), blocks.get("b6-shared", {}), blocks.get("b6-none", {})
+    b4, b6s = blocks.get("b4-shared", {}), blocks.get("b6-shared", {})
     finals = {arm: [name_of(c) for c in sorted(champs, key=lambda c: c["run"]) if c["arm"] == arm and c["read"] == "final"]
               for arm in ARMS}
     seed_sh = _mean(sh, "seed", "visits", n_mazes)
+    seed_sh = seed_sh if seed_sh else None  # missing, short, or a zero denominator: "not read"
     out = {"wording": wording(plan), "final_index_tf": final_index(plan, "tf")}
-    nr = {"label": "not read", "p": 1.0}
-    if not seed_sh:  # missing, short, or a zero denominator
-        out.update({k: dict(nr, reason="block 1's seed is missing or its mean is 0") for k in ("G", "S-gen", "S-trail", "S-peer")})
-        out["holm"] = T.holm({"S-gen": None, "S-trail": None, "S-peer": None})
-        return out
+    nr = lambda why: {"label": "not read", "p": 1.0, "reason": why}  # noqa: E731
 
-    def d_of(names, block_a, block_b=None, measure="visits", den=seed_sh, base=None):
+    def diffs(names, block_a, block_b, measure, den, base=None):
         vals = []
         for n in names:
             a = _mean(block_a, n, measure, n_mazes)
@@ -1100,60 +1209,85 @@ def compute_readings(blocks: dict, champs: list, plan: dict, *, n_mazes: int) ->
         return vals
 
     # G
-    dA, dF = d_of(finals["ta"], sh, base=seed_sh), d_of(finals["tf"], sh, base=seed_sh)
-    legs = [float(np.median(sh[n]["legs"])) for n in finals["ta"] + finals["tf"]
-            if _mean(sh, n, "visits", n_mazes) is not None]
-    g = T.gate(dA, dF, legs_medians=legs)
-    if g["label"] != "not read":
-        g["delta_visits"] = g["estimate"] * seed_sh
-        g["at_least_10pct"] = bool(g["lower_bound_95"] >= 0.10)
-        g["pooled_t_p"] = float(stats.ttest_1samp(np.r_[dA, dF], 0, alternative="greater").pvalue) \
-            if np.std(np.r_[dA, dF]) > 0 else (0.0 if np.mean(np.r_[dA, dF]) > 0 else 1.0)
-        g["sign_flip_p"] = T.sign_flip(dA, dF)
-        for nm, arr in (("schedule_A", np.asarray(dA)), ("schedule_F", np.asarray(dF))):
-            se = arr.std(ddof=1) / math.sqrt(len(arr))
-            tq = float(stats.t.ppf(0.975, len(arr) - 1))
-            g[nm] = {"n": len(arr), "mean": float(arr.mean()), "ci95": [float(arr.mean() - tq * se), float(arr.mean() + tq * se)]}
-        w2 = _mean(b6s, "w2_alone", "visits", n_mazes)
-        fol = _mean(b6s, "follower", "visits", n_mazes)
-        den_w2 = None if w2 is None else seed_sh - w2
-        den_f = None if fol is None else fol - seed_sh
-        g["multiple_of_seed_minus_w2"] = None if not den_w2 or den_w2 <= 0 else float(g["delta_visits"] / den_w2)
-        g["multiple_of_follower_minus_seed"] = None if not den_f or den_f <= 0 else float(g["delta_visits"] / den_f)
-        g["legs_medians"] = legs
-        g["d"] = {"ta": dA, "tf": dF}
+    if seed_sh is None:
+        g = nr("block 1's seed is missing, short, or its mean is 0")
+    else:
+        dA, dF = diffs(finals["ta"], sh, None, "visits", seed_sh, seed_sh), diffs(finals["tf"], sh, None, "visits", seed_sh, seed_sh)
+        legs = [float(np.median(sh[n]["legs"])) for n in finals["ta"] + finals["tf"]
+                if _mean(sh, n, "visits", n_mazes) is not None]
+        g = T.gate(dA, dF, legs_medians=legs)
+        if g["label"] != "not read":
+            pooled = np.r_[dA, dF]
+            g["delta_visits"] = g["estimate"] * seed_sh
+            g["at_least_10pct"] = bool(g["lower_bound_95"] >= 0.10)
+            g["pooled_t_p"] = float(stats.ttest_1samp(pooled, 0, alternative="greater").pvalue) \
+                if np.std(pooled) > 0 else (0.0 if np.mean(pooled) > 0 else 1.0)
+            g["sign_flip_p"] = T.sign_flip(dA, dF)
+            for nm, arr in (("schedule_A", np.asarray(dA)), ("schedule_F", np.asarray(dF))):
+                se = arr.std(ddof=1) / math.sqrt(len(arr))
+                tq = float(stats.t.ppf(0.975, len(arr) - 1))
+                g[nm] = {"n": len(arr), "mean": float(arr.mean()),
+                         "ci95": [float(arr.mean() - tq * se), float(arr.mean() + tq * se)]}
+            w2 = _mean(b6s, "w2_alone", "visits", n_mazes)
+            fol = _mean(b6s, "follower", "visits", n_mazes)
+            den_w2 = None if w2 is None else seed_sh - w2
+            den_f = None if fol is None else fol - seed_sh
+            g["multiple_of_seed_minus_w2"] = None if not den_w2 or den_w2 <= 0 else float(g["delta_visits"] / den_w2)
+            g["multiple_of_follower_minus_seed"] = None if not den_f or den_f <= 0 else float(g["delta_visits"] / den_f)
+            g["w2_alone_note"] = ("W2 alone is the W2 module grafted on the silent carrier (§6), not E3b-0's scripted "
+                                  "W2 controller: this multiple is not comparable with E3b-0's +1.09 (D188)")
+            g["legs_medians"] = legs
+            g["d"] = {"ta": dA, "tf": dF}
     out["G"] = g
     # S-gen
-    pairs = []
-    for n in finals["tf"]:
-        a, b = _mean(sh, n, "visits", n_mazes), _mean(b4, n.replace(":final", ":snap124"), "visits", n_mazes)
-        if a is not None and b is not None:
-            pairs.append((a - b) / seed_sh)
-    out["S-gen"] = {**T.paired(pairs), "diffs": pairs}
-    # S-trail
+    if seed_sh is None:
+        s_gen = nr("block 1's seed is missing, short, or its mean is 0")
+    else:
+        pairs = []
+        for n in finals["tf"]:
+            a, b = _mean(sh, n, "visits", n_mazes), _mean(b4, n.replace(":final", ":" + SNAP_READ), "visits", n_mazes)
+            if a is not None and b is not None:
+                pairs.append((a - b) / seed_sh)
+        s_gen = {**T.paired(pairs), "diffs": pairs}
+    # S-trail, on complete (shared, none) pairs, the schedules weighted equally
     seed_no = _mean(no, "seed", "visits", n_mazes)
-    e = {}
-    for arm in ("ta", "tf"):
-        e[arm] = [] if seed_no is None else [(x - y - (seed_sh - seed_no)) / seed_sh
-                                             for x, y in ((_mean(sh, n, "visits", n_mazes), _mean(no, n, "visits", n_mazes))
-                                                          for n in finals[arm]) if x is not None and y is not None]
-    out["S-trail"] = {**T.gate(e["ta"], e["tf"]), "e": e}
-    if seed_no is not None:
-        out["S-trail"]["four_means"] = {
-            "seed_shared": seed_sh, "seed_none": seed_no,
-            "t_shared": float(np.mean([_mean(sh, n, "visits", n_mazes) for n in finals["ta"] + finals["tf"]
-                                       if _mean(sh, n, "visits", n_mazes) is not None] or [np.nan])),
-            "t_none": float(np.mean([_mean(no, n, "visits", n_mazes) for n in finals["ta"] + finals["tf"]
-                                     if _mean(no, n, "visits", n_mazes) is not None] or [np.nan]))}
+    if seed_sh is None or seed_no is None:
+        s_trail = nr("the seed's shared or none mean is missing, short, or 0")
+    else:
+        e, ms, mn, npairs = {}, {}, {}, {}
+        for arm in ("ta", "tf"):
+            pr = [(x, y) for x, y in ((_mean(sh, n, "visits", n_mazes), _mean(no, n, "visits", n_mazes))
+                                      for n in finals[arm]) if x is not None and y is not None]
+            e[arm] = [(x - y - (seed_sh - seed_no)) / seed_sh for x, y in pr]
+            npairs[arm] = len(pr)
+            ms[arm] = float(np.mean([x for x, _ in pr])) if pr else None
+            mn[arm] = float(np.mean([y for _, y in pr])) if pr else None
+        s_trail = {**T.gate(e["ta"], e["tf"]), "e": e}
+        if s_trail["label"] != "not read":
+            t_s, t_n = (ms["ta"] + ms["tf"]) / 2, (mn["ta"] + mn["tf"]) / 2
+            s_trail["four_means"] = {"seed_shared": seed_sh, "seed_none": seed_no, "t_shared": t_s, "t_none": t_n,
+                                     "pairs": npairs, "weights": "each schedule's mean over its complete pairs, "
+                                                                 "the two schedules weighted equally (as the estimand)"}
+            s_trail["decomposition"] = {"t_shared_minus_seed_shared": t_s - seed_sh,
+                                        "t_none_minus_seed_none": t_n - seed_no,
+                                        "e_times_seed_shared": s_trail["estimate"] * seed_sh}
     # S-peer
     seed_own_fb = _mean(own, "seed", "later_first_b", n_mazes)
-    pe = {}
-    for arm in ("ta", "tf"):
-        pe[arm] = [] if not seed_own_fb else d_of(finals[arm], sh, own, measure="later_first_b", den=seed_own_fb)
-    out["S-peer"] = {**T.gate(pe["ta"], pe["tf"], alternative="less"), "values": pe}
-    if seed_own_fb:
-        out["S-peer"]["seed_shared_minus_own"] = (_mean(sh, "seed", "later_first_b", n_mazes) - seed_own_fb) / seed_own_fb
-    out["holm"] = T.holm({k: (None if out[k]["label"] == "not read" else out[k]["p"]) for k in ("S-gen", "S-trail", "S-peer")})
+    if not seed_own_fb:
+        s_peer = nr("the seed's own first-B mean is missing, short, or 0")
+    else:
+        pe = {arm: diffs(finals[arm], sh, own, "later_first_b", seed_own_fb) for arm in ("ta", "tf")}
+        s_peer = {**T.gate(pe["ta"], pe["tf"], alternative="less"), "values": pe}
+        seed_sh_fb = _mean(sh, "seed", "later_first_b", n_mazes)
+        if seed_sh_fb is not None:
+            s_peer["seed_shared_minus_own"] = (seed_sh_fb - seed_own_fb) / seed_own_fb
+    fam = {"S-gen": s_gen, "S-trail": s_trail, "S-peer": s_peer}
+    out["holm"] = T.holm({k: (None if v["label"] == "not read" else v["p"]) for k, v in fam.items()})
+    out["S-gen"] = secondary(s_gen, "greater", f"T-F's champions at index {final_index(plan, 'tf')} above their own "
+                                               f"at index 124", out["holm"]["S-gen"])
+    out["S-trail"] = secondary(s_trail, "greater", "increased trail dependence", out["holm"]["S-trail"])
+    out["S-peer"] = secondary(s_peer, "less", "shorter first-B times of later discoverers with peers' trails",
+                              out["holm"]["S-peer"])
     # descriptive
     shares = {}
     for blk in (sh, b4, b6s):
@@ -1162,7 +1296,7 @@ def compute_readings(blocks: dict, champs: list, plan: dict, *, n_mazes: int) ->
                 q = float(np.sum(v["nose_qualified"]))
                 shares[n] = None if q == 0 else float(np.sum(v["nose_above_1.0"]) / q)
     out["nose_share_above_1"] = shares
-    out["descriptive"] = descriptive(blocks, champs, finals, seed_sh, n_mazes)
+    out["descriptive"] = descriptive(blocks, champs, finals, seed_sh, n_mazes) if seed_sh is not None else "not read"
     out["means"] = {key: {n: {m: float(np.mean(x)) for m, x in v.items()} for n, v in blk.items()}
                     for key, blk in blocks.items()}
     out["not_read_blocks"] = sorted({"b5-peers", "b5-scramble", "b5-replay", "b6-shared", "b6-none"} - set(blocks))
@@ -1207,12 +1341,25 @@ def descriptive(blocks: dict, champs: list, finals: dict, seed_sh: float, n_maze
     return out
 
 
+def readings_from(champions_rec: dict, project_rec: dict, blocks: dict) -> dict:
+    """The readings from the records: every reading "not read" unless `champions` completed (§5)."""
+    plan = project_rec["plan"]
+    if champions_rec.get("outcome") != "completed":
+        why = "champions did not complete (§5)"
+        out = {k: {"label": "not read", "p": 1.0, "reason": why} for k in ("G", "S-gen", "S-trail", "S-peer")}
+        return {**out, "wording": wording(plan), "holm": T.holm({"S-gen": None, "S-trail": None, "S-peer": None})}
+    return compute_readings(blocks, champions_rec["champions"], plan, n_mazes=n_test())
+
+
 def cmd_readings(args):
-    rec = json.loads(E.record_path("champions").read_text(encoding="utf-8"))
-    plan = json.loads(E.record_path("project").read_text(encoding="utf-8"))["plan"]
-    out = compute_readings(load_blocks(), rec["champions"], plan, n_mazes=n_test())
+    champ = json.loads(E.record_path("champions").read_text(encoding="utf-8"))
+    proj = json.loads(E.record_path("project").read_text(encoding="utf-8"))
+    out = readings_from(champ, proj, load_blocks())
     E.write_atomic(EXP / "readings.json", out)
-    print(json.dumps({k: out[k].get("label") for k in ("G", "S-gen", "S-trail", "S-peer")}, indent=1))
+    print(json.dumps({"G": out["G"].get("label"),
+                      **{k: {"read": out[k].get("label"), "holm_rejected": out[k].get("holm_rejected"),
+                             "conclusion": out[k].get("conclusion")} for k in ("S-gen", "S-trail", "S-peer")}},
+                     indent=1))
 
 
 # ============================================================================== smoke and main

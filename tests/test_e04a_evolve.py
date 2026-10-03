@@ -223,3 +223,33 @@ def test_a_non_finite_score_names_its_runs(spec):
         _evolve(spec, _runs(), bad_run_1)
     assert err.value.runs == [1]
     assert "run 1" in str(err.value)
+
+
+def test_a_non_finite_validation_count_names_its_runs(spec):
+    good = FakeRollout()
+
+    def bad_validation_run_1(cfg, iface, genome, ids, world_seed, device, chunk_worlds=None):
+        r = good(cfg, iface, genome, ids, world_seed, device, chunk_worlds)
+        if np.asarray(ids).ndim == 1:
+            r.score = r.score.astype(float)
+            r.score[1, 0] = np.nan
+        return r
+
+    with pytest.raises(FloatingPointError) as err:
+        _evolve(spec, _runs(), bad_validation_run_1, generations=2, every=1)
+    assert err.value.runs == [1] and "run 1" in str(err.value)
+
+
+def test_fractional_counts_are_kept_and_whole_ones_stay_integers(spec):
+    good = FakeRollout()
+
+    def eighths(cfg, iface, genome, ids, world_seed, device, chunk_worlds=None):
+        r = good(cfg, iface, genome, ids, world_seed, device, chunk_worlds)
+        r.score = r.score.astype(float) + 0.125
+        return r
+
+    recs = _evolve(spec, _runs(), eighths, generations=2, every=1)
+    assert any(x % 1 == 0.125 for x in recs[0].checkpoints[0]["validation_counts"])
+    assert any(x % 1 == 0.125 for row in recs[0].generation0["counts"] for x in row)
+    plain = _evolve(spec, _runs(), FakeRollout(), generations=2, every=1)
+    assert all(isinstance(x, int) for x in plain[0].checkpoints[0]["validation_counts"])

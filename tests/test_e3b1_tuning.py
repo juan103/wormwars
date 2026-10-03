@@ -182,3 +182,11 @@ def test_holm_keeps_three_with_an_unread_test_at_one():
 def test_a_zero_denominator_is_not_read():
     assert T.normalised(np.array([1.0, 2.0]), 0.0) is None
     assert np.allclose(T.normalised(np.array([1.0, 2.0]), 2.0), [0.5, 1.0])
+
+
+def test_the_paired_secondary_gives_its_one_sided_bound():
+    d = np.array([0.1, 0.2, 0.15, 0.05])
+    r = T.paired(d)
+    se = d.std(ddof=1) / 2
+    assert r["lower_bound_95"] == pytest.approx(d.mean() - stats.t.ppf(0.95, 3) * se)
+    assert T.paired(np.full(4, 0.1))["lower_bound_95"] == pytest.approx(0.1)

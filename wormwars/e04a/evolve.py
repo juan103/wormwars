@@ -101,6 +101,13 @@ class RunRecord:
         return int(np.argmax([c["validation_mean"] for c in self.checkpoints]))
 
 
+def _counts(x: np.ndarray) -> list:
+    """Observations for the record: integers when every value is whole (count tasks, unchanged), else the
+    values themselves (E3b-1's visits per wey are multiples of 1/8)."""
+    x = np.asarray(x)
+    return x.astype(int).tolist() if np.array_equal(x, np.round(x)) else x.astype(float).tolist()
+
+
 def _stack_ids(per_run: list[np.ndarray], population: int) -> np.ndarray:
     """[runs x population, worlds]: each strain plays its own run's worlds."""
     return np.concatenate([np.tile(ids, (population, 1)) for ids in per_run])
@@ -169,7 +176,7 @@ def evolve_batch(cfg, iface, spec: BrainSpec, runs: list[RunSpec], *, generation
                             "zero_share": float((per_strain_count == 0).mean()),
                             "best_sha256": genome_hash(pops[i], best)})
             if g == 0:
-                rec.generation0 = {"train_ids": ids[i].tolist(), "counts": c_i.astype(int).tolist(),
+                rec.generation0 = {"train_ids": ids[i].tolist(), "counts": _counts(c_i),
                                    "progress": p_i.round(6).tolist()}
 
         if g in snapshot_at:
@@ -183,10 +190,14 @@ def evolve_batch(cfg, iface, spec: BrainSpec, runs: list[RunSpec], *, generation
                 v = rollout_fn(cfg, iface, Genome.cat(cands), validation_ids, world_seed, device,
                                chunk_worlds=R * len(validation_ids))
             if not np.isfinite(v.score).all():
-                raise FloatingPointError(f"generation {g}: non-finite validation count")
+                bad = [runs[i].run for i in range(R) if not np.isfinite(v.score[i]).all()]
+                err = FloatingPointError(f"generation {g}: non-finite validation count in "
+                                         + ", ".join(f"run {r}" for r in bad))
+                err.runs = bad
+                raise err
             for i, rec in enumerate(records):
                 rec.checkpoints.append({"generation": g, "validation_mean": float(v.score[i].mean()),
-                                        "validation_counts": v.score[i].astype(int).tolist(),
+                                        "validation_counts": _counts(v.score[i]),
                                         "sha256": genome_hash(cands[i], 0)})
                 rec.candidates.append(moved(cands[i].clone(), "cpu"))
             if on_checkpoint is not None:

@@ -5950,3 +5950,65 @@ the choice, said: "2a. Also check if the readme s are up to date".
 there. That brings to main the completed documentation and E3b-1's design and bound pre-registration,
 before any stage of E3b-1 runs. The pre-registration was already public on `roadmap`; on main it is
 public on the published record as well. `roadmap` continues from main with its banner.
+
+## D188 — E3b-1's code review: both "fix then start"; every blocking finding fixed, test-first
+
+**The review** (`docs/reviews/20261003-E3b-1-code/`): the implementation at d0410a8 (the runner
+`scripts/e3b1.py`, `wormwars/e3/tuning.py`, `evolve_batch`'s hooks, `play_batch`, and their tests) against
+the bound pre-registration. Same prompt to both. **Fable 5.1:** "fix then start", 4 blocking points.
+**Astra 6:** "fix then start", 9 blocking points; Astra also ran 83 tests and reproduced its findings with
+stubs.
+
+**Blocking findings, and who caught each:**
+1. **A kill during an in-stage attempt 2 or 3 left the stage unrecoverable.** `requires` refused the rerun,
+   so no final record was ever written and every later stage stayed blocked (both). Fixed: the rerun runs,
+   `train_attempts` ends it at once, and the frame writes the final record.
+2. **Kill reconciliation crashed** (Astra). `REGISTERED` lacked `rerun_kill_tail_seconds`. The frame also
+   saw no durable progress: training wrote none, and `evaluate`'s chunks are not among the frame's files.
+   Fixed: the key (900 s, as in E2), and a progress record written at every training checkpoint, every
+   champion read point and every evaluation chunk.
+3. **In-stage admission ignored the running process's hours** (both). Fixed: `spent_hours(cap.t_start)`.
+4. **An in-stage refusal wrote no refusal file** (both). It counted as "failed", and later training could
+   start. Fixed: the refusal file is written, and a refusal settles the stage first. Runs stopped by the cap
+   are now recorded as "not run" (Astra, Fable).
+5. **A non-finite validation count named no run** (both). Attempt 3 would have repeated it. Fixed in
+   `evolve_batch`.
+6. **Champion validation ran in chunks of 4 × 128 while its record said 32 × 128** (Fable; Astra
+   non-blocking). Fixed: one chunk of 32 × 128, in `champions` and in `project`'s timing, as §9 projects.
+7. **One denominator gated all four readings** (Astra). Fixed: each reading checks its own needs and
+   denominator; S-peer's is the seed's own first-B time.
+8. **The secondary tests carried G's better/worse labels and ignored Holm** (Astra; Fable non-blocking).
+   S-peer's beneficial −0.1 read "worse". Fixed: each secondary reports read or not read, its alternative,
+   its raw and Holm p, a bound in its own direction, and a conclusion only under Holm. S-trail's wording is
+   "increased trail dependence".
+9. **`readings` crashed after a final `champions` stop** (Astra). Fixed: every reading is "not read".
+10. **S-trail's four means pooled different runs and weights from its test** (Astra). Fixed: they use the
+    same complete pairs and equal schedule weights, and the decomposition is stated.
+
+**Non-blocking points, fixed:**
+- learning-curve observations are kept as fractions of 1/8 (whole counts stay integers, so other experiments'
+  records are unchanged) (Astra);
+- the replay route overlap is computed (Astra);
+- S-gen gets its one-sided bound (Astra);
+- earlier training records must be published before the next training stage, and final-stopped records are
+  checked like completed ones (Astra, Fable);
+- training admission projects `champions` and `evaluate` over completed runs, as §9 says (Fable);
+- the evaluation record states each chunk's composition (Fable);
+- the g-e hook leg says what it compared: the hook off against the hook on in this code, while the GPU leg
+  covers the change itself (both).
+
+**A gap closed with a new test:** a chunk of distinct organisms plays each exactly as it plays alone on the
+CPU (Fable: the smoke only ever batched identical champions).
+
+**The rulings, as reviewed:**
+- **"W2 alone on the carrier"** is the grafted W2 organism, as §6 says. Both accept it, on one condition: its
+  multiple must not be presented as comparable with E3b-0's "+1.09 above W2 alone", which used the scripted
+  controller under "none". The reading carries that note.
+- **Training's plain `Brain` equals the started brain** for this oscillator-free seed (Astra).
+- **The checkpoint subtraction and the conservative evaluation projection** are accepted (both).
+
+**Tests:** 19 new tests (16 for the runner, 1 for tuning, 2 for `evolve_batch`), each seen failing first, except two that already held: the settled rerun, whose
+bug was in `requires`, and the distinct-organisms test. Three new sabotage checks were all caught.
+
+**Next:** the full suite, a confirmation pass by both on the fixes, then the GPU stages (`project`, `g-e`)
+after telling the owner.

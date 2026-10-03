@@ -520,3 +520,157 @@ def test_a_smoke_of_every_stage(m):
     out = ROOT / "runs" / "e3b1-smoke"
     ev = json.loads((out / "evaluate.json").read_text(encoding="utf-8"))
     assert ev["outcome"] == "completed" and "G" in ev["readings"]
+
+
+# ------------------------------------------------------------------ the code review's findings (D188)
+
+def test_kill_reconciliation_has_its_tail(m):
+    assert m.REGISTERED["rerun_kill_tail_seconds"] == 900  # E2's frame charges it beyond a kill's last write
+
+
+def test_training_and_evaluation_write_durable_progress(m, tmp_path, monkeypatch):
+    from types import SimpleNamespace
+    monkeypatch.setattr(m.E, "EXP", tmp_path)
+    monkeypatch.setattr(m, "EXP", tmp_path)
+    recs = [SimpleNamespace(spec=SimpleNamespace(run=i), checkpoints=[{"generation": 25}]) for i in range(2)]
+    m.training_progress("train-ta")(recs, 25)
+    doc = json.loads(m.E.partial_path("train-ta").read_text(encoding="utf-8"))
+    assert doc["generation"] == 25 and doc["runs_in_batch"] == [0, 1]
+    m.note_progress("evaluate", "eval-b1-shared-c00.npz")
+    m.note_progress("evaluate", "eval-b1-shared-c01.npz")
+    doc = json.loads(m.E.partial_path("evaluate").read_text(encoding="utf-8"))
+    assert doc["completed_chunks"] == ["eval-b1-shared-c00.npz", "eval-b1-shared-c01.npz"]
+
+
+def test_an_exhausted_stage_is_settled_on_its_rerun_without_a_batch(m):
+    fake = FakeBatch([])
+    res = m.train_attempts([{"attempt": 1, "outcome": "non-finite", "runs": [2]}, {"attempt": 2, "outcome": None}],
+                           list(range(4)), fake, lambda e: None)
+    assert res["final"] and fake.calls == [] and res["entries"][1]["outcome"] == "crash or kill"
+
+
+def test_in_stage_admission_charges_the_running_time(m, monkeypatch):
+    from types import SimpleNamespace
+    monkeypatch.setattr(m.E, "clock", lambda: SimpleNamespace(spent_hours=lambda: 15.0))
+    monkeypatch.setattr(m.time, "perf_counter", lambda: 3600.0)
+    proj = {"train-ta": 4.0, "champions": 1.0, "evaluate": 1.0}
+    assert m.stage_admit("train-ta", proj, t_start=3600.0)(2)  # 15 + 0 + 5 + 2 = 22
+    assert not m.stage_admit("train-ta", proj, t_start=0.0)(2)  # one hour of this process already spent
+
+
+def test_an_in_stage_refusal_is_durable_and_stops_later_training(m, tmp_path, monkeypatch):
+    monkeypatch.setattr(m.E, "EXP", tmp_path)
+    monkeypatch.setattr(m, "EXP", tmp_path)
+    m.refuse("train-tf", {"attempt": 2})
+    assert m.stage_state("train-tf") == "refused"
+    with pytest.raises(SystemExit, match="refused: no later training stage starts"):
+        m.check_order("train-n", {"train-ta": "completed", "train-tf": m.stage_state("train-tf")}.get)
+
+
+def test_runs_stopped_by_the_cap_are_not_run_and_others_failed(m):
+    from wormwars import registration as reg
+    assert m.unmade_label(reg.CapReached("cap")) == "not_run_runs"
+    assert m.unmade_label(RuntimeError("crash")) == "failed_runs"
+
+
+def test_earlier_training_records_must_be_published(m):
+    seen = []
+    m.check_order("train-n", {"train-ta": "completed", "train-tf": "skipped"}.get, require=seen.append)
+    assert seen == ["train-ta", "train-tf"]
+
+
+def test_training_admission_counts_completed_runs_after_failures(m):
+    plan = m.default_plan()
+    full = m.admission_projection(TIMING, plan, {"ta": [0, 1, 2, 3, 4, 5, 6, 7]}, "train-tf")
+    fewer = m.admission_projection(TIMING, plan, {"ta": [0, 1]}, "train-tf")
+    assert fewer["champions"] < full["champions"] and fewer["train-tf"] == full["train-tf"]
+
+
+def test_each_reading_checks_its_own_denominator(m):
+    blocks, champs = _blocks(m, seed_visits=0.0)
+    blocks["b1-shared"]["seed"]["visits"] = np.zeros(256)  # exactly 0: _blocks adds noise
+    r = m.compute_readings(blocks, champs, m.default_plan(), n_mazes=256)
+    assert r["G"]["label"] == "not read" and r["S-trail"]["label"] == "not read" and r["S-gen"]["label"] == "not read"
+    assert r["S-peer"]["label"] == "read" and r["S-peer"]["estimate"] == pytest.approx(-0.1, abs=1e-6)
+
+
+def test_the_secondary_readings_carry_their_direction_and_holm(m):
+    blocks, champs = _blocks(m)
+    r = m.compute_readings(blocks, champs, m.default_plan(), n_mazes=256)
+    sp = r["S-peer"]
+    assert sp["label"] == "read" and sp["alternative"] == "less" and "lower_bound_95" not in sp
+    assert sp["upper_bound_95"] == pytest.approx(sp["estimate"])  # zero spread: the point estimate
+    assert sp["holm_rejected"] == r["holm"]["S-peer"]["rejected"]
+    st = r["S-trail"]
+    assert st["alternative"] == "greater" and st["holm_rejected"]
+    assert st["conclusion"] == "increased trail dependence"
+
+
+def test_s_trails_four_means_use_the_same_pairs_and_weights(m):
+    blocks, champs = _blocks(m)
+    for i in range(3):  # three T-A runs without their "none" condition
+        blocks["b2-none"].pop(f"ta:{i}:final")
+    r = m.compute_readings(blocks, champs, m.default_plan(), n_mazes=256)
+    st, fm = r["S-trail"], r["S-trail"]["four_means"]
+    assert fm["pairs"] == {"ta": 5, "tf": 8}
+    lhs = fm["t_shared"] - fm["seed_shared"]
+    rhs = (fm["t_none"] - fm["seed_none"]) + st["estimate"] * fm["seed_shared"]
+    assert lhs == pytest.approx(rhs)
+
+
+def test_readings_after_a_final_champions_stop_are_not_read(m):
+    r = m.readings_from({"outcome": m.E.OUTCOMES["stopped"], "final": True}, {"plan": m.default_plan()}, {})
+    assert all(r[k]["label"] == "not read" for k in ("G", "S-gen", "S-trail", "S-peer"))
+
+
+def test_validation_is_one_chunk_of_32_by_128(m):
+    seen = {}
+
+    def fake(cfg, iface, genome, ids, world_seed, device, **kw):
+        from types import SimpleNamespace
+        seen["chunk_worlds"] = kw.get("chunk_worlds")
+        return SimpleNamespace(score=np.zeros((genome.n_strains, len(ids))))
+
+    from wormwars.brain import Genome
+    cx = m.context(m.arm_cfg("ta"))
+    m.validate_read_point(Genome.cat([cx["seed"].genome] * 32), "ta", "cpu", rollout_fn=fake)
+    assert seen["chunk_worlds"] == 32 * 128
+
+
+def test_the_route_overlap_matches_play_replay(m):
+    from wormwars.e3 import maze_organisms as MO
+    from wormwars.e3 import maze_runs as MR
+    ids = np.array([5000, 5001, 5002])
+    eps, _ = MR.replay_donors(ids, m.seed(), 5)
+    cfg = m.cfg_for("shared")
+    cx = m.context(cfg)
+    rep = MR.play_replay(cfg, cx["seed"].iface, lambda: MO.brain(cx["seed"]), ids, m.seed(), donor_episodes=eps,
+                         coef=1.0, ticks=1)
+    assert np.allclose(m.route_overlap(ids, eps), rep["route_overlap"])
+
+
+def test_each_chunks_composition_is_recorded(m):
+    champs = [{"arm": a, "run": i, "read": "final"} for a in ("ta", "tf") for i in range(8)]
+    comp = m.chunk_compositions(m.eval_plan(champs, coefs=None), n_mazes=256)
+    b1 = [c for c in comp if c["chunk"].startswith("eval-b1-shared")]
+    assert [c["composition"] for c in b1] == [[16, 256, 8], [1, 256, 8]]
+    rep = [c for c in comp if c["chunk"].startswith("eval-b5-replay")]
+    assert [c["composition"] for c in rep] == [[16, 256, 8], [16, 256, 8], [2, 256, 8]]  # with their donors
+
+
+def test_distinct_organisms_in_one_chunk_play_as_their_own(m, monkeypatch):
+    from wormwars.brain import Genome
+    from wormwars.e3 import tuning as T
+    monkeypatch.setitem(m.REGISTERED, "H", 150)
+    cfg = m.cfg_for("shared")
+    cx = m.context(cfg)
+    mut = Genome.cat([cx["seed"].genome]).mutate(cfg.mutation, generator=torch.Generator().manual_seed(9),
+                                                  scales={k: v * 8 for k, v in T.scales(cx["seed"].ext).items()})
+    real = m.org_genome
+    monkeypatch.setattr(m, "org_genome", lambda n, c, f: mut if n == "mut" else real(n, c, f))
+    mazes = np.array([9900, 9901, 9902])
+    both = m.play_names(["seed", "mut"], "shared", mazes, cx, "cpu")
+    alone = {n: m.play_names([n], "shared", mazes, cx, "cpu") for n in ("seed", "mut")}
+    for i, n in enumerate(("seed", "mut")):
+        assert np.array_equal(both["visits"][i], alone[n]["visits"][0]) and np.array_equal(both["legs"][i], alone[n]["legs"][0])
+    assert not np.array_equal(both["exposure_mean"][0], both["exposure_mean"][1])

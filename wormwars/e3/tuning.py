@@ -122,10 +122,12 @@ def paired(diffs, *, min_runs: int = MIN_RUNS) -> dict:
         return {"label": "not read", "n": len(d), "p": 1.0}
     m, se = d.mean(), d.std(ddof=1) / math.sqrt(len(d))
     if se == 0:
-        p = 0.0 if m > 0 else 1.0
+        p, lower = (0.0 if m > 0 else 1.0), m
     else:
         p = float(stats.t.sf(m / se, len(d) - 1))
-    return {"label": "read", "n": len(d), "mean": float(m), "se": float(se), "p": p}
+        lower = m - float(stats.t.ppf(0.95, len(d) - 1)) * se
+    return {"label": "read", "n": len(d), "mean": float(m), "estimate": float(m), "se": float(se), "p": p,
+            "lower_bound_95": float(lower)}
 
 
 def holm(pvalues: dict, alpha: float = ALPHA) -> dict:
