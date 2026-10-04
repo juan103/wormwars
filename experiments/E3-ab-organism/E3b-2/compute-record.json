@@ -1,0 +1,36 @@
+{
+ "time_unit": "synchronised wall-clock seconds per category (not GPU kernel time)",
+ "neural_update_unit": "strains x batch x substeps network updates (network size not included)",
+ "attempts": [
+  {
+   "file": "20261004T103133Z-1207aa22.json",
+   "status": "completed",
+   "script": "e3b2",
+   "argv": [
+    "project",
+    "--device",
+    "cuda"
+   ],
+   "default_category": "measure",
+   "git_commit": "f9ae516ec3cc0b6d28feb6b072b232ab37ca5087"
+  }
+ ],
+ "failed_attempts": 0,
+ "uncategorised": false,
+ "categories": {
+  "measure": {
+   "worlds_built": 32768,
+   "world_ticks": 78643200,
+   "neural_updates": 20132659200,
+   "neural_padding": 0,
+   "seconds": 1176.748298799852
+  }
+ },
+ "totals": {
+  "worlds_built": 32768,
+  "world_ticks": 78643200,
+  "neural_updates": 20132659200,
+  "neural_padding": 0,
+  "seconds_timed": 1176.748298799852
+ }
+}
