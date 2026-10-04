@@ -6350,3 +6350,48 @@ raising.
 after telling the owner.
 - **Consensus:** Fable said start, and Astra asked only for these fixes, each with its test, so there is no
   further round.
+
+## D197 — E3b-2's results: the selector is in use; reviewed by both ("fix then publish"), corrected, published
+
+**The run** (2026-10-04) used 3.00 of 5 GPU-hours, with no drop and no failed attempt.
+- **The gain replicates on 256 fresh mazes:** T-A +0.114, T-F +0.451 of the seed's mean, with a pooled
+  correlation of 0.99 with E3b-1's test-block d.
+- **Holding the latch at either of its own states** removes 85-87% of the T champions' visits.
+- **The latch switches after every uncensored visit,** in all 21 organisms.
+- **The sensing and gating parameter groups interact strongly.** The tuned pair alone reaches 70% (T-A) and
+  79% (T-F) of the gain. The output edges carry 36% of T-A's summed gain.
+- **The nose inputs** matter to the T champions. N's champions use the scent but not the trails.
+
+**The plan's non-binding reading:** E3's assembly comparison and E4 keep their premise for these organisms.
+
+**The review** (`docs/reviews/20261004-E3b-2-results/`): the draft at d13d71d.
+- **Both recomputed the readings:** Astra from all 70 chunks, Fable from `summary.json`. Neither found a
+  calculation defect. Both said "fix then publish".
+- **Claude's factual errors:**
+  - "all eight mixed hybrids below W2 in 7 champions" is 6 (both);
+  - "about one undecided tick per leg" holds only in the middle-half band (both);
+  - "within 1-2 ticks" is a mean latency of up to 3 (Astra);
+  - "the costs keep the same order with trails off" is untrue (both).
+- **Over-wording, corrected:**
+  - "the cause" was a mechanism claim the plan rules out; it now reads as a strong interaction between
+    parameter groups (both);
+  - "output carries little" is true of T-F, not of T-A, where it is 36% (Astra);
+  - "the noses don't matter to N's champions" became: N's champions use the scent, and shared trails cost
+    them (both);
+  - the recorder is now framed as an integrity check, with the clamps as the evidence of use (both).
+- **Added:**
+  - the zero-visit hybrids and the tuned-pair coalition (Fable);
+  - the clamps as proportions and absolute levels (both);
+  - the latch denominators (Astra);
+  - the secondary outcomes that separate the schedules (Astra);
+  - the shares and an index to the supporting readings (both);
+  - the scope of the exactness checks (Astra).
+- **The notes on the plan:** the benchmark block and the nose lesion's name are not deviations from draft 3
+  (both).
+
+**Before the review, Claude corrected its own overstatement:** "every mixed hybrid below W2, in all 16" became
+15 of 16. Its recount then still had the 7-for-6 error above.
+
+**Publication:** consensus of all three, so main is brought up to date as in D187, and the owner is informed.
+
+**Next in Track E:** the owner chooses between E3's assembly comparison and E4.

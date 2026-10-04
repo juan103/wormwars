@@ -1,7 +1,10 @@
 # E3b-2: where E3b-1's gain comes from (exploratory)
 
-**Status (2026-10-04):** run at 3.00 of 5 GPU-hours. The results draft is under review by both reviewers
-(`RESULTS.md`).
+**Status (2026-10-04):** run at 3.00 of 5 GPU-hours; reviewed by both reviewers ("fix then publish"), corrected
+and published (D197). The results are in `RESULTS.md`:
+- **the latch's switching is used:** holding the latch fixed removes 85-87% of the tuned champions' visits;
+- **the gain:** most of it is reached by the comparators' sensing and gating parameter groups, tuned together;
+- **T-A's output edges** carry a third of its smaller gain.
 
 **The question:** E3b-1's tuned colonies beat the frozen seed. What do they use to do it, and does the
 engineered selector still switch in the maze?
@@ -19,7 +22,7 @@ engineered selector still switch in the maze?
 ## Where things are
 
 - **The plan:** `docs/E3/E3b-2-PLAN.md` (draft 3).
-- **The decisions:** D193-D196.
+- **The decisions:** D193-D197.
 - **The reviews:** `docs/reviews/20261004-E3b-2-*`.
 - **The code:**
   - `wormwars/e3/attribution.py`: the partitions, hybrids, Shapley values, lesions and latch recorder;

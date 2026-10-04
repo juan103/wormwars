@@ -88,6 +88,11 @@
     - **Its size:** about 5 GPU-hours, with no new evolution.
     - **Why first:** both later steps, E3's assembly comparison and E4, assume the selector is in use.
     - **After it:** the choice between E3's assembly comparison and E4.
+  - **E3b-2 ran and is published (2026-10-04, D197; `experiments/E3-ab-organism/E3b-2/RESULTS.md`).**
+    - **The latch's switching is used:** holding it fixed removes 85-87% of the tuned champions' visits.
+    - **The gain** sits mostly in the comparators' co-tuned sensing and gating parameters.
+    - **Both next steps keep their premise.**
+  - **Next in Track E:** the owner's choice between E3's assembly comparison and E4.
 
 - **Published on main:**
   - 02's D050 correction, as a Corrections entry (27 September, D063);

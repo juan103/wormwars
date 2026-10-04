@@ -1,0 +1,1 @@
+Astra 6 at "xhigh" with pinned settings and Fable 5.1 at "high" (run 20261004-153631), the same prompt to both, on the E3b-2 results draft at d13d71d. Both: "fix then publish"; every fix taken (D197).

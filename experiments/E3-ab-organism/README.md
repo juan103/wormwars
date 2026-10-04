@@ -12,7 +12,10 @@
 - **E3b-1: published** (2026-10-04, D192; `E3b-1/README.md`, `E3b-1/RESULTS.md`). It is the roadmap's E3
   gate: the tuned colony against the frozen seed in mazes. It reads "better" (+0.225 of the seed's mean; +0.069
   at 125 generations, +0.381 at 300), at 18.73 of 24 GPU-hours.
-- **Next: E3b-2** (exploratory): where E3b-1's gain comes from (D193).
+- **E3b-2: published** (2026-10-04, D197; `E3b-2/RESULTS.md`). It is exploratory: where E3b-1's gain comes from.
+  - The tuned colonies still use the latch's switching.
+  - Their gain sits mostly in the comparators' co-tuned sensing and gating parameters.
+  - E3's assembly comparison and E4 keep their premise. The owner chooses which follows.
   - It was pre-registered and bound before any stage ran (D181-D186).
   - Amendment 1 (infeasible mazes) was added before any score was read (D190, D191).
   - The code was reviewed by both (D188, D189).
@@ -89,8 +92,7 @@ silent worm, outside the N2 mask. Nothing here is about worm behaviour.
 
 - **E3a, the shuttle:** one wey, an open arena, two fixed sources. This folder's first experiment.
 - **E3b:** trails, branching mazes and the colony. It holds the roadmap's E3 gate. E3b-0, the engine and
-  feasibility, is published; so is E3b-1, the gate ("better"). E3b-2, where E3b-1's gain comes from, is
-  next.
+  feasibility, is published; so are E3b-1, the gate ("better"), and E3b-2, where its gain comes from.
 - **E3c:** the assembly comparison.
 
 **The owner's ceilings:** 30 GPU-hours for E3a, and about the same for each of E3b and E3c (D159).
