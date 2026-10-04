@@ -1,6 +1,8 @@
-# E3b-2 plan: where E3b-1's gain comes from (exploratory) — draft 2
+# E3b-2 plan: where E3b-1's gain comes from (exploratory) — draft 3
 
-**Status:** draft 2, 2026-10-04. Nothing has run.
+**Status:** draft 3, 2026-10-04. Nothing has run.
+- **Draft 3** states what the code review fixed (both reviewers: "fix then start";
+  `docs/reviews/20261004-E3b-2-code/`, D195). §11 maps the changes.
 - **Why:** the owner chose this step after E3b-1 (D193).
 - **Kind:** exploratory. Every analysis is fixed here before it runs, and none is a registered test. The
   results will be reported as descriptions with intervals, not as verdicts.
@@ -183,8 +185,14 @@ Applied to every T champion, N's 4 champions and the seed.
      carrier. It is one organism for all, run once as the **W2-alone reference**. A CPU test checks that every
      champion with both outputs silenced is bitwise the seed with both silenced, on smoke mazes.
 
-**Reported:** each lesion's cost, (lesioned − intact) / the seed's shared mean, per organism, by schedule and
-for the seed, for every outcome in §3.
+**Reported:** each lesion's cost per organism, by schedule and for the seed, for every outcome in §3. The units
+(D195):
+- visits: (lesioned − intact) / the seed's shared mean;
+- the later-leg rate, the unvisited and round-trip shares, and the first-B time: raw differences;
+- median legs: the difference of the medians.
+
+The intact baseline is the lesion stage's own. Its difference from A's all-champion hybrid (the same chunk
+sizes, another mix of strains) is reported as a composition diagnostic.
 
 ### D. Does the latch switch in the maze?
 
@@ -205,9 +213,15 @@ the recorder uses the goal from before the switch.
 - **agreement by goal:** the share of decided ticks matching the goal under the intended coding, for goal A
   and goal B separately, and their equal-weight mean. The opposite coding is computed with its own
   denominator;
-- **switching after a confirmed visit,** in both directions:
-  - the share of legs in which q crosses the threshold toward the new goal before the next visit;
-  - the latency in ticks from the visit to the crossing;
+- **switching after a confirmed visit,** in both directions (defined in D195):
+  - **a leg** toward the new goal starts at the visit tick;
+  - **pre-aligned:** q is already on the new goal's side there (it was computed before the visit's cue). Such
+    a leg needs no switch;
+  - **crossed:** otherwise, the leg is crossed at the first later tick with q on the new goal's side. A leg
+    still open at the next visit is not crossed, and one open at the horizon is censored;
+  - **the switched share** is crossed / (legs − pre-aligned − censored): the legs that needed a switch and
+    ended before the horizon. The pre-aligned share and the censored count are reported beside it;
+  - **the latency** counts in ticks from the visit to the crossing, over crossed legs;
   - the seed is the reference, since the relays read the position after the previous move and q needs
     ticks to cross;
 - **the denominators:** eligible weys, decided ticks, undecided ticks, goal occupancy, and the number of
@@ -271,15 +285,18 @@ Which step follows is the owner's decision, with both reviewers.
 | D | 21 organisms with the recorder | 2 |
 | F | shared with A | |
 
-That is about 63 chunks, about 2.6 GPU-hours.
+That is 70 chunks as implemented (A 32, B 8, C 28, D 2; D195), about 2.9 GPU-hours at 148.5 s a chunk.
 
-**A GPU benchmark** (`project`) times, on smoke mazes:
+**A GPU benchmark** (`project`) times, on its own block of 256 mazes (7300-7555, outside every other block;
+the smoke ids are too few for a 16 × 256 chunk; D195):
 - a plain chunk;
 - a clamped chunk;
 - a chunk with the recorder;
 - the saving.
 
-The plan is admitted if the hours spent plus the projected remaining work, × 1.25, is at most the cap.
+The plan is admitted if the hours spent plus 1.25 × the projected remaining work is at most the cap. The
+reserve applies to the remaining work only. The benchmark checks the cap between repeats, and records its
+progress durably, so a kill is charged to its last completed chunk.
 
 **The cap:** 5 GPU-hours, counted through `wormwars.accounting`, failed attempts included.
 
@@ -299,11 +316,14 @@ C's clamps and D answer the selector question more directly than B's selector al
   - E2's stage frame, configured for E3b-2's own folders; each stage once, with one rerun after a crash or
     a kill.
 - **Each stage:**
-  - checks its fixed inputs and the champions' hashes;
-  - runs the maze pre-flight;
+  - checks its fixed inputs (each pinned by sha256) and the champions' hashes;
+  - runs the maze pre-flight before it starts;
   - saves per-maze arrays as each chunk completes, and resumes at the first incomplete chunk;
-  - on resume, validates a chunk's full specification: its maze ids, configuration, condition, every
-    organism's genome and intervention identity, and its batch composition.
+  - on resume, validates a chunk's full specification: its ordered maze ids, configuration, condition,
+    every organism's genome and intervention identity, and its batch composition.
+- **The runner refuses `--out`,** which the accounting would otherwise read before the arguments are checked
+  (D195).
+- **The report reads stages stopped by the cap,** from their completed chunks, and lists what is missing.
 - **Fixed batch compositions:**
   - each hybrid chunk holds one champion's 16 hybrids;
   - the seed is the all-seed hybrid in each chunk, so its 16 score vectors, in one composition, must be
@@ -369,3 +389,21 @@ C's clamps and D answer the selector question more directly than B's selector al
 | A GPU benchmark, the recorder overhead, admission with a reserve | Astra | §7 |
 | The drop order | Fable and Astra differ | The ruling in §7 |
 | The seed in every hybrid chunk as an exactness check | Fable | §8 |
+
+## 11. Changes from draft 2 (the code review, D195)
+
+| Point | From | Change |
+|---|---|---|
+| A leg already on the new goal's side counted as crossed, with latency 0, so a stuck latch read as switching | both | Pre-aligned legs counted apart; crossing needs a later tick; latency from the visit tick; a visit on the last tick censored (§5D) |
+| The middle-half band, the occupancy, the eligible weys and the opposite coding were not recorded | both | Recorded, with maze-bootstrap intervals for agreement, the equal-weight agreement, switching and latency |
+| `--out` could send the accounting into E3b-1's folders | Astra | Refused before accounting opens |
+| Three fixed inputs were recorded but not checked | both | Pinned by sha256 |
+| The shared − none decomposition, raw-unit allocations, and bootstrap intervals for the gain, reversion and transplant were missing | Astra | Added (§5A); the conditions, champions and denominator resampled jointly |
+| The lesion schedules showed visits only, and the units were unstated | Astra | Every outcome, with the units above (§5C) |
+| The benchmark did not time the saving or check the cap, and a kill could be undercharged | Astra | Saving timed; the cap checked between repeats; progress recorded durably |
+| The pre-flight ran only in `project` | Astra | Before every stage |
+| The resume check stored the first and last maze ids only | Astra | Every ordered id |
+| The resting-turn check against the probes | both | Added (§5E). The seed matches its E3b-0 record to below 1e-6 |
+| The seed exactness checks | Fable | Widened to A-none and B; C's intact against A's hybrid reported |
+| A cap stop would leave no report | Fable | The report reads stopped stages' completed chunks |
+| The benchmark block, the admission reading, the chunk count | both | §7, as above |

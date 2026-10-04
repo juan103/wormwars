@@ -56,7 +56,9 @@ OUT = ROOT / "runs" / "e3b2"
 PLAN = "docs/E3/E3b-2-PLAN.md"
 E3B1 = "experiments/E3-ab-organism/E3b-1"
 FIXED = {  # §2: read-only inputs, checked at load (LF line endings, as committed)
-    f"{E3B1}/champions.json": None, f"{E3B1}/evaluate.json": None, f"{E3B1}/PREREGISTRATION.md": None,
+    f"{E3B1}/champions.json": "b2bcb81629abf98c266c6df68ffe93985bac6220257a7973f45dcadf3325abb2",
+    f"{E3B1}/evaluate.json": "3cc3631b8a79135399ce965c63382c36aa4c7ad27dee5eddbbbe4f7d481bd4c2",
+    f"{E3B1}/PREREGISTRATION.md": "031b4dc8cb82627d2e366bfc01b1044da40267f469711c0e51eb96710eab315f",
     "experiments/E3-ab-organism/E3b-0/report.json": "af82e1c9573b0f2b73d228d065c277f9bb46310f2fd8d395439a557e359d7df8",
     "experiments/E4s-stereo-module/E4s-0/module.json": "9613cd155a20ed2cfb891c1bd10fed16814f24a04f912a1940524f2378e877d4",
 }
@@ -105,7 +107,7 @@ def check_inputs() -> dict:
     got = {}
     for rel, want in FIXED.items():
         h = sha_lf(ROOT / rel)
-        if want is not None and h != want:
+        if h != want:
             raise SystemExit(f"{rel} has changed (sha256 {h}): refusing to run")
         got[rel] = h
     return got
@@ -354,7 +356,7 @@ def play_chunk(chunk: dict, orgs: dict, cx, dev, mazes: np.ndarray) -> dict:
 
 def chunk_spec(chunk: dict, orgs: dict, cx, mazes, cfg_sha: str) -> dict:
     built = [variant_genome(o, les, orgs, cx) for o, les in chunk["variants"]]
-    return {"mazes": [int(mazes[0]), int(mazes[-1]) + 1, len(mazes)], "maze_seed": seed(), "condition": chunk["condition"],
+    return {"mazes": [int(x) for x in mazes], "maze_seed": seed(), "condition": chunk["condition"],
             "config_sha256": cfg_sha, "scent_removed": bool(chunk.get("scent")), "recorder": bool(chunk.get("recorder")),
             "organisms": [variant_id(o, les, g, c) for (o, les), (g, c) in zip(chunk["variants"], built)],
             "composition": [len(built), len(mazes), REGISTERED["colony"]]}
@@ -404,11 +406,6 @@ def run_chunks(ctx, chunks: list) -> list:
     return done
 
 
-def load_chunk(key: str) -> dict:
-    with np.load(chunk_path(key), allow_pickle=False) as z:
-        return {k: z[k] for k in z.files}
-
-
 # ============================================================================== stages
 
 def preflight() -> dict:
@@ -436,30 +433,36 @@ def cmd_project(args):
         les = [c for c in lesion_chunks(plan) if any(v[1][0] == "clamp_a" for v in c["variants"])][0]
         scent = [c for c in lesion_chunks(plan) if c.get("scent")][0]
         rec = latch_chunks(plan)[0]
-        timing = {}
+        timing, done = {}, []
+        bench = OUT / "benchmark"
         for name, c in (("chunk", a), ("clamp_chunk", les), ("scent_chunk", scent), ("recorder_chunk", rec)):
-            for _ in range(2):  # the second of two repeats
+            for rep_ in range(2):  # the second of two repeats; the save path included
+                ctx.cap.check()
                 if str(dev) != "cpu":
                     torch.cuda.synchronize()
                 t0 = time.perf_counter()
+                path = bench / f"{name}.npz"
+                path.unlink(missing_ok=True)
                 with acct.category("measure"):
-                    play_chunk(c, orgs, cx, dev, mazes)
+                    run_chunk(path, {"benchmark": name, "repeat": rep_}, lambda c=c: play_chunk(c, orgs, cx, dev, mazes))
                 if str(dev) != "cpu":
                     torch.cuda.synchronize()
                 timing[name] = time.perf_counter() - t0
+                done.append(f"{name}-{rep_}")
+                E.write_atomic(E.partial_path("project"), {"stage": "project", "benchmark_done": done, "timing": timing})
         spent = E.clock().spent_hours() + (time.perf_counter() - ctx.cap.t_start) / 3600
         p = apply_drops(timing, spent)
         if not p["fits"] and not SMOKE:
             raise SystemExit("even after every drop the plan exceeds the cap: the owner is asked")
-        return {"fixed_inputs": inputs, "mazes": preflight(), "timing": timing, "plan": p,
+        return {"fixed_inputs": inputs, "mazes": ctx.earlier["mazes"], "timing": timing, "plan": p,
                 "note": "timings on the benchmark block 7300-7555 (outside every block); no result is read"}
 
-    return E.run_stage(args, "project", lambda a, prov: {}, body)
+    return E.run_stage(args, "project", lambda a, prov: {"mazes": preflight()}, body)
 
 
 def stage_plan(args, prov) -> dict:
     p = E.require_earlier(args, prov, "project")
-    return {"project": p}
+    return {"project": p, "mazes": preflight()}
 
 
 def make_stage(stage: str, chunks_fn):
@@ -467,6 +470,7 @@ def make_stage(stage: str, chunks_fn):
         def body(ctx):
             check_inputs()
             ctx.doc["stage"] = stage
+            ctx.doc["mazes"] = ctx.earlier["mazes"]
             plan = ctx.earlier["project"]["plan"]
             chunks = chunks_fn(plan)
             done = run_chunks(ctx, chunks)
@@ -486,15 +490,17 @@ cmd_latch = make_stage("latch", latch_chunks)
 def read_table(X: np.ndarray, players, seed_shared: np.ndarray) -> dict:
     """One champion's attribution from X [coalitions, mazes] (visits; the coalitions in `AT.coalitions` order,
     the all-seed first): the gain, Shapley allocations, reversion, transplant and dividends, in units of the
-    seed's shared mean."""
+    seed's shared mean, and the allocations in visits per wey."""
     den = float(np.mean(seed_shared))
     coal = AT.coalitions(players)
     table = {S: (float(X[k].mean()) - float(X[0].mean())) / den for k, S in enumerate(coal)}
     divs = AT.dividends(table, players)
-    return {"gain": table[frozenset(players)], "shapley": AT.shapley(table, players),
-            "reversion": AT.reversion(table, players), "transplant": AT.transplant(table, players),
-            "dividends": {"+".join(sorted(S, key=list(players).index)) or "none": v for S, v in divs.items()},
-            "table": {"+".join(sorted(S, key=list(players).index)) or "none": v for S, v in table.items()}}
+    phi = AT.shapley(table, players)
+    name = lambda S: "+".join(sorted(S, key=list(players).index)) or "none"  # noqa: E731
+    return {"gain": table[frozenset(players)], "shapley": phi, "reversion": AT.reversion(table, players),
+            "transplant": AT.transplant(table, players),
+            "shapley_visits_per_wey": {p: v * den for p, v in phi.items()},
+            "dividends": {name(S): v for S, v in divs.items()}, "table": {name(S): v for S, v in table.items()}}
 
 
 def bootstrap_indices(n_mazes: int, resamples: int, seed: int) -> np.ndarray:
@@ -506,32 +512,31 @@ def shapley_matrix(players) -> np.ndarray:
     coal = AT.coalitions(players)
     W = np.zeros((len(players), len(coal)))
     for k, S in enumerate(coal):
-        unit = {S2: float(S2 == S) for S2 in coal}
-        phi = AT.shapley(unit, players)
+        phi = AT.shapley({S2: float(S2 == S) for S2 in coal}, players)
         W[:, k] = [phi[p] for p in players]
     return W
 
 
-def ratio_interval(num, den, idx: np.ndarray) -> dict:
-    """A ratio of sums over mazes (num and den per maze), with a maze-bootstrap 95% interval (§5D: the
-    uncertainty is over mazes, not ticks). None if the denominator is 0."""
-    num, den = np.asarray(num, dtype=np.float64), np.asarray(den, dtype=np.float64)
-    if den.sum() == 0:
-        return {"value": None, "denominator": 0}
-    rn, rd = num[idx].sum(axis=1), den[idx].sum(axis=1)
-    ok = rd > 0
-    r = rn[ok] / rd[ok]
-    return {"value": float(num.sum() / den.sum()), "denominator": float(den.sum()),
-            "ci95": [float(np.quantile(r, 0.025)), float(np.quantile(r, 0.975))]}
+def endpoint_matrices(players) -> dict:
+    """Linear maps from the table to the gain, the reversions and the transplants."""
+    coal = AT.coalitions(players)
+    full, empty = frozenset(players), frozenset()
+    pos = {S: k for k, S in enumerate(coal)}
+    rev = np.zeros((len(players), len(coal)))
+    tra = np.zeros((len(players), len(coal)))
+    for i, p in enumerate(players):
+        rev[i, pos[full - {p}]], rev[i, pos[full]] = 1.0, -1.0
+        tra[i, pos[frozenset([p])]], tra[i, pos[empty]] = 1.0, -1.0
+    gain = np.zeros((1, len(coal)))
+    gain[0, pos[full]], gain[0, pos[empty]] = 1.0, -1.0
+    return {"gain": gain, "reversion": rev, "transplant": tra, "shapley": shapley_matrix(players)}
 
 
-OUTCOMES = ("visits", "legs", "later_leg_rate", "unvisited_share", "round_trip_share", "later_first_b")
-
-
-def variant_outcomes(z: dict, variants: list) -> list:
-    """Every variant's mean of every outcome over the mazes, and its median legs (§3)."""
-    return [{"organism": o, "variant": list(les), **{m: float(np.mean(z[m][k])) for m in OUTCOMES if m in z},
-             "median_legs": float(np.median(z["legs"][k]))} for k, (o, les) in enumerate(variants)]
+def boot_tables(X: np.ndarray, seed_shared: np.ndarray, idx: np.ndarray) -> np.ndarray:
+    """[coalitions, R]: each resample's table (relative to the all-seed coalition), over the seed's resampled shared
+    mean; the mazes resampled jointly (the same idx for every champion, condition and denominator)."""
+    M = X[:, idx].mean(axis=2)
+    return (M - M[0]) / seed_shared[idx].mean(axis=1)
 
 
 def t_interval(x) -> dict:
@@ -543,123 +548,227 @@ def t_interval(x) -> dict:
     return {"n": len(x), "mean": float(x.mean()), "ci95": [float(x.mean() - q * se), float(x.mean() + q * se)]}
 
 
+def pct(a: np.ndarray) -> list:
+    return [float(np.quantile(a, 0.025)), float(np.quantile(a, 0.975))]
+
+
+def ratio_interval(num, den, idx: np.ndarray) -> dict:
+    """A ratio of sums over mazes, with a maze-bootstrap 95% interval (§5D: the uncertainty is over mazes, not
+    ticks). None if the denominator is 0."""
+    num, den = np.asarray(num, dtype=np.float64), np.asarray(den, dtype=np.float64)
+    if den.sum() == 0:
+        return {"value": None, "denominator": 0}
+    rn, rd = num[idx].sum(axis=1), den[idx].sum(axis=1)
+    ok = rd > 0
+    return {"value": float(num.sum() / den.sum()), "denominator": float(den.sum()), "ci95": pct(rn[ok] / rd[ok])}
+
+
+OUTCOMES = ("visits", "legs", "later_leg_rate", "unvisited_share", "round_trip_share", "later_first_b")
+
+
+def variant_outcomes(z: dict, variants: list) -> list:
+    """Every variant's mean of every outcome over the mazes, and its median legs (§3)."""
+    return [{"organism": o, "variant": list(les), **{m: float(np.mean(z[m][k])) for m in OUTCOMES if m in z},
+             "median_legs": float(np.median(z["legs"][k]))} for k, (o, les) in enumerate(variants)]
+
+
+def load_chunk(key: str):
+    """A saved chunk's arrays, or None if it did not complete (a stage stopped by the cap leaves gaps)."""
+    p = chunk_path(key)
+    if not p.exists():
+        return None
+    with np.load(p, allow_pickle=False) as z:
+        return {k: z[k] for k in z.files}
+
+
+def tables_for(plan: dict, part: str, cond: str) -> dict:
+    """{champion: X [coalitions, mazes]} from the saved chunks; champions whose chunk is missing are left out."""
+    players = AT.FUNCTIONAL if part == "functional" else AT.SIDE
+    n = len(AT.coalitions(players))
+    out = {}
+    for k, c in enumerate(plan["t"]):
+        if part == "functional":
+            z = load_chunk(f"A-{cond}-{c.replace(':', '')}")
+            if z is not None:
+                out[c] = z["visits"]
+        else:
+            z = load_chunk(f"B-shared-{k // 2:02d}")
+            if z is not None:
+                off = (k % 2) * n
+                out[c] = z["visits"][off:off + n]
+    return out
+
+
+def schedules_of(plan: dict, Xs: dict, seed_shared, players, idx) -> dict:
+    """Each schedule's mean of every endpoint and allocation: a t interval over runs and a maze-paired bootstrap."""
+    mats = endpoint_matrices(players)
+    sched = {}
+    for arm in ("ta", "tf"):
+        names = [c for c in plan["t"] if c.startswith(arm) and c in Xs]
+        if not names:
+            continue
+        per = {c: read_table(Xs[c], players, seed_shared) for c in names}
+        boots = {c: boot_tables(Xs[c], seed_shared, idx) for c in names}
+        s = {"runs": names, "gain": {**t_interval([per[c]["gain"] for c in names]),
+                                     "bootstrap95": pct(np.mean([mats["gain"] @ boots[c] for c in names], axis=0)[0])}}
+        for kind in ("shapley", "reversion", "transplant"):
+            b = np.mean([mats[kind] @ boots[c] for c in names], axis=0)  # [players, R]
+            s[kind] = {p: {**t_interval([per[c][kind][p] for c in names]), "bootstrap95": pct(b[i])}
+                       for i, p in enumerate(players)}
+        gains = sum(per[c]["gain"] for c in names)
+        s["share_of_summed_gain"] = {p: (sum(per[c]["shapley"][p] for c in names) / gains if gains else None)
+                                     for p in players}
+        sched[arm] = s
+    return sched
+
+
+def trail_split(shared: dict, none: dict, seed_shared, players, idx) -> dict:
+    """§5A: each group's Shapley allocation under shared trails minus under none, per champion and by schedule (a t
+    interval over runs, and a bootstrap resampling both conditions, every champion and the denominator jointly)."""
+    W = shapley_matrix(players)
+    per, boots = {}, {}
+    for c in shared:
+        if c not in none:
+            continue
+        a, b = read_table(shared[c], players, seed_shared), read_table(none[c], players, seed_shared)
+        per[c] = {p: a["shapley"][p] - b["shapley"][p] for p in players}
+        boots[c] = W @ boot_tables(shared[c], seed_shared, idx) - W @ boot_tables(none[c], seed_shared, idx)
+    sched = {}
+    for arm in ("ta", "tf"):
+        names = [c for c in per if c.startswith(arm)]
+        if names:
+            b = np.mean([boots[c] for c in names], axis=0)
+            sched[arm] = {p: {**t_interval([per[c][p] for c in names]), "ci95": pct(b[i])} for i, p in enumerate(players)}
+    return {"per_champion": per, "schedules": sched,
+            "note": "shared − none, in units of the seed's shared mean; 'none' removes own and peer trails together"}
+
+
 def attribution_report(plan: dict) -> dict:
     R = REGISTERED["bootstrap"]
-    out, by = {}, {}
-    seeds_shared = []
-    for c in plan["t"]:
-        seeds_shared.append(load_chunk(f"A-shared-{c.replace(':', '')}")["visits"][0])
-    exact = all(np.array_equal(seeds_shared[0], s) for s in seeds_shared)
-    seed_shared = seeds_shared[0]
-    for part, players, cond_list in (("functional", AT.FUNCTIONAL, ("shared", "none")), ("side", AT.SIDE, ("shared",))):
-        if part == "side" and not plan["side"]:
-            continue
-        for cond in cond_list:
-            per = {}
-            Xs = {}
-            for c in plan["t"]:
-                if part == "functional":
-                    X = load_chunk(f"A-{cond}-{c.replace(':', '')}")["visits"]
-                else:
-                    k = plan["t"].index(c) // 2
-                    Z = load_chunk(f"B-shared-{k:02d}")["visits"]
-                    off = (plan["t"].index(c) % 2) * len(AT.coalitions(players))
-                    X = Z[off:off + len(AT.coalitions(players))]
-                Xs[c] = X
-                per[c] = read_table(X, players, seed_shared)
-            by[(part, cond)] = Xs
-            # schedules: means with t intervals over runs, and the maze-paired bootstrap (joint across champions)
-            idx = bootstrap_indices(len(seed_shared), R["resamples"], R["seed"])
-            Wm = shapley_matrix(players)
-            sched = {}
-            for arm in ("ta", "tf"):
-                names = [c for c in plan["t"] if c.startswith(arm)]
-                if not names:
-                    continue
-                s = {"gain": t_interval([per[c]["gain"] for c in names])}
-                for kind in ("shapley", "reversion", "transplant"):
-                    s[kind] = {p: t_interval([per[c][kind][p] for c in names]) for p in players}
-                den = seed_shared[idx].mean(axis=1)  # [R]
-                phis = []
-                for c in names:
-                    M = Xs[c][:, idx].mean(axis=2)  # [coalitions, R]
-                    table = (M - M[0]) / den
-                    phis.append(Wm @ table)  # [players, R]
-                ph = np.mean(phis, axis=0)
-                s["shapley_bootstrap95"] = {p: [float(np.quantile(ph[i], 0.025)), float(np.quantile(ph[i], 0.975))]
-                                            for i, p in enumerate(players)}
-                gains = sum(per[c]["gain"] for c in names)
-                s["share_of_summed_gain"] = {p: (sum(per[c]["shapley"][p] for c in names) / gains if gains else None)
-                                             for p in players}
-                sched[arm] = s
-            out[f"{part}-{cond}"] = {"per_champion": per, "schedules": sched}
-    w2 = load_chunk("C-shared-w2ref")["visits"][0] if chunk_path("C-shared-w2ref").exists() else None
+    shared_f = tables_for(plan, "functional", "shared")
+    first = next(iter(shared_f.values()))
+    seed_shared = first[0]
+    idx = bootstrap_indices(len(seed_shared), R["resamples"], R["seed"])
+    out = {}
+    tables = {("functional", "shared"): shared_f, ("functional", "none"): tables_for(plan, "functional", "none")}
+    if plan["side"]:
+        tables[("side", "shared")] = tables_for(plan, "side", "shared")
+    for (part, cond), Xs in tables.items():
+        players = AT.FUNCTIONAL if part == "functional" else AT.SIDE
+        out[f"{part}-{cond}"] = {"per_champion": {c: read_table(X, players, seed_shared) for c, X in Xs.items()},
+                                 "schedules": schedules_of(plan, Xs, seed_shared, players, idx),
+                                 "missing": [c for c in plan["t"] if c not in Xs]}
+    exact = {"A-shared": all(np.array_equal(X[0], seed_shared) for X in shared_f.values()),
+             "A-none (among themselves)": (lambda xs: all(np.array_equal(xs[0], x) for x in xs))(
+                 [X[0] for X in tables[("functional", "none")].values()] or [np.zeros(1)])}
+    if plan["side"]:
+        exact["B (against A-shared)"] = all(np.array_equal(X[0], seed_shared) for X in tables[("side", "shared")].values())
+    w2 = load_chunk("C-shared-w2ref")
+    w2 = None if w2 is None else w2["visits"][0]
     flags = {}
     if w2 is not None:
-        for (part, cond), Xs in by.items():
+        for (part, cond), Xs in tables.items():
             for c, X in Xs.items():
                 low = [k for k in range(len(X)) if X[k].mean() < w2.mean()]
                 if low:
                     flags[f"{part}-{cond}-{c}"] = low
-    return {"tables": out, "seed_exact_across_chunks": bool(exact), "seed_shared_mean": float(seed_shared.mean()),
+    return {"tables": out, "trail_split": trail_split(shared_f, tables[("functional", "none")], seed_shared,
+                                                      AT.FUNCTIONAL, idx),
+            "seed_exact_across_chunks": exact, "seed_shared_mean": float(seed_shared.mean()),
             "w2_reference_mean": None if w2 is None else float(w2.mean()), "hybrids_below_w2": flags}
 
 
 def lesion_report(plan: dict, seed_shared_mean: float) -> dict:
-    rows = {}
+    """§5C: each lesion's cost per organism and by schedule, for every outcome. Visits are in units of the seed's
+    shared mean; the rates, shares and first-B times are raw differences; median legs is the difference of medians
+    (D195)."""
+    rows, missing = {}, []
     for c in lesion_chunks(plan):
         z = load_chunk(c["key"])
-        for k, (o, les) in enumerate(c["variants"]):
-            rows[(c["condition"], o, json.dumps(les))] = {m: z[m][k] for m in
-                                                          ("visits", "legs", "later_leg_rate", "unvisited_share",
-                                                           "round_trip_share", "later_first_b")}
-    out = {}
-    for (cond, o, les), r in rows.items():
-        if les == json.dumps(["intact"]) or o == "w2_ref":
+        if z is None:
+            missing.append(c["key"])
             continue
-        base = rows[(cond, o, json.dumps(["intact"]))]
-        out.setdefault(cond, {}).setdefault(o, {})[les] = {
-            m: float((r[m].mean() - base[m].mean()) / (seed_shared_mean if m == "visits" else 1.0)) for m in r}
-    intact = {cond: {o: {m: float(r[m].mean()) for m in r} for (cc, o, les), r in rows.items()
-                     if cc == cond and les == json.dumps(["intact"])} for cond in plan["lesion_conditions"]}
+        for k, (o, les) in enumerate(c["variants"]):
+            rows[(c["condition"], o, json.dumps(les))] = {m: z[m][k] for m in OUTCOMES}
+    intact_key = json.dumps(["intact"])
+    cost = {}
+    for (cond, o, les), r in rows.items():
+        if les == intact_key or o == "w2_ref" or (cond, o, intact_key) not in rows:
+            continue
+        base = rows[(cond, o, intact_key)]
+        d = {m: float((r[m].mean() - base[m].mean()) / (seed_shared_mean if m == "visits" else 1.0)) for m in OUTCOMES}
+        d["median_legs"] = float(np.median(r["legs"]) - np.median(base["legs"]))
+        cost.setdefault(cond, {}).setdefault(o, {})[les] = d
     sched = {}
-    for cond in out:
+    for cond in cost:
         for arm in ("ta", "tf", "n"):
-            names = [o for o in out[cond] if o.startswith(arm + ":")]
+            names = [o for o in cost[cond] if o.startswith(arm + ":")]
             if names:
-                sched.setdefault(cond, {})[arm] = {les: t_interval([out[cond][o][les]["visits"] for o in names])
-                                                   for les in out[cond][names[0]]}
-    return {"cost": out, "intact": intact, "schedules": sched,
-            "note": "cost = (lesioned − intact) / the seed's shared mean for visits; raw differences for the others"}
+                sched.setdefault(cond, {})[arm] = {les: {m: t_interval([cost[cond][o][les][m] for o in names])
+                                                         for m in (*OUTCOMES, "median_legs")}
+                                                   for les in cost[cond][names[0]]}
+    intact = {cond: {o: {m: float(r[m].mean()) for m in OUTCOMES} for (cc, o, les), r in rows.items()
+                     if cc == cond and les == intact_key} for cond in plan["lesion_conditions"]}
+    composition = {}  # the lesion stage's intact against A's all-champion hybrid: the same sizes, another strain mix
+    for cond in ("shared", "none"):
+        for c in plan["t"]:
+            z = load_chunk(f"A-{cond}-{c.replace(':', '')}")
+            if z is not None and (cond, c, intact_key) in rows:
+                composition[f"{cond}-{c}"] = float(np.abs(z["visits"][-1] - rows[(cond, c, intact_key)]["visits"]).max())
+    return {"cost": cost, "intact": intact, "schedules": sched, "missing_chunks": missing,
+            "intact_vs_attribution_max_abs_visits": composition,
+            "units": "visits: units of the seed's shared mean; other outcomes: raw differences; median_legs: difference "
+                     "of medians"}
+
+
+def latch_summary(z: dict, k: int, idx: np.ndarray) -> dict:
+    """One organism's §5D reading from its per-maze counts (D195):
+    - switched = crossed / (legs − pre-aligned − censored): the legs that needed a switch and ended before the
+      horizon; pre-aligned legs (q already on the new goal's side at the visit) and censored legs are reported
+      beside it;
+    - latency = the mean ticks from the visit to the crossing, over crossed legs;
+    - agreement per goal in each band, the equal-weight mean, and the opposite coding (decided − agree)."""
+    g = lambda key: np.asarray(z[f"latch_{key}"][k], dtype=np.float64)  # noqa: E731
+    r = {"occupancy": {x: int(g(f"occupancy_{x}").sum()) for x in ("A", "B")},
+         "eligible_weys": int(g("eligible_weys").sum())}
+    for d in ("to_a", "to_b"):
+        legs, pre, cens = g(f"legs_{d}"), g(f"pre_{d}"), g(f"censored_{d}")
+        r[f"legs_{d}"] = int(legs.sum())
+        r[f"pre_aligned_{d}"] = float(pre.sum() / legs.sum()) if legs.sum() else None
+        r[f"censored_{d}"] = int(cens.sum())
+        r[f"switched_{d}"] = ratio_interval(g(f"crossed_{d}"), legs - pre - cens, idx)
+        r[f"latency_{d}"] = ratio_interval(g(f"lat_{d}"), g(f"crossed_{d}"), idx)
+    for band in ("third", "half"):
+        b = {}
+        for x in ("A", "B"):
+            b[f"agreement_{x}"] = ratio_interval(g(f"{band}_agree_{x}"), g(f"{band}_decided_{x}"), idx)
+            b[f"opposite_{x}"] = int(g(f"{band}_decided_{x}").sum() - g(f"{band}_agree_{x}").sum())
+            b[f"undecided_{x}"] = int(g(f"{band}_undecided_{x}").sum())
+        da, db = g(f"{band}_decided_A"), g(f"{band}_decided_B")
+        if da.sum() and db.sum():
+            ra = g(f"{band}_agree_A")[idx].sum(1) / np.maximum(da[idx].sum(1), 1)
+            rb = g(f"{band}_agree_B")[idx].sum(1) / np.maximum(db[idx].sum(1), 1)
+            b["agreement_equal_weight"] = {"value": float((g(f"{band}_agree_A").sum() / da.sum()
+                                                           + g(f"{band}_agree_B").sum() / db.sum()) / 2),
+                                           "ci95": pct((ra + rb) / 2)}
+        else:
+            b["agreement_equal_weight"] = {"value": None}
+        r[band] = b
+    return r
 
 
 def latch_report(plan: dict) -> dict:
-    out = {}
     B = REGISTERED["bootstrap"]
+    out, missing = {}, []
     for c in latch_chunks(plan):
         z = load_chunk(c["key"])
+        if z is None:
+            missing.append(c["key"])
+            continue
         idx = bootstrap_indices(z["visits"].shape[1], B["resamples"], B["seed"])
         for k, (o, _) in enumerate(c["variants"]):
-            tot = {key[len("latch_"):]: int(z[key][k].sum()) for key in z if key.startswith("latch_")}
-            per_maze_agree = []
-            for g in ("A", "B"):
-                d = z[f"latch_decided_{g}"][k]
-                a = z[f"latch_agree_{g}"][k]
-                per_maze_agree.append(np.where(d > 0, a / np.maximum(d, 1), np.nan))
-            r = {"counts": tot, "intervals": {
-                **{f"agreement_{g}": ratio_interval(z[f"latch_agree_{g}"][k], z[f"latch_decided_{g}"][k], idx) for g in ("A", "B")},
-                **{f"switched_{d}": ratio_interval(z[f"latch_crossed_{d}"][k], z[f"latch_legs_{d}"][k], idx)
-                   for d in ("to_a", "to_b")}}}
-            for g in ("A", "B"):
-                r[f"agreement_{g}"] = tot[f"agree_{g}"] / tot[f"decided_{g}"] if tot[f"decided_{g}"] else None
-            vals = [r["agreement_A"], r["agreement_B"]]
-            r["agreement_equal_weight"] = None if None in vals else (vals[0] + vals[1]) / 2
-            for d in ("to_a", "to_b"):
-                legs = tot[f"legs_{d}"]
-                r[f"switched_{d}"] = tot[f"crossed_{d}"] / legs if legs else None
-                r[f"latency_{d}"] = tot[f"lat_{d}"] / tot[f"crossed_{d}"] if tot[f"crossed_{d}"] else None
-            out[o] = r
-    return out
+            out[o] = latch_summary(z, k, idx)
+    return {"organisms": out, "missing_chunks": missing}
 
 
 def genome_report(plan: dict, cfg) -> dict:
@@ -683,28 +792,61 @@ def genome_report(plan: dict, cfg) -> dict:
     return out
 
 
+def resting_turn_check(genomes: dict) -> dict:
+    """§5E: the resting turn from the genome against the probes' records (the turn with both noses at 0): E3b-1's
+    for the champions (`A@…` is the upper state), E3b-0's for the seed. Formal only: smoke's stand-ins have none."""
+    ev = json.loads((ROOT / E3B1 / "evaluate.json").read_text(encoding="utf-8"))["probes"]
+    b0 = json.loads((ROOT / "experiments/E3-ab-organism/E3b-0/report.json").read_text(encoding="utf-8"))["component_tests"]
+    per, worst = {}, 0.0
+    for o, r in genomes.items():
+        if o == "seed":
+            rec = b0["one_nose"]["values"]
+        elif not SMOKE and f"{o}:final" in ev:
+            rec = ev[f"{o}:final"]["one_nose"]
+        else:
+            continue
+        a = next(v["u_none"] for k, v in rec.items() if k.startswith("A@"))
+        b = next(v["u_none"] for k, v in rec.items() if k.startswith("B@"))
+        diff = max(abs(r["resting_turn"]["high"] - a), abs(r["resting_turn"]["low"] - b))
+        per[o] = {"genome": r["resting_turn"], "probe": {"high": a, "low": b}, "abs_difference": diff}
+        worst = max(worst, diff)
+    return {"per_organism": per, "max_abs_difference": worst}
+
+
 def replication_report(plan: dict, seed_shared_mean: float) -> dict:
     ev = json.loads((ROOT / E3B1 / "evaluate.json").read_text(encoding="utf-8"))["readings"]["G"]["d"]
     pairs = []
     for arm in ("ta", "tf"):
         for i, d_test in enumerate(ev[arm]):
             name = f"{arm}:{i}"
-            if name in plan["t"]:
-                X = load_chunk(f"A-shared-{name.replace(':', '')}")["visits"]
+            z = load_chunk(f"A-shared-{name.replace(':', '')}") if name in plan["t"] else None
+            if z is not None:
+                X = z["visits"]
                 pairs.append({"champion": name, "fresh": float((X[-1].mean() - X[0].mean()) / seed_shared_mean),
                               "test": float(d_test)})
     f, t = np.array([p["fresh"] for p in pairs]), np.array([p["test"] for p in pairs])
-    return {"pairs": pairs, "correlation": float(np.corrcoef(f, t)[0, 1]) if len(pairs) > 2 else None,
+    corr = float(np.corrcoef(f, t)[0, 1]) if len(pairs) > 2 and f.std() > 0 and t.std() > 0 else None
+    return {"pairs": pairs, "correlation": corr,
             "means": {arm: {"fresh": float(np.mean([p["fresh"] for p in pairs if p["champion"].startswith(arm)])),
                             "test": float(np.mean([p["test"] for p in pairs if p["champion"].startswith(arm)]))}
                       for arm in ("ta", "tf") if any(p["champion"].startswith(arm) for p in pairs)}}
+
+
+def settled(args, prov, stage: str) -> dict:
+    """A measurement stage the report can read: completed, or stopped by the cap (its completed chunks stand)."""
+    path = E.record_path(stage)
+    if path.exists():
+        rec = json.loads(path.read_text(encoding="utf-8"))
+        if rec.get("outcome") == E.OUTCOMES["cap"]:
+            return rec
+    return E.require_earlier(args, prov, stage)
 
 
 def cmd_report(args):
     def requires(a, prov):
         out = stage_plan(a, prov)
         for s in ("attribution", "lesions", "latch"):
-            out[s] = E.require_earlier(a, prov, s)
+            out[s] = settled(a, prov, s)
         return out
 
     def body(ctx):
@@ -716,10 +858,12 @@ def cmd_report(args):
             genomes = genome_report(plan, cfg)
         variants = []
         for c in all_chunks(plan):
-            for row in variant_outcomes(load_chunk(c["key"]), c["variants"]):
-                variants.append({"chunk": c["key"], "condition": c["condition"], **row})
+            z = load_chunk(c["key"])
+            if z is not None:
+                for row in variant_outcomes(z, c["variants"]):
+                    variants.append({"chunk": c["key"], "condition": c["condition"], **row})
         summary = {"attribution": att, "lesions": lesion_report(plan, att["seed_shared_mean"]), "variants": variants,
-                   "latch": latch_report(plan), "genomes": genomes,
+                   "latch": latch_report(plan), "genomes": genomes, "resting_turn_check": resting_turn_check(genomes),
                    "replication": replication_report(plan, att["seed_shared_mean"])}
         E.write_atomic(EXP / "summary.json", summary)
         return {"summary": summary, "note": "descriptive throughout (§9); no gate"}
@@ -770,6 +914,8 @@ def main():
 
 if __name__ == "__main__":
     from wormwars.accounting import run_script
+    if any(a == "--out" or a.startswith("--out=") for a in sys.argv[1:]):
+        raise SystemExit("--out is not accepted: E3b-2 writes only to its own folders (D195)")
     smoke = "--smoke" in sys.argv
     out_dir = ROOT / "runs" / ("e3b2-smoke" if smoke else "e3b2")
     try:

@@ -176,30 +176,54 @@ def test_a_clamped_latch_holds_from_the_first_tick(seed, mutant):
 # ------------------------------------------------------------------ §5D: the latch recorder
 
 def test_the_switch_bookkeeping_on_a_scripted_case():
-    # one wey, intended coding: A <-> high (q > mid). Goal before each tick, and q after it.
-    goals = [0, 0, 0, 1, 1, 1, 1, 0, 0, 0]   # a visit at tick 3 (A reached, goal B), and at tick 7 (B reached)
-    qs = [0.9, 1.5, 1.6, 1.4, 0.45, -1.2, -1.5, -1.4, -1.5, 1.2]  # 0.45: inside the middle third (|q| < 0.533)
+    """Hand-specified (D195). Coding A <-> high, mid 0, stable states ±1.6: undecided is |q| < 0.533 (middle
+    third) or |q| < 0.8 (middle half). Each tick: q (computed before the move), the goal before and after the
+    tick's switch, and whether the wey had visited before the tick."""
+    ticks = [  # q, goal before, goal after, visited before
+        (1.5, 0, 0, False),
+        (1.4, 0, 1, False),   # visit A at tick 1: a leg to B opens (q on A's side: not pre-aligned)
+        (0.3, 1, 1, True),    # not crossed (q > 0); undecided in both bands
+        (-1.2, 1, 1, True),   # crossed toward B, latency 3 - 1 = 2
+        (-1.5, 1, 0, True),   # visit B at tick 4: a leg to A opens (q on B's side)
+        (-1.4, 0, 0, True),   # disagrees with A
+        (0.7, 0, 0, True),    # crossed toward A, latency 6 - 4 = 2; decided in the third band, undecided in the half
+        (1.5, 0, 1, True),    # visit A on the last tick: a leg to B opens and is censored
+    ]
     rec = AT.SwitchTally(mid=0.0, low=-1.6, high=1.6, a_high=True)
-    visited = False
-    for t, (g, q) in enumerate(zip(goals, qs)):
-        rec.tick(q=q, goal_before=g, visited_before=visited)
-        visited = visited or (t >= 3)
+    for q, gb, ga, vb in ticks:
+        rec.tick(q=q, goal_before=gb, goal_after=ga, visited_before=vb)
     out = rec.result()
-    assert out["switches"] == {"to_b": {"legs": 1, "crossed": 1, "latency_sum": 2, "censored": 0},
-                               "to_a": {"legs": 1, "crossed": 1, "latency_sum": 2, "censored": 0}}
-    # eligible ticks are those after the first visit (4..9); the undecided band is the middle third, |q| < 1.6/3
-    assert out["agree"]["B"] == 2 and out["decided"]["B"] == 2 and out["undecided"] == 1  # tick 4 (q 0.45) undecided
-    assert out["agree"]["A"] == 1 and out["decided"]["A"] == 3
+    assert out["switches"] == {"to_b": {"legs": 2, "pre_aligned": 0, "crossed": 1, "latency_sum": 2, "censored": 1},
+                               "to_a": {"legs": 1, "pre_aligned": 0, "crossed": 1, "latency_sum": 2, "censored": 0}}
+    # eligible ticks 2..7: B at 2, 3, 4; A at 5, 6, 7
+    assert out["occupancy"] == {"A": 3, "B": 3}
+    assert out["third"] == {"decided": {"A": 3, "B": 2}, "agree": {"A": 2, "B": 2}, "undecided": {"A": 0, "B": 1}}
+    assert out["half"] == {"decided": {"A": 2, "B": 2}, "agree": {"A": 1, "B": 2}, "undecided": {"A": 1, "B": 1}}
 
 
-def test_a_stuck_latch_agrees_but_does_not_switch():
+def test_a_stuck_latch_is_pre_aligned_once_and_never_switches_back():
     rec = AT.SwitchTally(mid=0.0, low=-1.6, high=1.6, a_high=True)
-    goals = [0, 0, 1] + [1] * 20 + [0] * 10
-    for t, g in enumerate(goals):
-        rec.tick(q=-1.5, goal_before=g, visited_before=t >= 3)
+    rec.tick(q=-1.5, goal_before=0, goal_after=0, visited_before=False)
+    rec.tick(q=-1.5, goal_before=0, goal_after=1, visited_before=False)  # visit A: already on B's side
+    for _ in range(20):
+        rec.tick(q=-1.5, goal_before=1, goal_after=1, visited_before=True)
+    rec.tick(q=-1.5, goal_before=1, goal_after=0, visited_before=True)  # visit B: a leg to A that never crosses
+    for _ in range(10):
+        rec.tick(q=-1.5, goal_before=0, goal_after=0, visited_before=True)
     out = rec.result()
-    assert out["switches"]["to_a"] == {"legs": 1, "crossed": 0, "latency_sum": 0, "censored": 1}
-    assert out["agree"]["B"] == out["decided"]["B"] and out["agree"]["A"] == 0
+    assert out["switches"]["to_b"] == {"legs": 1, "pre_aligned": 1, "crossed": 0, "latency_sum": 0, "censored": 0}
+    assert out["switches"]["to_a"] == {"legs": 1, "pre_aligned": 0, "crossed": 0, "latency_sum": 0, "censored": 1}
+    assert out["third"]["agree"]["B"] == out["third"]["decided"]["B"] == 21 and out["third"]["agree"]["A"] == 0
+
+
+def test_a_leg_ended_by_the_next_visit_is_not_crossed_and_not_censored():
+    rec = AT.SwitchTally(mid=0.0, low=-1.6, high=1.6, a_high=True)
+    rec.tick(q=1.5, goal_before=0, goal_after=1, visited_before=False)  # a leg to B
+    rec.tick(q=1.5, goal_before=1, goal_after=0, visited_before=True)   # the next visit, before any crossing
+    rec.tick(q=1.5, goal_before=0, goal_after=0, visited_before=True)
+    out = rec.result()["switches"]
+    assert out["to_b"] == {"legs": 1, "pre_aligned": 0, "crossed": 0, "latency_sum": 0, "censored": 0}
+    assert out["to_a"] == {"legs": 1, "pre_aligned": 1, "crossed": 0, "latency_sum": 0, "censored": 0}
 
 
 def test_the_recorder_decodes_weys_and_strains_and_changes_nothing(seed, mutant):
@@ -266,13 +290,16 @@ def test_the_vectorised_recorder_matches_the_scripted_tally_on_a_real_run(seed, 
             t = AT.SwitchTally(mid=mid, low=low, high=high, a_high=AT.a_high(genomes[s], seed.ext))
             goal_before, visited_before = int(both.goal0[wi, b]), False
             for q, goal_after, visited_after in both.trace:
-                t.tick(q=float(q[wi, b]), goal_before=goal_before, visited_before=visited_before)
+                t.tick(q=float(q[wi, b]), goal_before=goal_before, goal_after=int(goal_after[wi, b]),
+                       visited_before=visited_before)
                 goal_before, visited_before = int(goal_after[wi, b]), bool(visited_after[wi, b])
             r = t.result()
-            flat = {"agree_A": r["agree"]["A"], "agree_B": r["agree"]["B"], "decided_A": r["decided"]["A"],
-                    "decided_B": r["decided"]["B"], "undecided": r["undecided"],
-                    **{f"{k}_{d}": r["switches"][d][kk] for d in ("to_a", "to_b")
-                       for k, kk in (("legs", "legs"), ("crossed", "crossed"), ("lat", "latency_sum"), ("censored", "censored"))}}
+            flat = {f"{band}_{kind}_{g}": r[band][kind][g] for band in ("third", "half")
+                    for kind in ("decided", "agree", "undecided") for g in ("A", "B")}
+            flat.update({f"occupancy_{g}": r["occupancy"][g] for g in ("A", "B")})
+            flat.update({f"{k}_{d}": r["switches"][d][kk] for d in ("to_a", "to_b")
+                         for k, kk in (("legs", "legs"), ("pre", "pre_aligned"), ("crossed", "crossed"),
+                                       ("lat", "latency_sum"), ("censored", "censored"))})
             totals = flat if totals is None else {k: totals[k] + v for k, v in flat.items()}
         assert {k: got[wi][k] for k in totals} == totals, wi
     assert sum(got[0][k] + got[1][k] for k in ("legs_to_a", "legs_to_b")) > 0  # the run had visits to check

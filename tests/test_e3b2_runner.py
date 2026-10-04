@@ -147,3 +147,77 @@ def test_every_variant_reports_every_outcome(m):
     assert out[0]["visits"] == 2.0 and out[0]["median_legs"] == 2.5 and out[1]["median_legs"] == 2.5
     assert set(out[0]) >= {"organism", "variant", "visits", "later_leg_rate", "unvisited_share", "round_trip_share",
                            "median_legs"}
+
+
+# ------------------------------------------------------------------ the code review's findings (D195)
+
+def test_out_is_refused_before_any_accounting(m, tmp_path):
+    for args in (["--out", str(tmp_path / "x")], [f"--out={tmp_path / 'y'}"]):
+        r = subprocess.run([sys.executable, str(ROOT / "scripts" / "e3b2.py"), "report", "--smoke", "--device", "cpu", *args],
+                           cwd=ROOT, capture_output=True, text=True, timeout=600)
+        assert r.returncode != 0 and "--out" in (r.stderr + r.stdout)
+    assert not (tmp_path / "x").exists() and not (tmp_path / "y").exists()
+
+
+def test_every_fixed_input_is_pinned(m, monkeypatch):
+    assert all(v is not None and len(v) == 64 for v in m.FIXED.values())
+    m.check_inputs()
+    bad = dict(m.FIXED)
+    bad[next(iter(bad))] = "0" * 64
+    monkeypatch.setattr(m, "FIXED", bad)
+    with pytest.raises(SystemExit, match="has changed"):
+        m.check_inputs()
+
+
+def test_a_chunk_specification_holds_every_maze_id(m):
+    cfg = m.cfg_for("shared")
+    cx = m.context(cfg)
+    orgs = {"seed": cx["seed"].genome}
+    chunk = {"analysis": "C", "condition": "shared", "key": "x", "variants": [("seed", ("intact",))]}
+    a = m.chunk_spec(chunk, orgs, cx, np.array([7000, 7001, 7003]), "sha")
+    b = m.chunk_spec(chunk, orgs, cx, np.array([7000, 7002, 7003]), "sha")
+    assert a["mazes"] == [7000, 7001, 7003] and a != b
+
+
+def test_the_trail_dependence_split_on_synthetic_tables(m):
+    rng = np.random.default_rng(1)
+    players = m.AT.FUNCTIONAL
+    coal = m.AT.coalitions(players)
+    base = rng.normal(5.0, 0.3, 64)
+    seed_shared = base.copy()
+    def X(extra_output):
+        return np.stack([base + sum({"sensing": 0.1, "gating": 0.0, "output": 0.5 + extra_output, "latch": 0.2}[g] for g in S)
+                         for S in coal])
+    shared, none = {"ta:0": X(0.4)}, {"ta:0": X(0.0)}
+    out = m.trail_split(shared, none, seed_shared, players, m.bootstrap_indices(64, 200, 0))
+    d = out["per_champion"]["ta:0"]
+    assert d["output"] == pytest.approx(0.4 / base.mean()) and abs(d["sensing"]) < 1e-12
+    assert out["schedules"]["ta"]["output"]["ci95"][0] <= d["output"] <= out["schedules"]["ta"]["output"]["ci95"][1]
+
+
+def test_the_latch_summary_definitions(m):
+    z = {f"latch_{k}": np.array([[v, 0]]) for k, v in {
+        "legs_to_b": 4, "pre_to_b": 1, "crossed_to_b": 2, "lat_to_b": 10, "censored_to_b": 1,
+        "legs_to_a": 3, "pre_to_a": 0, "crossed_to_a": 0, "lat_to_a": 0, "censored_to_a": 0,
+        "third_decided_A": 10, "third_agree_A": 6, "third_undecided_A": 2, "third_decided_B": 8, "third_agree_B": 8,
+        "third_undecided_B": 0, "half_decided_A": 9, "half_agree_A": 5, "half_undecided_A": 3, "half_decided_B": 8,
+        "half_agree_B": 8, "half_undecided_B": 0, "occupancy_A": 12, "occupancy_B": 8, "eligible_weys": 7}.items()}
+    r = m.latch_summary(z, 0, m.bootstrap_indices(2, 50, 0))
+    assert r["switched_to_b"]["value"] == pytest.approx(2 / (4 - 1 - 1))  # crossed / (legs − pre-aligned − censored)
+    assert r["pre_aligned_to_b"] == pytest.approx(1 / 4) and r["latency_to_b"]["value"] == pytest.approx(5.0)
+    assert r["switched_to_a"]["value"] == 0.0
+    assert r["third"]["agreement_A"]["value"] == pytest.approx(0.6) and r["third"]["opposite_A"] == 4
+    assert r["third"]["agreement_equal_weight"]["value"] == pytest.approx((0.6 + 1.0) / 2)
+    assert r["half"]["agreement_A"]["value"] == pytest.approx(5 / 9)
+    assert r["occupancy"] == {"A": 12, "B": 8} and r["eligible_weys"] == 7
+
+
+def test_the_resting_turn_matches_the_seeds_probe_record(m):
+    cfg = m.cfg_for("shared")
+    out = m.resting_turn_check({"seed": m.genome_report({"t": [], "n": []}, cfg)["seed"]})
+    assert out["max_abs_difference"] < 1e-6
+
+
+def test_the_report_survives_a_missing_chunk(m, tmp_path, monkeypatch):
+    monkeypatch.setattr(m, "EXP", tmp_path)
+    assert m.load_chunk("A-shared-ta0") is None

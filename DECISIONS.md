@@ -6266,3 +6266,62 @@ same prompt to both. Astra checked the 16 champion genomes against their hashes.
 3. The GPU run, after telling the owner.
 
 The projection is about 2.6 GPU-hours, under a cap of 5.
+
+## D195 — E3b-2's code review: both "fix then start"; every blocking finding fixed; plan draft 3
+
+**The review** (`docs/reviews/20261004-E3b-2-code/`): the code at 443dcb0 and plan draft 2, with the same
+prompt to both.
+- **Fable 5.1:** 2 blocking points.
+- **Astra 6:** 7 blocking points. Astra also checked the 20 champions' hashes, and checked every champion
+  with both outputs silenced against the silenced seed, bitwise on the CPU.
+
+**Blocking, and fixed test-first:**
+1. **Switching measured occupancy, not switching** (both). A leg already on the new goal's side counted as
+   crossed with latency 0, so a stuck latch read as switching in one direction.
+
+   The fix:
+   - a leg now starts at the visit tick;
+   - a leg already on the new side then is "pre-aligned";
+   - a crossing needs a later tick, and its latency counts from the visit;
+   - a visit on the last tick is censored (Astra: such visits had vanished);
+   - the switched share is crossed / (legs − pre-aligned − censored).
+
+   Claude's own stuck-latch test had checked only one direction.
+2. **Readings not recorded** (both): the middle-half band, the occupancy, the eligible weys and the
+   opposite coding. All are recorded now, with maze-bootstrap intervals.
+3. **An isolation hole** (Astra). The accounting wrapper reads `--out` before the arguments are validated, so
+   `e3b2.py … --out runs/e3b1` could write into E3b-1's ledger. `--out` is now refused first, with a test.
+   - E3b-1's runner has the same route. It is finished and was not affected, so it is noted here and not
+     changed.
+4. **Three fixed inputs** were recorded but not checked (both). They are now pinned.
+5. **The attribution report** (Astra) gains:
+   - the shared − none decomposition, with a joint maze bootstrap;
+   - allocations in visits per wey;
+   - bootstrap intervals for the gain, reversion and transplant.
+6. **The lesion report** (Astra): every outcome by schedule, with the units stated in plan draft 3.
+7. **The benchmark** (Astra) now:
+   - times the save path;
+   - checks the cap between repeats;
+   - records its progress durably for kill accounting.
+
+**Non-blocking points taken:**
+- the pre-flight before every stage, and the full ordered maze list in each chunk's specification (Astra);
+- the resting-turn check against the probe records (both). Astra had computed it independently, at a
+  maximum difference of 0;
+- wider exactness diagnostics (Fable);
+- a report that reads stages stopped by the cap (Fable);
+- the plan's chunk count corrected from 63 to 70 (Astra).
+
+**The rulings, as reviewed:**
+- **Accepted by both:**
+  - the benchmark block 7300-7555, now stated in draft 3;
+  - the first A-shared seed as the denominator, with the exactness check;
+  - the lesion stage's own intact baseline, now with a composition diagnostic;
+  - the ratio-of-sums bootstrap;
+  - the A-is-high fallback, which is unreachable: every organism's relay signs agree.
+
+**Next:**
+1. The full suite, then commit and push.
+2. A confirmation pass by both on the fixes.
+3. The GPU run, after telling the owner. `project` binds every later stage to its commit, so every fix lands
+   before it.

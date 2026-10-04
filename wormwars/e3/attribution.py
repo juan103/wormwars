@@ -201,66 +201,75 @@ class HeldBrain(Brain):
 # ------------------------------------------------------------------ the latch reading (§5D)
 
 class SwitchTally:
-    """One organism's latch reading over its weys' ticks.
+    """One organism's latch reading over one wey's ticks (D195).
 
-    `tick(q, goal_before, visited_before)`: q computed in a tick, the goal in force when it was computed, and
-    whether the wey had made a confirmed visit before it. A change of goal between ticks starts a leg toward
-    the new goal; the leg is crossed when q is on the new goal's side of the unstable root, and its latency is
-    counted from the leg's first tick. A leg still open at the next change is not crossed; one open at the end
-    is censored. Agreement counts decided ticks (outside the middle third between the two stable states) after
-    the first visit, by goal, under the intended coding."""
+    `tick(q, goal_before, goal_after, visited_before)`: q computed in a tick (before the move), the goal in force
+    when it was computed and the goal after the tick's switch, and whether the wey had made a confirmed visit
+    before the tick.
+    - **A leg** toward the new goal starts at the visit tick (goal_after ≠ goal_before). If q is already on the new
+      goal's side there (it was computed before the visit's cue), the leg is **pre-aligned** and needs no switch.
+      Otherwise it is open, and **crossed** at the first later tick with q on the new goal's side; the latency
+      counts from the visit tick. A leg still open at the next visit ends uncrossed; one open at the end is
+      **censored**.
+    - **Agreement** counts eligible ticks (after the first visit) by the goal in force, in two undecided bands:
+      the middle third (the plan's) and the middle half (its sensitivity reading)."""
 
     def __init__(self, *, mid: float, low: float, high: float, a_high: bool):
         self.mid, self.a_high = mid, a_high
-        third = (high - low) / 3.0
-        self.band = (low + third, high - third)
-        self.prev_goal = None
-        self.open = None  # (direction, start tick)
+        self.bands = {"third": (low + (high - low) / 3, high - (high - low) / 3),
+                      "half": (low + (high - low) / 4, high - (high - low) / 4)}
+        self.open = None  # (direction, start tick, target goal)
         self.t = 0
-        self.sw = {d: {"legs": 0, "crossed": 0, "latency_sum": 0, "censored": 0} for d in ("to_a", "to_b")}
-        self.agree = {"A": 0, "B": 0}
-        self.decided = {"A": 0, "B": 0}
-        self.undecided = 0
+        self.sw = {d: {"legs": 0, "pre_aligned": 0, "crossed": 0, "latency_sum": 0, "censored": 0}
+                   for d in ("to_a", "to_b")}
+        self.occ = {"A": 0, "B": 0}
+        self.counts = {b: {"decided": {"A": 0, "B": 0}, "agree": {"A": 0, "B": 0}, "undecided": {"A": 0, "B": 0}}
+                       for b in self.bands}
 
     def _on_side(self, q: float, goal: int) -> bool:
         high = q > self.mid
         return high == (goal == 0) if self.a_high else high == (goal == 1)
 
-    def tick(self, *, q: float, goal_before: int, visited_before: bool) -> None:
-        if self.prev_goal is not None and goal_before != self.prev_goal:
-            if self.open is not None:
-                pass  # the open leg ended without crossing
-            d = "to_a" if goal_before == 0 else "to_b"
-            self.sw[d]["legs"] += 1
-            self.open = (d, self.t, goal_before)
+    def tick(self, *, q: float, goal_before: int, goal_after: int, visited_before: bool) -> None:
         if self.open is not None and self._on_side(q, self.open[2]):
             d, t0, _ = self.open
             self.sw[d]["crossed"] += 1
             self.sw[d]["latency_sum"] += self.t - t0
             self.open = None
-        if visited_before:
-            if self.band[0] < q < self.band[1]:
-                self.undecided += 1
+        if goal_after != goal_before:
+            d = "to_a" if goal_after == 0 else "to_b"
+            self.sw[d]["legs"] += 1
+            if self._on_side(q, goal_after):
+                self.sw[d]["pre_aligned"] += 1
+                self.open = None
             else:
-                g = "A" if goal_before == 0 else "B"
-                self.decided[g] += 1
-                self.agree[g] += int(self._on_side(q, goal_before))
-        self.prev_goal = goal_before
+                self.open = (d, self.t, goal_after)
+        if visited_before:
+            g = "A" if goal_before == 0 else "B"
+            self.occ[g] += 1
+            for b, (lo, hi) in self.bands.items():
+                if lo < q < hi:
+                    self.counts[b]["undecided"][g] += 1
+                else:
+                    self.counts[b]["decided"][g] += 1
+                    self.counts[b]["agree"][g] += int(self._on_side(q, goal_before))
         self.t += 1
 
     def result(self) -> dict:
         sw = {d: dict(v) for d, v in self.sw.items()}
         if self.open is not None:
             sw[self.open[0]]["censored"] += 1
-        return {"switches": sw, "agree": dict(self.agree), "decided": dict(self.decided), "undecided": self.undecided}
+        return {"switches": sw, "occupancy": dict(self.occ),
+                **{b: {k: dict(v) for k, v in c.items()} for b, c in self.counts.items()}}
 
 
 class LatchRecorder:
-    """§5D on a maze world, vectorised over worlds and weys on the device; `genomes[s]` is strain s.
+    """§5D on a maze world, vectorised over worlds and weys on the device; `genomes[s]` is strain s. It runs after
+    the world's post-move update each tick, so q was computed before the move, `world.goal` is the goal after the
+    switch, and the recorder keeps the goal before it. Its counts per world equal `SwitchTally`'s summed over the
+    world's weys."""
 
-    Each tick (after the world's post-move update) it reads every wey's q in world and wey order, pairs it with
-    the goal in force when q was computed (the goal before this tick's switch), and accumulates the same counts
-    as `SwitchTally`, per world."""
+    BANDS = {"third": 3.0, "half": 4.0}
 
     def __init__(self, ext, genomes: list):
         self.q_index = ext.index(O.Q)
@@ -278,21 +287,20 @@ class LatchRecorder:
         W, B = world.n_worlds, world.n_weys
         per = lambda x: x.to(dev)[self.strain].view(W, 1)  # noqa: E731
         self.mid_w, low, high = per(self.mid), per(self.low), per(self.high)
-        third = (high - low) / 3.0
-        self.band_lo, self.band_hi = low + third, high - third
+        self.bands = {b: (low + (high - low) / k, high - (high - low) / k) for b, k in self.BANDS.items()}
         coding = torch.tensor([c if c is not None else True for c in self.coding], device=dev)
         self.ahigh_w = coding[self.strain].view(W, 1)
         self.prev_goal = world.goal.clone()
         self.prev_visited = world.has_visited.clone()
         z = lambda: torch.zeros(W, dtype=torch.long, device=dev)  # noqa: E731
-        self.c = {k: z() for k in ("agree_A", "agree_B", "decided_A", "decided_B", "undecided",
-                                   "legs_to_a", "legs_to_b", "crossed_to_a", "crossed_to_b",
-                                   "lat_to_a", "lat_to_b", "censored_to_a", "censored_to_b")}
+        keys = [f"{b}_{k}_{g}" for b in self.BANDS for k in ("decided", "agree", "undecided") for g in ("A", "B")]
+        keys += ["occupancy_A", "occupancy_B", "eligible_weys"]
+        keys += [f"{k}_{d}" for d in ("to_a", "to_b") for k in ("legs", "pre", "crossed", "lat", "censored")]
+        self.c = {k: z() for k in keys}
         self.open = torch.zeros(W, B, dtype=torch.bool, device=dev)
         self.open_goal = torch.zeros(W, B, dtype=torch.long, device=dev)
         self.open_start = torch.zeros(W, B, dtype=torch.long, device=dev)
         self.t = 0
-        self.world = world
 
     def _on_side(self, q, goal):
         high = q > self.mid_w
@@ -301,32 +309,34 @@ class LatchRecorder:
     def record(self, world) -> None:
         q = world.assigns[0].from_brain(world.v[0], world.n_worlds, world.n_weys)[..., self.q_index].to(torch.float64)
         self.last_q = q.to(world.v[0].dtype)
-        g = self.prev_goal  # the goal in force when q was computed
-        # a leg starts on the tick after a switch: compare the goal in force now with the one a tick before
-        if self.t > 0:
-            new = g != self.goal_before_prev
-            for d, gv in (("to_a", 0), ("to_b", 1)):
-                self.c[f"legs_{d}"] += (new & (g == gv)).sum(1)
-            self.open = torch.where(new, torch.ones_like(self.open), self.open)
-            self.open_goal = torch.where(new, g, self.open_goal)
-            self.open_start = torch.where(new, torch.full_like(self.open_start, self.t), self.open_start)
-        hit = self.open & self._on_side(q, self.open_goal)
+        gb, ga = self.prev_goal, world.goal
+        hit = self.open & self._on_side(q, self.open_goal)  # crossings of legs opened at earlier ticks
         for d, gv in (("to_a", 0), ("to_b", 1)):
             m = hit & (self.open_goal == gv)
             self.c[f"crossed_{d}"] += m.sum(1)
             self.c[f"lat_{d}"] += ((self.t - self.open_start) * m).sum(1)
         self.open = self.open & ~hit
+        new = ga != gb  # a visit this tick: a leg toward the goal after the switch
+        pre = new & self._on_side(q, ga)
+        for d, gv in (("to_a", 0), ("to_b", 1)):
+            self.c[f"legs_{d}"] += (new & (ga == gv)).sum(1)
+            self.c[f"pre_{d}"] += (pre & (ga == gv)).sum(1)
+        self.open = torch.where(new, new & ~pre, self.open)
+        self.open_goal = torch.where(new, ga, self.open_goal)
+        self.open_start = torch.where(new, torch.full_like(self.open_start, self.t), self.open_start)
         elig = self.prev_visited
-        und = elig & (q > self.band_lo) & (q < self.band_hi)
-        dec = elig & ~und
-        self.c["undecided"] += und.sum(1)
-        agree = self._on_side(q, g)
+        agree = self._on_side(q, gb)
         for name, gv in (("A", 0), ("B", 1)):
-            m = dec & (g == gv)
-            self.c[f"decided_{name}"] += m.sum(1)
-            self.c[f"agree_{name}"] += (m & agree).sum(1)
-        self.goal_before_prev = g.clone()
-        self.prev_goal = world.goal.clone()
+            on = elig & (gb == gv)
+            self.c[f"occupancy_{name}"] += on.sum(1)
+            for b, (lo, hi) in self.bands.items():
+                und = on & (q > lo) & (q < hi)
+                dec = on & ~und
+                self.c[f"{b}_undecided_{name}"] += und.sum(1)
+                self.c[f"{b}_decided_{name}"] += dec.sum(1)
+                self.c[f"{b}_agree_{name}"] += (dec & agree).sum(1)
+        self.c["eligible_weys"] = world.has_visited.sum(1)
+        self.prev_goal = ga.clone()
         self.prev_visited = world.has_visited.clone()
         self.t += 1
 
