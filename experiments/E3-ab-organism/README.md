@@ -9,8 +9,9 @@
   - Its results were reviewed by both ("fix") and corrected (D169).
 - **E3b-0: published on main** (2026-10-03, D180). It is exploratory, at 2.62 of 3 GPU-hours: the maze
   engine, the controls and the task's feasibility (`E3b-0/README.md`).
-- **E3b-1: running** (since 2026-10-03; `E3b-1/README.md`). It is the roadmap's E3 gate: the tuned colony
-  against the frozen seed in mazes, with a cap of 24 GPU-hours.
+- **E3b-1: published** (2026-10-04, D192; `E3b-1/README.md`, `E3b-1/RESULTS.md`). It is the roadmap's E3
+  gate: the tuned colony against the frozen seed in mazes. It reads "better" (+0.225 of the seed's mean; +0.069
+  at 125 generations, +0.381 at 300), at 18.73 of 24 GPU-hours.
   - It was pre-registered and bound before any stage ran (D181-D186).
   - Amendment 1 (infeasible mazes) was added before any score was read (D190, D191).
   - The code was reviewed by both (D188, D189).

@@ -1,19 +1,26 @@
 # E3b-1: the E3 gate in mazes (confirmatory)
 
-**Status (2026-10-03): running.**
+**Status (2026-10-04): run, reviewed by both reviewers ("fix then publish"), corrected and published
+(D192).** The results are in `RESULTS.md`:
+- **G is "better":** +0.225 of the seed's mean, +0.069 for T-A and +0.381 for T-F;
+- **the secondary tests:** S-gen, S-trail and S-peer are all significant after Holm;
+- **the probes:** no tuned champion meets the seed's comparator criteria.
+
+**Its course:**
 - **Pre-registration:** bound at 1c65e4e (D186), before any stage ran: `PREREGISTRATION.md`.
 - **Amendment 1:** infeasible mazes redraw their walls. Its text and a dated correction are in §14 of the
   pre-registration (D190, D191).
 - **Code:** reviewed by both reviewers before any formal stage. Their blocking findings were fixed
   (D188, D189).
-- **Stages so far:**
+- **The stages:**
   - `project` completed, on its one rerun after Amendment 1. It applied cut 1 (N to runs 0-3); the planned
     total is 22.85 of 24 GPU-hours.
-  - `g-e` passed.
-  - Training is under way.
+  - `g-e` passed: E2's GPU batch was identical, and so were the CPU and maze equivalences.
+  - Every training run completed on its first attempt.
+  - `champions` and `evaluate` completed, at 18.73 of 24 GPU-hours.
 
 **The question:** does joint tuning of the maze-ready seed E + W2 improve a colony's shuttling in 5 × 5 tree
-mazes with shared trails, against the frozen seed, on untouched mazes? The answer is read from gate G. Three
+mazes with shared trails, against the frozen seed, on 256 prespecified test mazes? The answer is read from gate G. Three
 secondary questions:
 - more generations (S-gen);
 - trail dependence (S-trail);

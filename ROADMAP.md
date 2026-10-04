@@ -75,6 +75,15 @@
     - **The gate:** a stratified Welch test on the 16 final champions against the frozen seed.
     - **The cap:** 24 GPU-hours.
     - **Next:** implementation, a code review, then the runs.
+  - **E3b-1 ran and is published (2026-10-04, D188-D192;
+    `experiments/E3-ab-organism/E3b-1/RESULTS.md`).**
+    - **The gate: "better",** +0.225 of the seed's mean: +0.069 at 125 generations, +0.381 at 300.
+    - **The secondary tests:** more generations helped; trail dependence increased; peers' trails still help.
+    - **The probes:** no tuned champion meets the seed's comparator criteria, so the route of the gain is open.
+    - **Its course:** the code review (both, D188-D189); Amendment 1 on infeasible mazes before any score was
+      read, and its correction for an audit trace on one test maze (D190-D191); 18.73 of 24 GPU-hours.
+  - **Next in Track E: the step after the gate,** E3's assembly comparison or E4. It is to be designed with
+    both reviewers, and E3b-1's probes bear on it.
 
 - **Published on main:**
   - 02's D050 correction, as a Corrections entry (27 September, D063);

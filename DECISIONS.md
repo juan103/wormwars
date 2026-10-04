@@ -6127,3 +6127,52 @@ for 300 ticks on test maze 6000, twice. Amendment 1's "no organism played on tho
 
 **Next:** the full suite, then `project`'s rerun on the GPU. Fable said "rerun project"; Astra's fixes are
 all taken as asked, so there is no further round.
+
+## D192 — E3b-1's results: G "better"; reviewed by both ("fix then publish"), corrected, published
+
+**The run** (2026-10-03/04), at 18.73 of 24 GPU-hours:
+- every stage completed;
+- every training run completed on its first attempt;
+- cut 1 applied (N to runs 0-3).
+
+**The registered readings, on the 256 prespecified test mazes:**
+- **G: "better",** Δ = +0.225 of the seed's mean (+1.32 visits per wey), p = 7.2 × 10⁻⁵, with a lower bound of
+  +0.166 ("and at least 10%"). T-A's d is +0.069 and T-F's +0.381.
+- **S-gen, S-trail ("increased trail dependence") and S-peer** are all significant after Holm.
+
+**The descriptive probes:** no champion meets the seed's active-comparator criteria.
+
+**The review** (`docs/reviews/20261004-E3b-1-results/`): the draft at 84abac1. Both reviewers recomputed
+every registered reading from the records, and all matched. Both said "fix then publish". Every fix was
+taken:
+- **T-A's e** is negative in 7 of 8 runs, with mean −0.06; the draft said 6 of 8 and −0.05 (Fable, Astra).
+- **The registered later-leg contrast** under S-trail had been omitted (both).
+- **N's trails-off denominator** is the seed's shared mean, and the text now says so (both).
+- **Two T-F champions' e** comes partly from a worse "none" (Fable).
+- **The selector claim:**
+  - "largely does not run through the selector" is replaced by "departure from the seed's measured
+    component performance; the route of the gain is not established";
+  - "respond to neither goal" is replaced by "zero measured active K_D": the one-nose turns of those champions
+    do respond (Astra's counterexample, checked);
+  - the K_D > 10 grouping is marked as exploratory, and switching's trivial pass is qualified (Astra, Fable).
+- **The peer conditions** are worded for replay and scramble only; their exposures are added; the overlap is
+  the geometric route overlap (both).
+- **"Untouched" becomes "prespecified",** with the trace on test maze 6000, the validation mazes and the wall
+  audit disclosed throughout (Astra, Fable).
+- **The power language** is replaced by the observed precision, and §8's framing of the gate added (Astra,
+  Fable).
+- **S-peer's comparison and S-worlds** are kept descriptive (Astra, Fable).
+- **The training summary, the nose ranges at index 124,** and N's K_D range are added (Astra, Fable).
+- **The READMEs:** the statuses are updated (both).
+
+**Before the review, Claude's own corrections:**
+- the probes cover 30 read points, not 26;
+- a single comparator pattern had been described from three examples; it is now a per-champion table.
+
+**Publication:** consensus of all three on publishing after the fixes, so main is brought up to date, as in
+D187, and the owner is informed afterwards.
+- Also published: the review trail's episodes 44-47, the top README's Newest section, ROADMAP and the E3
+  READMEs.
+
+**Next in Track E:** the step after the gate, E3's assembly comparison or E4. It is to be designed with both
+reviewers; the probes' finding bears on it.
