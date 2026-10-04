@@ -130,6 +130,9 @@ def test_a_smoke_of_every_stage(m):
         assert r.returncode == 0, (stage, r.stdout[-2000:], r.stderr[-4000:])
     rep = json.loads((ROOT / "runs" / "e3b2-smoke" / "report.json").read_text(encoding="utf-8"))
     assert rep["outcome"] == "completed" and "attribution" in rep["summary"]
+    r = subprocess.run([sys.executable, str(ROOT / "scripts" / "e3b2.py"), "summary", "--smoke", "--device", "cpu"],
+                       cwd=ROOT, capture_output=True, text=True, timeout=1800)
+    assert r.returncode == 0, r.stderr[-3000:]
 
 
 def test_a_ratio_interval_over_mazes(m):
@@ -192,7 +195,8 @@ def test_the_trail_dependence_split_on_synthetic_tables(m):
     out = m.trail_split(shared, none, seed_shared, players, m.bootstrap_indices(64, 200, 0))
     d = out["per_champion"]["ta:0"]
     assert d["output"] == pytest.approx(0.4 / base.mean()) and abs(d["sensing"]) < 1e-12
-    assert out["schedules"]["ta"]["output"]["ci95"][0] <= d["output"] <= out["schedules"]["ta"]["output"]["ci95"][1]
+    b = out["schedules"]["ta"]["output"]["bootstrap95"]
+    assert b[0] <= d["output"] <= b[1]
 
 
 def test_the_latch_summary_definitions(m):
@@ -221,3 +225,34 @@ def test_the_resting_turn_matches_the_seeds_probe_record(m):
 def test_the_report_survives_a_missing_chunk(m, tmp_path, monkeypatch):
     monkeypatch.setattr(m, "EXP", tmp_path)
     assert m.load_chunk("A-shared-ta0") is None
+
+
+# ------------------------------------------------------------------ the confirmation pass (D196)
+
+def test_the_trail_split_keeps_both_intervals(m):
+    players = m.AT.FUNCTIONAL
+    coal = m.AT.coalitions(players)
+    base = np.full(32, 5.0)
+    def X(out_shared):
+        return np.stack([base + sum({"sensing": 0.0, "gating": 0.0, "output": out_shared, "latch": 0.0}[g] for g in S)
+                         for S in coal])
+    shared = {"ta:0": X(1.0), "ta:1": X(3.0)}
+    none = {"ta:0": X(0.0), "ta:1": X(0.0)}
+    out = m.trail_split(shared, none, base, players, m.bootstrap_indices(32, 100, 0))["schedules"]["ta"]["output"]
+    assert out["ci95"][0] < 0.2 and out["ci95"][1] > 0.6  # the run-level t interval, wide over runs 0.2 and 0.6
+    assert out["bootstrap95"] == pytest.approx([0.4, 0.4])  # the maze bootstrap, no maze noise here
+
+
+def test_the_equal_weight_bootstrap_excludes_draws_missing_a_goal(m):
+    z = {f"latch_{k}": np.array([v]) for k, v in {
+        "third_decided_A": [5, 0], "third_agree_A": [5, 0], "third_decided_B": [0, 5], "third_agree_B": [0, 5],
+        "third_undecided_A": [0, 0], "third_undecided_B": [0, 0], "half_decided_A": [5, 0], "half_agree_A": [5, 0],
+        "half_decided_B": [0, 5], "half_agree_B": [0, 5], "half_undecided_A": [0, 0], "half_undecided_B": [0, 0],
+        **{f"{k}_{d}": [0, 0] for k in ("legs", "pre", "crossed", "lat", "censored") for d in ("to_a", "to_b")},
+        "occupancy_A": [5, 0], "occupancy_B": [0, 5], "eligible_weys": [1, 1]}.items()}
+    r = m.latch_summary(z, 0, m.bootstrap_indices(2, 400, 0))["third"]["agreement_equal_weight"]
+    assert r["value"] == 1.0 and r["ci95"] == [1.0, 1.0]
+
+
+def test_the_summary_runs_outside_the_stage_frame(m):
+    assert "summary" in m.COMMANDS and "summary" not in m.STAGES

@@ -1,0 +1,1 @@
+Astra 6 at "xhigh" with pinned settings and Fable 5.1 at "high" (run 20261004-120049), the same prompt to both, on the fixes at bf8d54e. Fable: "start the GPU run". Astra: two reporting fixes, and the cap-stop report still ineffective (D196).

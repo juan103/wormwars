@@ -323,7 +323,8 @@ C's clamps and D answer the selector question more directly than B's selector al
     every organism's genome and intervention identity, and its batch composition.
 - **The runner refuses `--out`,** which the accounting would otherwise read before the arguments are checked
   (D195).
-- **The report reads stages stopped by the cap,** from their completed chunks, and lists what is missing.
+- **After a stop by the cap,** the stage frame starts no further stage. So a `summary` command builds the same summary
+  from whatever chunks completed, outside the frame, and lists what is missing (D196).
 - **Fixed batch compositions:**
   - each hybrid chunk holds one champion's 16 hybrids;
   - the seed is the all-seed hybrid in each chunk, so its 16 score vectors, in one composition, must be
@@ -405,5 +406,6 @@ C's clamps and D answer the selector question more directly than B's selector al
 | The resume check stored the first and last maze ids only | Astra | Every ordered id |
 | The resting-turn check against the probes | both | Added (§5E). The seed matches its E3b-0 record to below 1e-6 |
 | The seed exactness checks | Fable | Widened to A-none and B; C's intact against A's hybrid reported |
-| A cap stop would leave no report | Fable | The report reads stopped stages' completed chunks |
+| A cap stop would leave no report | Fable; Astra (the first fix was ineffective, D196) | A `summary` command outside the stage frame |
+| The trail split kept one interval; the equal-weight bootstrap counted draws missing a goal as 0 | Astra (D196) | Both intervals kept; such draws left out |
 | The benchmark block, the admission reading, the chunk count | both | §7, as above |

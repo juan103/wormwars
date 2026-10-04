@@ -6325,3 +6325,28 @@ prompt to both.
 2. A confirmation pass by both on the fixes.
 3. The GPU run, after telling the owner. `project` binds every later stage to its commit, so every fix lands
    before it.
+
+## D196 — E3b-2's confirmation pass: Fable "start", Astra two reporting fixes; fixed before `project`
+
+**The review** (`docs/reviews/20261004-E3b-2-code-recheck/`): the fixes at bf8d54e.
+- **Fable 5.1:** "start the GPU run". It re-derived the switching counts by hand and checked the recorder's
+  branch order against `SwitchTally`.
+- **Astra 6:** every D195 fix checks out, except the following.
+
+**Fixed before `project` binds the commit, test-first:**
+1. **The trail split overwrote its run-level t interval** with the bootstrap interval. Both are now kept
+   (`ci95` and `bootstrap95`).
+2. **The equal-weight agreement's bootstrap** counted a draw with no decided ticks for one goal as zero
+   agreement. Its interval was biased downward: [0.5, 1] for perfect agreement in Astra's example. Such draws
+   are now left out, and the number of draws used is reported.
+3. **D195's cap-stop fix was ineffective.** E2's frame refuses to start any stage once the cap is reached, so
+   a report stage could never run then. A `summary` command now builds the same summary outside the frame.
+   The report stage stays the normal path.
+
+**Also guarded (Fable, non-blocking):** a report with no A-shared chunk at all now says so, instead of
+raising.
+
+**Next:** the full suite, then commit and push. Then the GPU run (about 2.9 GPU-hours under a cap of 5),
+after telling the owner.
+- **Consensus:** Fable said start, and Astra asked only for these fixes, each with its test, so there is no
+  further round.

@@ -638,7 +638,8 @@ def trail_split(shared: dict, none: dict, seed_shared, players, idx) -> dict:
         names = [c for c in per if c.startswith(arm)]
         if names:
             b = np.mean([boots[c] for c in names], axis=0)
-            sched[arm] = {p: {**t_interval([per[c][p] for c in names]), "ci95": pct(b[i])} for i, p in enumerate(players)}
+            sched[arm] = {p: {**t_interval([per[c][p] for c in names]), "bootstrap95": pct(b[i])}
+                          for i, p in enumerate(players)}
     return {"per_champion": per, "schedules": sched,
             "note": "shared − none, in units of the seed's shared mean; 'none' removes own and peer trails together"}
 
@@ -646,8 +647,9 @@ def trail_split(shared: dict, none: dict, seed_shared, players, idx) -> dict:
 def attribution_report(plan: dict) -> dict:
     R = REGISTERED["bootstrap"]
     shared_f = tables_for(plan, "functional", "shared")
-    first = next(iter(shared_f.values()))
-    seed_shared = first[0]
+    if not shared_f:
+        return {"tables": {}, "missing": "every A-shared chunk: no denominator", "seed_shared_mean": None}
+    seed_shared = next(iter(shared_f.values()))[0]
     idx = bootstrap_indices(len(seed_shared), R["resamples"], R["seed"])
     out = {}
     tables = {("functional", "shared"): shared_f, ("functional", "none"): tables_for(plan, "functional", "none")}
@@ -696,7 +698,8 @@ def lesion_report(plan: dict, seed_shared_mean: float) -> dict:
         if les == intact_key or o == "w2_ref" or (cond, o, intact_key) not in rows:
             continue
         base = rows[(cond, o, intact_key)]
-        d = {m: float((r[m].mean() - base[m].mean()) / (seed_shared_mean if m == "visits" else 1.0)) for m in OUTCOMES}
+        d = {m: float((r[m].mean() - base[m].mean()) / (seed_shared_mean if m == "visits" and seed_shared_mean else 1.0))
+             for m in OUTCOMES}
         d["median_legs"] = float(np.median(r["legs"]) - np.median(base["legs"]))
         cost.setdefault(cond, {}).setdefault(o, {})[les] = d
     sched = {}
@@ -746,11 +749,14 @@ def latch_summary(z: dict, k: int, idx: np.ndarray) -> dict:
             b[f"undecided_{x}"] = int(g(f"{band}_undecided_{x}").sum())
         da, db = g(f"{band}_decided_A"), g(f"{band}_decided_B")
         if da.sum() and db.sum():
-            ra = g(f"{band}_agree_A")[idx].sum(1) / np.maximum(da[idx].sum(1), 1)
-            rb = g(f"{band}_agree_B")[idx].sum(1) / np.maximum(db[idx].sum(1), 1)
+            sa, sb = da[idx].sum(1), db[idx].sum(1)
+            ok = (sa > 0) & (sb > 0)  # a draw missing a goal leaves the mean undefined: it is left out
+            ra = g(f"{band}_agree_A")[idx].sum(1)[ok] / sa[ok]
+            rb = g(f"{band}_agree_B")[idx].sum(1)[ok] / sb[ok]
             b["agreement_equal_weight"] = {"value": float((g(f"{band}_agree_A").sum() / da.sum()
                                                            + g(f"{band}_agree_B").sum() / db.sum()) / 2),
-                                           "ci95": pct((ra + rb) / 2)}
+                                           "ci95": pct((ra + rb) / 2) if ok.any() else None,
+                                           "draws_used": int(ok.sum())}
         else:
             b["agreement_equal_weight"] = {"value": None}
         r[band] = b
@@ -816,6 +822,8 @@ def resting_turn_check(genomes: dict) -> dict:
 def replication_report(plan: dict, seed_shared_mean: float) -> dict:
     ev = json.loads((ROOT / E3B1 / "evaluate.json").read_text(encoding="utf-8"))["readings"]["G"]["d"]
     pairs = []
+    if not seed_shared_mean:
+        return {"pairs": [], "missing": "no denominator"}
     for arm in ("ta", "tf"):
         for i, d_test in enumerate(ev[arm]):
             name = f"{arm}:{i}"
@@ -830,6 +838,33 @@ def replication_report(plan: dict, seed_shared_mean: float) -> dict:
             "means": {arm: {"fresh": float(np.mean([p["fresh"] for p in pairs if p["champion"].startswith(arm)])),
                             "test": float(np.mean([p["test"] for p in pairs if p["champion"].startswith(arm)]))}
                       for arm in ("ta", "tf") if any(p["champion"].startswith(arm) for p in pairs)}}
+
+
+def build_summary(plan: dict, cfg) -> dict:
+    att = attribution_report(plan)
+    with acct.category("probe"):
+        genomes = genome_report(plan, cfg)
+    variants = []
+    for c in all_chunks(plan):
+        z = load_chunk(c["key"])
+        if z is not None:
+            for row in variant_outcomes(z, c["variants"]):
+                variants.append({"chunk": c["key"], "condition": c["condition"], **row})
+    return {"attribution": att, "lesions": lesion_report(plan, att["seed_shared_mean"]), "variants": variants,
+            "latch": latch_report(plan), "genomes": genomes, "resting_turn_check": resting_turn_check(genomes),
+            "replication": replication_report(plan, att["seed_shared_mean"])}
+
+
+def cmd_summary(args):
+    """The summary from whatever chunks completed, outside the stage frame (which refuses to start once the cap is
+    reached; D196). CPU only, counted by the accounting; the stage records are not checked here."""
+    check_inputs()
+    proj = json.loads(E.record_path("project").read_text(encoding="utf-8"))
+    summary = build_summary(proj["plan"], cfg_for("shared"))
+    summary["note"] = "built by `summary`, outside the stage frame; the stage records were not checked"
+    E.write_atomic(EXP / "summary.json", summary)
+    print(json.dumps({"seed_shared_mean": summary["attribution"].get("seed_shared_mean"),
+                      "missing_lesion_chunks": len(summary["lesions"]["missing_chunks"])}, indent=1))
 
 
 def settled(args, prov, stage: str) -> dict:
@@ -852,19 +887,7 @@ def cmd_report(args):
     def body(ctx):
         check_inputs()
         plan = ctx.earlier["project"]["plan"]
-        cfg = cfg_for("shared")
-        att = attribution_report(plan)
-        with acct.category("probe"):
-            genomes = genome_report(plan, cfg)
-        variants = []
-        for c in all_chunks(plan):
-            z = load_chunk(c["key"])
-            if z is not None:
-                for row in variant_outcomes(z, c["variants"]):
-                    variants.append({"chunk": c["key"], "condition": c["condition"], **row})
-        summary = {"attribution": att, "lesions": lesion_report(plan, att["seed_shared_mean"]), "variants": variants,
-                   "latch": latch_report(plan), "genomes": genomes, "resting_turn_check": resting_turn_check(genomes),
-                   "replication": replication_report(plan, att["seed_shared_mean"])}
+        summary = build_summary(plan, cfg_for("shared"))
         E.write_atomic(EXP / "summary.json", summary)
         return {"summary": summary, "note": "descriptive throughout (§9); no gate"}
 
@@ -895,7 +918,7 @@ def use_smoke(args) -> None:
 
 
 COMMANDS = {"project": cmd_project, "attribution": cmd_attribution, "lesions": cmd_lesions, "latch": cmd_latch,
-            "report": cmd_report}
+            "report": cmd_report, "summary": cmd_summary}
 
 
 def main():
