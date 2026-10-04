@@ -130,3 +130,20 @@ def test_a_smoke_of_every_stage(m):
         assert r.returncode == 0, (stage, r.stdout[-2000:], r.stderr[-4000:])
     rep = json.loads((ROOT / "runs" / "e3b2-smoke" / "report.json").read_text(encoding="utf-8"))
     assert rep["outcome"] == "completed" and "attribution" in rep["summary"]
+
+
+def test_a_ratio_interval_over_mazes(m):
+    num, den = np.array([1, 2, 3, 0]), np.array([2, 2, 4, 0])
+    r = m.ratio_interval(num, den, m.bootstrap_indices(4, 2000, 0))
+    assert r["value"] == pytest.approx(6 / 8) and r["ci95"][0] <= 0.75 <= r["ci95"][1]
+    assert m.ratio_interval(np.zeros(3), np.zeros(3), m.bootstrap_indices(3, 10, 0))["value"] is None
+
+
+def test_every_variant_reports_every_outcome(m):
+    z = {"visits": np.array([[1.0, 3.0], [2.0, 2.0]]), "legs": np.array([[1.0, 4.0], [2.0, 3.0]]),
+         "later_leg_rate": np.ones((2, 2)), "unvisited_share": np.zeros((2, 2)), "round_trip_share": np.ones((2, 2)),
+         "later_first_b": np.ones((2, 2))}
+    out = m.variant_outcomes(z, [("ta:0", ("intact",)), ("seed", ("intact",))])
+    assert out[0]["visits"] == 2.0 and out[0]["median_legs"] == 2.5 and out[1]["median_legs"] == 2.5
+    assert set(out[0]) >= {"organism", "variant", "visits", "later_leg_rate", "unvisited_share", "round_trip_share",
+                           "median_legs"}

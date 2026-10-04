@@ -512,6 +512,28 @@ def shapley_matrix(players) -> np.ndarray:
     return W
 
 
+def ratio_interval(num, den, idx: np.ndarray) -> dict:
+    """A ratio of sums over mazes (num and den per maze), with a maze-bootstrap 95% interval (§5D: the
+    uncertainty is over mazes, not ticks). None if the denominator is 0."""
+    num, den = np.asarray(num, dtype=np.float64), np.asarray(den, dtype=np.float64)
+    if den.sum() == 0:
+        return {"value": None, "denominator": 0}
+    rn, rd = num[idx].sum(axis=1), den[idx].sum(axis=1)
+    ok = rd > 0
+    r = rn[ok] / rd[ok]
+    return {"value": float(num.sum() / den.sum()), "denominator": float(den.sum()),
+            "ci95": [float(np.quantile(r, 0.025)), float(np.quantile(r, 0.975))]}
+
+
+OUTCOMES = ("visits", "legs", "later_leg_rate", "unvisited_share", "round_trip_share", "later_first_b")
+
+
+def variant_outcomes(z: dict, variants: list) -> list:
+    """Every variant's mean of every outcome over the mazes, and its median legs (§3)."""
+    return [{"organism": o, "variant": list(les), **{m: float(np.mean(z[m][k])) for m in OUTCOMES if m in z},
+             "median_legs": float(np.median(z["legs"][k]))} for k, (o, les) in enumerate(variants)]
+
+
 def t_interval(x) -> dict:
     x = np.asarray(x, dtype=np.float64)
     if len(x) < 2:
@@ -613,8 +635,10 @@ def lesion_report(plan: dict, seed_shared_mean: float) -> dict:
 
 def latch_report(plan: dict) -> dict:
     out = {}
+    B = REGISTERED["bootstrap"]
     for c in latch_chunks(plan):
         z = load_chunk(c["key"])
+        idx = bootstrap_indices(z["visits"].shape[1], B["resamples"], B["seed"])
         for k, (o, _) in enumerate(c["variants"]):
             tot = {key[len("latch_"):]: int(z[key][k].sum()) for key in z if key.startswith("latch_")}
             per_maze_agree = []
@@ -622,7 +646,10 @@ def latch_report(plan: dict) -> dict:
                 d = z[f"latch_decided_{g}"][k]
                 a = z[f"latch_agree_{g}"][k]
                 per_maze_agree.append(np.where(d > 0, a / np.maximum(d, 1), np.nan))
-            r = {"counts": tot}
+            r = {"counts": tot, "intervals": {
+                **{f"agreement_{g}": ratio_interval(z[f"latch_agree_{g}"][k], z[f"latch_decided_{g}"][k], idx) for g in ("A", "B")},
+                **{f"switched_{d}": ratio_interval(z[f"latch_crossed_{d}"][k], z[f"latch_legs_{d}"][k], idx)
+                   for d in ("to_a", "to_b")}}}
             for g in ("A", "B"):
                 r[f"agreement_{g}"] = tot[f"agree_{g}"] / tot[f"decided_{g}"] if tot[f"decided_{g}"] else None
             vals = [r["agreement_A"], r["agreement_B"]]
@@ -687,7 +714,11 @@ def cmd_report(args):
         att = attribution_report(plan)
         with acct.category("probe"):
             genomes = genome_report(plan, cfg)
-        summary = {"attribution": att, "lesions": lesion_report(plan, att["seed_shared_mean"]),
+        variants = []
+        for c in all_chunks(plan):
+            for row in variant_outcomes(load_chunk(c["key"]), c["variants"]):
+                variants.append({"chunk": c["key"], "condition": c["condition"], **row})
+        summary = {"attribution": att, "lesions": lesion_report(plan, att["seed_shared_mean"]), "variants": variants,
                    "latch": latch_report(plan), "genomes": genomes,
                    "replication": replication_report(plan, att["seed_shared_mean"])}
         E.write_atomic(EXP / "summary.json", summary)
