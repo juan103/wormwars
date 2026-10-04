@@ -513,11 +513,22 @@ def test_the_pre_pass_projection(m):
 
 @pytest.mark.slow
 def test_a_smoke_of_every_stage(m):
+    out = ROOT / "runs" / "e3b1-smoke"
     for stage in m.STAGES:
         r = subprocess.run([sys.executable, str(ROOT / "scripts" / "e3b1.py"), stage, "--smoke", "--device", "cpu"],
                            cwd=ROOT, capture_output=True, text=True, timeout=3600)
         assert r.returncode == 0, (stage, r.stdout[-2000:], r.stderr[-4000:])
-    out = ROOT / "runs" / "e3b1-smoke"
+        if stage == "g-e":
+            ge = json.loads((out / "g-e.json").read_text(encoding="utf-8"))
+            if not ge["passed"]:
+                # The CPU leg compares per-tick state hashes, bitwise, against a reference recorded on Windows. Rule 6
+                # claims CPU exactness on one platform only, so elsewhere (the CI's Linux) that leg may differ; every
+                # other leg must still pass, and the training stages, which require g-e, are not run.
+                legs = {k: ge[k] for k in ("cpu", "snapshot_hook", "mazes")}
+                assert sys.platform != "win32", legs
+                assert ge["snapshot_hook"]["identical"] and ge["mazes"]["passed"], legs
+                assert not ge["cpu"]["passed"], legs
+                pytest.skip("g-e's CPU leg is bitwise against a Windows reference (rule 6); the later stages need g-e")
     ev = json.loads((out / "evaluate.json").read_text(encoding="utf-8"))
     assert ev["outcome"] == "completed" and "G" in ev["readings"]
 

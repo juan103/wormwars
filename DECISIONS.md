@@ -6488,3 +6488,57 @@ taken. Genomes carry connectome-derived weights (rule 1, D104)."
 
 **Next:** the pilot, test-first and exploratory, about 2.5 GPU-hours; then the power analysis and the
 pre-registration.
+
+## D201 — E3c's pilot runner: both reviewers said "fix first"; every finding taken, test-first
+
+**The runner:**
+- `scripts/e3c.py`, the pilot stage on E2's stage frame;
+- `wormwars/e3/assembly.py`, the arms' draws and masks;
+- `tuning.scales` gained a `factor` argument; its default, 0.25, is unchanged and tested.
+
+**The review** (`docs/reviews/20261004-E3c-pilot-code/`): the same prompt to both. Both found the arms, masks,
+seeds, blocks, units, access mode and criterion right. Both said "fix first":
+1. **A failure lost everything finished,** and the `inconclusive` branch could not be reached (both; Astra
+   injected the failures).
+   - **Now:**
+     - the frame's salvage records the completed runs, the runs in progress and `"decision": "inconclusive"`;
+     - the partial record is written at every checkpoint and at least once a minute, so a kill is charged to
+       its last minute (E2's reconciliation, D107).
+2. **The record dropped the distributions the power analysis needs** (both).
+   - **Now kept:**
+     - every checkpoint's per-maze counts;
+     - the references' and the finals' per-maze outcomes;
+     - every run's 32 generation-0 means, offsets and K_D;
+     - the per-generation `batch_seconds`, the benchmark §8 needs.
+3. **The 3.0 h stop was too tight** (Fable): the projection from E3b-1's measured rates is about 2.8 h, and a
+   rerun after a failure would also need room.
+   - **Now:** the stop is 4.5 h. It is a ceiling, not a cost: the pilot is still expected to take about
+     2.5-2.8 h, all counted toward E3c's 30.
+4. **Recommended** (Fable): after training, every parameter frozen by an arm's mask is checked, bitwise, against
+   the draw. The check runs on every final population and checkpoint candidate.
+
+**One diagnostic was found degenerate before the review:**
+- E3c's draws are mirror-symmetric: tied left/right biases, antisymmetric outputs. So their turn offset at level
+  noses is exactly 0.
+- The runner logs E3a's pair instead: the offset, kept as a check, and module A's K_D at q = 0.
+
+## D202 — the CPU CI had been red since d0410a8; two tests depended on this PC
+
+**Found by the owner,** who asked about GitHub's failure emails. About 40 pushes, from d0410a8 (3 October) to
+edb0c3e, failed GitHub's CPU suite on 2 tests. The local suite was green on every push, and nobody checked the
+GitHub runs. No published result is affected.
+
+**The two tests:**
+1. **`test_e3b1_runner.py::test_a_smoke_of_every_stage`.** E3b-1's g-e stage compares per-tick state hashes,
+   bitwise, against a reference recorded on Windows.
+   - On the CI's Linux the CPU leg differs, so g-e does not pass and the training stages refuse to start.
+   - Rule 6 already claims CPU exactness on one platform only.
+   - **Now:** off Windows, the test asserts the other legs (the snapshot hook and the mazes) and that only the CPU
+     leg failed. It then skips the later stages with the reason. On Windows every stage still runs.
+   - The cause was inferred from the logs, not reproduced on Linux. The test asserts it, so a different cause
+     fails it with the record's legs.
+2. **`test_e3b2_runner.py::test_the_resting_turn_matches_the_seeds_probe_record`** read E3b-1's champion
+   genomes, which stay local.
+   - **Now:** it skips, with the reason, when they are absent.
+
+**The practice:** after a push, the GitHub run is checked as well as the local suite.

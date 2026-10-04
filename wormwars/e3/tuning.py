@@ -46,13 +46,14 @@ def start_organism(kind: str, con, l1, bcfg) -> MO.Organism:
     return MO.maze_organism(con, MO.Seed("E-no-latch", module, ext, genome), "W2", bcfg)
 
 
-def scales(ext) -> dict:
+def scales(ext, factor: float = FACTOR) -> dict:
+    """E3b-1's mask at `factor` (0.25 there); E3c's arms starting from random values use 1.0 (D199)."""
     spec, edges, nodes = _grafted(ext)
     w2 = torch.tensor([ext.index(n) for n in W2_NEURONS])
     edges = edges & ~torch.isin(spec.chem_i, w2)
     nodes = nodes.clone()
     nodes[w2] = False
-    return _scales(spec, edges, nodes, nodes, FACTOR)
+    return _scales(spec, edges, nodes, nodes, factor)
 
 
 def assert_frozen(start: Genome, final: Genome, ext) -> None:

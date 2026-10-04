@@ -68,6 +68,8 @@ led to several of the findings.
 | 48 | E3b-2's plan: a "latch frozen" lesion that froze nothing (cutting the relay inputs leaves q to drift by its bias; the seed sits at its unstable point); sign(q) as the tracking measure; agreement that a stuck latch would pass | Claude Opus 5.5 | **Fable 5.1** and **Astra 6** (both, independently) | Clamps at each organism's own states, tested to hold; a per-visit switching measure | D194 |
 | 49 | E3b-2's code: switching measured as occupancy (a stuck latch read as switching in one direction; Claude's own test checked only the other); `--out` could send the accounting into E3b-1's folders; three fixed inputs not checked; then, after the fixes, the trail split dropped an interval and the agreement bootstrap counted undefined draws as 0 | Claude Opus 5.5 | **Both** (switching); **Astra 6** (`--out`, the second-round defects); **Fable 5.1** (the band, the inputs) | Hand-specified tests seen failing first; two confirmation rounds | D195, D196 |
 | 50 | E3b-2's results draft: "all eight below W2 in 7 champions" (6); "one undecided tick per leg"; "within 1-2 ticks"; "the same order"; "the cause" (a mechanism claim); "output carries little" (36% of T-A's gain); N's noses "do not matter" | Claude Opus 5.5 | **Fable 5.1** and **Astra 6** (each point by one or both); **Claude Opus 5.5** (an earlier "in all 16", before review) | Both recomputed every reading from the records; corrected before publication | D197 |
+| 51 | E3c's pilot runner: a failure would have lost every finished learning curve, an incomplete pilot was never recorded as inconclusive, the record dropped the distributions the power analysis needs, and the 3.0 h stop was tighter than the projected runtime | Claude Opus 5.5 | **Astra 6** and **Fable 5.1** (the first three by both, Astra by injecting failures; the stop by Fable, from E3b-1's measured rates) | Each fixed test-first before any GPU use; the failure path re-run with an injected crash | D201 |
+| 52 | About 40 pushes passed the local suite but failed GitHub's CPU suite for two days, unnoticed: one test relied on a bitwise reference recorded on Windows, another on genome files that stay local | Claude Opus 5.5 | **The human**, asking what GitHub's failure emails meant | The CI logs; both tests now state their platform and file needs | D202 |
 
 Episode 6 went unnoticed for a week, through a passing test suite, every milestone report, a
 publication audit, the first public release and Claude's own review of the roadmap on the day it
@@ -102,7 +104,7 @@ food response is 1.55-2.7 times the most responsive graph's, not 1.5-1.8).
   useful.
 - One error (episode 16) was caught by neither a person nor a reviewer but by running the tests on
   another operating system.
-- This is one project and fifty episodes: an anecdote about multi-agent review, not a measurement
+- This is one project and fifty-two episodes: an anecdote about multi-agent review, not a measurement
   of it.
 
 ## In the history

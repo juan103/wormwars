@@ -217,6 +217,8 @@ def test_the_latch_summary_definitions(m):
 
 
 def test_the_resting_turn_matches_the_seeds_probe_record(m):
+    if not (m.GENOMES_E3B1 / "ta-run00-champion-final.npz").exists():
+        pytest.skip("needs E3b-1's champion genomes, which stay local (runs/e3b1/genomes; D200)")
     cfg = m.cfg_for("shared")
     out = m.resting_turn_check({"seed": m.genome_report({"t": [], "n": []}, cfg)["seed"]})
     assert out["max_abs_difference"] < 1e-6
