@@ -1,9 +1,5 @@
 # WormWars: *C. elegans* wiring vs. shuffled and random graphs
 
-> **This is the `roadmap` working branch.** The published record is `main`. This branch holds work
-> in progress beyond it until it is merged. E4s-0, E4s-1, E3a and E3b-0 are on `main` (2026-10-03), and E3b-1
-> and E3b-2 (2026-10-04). Next in Track E: the owner's choice between E3's assembly comparison and E4.
-
 Many parallel 2D worlds on one GPU. In each world, swarms of small creatures called **weys** forage
 and fight. Every wey's brain is a small continuous-time recurrent network whose wiring is the real
 *C. elegans* connectome (302 neurons, chemical synapses and gap junctions) used as a fixed sparsity
