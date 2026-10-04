@@ -6416,3 +6416,42 @@ E4. 30 GPU hours."
 - **Claude's estimate:** not for the experiments; the simulation is GPU-bound and the board would be roughly
   100-1 000 times slower for this code.
 - **The owner's answer:** declined to measure it.
+
+## D199 — E3c design v1: both "revise"; v2 takes their changes, with two rulings
+
+**The review** (`docs/reviews/20261004-E3c-design/`): v1 (f0bd143), with the same prompt to both. Both said
+"revise".
+
+**The main catches:**
+- **Fable:** at E3b-1's mutation factor 0.25 (about 0.02 a generation), arms starting from random values
+  cannot reach working values (±2-3) in the schedule. The pilot as drafted could not have detected it. Fable
+  also found the cost ledger counted 0.23 of a lineage of about 32 GPU-hours.
+- **Astra:**
+  - Q2 measures an engineered-initialization advantage, not "pretrained modules";
+  - P-sel's degraded start keeps an engineered latch;
+  - the relays' inputs are occupancy levels, not goal bits;
+  - P-joint's champions should be reselected on E3c's block under the same rule;
+  - the tests should be two-sided with Holm, after a power analysis that includes failed runs.
+- **Both:** the random 65-edge "dense" subset is a weak control, and the starting draws were unspecified.
+
+**v2's changes:**
+- factor 1.0 for the arms starting from random values;
+- T-F's 300 × 8 schedule, with the T-F cohort reused and reselected;
+- B-task's full mask for the dense arm;
+- E3a's samplers for every draw;
+- W2 alone as the floor;
+- a 100-generation pilot with branches fixed in advance;
+- the lineage cost ledger, by category;
+- Q2 renamed.
+
+**Rulings:**
+- **P-sel's start:** a random selector (E3a's Stage 2 draw) on frozen intact modules, the roadmap's "same
+  modules with an evolved selector". Fable would keep the degraded start; Astra suggested tuning from the
+  intact E.
+- **Fable's suggestion to commit P-joint's genomes is not taken.** Genomes carry connectome-derived weights
+  (rule 1, D104).
+
+**Checked before use:** the lineage figures against the committed compute records: E4s-0 0.23, E4s-1 16.61,
+E3a 5.97, E3b-0 2.62 GPU-hours.
+
+**Next:** v2 goes to both for confirmation, then the pilot, the power analysis and the pre-registration.
