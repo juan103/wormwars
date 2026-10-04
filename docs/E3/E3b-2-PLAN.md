@@ -1,174 +1,371 @@
-# E3b-2 plan: where E3b-1's gain comes from (exploratory) — draft 1
+# E3b-2 plan: where E3b-1's gain comes from (exploratory) — draft 2
 
-**Status:** draft 1, 2026-10-04, for review by both reviewers (Astra 6, Fable 5.1). Nothing has run.
+**Status:** draft 2, 2026-10-04. Nothing has run.
 - **Why:** the owner chose this step after E3b-1 (D193).
 - **Kind:** exploratory. Every analysis is fixed here before it runs, and none is a registered test. The
   results will be reported as descriptions with intervals, not as verdicts.
+- **Draft 1** (cdc62e0) was reviewed by both reviewers. Both said "go with changes"
+  (`docs/reviews/20261004-E3b-2-plan/`, D194). This draft takes every change; §10 maps them. Where the two
+  differ, the ruling is stated.
 
 ## 1. The question
 
-**What do E3b-1's tuned colonies use to beat the frozen seed?** E3b-1's gate read "better": +0.225 of the
-seed's mean on the test mazes, with T-A at +0.069 and T-F at +0.381. Its probes found that no tuned champion
-still meets the seed's comparator criteria, and three of T-F's best champions show zero measured active K_D
-at every level. E3b-1 did not test which tuned parameters carry the gain, or whether the latch still tracks
-the goal in the maze.
+**What do E3b-1's tuned colonies use to beat the frozen seed, and does the engineered selector still
+switch in the maze?** E3b-1's gate read "better": +0.225 of the seed's mean on the test mazes, with T-A at
++0.069 and T-F at +0.381. Its probes found that no tuned champion still meets the seed's comparator
+criteria. The resting turn command is above the seed's +0.4 in every final T champion, and at +1 in both
+latch states for T-F finals 2, 3 and 7.
 
-**Why it comes first:** the roadmap's next steps, E3's assembly comparison and E4 (information crossing
-between the modules), both assume the engineered selector is in use.
+**Why it comes first:** the roadmap's next steps are E3's assembly comparison and E4 (information crossing
+between the modules). E3b-2 cannot establish the value of modular assembly or of information transfer. It
+can say whether those experiments have a suitable starting organism.
 
 **The frame:**
 - the organism is a hand-built circuit on a silent worm, so nothing here is about worm behaviour;
 - stereo sensing is a game-design choice;
 - E3b-2 evolves nothing.
 
-## 2. Inputs (fixed, checked at load)
+## 2. Inputs (fixed, hash-checked at load; read-only)
 
-- **The organisms:** E3b-1's 16 final T champions (T-A runs 0-7 at index 124, T-F runs 0-7 at index 299)
-  and the frozen seed E + W2.
-  - The champions' genomes are local (`runs/e3b1/genomes`). Each is checked against its sha256 in
-    `experiments/E3-ab-organism/E3b-1/champions.json`.
-  - N's and R's champions and T-F's champions at index 124 are not used.
+- **The organisms:**
+  - E3b-1's 16 final T champions: T-A runs 0-7 at generation index 124, T-F runs 0-7 at generation index
+    299. `champions.json`'s `index` is the selected population member;
+  - N's 4 champions, for C, D and E only;
+  - the frozen seed E + W2.
+  - Each champion's genome (local, `runs/e3b1/genomes`) is checked against its sha256 in E3b-1's
+    `champions.json`.
+- **Not used:** R's champions, and T-F's champions at index 124.
 - **The task:** E3b-1's configuration exactly: c = 5, H = 2 400, colonies of 8 on up to 4 spawns, the trail
   constants μ 0.01, λ 0.02, δ 0.05, d₀ 1.142, maze run seed 1 180 000, episode 0. Amendment 1's redraw rule
   applies.
-- **The fixed-input hashes:** E3b-1's `champions.json`, `evaluate.json` and `PREREGISTRATION.md`, and E4s-0's
-  `module.json`.
+- **The fixed-input hashes:**
+  - E3b-1's `champions.json`, `evaluate.json` and `PREREGISTRATION.md`;
+  - E3b-0's `report.json` (the seed's own probe readings);
+  - E4s-0's `module.json`.
+- **E3b-1's records are inputs only.** E3b-2 has its own experiment folder
+  (`experiments/E3-ab-organism/E3b-2/`), run folder (`runs/e3b2/`), compute ledger, markers and chunk paths.
+  - The runner does not import E3b-1's runner, which configures E2's stage frame for E3b-1's folders on
+    import.
+  - A test checks that every output path lies outside E3b-0's and E3b-1's folders.
 
 ## 3. The mazes
 
 - **A fresh block:** ids 7000-7255 (256 mazes), at maze run seed 1 180 000.
-  - It lies outside every block of E3b-0 and E3b-1. No organism has played it.
-  - Its feasibility and any redraws are listed by a pre-flight before the first stage.
-- **Smoke ids:** 9600 and up, never results.
-- **Not used:** E3b-1's test block (6000-6255), and its validation, learning and calibration blocks.
-- **The measure:** visits per wey (the colony mean), as in E3b-1. Where noted, also the later-leg rate.
+  - It lies outside every block of E3b-0 and E3b-1: their test, validation, learning, calibration, training,
+    projection and smoke ids, and the audit trace's 9900-9902. No organism has played it.
+  - A pre-flight lists its feasibility and any redraws before the first stage.
+- **Smoke ids:** 9800-9899, never results.
+- **Not used:** E3b-1's test block and every other registered block.
+- **The outcomes,** all as colony means per maze, each reported for every variant:
+  - visits per wey;
+  - the later-leg rate;
+  - the unvisited share;
+  - the round-trip share;
+  - median legs.
 
-A champion's **gain** on this block is (its mean visits − the seed's) / the seed's mean, both with shared
-trails: E3b-1's d, re-measured on fresh mazes.
+**A variant's gain** in condition a (shared trails or none) is
+v_a = (its mean visits in a − the seed's mean visits in a) / the seed's mean visits *with shared trails*.
+The denominator is the same for both conditions, so allocations under "shared" and "none" can be
+subtracted.
 
 ## 4. The parameter groups
 
-Tuning in E3b-1 could change 47 chemical edges and 9 neurons' τ and bias (`tuning.scales`). The W2 reflex,
-the relays' τ and bias, the worm block (the carrier's turn and forward biases) and the gap junctions were
-frozen. They are partitioned two ways.
+Tuning in E3b-1 could change 65 scalars: 47 chemical edges, 9 τ and 9 biases (`tuning.scales`). The W2
+reflex, the relays' τ and bias, the worm block (the carrier's turn and forward biases) and the gap junctions
+were frozen.
 
-**The functional partition (4 groups):**
+Frozen does not mean irrelevant to the gain. Tuned comparator outputs can change how the unchanged reflex and
+carrier act on the motors, and C's reflex and scent diagnostics address that.
 
-| Group | Parameters |
-|---|---|
-| **sensing** | the 8 nose → comparator edges (A's and B's), the 4 nose neurons' τ and bias, and the 4 comparators' τ |
-| **gating** | the 4 comparators' biases and the 4 latch → comparator edges |
-| **output** | the 32 comparator → turn-neuron edges |
-| **latch** | the latch's self-edge, the 2 relay → latch edges, and the latch's τ and bias |
+The groups are **parameter groups defined from the seed's design,** not isolated functions:
+- a comparator's bias sets both its gating and its resting output (× 16 output edges, a constant turn push);
+- a comparator's τ affects its responses to the noses and to q.
+
+A large "gating" allocation would not by itself show more use of the selector.
+
+**The functional partition (4 groups, 65 scalars):**
+
+| Group | Parameters | Scalars |
+|---|---|---|
+| **sensing** | the 8 nose → comparator edges, the 4 nose neurons' τ and bias, the 4 comparators' τ | 20 |
+| **gating** | the 4 comparators' biases, the 4 latch → comparator edges | 8 |
+| **output** | the 32 comparator → turn-neuron edges | 32 |
+| **latch** | the latch's self-edge, the 2 relay → latch edges, the latch's τ and bias | 5 |
 
 **The side partition (3 groups):**
 
-| Group | Parameters |
-|---|---|
-| **module A** | A's nose → comparator edges, A's 16 output edges, and A's 4 neurons' τ and bias |
-| **module B** | the same, for B |
-| **selector** | the latch's self-edge, the relay → latch edges, the latch's τ and bias, and the 4 latch → comparator edges |
+| Group | Parameters | Scalars |
+|---|---|---|
+| **module A** | A's 4 nose → comparator edges, its 16 output edges, its 4 neurons' τ and bias | 28 |
+| **module B** | the same, for B | 28 |
+| **selector** | the latch's self-edge, the relay → latch edges, the latch's τ and bias, the 4 latch → comparator edges | 9 |
 
-A test checks that each partition covers every mutable parameter exactly once, and no frozen one.
+The side partition puts the comparator biases inside A and B, where the functional partition puts them in
+gating. So its "selector" and the functional "gating" answer different questions; they are not two estimates
+of one quantity.
+
+A test checks that each partition covers every mutable scalar exactly once, and no frozen one.
 
 ## 5. The analyses
 
-### A. The functional attribution
+### A. The functional attribution, under shared trails and under none
 
-- **The hybrids:** for each champion, all 2⁴ = 16 hybrids that take each group's values from either the
-  champion or the seed. The all-seed hybrid is the seed and the all-champion hybrid is the champion, each
-  checked bitwise.
-- **Each hybrid's gain** on the fresh block, with shared trails.
-- **Per champion, from the 16 gains:**
-  - each group's Shapley value: its average marginal contribution over the orders, which sums exactly to
-    the champion's gain;
-  - each group's **reversion effect** (the champion with that group set back to the seed's values);
-  - its **transplant effect** (the seed given that group's champion values);
-  - the interaction terms (the Harsanyi dividends) of every pair and higher set.
-- **Reported:**
+- **The hybrids:** for each of the 16 T champions, all 2⁴ = 16 hybrids. Each takes every group's values from
+  either the champion or the seed. The all-seed hybrid is the seed and the all-champion hybrid is the
+  champion, each checked bitwise.
+- **Played:** every hybrid, with shared trails and with none.
+- **Per champion and condition:**
+  - **the endpoints, reported first:**
+    - each group's **reversion effect** (the champion with that group set back to the seed's values);
+    - each group's **transplant effect** (the seed given that group's champion values);
+  - **the Shapley allocation** of each group: its average marginal contribution over the 24 orders, in units
+    of the seed's shared mean and in visits per wey. It is signed, can be negative, and can exceed the net
+    gain;
+  - **the interaction terms** (Harsanyi dividends): the largest ones first, then the full table.
+- **The trail dependence, decomposed:** under this intervention scheme, the difference between a group's
+  allocation under "shared" and under "none" is that group's part in the change of trail dependence.
+  - It addresses why T-F's gain came with more trail dependence and T-A's did not.
+  - "None" removes the own and the peers' trails together, so this does not isolate peer effects.
+- **Every hybrid's absolute visits** are reported beside the seed's and W2 alone's (C5). A hybrid below W2
+  alone is flagged wherever its allocation is discussed.
+- **Summaries:**
   - per champion;
-  - each schedule's mean, with a two-sided 95% t interval over its 8 runs;
-  - the mean of the two schedules' means.
+  - each schedule's mean, with a two-sided 95% t interval over its runs, and a maze-paired bootstrap interval
+    (the mazes resampled jointly across every variant and champion, 10 000 resamples, seed 0);
+  - schedule-level shares only, as the sum of allocations over the sum of gains;
+  - no per-champion shares for T-A, whose gains (+0.03 to +0.13 on the test block) are near the per-variant
+    noise.
 
-### B. The side attribution
+**The wording:**
+- "Under the specified seed–champion substitutions, group X's Shapley allocation was … visits per wey (… of
+  the seed's shared mean)."
+- Allocations are exact for this baseline, partition and table of hybrid performance. They are not the
+  route evolution took, nor unique contributions.
 
-The same over the side partition: 2³ = 8 hybrids per champion, with Shapley values, reversions,
-transplants and interactions.
+### B. The side attribution, under shared trails
 
-### C. Lesions
+The same over the side partition, with 2³ = 8 hybrids per champion, shared trails only.
 
-On each champion and on the seed, with shared trails and with trails off ("none"):
-1. **gate cut:** the 4 latch → comparator edges at 0;
-2. **latch frozen:** the 2 relay → latch edges at 0, so the latch never switches from its start;
-3. **A's outputs silenced:** A's 16 output edges at 0;
-4. **B's outputs silenced:** B's 16 output edges at 0;
-5. **both silenced:** all 32 output edges at 0, leaving W2 and the carrier.
+### C. Lesions and diagnostics (shared trails and none)
 
-**Reported:** each lesion's cost, (lesioned − intact) / the seed's shared mean, per organism, by schedule
-and for the seed.
+Applied to every T champion, N's 4 champions and the seed.
 
-### D. Does the latch track the goal in the maze?
+1. **Latch clamped at its own A state,** and separately **at its own B state.**
+   - Each organism's two stable latch states come from its own q self-weight and bias (`latch.roots`).
+   - q is clamped there (`Brain.clamp`) from the first tick, its state initialised to the clamped value.
+   - A test checks that q stays at the value for the horizon.
+   - Both conditions are reported; neither is chosen as "the" lesion.
+   - With everything else at the organism's own values, this is the cleanest "the selector does not switch"
+     test.
+2. **Visit input disconnected:** the 2 relay → latch edges at 0, so q follows its own dynamics from 0. This is
+   not a frozen latch:
+   - for the seed (q bias 0) q stays at its unstable point 0, which closes both comparators;
+   - for champions, q drifts to the state their bias selects.
 
-A recorder reads, every tick, each wey's latch state q and its current goal (A or B).
-- **The agreement:** the share of wey-ticks after the wey's first confirmed visit at which sign(q) matches
-  the goal, taking q > 0 as goal A, the seed's coding.
-- **Also reported:** the share for the opposite coding (1 − agreement), and the share of ticks with |q| below
-  the probe's separation threshold (an undecided latch).
-- **Organisms:** the 16 intact champions and the seed, with shared trails.
+   It is reported under that name, as a diagnostic.
+3. **Gate cut:** the 4 latch → comparator edges at 0, the comparators' tuned biases kept. Its meaning differs
+   by organism:
+   - for the seed it closes both modules;
+   - for a champion whose comparator biases drifted toward 0 it leaves both open.
 
-### E. The resting turn (no new compute)
+   It is read with E's effective comparator biases.
+4. **Scent removed:** the interface gains of the 4 A/B nose channels (`a_left`, `a_right`, `b_left`,
+   `b_right`) at 0. The nose neurons keep their biases and τ, and the wall sensing and latch inputs stay.
+   - This tests whether scent-driven modulation matters beyond the circuit's tonic output.
+   - The one interface change, applied to a whole chunk, is checked by a test.
+5. **Reflex held at rest:** W2's two neurons clamped at their resting state, v = −0.5 (their bias; they have
+   no other inputs). This removes the wall response and keeps the resting push the carrier compensates.
+   Zeroing W2's outputs would change the resting turn as well, so it is not used.
+6. **Outputs silenced:**
+   - **A's outputs:** A's 16 output edges at 0;
+   - **B's outputs:** B's 16 output edges at 0;
+   - **both:** all 32 at 0. This disconnects every tuned parameter from the motors, leaving W2 and the
+     carrier. It is one organism for all, run once as the **W2-alone reference**. A CPU test checks that every
+     champion with both outputs silenced is bitwise the seed with both silenced, on smoke mazes.
 
-From E3b-1's probe records: each champion's turn command with no nose input at each latch state, against
-the seed's. This is descriptive context for C.
+**Reported:** each lesion's cost, (lesioned − intact) / the seed's shared mean, per organism, by schedule and
+for the seed, for every outcome in §3.
+
+### D. Does the latch switch in the maze?
+
+A recorder runs with shared trails on the 16 T champions, N's 4 and the seed, all intact.
+
+**The data:** every tick, each wey's q (decoded through the strain assignment into world and wey order) and
+the goal in force when q was computed. The goal switches after the move, in the same tick; on a visit tick
+the recorder uses the goal from before the switch.
+
+**The organism's coding:**
+- the threshold is the organism's own unstable middle root (`latch.roots`), not 0;
+- **"undecided"** is the middle third of the interval between its two stable states. As a sensitivity
+  reading, the middle half is reported too;
+- **the intended coding** follows from its relay → latch signs: an A visit drives q toward the B state if
+  RA → Q < 0.
+
+**The measures:**
+- **agreement by goal:** the share of decided ticks matching the goal under the intended coding, for goal A
+  and goal B separately, and their equal-weight mean. The opposite coding is computed with its own
+  denominator;
+- **switching after a confirmed visit,** in both directions:
+  - the share of legs in which q crosses the threshold toward the new goal before the next visit;
+  - the latency in ticks from the visit to the crossing;
+  - the seed is the reference, since the relays read the position after the previous move and q needs
+    ticks to cross;
+- **the denominators:** eligible weys, decided ticks, undecided ticks, goal occupancy, and the number of
+  transitions in each direction, including organisms with none;
+- **the uncertainty** is over mazes (colonies), not ticks.
+
+A stuck latch can score high agreement: a wey that visits A once and then seeks B for ever with q low agrees
+on almost every tick. Agreement is therefore read only beside switching.
+
+**Strong evidence of useful selection** would be both:
+- high agreement with switching after visits;
+- harm from both clamps (C1).
+
+Either alone is weaker.
+
+**Recorder off and on:** a test checks that the recorder changes nothing in the simulation, bitwise on the
+CPU.
+
+### E. Genome descriptives (no simulation)
+
+For each champion and the seed:
+- **the latch:** its relay → latch edge signs, its two stable states and its unstable root;
+- **the gate edges;**
+- **each comparator's effective bias** at each latch state: bias + gate weight × tanh(q state);
+- **the resting turn command** at each latch state, computed from the genome. It is checked against E3b-1's
+  probe values for the champions and E3b-0's for the seed.
 
 ### F. Replication on fresh mazes
 
-The 16 intact champions' gains on this block, set beside their E3b-1 test-block d: the per-champion pairs,
-their correlation, and the two means. Descriptive.
+The 16 intact champions' gains on this block (from A), beside their E3b-1 test-block d: the per-champion
+pairs, their correlation, and each schedule's mean. Descriptive.
 
-## 6. Compute
+## 6. How the result would bear on the next step (written before the run; not binding)
 
-**The projection,** from E3b-1's timed chunk of 16 organisms × 256 mazes (149 s):
-- A: 256 organism-variants, 16 chunks;
-- B: 128 variants, 8 chunks;
-- C: 102 variants × 2 conditions, about 13 chunks;
-- D: 17 organisms with the recorder, 2 chunks;
-- F: shared with A.
+**If the selector is not in use**, both E3's assembly comparison and E4 lose their starting premise for this
+organism. That would show as:
+- the selector's side allocation (B) and the latch allocation (A) both small;
+- both clamps (C1) costing little;
+- the latch rarely switching after visits (D).
 
-That is about 39 chunks, or about 1.6 GPU-hours, plus a pre-flight and a short CPU benchmark.
+The next step would then be a redesigned starting organism, or stronger controls, before either experiment.
 
-**The cap:** 5 GPU-hours, counted through `wormwars.accounting`. If the benchmark projects more than 4, B is
-dropped first, then C's "none" condition.
+**If the clamps cost much and the latch switches after visits,** the tuned organisms still use dynamic
+selection. E3's assembly comparison and E4 keep their premise.
 
-## 7. How it runs
+**Mixed outcomes are reported as mixed.** One example: the gain carried mostly by output edges and tonic
+steering (C4, C5, E), while the latch still switches but matters little.
 
-- **A runner, `scripts/e3b2.py`,** with stages `project`, `attribution` (A, B and F), `lesions` (C) and
-  `latch` (D), and a `report` (E and the summaries).
+An assembly comparison can itself test the value of modular structure; it does not require assuming it.
+Which step follows is the owner's decision, with both reviewers.
+
+## 7. Compute and admission
+
+**The projection,** from E3b-1's timed chunk of 16 organisms × 256 mazes (148.5 s, GPU):
+
+| Analysis | Variants | Chunks |
+|---|---|---|
+| A | 256 hybrids × 2 conditions | 32 |
+| B | 128 hybrids | 8 |
+| C | (16 + 4 + 1 organisms) × 8 lesioned variants (two clamps, the input cut, the gate cut, scent, reflex, A's and B's outputs) × 2 conditions, plus the W2 reference | about 21 |
+| D | 21 organisms with the recorder | 2 |
+| F | shared with A | |
+
+That is about 63 chunks, about 2.6 GPU-hours.
+
+**A GPU benchmark** (`project`) times, on smoke mazes:
+- a plain chunk;
+- a clamped chunk;
+- a chunk with the recorder;
+- the saving.
+
+The plan is admitted if the hours spent plus the projected remaining work, × 1.25, is at most the cap.
+
+**The cap:** 5 GPU-hours, counted through `wormwars.accounting`, failed attempts included.
+
+**If the projection exceeds the cap, the drop order:**
+1. N's champions;
+2. B, the side attribution;
+3. C's "none" condition.
+
+The ruling: Fable would drop B last and Astra first. B goes second because A's shared-and-none attribution,
+C's clamps and D answer the selector question more directly than B's selector allocation.
+
+## 8. How it runs
+
+- **A runner, `scripts/e3b2.py`,** with:
+  - stages `project`, `attribution` (A, B and F), `lesions` (C), `latch` (D) and `report` (E and the
+    summaries);
+  - E2's stage frame, configured for E3b-2's own folders; each stage once, with one rerun after a crash or
+    a kill.
 - **Each stage:**
   - checks its fixed inputs and the champions' hashes;
-  - runs a maze pre-flight;
+  - runs the maze pre-flight;
   - saves per-maze arrays as each chunk completes, and resumes at the first incomplete chunk;
-  - runs on the GPU, in E2's stage frame, once, with one rerun after a crash.
+  - on resume, validates a chunk's full specification: its maze ids, configuration, condition, every
+    organism's genome and intervention identity, and its batch composition.
+- **Fixed batch compositions:**
+  - each hybrid chunk holds one champion's 16 hybrids;
+  - the seed is the all-seed hybrid in each chunk, so its 16 score vectors, in one composition, must be
+    bitwise equal. That is a free exactness check, and a mismatch is reported.
 - **Tests first** (rule 9), each seen failing:
-  - each partition covers every mutable parameter exactly once;
-  - the all-seed and all-champion hybrids are bitwise the seed and the champion;
-  - each lesion zeroes exactly its edges;
-  - the Shapley values sum to the gain, checked on synthetic gains;
-  - the recorder's agreement on a scripted case;
+  - each partition covers every mutable scalar exactly once;
+  - the endpoint hybrids are bitwise the seed and the champion;
+  - each lesion changes exactly its parameters, or its interface gains or clamps;
+  - the latch clamp holds;
+  - with both outputs silenced, every organism behaves as the seed with both silenced (CPU);
+  - **the Shapley and dividend calculator** on hand-computed cases: additive, a dummy group, a pure pair
+    interaction and a higher-order interaction, plus the hybrid table reconstructed from the dividends;
+  - the recorder:
+    - decodes several weys and strains with different goals;
+    - takes the pre-switch goal on visit ticks;
+    - gives the per-goal agreement, switching and latency on scripted cases;
+    - changes nothing in the simulation (recorder off against on);
   - the fresh block is disjoint from every earlier block;
-  - the champions' hash check refuses a changed genome;
+  - every output path lies outside E3b-0's and E3b-1's folders;
+  - the hash check refuses a changed genome;
   - a smoke run of every stage.
-- **The review:** both reviewers review this plan before code, and the code before the GPU run.
+- **The reviews:**
+  - both reviewers review the code before the GPU run, and this draft's changes with it;
+  - the results are reviewed by both before publication.
 
-## 8. What would be reported, and how
+## 9. What would be reported, and how
 
 - **Every number is descriptive.** There is no gate, no "better" or "worse", and no p-value used as a
   verdict.
-- **The fixed wording frame:** "In E3b-1's tuned champions, on 256 fresh mazes, the share of the gain
-  attributable to <group> is …". Attribution is within this organism and these groups. It says which tuned
-  parameters carry the gain, not how the behaviour works.
-- **Reversion and transplant are reported beside Shapley values.** They answer different questions:
-  whether the champion still needs the group's tuned values, and whether those values help on their own.
+- **The schedules are reported separately and prominently.**
+- **The intervals are conditional on this maze block,** apart from the maze-paired bootstrap.
+- **The attribution wording** is that of §5A. Reversion, transplant and Shapley answer different questions:
+  - reversion: whether the champion benefits from keeping the group's tuned values;
+  - transplant: whether those values help in the seed;
+  - Shapley: the average over the substitutions.
+
+  None of them measures whether a component is necessary or sufficient for the behaviour.
 - **Not claimed:**
-  - that a group with a small share is unused;
-  - any mechanism beyond what C and D measure directly.
+  - that a group with a small allocation is unused;
+  - any mechanism beyond what C and D measure directly;
+  - any statement about E3's assembly comparison or E4 beyond §6's reading.
+
+## 10. Changes from draft 1 (the reviews, D194)
+
+| Point | From | Change |
+|---|---|---|
+| "Latch frozen" by the relay cut does not hold q: the seed stays at its unstable 0, and champions drift by their bias | both | Two clamps at each organism's own A and B states (C1); the relay cut kept as a named diagnostic (C2) |
+| A scent lesion, to separate stereo use from tonic steering | both (Fable: nose edges; Astra: scent inputs) | C4, scent inputs at 0, keeping the nose neurons' tonic activity |
+| Frozen is not irrelevant; the reflex's wall response | Astra | C5, the reflex held at rest |
+| Lesion 5 is one organism | Fable | The W2-alone reference, run once, with a CPU equivalence test |
+| The recorder: sign(q), the undecided band, timing, per-goal agreement, the stuck-latch trap, switching latency, mapping | both | §5D rewritten |
+| "Share of the gain" wording; per-champion shares on small gains; weak calculator tests | both | Signed allocations, endpoints first, schedule-level shares only, hand-computed tests |
+| Attribution under "none" decomposes trail dependence | Astra | A runs under both conditions |
+| Outcomes beyond visits | both | §3's five outcomes for every variant |
+| Hybrids off the evolutionary path | both | Absolute scores beside W2 alone; hybrids below it flagged |
+| N's champions | Fable (Astra optional) | In C, D and E; not in the attribution |
+| Genome descriptives; the effective comparator bias | Fable | §5E |
+| A non-binding reading for the next step | both | §6 |
+| Output isolation from E3b-1; resume validates the full specification | Astra | §2, §8 |
+| Smoke ids overlapped the projection ids | Fable | 9800-9899 |
+| "Index 124" meant the population member | Astra | Generation index, stated |
+| The seed's probe readings are in E3b-0's report | Astra | Added to the fixed inputs |
+| A GPU benchmark, the recorder overhead, admission with a reserve | Astra | §7 |
+| The drop order | Fable and Astra differ | The ruling in §7 |
+| The seed in every hybrid chunk as an exactness check | Fable | §8 |

@@ -1,0 +1,1 @@
+Astra 6 at "xhigh" with pinned settings and Fable 5.1 at "high" (run 20261004-103712), the same prompt to both, on the E3b-2 plan draft 1 (cdc62e0). Both: "go with changes"; every change taken in draft 2 (D194).

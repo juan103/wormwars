@@ -6218,3 +6218,51 @@ and roadmap are up to date". Main and roadmap differed only by the roadmap banne
 
 **The other READMEs** were checked on 2026-10-03 (D187), and nothing has changed in them since. The search
 for stale statuses found none.
+
+## D194 — E3b-2's plan: both "go with changes"; draft 2 takes every change
+
+**The review** (`docs/reviews/20261004-E3b-2-plan/`): draft 1 of `docs/E3/E3b-2-PLAN.md` (cdc62e0), with the
+same prompt to both. Astra checked the 16 champion genomes against their hashes.
+
+**The main catches:**
+- **"Latch frozen" did not freeze the latch** (both). Cutting the relay inputs leaves q to its own dynamics
+  from 0:
+  - the seed (q bias 0) sits at its unstable point, and both comparators close;
+  - each champion drifts by its own bias.
+
+  It is replaced by clamps at each organism's own A and B states. The relay cut is kept as a named
+  diagnostic.
+- **The latch recorder** (both):
+  - sign(q) is replaced by each organism's unstable root;
+  - an undecided band is defined;
+  - the goal from before the switch is used on visit ticks (Astra: the goal switches after the move in the
+    same tick);
+  - agreement is reported per goal, beside switching and its latency, because a stuck latch can score high
+    agreement.
+- **New diagnostics:**
+  - scent removed at the nose inputs (both);
+  - the reflex held at rest (Astra), since frozen does not mean irrelevant to the gain.
+- **The attribution:**
+  - it also runs under "none", which decomposes the trail-dependence change (Astra);
+  - its wording is narrowed to signed allocations under the stated substitutions, with the endpoints first
+    and no per-champion shares for T-A (both);
+  - the calculator gets hand-computed interaction tests (Astra).
+- **Isolation:** E3b-2 gets its own folders, and does not import E3b-1's runner, which configures E3b-1's
+  folders on import (Astra).
+- **Other fixes:**
+  - the smoke ids no longer overlap E3b-1's projection ids (Fable);
+  - "index 124" is the generation index (Astra);
+  - the seed's own probe readings come from E3b-0's report (Astra).
+
+**Rulings by Claude:**
+- **The drop order, where the reviewers differ:** N's champions first, then the side attribution, then
+  the lesions' "none" condition.
+- **Checked before use:** W2's neurons have no chemical or gap inputs and a bias of −0.5, so "held at rest"
+  is v = −0.5.
+
+**Next:**
+1. The runner, test-first.
+2. A code review by both, covering draft 2's changes too.
+3. The GPU run, after telling the owner.
+
+The projection is about 2.6 GPU-hours, under a cap of 5.
