@@ -1,0 +1,15 @@
+**Mostly: the central revisions are acceptable, but several corrections remain.** I accept random-selector P-sel, the neuron-matched dense control, T-F reuse with reselection, the “either S arm” pilot branch, and the proposed cuts’ order.
+
+- **§4 misdescribes the draws.** [`b_task_draw`](/D:/Claude/random/wormWars/wormwars/e3/samplers.py:204) preserves the nose-to-comparator `(a, −a; −a, a)` pattern and opposite comparator-output weights. Both S arms therefore inherit engineered sign relationships, although their orientation and magnitudes are random. “Without E’s engineered signs” is misleading. Explicitly specify drawing the full controller then projecting onto E’s mask, while preserving W2 and its carrier compensation. `ga_draw` also clips **all biases to ±2**, omitted here.
+
+- **§5/§8 underbudget the pilot.** Scaling the recorded T-F expenditure gives `6.438 × (9×100)/(8×300) = 2.41 hours`, before accounting for different batch efficiency and pilot diagnostics. **1.5 hours is unsupported.** Benchmark the actual compositions and reallocate the allowance within 30 hours, or reduce pilot runs prospectively. An incomplete pilot must be labelled inconclusive, not trigger the “neither learns” fallback. Measure W2 and P-fixed on the pilot’s own block.
+
+- **§3 needs narrower claims.** Factor 1.0 is defensible, but “cannot reach” is wrong: 0.02 is an edge mutation’s standard deviation, not a displacement limit. Q2 compares initialization **and mutation recipes**, including in its outcome labels. “S-mod ≥ S-dense” does not establish superiority; use §6’s inferential decision. Also, P-sel changes four comparator biases, and R-shared has nine controller neurons, not eleven.
+
+- **§6 is acceptable with registration details completed.** Choose the practical margin for scientific relevance; use power analysis to assess detectability. Three pilot runs cannot estimate success-mixture probabilities reliably, so examine a range. Specify checkpoint candidate selection, report uncertainty, distinguish censored runs from successes at generation 299, and report an unreached median when appropriate. Clarify multiplicity for the two threshold-count tests.
+
+- **§7 double-counts T-F.** The committed records total **31.86 hours including T-F**, not “about 32 hours plus the reused arm.” The category separation and scenario-only reuse claims otherwise address my objections.
+
+- **D199’s genome rationale is factually wrong for this cohort.** [`seeded_genome`](/D:/Claude/random/wormWars/wormwars/graft.py:117) creates a silent background, which tuning freezes. I checked all eight final populations: all **256 genome hashes match**, and their worm chemical weights and gap weights are zero. Keeping files local is acceptable, but “they carry connectome-derived weights” is not the demonstrated reason. Correct that statement openly; exporting only graft parameters is also an available reproducibility option.
+
+These are bounded corrections, not grounds to redesign the comparison. With the draw specification and pilot budget corrected before execution, **run the pilot**.

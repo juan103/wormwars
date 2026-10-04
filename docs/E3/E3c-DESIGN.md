@@ -1,10 +1,12 @@
-# E3c design: the assembly comparison — v2 (draft, for review)
+# E3c design: the assembly comparison — v2.1
 
-**Status:** draft v2, 2026-10-04. Nothing has run.
+**Status:** v2.1, 2026-10-04. Nothing has run.
+- **v2** (1e207f5) was reviewed again by both reviewers. Both said "run the pilot", with bounded corrections
+  and no further round (`docs/reviews/20261004-E3c-design-2/`, D200). v2.1 takes them; §12 maps them.
 - **Who decided:** the owner chose E3c after E3b-2, with a ceiling of 30 GPU-hours (D198).
 - **v1** (f0bd143) was reviewed by both reviewers. Both said "revise" (`docs/reviews/20261004-E3c-design/`,
   D199). This draft takes their changes; §11 maps them, with two rulings where they differed.
-- **Next:** v2 goes back to both reviewers before a pre-registration is written.
+- **Next:** the pilot (§5), then the power analysis and the pre-registration.
 
 ## 1. The question, narrowed
 
@@ -21,7 +23,8 @@ The roadmap asks for the first-use cost (pretraining included) and the cumulativ
   organism on E's modular mask beat a dense controller of the same 11 neurons? It compares two masks with one
   start distribution and one search recipe. It is not a test of "modularity" in general.
 - **Q2, engineered-initialization advantage:** at equal training evaluations, do the engineered seed E + W2
-  plus tuning beat E's mask trained from scratch?
+  plus tuning beat E's mask trained from scratch? The two arms differ in their starting values and in their
+  mutation recipe (§3), and Q2's labels say so.
   - **The expected outcome:** it is registered in advance, as "P-joint better".
   - **The informative content:** the size of the advantage, and S-mod's cost to reach the seed's level. Both
     are read beside the cost ledger (§7).
@@ -64,8 +67,8 @@ E3b-1's maze shuttle, unchanged:
 
 ## 3. The arms
 
-Every arm has the same 11 grafted neurons in the same interface positions, plus W2's 2 frozen neurons and the
-carrier.
+Every trained arm has the same 11 grafted neurons in the same interface positions, plus W2's 2 frozen
+neurons and the carrier.
 
 | Arm | Mask | Start | Mutates | Factor | Runs | Roadmap arm |
 |---|---|---|---|---|---|---|
@@ -74,34 +77,40 @@ carrier.
 | **P-joint** | E | the seed | E's 65 mutable scalars | 0.25 | 8, **reused:** E3b-1's T-F cohort | (joint tuning) |
 | **S-mod** | E | random (§4) | E's 65 mutable scalars | 1.0 | 8 | 4 |
 | **S-dense** | B-task's full mask: all 121 edges among the 11, plus the 32 output edges | random (§4) | 171 scalars | 1.0 | 8 | 1 |
-| **R-shared** (reference) | E3a's `b_shared` plus W2: one engineered navigator, two gated nose pairs, the latch | engineered | nothing | — | — | D144's baseline, engineered |
+| **R-shared** (reference) | E3a's `b_shared` plus W2: one engineered navigator, two gated nose pairs, the latch; 9 controller neurons | engineered | nothing | — | — | D144's baseline, engineered |
 
 **The schedule:** every trained arm runs T-F's schedule, 300 generations × 8 mazes per genome. Equal training
 evaluations (population × generations × mazes × horizon) is the matching unit. Evaluation and selection
 compute are equal across arms, and go in the ledger, not in the matching.
 
 **The mutation factor differs, deliberately.** P-joint ran at E3b-1's 0.25 on 02's σ. The arms that start
-from random values run at 1.0, as E3a's Stage 2 and B-task did. At 0.25, a parameter moves about 0.02 per
-generation, against working values of ±2-3, so a start near 0 could not reach them in 300 generations
-(Fable). So the arms compare training recipes, not starting values alone, and the readings say so.
+from random values run at 1.0, as E3a's Stage 2 and B-task did. At 0.25, an edge's mutation step has a
+standard deviation of about 0.02, against working values of ±2-3. So a start near 0 is unlikely to reach them
+in 300 generations (Fable; "unlikely", not "cannot": a step's σ is not a limit, Astra). So the arms compare
+training recipes, not starting values alone, and the readings say so.
 
 **P-joint, reused and reselected:**
 - **The cohort:** E3b-1's T-F cohort, 8 runs at 300 × 8. T-F's schedule is the one that gained.
 - **The checks:** every final population (32 genomes per run, local) is checked against E3b-1's recorded
-  hashes. The genomes stay local: they carry connectome-derived weights (rule 1, D104).
+  hashes (`train-tf.json`).
+- **What is published:** every champion's grafted parameters by name, as E3a's `champions-3.json` did, so an
+  outsider can rebuild P-joint and every other champion. The whole genome files stay local by the
+  repository's convention (D200 corrects D199's stated reason).
 - **The reselection:** they are revalidated on E3c's validation block with the same rule as the new arms
   (the best mean, ties to the lower index). The new champion is used, never a choice between the old and the
   new.
 - **The engine check:** `g-e` at E3c's commit reruns E3b-1's three legs (the GPU hashes, the CPU
-  equivalence, `maze-reference.json`). T-A trained at 47f660d; since then only `e3/attribution.py` has been
-  added under `wormwars/` (Astra).
+  equivalence, `maze-reference.json`). The T-F cohort trained at f881308. Since then only
+  `e3/attribution.py` has been added under `wormwars/`.
 
 **S-dense's mask:**
 - **What it is:** B-task's full mask, neuron-matched rather than parameter-matched. It is a strict superset of
   E's mask.
-- **How to read Q1:**
-  - if S-mod ≥ S-dense, E's structure beats extra capacity under this recipe;
-  - if S-dense > S-mod, capacity and structure are not separable here. That reading is stated in advance.
+- **How to read Q1,** by §6's test:
+  - "modular better": E's structure beats extra capacity under this recipe;
+  - "dense better": capacity and structure are not separable here.
+
+  Both readings are stated in advance.
 - **The confound it carries:** more mutable scalars at the same σ means more noise per child. σ is kept equal
   and reported; no scaling rule is invented.
 - **The alternatives:** a random 65-edge subset was dropped, since one draw can lack a path or the latch's
@@ -120,18 +129,26 @@ Each run's generation 0 holds 32 independent draws.
 - **S-dense:** `samplers.b_task_draw`, exactly:
   - every edge U[−0.5, 0.5];
   - each left/right pair's τ (log-uniform on [0.5, 20]) and bias (N(0, 0.5²), clipped to ±2) tied;
-  - the within-pair blocks symmetric.
-- **S-mod:** the same draw, restricted to E's mask: the edges outside E's mask are absent. The two arms then
-  share one start distribution on their common positions. "Structure" means E's mask, with the pair ties of
-  the draw and without E's engineered signs.
+  - the within-pair blocks symmetric;
+  - **two sign patterns:** the nose → comparator edges get L1's antisymmetric pattern (a, −a; −a, a), with
+    one random magnitude per module, and each comparator pair's outputs are push-pull (v, −v).
+- **S-mod:** the full B-task draw, then projected onto E's mask: the edges outside E's mask are dropped.
+  W2 and the carrier's compensation are kept as in every arm.
+  - The two arms then share one start distribution on their common positions.
+  - **What "structure" means:** E's mask, plus the draw's pair ties and antisymmetric patterns, inherited by
+    both arms with random orientation and magnitudes. It does not include E's engineered orientation or
+    magnitudes (Fable, Astra: v2 said "without E's engineered signs", which was wrong).
 - **P-sel:** `samplers.ga_draw`, E3a Stage 2's start, for the 13 selector parameters:
   - a gate weight U[−0.5, 0.5] and a bias N(0, 0.5²) per module, tied within the module;
   - w_qq, w_aq and w_bq U[−0.5, 0.5];
   - b_q N(0, 0.5²);
+  - every bias clipped to ±2;
   - τ_q log-uniform on [0.5, 20].
 
   The modules' 52 other mutable scalars stay at E's frozen values. No engineered latch survives: the
-  self-weight and the relay → latch weights are drawn (Astra).
+  self-weight and the relay → latch weights are drawn.
+  - **The module boundary is not innocuous:** the 13 include the 4 comparator biases, which set the
+    comparators' operating points and resting output.
   - **The expected outcome,** fixed in advance: in E3a's open arena, evolution from this start found a working
     selector in 1 of 8 runs. So P-sel may end below P-fixed. That is a reading of the reuse cost, not a
     failure of the experiment.
@@ -141,8 +158,12 @@ Each run's generation 0 holds 32 independent draws.
 **The aim:** to see whether the from-scratch arms leave the floor in mazes, and to fix the formal schedule.
 - **The arms:** S-mod, S-dense and P-sel, 3 runs each.
 - **The schedule:** factor 1.0 (P-sel's selector included), 100 generations × 8 mazes per genome.
-- **The checkpoints:** every 25 generations, on a pilot learning-curve block.
-- **The cost:** at most 1.5 GPU-hours.
+- **The checkpoints:** every 25 generations, on a pilot learning-curve block of 128 mazes.
+- **The references:** W2 alone and P-fixed are played on the pilot's own block.
+- **The cost:** about 2.5 GPU-hours, from T-F's rate (about 76 s a generation for 2 048 worlds; the pilot
+  runs 2 304). It is benchmarked on the actual compositions first. v2's 1.5 was an underestimate (both).
+- **What the pilot may change:** only the mutation factor of the arms starting from random values. The
+  schedule is fixed by P-joint's match. The pre-registration then fixes the factor.
 - **Its own blocks:** pilot ids, disjoint from every other.
 - **The diagnostics:**
   - the generation-0 distribution of visits, against W2 alone;
@@ -165,7 +186,10 @@ W2 alone.
     2.4 GPU-hours per arm; E3a measured a dense arm there.
   - Q2 and P-sel are then not run in mazes, and E3c is narrowed to the open-arena structure question.
   - Shaping, an easier maze or another fitness are not used. They would also break P-joint's match.
-- **The pilot's limits:** 3 runs cannot estimate rare successes or power. That is stated.
+- **An incomplete pilot** (stopped by a crash or the budget) is "inconclusive". It does not trigger the
+  fallback.
+- **The pilot's limits:** 3 runs cannot estimate rare successes or power. The power analysis therefore
+  examines a range of success mixtures.
 
 ## 6. The readings (to be registered)
 
@@ -183,17 +207,24 @@ W2 alone.
   - Q1: "modular better", "dense better" or "unclear";
   - Q2: "engineered initialization better", "worse" or "unclear".
 - **A practical margin:** to be fixed in the pre-registration from the power analysis.
-- **Q1's floor guard:** Q1 is "not read: both at the floor" unless at least one of the two arms' mean test
-  visits exceeds W2 alone by the pilot's margin.
+- **Q1's floor guard:** Q1 is "not read: both at the floor" unless at least one arm's mean over its
+  champions' test visits exceeds W2 alone by the pilot's margin.
+- **The practical margin** is chosen for scientific relevance. The power analysis says whether it is
+  detectable; it does not set it.
 
 **The cost curve (registered, secondary):** each run's generations to threshold, as the first learning-curve
 checkpoint (every 25 generations, on one block shared by the new arms) whose generation-best exceeds:
 - W2 alone + 1;
 - the seed's level.
 
-Each is right-censored at 299. For each arm the record gives:
-- the number of runs reaching each threshold (Fisher's exact test for S-mod against S-dense);
-- the median generation.
+Each is right-censored at 299.
+- **The checkpoint candidate** is the generation-best by fitness, as in `evolve_batch`.
+- **A run reaching a threshold at 299** is a success. A run not reaching it is censored, and is never counted
+  as reaching at 299.
+- **For each arm, the record gives:**
+  - the number of runs reaching each threshold. Fisher's exact test is used for S-mod against S-dense, with
+    Holm's correction over the two thresholds;
+  - the median generation, reported as "not reached" when fewer than half the runs reach it.
 
 **Descriptive:**
 - **P-sel:** against P-fixed and P-joint.
@@ -221,8 +252,8 @@ mixtures of successful and failed runs from the pilot's distributions.
 - **The categories, separately:** measured artifact production and selection; shared infrastructure; the
   downstream adaptation and validation; and unmeasured design and review effort. No hours are invented for the
   last.
-- **P-joint's first-use cost** is given as a range: from the reused training plus E4s-0's, up to the full
-  lineage (about 32 hours plus the reused arm).
+- **P-joint's first-use cost** is given as a range: from 6.7 hours (T-F plus E4s-0) to 31.9 hours (the full
+  lineage, T-F included). v2's "32 hours plus the reused arm" double-counted T-F (both).
 - **Common costs:** S-mod inherits E's mask, and every arm inherits W2 and the interface. These costs are
   common and noted as such.
 - **E3c's incremental cost** is reported apart from the historical first-use cost.
@@ -236,14 +267,14 @@ took 42.7 s a generation.
 
 | Part | GPU-hours |
 |---|---|
-| Pilot (exploratory) | ≤ 1.5 |
+| Pilot (exploratory) | about 2.5 |
 | `project`, `g-e` | about 1.5 |
 | S-mod, S-dense (8 × 300 × 8 each) | 2 × 6.44 = 12.9 |
 | P-sel (4 × 300 × 8) | about 3.8 |
 | P-joint's reselection (8 × 32 × 128 validation mazes) | about 0.3 |
 | Champions (20 runs × 32 × 128) | about 0.8 |
 | Evaluation (6 arms and W2 alone, on 256 test mazes; the secondary conditions) | about 1.2 |
-| **Total** | **about 22.0**; 26.2 with × 1.25 on training |
+| **Total** | **about 23.0**; 27.2 with × 1.25 on training |
 
 **The cuts, in order, if the benchmark exceeds the ceiling:**
 1. the evaluation's secondary conditions;
@@ -284,3 +315,20 @@ E4 follows E3c and builds on its organisms. A null result on Q1 is published as 
 | Learning curves on different blocks | both | One block for the new arms; P-joint's two points descriptive |
 | The power analysis | Astra | Before the pre-registration, with mixtures of failed runs |
 | Commit P-joint's genomes | Fable | **Not taken:** rule 1, D104 |
+
+## 12. Changes from v2 (the second review, D200)
+
+| Point | From | Change |
+|---|---|---|
+| B-task's draw keeps L1's antisymmetric and push-pull patterns; "without E's engineered signs" was wrong | both | §4 restated; S-mod is the full draw projected onto E's mask |
+| `ga_draw` clips every bias to ±2 | Astra | Stated |
+| The pilot costs about 2.5 h, not 1.5 | both | §5, §8 |
+| An incomplete pilot is inconclusive; W2 and P-fixed are measured on the pilot's block | Astra | §5 |
+| Only the factor may change after the pilot; the block is 128 mazes | Fable | §5 |
+| "Cannot reach" → "unlikely to reach"; Q2 also compares mutation recipes | Astra | §3, §1 |
+| "S-mod ≥ S-dense" is not an inference | Astra | §3 reads Q1 by §6's test |
+| R-shared has 9 controller neurons; P-sel's 13 include the comparator biases | Astra | §3, §4 |
+| The engine reference is T-F's commit (f881308), not T-A's | both | §3 |
+| The ledger range double-counted T-F | both | 6.7 to 31.9 h |
+| The floor guard's mean; the margin set by relevance; the threshold tests' multiplicity, censoring and medians | both | §6 |
+| D199's reason for keeping the genomes local was wrong: the cohort's worm-block weights are all zero | Astra | D200 corrects it; the champions' grafted parameters are published by name |

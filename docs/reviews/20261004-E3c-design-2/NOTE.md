@@ -1,0 +1,1 @@
+Astra 6 at "xhigh" with pinned settings and Fable 5.1 at "high" (run 20261004-224153), the same prompt to both, on the E3c design v2 (1e207f5). Both: "run the pilot", with bounded corrections and no further round (D200).

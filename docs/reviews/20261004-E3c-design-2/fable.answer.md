@@ -1,0 +1,17 @@
+Verified against the files. Summary of what I checked and found:
+
+**§3 arms, factors, reuse.** Resolved. The T-F cohort's 32-genome final populations and the index-124 snapshots have per-genome hashes in `train-tf.json` (`final_sha256`, `snapshot_sha256`), so the reselection check is feasible as written. One wording slip: §3 cites T-A's training commit (47f660d) as the engine reference, but the reused cohort is T-F. Cite T-F's own training commit. The relays-receive-recurrence note for S-dense is correctly stated as part of the dense recipe.
+
+**§4 draws, against `samplers.py`.** Mostly right, one mischaracterization. `b_task_draw` (lines 204–215) does not draw independent signs: the nose→comparator edges get L1's antisymmetric pattern with one random magnitude per module (`a, −a, a, −a`), and each comparator pair's 32 outputs are push-pull (`v, −v`). So §4's "without E's engineered signs" is wrong. S-mod inherits L1's push-pull layout, with random orientation and magnitude. Since S-dense gets the same on the shared positions, Q1 is unaffected; "structure" should read "E's mask, the pair ties and the draw's antisymmetric pattern, not E's orientation or magnitudes". P-sel's `ga_draw` description matches the code exactly, and "52 other scalars frozen" is right since the four comparator biases are in the 13.
+
+**§5 pilot.** The design is right; the budget is not. T-F's record shows about 76 s per generation for 2 048 worlds. The pilot runs 9 runs × 8 mazes × 32 = 2 304 worlds per generation, 100 generations: about 2.4 h, not ≤ 1.5 h. Either state 2.5 h (total becomes about 23 h, 27.2 with the reserve, still under 30) or cut to 2 runs per arm (about 1.6 h). I prefer keeping 3 runs. Also state the pilot learning-curve block size (128, as E3b-1), and say what the pilot may change: the schedule is fixed by the P-joint match, so the only thing it can adjust is the factor, and the pre-registration fixes it.
+
+**§6 readings.** Resolved. One ambiguity: the floor guard's "mean test visits" should say the arm mean over its champions. The margin should come from a substantive argument, with power telling you whether it is detectable, not the other way round. Fine to settle in the pre-registration.
+
+**§7 ledger.** The categories and the range are right, but the range's top end double-counts, and that was my error in v1. The four lineage lines sum to 25.4 h; with T-F's 6.44 h the full lineage is 31.9 h. So the range is "6.7 h (T-F plus E4s-0) to about 32 h (the full lineage, T-F included)", not "32 h plus the reused arm".
+
+**§8 budget.** The main arm figures reproduce from T-F's rate (12.9, 3.8, 0.3, 0.8 all check). Only the pilot line is wrong, as above. The cut order is sensible.
+
+**§10 rulings.** Both accepted. P-sel as a random selector on frozen intact modules is the roadmap's arm 3 literally, and E3a's Stage 2 record (1 of 8 at 300 generations) makes its expected outcome honest and pre-stated. Not committing the genomes under rule 1 is correct; the hashes in `train-tf.json` give an outsider what they can check.
+
+**Run the pilot**, with these changes written into the design before the pre-registration: the pilot cost line (about 2.5 h, totals 23 and 27.2), §4's sign-pattern wording, §7's range (6.7 to about 32 h, the reused arm included), T-F's commit in place of T-A's, and the three small specifications (pilot block size, factor as the only pilot-adjustable setting, arm mean in the floor guard). None of these needs another review round before the pilot runs.

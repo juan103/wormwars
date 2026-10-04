@@ -6455,3 +6455,36 @@ E4. 30 GPU hours."
 E3a 5.97, E3b-0 2.62 GPU-hours.
 
 **Next:** v2 goes to both for confirmation, then the pilot, the power analysis and the pre-registration.
+
+## D200 — E3c design v2: both "run the pilot"; v2.1 takes the corrections; a correction to D199
+
+**The review** (`docs/reviews/20261004-E3c-design-2/`): v2 (1e207f5). Both said "run the pilot", with
+bounded corrections and no further round.
+- **Accepted by both:**
+  - the random-selector P-sel;
+  - the neuron-matched dense control;
+  - the reuse and reselection of the T-F cohort;
+  - the pilot's branches;
+  - the order of the cuts.
+- **v2.1 takes every correction** (§12 of the design):
+  - the draws' sign patterns, restated (both);
+  - the pilot's cost, about 2.5 h, not 1.5 (both);
+  - the ledger's double count (both);
+  - T-F's training commit, f881308, in place of T-A's (both);
+  - an incomplete pilot is inconclusive (Astra);
+  - only the factor may change after the pilot (Fable);
+  - narrower wording (Astra);
+  - the registration details of the threshold readings (both).
+
+**Correction to D199** (2026-10-04, rule 4). D199 said: "Fable's suggestion to commit P-joint's genomes is not
+taken. Genomes carry connectome-derived weights (rule 1, D104)."
+- **Wrong for this cohort:** the champions sit on a silent carrier that tuning froze. Astra checked all 8 T-F
+  final populations, all 256 hashes: their worm chemical and gap weights are zero.
+- **What now holds:**
+  - the whole genome files still stay local, by the repository's convention;
+  - E3c publishes every champion's grafted parameters by name, as E3a's `champions-3.json` did, so an outsider
+    can rebuild P-joint and every other champion. That meets Fable's aim, reproducibility, without the
+    files.
+
+**Next:** the pilot, test-first and exploratory, about 2.5 GPU-hours; then the power analysis and the
+pre-registration.
