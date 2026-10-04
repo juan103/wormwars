@@ -6176,3 +6176,45 @@ D187, and the owner is informed afterwards.
 
 **Next in Track E:** the step after the gate, E3's assembly comparison or E4. It is to be designed with both
 reviewers; the probes' finding bears on it.
+
+## D193 — after the E3 gate: E3b-2 first (the owner's choice); the READMEs checked section by section
+
+**The owner, 2026-10-04,** asked what was needed and was offered three options:
+- E3's assembly comparison;
+- E4;
+- first, a short exploratory follow-up on where E3b-1's gain comes from (Claude's recommendation).
+
+The owner chose: "Option 3."
+
+**E3b-2** (exploratory, about 5 GPU-hours, no new evolution) will knock out or freeze parts of E3b-1's tuned
+champions: the latch, the comparators, the reflex, the turn biases. Its design and plan go to both reviewers
+before it runs.
+
+**The README check.** Before starting, the owner asked: "check section by section that the readmes of main
+and roadmap are up to date". Main and roadmap differed only by the roadmap banner.
+
+**Brought up to date:**
+- **The top README:**
+  - the banner and "Next on the roadmap" now name E3b-2;
+  - E3b-0's "+1.09 over the reflex alone" names the scripted reflex;
+  - "How to help" lists E3b-1's compute and records;
+  - a new limitation: Track E's organisms are engineered;
+  - "The claim under test" adds E4s and E3;
+  - "How this was made" adds E3b-1's review catches.
+- **The E3 README:**
+  - an E3b-1 results section;
+  - its status and parts lines;
+  - a stale "E3b-1 must be resized".
+- **E3b-0's README:** "Extend it", which said E3b-1 "follows".
+- **E3b-1's README:**
+  - "untouched" becomes "prespecified";
+  - the decisions and reviews lists are completed, and the records list now names `RESULTS.md` and
+    `evaluate.json`;
+  - a `readings` command, checked to reproduce every registered reading exactly from the committed records;
+  - a new "Extend it" section.
+- **03r's README:** "the mechanism follow-up is next", which predated 03m.
+- **AGENTS.md:** the `wormwars/e3/` row gains E3b-1's pieces.
+- **ROADMAP:** the next step.
+
+**The other READMEs** were checked on 2026-10-03 (D187), and nothing has changed in them since. The search
+for stale statuses found none.

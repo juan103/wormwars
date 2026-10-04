@@ -82,8 +82,12 @@
     - **The probes:** no tuned champion meets the seed's comparator criteria, so the route of the gain is open.
     - **Its course:** the code review (both, D188-D189); Amendment 1 on infeasible mazes before any score was
       read, and its correction for an audit trace on one test maze (D190-D191); 18.73 of 24 GPU-hours.
-  - **Next in Track E: the step after the gate,** E3's assembly comparison or E4. It is to be designed with
-    both reviewers, and E3b-1's probes bear on it.
+  - **Next in Track E: E3b-2** (exploratory; the owner's choice, 2026-10-04, D193).
+    - **What:** knock out or freeze parts of E3b-1's tuned champions (the latch, the comparators, the reflex,
+      the turn biases) to see where the gain comes from.
+    - **Its size:** about 5 GPU-hours, with no new evolution.
+    - **Why first:** both later steps, E3's assembly comparison and E4, assume the selector is in use.
+    - **After it:** the choice between E3's assembly comparison and E4.
 
 - **Published on main:**
   - 02's D050 correction, as a Corrections entry (27 September, D063);

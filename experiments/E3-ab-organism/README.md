@@ -12,6 +12,7 @@
 - **E3b-1: published** (2026-10-04, D192; `E3b-1/README.md`, `E3b-1/RESULTS.md`). It is the roadmap's E3
   gate: the tuned colony against the frozen seed in mazes. It reads "better" (+0.225 of the seed's mean; +0.069
   at 125 generations, +0.381 at 300), at 18.73 of 24 GPU-hours.
+- **Next: E3b-2** (exploratory): where E3b-1's gain comes from (D193).
   - It was pre-registered and bound before any stage ran (D181-D186).
   - Amendment 1 (infeasible mazes) was added before any score was read (D190, D191).
   - The code was reviewed by both (D188, D189).
@@ -54,7 +55,26 @@ publish"), and it was corrected (D175-D180). It tunes nothing.
 - most of the seed's maze performance comes from the reflex;
 - the trail constants are adaptively selected.
 
-**E3b-1 must be resized:** about 71 GPU-hours as first planned.
+**E3b-1, as first planned, did not fit** (about 71 GPU-hours). It was redesigned to a cap of 24.
+
+## E3b-1's results (confirmatory; `E3b-1/README.md`, `E3b-1/RESULTS.md`)
+
+E3b-1 ran on 2026-10-03/04 and used 18.73 of its 24 GPU-hours. Both reviewers reviewed it ("fix then
+publish"), and it was corrected (D188-D192).
+
+**On 256 prespecified test mazes:**
+- **The gate reads "better":** tuned colonies against the frozen seed E + W2, +0.225 of the seed's mean
+  (+1.32 visits per wey). It averages two schedules: +0.069 at 125 generations, +0.381 at 300.
+- **The secondary tests:**
+  - more generations helped;
+  - trail dependence increased, from the 300-generation schedule;
+  - peers' trails still speed later discoverers.
+
+**Not shown:** that the gain runs through the engineered A/B selector. No tuned champion meets the seed's
+comparator criteria under the probe protocol.
+
+**Disclosed:** Amendment 1 (infeasible mazes redraw their walls), and an audit trace that played the frozen
+seed on one test maze.
 
 ## What it asks
 
@@ -69,7 +89,8 @@ silent worm, outside the N2 mask. Nothing here is about worm behaviour.
 
 - **E3a, the shuttle:** one wey, an open arena, two fixed sources. This folder's first experiment.
 - **E3b:** trails, branching mazes and the colony. It holds the roadmap's E3 gate. E3b-0, the engine and
-  feasibility, is published; E3b-1, the gate, is pre-registered.
+  feasibility, is published; so is E3b-1, the gate ("better"). E3b-2, where E3b-1's gain comes from, is
+  next.
 - **E3c:** the assembly comparison.
 
 **The owner's ceilings:** 30 GPU-hours for E3a, and about the same for each of E3b and E3c (D159).
@@ -80,3 +101,5 @@ silent worm, outside the N2 mask. Nothing here is about worm behaviour.
   D156-D163.
 - **The geometry check:** `scripts/e3_geometry_check.py` and `docs/E3/geometry-check.json`.
 - **The module it builds on:** E4s-0's L1 (`../E4s-stereo-module/E4s-0/module.json`).
+- **E3b's plans and design:** `docs/E3/E3b-0-PLAN.md` and `docs/E3/E3b-1-DESIGN.md`; each experiment's
+  folder holds its own records.

@@ -71,9 +71,8 @@ python scripts/e3b0_diagnose5.py
   (`docs/REPRODUCIBILITY.md`).
 
 ## Extend it
-- **E3b-1 follows:** the tuned colony against the frozen seed E + W2 on untouched mazes. It is
-  pre-registered and bound (`../E3b-1/PREREGISTRATION.md`, D186), its budget resized to about 21 GPU-hours
-  under a cap of 24.
+- **E3b-1 followed** (published 2026-10-04; `../E3b-1/RESULTS.md`). The tuned colony beat the frozen seed
+  E + W2 ("better", +0.225 of its mean), within a cap of 24 GPU-hours.
 - **Open questions:**
   - whether a controller that compares readings over time can use the trails' slope;
   - why replayed and scrambled peer fields hurt;

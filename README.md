@@ -2,7 +2,7 @@
 
 > **This is the `roadmap` working branch.** The published record is `main`. This branch holds work
 > in progress beyond it until it is merged. E4s-0, E4s-1, E3a and E3b-0 are on `main` (2026-10-03), and E3b-1
-> (2026-10-04). Next in Track E: the step after the E3 gate.
+> (2026-10-04). Next in Track E: E3b-2, where E3b-1's gain comes from.
 
 Many parallel 2D worlds on one GPU. In each world, swarms of small creatures called **weys** forage
 and fight. Every wey's brain is a small continuous-time recurrent network whose wiring is the real
@@ -43,9 +43,12 @@ selection acts on team results.
 Next on the roadmap:
 - **Published 2026-10-02:** E4s-0 and E4s-1, together; then E3a. **2026-10-03:** E3b-0. **2026-10-04:**
   E3b-1, the E3 gate ("better").
-- **Next in Track E:** the step after the gate. The roadmap offers two: E3's assembly comparison, and E4
-  (does information cross between the modules?). E3b-1's probes, which find the tuned comparators departed
-  from the seed's design, bear on the choice.
+- **Next in Track E: E3b-2,** exploratory, at about 5 GPU-hours (the owner's choice, 2026-10-04, D193).
+  - **What it does:** it knocks out or freezes parts of E3b-1's tuned champions (the latch, the comparators,
+    the reflex, the turn biases) to see where their gain comes from.
+  - **Why first:** E3b-1's probes found the tuned comparators departed from the seed's design. The
+    roadmap's next two steps, E3's assembly comparison and E4 (does information cross between the
+    modules?), both assume the selector is in use.
 - **In the biology track:** a confirmatory study of 03m's leads, then 03a's six-neuron proof of
   concept.
 
@@ -91,7 +94,7 @@ linear trails.**
 **Not shown:**
 - that the weys follow a trail's direction;
 - that the seed's ability is its own. Most of it comes from the reflex: it makes only +1.09 visits per wey
-  over the reflex alone, of 5.78.
+  over the reflex alone (a scripted wall follower, with trails off), of 5.78.
 
 **E3a's best tuned organism circles in the maze.**
 
@@ -254,12 +257,12 @@ archived verbatim. Our bottleneck is compute: everything so far ran on one consu
 GPU. If you have more, you can get to the next answers first, and we would count that as a good
 outcome. Useful things anyone can do:
 
-- **Replicate on other hardware.** 03 took 19.75 GPU-hours, 03r 23.95 and 04a 2.91, on one RTX
-  5080, and their READMEs give the commands. CUDA results are exact only on the same GPU, so an independent
+- **Replicate on other hardware.** 03 took 19.75 GPU-hours, 03r 23.95, 04a 2.91 and E3b-1 18.73, on one
+  RTX 5080, and their READMEs give the commands. CUDA results are exact only on the same GPU, so an independent
   replication is a real test.
 - **Re-analyse without a GPU.** Every verdict can be checked from committed files (`report.json`,
-  `analysis.json`, `records.jsonl`, and E1's `gate.json` and 04a's `evaluation.json` with their event
-  tables).
+  `analysis.json`, `records.jsonl`, E1's `gate.json` and 04a's `evaluation.json` with their event
+  tables, and E3b-1's `evaluate.json` with its per-maze arrays).
 - **Take an open question from [`ROADMAP.md`](ROADMAP.md):**
   - [the mechanism behind 03's history dependence](ROADMAP.md#03-and-03r): 03m took an
     exploratory first look, and its RESULTS.md lists what a confirmatory study would register;
@@ -373,6 +376,11 @@ foraging can be solved by comparing the two sides. A real worm cannot do that: *
 chemotaxis samples concentration over time while moving. The sensor and motor mapping onto named
 neurons is chosen by hand.
 
+**Track E's organisms are engineered.** E4s grafts a hand-built stereo module onto N2. E3 builds its
+organism from such modules on a silent worm, whose own neurons do nothing. Their results are about tuning
+hand-built circuits in a game, not about the worm's wiring or behaviour. Stereo sensing itself is a
+game-design choice.
+
 **Numerics.** 01b ran with 8 integrator substeps. Motor read-out errors above 0.05, against 32
 substeps, are rare (0 to 8 of 1440 weys, depending on the inputs used), and their effect on fitness
 was not measured.
@@ -465,8 +473,12 @@ quantities onto individual named neurons.
 That is a test of **wiring plus interface on one task**. It is not a test of whether biological
 wiring is better in general. A positive result would say that this graph suits this interface on
 this game; a negative result would say it does not. Neither generalises on its own. Later
-experiments ask narrower questions (03: unevolved brains; E1 and 04a: navigation on N2 alone), and
-each README states its own.
+experiments ask narrower questions:
+- 03: unevolved brains;
+- E1 and 04a: navigation on N2 alone;
+- E4s and E3: hand-built circuits grafted onto the wiring or onto a silent worm.
+
+Each README states its own question.
 
 ## Conditions
 
@@ -562,7 +574,10 @@ recently, the reviewers caught a smoke test that trained on 04a's real training 
 that would have published genomes carrying connectome weights (D104), and an overclaim that 04a's
 champions "steer" (D111). In E2, they caught failure paths in four rounds of pre-registration
 review, including a false claim that every test had been seen failing first (D119-D123), and a
-first reading of its floor result that called the optimizers' gains "little" (D125). One error was
+first reading of its floor result that called the optimizers' gains "little" (D125). In E3b-1, they
+caught failure paths in its runner (D188, D189), and Astra 6 caught an audit check, written by Claude
+Code, that had played a test maze before the evaluation (D191). Both caught an over-reading of its probes
+(D192). One error was
 caught by a machine: the first automatic test run on Linux
 showed that 03's graph files rebuild byte for byte only on Windows (D106). The full list, with
 commits: [`docs/REVIEW_TRAIL.md`](docs/REVIEW_TRAIL.md).

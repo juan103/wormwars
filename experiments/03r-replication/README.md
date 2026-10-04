@@ -220,10 +220,11 @@ python experiments/03-generation0/supplement.py --instance 03r
 
 ## Extend it
 
-- **The mechanism follow-up** is next in Track B ([`ROADMAP.md`](../../ROADMAP.md#03-and-03r)):
-  where the history effect lives (deletions), gap junctions or chemical synapses, inputs other than
-  food, and what gives N2's random brains their stronger response. It needs its own
-  pre-registration.
+- **The mechanism follow-up** ([`ROADMAP.md`](../../ROADMAP.md#03-and-03r)): where the history effect
+  lives (deletions), gap junctions or chemical synapses, inputs other than food, and what gives N2's
+  random brains their stronger response.
+  - [03m](../03m-p4-mechanism/README.md) took an exploratory first look and found leads, not a mechanism.
+  - A confirmatory study of its leads is next in Track B, with its own pre-registration.
 - **Bridge 2** (the A/B shuttle on N2 and matched nulls) gains priority, per the roadmap: it tests
   whether N2's memory head start matters for behaviour.
 - **P3's reversal** is an unpredicted secondary. Any claim about its cause needs its own
