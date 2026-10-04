@@ -92,7 +92,8 @@
     - **The latch's switching is used:** holding it fixed removes 85-87% of the tuned champions' visits.
     - **The gain** sits mostly in the comparators' co-tuned sensing and gating parameters.
     - **Both next steps keep their premise.**
-  - **Next in Track E:** the owner's choice between E3's assembly comparison and E4.
+  - **Next in Track E: E3c, the assembly comparison, then E4** (the owner's choice, 2026-10-04, D198), each
+    capped at 30 GPU-hours.
 
 - **Published on main:**
   - 02's D050 correction, as a Corrections entry (27 September, D063);

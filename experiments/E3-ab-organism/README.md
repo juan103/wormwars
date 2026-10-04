@@ -15,7 +15,8 @@
 - **E3b-2: published** (2026-10-04, D197; `E3b-2/RESULTS.md`). It is exploratory: where E3b-1's gain comes from.
   - The tuned colonies still use the latch's switching.
   - Their gain sits mostly in the comparators' co-tuned sensing and gating parameters.
-  - E3's assembly comparison and E4 keep their premise. The owner chooses which follows.
+  - E3's assembly comparison and E4 keep their premise.
+- **Next: E3c, the assembly comparison,** then E4 (the owner's choice, D198; 30 GPU-hours each).
   - It was pre-registered and bound before any stage ran (D181-D186).
   - Amendment 1 (infeasible mazes) was added before any score was read (D190, D191).
   - The code was reviewed by both (D188, D189).

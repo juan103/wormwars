@@ -2,7 +2,7 @@
 
 > **This is the `roadmap` working branch.** The published record is `main`. This branch holds work
 > in progress beyond it until it is merged. E4s-0, E4s-1, E3a and E3b-0 are on `main` (2026-10-03), and E3b-1
-> and E3b-2 (2026-10-04). Next in Track E: the owner's choice between E3's assembly comparison and E4.
+> and E3b-2 (2026-10-04). Next in Track E: E3c, the assembly comparison, then E4.
 
 Many parallel 2D worlds on one GPU. In each world, swarms of small creatures called **weys** forage
 and fight. Every wey's brain is a small continuous-time recurrent network whose wiring is the real
@@ -43,9 +43,9 @@ selection acts on team results.
 Next on the roadmap:
 - **Published 2026-10-02:** E4s-0 and E4s-1, together; then E3a. **2026-10-03:** E3b-0. **2026-10-04:**
   E3b-1, the E3 gate ("better"), and E3b-2, where its gain comes from.
-- **Next in Track E:** the owner's choice between E3's assembly comparison and E4 (does information cross
-  between the modules?). E3b-2 found the tuned organisms still use the selector, so both keep their premise
-  (D197).
+- **Next in Track E: E3c, the assembly comparison, then E4** (does information cross between the modules?).
+  It is the owner's choice (D198), with 30 GPU-hours each. E3b-2 found the tuned organisms still use the
+  selector, so both keep their premise (D197).
 - **In the biology track:** a confirmatory study of 03m's leads, then 03a's six-neuron proof of
   concept.
 

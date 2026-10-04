@@ -6395,3 +6395,24 @@ after telling the owner.
 **Publication:** consensus of all three, so main is brought up to date as in D187, and the owner is informed.
 
 **Next in Track E:** the owner chooses between E3's assembly comparison and E4.
+
+## D198 — after E3b-2: E3c (the assembly comparison) next, then E4; 30 GPU-hours (the owner's choice)
+
+**The owner, 2026-10-04,** after E3b-2's results: "update github, then E3's assembly comparison (E3c), and then
+E4. 30 GPU hours."
+- **E3c** is ROADMAP §E3's assembly comparison. It compares these, with the first-use and cumulative reuse
+  costs reported (ROADMAP):
+  - one task-conditioned controller of matched size;
+  - pretrained modules with a fixed selector;
+  - the same modules with an evolved selector;
+  - a modular organism of the same size trained from scratch.
+- **E4** follows: do the two minds share?
+- **The ceiling:** 30 GPU-hours each, matching D159's "about the same each for E3b and E3c".
+- **How it proceeds:** as delegated. A design with both reviewers, then a pre-registration bound before
+  any formal stage, then test-first code with a code review, then the run, the review of the results and
+  publication.
+
+**Also asked:** whether the owner's Arduino board could take some computation.
+- **Claude's estimate:** not for the experiments; the simulation is GPU-bound and the board would be roughly
+  100-1 000 times slower for this code.
+- **The owner's answer:** declined to measure it.
