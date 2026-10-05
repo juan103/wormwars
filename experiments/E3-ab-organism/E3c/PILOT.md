@@ -139,3 +139,58 @@ come from the final generation-best's play on the same block.
   with each other more strongly (Pearson 0.56-0.90, Astra).
 - **The reading that fits** is goal-agnostic coverage of the tree, helped by the wall reflex. It is still an
   inference: no champion has been probed.
+
+## The replay and probe (exploratory; D205; `replay.json`)
+
+**When and what:** 2026-10-05, 1.10 GPU-hours, code at ec69134. Both reviewers checked the code first and
+said "fix first"; all findings were taken (D205's note).
+
+**The replay is exact.**
+- Every generation's best-genome hash of the pilot's S-dense batch matches the pilot's: 100 of 100 in each of
+  runs 10-12.
+- The champions' intact plays equal the pilot's per-maze records, and so do the seed's and W2 alone's.
+- The saved genomes (local, `runs/e3c/genomes/`) are therefore the pilot's own champions.
+
+**The outcome fixed in advance is "coverage."** All three champions meet every condition (pilot block, 128
+mazes; visits per wey):
+
+| | Intact visits | Noses removed | Retained | Coverage (intact) | Tour match (intact) |
+|---|---|---|---|---|---|
+| S-dense run 10 | 6.789 | 6.832 | 1.006 | 0.998 | 0.990 |
+| S-dense run 11 | 6.739 | 6.745 | 1.001 | 0.993 | 0.992 |
+| S-dense run 12 | 6.649 | 6.644 | 0.999 | 0.990 | 0.985 |
+| The seed E + W2 | 4.824 | 1.662 | 0.345 | 0.793 | 0.070 |
+| W2 alone | 1.720 | 1.720 | 1.000 | 0.826 | 0.058 |
+
+**What the table shows:**
+- **Removing the noses changes the champions' visits by −0.1% to +0.6%.**
+  - They cover essentially the whole maze.
+  - 98.5-99.2% of their moves repeat the move 48 earlier, the period of a full circuit of a 25-cell tree.
+- **The seed keeps 35% of its visits without its noses,** and its moves do not repeat at that period.
+- **The champions' resting turn is offset** by about +0.49 to +0.52 from the seed's. Their module A's K_D at
+  q = 0 is about 0 (−0.017 to 0.004).
+- **The reading:** the from-scratch champions solve these mazes as wall-followers. A standing turn bias
+  presses them against one wall, W2's reflex turns them away from it, and they circle the whole tree,
+  collecting both sources on every lap. They do not use the scent.
+
+**A scent-free reference: W2 alone with a constant resting turn** (Fable's suggestion; a sweep, not tuned
+beyond its grid):
+
+| Resting turn | −0.8 | −0.4 | 0.0 | 0.2 | 0.4 (W2) | 0.6 | 0.8 | 1.0 | 1.2 | 1.4 |
+|---|---|---|---|---|---|---|---|---|---|---|
+| Visits | 0.02 | 0.26 | 0.46 | 0.73 | 1.72 | 1.92 | 3.35 | 4.17 | 5.64 | 5.81 |
+| Tour match | 0.81 | 0.34 | 0.37 | 0.29 | 0.06 | 0.06 | 0.24 | 0.90 | 1.00 | 1.00 |
+
+**What the sweep shows:**
+- **W2 with a resting turn of 1.2-1.4 makes 5.6-5.8 visits,** above the engineered seed's 4.82 on this block,
+  with no module at all.
+- **Its coverage is 0.87-0.89 against the champions' 0.99,** so its circuit misses part of some mazes.
+- **The point at −0.8 barely moves** (0.02 visits, coverage 0.10). Its tour match of 0.81 comes from
+  circling in place, not from a circuit of the tree.
+- **The champions add about 1 visit per wey to this reflex circuit** and complete it.
+
+**What follows, as D205 fixed:**
+- the coverage hypothesis is registered;
+- the stereo-assembly language is narrowed;
+- the formal noses-removed reading is kept;
+- by the owner's choice, E3c then runs as designed, with these readings interpreting Q1 and Q2.

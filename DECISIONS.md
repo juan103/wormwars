@@ -6672,3 +6672,33 @@ said "fix first"; all findings taken, test-first, before any GPU use):
 - **The thresholds are unchanged.** Fable noted that one deviation in a circuit drops the lag-48 match to
   about 0.66, and two to about 0.3. A true wall-follower can therefore land in "mixed", which is the
   conservative side.
+
+## D206 — E3c's replay and probe: exact, and "coverage": the from-scratch champions are scent-free wall-followers
+
+**The run** (`replay.json`; PILOT.md's section): 1.10 GPU-hours, completed, at ec69134. E3c's total is about
+3.95 of 30.
+- **The replay is bitwise:** 100 of 100 generation hashes in each S-dense run, and the intact plays equal the
+  pilot's.
+- **Every champion meets D205's "coverage" outcome:**
+  - it keeps 0.999-1.006 of its visits with the noses removed;
+  - its coverage is 0.990-0.998;
+  - its tour match is 0.985-0.992.
+- **The seed keeps 0.345,** with a tour match of 0.07.
+- **W2 with a constant resting turn of 1.2-1.4 makes 5.6-5.8 visits,** above the seed's 4.82 on the pilot
+  block, with no module.
+
+**What follows** (D205's fixed consequences; the owner's choice for this case: run E3c as designed):
+- **The coverage hypothesis is registered.**
+- **The stereo-assembly language is narrowed.** E3c's Q1 and Q2 compare training routes on a task that a
+  scent-free circuit solves; they do not compare assemblies of stereo navigators.
+- **The noses-removed reading is registered** for every champion, P-joint and P-sel included.
+- **The task is unchanged.** A navigators-only question needs a new task, where coverage cannot win; it is
+  noted for the roadmap.
+
+**Also noted for E3b-1's interpretation** (no correction is made without a check):
+- E3b-1's gate measured gains over the seed in this same maze task;
+- part of its tuned champions' level may be coverage (Fable: T-F keeps about 3.9 visits without noses,
+  against W2 alone's 1.72, per E3b-2).
+- This is to be examined in E3c's readings, not asserted.
+
+**Next:** the power analysis and the pre-registration, reviewed by both.
