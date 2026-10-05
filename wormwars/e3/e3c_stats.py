@@ -3,9 +3,12 @@
 - **The unit:** each run's d = (its champion's mean visits per wey on the test block − P-fixed's) / P-fixed's
   mean. The run is the independent unit.
 - **The contrasts:** Q1 = S-mod − S-dense; Q2 = P-joint − S-mod. Each is a two-sided Welch comparison.
-- **The intervals** (Astra, D207): both contrasts' labels come from fixed Welch intervals at 1 − 0.05 / 2
-  (Bonferroni over the two). A contrast is "rejected" when its interval excludes 0. Holm's adjusted p-values
-  are reported beside, never as labels: Holm-matched intervals are not simultaneous.
+- **The confirmatory decision** (D208): an exact two-sided permutation test of the difference in mean d, over
+  every split of the pooled runs, at 0.05 / 2 per contrast. Its null is that the two arms' runs are
+  exchangeable (one distribution). It needs no assumption about failed runs, which the Welch labels do.
+- **The margin labels** are approximate (model-based): fixed Welch intervals at 1 − 0.05 / 2 with the dual
+  margin. They are calibrated only under the no-failure model of `power.json`. Holm's adjusted p-values are
+  reported beside, never as labels.
 - **The practical margin** (the owner's choice, 2026-10-05): two margins, combined so that both must agree:
   - 0.10 of P-fixed's mean (Fable);
   - 0.5 visits per wey (Astra), that is 0.5 / P-fixed's mean in d.
@@ -14,9 +17,9 @@
   strictly inside the smaller.
 - **Q1's floor guard:** Q1 is not read unless at least one S arm's mean test visits exceed W2 alone + 1. When it
   is not read, it enters Holm with p = 1.
-- **Failed runs** (D207): a run whose champion's mean test visits are not above W2 alone + 1. A contrast with a
-  failed run in either arm is labelled "approximate: …". It is never a confirmatory claim, since Welch's
-  intervals are miscalibrated under such mixtures (Astra's diagnostics).
+- **Failed runs** (D207, D208): a run whose champion's mean test visits are not above W2 alone + 1. They are
+  counted per arm and reported with every label, with a decomposition (Welch among the runs that did not fail).
+  They detect only failures below that line.
 - **Supplement:** a two-sided Mann-Whitney U test per contrast, unadjusted, never a label.
 - **The coverage classification** (descriptive; §7.3): by proportions, with nose classes kept apart from
   coverers.
@@ -94,6 +97,30 @@ def contrasts(pairs: dict, alpha: float = ALPHA) -> dict:
     return out
 
 
+def permutation_p(x, y) -> float:
+    """The exact two-sided permutation p-value of the difference in means, over every split of the pooled values
+    into groups of len(x) and len(y)."""
+    import itertools
+    x, y = np.asarray(x, dtype=np.float64), np.asarray(y, dtype=np.float64)
+    pooled = np.concatenate([x, y])
+    n, nx = len(pooled), len(x)
+    idx = np.array(list(itertools.combinations(range(n), nx)))
+    a = np.zeros((len(idx), n))
+    a[np.arange(len(idx))[:, None], idx] = 1.0
+    sx = a @ pooled
+    diffs = sx / nx - (pooled.sum() - sx) / (n - nx)
+    obs = x.mean() - y.mean()
+    return float(np.mean(np.abs(diffs) >= abs(obs) - 1e-12))
+
+
+def decomposition(x_ok, y_ok) -> dict:
+    """Welch (two-sided 95%) among the runs that did not fail; not computed when an arm has fewer than 2."""
+    counts = [len(x_ok), len(y_ok)]
+    if min(counts) < 2:
+        return {"successful_runs": counts, "welch": "not computed: fewer than 2"}
+    return {"successful_runs": counts, "welch": welch(x_ok, y_ok, level=0.95)}
+
+
 def failed(run_visits, w2_alone: float) -> int:
     return int(np.sum(np.asarray(run_visits, dtype=np.float64) <= w2_alone + FLOOR_MARGIN))
 
@@ -111,15 +138,22 @@ def readings(*, d: dict, seed_mean: float, run_visits: dict, w2_alone: float, al
         a, b = NAMES[q]
         fails = {arm: failed(run_visits[arm], w2_alone) for arm in arms[q]}
         if not r["read"]:
-            out[q] = {**r, "label": "not read: both at the floor", "failed_runs": fails, "approximate": None}
+            out[q] = {**r, "label": "not read: both at the floor", "failed_runs": fails,
+                      "exact": {"p": None, "label": "not read"}}
             continue
         x, y = pairs[q]
+        p_exact = permutation_p(x, y)
+        side = a if np.mean(x) > np.mean(y) else b
+        exact = {"p": p_exact, "level": alpha / len(pairs), "rejected": p_exact <= alpha / len(pairs),
+                 "label": f"distributions differ; {side} higher (exact)" if p_exact <= alpha / len(pairs) else "no difference detected (exact)"}
+        ok = {arm: np.asarray(dd)[np.asarray(run_visits[arm], dtype=np.float64) > w2_alone + FLOOR_MARGIN]
+              for arm, dd in zip(arms[q], (x, y))}
         mw = stats.mannwhitneyu(x, y, alternative="two-sided")
         lab = label(r["estimate"], r["lo"], r["hi"], r["rejected"], m_lo=m_lo, m_hi=m_hi, a=a, b=b)
-        approx = any(fails.values())
-        out[q] = {**r, "label": f"approximate: {lab}" if approx else lab, "label_unqualified": lab,
-                  "approximate": approx, "failed_runs": fails, "estimate_visits": r["estimate"] * seed_mean,
-                  "mann_whitney_p": float(mw.pvalue)}
+        out[q] = {**r, "label": f"approximate (model-based): {lab}", "label_unqualified": lab, "exact": exact,
+                  "failed_runs": fails, "failed_runs_present": any(fails.values()),
+                  "decomposition": decomposition(ok[arms[q][0]], ok[arms[q][1]]),
+                  "estimate_visits": r["estimate"] * seed_mean, "mann_whitney_p": float(mw.pvalue)}
     return out
 
 
@@ -136,13 +170,13 @@ def nose_class(r) -> str:
 def coverage_rule(coverer: dict) -> dict:
     """`coverer[arm]`: per champion True, False or None (undefined). "supported": both S arms' coverer shares
     ≥ 0.75 and P-joint's share below both; "not supported": both S arms' shares ≤ 0.25; "mixed" otherwise, and
-    whenever an S arm has an undefined champion. The parts are reported apart."""
+    whenever any arm has an undefined champion (D208). The parts are reported apart."""
     share, undefined = {}, {}
     for arm, xs in coverer.items():
         undefined[arm] = sum(x is None for x in xs)
-        share[arm] = sum(x is True for x in xs) / len(xs) if xs else float("nan")
+        share[arm] = sum(bool(x) for x in xs if x is not None) / len(xs) if xs else float("nan")
     s = ("s_mod", "s_dense")
-    if any(undefined[a] for a in s):
+    if any(undefined.values()):  # an undefined champion in any arm (Astra, D208)
         s_part = "mixed"
     elif all(share[a] >= COVER_HIGH for a in s):
         s_part = "high"
@@ -151,7 +185,7 @@ def coverage_rule(coverer: dict) -> dict:
     else:
         s_part = "mixed"
     p_lower = all(share["p_joint"] < share[a] for a in s)
-    if s_part == "high" and p_lower:
+    if s_part == "high" and p_lower and not any(undefined.values()):
         lab = "supported"
     elif s_part == "low":
         lab = "not supported"
@@ -166,6 +200,8 @@ def censored_median(gens) -> float | str:
     a censored run (fewer than half reach it, or exactly half)."""
     x = np.sort(np.asarray(gens, dtype=np.float64))
     n = len(x)
+    if n == 0:
+        return "no runs"
     mid = x[(n - 1) // 2: n // 2 + 1]
     if not np.all(np.isfinite(mid)):
         return "not reached"

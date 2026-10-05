@@ -1,6 +1,7 @@
-"""E3c's registered statistics (the pre-registration's §7): Welch with Holm, intervals at each contrast's Holm
-level, and the dual practical margin (the owner's choice, 2026-10-05: 0.10 of the seed's mean and 0.5 visits per
-wey, combined so that both must agree)."""
+"""E3c's registered statistics (the pre-registration's §7, draft 3): the exact permutation test (the
+confirmatory decision), Welch's fixed 97.5% intervals with the dual practical margin (the owner's choice,
+2026-10-05: 0.10 of the seed's mean and 0.5 visits per wey, both must agree), labelled approximate, Holm beside,
+the failed-run counts, the coverage classification and the censored median."""
 
 from __future__ import annotations
 
@@ -74,23 +75,24 @@ def test_boundaries_are_strict_and_the_seed_mean_must_be_positive():
             S.margins(bad)
 
 
-def test_failed_runs_make_a_contrast_approximate():
-    """Fable's count and Astra's fallback (D207): a run whose champion is below W2 alone + 1 on the test block
-    is failed; a contrast with a failed run in either arm is labelled approximate, never confirmatory."""
+def test_failed_runs_are_counted_and_decomposed():
+    """D207-D208: a run whose champion is not above W2 alone + 1 on the test block is failed. Every margin label is
+    approximate (D208); the failed-run counts and a decomposition among the runs that did not fail go with it."""
     rng = np.random.default_rng(6)
     seed = 5.0
     smod, sdense, pjoint = (rng.normal(m, s, 8) for m, s in ((0.36, 0.01), (0.37, 0.012), (0.38, 0.18)))
     vis = {"s_mod": seed * (1 + smod), "s_dense": seed * (1 + sdense), "p_joint": seed * (1 + pjoint)}
     ok = S.readings(d={"s_mod": smod, "s_dense": sdense, "p_joint": pjoint}, seed_mean=seed, run_visits=vis,
                     w2_alone=1.7)
-    assert ok["Q1"]["failed_runs"] == {"s_mod": 0, "s_dense": 0} and ok["Q1"]["approximate"] is False
+    assert ok["Q1"]["failed_runs"] == {"s_mod": 0, "s_dense": 0} and ok["Q1"]["failed_runs_present"] is False
+    assert ok["Q1"]["label"].startswith("approximate (model-based): ")
     vis2 = {**vis, "s_dense": vis["s_dense"].copy()}
     vis2["s_dense"][3] = 2.0  # below 1.7 + 1
     got = S.readings(d={"s_mod": smod, "s_dense": sdense, "p_joint": pjoint}, seed_mean=seed, run_visits=vis2,
                      w2_alone=1.7)
-    assert got["Q1"]["failed_runs"]["s_dense"] == 1 and got["Q1"]["approximate"] is True
-    assert got["Q1"]["label"].startswith("approximate: ")
-    assert got["Q2"]["approximate"] is False  # Q2's arms have no failed run
+    assert got["Q1"]["failed_runs"]["s_dense"] == 1 and got["Q1"]["failed_runs_present"] is True
+    assert got["Q1"]["decomposition"]["successful_runs"] == [8, 7]
+    assert got["Q2"]["failed_runs_present"] is False  # Q2's arms have no failed run
 
 
 def test_q2_names_the_recipe():
@@ -135,11 +137,60 @@ def test_the_readings_end_to_end():
     out = S.readings(d={"s_mod": smod, "s_dense": sdense, "p_joint": pjoint}, seed_mean=seed,
                      run_visits={k: seed * (1 + v) for k, v in (("s_mod", smod), ("s_dense", sdense), ("p_joint", pjoint))},
                      w2_alone=1.7)
-    assert out["Q1"]["label"] in ("no relevant difference", "modular better, within the margin",
-                                  "dense better, within the margin")
+    assert out["Q1"]["label_unqualified"] in ("no relevant difference", "modular better, within the margin",
+                                              "dense better, within the margin")
     assert out["margins"] == {"m_lo": pytest.approx(0.10), "m_hi": pytest.approx(0.10)}
     assert "mann_whitney_p" in out["Q1"] and "mann_whitney_p" in out["Q2"]
     floor = S.readings(d={"s_mod": smod, "s_dense": sdense, "p_joint": pjoint}, seed_mean=seed,
                        run_visits={"s_mod": np.full(8, 2.0), "s_dense": np.full(8, 2.1), "p_joint": seed * (1 + pjoint)},
                        w2_alone=1.7)
     assert floor["Q1"]["label"] == "not read: both at the floor" and floor["Q1"]["read"] is False
+
+
+# ------------------------------------------------------------------ draft 3 (both reviewers of draft 2, D208)
+
+def test_the_exact_permutation_test():
+    """The confirmatory decision (D208): an exact two-sided permutation test of the difference in mean d over every
+    split of the pooled runs; its null is that the two arms' runs are exchangeable."""
+    import itertools
+    x = np.array([0.31, 0.35, 0.40, 0.33])
+    y = np.array([0.20, 0.22, 0.30, 0.25])
+    pooled = np.concatenate([x, y])
+    obs = x.mean() - y.mean()
+    count = total = 0
+    for idx in itertools.combinations(range(8), 4):
+        a = pooled[list(idx)]
+        b = np.delete(pooled, list(idx))
+        total += 1
+        count += abs(a.mean() - b.mean()) >= abs(obs) - 1e-12
+    assert S.permutation_p(x, y) == pytest.approx(count / total)
+    assert S.permutation_p(x, y) == pytest.approx(2 / 70)  # only the observed split and its mirror
+    assert S.permutation_p(np.ones(8), np.ones(8)) == 1.0
+
+
+def test_the_readings_carry_an_exact_decision_and_approximate_margin_labels():
+    rng = np.random.default_rng(7)
+    seed = 5.0
+    smod, sdense, pjoint = (rng.normal(m, s, 8) for m, s in ((0.36, 0.01), (0.30, 0.01), (0.38, 0.18)))
+    vis = {k: seed * (1 + v) for k, v in (("s_mod", smod), ("s_dense", sdense), ("p_joint", pjoint))}
+    out = S.readings(d={"s_mod": smod, "s_dense": sdense, "p_joint": pjoint}, seed_mean=seed, run_visits=vis,
+                     w2_alone=1.7)
+    q1 = out["Q1"]
+    assert q1["exact"]["p"] <= 0.025 and q1["exact"]["label"] == "distributions differ; modular higher (exact)"
+    assert q1["label"].startswith("approximate (model-based): ")
+    assert out["Q2"]["exact"]["label"] in ("no difference detected (exact)",
+                                          "distributions differ; engineered initialization and tuning higher (exact)",
+                                          "distributions differ; from scratch higher (exact)")
+
+
+def test_undefined_champions_anywhere_make_the_coverage_rule_mixed():
+    """Astra's counterexample (D208): undefined P-joint measurements must not establish a lower share."""
+    r = S.coverage_rule({"s_mod": [True] * 8, "s_dense": [True] * 8, "p_joint": [None] * 8})
+    assert r["coverers"] == "mixed" and r["undefined"]["p_joint"] == 8
+    r = S.coverage_rule({"s_mod": [np.bool_(True)] * 8, "s_dense": [True] * 8, "p_joint": [np.bool_(False)] * 8})
+    assert r["coverers"] == "supported"  # numpy booleans count (Astra)
+
+
+def test_no_runs_is_a_registered_outcome():
+    assert S.censored_median([]) == "no runs"
+    assert S.decomposition([0.3], [0.2, 0.25]) == {"successful_runs": [1, 2], "welch": "not computed: fewer than 2"}

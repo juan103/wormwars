@@ -6740,3 +6740,53 @@ said "fix first"; all findings taken, test-first, before any GPU use):
   - taken: Astra's fallback, labelling such contrasts approximate, with Fable's failed-run count;
   - nothing was tuned to the pilot.
 - **The seed diagnostic's 108.6 s is charged** in E3c's compute record. The cap clock now reads 3.946 hours.
+
+**Correction to D207** (2026-10-05, rule 4). D207 said: "Draft 2 takes every required change", and that the
+fallback taken was "Astra's fallback, labelling such contrasts approximate".
+- **What Astra showed:** draft 2 had labelled contrasts approximate only when a failure was observed in the
+  sample, and kept the rest confirmatory. Astra's fallback was to downgrade the Welch conclusions, not to
+  confirm them whenever no failure happens to be observed.
+- **Also incomplete:** the coverage rule's undefined case for P-joint.
+- Both are fixed in draft 3 (D208).
+
+## D208 — E3c pre-registration draft 2 reviewed: both "revise"; draft 3 makes an exact test the confirmatory decision
+
+**The review** (`docs/reviews/20261005-E3c-prereg-2/`): the same prompt to both.
+- **Fable said "revise, narrowly",** with three items:
+  - the `g-e` gate before training;
+  - P-joint's undefined case in the coverage rule;
+  - the failed-run counts' blind spots: failures above the line, and partial outcomes.
+- **Astra said "revise":**
+  - zero observed failures cannot confer confirmatory status: the gate is the same small sample whose missing
+    failures cause the problem;
+  - the joint counter omitted false margin assertions;
+  - the coverage rule returned "supported" with P-joint unmeasured, a counterexample now in the tests;
+  - execution details remained open.
+- **Both** found 20 checkpoints where the schedule has 21.
+
+**Draft 3:**
+- **The confirmatory decision is an exact two-sided permutation test** per contrast, at 0.025.
+  - Its null is that the two arms' runs are exchangeable, so its level is exact whatever the failure rates.
+  - Its label says only "distributions differ; X higher (exact)". It rejects at equal means when the spreads
+    differ (0.042 in the simulation), so it is not read as a claim about means.
+  - In the power analysis, its false rejections where the distributions are identical are 0.019-0.031 over 93
+    scenarios, against 0.025.
+  - Its power for Q2 at 1 visit is 0.76, against Welch's 0.64.
+- **Every Welch margin label is approximate (model-based),** keeping the owner's dual margin.
+- **The joint counter counts every false label assertion:** at most 0.049 without failures in the base
+  scenarios, and up to 0.47 with failures. The joint coverage of the two 97.5% intervals is 0.948-0.959
+  without failures.
+- **The coverage rule:** an undefined champion in any arm gives "mixed".
+- **Added:**
+  - the `g-e` gate;
+  - the cut compositions and a 256-maze benchmark block;
+  - the learning-curve references;
+  - eligibility per reading, and whole-stage reruns;
+  - the trails-off scope, the bootstrap level and the no-data cases;
+  - an engine-freeze check in the start markers.
+- **The pilot's failure bound, qualified:** 0.39 pooled, 0.63 per arm.
+
+**Who proposed what:**
+- the exact test is Claude's proposal for Astra's "register a validated procedure" option. Astra named Welch's
+  downgrade as the other acceptable route; both are taken together;
+- Fable had held that disclosure sufficed, so draft 3 is the more conservative side of the earlier split.
