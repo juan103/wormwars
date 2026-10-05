@@ -6855,3 +6855,46 @@ in a dated amendment and in every start marker. Then `project`, `g-e` and the ru
 - Every round found real errors: the miscentred power simulation, the intervals, the confirmatory status, and
   code defects in the coverage rule.
 - Several of them were mine and were introduced while fixing earlier ones. Episodes 55-57 record them.
+
+## D211 — E3c's formal stages reviewed: both "fix first"; fixed test-first, with Amendment 1
+
+**The review** (`docs/reviews/20261005-E3c-formal-code/`): the same prompt to both.
+- **What they checked, and found right** for a run that completes cleanly:
+  - the organisms and masks;
+  - P-joint's 512 genomes, which Astra verified against their hashes;
+  - the seeds, compositions and statistics;
+  - the checkpoint approach.
+- **The defects were all in stopping and reading:**
+  - a late stop could lose an arm's 6.4 hours of training;
+  - `train-s` was one 12.9-hour stage that could not be rerun within the cap (Fable);
+  - §5's eligibility rule was not implemented. Astra reproduced seven cases, including a missing noses-removed
+    row silently dropping a champion;
+  - several §7 outputs were missing;
+  - the consistency check compared means only, and did not refuse;
+  - `train-psel` did not require `train-s`;
+  - the bound text was not guarded;
+  - several §12 tests were missing.
+
+**Taken, test-first,** with Amendment 1 (PREREGISTRATION §14, dated, before any formal stage ran):
+- `train-smod` and `train-sdense` as separate stages;
+- populations saved before the checkpoint plays;
+- a rerun reuses a completed, hash-verified training;
+- stopped stages are read through their salvage, under §5's eligibility;
+- the report runs after the cap;
+- every path in both conditions is saved locally;
+- partial records in every stage;
+- the registered text is pinned by hash in every start marker.
+
+**The tests:** 13 new report tests on synthetic records, among them every eligibility case Astra reproduced
+and every margin label. Also:
+- sabotage checks for the consistency refusal, the engine freeze, the registered-text pin and P-joint's
+  snapshot hashes;
+- the order rule for every stage;
+- a stop-and-rerun test. The rerun reused the saved training, with retraining made to fail;
+- the full smoke of all eight stages. It now asserts the paths, the markers, the validation-only W2-turn choice
+  and P-joint's logged-hash points.
+
+**Disclosed:** the report tests were written after the report. Their sabotage check shows they can fail.
+
+**Next:** both reviewers recheck the fixes and Amendment 1. Then the formal commit is recorded in Amendment 2,
+and the run starts.

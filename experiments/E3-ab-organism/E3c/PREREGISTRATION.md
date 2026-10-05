@@ -659,7 +659,48 @@ Each test is seen failing first. Where a check could not otherwise fail, it gets
 
 ## 14. Amendments
 
-None yet.
+### Amendment 1 (2026-10-05, before any formal stage ran): the stages, durability and eligibility
+
+**Why:** both reviewers' code review of the formal stages said "fix first" (`docs/reviews/20261005-E3c-formal-code/`,
+D211). §5 as bound would lose completed work on a late stop, and a stopped stage could block the readings
+§5's own eligibility rule promises. The registered text above is unchanged; this amendment supersedes it where
+they differ.
+
+1. **`train-s` is split into `train-smod` and `train-sdense`** (Fable).
+   - **Unchanged:** the batches, compositions, seeds, ids and schedule.
+   - **The order:** `train-smod`, then `train-sdense`, then `train-psel`.
+   - **Why:** each stage has its own once-only rule and rerun, so a stop during S-dense no longer costs S-mod's
+     completed training.
+2. **Saved before anything else** (both). Each run's final population and its 21 checkpoint candidates (the
+   generation-bests identified by their logged hashes) are saved, with their hashes in the record, as soon as
+   training ends. That is before any checkpoint play.
+3. **A rerun of a training stage reuses a completed training.** If the stopped attempt's training completed every
+   generation and its saved populations match their recorded hashes, the rerun loads them and redoes only the
+   checkpoint plays. Otherwise it trains again.
+4. **The checkpoints are played after training,** from the snapshots `evolve_batch` takes at the 21 generations
+   (E3b-1's `snapshot_at` hook). This keeps the engine unchanged.
+   - **The check:** `evolve_batch`'s own in-loop checkpoints at generations 0 and 299 must equal the post-hoc
+     plays in their candidate hashes and per-maze counts. A mismatch stops the stage.
+   - **When it is not checked:** after a reused training (point 3), since no in-loop checkpoints exist.
+   - **The projection** counts 23 checkpoint plays per training batch.
+5. **Stopped stages and eligibility** (both). A later stage may read an earlier one that stopped for good,
+   after its one rerun or at the cap, through that stage's salvaged record. §5's eligibility rule then decides
+   what is read:
+   - only runs whose training completed and whose champion was played on every test maze;
+   - "not read: too few runs" below 6 in an S arm or P-joint;
+   - a missing checkpoint makes the cost curve undefined;
+   - a missing noses-removed play makes §7.3's readings undefined, never a dropped champion.
+6. **The `report` stage is analysis on the CPU.** It runs even after the cap is reached, so that a run stopped by
+   the cap is still reported (rule 3).
+7. **Every wey's path in both conditions** (§5) is saved locally (`runs/e3c/paths/`), with its sha256 in the
+   evaluate record. It is not committed, for size.
+8. **Every stage writes a partial record at least once a minute and keeps a salvage,** `project`, `champions` and
+   `evaluate` included.
+9. **The guards:**
+   - this pre-registration is among the guarded paths;
+   - its registered text, everything before §14, is pinned by sha256
+     (553f253d260b80638d9ef72d4654f2ef78372e960ea31d62d04345098d8c3397);
+   - every formal stage's start marker records that hash and the engine freeze, and refuses on either mismatch.
 
 ## 15. Changes from draft 1 (the reviews, D207)
 
