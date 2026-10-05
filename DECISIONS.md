@@ -7017,3 +7017,30 @@ of its parts targets behaviour the old code lacked):
 - Amendment 2, recording the formal commit, is committed and pushed before `project`;
 - nothing guarded changes between `project` and `report`;
 - each stage's record is committed and pushed before the next stage.
+
+## D216 — The killed-stage route guarded (both); then Amendment 2
+
+**The confirmation** (`docs/reviews/20261005-E3c-formal-code-5/`), at 265ed2c.
+- **Both** found the per-champion files correct.
+- **Both** found that the new route for a killed stage, read after the cap, skipped the guards that every
+  earlier record passes: committed inputs, unchanged code, the same environment. Astra reproduced it accepting
+  an uncommitted partial record with mismatched provenance.
+- **Fable also found** that it bypassed the frame's own handling of a killed *rerun*, which charges the kill
+  and writes a final record.
+
+**Taken, test-first:**
+- **The killed route now:**
+  - requires the start marker and the partial record to be committed;
+  - checks the code and the environment against the marker's provenance;
+  - excludes a killed rerun, which keeps the frame's route.
+- **Also taken** (Fable's optional items):
+  - a kill before the first partial record gives an empty record, so the report reads "not read" instead of
+    getting stuck;
+  - `save_atomic` removes its temporary file on failure.
+- **The tests:** a committed-input refusal, a code-change refusal, the rerun exclusion, the empty case and
+  acceptance under passing guards, plus the temporary-file cleanup.
+
+**Next:**
+- Amendment 2 states the rule and records the formal code commit;
+- both reviewers confirm;
+- then `project`.

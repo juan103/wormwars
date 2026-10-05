@@ -544,7 +544,7 @@ def test_an_atomic_save_keeps_the_earlier_file(tmp_path, monkeypatch):
     monkeypatch.setattr(m4, "save_population", broken)
     with pytest.raises(OSError):
         m4.save_atomic(target, None)
-    assert target.read_bytes() == b"earlier"
+    assert target.read_bytes() == b"earlier" and not (tmp_path / "x.tmp.npz").exists()
 
 
 @pytest.mark.slow
@@ -688,7 +688,7 @@ def test_after_the_cap_a_crashed_or_killed_stage_is_read_as_final(tmp_path, monk
     args = type("A", (), {"smoke": True, "guarded": False})()
     (tmp_path / "train-smod.json").write_text(json.dumps({"outcome": m.E.OUTCOMES["stopped"], "arms": {"s_mod": {}},
                                                          "provenance_at_start": {"git_commit": "x"}}), encoding="utf-8")
-    (tmp_path / "train-psel-started.json").write_text("{}", encoding="utf-8")
+    (tmp_path / "train-psel-started.json").write_text(json.dumps({"provenance": {"git_commit": "x"}}), encoding="utf-8")
     (tmp_path / "train-psel-partial.json").write_text(json.dumps({"arms": {"p_sel": {"runs": []}}}), encoding="utf-8")
     monkeypatch.setattr(m, "cap_exhausted", lambda: False)
     for st in ("train-smod", "train-psel"):
@@ -698,3 +698,47 @@ def test_after_the_cap_a_crashed_or_killed_stage_is_read_as_final(tmp_path, monk
     assert m.require_record(args, {}, "train-smod", stopped_ok=True)["arms"] == {"s_mod": {}}
     got = m.require_record(args, {}, "train-psel", stopped_ok=True)
     assert got["arms"] == {"p_sel": {"runs": []}} and got["outcome"].startswith("killed")
+
+
+
+def test_a_killed_stage_read_after_the_cap_passes_the_usual_guards(tmp_path, monkeypatch):
+    """Both reviewers (D216): the killed route checks the committed inputs, the code and the environment from the
+    start marker's provenance; a killed rerun goes the frame's way; a kill before any partial gives an empty record."""
+    m = _fresh("e3c_killed_guards")
+    m.use_smoke(type("A", (), {"command": "pilot"})())
+    monkeypatch.setattr(m.E, "EXP", tmp_path)
+    monkeypatch.setattr(m, "cap_exhausted", lambda: True)
+    (tmp_path / "train-psel-started.json").write_text(json.dumps({"provenance": {"git_commit": "abc"}}), encoding="utf-8")
+    (tmp_path / "train-psel-partial.json").write_text(json.dumps({"arms": {"p_sel": {"runs": []}}}), encoding="utf-8")
+    formal = type("A", (), {"smoke": False, "guarded": False})()
+    seen = []
+    monkeypatch.setattr(m.E, "require_committed", lambda p: seen.append(Path(p).name))
+    monkeypatch.setattr(m.E.reg, "require_same_code", lambda c, g: seen.append(("code", c)))
+    monkeypatch.setattr(m.E.reg, "require_same_env", lambda a, b: seen.append("env"))
+    got = m.require_record(formal, {}, "train-psel", stopped_ok=True)
+    assert got["outcome"].startswith("killed") and got["provenance_at_start"] == {"git_commit": "abc"}
+    assert {"train-psel-started.json", "train-psel-partial.json"} <= set(x for x in seen if isinstance(x, str))
+    assert ("code", "abc") in seen and "env" in seen
+
+    def uncommitted(p):
+        raise SystemExit(f"{Path(p).name} must be committed")
+
+    monkeypatch.setattr(m.E, "require_committed", uncommitted)
+    with pytest.raises(SystemExit, match="committed"):
+        m.require_record(formal, {}, "train-psel", stopped_ok=True)
+    monkeypatch.setattr(m.E, "require_committed", lambda p: None)
+
+    def changed(c, g):
+        raise SystemExit("code changed")
+
+    monkeypatch.setattr(m.E.reg, "require_same_code", changed)
+    with pytest.raises(SystemExit, match="code changed"):
+        m.require_record(formal, {}, "train-psel", stopped_ok=True)
+    monkeypatch.setattr(m.E.reg, "require_same_code", lambda c, g: None)
+    monkeypatch.setattr(m.E, "rerun_state", lambda st: "used")  # a killed rerun: the frame's own route
+    with pytest.raises(SystemExit):
+        m.require_record(formal, {}, "train-psel", stopped_ok=True)
+    monkeypatch.setattr(m.E, "rerun_state", lambda st: "none")
+    (tmp_path / "train-psel-partial.json").unlink()
+    got = m.require_record(formal, {}, "train-psel", stopped_ok=True)
+    assert got["outcome"].startswith("killed before") and "arms" not in got

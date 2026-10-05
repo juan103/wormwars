@@ -742,11 +742,25 @@ def require_record(args, prov, stage: str, stopped_ok: bool) -> dict:
         if not stopped_ok:
             raise
         if not path.exists():
-            part = E.partial_path(stage)
-            if E.marker_path(stage).exists() and part.exists() and cap_exhausted():
-                rec = json.loads(part.read_text(encoding="utf-8"))
-                return {**rec, "outcome": "killed; read from its partial record, the cap being exhausted (D215)"}
-            raise
+            part, mk = E.partial_path(stage), E.marker_path(stage)
+            # a killed rerun goes the frame's way (it charges the kill and writes a final record); a killed first
+            # attempt, once the cap forbids its rerun, is read from its partial record under the same guards
+            if not (mk.exists() and cap_exhausted() and E.rerun_state(stage) != "used"):
+                raise
+            mprov = json.loads(mk.read_text(encoding="utf-8"))["provenance"]
+            if E.formal(args):  # the same guards as any earlier record (both reviewers, D216)
+                if not args.smoke:
+                    E.require_committed(mk)
+                    if part.exists():
+                        E.require_committed(part)
+                E.reg.require_same_code(mprov["git_commit"], GUARDED)
+                E.reg.require_same_env(mprov, prov)
+            if not part.exists():
+                return {"outcome": "killed before its first partial record; nothing to read (D216)",
+                        "provenance_at_start": mprov}
+            rec = json.loads(part.read_text(encoding="utf-8"))
+            return {**rec, "outcome": "killed; read from its partial record, the cap being exhausted (D215)",
+                    "provenance_at_start": mprov}
         rec = json.loads(path.read_text(encoding="utf-8"))
         if rec.get("outcome") != E.OUTCOMES["cap"] and not (rec.get("outcome") == E.OUTCOMES["stopped"] and cap_exhausted()):
             raise
@@ -832,8 +846,12 @@ def save_atomic(path: Path, genome: Genome, **kw) -> Path:
     """`save_population` to a temporary file, then an atomic replace: an interrupted save never destroys the earlier
     file (Astra, D214)."""
     tmp = path.with_name(path.stem + ".tmp.npz")
-    save_population(tmp, genome, **kw)
-    os.replace(tmp, path)
+    try:
+        save_population(tmp, genome, **kw)
+        os.replace(tmp, path)
+    except BaseException:
+        tmp.unlink(missing_ok=True)  # never leave a partial archive behind (Fable, D216)
+        raise
     return path
 
 
