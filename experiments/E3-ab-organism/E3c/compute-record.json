@@ -25,6 +25,11 @@
    ],
    "default_category": "measure",
    "git_commit": "ec6913436bff2ac284c1495197459b23e4e94c49"
+  },
+  {
+   "file": "diagnostic-seed-check-20261005.json",
+   "status": "diagnostic (reconciled)",
+   "script": "experiments/E3-ab-organism/E3c/diagnostics/seed_check.py"
   }
  ],
  "failed_attempts": 0,
@@ -57,6 +62,13 @@
    "neural_updates": 1889095680,
    "neural_padding": 314572800,
    "seconds": 215.77324960008264
+  },
+  "diagnostic": {
+   "worlds_built": 0,
+   "world_ticks": 0,
+   "neural_updates": 0,
+   "neural_padding": 0,
+   "seconds": 108.55247449874878
   }
  },
  "totals": {
@@ -64,6 +76,6 @@
   "world_ticks": 765235200,
   "neural_updates": 196373754240,
   "neural_padding": 471863040,
-  "seconds_timed": 14096.095647499897
+  "seconds_timed": 14204.648121998645
  }
 }

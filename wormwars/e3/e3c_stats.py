@@ -1,32 +1,42 @@
-"""E3c's registered statistics (its pre-registration's §7).
+"""E3c's registered statistics (its pre-registration's §7; draft 2, D207).
 
-- **The unit:** each run's d = (its champion's mean visits per wey on the test block − the seed's) / the seed's
+- **The unit:** each run's d = (its champion's mean visits per wey on the test block − P-fixed's) / P-fixed's
   mean. The run is the independent unit.
-- **The contrasts:** Q1 = S-mod − S-dense; Q2 = P-joint − S-mod. Each is a two-sided Welch test; Holm's
-  step-down over the two at 5%.
-- **The intervals:** each contrast's Welch interval at its Holm level, 1 − α / (m − rank). After the first
-  contrast that is not rejected, the later ones keep that step's level. A contrast is then rejected exactly
-  when its interval excludes 0.
+- **The contrasts:** Q1 = S-mod − S-dense; Q2 = P-joint − S-mod. Each is a two-sided Welch comparison.
+- **The intervals** (Astra, D207): both contrasts' labels come from fixed Welch intervals at 1 − 0.05 / 2
+  (Bonferroni over the two). A contrast is "rejected" when its interval excludes 0. Holm's adjusted p-values
+  are reported beside, never as labels: Holm-matched intervals are not simultaneous.
 - **The practical margin** (the owner's choice, 2026-10-05): two margins, combined so that both must agree:
-  - 0.10 of the seed's mean (Fable);
-  - 0.5 visits per wey (Astra), that is 0.5 / the seed's mean in d.
+  - 0.10 of P-fixed's mean (Fable);
+  - 0.5 visits per wey (Astra), that is 0.5 / P-fixed's mean in d.
 
-  "Beyond the margin" needs the interval to clear the larger. "No relevant difference" needs it inside the
-  smaller.
-- **Q1's floor guard:** Q1 is not read unless at least one S arm's mean test visits exceed W2 alone + 1.
-- **Supplement:** a two-sided Mann-Whitney U test per contrast, unadjusted. It is never a label.
+  "Beyond the margin" needs the interval to clear the larger, strictly. "No relevant difference" needs it
+  strictly inside the smaller.
+- **Q1's floor guard:** Q1 is not read unless at least one S arm's mean test visits exceed W2 alone + 1. When it
+  is not read, it enters Holm with p = 1.
+- **Failed runs** (D207): a run whose champion's mean test visits are not above W2 alone + 1. A contrast with a
+  failed run in either arm is labelled "approximate: …". It is never a confirmatory claim, since Welch's
+  intervals are miscalibrated under such mixtures (Astra's diagnostics).
+- **Supplement:** a two-sided Mann-Whitney U test per contrast, unadjusted, never a label.
+- **The coverage classification** (descriptive; §7.3): by proportions, with nose classes kept apart from
+  coverers.
 """
 
 from __future__ import annotations
+
+import math
 
 import numpy as np
 from scipy import stats
 
 ALPHA = 0.05
+LEVEL = 1 - ALPHA / 2
 MARGIN_REL = 0.10
 MARGIN_VISITS = 0.5
 FLOOR_MARGIN = 1.0
-NAMES = {"Q1": ("modular", "dense"), "Q2": ("engineered initialization", "from scratch")}
+NAMES = {"Q1": ("modular", "dense"), "Q2": ("engineered initialization and tuning", "from scratch")}
+NOSE_INDEPENDENT, NOSE_DEPENDENT = 0.9, 0.5
+COVER_HIGH, COVER_LOW = 0.75, 0.25
 
 
 def welch(x, y, level: float = 0.95) -> dict:
@@ -45,6 +55,8 @@ def welch(x, y, level: float = 0.95) -> dict:
 
 def margins(seed_mean: float, rel: float = MARGIN_REL, visits: float = MARGIN_VISITS) -> tuple[float, float]:
     """(the smaller, the larger) margin in d."""
+    if not (math.isfinite(seed_mean) and seed_mean > 0):
+        raise ValueError(f"P-fixed's mean must be finite and positive, not {seed_mean}")
     a, b = rel, visits / seed_mean
     return min(a, b), max(a, b)
 
@@ -63,42 +75,98 @@ def label(est: float, lo: float, hi: float, rejected: bool, *, m_lo: float, m_hi
 
 
 def contrasts(pairs: dict, alpha: float = ALPHA) -> dict:
-    """Holm's step-down over `pairs` ({name: (x, y)} or {name: None} when not read), with each contrast's
-    interval at its Holm level."""
-    names = list(pairs)
-    m = len(names)
-    base = {k: (welch(*v) if v is not None else None) for k, v in pairs.items()}
-    order = sorted(names, key=lambda k: 1.0 if base[k] is None else base[k]["p"])
-    out, still, level = {}, True, None
-    for i, k in enumerate(order):
-        if still:  # after the first failure, later contrasts keep the failed step's level, so that their
-            level = 1 - alpha / (m - i)  # intervals (p at least as large) include 0, as their Holm result says
-        if pairs[k] is None:
-            out[k] = {"read": False, "rejected": False, "level": level}
-            still = False
+    """Each contrast's Welch interval at 1 − alpha / m; "rejected" when it excludes 0. Holm's adjusted p beside
+    (a contrast not read enters with p = 1)."""
+    m = len(pairs)
+    level = 1 - alpha / m
+    out = {}
+    for k, v in pairs.items():
+        if v is None:
+            out[k] = {"read": False, "rejected": False, "level": level, "p": None}
             continue
-        w = welch(*pairs[k], level=level)
-        rej = still and w["p"] <= 1 - level
-        still = still and rej
-        out[k] = {**w, "read": True, "rejected": bool(rej)}
+        w = welch(*v, level=level)
+        out[k] = {**w, "read": True, "rejected": bool(w["lo"] > 0 or w["hi"] < 0)}
+    ps = {k: (1.0 if out[k]["p"] is None else out[k]["p"]) for k in out}
+    running = 0.0
+    for i, k in enumerate(sorted(ps, key=ps.get)):
+        running = max(running, min(1.0, (m - i) * ps[k]))
+        out[k]["p_holm"] = running
     return out
 
 
-def readings(*, d: dict, seed_mean: float, visits: dict, w2_alone: float, alpha: float = ALPHA) -> dict:
-    """Q1 and Q2 from the runs' d (`d["s_mod"]`, `d["s_dense"]`, `d["p_joint"]`), with Q1's floor guard on the S
-    arms' mean test visits."""
-    q1_read = max(visits["s_mod"], visits["s_dense"]) > w2_alone + FLOOR_MARGIN
-    pairs = {"Q1": (d["s_mod"], d["s_dense"]) if q1_read else None, "Q2": (d["p_joint"], d["s_mod"])}
-    res = contrasts(pairs, alpha)
+def failed(run_visits, w2_alone: float) -> int:
+    return int(np.sum(np.asarray(run_visits, dtype=np.float64) <= w2_alone + FLOOR_MARGIN))
+
+
+def readings(*, d: dict, seed_mean: float, run_visits: dict, w2_alone: float, alpha: float = ALPHA) -> dict:
+    """Q1 and Q2 from the runs' d and their champions' mean test visits (`run_visits`, per arm), with Q1's floor
+    guard and the failed-run rule."""
     m_lo, m_hi = margins(seed_mean)
+    q1_read = max(float(np.mean(run_visits["s_mod"])), float(np.mean(run_visits["s_dense"]))) > w2_alone + FLOOR_MARGIN
+    pairs = {"Q1": (d["s_mod"], d["s_dense"]) if q1_read else None, "Q2": (d["p_joint"], d["s_mod"])}
+    arms = {"Q1": ("s_mod", "s_dense"), "Q2": ("p_joint", "s_mod")}
+    res = contrasts(pairs, alpha)
     out = {"margins": {"m_lo": m_lo, "m_hi": m_hi}, "seed_mean": seed_mean}
     for q, r in res.items():
         a, b = NAMES[q]
+        fails = {arm: failed(run_visits[arm], w2_alone) for arm in arms[q]}
         if not r["read"]:
-            out[q] = {**r, "label": "not read: both at the floor"}
+            out[q] = {**r, "label": "not read: both at the floor", "failed_runs": fails, "approximate": None}
             continue
         x, y = pairs[q]
         mw = stats.mannwhitneyu(x, y, alternative="two-sided")
-        out[q] = {**r, "label": label(r["estimate"], r["lo"], r["hi"], r["rejected"], m_lo=m_lo, m_hi=m_hi, a=a, b=b),
-                  "estimate_visits": r["estimate"] * seed_mean, "mann_whitney_p": float(mw.pvalue)}
+        lab = label(r["estimate"], r["lo"], r["hi"], r["rejected"], m_lo=m_lo, m_hi=m_hi, a=a, b=b)
+        approx = any(fails.values())
+        out[q] = {**r, "label": f"approximate: {lab}" if approx else lab, "label_unqualified": lab,
+                  "approximate": approx, "failed_runs": fails, "estimate_visits": r["estimate"] * seed_mean,
+                  "mann_whitney_p": float(mw.pvalue)}
     return out
+
+
+def nose_class(r) -> str:
+    if r is None or not math.isfinite(r):
+        return "undefined"
+    if r >= NOSE_INDEPENDENT:
+        return "nose-independent"
+    if r <= NOSE_DEPENDENT:
+        return "nose-dependent"
+    return "partial"
+
+
+def coverage_rule(coverer: dict) -> dict:
+    """`coverer[arm]`: per champion True, False or None (undefined). "supported": both S arms' coverer shares
+    ≥ 0.75 and P-joint's share below both; "not supported": both S arms' shares ≤ 0.25; "mixed" otherwise, and
+    whenever an S arm has an undefined champion. The parts are reported apart."""
+    share, undefined = {}, {}
+    for arm, xs in coverer.items():
+        undefined[arm] = sum(x is None for x in xs)
+        share[arm] = sum(x is True for x in xs) / len(xs) if xs else float("nan")
+    s = ("s_mod", "s_dense")
+    if any(undefined[a] for a in s):
+        s_part = "mixed"
+    elif all(share[a] >= COVER_HIGH for a in s):
+        s_part = "high"
+    elif all(share[a] <= COVER_LOW for a in s):
+        s_part = "low"
+    else:
+        s_part = "mixed"
+    p_lower = all(share["p_joint"] < share[a] for a in s)
+    if s_part == "high" and p_lower:
+        lab = "supported"
+    elif s_part == "low":
+        lab = "not supported"
+    else:
+        lab = "mixed"
+    return {"coverers": lab, "s_arms": s_part, "p_joint_lower_than_both": p_lower, "shares": share,
+            "undefined": undefined}
+
+
+def censored_median(gens) -> float | str:
+    """The median generation to threshold, with censored runs as +inf; "not reached" when the median touches
+    a censored run (fewer than half reach it, or exactly half)."""
+    x = np.sort(np.asarray(gens, dtype=np.float64))
+    n = len(x)
+    mid = x[(n - 1) // 2: n // 2 + 1]
+    if not np.all(np.isfinite(mid)):
+        return "not reached"
+    return float(mid.mean())

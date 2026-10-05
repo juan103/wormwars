@@ -6702,3 +6702,41 @@ said "fix first"; all findings taken, test-first, before any GPU use):
 - This is to be examined in E3c's readings, not asserted.
 
 **Next:** the power analysis and the pre-registration, reviewed by both.
+
+## D207 — E3c pre-registration draft 1 reviewed: both "revise"; draft 2 takes every required change
+
+**The review** (`docs/reviews/20261005-E3c-prereg/`): the same prompt to both.
+
+**What they found:**
+- **The power analysis was wrong** (Astra).
+  - Failure mixtures shifted the arm means, so draft 1's labelled scenarios were not the ones simulated. At a
+    1/4 failure rate, a "no difference" Q2 scenario had P-joint ahead by 1.1 visits.
+  - The 6-run cut was also applied to P-joint.
+  - §8 misstated several rates against `power.json` (Fable).
+- **The intervals:** draft 1's Holm-level intervals are not simultaneous, at 92.6% joint coverage under the base
+  model (Astra).
+- **The mixtures:** under centred mixture nulls, Welch's false-positive rate is 7.6-13.6% (Astra's diagnostics).
+- **Fable also found:**
+  - §0's binding of code not yet written;
+  - gaps in §7.3, §13 and the pinned files.
+- **Both asked** for an execution contract and for the secondary statistics to be defined.
+
+**Draft 2:**
+- **The registered statistics are revised, test-first:**
+  - fixed 97.5% intervals for both contrasts;
+  - strict margin boundaries;
+  - the failed-run rule ("approximate");
+  - the coverage rule by proportions;
+  - the censored median.
+- **The power analysis is rebuilt:** centred, vectorized, checked against the registered readings on 15 040
+  trials, with joint error rates and Monte Carlo standard errors. The centring has its own tests; draft 1's code
+  fails them.
+- **A new limit, stated in advance:** the failed-run rule cannot catch failures absent from the sample. A
+  confirmatory claim about the mean over all runs can be wrong far more often than 5% (up to 0.34-0.46 in
+  constructed cases), while remaining true for runs that succeeded. A decomposition (failure counts by
+  Fisher; Welch among the runs that succeeded) is reported beside every contrast.
+- **Where the reviewers split, and what was taken:**
+  - on calibration under mixtures, Fable held that disclosure suffices and Astra that it does not;
+  - taken: Astra's fallback, labelling such contrasts approximate, with Fable's failed-run count;
+  - nothing was tuned to the pilot.
+- **The seed diagnostic's 108.6 s is charged** in E3c's compute record. The cap clock now reads 3.946 hours.

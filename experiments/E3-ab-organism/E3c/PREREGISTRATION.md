@@ -1,50 +1,72 @@
 # E3c pre-registration: the assembly comparison in the maze shuttle
 
-**Status: draft 1, for review by both reviewers.** It binds at the commit that is pushed after their
-agreement. From then on, registered text is never changed or removed; amendments are added beside it, dated
-(AGENTS.md, rule 2).
+**Status: draft 2, for review by both reviewers.** Draft 1 (54f6f5f) was reviewed by both, who said "revise"
+(D207); §15 lists the changes. This text binds at the commit that is pushed after their agreement. From then
+on, registered text is never changed or removed. Amendments are added beside it, dated (AGENTS.md, rule 2).
 
 **Its sources:**
 - the design, `docs/E3/E3c-DESIGN.md` v2.1 (D200);
 - the exploratory pilot and its replay and probe (`PILOT.md`, D203-D206);
-- the owner's choices: E3c then E4 (D198), the replay first, running as designed if scent-free (D205), and
-  the dual practical margin (2026-10-05).
+- the owner's choices:
+  - E3c then E4 (D198);
+  - the replay first, and running as designed if scent-free (D205);
+  - the dual practical margin (2026-10-05).
 
-Everything here that changed after the pilot is marked **post-pilot** and listed in §13.
+Changes made after the pilot are marked **post-pilot** and listed in §13.
+
+## 0. The binding sequence (both reviewers)
+
+1. **This text** binds at its commit, together with:
+   - the registered statistics, `wormwars/e3/e3c_stats.py` and their tests;
+   - the power analysis, `scripts/e3c_power.py` → `power.json`.
+2. **The formal stages of §5 are not yet written.** They are written after binding:
+   - test-first, against §12's list;
+   - reviewed by both reviewers;
+   - their commit is recorded in a dated amendment (§14) and in every formal stage's start marker.
+3. **What the formal stages may not change:** this text, the registered statistics and the engine paths
+   (`wormwars/` outside `e3c_stats.py` and the new E3c stage code, `configs`, `requirements.txt`). Any change
+   to them after binding is an amendment, with an equivalence check where it touches the engine (rule 7).
 
 ## 1. The question, narrowed by the pilot
 
 **The pilot changed what E3c can say.**
-- **What it found:** the from-scratch champions solve this maze task as scent-free wall-followers.
-  - They keep 100% of their visits with the noses removed, and repeat a full circuit of the tree (D206).
-  - W2's reflex with a constant turn bias makes 5.6-5.8 visits, above the engineered seed's 4.82.
-- **The consequence for E3c's questions:** they compare **training routes on a task that a scent-free
-  circuit solves**. They do not compare assemblies of stereo navigators.
+- **What it found,** for the three replayed S-dense champions (D206):
+  - they keep 99.9-100.6% of their visits with the noses removed;
+  - they cover 99-100% of the maze, and repeat a full circuit of the tree.
+- **A scent-free reference does nearly as well:** on the pilot block, W2's reflex with a constant turn bias makes
+  5.6-5.8 visits, above the engineered seed's 4.82.
+- **What remains open:** S-mod's champions were not probed. That they do the same is the hypothesis of §7.3.
+- **The consequence:** E3c's questions compare **training routes on a task that a scent-free circuit solves**.
+  They do not compare assemblies of stereo navigators.
 - **The task is not changed,** as the design's §5 requires.
 
-**The primary questions** (as in the design's §1, narrowed in wording):
+**The primary questions** (the design's §1, narrowed in wording):
 - **Q1, structure under one training recipe:** from random weights, at equal training evaluations, does an
   organism on E's modular mask score differently from a dense controller of the same 11 neurons? It compares
   two masks under one start distribution and one search recipe. It is not a test of modularity in general.
-- **Q2, the engineered initialization:** at equal training evaluations, do the engineered seed E + W2 plus
-  tuning (P-joint) score differently from E's mask trained from scratch (S-mod)? The two arms differ in their
-  starting values and in their mutation recipe (factor 0.25 against 1.0); the labels say so.
+- **Q2, the engineered initialization and its tuning recipe:** at equal training evaluations, do the engineered
+  seed E + W2 plus tuning (P-joint) score differently from E's mask trained from scratch (S-mod)? The two arms
+  differ in their starting values and in their mutation recipe (factor 0.25 against 1.0). The label names
+  both.
 
-**A registered mechanistic question, post-pilot:**
-- **The coverage hypothesis:** the from-scratch champions solve the task by scent-free coverage. P-joint's
-  champions depend more on their noses.
-- It is read by the noses-removed reading and the path measures (§7.3). It does not change Q1's or Q2's
-  labels; it is reported beside them.
+**Registered mechanistic readings, post-pilot** (§7.3; descriptive classifications, not calibrated tests):
+- **The coverage hypothesis:** the S arms' champions are coverers, and P-joint's champions are coverers less
+  often.
+- **Nose dependence,** measured directly: whether P-joint's champions depend more on their noses than the S
+  arms'.
 
 **Descriptive:**
-- P-sel: whether evolution finds a working selector in mazes, with E's modules frozen;
-- R-shared, the engineered shared navigator, against P-fixed;
-- the scent-free reference, W2 with a constant turn (§3).
+- **P-sel:** selector-only training with E's modules frozen. How many runs end above the floor.
+- **R-shared**, the engineered shared navigator, against P-fixed.
+- **W2-turn,** the scent-free reference (§3).
 
-**Not claimed:**
-- cumulative reuse savings;
-- the equivalence of arms ("unclear" is never read as "equivalent");
-- anything about stereo navigation that the noses-removed reading does not support.
+**What the labels claim:**
+- **"No relevant difference"** is a practical-equivalence statement. It means the difference is inside the
+  smaller margin, on this score and this test block. It is the only equivalence E3c asserts. "Unclear" is never
+  read as equivalent.
+- **Not claimed:**
+  - cumulative reuse savings;
+  - anything about stereo navigation that the noses-removed reading does not support.
 
 ## 2. Fixed inputs
 
@@ -56,16 +78,22 @@ Everything here that changed after the pilot is marked **post-pilot** and listed
 - W2 frozen;
 - E2's GA (population 32, elites 3, truncation 8), with unshaped fitness (visits per wey).
 
-**Pinned files** (sha256 after CRLF → LF):
-- **E4s-0's `module.json`:** 9613cd155a20ed2cfb891c1bd10fed16814f24a04f912a1940524f2378e877d4;
-- **the pilot's `pilot.json`:** 6f6402ebecdf34633a77f8e4df97f8cf9a1e86316179116a63a668286d9ee41e;
-- **E3b-1's `train-tf.json`:** P-joint's 8 final populations are checked against its recorded hashes;
-- **E3b-1's `maze-reference.json`:** the maze generator, bitwise, through `g-e`.
+**Pinned files** (sha256 after CRLF → LF; each checked before use, refusing on a mismatch):
 
-**The engine:**
-- E3b-1's T-F cohort trained at f881308. E3c's own code is bound at this registration's commit.
-- `g-e` (§5) reruns E3b-1's three legs at that commit: the GPU hashes, the CPU equivalence and the maze
-  reference.
+| File | sha256 |
+|---|---|
+| E4s-0's `module.json` | 9613cd155a20ed2cfb891c1bd10fed16814f24a04f912a1940524f2378e877d4 |
+| the pilot's `pilot.json` | 6f6402ebecdf34633a77f8e4df97f8cf9a1e86316179116a63a668286d9ee41e |
+| E3b-1's `train-tf.json` | 68f485107eefb9609d192b50b7e227c50732e6c1159cd656d2118d05ba05f01b |
+| E3b-1's `maze-reference.json` | 11b726a05ef5e0ff5b6d6a01d4eb59abc51a48b516c785cf35151fc9e0e6358d |
+
+**P-joint's genomes:**
+- **The populations:** its 8 final populations (index 299) and its 8 snapshots at index 124, local.
+- **The check:** they are checked against `train-tf.json`'s recorded hashes (all 256 + 256).
+- **On a mismatch:** the `champions` stage refuses to start. It is not repaired, and no substitute is used.
+
+**The engine:** E3b-1's T-F cohort trained at f881308. `g-e` (§5) reruns E3b-1's three legs at E3c's formal
+commit: the GPU hashes, the CPU equivalence and the maze reference.
 
 ## 3. The arms
 
@@ -83,37 +111,34 @@ Everything here that changed after the pilot is marked **post-pilot** and listed
 evaluations is the matching unit.
 
 **The seeds:**
-- **The run seeds:** 1 300 000 + run, with S-mod's runs 0-7, S-dense's 10-17 and P-sel's 20-23.
+- **The run seeds:** 1 300 000 + run. S-mod's runs are 0-7, S-dense's 10-17, P-sel's 20-23.
 - **The draws:** `default_rng([run seed, 0xE3C])`, as in the pilot.
-- **The training ids:** base 40 000 000, span 10 000 000. They are new, and disjoint from E3b-1's (10-20 M)
-  and the pilot's (30-40 M).
+- **The training ids:** base 40 000 000, span 10 000 000. They are disjoint from E3b-1's (10-20 M) and the
+  pilot's (30-40 M).
 
 **The frozen sets** are as in the pilot (`assembly.arm_scales`). They are checked bitwise against each run's
 draw, in every saved population (D201).
 
-**The mutation factor stays 1.0.** The pilot permitted changing it (design §5), and the from-scratch arms
-learned at 1.0.
+**The mutation factor stays 1.0.** The pilot permitted changing it (design §5); the from-scratch arms learned at
+1.0.
 
-**The W2-turn reference** (post-pilot):
-- **The grid:** the resting turns −0.8, −0.4, 0.0, 0.2, 0.4, 0.6, 0.8, 1.0, 1.2, 1.4 (as in the probe).
-- **The choice:** the one with the best mean visits on E3c's validation block, ties to the smaller |turn|.
-  It is then played on the test block.
+**W2-turn** (post-pilot):
+- **The grid:** resting turns −0.8, −0.4, 0.0, 0.2, 0.4, 0.6, 0.8, 1.0, 1.2, 1.4.
+- **The choice:** the best mean visits on the validation block. Ties go to the smaller |turn|, then to the
+  earlier grid position.
+- **The test:** the chosen turn is played on the test block.
 
-**P-joint:**
-- **The checks:** its 8 final populations (index 299, 32 genomes each, local) are checked against
-  `train-tf.json`'s recorded hashes before use.
-- **Its champions** are reselected on E3c's validation block by the rule of §6, the same as every arm's.
-
-## 4. The maze blocks (new, and disjoint from every earlier block)
+## 4. The maze blocks and ids (new, and disjoint from every earlier block)
 
 | Block | Ids | Use |
 |---|---|---|
 | Validation | 10 000-10 127 (128) | champion selection; the W2-turn choice |
-| Learning curve | 10 200-10 327 (128) | the checkpoints of the new arms; P-joint's two points |
+| Learning curve | 10 200-10 327 (128) | the checkpoints; P-joint's two points |
 | Test | 10 400-10 655 (256) | every reading |
+| Benchmark | 10 700-10 731 (32); training ids 50 000 000-50 099 999 | `project`'s timings only |
 | Training | 40 000 000-49 999 999 | the new arms' training mazes |
 
-**The check:** every id, the training ids the schedule will draw included, is pre-flighted by `walls_for`
+**The check:** every id, including every training id the schedule will draw, is pre-flighted by `walls_for`
 before training. Redraws are recorded (Amendment 1's rule).
 
 **Unused by E3c:**
@@ -122,35 +147,54 @@ before training. Redraws are recorded (Amendment 1's rule).
 
 ## 5. The stages, in order
 
-Every stage runs on E2's frame (`scripts/e3c.py`). Each has:
-- a start marker;
+**The frame:** every stage runs on E2's frame (`scripts/e3c.py`). Each has:
+- a start marker carrying the formal commit;
 - the once-only rule, and one rerun with a stated reason;
 - a partial record each minute;
 - a salvage record if it stops.
 
-The stages:
-1. **`project`:** the benchmark.
-   - It times one generation of each training composition, and the checkpoint and evaluation chunks.
-   - It projects the formal total against the cap, and applies §10's cuts if needed.
-2. **`g-e`:** the engine check at E3c's commit: E3b-1's GPU hashes, the CPU equivalence and the maze
-   reference.
-   - **Off Windows,** the CPU leg's bitwise reference is not expected to match (rule 6; D202), and `g-e` is
-     read on the tested platform only.
+**Batch compositions** are given as (strains per chunk, worlds per strain, weys per world). The single-strain
+padding is on (`pad_single_strain`).
+
+1. **`project`:** the benchmark, on the benchmark ids only.
+   - **What it times:** one generation of each training composition, a checkpoint chunk, a champions chunk and
+     an evaluation chunk.
+   - **What it decides:** it projects the formal total and applies §10's admission rule.
+2. **`g-e`:** E3b-1's three legs at E3c's formal commit.
+   - It is read on the tested platform (Windows, the RTX 5080).
+   - Off that platform, the CPU leg's bitwise reference is not expected to match (rule 6; D202).
 3. **`train-s`:** S-mod and S-dense, as two batches.
-   - **Each batch:** 8 runs × 32 strains × 8 worlds × 8 weys, that is [256, 8, 8].
-   - **The checkpoints** (post-pilot, denser early): every 5 generations to 50, then every 25, and at 299.
-     They are played on the learning-curve block.
+   - **Each batch:** [256, 8, 8], that is 8 runs × 32 strains.
+   - **The checkpoints** (post-pilot, denser early): generations 0, 5, …, 50, then 75, 100, …, 275, and 299.
+     Each run's generation-best by training fitness is played on the learning-curve block, in chunks of
+     [8, 128, 8].
    - **Saved locally:** every run's final population and checkpoint candidates, with their hashes in the
      record.
-4. **`train-psel`:** P-sel, 4 runs, [128, 8, 8], with the same checkpoints and saving.
-5. **`champions`:** every arm's final populations (32 genomes per run) on the validation block.
-   - P-joint's 8 runs are included; its populations are checked against `train-tf.json` first.
-   - The W2-turn choice is made here.
-6. **`evaluate`:** every champion, P-fixed, W2 alone, W2-turn and R-shared on the test block, under shared
-   trails.
-   - **Each champion** is also played with the noses removed, and with each wey's cell path recorded.
+4. **`train-psel`:** P-sel, [128, 8, 8], with the same checkpoints ([4, 128, 8]) and the same saving.
+5. **`champions`:**
+   - **Each run's final population** is played on the validation block, as one chunk of [32, 128, 8] per run.
+     P-joint's populations are checked first (§2).
+   - **W2-turn:** the grid is played as [10, 128, 8].
+   - **P-joint's learning-curve points:** at index 124 and 299, the population's generation-best by training
+     fitness. That is the genome whose hash is `train-tf.json`'s logged `best_sha256` for that generation, as
+     for the new arms. Each is played on the learning-curve block, [8, 128, 8].
+6. **`evaluate`:** every champion, P-fixed, W2 alone, the chosen W2-turn and R-shared, on the test block under
+   shared trails.
+   - **Chunks:** each arm's champions are one chunk, [runs, 256, 8]. Each reference is [1, 256, 8].
+   - **The noses-removed condition:** every champion and P-fixed again, with each wey's cell path recorded in
+     both conditions.
    - **The secondary condition,** trails off, is the first cut (§10).
-7. **`report`:** the readings of §7, from the records only.
+7. **`report`:** the readings of §7, computed from the records by one function.
+
+**Eligibility after interruption:**
+- **A run counts** only if it completed all 300 generations and its champion was played on every validation
+  and test maze. No shorter run enters a reading.
+- **Below the minimum:**
+  - if fewer than 6 runs of an S arm count, the contrasts using that arm are "not read: too few runs";
+  - if fewer than 6 of P-joint's count, Q2 is not read;
+  - P-sel is described with whatever runs count.
+- **A missing evaluation chunk** is rerun once under the frame's rerun rule. Mazes are never dropped from a
+  reading.
 
 ## 6. Champions
 
@@ -163,60 +207,75 @@ The stages:
 
 **Saved and published:**
 - **Saved locally:** every champion's genome.
-- **Published:** every champion's grafted parameters by name (as E3a's `champions-3.json`), so that an
-  outsider can rebuild each champion (D200).
+- **Published:** every champion's grafted parameters by name (design §3, reaffirmed; D200), so that an
+  outsider can rebuild each champion.
 
 ## 7. The readings
 
 ### 7.1 The unit and the primary contrasts
 
 **The unit:** d = (the champion's mean visits per wey on the 256 test mazes − P-fixed's) / P-fixed's mean.
-- The run is the independent unit.
-- Inference is conditional on the test block.
-- A maze-paired bootstrap is a supplement.
+- **P-fixed's mean** must be finite and positive. Otherwise no contrast is read.
+- **The run** is the independent unit.
+- **Inference** is conditional on the test block.
 
 **The contrasts** (`wormwars/e3/e3c_stats.py`, tested):
 - Q1 = mean d (S-mod) − mean d (S-dense);
 - Q2 = mean d (P-joint) − mean d (S-mod).
 
-**The test:**
-- each contrast is a two-sided Welch test, with Holm's step-down over the two at 5%;
-- **its interval** is the Welch interval at its Holm level, 1 − 0.05 / (2 − rank). After a contrast that is
-  not rejected, later ones keep that step's level. A contrast is rejected exactly when its interval excludes
-  0.
+**The intervals and the decisions** (Astra; post-review):
+- **Each contrast** has a two-sided Welch interval at 97.5%, that is 1 − 0.05 / 2, Bonferroni over the two.
+- **"Rejected"** means that interval excludes 0. Every label comes from it.
+- **Holm's adjusted p-values** are reported beside, but are never a label: Holm-matched intervals are not
+  simultaneous (Astra).
+- **Q1's floor guard:** Q1 is "not read: both at the floor" unless at least one S arm's mean test visits exceed
+  W2 alone + 1. When Q1 is not read, it enters Holm with p = 1.
 
-**The practical margin** (post-pilot; the owner's choice; both reviewers' proposals kept):
+**The practical margin** (post-pilot; the owner's choice, keeping both reviewers' proposals):
 - **The two margins:**
   - 0.10 of P-fixed's mean (Fable; E3b-1's "at least 10%");
   - 0.5 visits per wey (Astra), that is 0.5 / P-fixed's mean in d.
 - **How they combine:**
   - m_lo is the smaller of the two, m_hi the larger;
-  - "beyond the margin" needs the interval to clear m_hi;
-  - "no relevant difference" needs it inside ±m_lo.
-- **What it means:** both margins must agree before a difference is called relevant, or negligible. On a
-  block where P-fixed makes 5.0, the two coincide at 0.10.
+  - "beyond the margin" needs the interval to clear m_hi, strictly;
+  - "no relevant difference" needs it strictly inside ±m_lo.
+- **What it means:** both margins must agree before a difference is called relevant, or negligible.
 
-**The labels** (Q1: "modular" / "dense"; Q2: "engineered initialization" / "from scratch"):
+**The labels** (Q1: "modular" / "dense"; Q2: "engineered initialization and tuning" / "from scratch"):
 
-| Holm | The interval | Label |
-|---|---|---|
-| rejected | beyond m_hi | "X better, beyond the margin" |
-| rejected | entirely inside m_lo, on X's side | "X better, within the margin" |
-| rejected | otherwise | "X better, margin unresolved" |
-| not rejected | inside ±m_lo | "no relevant difference" |
-| not rejected | otherwise | "unclear" |
+| The 97.5% interval | Label |
+|---|---|
+| excludes 0, and clears m_hi on X's side | "X better, beyond the margin" |
+| excludes 0, and lies inside m_lo on X's side | "X better, within the margin" |
+| excludes 0, otherwise | "X better, margin unresolved" |
+| includes 0, and lies inside ±m_lo | "no relevant difference" |
+| includes 0, otherwise | "unclear" |
 
-**Q1's floor guard:** Q1 is "not read: both at the floor" unless at least one S arm's mean test visits exceed
-W2 alone + 1. If so, it enters Holm with p = 1.
+**Failed runs** (post-review; Fable's count, Astra's fallback):
+- **A failed run** is one whose champion's mean test visits are not above W2 alone + 1.
+- **Its effect on a contrast:** a contrast with a failed run in either arm gets the label "approximate: …". That
+  label is evidence, not a confirmatory claim, since Welch's intervals are miscalibrated under such mixtures
+  (§8). The failed-run counts are reported with every label.
+- **What it cannot catch,** stated in advance: failures that did not occur in the sample. If an arm fails
+  rarely, a sample without a failure can make a confirmatory claim about the mean over all runs wrong, far
+  more often than 5% (§8). Such a claim remains a statement about runs that succeeded.
+- **Beside each contrast, a decomposition:**
+  - the failed-run counts compared by Fisher's exact test;
+  - the Welch comparison among runs that did not fail.
+  Both are descriptive.
 
-**The supplement:** a two-sided Mann-Whitney U test per contrast, unadjusted. It is reported, never a label.
+**The supplements:**
+- a two-sided Mann-Whitney U test per contrast, unadjusted, never a label;
+- a maze-paired percentile bootstrap of each contrast. It resamples the 256 test mazes with replacement,
+  10 000 times, seed 20 261 007, with each run's d recomputed on every resample.
 
 **The expectations, registered:**
 - **Q2:** the design registered "engineered initialization better" (§1, v2.1). That sentence stands.
-  - **Annotation (post-pilot):** the pilot makes the direction uncertain. On different blocks, the S arms'
-    gain over the seed (+0.38 in d) equals T-F's (+0.381), so "unclear" is the likeliest label (§8).
-- **Q1:** "no relevant difference" is expected (post-pilot). The two S arms differed by about 0.08 visits per
-  wey in the pilot.
+  - **Annotation (post-pilot):** the direction is now uncertain. On different blocks, the S arms' gain over the
+    seed (+0.38 in d) and T-F's (+0.381) were alike. If the true difference is within about half a visit,
+    "unclear" is the likeliest label (§8).
+- **Q1:** if no run fails, "no relevant difference" is expected (post-pilot). The two S arms differed by about
+  0.08 visits per wey in the pilot.
 
 ### 7.2 The cost curve (secondary)
 
@@ -233,188 +292,308 @@ generation 25.
 - A run reaching it at 299 is a success; one not reaching it is censored.
 
 **Per arm:**
-- the number of runs reaching each threshold. Fisher's exact test compares S-mod with S-dense, with Holm
+- the number of runs reaching each threshold, with Fisher's exact test of S-mod against S-dense, and Holm
   over the two thresholds;
-- the median generation, or "not reached" when fewer than half the runs reach it.
+- the median generation, with censored runs as +∞ (`e3c_stats.censored_median`). It is "not reached" when the
+  median touches a censored run, that is when half or fewer reach it.
 
-### 7.3 Scent dependence and the coverage hypothesis (secondary; post-pilot)
+### 7.3 Nose dependence and the coverage hypothesis (secondary; post-pilot; descriptive classifications)
 
-**For every champion** (P-joint's and P-sel's included), and for P-fixed, on the test block:
-- **The retained fraction** r = visits with the noses removed / intact visits.
-  - **"Noses removed":** the four A/B nose channels at gain 0. The relays' source-occupancy inputs and W2's
-    collision sensing stay on.
-  - **The classes** (Fable): r ≥ 0.9 "scent-independent", r ≤ 0.5 "scent-dependent", else "partial".
-  - **The paired loss** L = mean over mazes of (intact − noses removed) visits, with each arm's run-level
-    interval (Astra).
-  - **"No material loss"** for an arm: the upper end of its 95% interval for mean L is below m_lo in visits.
-- **The path measures,** intact, as in the probe (D205):
+**"Noses removed":**
+- **What it does:** the four A/B nose channels at gain 0.
+- **What stays on:** the relays' source-occupancy inputs and W2's collision sensing.
+- **What it can show:** a small loss means the intervention is tolerable. It does not show that the intact
+  controller ignores its noses (Astra).
+
+**Per champion,** and for P-fixed, on the test block:
+- **The intact and noses-removed visits,** with their maze-level differences, all published.
+- **The retained fraction** r = noses-removed visits / intact visits.
+  - **Its class:** r ≥ 0.9 "nose-independent", r ≤ 0.5 "nose-dependent", otherwise "partial"
+    (`e3c_stats.nose_class`).
+  - **Undefined:** when intact visits are 0 or a record is missing, the class is "undefined", never another
+    class.
+- **The path measures,** intact:
   - the coverage of the 25 cells, averaged over weys and mazes;
   - the tour match: directed moves at lag 48, averaged over weys with more than 48 moves;
-  - the best lag over 44-52, beside it.
-- **"Coverer"** (D205's criterion, per champion): r ≥ 0.9, coverage ≥ 0.95 and tour match ≥ 0.5.
+  - the best lag over 44-52, beside it;
+  - a champion with no eligible wey has an undefined tour match.
+- **"Coverer"** (D205's criterion): r ≥ 0.9, coverage ≥ 0.95 and tour match ≥ 0.5. It is undefined when any of
+  the three is undefined.
 
-**The coverage hypothesis:**
-- **"supported"** if at least 6 of 8 champions in each S arm are coverers, and P-joint has fewer coverers than
-  either S arm;
-- **"not supported"** if at most 2 of 8 in each S arm are coverers;
-- **"mixed"** otherwise.
+**Per arm:**
+- **Nose classes and coverers,** counted separately.
+- **The paired loss** L, per run: the mean over test mazes of (intact − noses removed) visits.
+  - **The arm's interval:** a two-sided 95% t-interval for its mean L over runs.
+  - **P-fixed** has no runs. It gets the maze-paired percentile bootstrap of its L instead (10 000 resamples,
+    seed 20 261 008).
+  - **"No material loss":** the interval's upper end is below m_lo in visits.
 
-**The qualifier:** each arm's class counts are appended to Q1's and Q2's labels as a qualifier. For example:
-"no relevant difference (S-mod: 8/8 coverers; S-dense: 8/8)".
+**The coverage hypothesis** (`e3c_stats.coverage_rule`; proportions, so the cut to 6 runs keeps the rule):
+- **"supported":** each S arm's coverer share is ≥ 0.75, and P-joint's share is below both S arms' shares;
+- **"not supported":** both S arms' shares are ≤ 0.25;
+- **"mixed":** anything else.
+  - It includes the case where every arm is mostly coverers, since P-joint is then not lower.
+  - It includes any S arm with an undefined champion.
+- **Reported apart:** the S arms' part ("high", "low" or "mixed") and whether P-joint is lower than both.
+
+**Nose dependence,** directly (descriptive):
+- P-joint's mean r against each S arm's, as Welch differences with two-sided 95% intervals;
+- P-fixed's r beside them.
+
+**The qualifier:** the arms' nose-class and coverer counts are appended to Q1's and Q2's labels, both shown.
+They never change a label.
 
 ### 7.4 Descriptive
 
 - **P-sel:**
-  - the runs whose champion exceeds W2 alone + 1 (E3a: 1 of 8; the pilot: 1 of 3);
+  - the runs whose champion exceeds W2 alone + 1, a selector-only training outcome above the floor. E3a had
+    1 of 8; the pilot 1 of 3;
   - each run against P-fixed and P-joint.
-- **R-shared and W2-turn** against P-fixed and W2 alone.
-- **The learning curves.** P-joint's curve has two points on the learning-curve block, its populations at
-  index 124 and 299.
+- **R-shared and W2-turn** against P-fixed and W2 alone, with W2-turn's coverage and tour match.
+- **The learning curves,** with P-joint's two points (§5).
 - **The secondary outcomes,** as in E3b-2: the later-leg rate, and the unvisited and round-trip shares.
 - **Per champion:**
   - the Spearman correlation of its per-maze test visits with P-fixed's, and with the A-B tree distance
     (Fable);
   - its resting turn offset and module A's K_D at q = 0.
 - **Trails off,** if not cut.
+- **Declined:** Fable's analytic coverage ceiling (about 8.7 visits per wey). Its derivation has not been
+  checked, so it is not used as a reference.
 
-## 8. Power (`power.json`, simulated as the readings are computed: `scripts/e3c_power.py`)
+## 8. Power (`power.json`, `scripts/e3c_power.py`; regenerated after the review, D207)
 
 **The simulation:**
-- 2 000 trials per scenario, seed 20 261 005;
-- Q1 and Q2 computed jointly by the registered functions, so one S-mod sample enters both;
-- P-fixed's test mean set to 5.0, so both margins are 0.10 in d (0.5 visits), with 4.82 and 5.84 as
-  sensitivity checks;
-- the inputs as in the script's docstring (both reviewers, D204).
+- 376 scenarios, 5 000 trials each, seed 20 261 006, with Monte Carlo standard errors.
+- **The labels are vectorized.** On every run, 15 040 trials are checked against the registered `readings`,
+  label for label. All match.
+- **The scenarios are centred on the true arm means** (Astra). Draft 1's failure mixtures had shifted them, and
+  are withdrawn.
+- **The S arms:** successes at 6.7 visits per wey, spread 0.06 (0.4 as a sensitivity case). Failures at
+  N(2.3, 0.3²), or N(1.8, 0.2²).
+- **P-joint:**
+  - E3b-1's T-F spread (d SD 0.177), times 1, 0.75 or 1.5;
+  - normal, or T-F's empirical shape. Resampling 8 atoms gives ties, so that case is anti-conservative and is
+    a sensitivity case only;
+  - always 8 runs, since the cut to 6 applies to the S arms only.
+- **P-fixed's test mean:** 5.0, with 4.82 and 5.84 as sensitivity cases.
 
-**Base case** (8 runs per arm; the S arms' spread at the pilot's 0.06 visits; no failed run):
+**Without failed runs** (8 runs per S arm; spread 0.06):
 
-| True difference | Q1's labels | Q2's labels |
-|---|---|---|
-| 0 | "no relevant difference" 0.98; any "better" 0.02 | "unclear" 0.97; any "better" 0.02 |
-| 0.5 visits | rejected 1.00 (it sits at the margin, so "margin unresolved" 0.98) | rejected 0.19; beyond the margin 0.01-0.02 |
-| 1.0 visits | "beyond the margin" 1.00 | rejected 0.65-0.67; beyond the margin 0.19 |
-
-**Failed runs dominate Q1.** Each S run stays near the floor with probability p:
-
-| S arms' spread | p | Q1 at 0: "no relevant difference" | Q1 at 1.0 visits: rejected |
+| True Q1, Q2 (visits) | Q1 | Q2 | Any false confirmatory claim |
 |---|---|---|---|
-| 0.06 | 0 | 0.98 | 1.00 |
-| 0.06 | 1/8 | 0.12 | 0.35 |
-| 0.06 | 1/4 | 0.01 | 0.12 |
-| 0.4 | 0 | 0.15 | 0.99 |
-| 0.4 | 1/8 | 0.02 | 0.30 |
+| 0, 0 | "no relevant difference" 0.98 | rejected 0.02 | 0.045 (SE 0.003) |
+| 0.5, 0 | rejected 1.00 (the truth sits at m_hi; a false "beyond" 0.014) | rejected 0.03 | 0.027 |
+| 1.0, 0.5 | "beyond the margin" 1.00 | rejected 0.18; beyond 0.01 | 0 |
+| 0, 1.0 | "no relevant difference" 0.98 | rejected 0.65; beyond 0.19 | 0.023 |
 
-**What the table says:**
-- **A single failed run inflates its arm's spread to about 1.5 visits.** Q1 then most likely reads "unclear",
-  whatever the truth. That is the honest label for such data, not an error. The Mann-Whitney supplement is
-  reported beside it.
-- **Q1's false-positive rate stays at or below 0.03** in every scenario.
+With 6 runs per S arm, the joint false-claim rate at the full null is 0.050.
 
-**Q2's false positives under failures:**
-- with S-mod failing in a quarter of its runs, Q2's rate of any "better" at a true difference of 0 is
-  0.054-0.062, above the nominal 0.05. Welch's test is fragile to such mixtures;
-- otherwise it is at most 0.03.
-- **This is disclosed, not corrected.** The run count stays as designed.
+**Q2's power at ±1 visit** (confirmatory):
 
-**Q2 is powered only for about a visit:**
-- **its power to detect ±1.0 visit:**
-  - 0.65 with 8 runs;
-  - 0.45 with 6;
-  - 0.61 under T-F's empirical shape;
-  - 0.69 if P-fixed's test mean is 4.82, and 0.51 if it is 5.84, since the d spread in visits grows with it;
-- **at ±0.5 visits:** 0.19;
-- **"beyond the margin"** is reached in at most about 0.3 of trials at 1.0 visit.
-- **So Q2 is expected to read "unclear"** unless the true difference is near a visit or more. The
-  registration says so in advance (§7.1).
+| Condition | Power |
+|---|---|
+| base, 8 or 6 S runs | 0.65 |
+| P-joint's spread × 0.75 | 0.89 |
+| P-joint's spread × 1.5 | 0.28-0.32 |
+| T-F's empirical shape | 0.58 (+1) and 0.63 (−1) |
+| P-fixed's test mean 4.82 | 0.68 |
+| P-fixed's test mean 5.84 | 0.50 |
+| S spread 0.4 | 0.60-0.62 |
 
-**P-sel** (descriptive): the chance that none of its 4 runs finds a working selector is 0.59 at E3a's rate
-(1/8), and 0.20 at the pilot's (1/3).
+**What follows for Q2:**
+- at ±0.5 visit its power is about 0.18;
+- "beyond the margin" is reached in about 0.18-0.19 of trials at 1 visit;
+- so Q2 reads "unclear" unless the true difference is near a visit or more.
 
-**The cut to 6 runs:**
-- leaves Q1 decisive without failures ("no relevant difference" 0.97 at spread 0.06);
-- lowers Q2's power at 1 visit to about 0.45.
+**Failed runs:**
+- **The rule catches observed failures:** with failures in both S arms at 1/8, Q1 is "approximate" in 0.86 of
+  trials and Q2 in 0.62.
+- **It cannot catch unobserved ones.** At true nulls with 8 S runs, the joint false confirmatory claim rate is:
+  - 0.079 with both S arms failing at 1/8;
+  - 0.075 at 1/4;
+  - 0.34-0.35 when only one S arm fails at 1/8;
+  - 0.44-0.46 with 6 S runs in that case.
+- **Why:** when the failing arm's 8 runs happen to contain no failure (a probability of (7/8)⁸ ≈ 0.34), its
+  successful runs out-score an arm whose mean is equal only as a mixture. The claim is then true for runs that
+  succeeded, and false for the mean over all runs.
+- **The worst Q2 case:** a false confirmatory claim of 0.14, with P-joint's spread × 0.75 and both S arms
+  failing at 1/8.
+- **What this means for reading:**
+  - a confirmatory label is reliable as stated only if failures are absent from the arms, not merely from the
+    sample;
+  - §7.1's decomposition and the failed-run counts are how a reader judges that.
+- **The pilot** saw 0 failures in 6 S runs, which bounds the failure rate below about 0.39 (one-sided 95%).
+
+**With failures, Q1 mostly reads "approximate" or "unclear"** whatever the truth. With both S arms failing at
+1/8, its confirmatory power at 1 visit is 0.14.
+
+**P-sel** (descriptive): the chance that none of its 4 runs ends above the floor is 0.59 at E3a's rate (1/8),
+and 0.20 at the pilot's (1/3).
+
+**Not simulated:**
+- separate spreads for S-mod and S-dense;
+- the uncertainty of the 300-generation endpoint against the pilot's 99-generation one (Astra).
+
+Both are named here as limits.
 
 ## 9. The benchmark (`project`)
 
-**What it times:** one generation of each training composition ([256, 8, 8] for S-mod and S-dense, [128, 8, 8]
-for P-sel), and the checkpoint, champion and evaluation chunks.
+**What it times,** on the benchmark ids: one generation of [256, 8, 8] for S-mod and S-dense, and of [128, 8, 8]
+for P-sel; a checkpoint chunk; a champions chunk; an evaluation chunk.
 
-**The projection:** the formal total is projected from those times, with × 1.25 on training. It is checked
-against the cap before any training starts.
+**The projection:** the formal total, with × 1.25 on training, checked against §10 before any training.
 
 ## 10. The cap, admission and cuts
 
-**The ceiling** is 30 GPU-hours for all of E3c (D198). It is a running total from every attempt's compute
-record, the pilot's and the replay's included (3.95 so far).
+**The ceiling:** 30 GPU-hours for all of E3c (D198).
+- It is a running total over every compute record, and is what the cap clock reads.
+- So far 3.946 hours: the pilot 2.82, the replay 1.10, the seed diagnostic 0.03 (charged in the record, D207).
 
-**The projected formal total** comes from E3b-1's and the pilot's measured rates:
+**The projected formal total,** from E3b-1's and the pilot's measured rates:
 
 | Part | GPU-hours |
 |---|---|
 | `project`, `g-e` | about 1.5 |
 | S-mod, S-dense (8 × 300 × 8 each) | 2 × 6.44 = 12.9 |
 | P-sel (4 × 300 × 8) | about 3.6 |
-| Denser checkpoints | about 0.2 |
-| Champions (28 runs × 32 × 128) | about 1.0 |
-| Evaluation (with the noses-removed condition and the paths) | about 1.5 |
-| **Formal total** | **about 20.7**; 24.8 with × 1.25 on training |
-| **With the 3.95 spent** | **about 24.7**; 28.8 with × 1.25 |
+| The checkpoints (20 per run; T-F had none) | about 0.6-0.9 |
+| Champions (28 runs × 32 × 128) and W2-turn | about 1.0 |
+| Evaluation (both conditions, with paths) | about 1.5 |
+| **Formal total** | **about 21.4**; 25.5 with × 1.25 on training |
+| **With the 3.95 spent** | **about 25.3**; 29.4 with × 1.25 |
 
-**The cuts, in order,** if `project`'s projection exceeds the remaining budget:
+**The admission rule:** if `project`'s projection exceeds the remaining budget, the cuts apply in order until it
+fits:
 1. the trails-off condition;
-2. P-sel to 2 runs;
-3. S-mod and S-dense to 6 runs each.
+2. P-sel to runs 20-21;
+3. S-mod to runs 0-5 and S-dense to runs 10-15.
 
-The primary contrasts, the noses-removed reading and the path measures are kept whole as long as possible.
+If it still does not fit, E3c's formal run does not start, and the owner is asked.
+
+**What is kept:** the primary contrasts, the noses-removed reading and the path measures are kept whole as long
+as possible.
 
 **The stop:** every stage checks the cap before each rollout. A stage stopped by the cap records what it
-finished.
+finished. The eligibility rule of §5 then decides what is read.
 
-## 11. Budget
+## 11. The cost ledger (descriptive; the design's §7, restored)
 
-**E3c's 30 GPU-hours:**
-- 3.95 spent: the pilot 2.82, its seed diagnostic about 0.03, and the replay 1.10;
-- the formal run as projected in §10.
+| Line | GPU-hours | What it bought |
+|---|---|---|
+| E4s-0 | 0.23 | L1's calibration and diagnostics |
+| E4s-1 | 16.6 | L1's confirmatory validation |
+| E3a | 5.97 | the selector, E and its gates |
+| E3b-0 | 2.62 | W2, the maze-ready additions and the task |
+| E3b-1's T-F | 6.44 | P-joint's tuning |
+| E3c's pilot, replay and diagnostic | 3.95 | the branch, and the coverage finding |
+| E3c's new arms | measured | S-mod, S-dense, P-sel |
+
+**How it is kept:**
+- **The categories,** separately: measured artifact production and selection; shared infrastructure; the
+  downstream adaptation and validation; and unmeasured design and review effort. No hours are invented for the
+  last.
+- **P-joint's first-use cost** is a range: from 6.7 hours (T-F plus E4s-0) to 31.9 hours (the full lineage, T-F
+  included).
+- **Common costs:** S-mod inherits E's mask, and every arm inherits W2 and the interface. These costs are common
+  and noted as such.
+- **E3c's incremental cost** is reported apart from the historical first-use cost.
+- **The reuse cost** is the library cost paid once plus each downstream adaptation (P-sel here). It is shown as
+  scenarios, not as a measured saving.
 
 ## 12. Tests before the formal run
 
 Each test is seen failing first. Where a check could not otherwise fail, it gets a sabotage test.
-- **The arms:**
-  - the masks, the frozen sets and the draws (`tests/test_e3c_assembly.py`);
-  - the bitwise frozen check on every saved population.
-- **The statistics:** Welch, Holm with its intervals, the dual margin and the labels
-  (`tests/test_e3c_stats.py`).
-- **The blocks:** disjoint from every earlier block. Every id is pre-flighted.
-- **The stages:**
-  - the stage order;
-  - the once-only rule and the rerun;
-  - the salvage on failure;
-  - a CPU smoke of every stage.
-- **P-joint:** the hash check against `train-tf.json` is sabotaged: one changed byte must fail.
-- **The champion rule:** ties go to the lower index.
-- **The W2-turn choice** is made on the validation block only.
-- **The noses-removed condition and the path measures:** as tested for the replay (D205).
-- **The registered readings** are computed from records by one function. It is tested on synthetic records
-  for every label.
 
-## 13. Post-pilot departures from design v2.1
+**Already written:**
+- **The arms:** masks, frozen sets and draws (`tests/test_e3c_assembly.py`).
+- **The statistics** (`tests/test_e3c_stats.py`):
+  - Welch;
+  - the fixed 97.5% intervals and Holm beside them;
+  - the dual margin with strict boundaries;
+  - the labels;
+  - the floor guard;
+  - the failed-run rule;
+  - the coverage rule;
+  - the censored median.
+- **The power simulation** (`tests/test_e3c_power.py`): centred mixtures, and the check against the registered
+  readings, sabotaged.
 
+**To be written** with the formal stages:
+- the blocks' disjointness and the pre-flight of every id;
+- the stage order, the once-only rule and the rerun;
+- the salvage, and the eligibility rule;
+- a CPU smoke of every stage;
+- P-joint's hash check, sabotaged: one changed byte must refuse;
+- the champion rule's ties;
+- the W2-turn choice, on the validation block only, with its ties;
+- P-joint's learning-curve genomes found by their logged hashes;
+- the noses-removed condition and the path measures (as for the replay, D205);
+- the report function on synthetic records, for every label;
+- the cut plans: their run ids and compositions.
+
+## 13. Post-pilot and post-review departures from design v2.1
+
+**After the pilot:**
 1. **The question's wording is narrowed** (§1). E3c does not compare assemblies of stereo navigators. D206.
-2. **The coverage hypothesis is registered,** with the noses-removed reading and the path measures (§7.3).
-   D205's consequence for "coverage"; both reviewers.
-3. **A scent-free reference is added:** W2 with a constant turn, chosen on validation (§3; Fable).
-4. **The practical margin is dual** (§7.1). It is the owner's choice, keeping Fable's 0.10 and Astra's
-   0.5 visits.
-5. **The labels are interval-based,** at Holm's levels (§7.1). Fable proposed the scheme; the Holm-consistent
-   levels are added here.
-6. **A Mann-Whitney supplement** is added (Fable).
-7. **Q2's expectation is annotated,** and Q1's added (§7.1). Both reviewers.
-8. **The early checkpoints are denser** (§5; Fable). The pilot's S runs passed both cost-curve thresholds
-   before the first checkpoint.
-9. **Genomes are saved,** and published by name (§5, §6). Both reviewers; D200.
-10. **The new arms' run seeds and training ids are new** (§3). They are not the pilot's.
-11. **`share_above_w2` is dropped.** Fable: it compared different blocks.
+2. **The coverage hypothesis and the nose-dependence reading are registered,** as descriptive classifications
+   (§7.3). D205's consequence for "coverage"; both reviewers.
+3. **The noses-removed reading** gets Astra's paired loss and its "no material loss" bound (§7.3).
+4. **The W2-turn reference is added** (§3; Fable).
+5. **The practical margin is dual** (§7.1). The owner's choice.
+6. **The Mann-Whitney supplement** (Fable).
+7. **Q2's expectation is annotated, and Q1's is added** (§7.1). Both reviewers.
+8. **The early checkpoints are denser** (§5; Fable).
+9. **New run seeds, training ids and benchmark ids** (§3, §4).
+10. **`share_above_w2` is dropped** (Fable).
+11. **New descriptives:** each champion's Spearman correlations, resting turn and K_D (§7.4; Fable).
+12. **The cuts' first item:** the design's "the evaluation's secondary conditions" becomes trails off only. The
+    noses-removed condition is kept.
+
+**After the review of draft 1** (D207):
+
+13. **The intervals:** fixed 97.5% (Bonferroni) for both contrasts, replacing draft 1's Holm-level intervals
+    (Astra).
+14. **The failed-run rule** and the decomposition (Fable's count; Astra's fallback).
+15. **The coverage rule** by proportions, its parts reported apart, and its undefined cases (both).
+16. **The binding sequence, the execution contract and the eligibility rule** (§0, §5; both).
+17. **The cost ledger is restored** (§11; Astra).
+18. **Two more files are pinned,** and P-joint's hash-check failure refuses (§2; Fable).
+
+**Reaffirmed, not departures:** publication of the champions' grafted parameters by name (design §3, D200).
 
 ## 14. Amendments
 
 None yet.
+
+## 15. Changes from draft 1 (the reviews, D207)
+
+**Both reviewers said "revise".** Every required change is taken:
+- **The binding sequence** (§0; both).
+- **The power analysis, corrected and regenerated** (§8; both):
+  - centred mixtures;
+  - P-joint kept at 8 under the cut;
+  - unequal failure rates, Q1 in both directions, P-joint's spread varied;
+  - joint error rates and Monte Carlo standard errors;
+  - §8's figures, recomputed from `power.json`.
+- **The intervals** (§7.1; Astra).
+- **The mixture calibration** (§7.1, §8). Fable held that disclosure suffices; Astra that it does not.
+  - **What is taken:** the failed-run rule makes such contrasts "approximate", with the decomposition beside
+    them, and the limit for unobserved failures is stated in advance.
+  - **No procedure was tuned to the pilot.**
+- **The coverage rule and nose dependence** (§7.3; both).
+- **The secondary statistics defined:** L's interval, the bootstraps, the censored median, P-joint's
+  learning-curve genomes (§5, §7; both).
+- **The execution contract:**
+  - the benchmark ids, the compositions, the cut run ids, the admission and eligibility rules (§4, §5, §10;
+    Astra);
+  - the diagnostic charged in the compute record (§10; Astra).
+- **§13's inventory completed; the cost ledger restored** (§11, §13; both).
+- **The wording:**
+  - the replayed S-dense champions named;
+  - "nose-independent";
+  - Q2's label names the recipe;
+  - P-sel's outcome described as selector-only training;
+  - "no relevant difference" stated as the one equivalence claim;
+  - 99.9-100.6%;
+  - the pilot block named;
+  - the analytic ceiling declined (§1, §7; both).
