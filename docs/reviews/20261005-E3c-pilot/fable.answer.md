@@ -1,0 +1,56 @@
+**Verdict: proceed to the power analysis and the pre-registration.** No retraining. The record already answers the scent question more firmly than PILOT.md claims, and the formal run can settle it with saved genomes at almost no cost. The changes are listed at the end. Two errors in PILOT.md and D203 need correcting first.
+
+## The six questions
+
+**1. Branch and factor.** "Mazes" is the correct application. `scripts/e3c.py:146-150` implements §5's rule literally, and both S arms cleared the threshold at the first checkpoint, not the last. The factor should stay at 1.0. The arms learned at it and plateaued by generation 50; the plateau looks like a strategy ceiling, not a mutation-scale limit, and nothing in the pilot argues for another value. One caveat: §5's branches only anticipated a floor. A ceiling reached by a degenerate strategy is outside the rule, so anything you do about it is a post-pilot amendment and must be labelled so.
+
+**2. Do the S champions use scent?** I read the pattern as you do, and the record lets you say more than "possibly". Three pieces of evidence, none of which needs a genome:
+
+- **Maze 7658, array position 58.** W2 alone makes 12.125 there (`pilot.json:339`), the seed 20.375 (`pilot.json:998`), S-mod run 0 makes 7.0 (`pilot.json:2865`), S-dense run 10 makes 6.0 (`pilot.json:8469`), P-sel run 22 makes 4.5 (`pilot.json:17805`). The from-scratch champions are slower than the blind reflex on the one maze where the reflex bounces between the sources. A reliable navigator cannot lose to a blind walker on the easiest maze. That rules out the "merely reliable navigation" reading.
+- **The flat profile has a mechanism.** The mazes are spanning trees (`wormwars/e3/maze.py:1-6`). A wall-follower's circuit traverses every corridor twice, so in every 5 × 5 maze it makes 48 cell transitions of 4 grid cells, passes each dead end once, and earns exactly 2 alternating visits per circuit. At max_speed 0.35 (`wormwars/config.py:90`) that caps coverage at about 8.7 visits per wey in 2 400 ticks. The S champions' per-maze maxima are 8.0 and 7.875; their means of 6.6 to 6.8 correspond to about 75% of full speed. The seed's profile scales with the A–B path length, as a navigator's must.
+- **The secondary outcomes.** Unvisited share 0.003 to 0.024 and round-trip share 0.97 to 0.996 for the S champions (`pilot.json:2803-2804`, `8407-8408`) against the seed's 0.073 and 0.642 (`pilot.json:936-937`). Every wey covers the whole maze. That is coverage, not navigation.
+
+P-sel run 22's profile is also flat, with an unvisited share of 0.19. Its 13 parameters include the comparator biases, which can saturate the comparators into a constant drive. So the one "successful" selector may be a slow coverer too. Mechanistically this is plausible: the controller's only inputs are the noses and the relays, with no edges from W2 (design §3), so a scent-free solution is an autonomous bias or oscillator driving the motors over W2's reflex. The generation-0 turn offset is 0 by symmetric construction; a turn bias is the symmetry break evolution found by generation 25.
+
+What should establish it:
+
+- **(a) Yes, registered, as a secondary reading with pre-fixed consequences for the labels, not a guard.** The primary contrasts answer §1's literal questions whatever the mechanism. A guard that voids a from-scratch win on mechanistic grounds would read as rescuing the engineered seed. Fix the classification now: retained fraction r = visits without scent / intact visits on the test block; r ≥ 0.9 "scent-independent", r ≤ 0.5 "scent-dependent", between "partial". The seed and T-F lose 0.71 of the seed's mean under this lesion (`E3b-2/RESULTS.md:204`), which puts them in the dependent class. Report counts per arm and append the arm's class to the Q1 and Q2 labels. `without_scent` (`wormwars/e3/attribution.py:182-188`) zeroes the four channels by name, and S-dense's module uses the same names (`wormwars/e3/samplers.py:159`), so it applies to every arm.
+- **(b) Yes, but not an algorithmic wall-follower.** The cheaper and more relevant reference is W2 plus a constant turn bias. `carrier_genome` already takes it as `turn` (`wormwars/e4s/comparator.py:64-77`); W2 alone is the case turn = 0.2 (`scripts/e3c.py:157`). Sweep a fixed grid of k, choose the best on the validation block, play it on the test block, and register it as a reference line beside W2 alone and P-fixed. State the analytic coverage ceiling beside it. An algorithmic wall-follower costs more code than it earns.
+- **(c) No.** Retraining buys certainty on a question the formal run answers anyway, and no registered element depends on the answer: the task cannot change under §5, and the scent reading is registered either way. If you did retrain, it would have to be the whole S-dense group, since the bitwise check against the logged `best_sha256` needs the same composition.
+- **(d) Two zero-compute descriptive readings.** The Spearman correlation of each champion's per-maze visits with the seed's and with the A–B tree distance on the test block: a navigator correlates, a coverer does not. And each champion's resting turn with level noses, already coded for the seed (`scripts/e3c.py:182-185`), as the mechanism probe for a bias.
+
+**3. Does a scent-free solution undermine E3c?** It changes what E3c is about, not whether it is valid. Q1 is registered as "two masks, one start distribution, one recipe" and stays well posed; it will most likely come out "no relevant difference", which is a result. Q2 becomes "the engineered navigator plus tuning against what evolution finds from scratch on this task", and both directions are already pre-labelled. What is undermined is the roadmap's framing "assemblies of stereo navigators": E3b-1's task admits a scent-free routine that beats the engineered navigator by about 1.8 visits and matches its tuned version. That reflects on E3b-1 as well: T-F keeps about 3.9 visits without noses, far above W2 alone's 1.72, so part of its level may already be coverage. Run E3c as designed, with the scent reading and the scent-free reference interpreting it. Do not change the task inside E3c: §5 forbids it, and doing so after seeing from-scratch win would be moving the goalposts. The navigators-only question needs a task that coverage cannot solve, for instance a horizon short relative to the Euler tour, and that is a new design for the roadmap, not an amendment. Tell the owner plainly before the remaining 20 GPU-hours are spent: E3c will most likely report that the engineered prior buys little or nothing here, and that 300 generations for the S arms buys mostly plateau, fixed by P-joint's match.
+
+**4. Q2's expectation.** Keep the registered sentence, add a dated post-pilot annotation that the direction is now uncertain and "unclear" the likeliest label, and correct the comparison PILOT.md rests on. PILOT.md line 56 says E3b-1's tuned champions made about 1.3 visits above the seed. That is Δ pooled over T-A and T-F (`E3b-1/RESULTS.md:41-44`). P-joint is the T-F cohort alone, mean d +0.381 (`RESULTS.md:52`), about +2.2 visits on E3b-1's block.
+
+| | d relative to the seed | Block |
+|---|---|---|
+| T-F cohort, E3b-1 | +0.38 | E3b-1 test, seed 5.84 |
+| S arms, pilot | +0.38 | pilot, seed 4.82 |
+
+Equal in d. If the T-F champions' d transfers to a harder block they land near the S arms; if their absolute gain transfers they land slightly above. A coverer's absolute level is block-independent. So Q2 is a toss-up, dominated by P-joint's run spread. D203's finding 1 and PILOT.md's point 1 need this correction.
+
+**5. The power analysis.** Model these:
+
+- **S arms:** normal, with the SD on a range. The pilot's 0.06 visits comes from 3 runs; its 95% upper bound is about six times that. Add a failure mixture: each run stays near the floor with probability p in {0, 1/8, 2/8}; 0 of 6 pilot runs bounds p below 0.39. One failed run in 8 drops the arm mean by about half a visit and inflates its SD to about 1.5, which moves Q1's SE from about 0.035 visits to about 0.5. Q1's label hinges on whether any run fails. Register a Mann-Whitney supplement for that case.
+- **P-joint:** E3b-1's eight T-F d values, SD 0.177 (`RESULTS.md:108-109`), reselected on E3c's validation block.
+- **P-sel:** descriptive; with a success rate between E3a's 1/8 and the pilot's 1/3, the chance that 0 of 4 runs succeed is 0.2 to 0.6. Register "runs above the floor" as the reading.
+- **The arithmetic at n = 8:** Q2's SE is about 0.063 in d, so 80% power at Holm's 0.025 needs about 0.2 to 0.25 in d, roughly one visit; power at d = 0.10 is about 15 to 25%. Q1's SE at the pilot's SD is about 0.0075 in d, so a 0.08-visit difference would reject. Q1 therefore needs a relevance reading, and Q2 will likely be "unclear" at any relevant margin. The pre-registration should say both.
+- **The margin:** d = 0.10 for both contrasts, by the repository's own precedent. E3b-1's "at least 10%" (`RESULTS.md:43, 82`) is the smallest gain this project has called a gain. E3b-0's one visit is about 0.2 in d and too coarse for Q1 when the whole S-versus-seed gap is 0.38. Read against the margin via the 95% CI of Δ: entirely beyond ±m is "better, relevant"; entirely within ±m is "no relevant difference", a TOST reading that does not violate "unclear is never equivalent"; Welch rejects with the CI inside or straddling m is "distinguishable, below the margin"; otherwise "unclear".
+
+**6.** Proceed, with the changes below.
+
+## Changes for the pre-registration
+
+1. Save every final population and checkpoint candidate locally with hashes in the record, as E3b-1's train stage did (`scripts/e3b1.py:892-896`).
+2. Register the scent reading with the fixed classification and the label qualifiers.
+3. Register the W2 plus constant-turn reference, with the analytic coverage ceiling stated beside it.
+4. Register the per-maze correlation and the resting-turn probe as descriptive.
+5. Keep Q2's registered expectation; add the dated post-pilot annotation; correct PILOT.md line 56 and D203 finding 1.
+6. Margin d = 0.10 for Q1 and Q2 with the CI-based labels, plus the Mann-Whitney supplement.
+7. The power analysis as above, including the mixture table and the statement that Q2 is powered only near d = 0.2.
+8. Denser early checkpoints, every 5 generations to 50 then every 25. The pilot's S runs crossed both cost-curve thresholds before the first checkpoint, so §6's cost curve as written would be censored at its first point for every S run and Fisher's test would be 8/8 against 8/8. The cadence is a measurement detail, not the schedule; label it post-pilot.
+9. Fix or drop `share_above_w2`. It compares 8 training mazes' means with W2 on the 128-maze block. S-dense run 10 shows 0.97 and runs 11 and 12 show 0.0 (`pilot.json:8401, 10267, 12133`) because their generation-0 training mazes differ, not their draws (`pilot.json:8289-8321` against `10155-10187`).
+10. State in the preamble what E3c will most likely say, and that the navigators-only question needs a new task and design.
+
+One minor note: the seed's 4.82 against 5.84 is about 2.5 standard errors apart given a per-maze SD of 3.7 over 128 and 256 mazes. Unusual, not alarming; the within-block design absorbs it, so keep the maze-paired bootstrap.

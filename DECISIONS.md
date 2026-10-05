@@ -6563,3 +6563,38 @@ GitHub runs. No published result is affected.
 
 **Next:** both reviewers are asked about the formal run's changes before the power analysis and the
 pre-registration: saving genomes, a scent-dependence reading, a wall-follower reference.
+
+## D204 — E3c pilot reviewed: the corrections taken; the next step split, so the owner is asked
+
+**The review** (`docs/reviews/20261005-E3c-pilot/`): the same prompt to both.
+
+**Both agree:**
+- "mazes" is the correct branch, and factor 1.0 stays;
+- the S champions' per-maze pattern points to goal-agnostic coverage, untested;
+- E3c's numerical questions, Q1 and Q2, stay valid, but its mechanistic reading ("assemblies of stereo
+  navigators") does not, if coverage is confirmed;
+- the task must not change inside E3c: a navigators-only question needs a new task and design;
+- a registered reading with the noses removed, secondary rather than a guard, should go to every champion;
+- genomes are saved in the formal run.
+
+**Corrections taken** (PILOT.md's Corrections section, rule 4):
+- the Q2 comparison used the pooled T-A/T-F gain for T-F. T-F alone is +2.23 visits, d = +0.381, which equals
+  the S arms' gain in d;
+- the block difference was overstated: it is about 2.5 standard errors;
+- the diagnostic's 0.03 GPU-hours is charged; E3c's total is about 2.85;
+- `share_above_w2` is dropped;
+- D203's wording on the factor: the rule fixes the branch, and keeping the factor is a choice.
+
+**Where they differ:**
+- **The next step:**
+  - Fable: "proceed to the power analysis and the pre-registration"; the record already answers enough;
+  - Astra: "one bounded step first": replay the pilot's S-dense batch with genome saving, then probe the three
+    champions with the noses removed and inspect trajectories. About 1.5 GPU-hours. The consequences are
+    fixed in advance, and none changes the branch, the factor, the schedule or the primary contrasts.
+- **The practical margin:** Fable d = 0.10, E3b-1's "at least 10%"; Astra 0.5 visits per wey, absolute. On the
+  pilot block, 0.5 visits is about 0.10 of the seed's mean.
+- **The scent-free reference:** Fable W2 plus a constant turn bias, swept and validated; Astra a scripted
+  wall-follower, optional.
+
+**Without consensus on the next step, and since the finding bears on what E3c can say, the owner is asked**
+(the delegation: decisions without consensus and scientific-direction questions go to the owner).

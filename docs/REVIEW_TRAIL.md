@@ -70,6 +70,7 @@ led to several of the findings.
 | 50 | E3b-2's results draft: "all eight below W2 in 7 champions" (6); "one undecided tick per leg"; "within 1-2 ticks"; "the same order"; "the cause" (a mechanism claim); "output carries little" (36% of T-A's gain); N's noses "do not matter" | Claude Opus 5.5 | **Fable 5.1** and **Astra 6** (each point by one or both); **Claude Opus 5.5** (an earlier "in all 16", before review) | Both recomputed every reading from the records; corrected before publication | D197 |
 | 51 | E3c's pilot runner: a failure would have lost every finished learning curve, an incomplete pilot was never recorded as inconclusive, the record dropped the distributions the power analysis needs, and the 3.0 h stop was tighter than the projected runtime | Claude Opus 5.5 | **Astra 6** and **Fable 5.1** (the first three by both, Astra by injecting failures; the stop by Fable, from E3b-1's measured rates) | Each fixed test-first before any GPU use; the failure path re-run with an injected crash | D201 |
 | 52 | About 40 pushes passed the local suite but failed GitHub's CPU suite for two days, unnoticed: one test relied on a bitwise reference recorded on Windows, another on genome files that stay local | Claude Opus 5.5 | **The human**, asking what GitHub's failure emails meant | The CI logs; both tests now state their platform and file needs | D202 |
+| 53 | E3c's pilot summary compared the S arms with E3b-1's pooled T-A/T-F gain (+1.3 visits), suggesting S-mod already beat the tuning that P-joint reuses; T-F alone was +2.2 visits, equal in units of the seed's mean. It also called a 2.5-SE block difference typical | Claude Opus 5.5 | **Fable 5.1** and **Astra 6**, each independently | Recomputed from E3b-1's `evaluate.json` and `RESULTS.md`; dated corrections in PILOT.md | D204 |
 
 Episode 6 went unnoticed for a week, through a passing test suite, every milestone report, a
 publication audit, the first public release and Claude's own review of the roadmap on the day it
@@ -104,7 +105,7 @@ food response is 1.55-2.7 times the most responsive graph's, not 1.5-1.8).
   useful.
 - One error (episode 16) was caught by neither a person nor a reviewer but by running the tests on
   another operating system.
-- This is one project and fifty-two episodes: an anecdote about multi-agent review, not a measurement
+- This is one project and fifty-three episodes: an anecdote about multi-agent review, not a measurement
   of it.
 
 ## In the history

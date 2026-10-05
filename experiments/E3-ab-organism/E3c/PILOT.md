@@ -105,3 +105,37 @@ come from the final generation-best's play on the same block.
 - **The power analysis:**
   - the S arms' run-to-run spread is about 0.05-0.07 visits per wey (d of about 0.01-0.015);
   - P-sel's outcome looks bimodal (1 success in 3).
+
+## Corrections (2026-10-05, after both reviewers; `docs/reviews/20261005-E3c-pilot/`, D204)
+
+1. **The Q2 comparison was wrong** (both reviewers).
+   - **The text said:** "on a different block, E3b-1's tuned champions made about 1.3 visits per wey above the
+     seed".
+   - **Why it is wrong:** +1.32 is E3b-1's gain pooled over T-A and T-F. E3c reuses T-F alone, which made
+     +2.23 visits above the seed (d = +0.381; `E3b-1/RESULTS.md`, `evaluate.json`).
+   - **What holds:** in units of the seed's mean, the S arms' gain on the pilot block (about +0.38) equals
+     T-F's on E3b-1's block. Q2's direction is open; it is not suggested by the pilot.
+2. **The block difference was overstated** (both).
+   - **The text said:** "with a per-maze SD of 3.7, the seed's block means move by about a visit between blocks
+     of this size".
+   - **Why it is wrong:** with 128 and 256 mazes, the block means' standard errors are about 0.33 and 0.23.
+     The 1.02 difference is about 2.5 standard errors: unusual, not typical.
+   - **What holds:** the comparisons within one block are unaffected.
+3. **The diagnostic's compute is charged** (Astra): about 0.03 GPU-hours. E3c has used about 2.85, not 2.82.
+4. **`share_above_w2` is not interpretable** (Fable). It compares each strain's mean over its own 8
+   generation-0 training mazes with W2 alone on the 128-maze block. Runs 11 and 12 show 0.0 and run 10
+   shows 0.97 because their training mazes differ, not their draws. It is dropped from any reading.
+5. **The factor** (Astra): D203 says §5's rule "keeps E3c in the mazes, at factor 1.0". The branch is fixed by
+   the rule. Keeping the factor at 1.0 is a choice §5 permits, supported by the pilot.
+
+**Added evidence on the scent question** (from the reviewers; checked against `pilot.json`):
+- **On maze 7658,** W2 alone makes 12.1 visits and the seed 20.4. The S champions make only 5.75-7.0, below
+  the blind reflex on the maze where the reflex does best. That argues against "merely reliable
+  navigation" (Fable).
+- **The champions' per-maze maxima are 7.75-8.0.** Fable's estimate of the ceiling for a full traversal of a
+  25-cell tree at maximum speed is about 8.7 visits per wey; the analysis is Fable's and has not been checked
+  here.
+- **The champions' per-maze scores correlate weakly with the seed's** (Spearman 0.14-0.25). They correlate
+  with each other more strongly (Pearson 0.56-0.90, Astra).
+- **The reading that fits** is goal-agnostic coverage of the tree, helped by the wall reflex. It is still an
+  inference: no champion has been probed.
