@@ -425,7 +425,7 @@ def test_the_bootstrap_against_a_direct_computation(m):
     r = RR(m, ev, ch, tr)
     seed_pm = np.asarray(ev["references"]["seed"]["intact"]["visits_per_maze"])
     pm = {a: np.array([x["visits_per_maze"] for x in ev["arms"][a]["intact"]]) for a in ("s_mod", "s_dense")}
-    rng = np.random.default_rng([m.REGISTERED["formal"]["bootstrap_seeds"]["contrast"], 1])
+    rng = np.random.default_rng(20_261_007)  # §7.1's registered seed
     vals = []
     for _ in range(m.REGISTERED["formal"]["bootstrap_resamples"]):
         idx = rng.integers(0, 16, 16)
@@ -496,3 +496,17 @@ def test_interruptions_keep_completed_work_and_a_mismatch_stays_refused(monkeypa
         m2.cmd_champions(args)
     rec = json.loads(m2.E.record_path("champions").read_text(encoding="utf-8"))
     assert len(rec["arms"]["s_mod"]["runs"]) == 1 and m2.champions_file("s_mod").exists()
+
+
+def test_the_real_path_validator(tmp_path, monkeypatch):
+    """Astra (D213): the writer's recorded shape and the validator's check agree; altered or missing files fail."""
+    m3 = _fresh("e3c_paths")
+    monkeypatch.setattr(m3, "ROOT", tmp_path)
+    monkeypatch.setattr(m3, "OUT", tmp_path / "out")
+    paths = {"cells": np.arange(6, dtype=np.int16), "ticks": np.arange(6, dtype=np.int32),
+             "offsets": np.zeros((3, 8, 2), dtype=np.int64), "world_ids": np.arange(3), "strain_of_world": np.zeros(3)}
+    man = m3.save_paths("s_mod", "intact", paths)
+    assert m3.paths_ok(man, 3) is True
+    assert m3.paths_ok(man, 4) is False and m3.paths_ok(None, 3) is False
+    m3.paths_file("s_mod", "intact").write_bytes(b"altered")
+    assert m3.paths_ok(man, 3) is False

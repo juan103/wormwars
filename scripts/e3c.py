@@ -1207,7 +1207,7 @@ def save_paths(name: str, cond: str, paths: dict) -> dict:
     p.parent.mkdir(parents=True, exist_ok=True)
     np.savez_compressed(p, **paths)
     return {"path": str(p.relative_to(ROOT)).replace("\\", "/"), "sha256": hashlib.sha256(p.read_bytes()).hexdigest(),
-            "worlds_weys": list(paths["offsets"].shape)}
+            "worlds_weys": list(paths["offsets"].shape[:2])}  # [worlds, weys], as paths_ok checks (Astra, D213)
 
 
 def cmd_evaluate(args):
@@ -1400,7 +1400,7 @@ def report_readings(ev: dict, ch: dict, trained: dict, project: dict, n_test: in
         if not (seed_ok and prim.get(q, {}).get("read")):
             out["bootstrap"][q] = "not computed: the contrast is not read"
             continue
-        rng = np.random.default_rng([REGISTERED["formal"]["bootstrap_seeds"]["contrast"], 1 if q == "Q1" else 2])
+        rng = np.random.default_rng(REGISTERED["formal"]["bootstrap_seeds"]["contrast"])  # the registered seed, fresh per contrast
         vals = []
         for _ in range(REGISTERED["formal"]["bootstrap_resamples"]):
             idx = rng.integers(0, n, n)

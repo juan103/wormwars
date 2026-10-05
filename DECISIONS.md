@@ -6943,3 +6943,24 @@ and the run starts.
 - truncated vectors and missing paths;
 - the partial contrast's Holm p against the full-data reading;
 - the bootstrap against a direct computation.
+
+## D213 — The second recheck: Astra "fix first" (Fable unavailable); two regressions fixed, three items open
+
+**The recheck** (`docs/reviews/20261005-E3c-formal-code-3/`), at 30167b3. Fable's run failed on its session
+limit. Astra said "fix first", with five items.
+
+**Fixed, with tests:**
+1. **The path files** (my regression). The writer recorded their 3-D shape and the validator checked 2-D, so
+   every valid path file was rejected. That would have left every §7.3 reading undefined.
+5. **The bootstrap seed** (my regression). It had changed from the registered 20 261 007. It is restored, fresh
+   per contrast.
+
+**Open, for the next session:**
+2. **Per-play durability** for P-joint's learning points, the learning-curve references, W2-turn and `g-e`'s
+   legs, and atomic champion saves.
+3. **`report_from`'s fallback with no evaluate record:** it must keep the cost-curve readings.
+4. **A corrupt genome archive** must count as a failed verification, and trigger retraining.
+- **Also:** tests for a pre-start cap stop and for the frame's final cap check.
+
+**Then:** a recheck by both, Amendment 2 recording the formal commit, and the run. No GPU time has been spent on
+formal stages; E3c's total is still 3.946 of 30.
