@@ -1,0 +1,1 @@
+Final recheck at 2e40827 (run 20261005-210020), the same prompt to both. Fable 5.1: "run it", recommending that a crash whose rerun the cap refuses not leave the stage unreadable (to decide before project). Astra 6: "fix first", one defect, reproduced: the champion archive and its salvage record could disagree after an interrupted save. Both taken (D215).

@@ -725,17 +725,30 @@ def check_pinned() -> dict:
     return got
 
 
+def cap_exhausted() -> bool:
+    """E3c's recorded compute has reached its 30-hour ceiling, so no stage can start or be rerun."""
+    return E.clock().spent_hours() >= REGISTERED["formal"]["cap_total_gpu_hours"]
+
+
 def require_record(args, prov, stage: str, stopped_ok: bool) -> dict:
     """An earlier stage's record: completed; or, when `stopped_ok` (Amendment 1), also final-stopped (its rerun
-    used) or stopped by the cap, which can never be rerun. A stopped record is read through its salvage."""
+    used) or stopped by the cap, which can never be rerun. Once the cap is exhausted (Fable, D215), a stage that
+    crashed and could not be rerun is final too, and one that was killed is read from its partial record. A
+    stopped record is read through its salvage."""
     try:
         return E.require_earlier(args, prov, stage, final_ok=stopped_ok)
     except SystemExit:
         path = E.record_path(stage)
-        if not (stopped_ok and path.exists()):
+        if not stopped_ok:
+            raise
+        if not path.exists():
+            part = E.partial_path(stage)
+            if E.marker_path(stage).exists() and part.exists() and cap_exhausted():
+                rec = json.loads(part.read_text(encoding="utf-8"))
+                return {**rec, "outcome": "killed; read from its partial record, the cap being exhausted (D215)"}
             raise
         rec = json.loads(path.read_text(encoding="utf-8"))
-        if rec.get("outcome") != E.OUTCOMES["cap"]:
+        if rec.get("outcome") != E.OUTCOMES["cap"] and not (rec.get("outcome") == E.OUTCOMES["stopped"] and cap_exhausted()):
             raise
         if E.formal(args):
             if not args.smoke:
@@ -1102,8 +1115,20 @@ def grafted_by_name(genome: Genome, ext, k: int) -> dict:
             "sha256": genome_hash(g, 0)}
 
 
-def champions_file(arm: str) -> Path:
-    return OUT / "genomes" / f"formal-{arm}-champions.npz"
+def champion_file(arm: str, run: int) -> Path:
+    """One immutable file per champion, written before its record entry exists (Astra, D215)."""
+    return OUT / "genomes" / f"formal-{arm}-run{run:02d}-champion.npz"
+
+
+def load_champions(arm: str, runs_: list, spec, bcfg) -> Genome:
+    """The champions the record lists, each from its own file, each checked against its recorded hash."""
+    gs = []
+    for r in runs_:
+        g, _ = load_population(champion_file(arm, r["run"]), spec, bcfg)
+        if genome_hash(g, 0) != r["champion_sha256"]:
+            raise SystemExit(f"{arm} run {r['run']}'s champion differs from the champions record")
+        gs.append(g)
+    return Genome.cat(gs)
 
 
 def trained_runs(rec: dict, arm: str) -> list:
@@ -1145,18 +1170,17 @@ def cmd_champions(args):
                         if [genome_hash(g, k) for k in range(g.n_strains)] != f["sha256"]:
                             raise SystemExit(f"{f['path']} differs from its recorded hashes")
                         pops[r["run"]] = g
-                per_run, champs = [], []
+                per_run = []
                 arms[arm] = {"runs": per_run}
                 for i, g in sorted(pops.items()):
                     prog.check()
                     means = play(g, org, val).mean(axis=1)
                     k = FO.champion_index(means)
-                    champs.append(g.select([k]))
+                    save_atomic(champion_file(arm, i), g.select([k]), cfg=cfg, stage="champions", arm=arm, run=i)
                     per_run.append({"run": i, "validation_means": np.round(means, 6).tolist(), "champion_index": k,
-                                    "champion_sha256": genome_hash(g, k)})
+                                    "champion_sha256": genome_hash(g, k),
+                                    "champion_file": str(champion_file(arm, i).relative_to(ROOT)).replace("\\", "/")})
                     published[f"{arm}-run{i:02d}"] = grafted_by_name(g, org.ext, k)
-                    save_atomic(champions_file(arm), Genome.cat(champs), cfg=cfg, stage="champions", arm=arm,
-                                runs=[x["run"] for x in per_run])  # the champions so far, saved with each chunk
                     prog.write(force=True)
             grid = REGISTERED["formal"]["turn_grid"]
             orgs = [w2_turn(con, cfg.brain, r) for r in grid]
@@ -1200,7 +1224,8 @@ def cmd_champions(args):
                                             "p_joint_points": [len(pj_final), len(learn), REGISTERED["colony"]]}})
         return dict(prog.state)
 
-    files = [champions_file(a) for a in ("s_mod", "s_dense", "p_sel", "p_joint")]
+    files = [champion_file(a, r["run"]) for a in ("s_mod", "s_dense", "p_sel") for r in formal_runs(FO.PLAN_FULL)[a]]
+    files += [champion_file("p_joint", i) for i in range(FO.P_JOINT_RUNS)]
     return E.run_stage(args, "champions", formal_requires("champions"), body, local_files=files)
 
 
@@ -1275,9 +1300,7 @@ def cmd_evaluate(args):
                     out["arms"][arm] = {"runs": [], "unavailable": "no champions"}
                     continue
                 org = _org(arm, cx)
-                g, _ = load_population(champions_file(arm), BrainSpec.from_connectome(org.ext), cfg.brain)
-                if [genome_hash(g, k) for k in range(g.n_strains)] != [r["champion_sha256"] for r in runs_]:
-                    raise SystemExit(f"{arm}'s champions differ from the champions record")
+                g = load_champions(arm, runs_, BrainSpec.from_connectome(org.ext), cfg.brain)
                 res = {"runs": [r["run"] for r in runs_], "paths_files": {}}
                 out["arms"][arm] = res
                 conds = [("intact", lambda i: i, "shared"), ("noses_removed", AT.without_scent, "shared")]

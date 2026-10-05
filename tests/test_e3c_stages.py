@@ -495,7 +495,7 @@ def test_interruptions_keep_completed_work_and_a_mismatch_stays_refused(monkeypa
     with pytest.raises(RuntimeError, match="injected"):
         m2.cmd_champions(args)
     rec = json.loads(m2.E.record_path("champions").read_text(encoding="utf-8"))
-    assert len(rec["arms"]["s_mod"]["runs"]) == 1 and m2.champions_file("s_mod").exists()
+    assert len(rec["arms"]["s_mod"]["runs"]) == 1 and m2.champion_file("s_mod", rec["arms"]["s_mod"]["runs"][0]["run"]).exists()
 
 
 def test_the_real_path_validator(tmp_path, monkeypatch):
@@ -635,4 +635,66 @@ def test_the_cap_and_the_last_chunks(monkeypatch):
     m4.cmd_train("train-smod")(rerun)
     rec = json.loads(m4.E.record_path("train-smod").read_text(encoding="utf-8"))
     entry = rec["arms"]["s_mod"]
+    for f in (ROOT / "runs" / "e3c-smoke" / "genomes").glob("*-attempt1.npz"):
+        f.unlink()  # the deliberately truncated archive must not outlive this test (other tests read every .npz)
     assert rec["outcome"] == "completed" and "reuse_refused" in entry and "training_reused_from_attempt_1" not in entry
+
+
+
+# ------------------------------------------------------------------ the final recheck (D215)
+
+@pytest.mark.slow
+@pytest.mark.skipif(not TF_GENOMES.exists(), reason="needs E3b-1's T-F genomes, which stay local (D200)")
+def test_a_failed_champion_save_leaves_a_consistent_record(monkeypatch):
+    """Astra: a save that fails adds no record entry, so the record and the files agree and evaluate can load every
+    listed champion; a file written just before a kill is merely unreferenced."""
+    for stage in ("project", "g-e", "train-smod", "train-sdense", "train-psel"):
+        r = _run(stage)
+        assert r.returncode == 0, (stage, r.stderr[-3000:])
+    m = _fresh("e3c_champ_save")
+    m.use_smoke(type("A", (), {"command": "champions"})())
+    m.REGISTERED["cap_gpu_hours"] = 30.0
+    real, calls = m.save_atomic, {"n": 0}
+
+    def second_fails(path, genome, **kw):
+        calls["n"] += 1
+        if calls["n"] == 2:
+            raise OSError("injected: the second champion's save")
+        return real(path, genome, **kw)
+
+    monkeypatch.setattr(m, "save_atomic", second_fails)
+    args = type("A", (), {"device": "cpu", "smoke": True, "guarded": False, "rerun": False, "reason": None})()
+    with pytest.raises(OSError, match="injected"):
+        m.cmd_champions(args)
+    rec = json.loads(m.E.record_path("champions").read_text(encoding="utf-8"))
+    listed = rec["arms"]["s_mod"]["runs"]
+    assert len(listed) == 1  # the failed save added no entry
+    from wormwars.brain import BrainSpec
+    from wormwars.connectome import load_connectome
+    from wormwars.e3 import assembly as AS
+    from wormwars.e4s import arms as A
+    cfg = m._formal_cfg()
+    cx = AS.context(load_connectome(), A.load_l1(), cfg.brain)
+    g = m.load_champions("s_mod", listed, BrainSpec.from_connectome(cx["seed"].ext), cfg.brain)
+    assert g.n_strains == 1
+
+
+def test_after_the_cap_a_crashed_or_killed_stage_is_read_as_final(tmp_path, monkeypatch):
+    """Fable: once the cap is exhausted, a crashed stage (no rerun possible) is read from its stopped record, and a
+    killed one from its partial record; before that, both still refuse."""
+    m = _fresh("e3c_cap_final_read")
+    m.use_smoke(type("A", (), {"command": "pilot"})())
+    monkeypatch.setattr(m.E, "EXP", tmp_path)
+    args = type("A", (), {"smoke": True, "guarded": False})()
+    (tmp_path / "train-smod.json").write_text(json.dumps({"outcome": m.E.OUTCOMES["stopped"], "arms": {"s_mod": {}},
+                                                         "provenance_at_start": {"git_commit": "x"}}), encoding="utf-8")
+    (tmp_path / "train-psel-started.json").write_text("{}", encoding="utf-8")
+    (tmp_path / "train-psel-partial.json").write_text(json.dumps({"arms": {"p_sel": {"runs": []}}}), encoding="utf-8")
+    monkeypatch.setattr(m, "cap_exhausted", lambda: False)
+    for st in ("train-smod", "train-psel"):
+        with pytest.raises(SystemExit):
+            m.require_record(args, {}, st, stopped_ok=True)
+    monkeypatch.setattr(m, "cap_exhausted", lambda: True)
+    assert m.require_record(args, {}, "train-smod", stopped_ok=True)["arms"] == {"s_mod": {}}
+    got = m.require_record(args, {}, "train-psel", stopped_ok=True)
+    assert got["arms"] == {"p_sel": {"runs": []}} and got["outcome"].startswith("killed")

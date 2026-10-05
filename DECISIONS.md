@@ -6987,3 +6987,33 @@ of its parts targets behaviour the old code lacked):
   - the no-evaluate report keeps the cost curve.
 
 **The full suite** was green at d7aae60, before these changes. It is rerun here.
+
+## D215 — The final recheck: Fable "run it", Astra "fix first" (one defect); both points taken
+
+**The recheck** (`docs/reviews/20261005-E3c-formal-code-4/`), at 2e40827.
+- **Fable said "run it".** It found every earlier item fixed, and noted that the pilot's in-loop and post-hoc
+  checkpoints already agree to every printed digit. It recommended one change, to be decided before `project`
+  because the code guard blocks later changes.
+- **Astra said "fix first",** for one defect it reproduced: the champion archive and its salvage record could
+  disagree after an interrupted save. The record listed runs 0 and 1, the archive held only run 0, and
+  `evaluate` then rejected it.
+
+**Taken, test-first:**
+- **Champions:**
+  - each champion is saved to its own immutable file, atomically, before its record entry is added;
+  - `evaluate` loads each listed champion from its file and checks its hash;
+  - a failed save adds no entry, and a file written just before a kill is merely unreferenced;
+  - the test injects a failed second save and loads every listed champion.
+- **Fable's recommendation:**
+  - once the recorded compute reaches the 30-hour ceiling, no stage can be rerun;
+  - a stage that crashed is then read as final through its stopped record, and one that was killed through its
+    partial record;
+  - before the ceiling, both still refuse, as the frame's rerun rule requires;
+  - tested both ways.
+- **A test-hygiene fix:** the corrupt-archive test now removes its truncated file. A T0 test reads every `.npz`
+  under `runs/` and had failed on it.
+
+**Fable's process conditions, to be kept:**
+- Amendment 2, recording the formal commit, is committed and pushed before `project`;
+- nothing guarded changes between `project` and `report`;
+- each stage's record is committed and pushed before the next stage.
