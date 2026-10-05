@@ -176,11 +176,11 @@ def test_the_readings_carry_an_exact_decision_and_approximate_margin_labels():
     out = S.readings(d={"s_mod": smod, "s_dense": sdense, "p_joint": pjoint}, seed_mean=seed, run_visits=vis,
                      w2_alone=1.7)
     q1 = out["Q1"]
-    assert q1["exact"]["p"] <= 0.025 and q1["exact"]["label"] == "distributions differ; modular higher (exact)"
+    assert q1["exact"]["p"] <= 0.025 and q1["exact"]["label"] == "distributions differ (exact test); observed mean higher for modular"
     assert q1["label"].startswith("approximate (model-based): ")
     assert out["Q2"]["exact"]["label"] in ("no difference detected (exact)",
-                                          "distributions differ; engineered initialization and tuning higher (exact)",
-                                          "distributions differ; from scratch higher (exact)")
+                                          "distributions differ (exact test); observed mean higher for engineered initialization and tuning",
+                                          "distributions differ (exact test); observed mean higher for from scratch")
 
 
 def test_undefined_champions_anywhere_make_the_coverage_rule_mixed():
@@ -194,3 +194,30 @@ def test_undefined_champions_anywhere_make_the_coverage_rule_mixed():
 def test_no_runs_is_a_registered_outcome():
     assert S.censored_median([]) == "no runs"
     assert S.decomposition([0.3], [0.2, 0.25]) == {"successful_runs": [1, 2], "welch": "not computed: fewer than 2"}
+
+
+# ------------------------------------------------------------------ draft 4 (both reviewers of draft 3, D209)
+
+def test_the_coverage_components_never_count_undefined_champions():
+    """Astra (D209): the S-arm part comes from the S arms alone; the P-joint comparison is undefined when any
+    champion is; shares are over defined champions."""
+    r = S.coverage_rule({"s_mod": [True] * 8, "s_dense": [True] * 8, "p_joint": [None] * 8})
+    assert r["coverers"] == "mixed" and r["s_arms"] == "high"
+    assert r["p_joint_lower_than_both"] is None and r["shares"]["p_joint"] is None
+    r = S.coverage_rule({"s_mod": [True, None, True, True], "s_dense": [True] * 4, "p_joint": [False] * 4})
+    assert r["coverers"] == "mixed" and r["s_arms"] == "undefined" and r["p_joint_lower_than_both"] is None
+    assert r["shares"]["s_mod"] == 1.0  # 3 of 3 defined
+
+
+def test_equal_low_shares_are_not_supported():
+    """§7.3's precedence: both S arms low gives "not supported", whatever P-joint's share."""
+    low = [True, False, False, False, False, False, False, False]
+    assert S.coverage_rule({"s_mod": low, "s_dense": low, "p_joint": low})["coverers"] == "not supported"
+
+
+def test_a_non_positive_seed_mean_is_a_registered_outcome():
+    rng = np.random.default_rng(8)
+    d = {k: rng.normal(0.3, 0.05, 8) for k in ("s_mod", "s_dense", "p_joint")}
+    out = S.readings(d=d, seed_mean=0.0, run_visits={k: np.full(8, 5.0) for k in d}, w2_alone=1.7)
+    for q in ("Q1", "Q2"):
+        assert out[q]["label"] == "not read: P-fixed's mean is not positive" and out[q]["read"] is False

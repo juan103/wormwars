@@ -146,7 +146,8 @@ def simulate(rng, *, n_s, sd_s, p_mod, p_dense, f, d1, d2, pj_sd_mult, shape, se
         lab = np.char.add(APPROX, lab.astype(str)).astype(object)
         a, b = S.NAMES[q]
         exact = vpermutation_p(x, y) <= S.ALPHA / 2
-        exact_lab = np.where(exact, np.where(x.mean(1) > y.mean(1), f"distributions differ; {a} higher (exact)", f"distributions differ; {b} higher (exact)"),
+        exact_lab = np.where(exact, np.where(x.mean(1) > y.mean(1), f"distributions differ (exact test); observed mean higher for {a}",
+                                              f"distributions differ (exact test); observed mean higher for {b}"),
                              "no difference detected (exact)").astype(object)
         read = q1_read if q == "Q1" else np.ones(trials, dtype=bool)
         lab = np.where(read, lab, "not read: both at the floor").astype(object)

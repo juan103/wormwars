@@ -1,11 +1,14 @@
-"""E3c's registered statistics (its pre-registration's §7; draft 2, D207).
+"""E3c's registered statistics (its pre-registration's §7; draft 4, D207-D209).
 
 - **The unit:** each run's d = (its champion's mean visits per wey on the test block − P-fixed's) / P-fixed's
   mean. The run is the independent unit.
-- **The contrasts:** Q1 = S-mod − S-dense; Q2 = P-joint − S-mod. Each is a two-sided Welch comparison.
+- **The contrasts:** Q1 = S-mod − S-dense; Q2 = P-joint − S-mod.
 - **The confirmatory decision** (D208): an exact two-sided permutation test of the difference in mean d, over
-  every split of the pooled runs, at 0.05 / 2 per contrast. Its null is that the two arms' runs are
-  exchangeable (one distribution). It needs no assumption about failed runs, which the Welch labels do.
+  every split of the pooled runs, at 0.05 / 2 per contrast.
+  - **Its null:** the two arms' runs are exchangeable (one distribution). Under that null its finite-sample
+    type I error is at most 0.025, whatever the failure rates.
+  - **What it does not claim:** a difference in means. For Q2 the null is expected to be false on spread alone
+    (D209).
 - **The margin labels** are approximate (model-based): fixed Welch intervals at 1 − 0.05 / 2 with the dual
   margin. They are calibrated only under the no-failure model of `power.json`. Holm's adjusted p-values are
   reported beside, never as labels.
@@ -128,6 +131,10 @@ def failed(run_visits, w2_alone: float) -> int:
 def readings(*, d: dict, seed_mean: float, run_visits: dict, w2_alone: float, alpha: float = ALPHA) -> dict:
     """Q1 and Q2 from the runs' d and their champions' mean test visits (`run_visits`, per arm), with Q1's floor
     guard and the failed-run rule."""
+    if not (math.isfinite(seed_mean) and seed_mean > 0):
+        lab = "not read: P-fixed's mean is not positive"
+        return {"seed_mean": seed_mean, **{q: {"read": False, "label": lab, "exact": {"p": None, "label": lab}}
+                                           for q in ("Q1", "Q2")}}
     m_lo, m_hi = margins(seed_mean)
     q1_read = max(float(np.mean(run_visits["s_mod"])), float(np.mean(run_visits["s_dense"]))) > w2_alone + FLOOR_MARGIN
     pairs = {"Q1": (d["s_mod"], d["s_dense"]) if q1_read else None, "Q2": (d["p_joint"], d["s_mod"])}
@@ -144,8 +151,10 @@ def readings(*, d: dict, seed_mean: float, run_visits: dict, w2_alone: float, al
         x, y = pairs[q]
         p_exact = permutation_p(x, y)
         side = a if np.mean(x) > np.mean(y) else b
-        exact = {"p": p_exact, "level": alpha / len(pairs), "rejected": p_exact <= alpha / len(pairs),
-                 "label": f"distributions differ; {side} higher (exact)" if p_exact <= alpha / len(pairs) else "no difference detected (exact)"}
+        rej = p_exact <= alpha / len(pairs)
+        exact = {"p": p_exact, "level": alpha / len(pairs), "rejected": rej,
+                 "label": (f"distributions differ (exact test); observed mean higher for {side}" if rej
+                           else "no difference detected (exact)")}
         ok = {arm: np.asarray(dd)[np.asarray(run_visits[arm], dtype=np.float64) > w2_alone + FLOOR_MARGIN]
               for arm, dd in zip(arms[q], (x, y))}
         mw = stats.mannwhitneyu(x, y, alternative="two-sided")
@@ -168,27 +177,36 @@ def nose_class(r) -> str:
 
 
 def coverage_rule(coverer: dict) -> dict:
-    """`coverer[arm]`: per champion True, False or None (undefined). "supported": both S arms' coverer shares
-    ≥ 0.75 and P-joint's share below both; "not supported": both S arms' shares ≤ 0.25; "mixed" otherwise, and
-    whenever any arm has an undefined champion (D208). The parts are reported apart."""
+    """`coverer[arm]`: per champion True, False or None (undefined).
+    - **Shares** are over defined champions (None when an arm has none).
+    - **The S-arm part,** from the S arms alone: "undefined" if any S champion is; "high" if both shares are
+      ≥ 0.75; "low" if both are ≤ 0.25; else "mixed".
+    - **The P-joint comparison:** whether P-joint's share is below both S arms'. None when any champion of the
+      three arms is undefined (Astra, D209).
+    - **The classification:** "mixed" whenever any champion is undefined; otherwise "not supported" if the S arms
+      are low; "supported" if they are high and P-joint is lower than both; else "mixed"."""
     share, undefined = {}, {}
     for arm, xs in coverer.items():
-        undefined[arm] = sum(x is None for x in xs)
-        share[arm] = sum(bool(x) for x in xs if x is not None) / len(xs) if xs else float("nan")
+        defined = [bool(x) for x in xs if x is not None]
+        undefined[arm] = len(xs) - len(defined)
+        share[arm] = sum(defined) / len(defined) if defined else None
     s = ("s_mod", "s_dense")
-    if any(undefined.values()):  # an undefined champion in any arm (Astra, D208)
-        s_part = "mixed"
+    if any(undefined[a] for a in s):
+        s_part = "undefined"
     elif all(share[a] >= COVER_HIGH for a in s):
         s_part = "high"
     elif all(share[a] <= COVER_LOW for a in s):
         s_part = "low"
     else:
         s_part = "mixed"
-    p_lower = all(share["p_joint"] < share[a] for a in s)
-    if s_part == "high" and p_lower and not any(undefined.values()):
-        lab = "supported"
+    any_undefined = any(undefined.values())
+    p_lower = None if any_undefined else all(share["p_joint"] < share[a] for a in s)
+    if any_undefined:
+        lab = "mixed"
     elif s_part == "low":
         lab = "not supported"
+    elif s_part == "high" and p_lower:
+        lab = "supported"
     else:
         lab = "mixed"
     return {"coverers": lab, "s_arms": s_part, "p_joint_lower_than_both": p_lower, "shares": share,

@@ -6790,3 +6790,40 @@ fallback taken was "Astra's fallback, labelling such contrasts approximate".
 - the exact test is Claude's proposal for Astra's "register a validated procedure" option. Astra named Welch's
   downgrade as the other acceptable route; both are taken together;
 - Fable had held that disclosure sufficed, so draft 3 is the more conservative side of the earlier split.
+
+## D209 — E3c pre-registration draft 3 reviewed: both "revise, narrowly"; draft 4 for a confirmation pass
+
+**The review** (`docs/reviews/20261005-E3c-prereg-3/`). Both found the exact permutation test sound for its
+distributional claim. Both reproduced the scenarios they checked from `power.json` exactly; Astra reproduced
+all of it, with the 15 040 checks.
+
+**Required, and taken in draft 4:**
+- **Q2's exact test** (Fable). Under the registered model, P-joint's spread is about 15 times S-mod's, so Q2's
+  exchangeability null is expected to be false on spread alone.
+  - A Q2 rejection therefore carries no 0.025 guarantee about means.
+  - At equal means it rejects in 0.02-0.055 of trials without failures, and up to 0.18 when S-mod fails.
+    Fable's examples, 0.04-0.05 and 0.09-0.10, understated the full range in `power.json`.
+  - **Note to D208:** "its power for Q2 at 1 visit is 0.76, against Welch's 0.64" compares the two tests at
+    unequal false-rejection rates under equal means. It is not a like-for-like comparison.
+- **The exact label** reads "distributions differ (exact test); observed mean higher for X" (both).
+- **The coverage rule's components** (Astra):
+  - the S-arm part comes from the S arms alone;
+  - the P-joint comparison is undefined when any champion is;
+  - shares are over defined champions;
+  - tests assert the components.
+- **§8's Q1 conclusion** is limited to no failures at the pilot's narrow spread (Astra). At spread 0.4 the
+  margin label reads "unclear" in 0.82 of trials.
+
+**Also taken** (optional):
+- the 6-run figures;
+- "not read" for a non-positive P-fixed mean (a test);
+- P-fixed's mean recomputed in the bootstrap;
+- the split counts;
+- the Q1 sentence template;
+- the 128-maze benchmark subsets;
+- the module docstring.
+
+**Not taken:** Fable's studentized permutation statistic (Welch's t permuted). It would bring Q2's equal-means
+rate nearer 0.025, but needs its own power run, and Fable did not require it. The disclosure stands instead.
+
+**Next:** a confirmation pass by both on draft 4's diff. Then the text binds.

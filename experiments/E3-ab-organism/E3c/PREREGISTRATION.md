@@ -1,7 +1,8 @@
 # E3c pre-registration: the assembly comparison in the maze shuttle
 
-**Status: draft 3, for review by both reviewers.** Drafts 1 (54f6f5f) and 2 (0e27083) were reviewed by both,
-who said "revise" each time (D207, D208); §15 and §16 list the changes. This text binds at the commit that is pushed after their agreement. From then
+**Status: draft 4, for a confirmation pass by both reviewers.** Drafts 1 (54f6f5f), 2 (0e27083) and 3
+(65cd529) were reviewed by both. Each time they said "revise", the last time narrowly (D207-D209). §15-§17 list
+the changes. This text binds at the commit that is pushed after their agreement. From then
 on, registered text is never changed or removed. Amendments are added beside it, dated (AGENTS.md, rule 2).
 
 **Its sources:**
@@ -229,7 +230,8 @@ padding is on (`pad_single_strain`).
 ### 7.1 The unit and the primary contrasts
 
 **The unit:** d = (the champion's mean visits per wey on the 256 test mazes − P-fixed's) / P-fixed's mean.
-- **P-fixed's mean** must be finite and positive. Otherwise no contrast is read.
+- **P-fixed's mean** must be finite and positive. Otherwise both contrasts read "not read: P-fixed's mean is not
+  positive".
 - **The run** is the independent unit.
 - **Inference** is conditional on the test block.
 
@@ -239,16 +241,26 @@ padding is on (`pad_single_strain`).
 
 **The confirmatory decision** (post-review, D208): an exact two-sided permutation test per contrast
 (`e3c_stats.permutation_p`).
-- **The statistic:** the difference in mean d, over every split of the pooled runs. With 8 runs against 8 there
-  are 12 870 splits.
+- **The statistic:** the absolute difference in mean d, compared over every split of the pooled runs.
+  - **The p-value:** the share of splits whose absolute difference is at least the observed one (ties
+    included).
+  - **The number of splits:** 12 870 for 8 runs against 8. Under the cut, 3 003 for 6 against 8 (Q2) and 924
+    for 6 against 6 (Q1).
 - **The level:** each contrast is tested at 0.025 (Bonferroni over the two).
-- **Its null:** the two arms' runs are exchangeable, that is drawn from one distribution. Its level is exact
-  under that null, whatever the failure rates. No assumption about failed runs is needed.
+- **Its null:** the two arms' runs are exchangeable, that is drawn from one distribution. Under that null its
+  finite-sample type I error is at most 0.025, whatever the failure rates.
 - **Its labels:**
-  - "distributions differ; X higher (exact)": rejected. "X higher" describes the observed means;
-  - "no difference detected (exact)": not rejected.
-- **What the test does not claim:** a difference in means. When the arms' spreads differ, it can reject at
-  equal means (§8). The claim is only that the arms' run outcomes differ.
+  - "distributions differ (exact test); observed mean higher for X": rejected. The direction describes the
+    sample only. It is not a calibrated claim about population means or about stochastic ordering;
+  - "no difference detected (exact)": not rejected. It does not establish identical distributions.
+- **What the test does not claim:** a difference in means.
+- **For Q2, the null is expected to be false before any data, on spread alone** (Fable).
+  - **Why:** under §8's model, P-joint's runs spread about 15 times more than S-mod's.
+  - **What a Q2 rejection therefore carries:** no 0.025 guarantee about means. In the simulation it rejects at
+    equal means in 0.02-0.055 of trials without failed runs (0.042 in the base case), and in up to 0.18 when
+    S-mod has failed runs (0.05-0.18).
+  - **For Q2,** the exact test is read as "the arms' outcomes differ". Any reading about means rests on the
+    approximate margin label.
 
 **The margin labels,** approximate (model-based) (post-review; both reviewers; the owner's dual margin):
 - **The interval:** each contrast has a two-sided Welch interval at 97.5%, that is 1 − 0.05 / 2.
@@ -297,8 +309,8 @@ padding is on (`pad_single_strain`).
 **The supplements:**
 - a two-sided Mann-Whitney U test per contrast, unadjusted, never a label;
 - a maze-paired percentile bootstrap of each contrast. It resamples the 256 test mazes with replacement,
-  10 000 times, seed 20 261 007, with each run's d recomputed on every resample. Its 95% interval is the 2.5th
-  and 97.5th percentiles.
+  10 000 times, seed 20 261 007. On every resample, P-fixed's mean and each run's d are recomputed. Its 95%
+  interval is the 2.5th and 97.5th percentiles.
 
 **The expectations, registered:**
 - **Q2:** the design registered "engineered initialization better" (§1, v2.1). That sentence stands.
@@ -306,9 +318,12 @@ padding is on (`pad_single_strain`).
     seed (+0.38 in d) and T-F's (+0.381) were alike.
   - **What follows, under the assumed scenarios** (§8): if the true difference is within about half a visit, the
     exact test most likely reads "no difference detected" and the margin label "unclear".
-- **Q1:** if no run fails, "no relevant difference" (approximate) is expected (post-pilot). The two S arms
-  differed by about 0.08 visits per wey in the pilot. A difference that large is within the smaller margin; the
-  exact test may still detect it, since the runs barely vary.
+- **Q1:** if no run fails and the S arms vary as little as in the pilot, "no relevant difference" (approximate) is
+  expected (post-pilot). The two S arms differed by about 0.08 visits per wey in the pilot.
+  - **Why the exact test may still reject:** the runs barely vary, so the test can detect a difference that
+    small.
+  - **How that pair reads:** "the arms' outcomes differ (exact); the mean difference is within the smaller
+    margin (approximate)".
 
 ### 7.2 The cost curve (secondary)
 
@@ -365,10 +380,15 @@ generation 25.
 **The coverage hypothesis** (`e3c_stats.coverage_rule`; proportions, so the cut to 6 runs keeps the rule):
 - **"supported":** each S arm's coverer share is ≥ 0.75, and P-joint's share is below both S arms' shares;
 - **"not supported":** both S arms' shares are ≤ 0.25;
-- **"mixed":** anything else. It includes:
-  - the case where P-joint's share equals or exceeds an S arm's;
-  - any arm, P-joint included, with an undefined champion (Astra's counterexample; D208).
-- **Reported apart:** the S arms' part ("high", "low" or "mixed") and whether P-joint is lower than both.
+- **"mixed":** anything else, by this precedence:
+  1. any arm, P-joint included, with an undefined champion: "mixed" (Astra; D208-D209);
+  2. otherwise, both S arms low: "not supported", whatever P-joint's share;
+  3. otherwise, both S arms high and P-joint lower than both: "supported";
+  4. otherwise "mixed". That includes S arms high with P-joint's share equal to or above an S arm's.
+- **Shares** are over defined champions.
+- **Reported apart** (`e3c_stats.coverage_rule`):
+  - the S arms' part, from the S arms alone: "high", "low", "mixed", or "undefined" if an S champion is;
+  - whether P-joint is lower than both, or undefined when any champion of the three arms is.
 
 **Nose dependence,** directly (descriptive):
 - P-joint's mean r against each S arm's, as Welch differences with two-sided 95% intervals;
@@ -416,9 +436,11 @@ They never change a label.
 - **Its false rejections** where Q1's two distributions are identical (equal means and failure rates; 93
   scenarios): 0.019-0.031. That is consistent with the exact 0.025, given a Monte Carlo SE of about 0.002 and
   the maximum of 93.
-- **At equal means but different spreads** (Q2 at a true difference of 0: P-joint's spread is about 15 times the
-  S arms'), it rejects in 0.042. The arms' distributions then differ, so the "distributions differ" claim is
-  not false; a claim about means would be.
+- **At equal means but different spreads** (Q2 at a true difference of 0: P-joint's spread is about 15 times
+  the S arms'), it rejects in 0.02-0.055 over the 24 no-failure scenarios (0.042 in the base case). When S-mod
+  has failed runs, 0.05-0.18.
+  - The arms' distributions then differ, so "distributions differ" is not false; a claim about means would be.
+  - For the same reason, Q2's exact power below is not comparable with Welch's at equal false-rejection rates.
 - **Its power** (8 S runs, no failures):
   - Q1 at 0.5 visit: 1.00. With 6 S runs: 1.00;
   - Q2 at ±0.5 visit: 0.27;
@@ -436,8 +458,8 @@ They never change a label.
     | S spread 0.4 | 0.67-0.68 |
 - **With failures:**
   - Q1 at a true 1 visit: 0.34 (both S arms failing at 1/8) and 0.14 (at 1/4);
-  - with unequal failure rates at equal means, it rejects in 0.33-0.34, correctly, since the distributions
-    differ;
+  - with unequal failure rates at equal means, it rejects in 0.33-0.34 with 8 S runs, and 0.44-0.45 with 6:
+    correctly, since the distributions differ;
   - its largest "wrong direction" rate, 0.108, comes from such a case: the failing arm's successful runs
     out-score the other arm while its mean is lower. "X higher" describes the sample, as the label says.
 
@@ -445,7 +467,7 @@ They never change a label.
 - **Without failures, in the base scenarios:** the joint rate of any false label assertion over both contrasts,
   counting a false "beyond", "within" or "no relevant difference" as well as a wrong direction (Astra), is at
   most 0.049. The joint coverage of the two 97.5% intervals is 0.948-0.959.
-- **Under T-F's empirical shape** they are 0.066 and 0.934: the 8-atom artifact.
+- **Under T-F's empirical shape** they are at worst 0.066 and 0.934: the 8-atom artifact.
 - **With failures:** up to 0.47, and coverage down to 0.52 (6 S runs, S-dense failing at 1/8). This is why they
   are labelled approximate.
 - **Base examples** (8 S runs, no failures):
@@ -458,7 +480,13 @@ They never change a label.
   | 1, 1 | "beyond the margin" 1.00 | 0.65 | 0.000 |
 
 **What follows:**
-- **Q1** is decisive if no run fails.
+- **Q1, margin label:** decisive only if no run fails **and** the S arms vary as little as in the pilot (spread
+  0.06).
+  - At spread 0.4 without failures, it reads "unclear" in 0.82 of trials at a true difference of 0, and "no
+    relevant difference" in 0.15 (Astra).
+  - The absence of observed failures is not evidence of the no-failure model.
+- **Q1, exact test:** it detects a 0.5-visit difference with power 1.00 at spread 0.06, with 8 or 6 runs. It
+  answers "do the outcomes differ", not "is the difference relevant".
 - **Q2** needs a true difference near a visit or more for a likely detection, by either decision.
 - **With failures,** Q1's margin label is mostly uninformative, and the exact test answers the narrower question
   of whether the distributions differ.
@@ -482,8 +510,9 @@ and 0.20 at the pilot's (1/3).
 **What it times,** on the benchmark ids:
 - one generation of each training composition, uncut and cut: [256, 8, 8] and [192, 8, 8] for the S arms,
   [128, 8, 8] and [64, 8, 8] for P-sel;
-- a checkpoint chunk, a champions chunk and an evaluation chunk, each on the 256 benchmark mazes (no id
-  repeated).
+- a checkpoint chunk and a champions chunk on the first 128 benchmark mazes (10 700-10 827), as in their formal
+  compositions;
+- an evaluation chunk on all 256 (no id repeated).
 
 **The projection:** the formal total, with × 1.25 on training, checked against §10 before any training.
 
@@ -708,3 +737,30 @@ details. Taken:
   - §15's completion claim, corrected beside it (rule 4; Astra);
   - the exact label says "distributions differ", since the test can reject at equal means when the spreads
     differ (§8).
+
+## 17. Changes from draft 3 (the reviews, D209)
+
+**Both reviewers said "revise, narrowly".** Taken:
+- **Q2's exact test, disclosed** (§7.1, §8; Fable):
+  - its null is expected to be false on spread alone, so a rejection carries no guarantee about means;
+  - the equal-means rejection rates are given from `power.json`: 0.02-0.055 without failures, up to 0.18 with
+    them. Fable's examples were 0.04-0.05 and 0.09-0.10; the full ranges are wider;
+  - its power is not comparable with Welch's.
+- **The exact label** names the direction as the observed mean: "distributions differ (exact test); observed mean
+  higher for X" (both).
+- **The coverage rule's components** (§7.3; Astra):
+  - the S-arm part comes from the S arms alone;
+  - the P-joint comparison is undefined when any champion is;
+  - shares are over defined champions;
+  - the precedence is stated. Tests assert the components.
+- **§8's Q1 conclusion is qualified:** no failures and narrow spread; the exact and margin readings are
+  distinguished (Astra).
+- **Smaller fixes:**
+  - the 6-run figures (Fable);
+  - "not read" for a non-positive P-fixed mean (Fable);
+  - P-fixed's mean recomputed in the bootstrap (Fable);
+  - the split counts (Fable);
+  - the Q1 sentence template (Fable);
+  - the 128-maze benchmark subsets (Astra);
+  - "at most 0.025 under exchangeability" (Astra);
+  - the module docstring (Fable).
