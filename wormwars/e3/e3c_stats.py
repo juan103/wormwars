@@ -182,7 +182,7 @@ def coverage_rule(coverer: dict) -> dict:
     - **The S-arm part,** from the S arms alone: "undefined" if any S champion is; "high" if both shares are
       ≥ 0.75; "low" if both are ≤ 0.25; else "mixed".
     - **The P-joint comparison:** whether P-joint's share is below both S arms'. None when any champion of the
-      three arms is undefined (Astra, D209).
+      three arms is undefined, or an arm has no defined champion at all (Astra, D209-D210).
     - **The classification:** "mixed" whenever any champion is undefined; otherwise "not supported" if the S arms
       are low; "supported" if they are high and P-joint is lower than both; else "mixed"."""
     share, undefined = {}, {}
@@ -191,7 +191,8 @@ def coverage_rule(coverer: dict) -> dict:
         undefined[arm] = len(xs) - len(defined)
         share[arm] = sum(defined) / len(defined) if defined else None
     s = ("s_mod", "s_dense")
-    if any(undefined[a] for a in s):
+    unavailable = [arm for arm in coverer if share[arm] is None]  # no defined champion, or an empty arm (D210)
+    if any(undefined[a] for a in s) or any(share[a] is None for a in s):
         s_part = "undefined"
     elif all(share[a] >= COVER_HIGH for a in s):
         s_part = "high"
@@ -199,7 +200,7 @@ def coverage_rule(coverer: dict) -> dict:
         s_part = "low"
     else:
         s_part = "mixed"
-    any_undefined = any(undefined.values())
+    any_undefined = any(undefined.values()) or bool(unavailable)
     p_lower = None if any_undefined else all(share["p_joint"] < share[a] for a in s)
     if any_undefined:
         lab = "mixed"
@@ -210,7 +211,7 @@ def coverage_rule(coverer: dict) -> dict:
     else:
         lab = "mixed"
     return {"coverers": lab, "s_arms": s_part, "p_joint_lower_than_both": p_lower, "shares": share,
-            "undefined": undefined}
+            "undefined": undefined, "unavailable": unavailable}
 
 
 def censored_median(gens) -> float | str:

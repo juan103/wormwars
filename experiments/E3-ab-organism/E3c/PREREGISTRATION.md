@@ -1,6 +1,6 @@
 # E3c pre-registration: the assembly comparison in the maze shuttle
 
-**Status: draft 4, for a confirmation pass by both reviewers.** Drafts 1 (54f6f5f), 2 (0e27083) and 3
+**Status: draft 4, confirmed by both reviewers after one fix (D210); it binds at this commit.** Drafts 1 (54f6f5f), 2 (0e27083) and 3
 (65cd529) were reviewed by both. Each time they said "revise", the last time narrowly (D207-D209). §15-§17 list
 the changes. This text binds at the commit that is pushed after their agreement. From then
 on, registered text is never changed or removed. Amendments are added beside it, dated (AGENTS.md, rule 2).
@@ -257,9 +257,9 @@ padding is on (`pad_single_strain`).
 - **For Q2, the null is expected to be false before any data, on spread alone** (Fable).
   - **Why:** under §8's model, P-joint's runs spread about 15 times more than S-mod's.
   - **What a Q2 rejection therefore carries:** no 0.025 guarantee about means. In the simulation it rejects at
-    equal means in 0.02-0.055 of trials without failed runs (0.042 in the base case), and in up to 0.18 when
-    S-mod has failed runs (0.05-0.18).
-  - **For Q2,** the exact test is read as "the arms' outcomes differ". Any reading about means rests on the
+    equal means in 0.02-0.055 of trials without failures (0.042 in the base case). Under the failure models
+    where S-mod can fail, it rejects in 0.05-0.18.
+  - **For Q2,** the exact test is read as "distributions differ". Any reading about means rests on the
     approximate margin label.
 
 **The margin labels,** approximate (model-based) (post-review; both reviewers; the owner's dual margin):
@@ -381,7 +381,8 @@ generation 25.
 - **"supported":** each S arm's coverer share is ≥ 0.75, and P-joint's share is below both S arms' shares;
 - **"not supported":** both S arms' shares are ≤ 0.25;
 - **"mixed":** anything else, by this precedence:
-  1. any arm, P-joint included, with an undefined champion: "mixed" (Astra; D208-D209);
+  1. any arm, P-joint included, with an undefined champion, or with no eligible champion at all: "mixed"
+     (Astra; D208-D210). An S arm with none makes the S arms' part "undefined";
   2. otherwise, both S arms low: "not supported", whatever P-joint's share;
   3. otherwise, both S arms high and P-joint lower than both: "supported";
   4. otherwise "mixed". That includes S arms high with P-joint's share equal to or above an S arm's.
@@ -437,8 +438,8 @@ They never change a label.
   scenarios): 0.019-0.031. That is consistent with the exact 0.025, given a Monte Carlo SE of about 0.002 and
   the maximum of 93.
 - **At equal means but different spreads** (Q2 at a true difference of 0: P-joint's spread is about 15 times
-  the S arms'), it rejects in 0.02-0.055 over the 24 no-failure scenarios (0.042 in the base case). When S-mod
-  has failed runs, 0.05-0.18.
+  the S arms'), it rejects in 0.02-0.055 over the 24 scenarios without failures (0.042 in the base case). Under
+  the failure models where S-mod can fail, 0.05-0.18; where only S-dense can fail, 0.02-0.05.
   - The arms' distributions then differ, so "distributions differ" is not false; a claim about means would be.
   - For the same reason, Q2's exact power below is not comparable with Welch's at equal false-rejection rates.
 - **Its power** (8 S runs, no failures):
@@ -764,3 +765,11 @@ details. Taken:
   - the 128-maze benchmark subsets (Astra);
   - "at most 0.025 under exchangeability" (Astra);
   - the module docstring (Fable).
+
+**The confirmation pass of draft 4** (D210): Fable said "bind it". Astra said "revise", for one regression: draft
+4's `coverage_rule` crashed on an arm with no eligible champion. It is fixed test-first, together with Fable's
+wording notes:
+- "under the failure models";
+- "distributions differ", aligned with the label;
+- the scenarios where only S-dense can fail;
+- §7.3's wording for an empty arm.

@@ -221,3 +221,14 @@ def test_a_non_positive_seed_mean_is_a_registered_outcome():
     out = S.readings(d=d, seed_mean=0.0, run_visits={k: np.full(8, 5.0) for k in d}, w2_alone=1.7)
     for q in ("Q1", "Q2"):
         assert out[q]["label"] == "not read: P-fixed's mean is not positive" and out[q]["read"] is False
+
+
+def test_an_empty_arm_is_unavailable_never_a_crash():
+    """Astra and Fable (D210): an arm with no eligible champion, possible under §5's interruption rules."""
+    r = S.coverage_rule({"s_mod": [True] * 8, "s_dense": [True] * 8, "p_joint": []})
+    assert r["coverers"] == "mixed" and r["s_arms"] == "high" and r["p_joint_lower_than_both"] is None
+    assert r["shares"]["p_joint"] is None and r["unavailable"] == ["p_joint"]
+    for empty in ("s_mod", "s_dense"):
+        arms = {"s_mod": [True] * 8, "s_dense": [True] * 8, "p_joint": [False] * 8, empty: []}
+        r = S.coverage_rule(arms)
+        assert r["coverers"] == "mixed" and r["s_arms"] == "undefined" and r["p_joint_lower_than_both"] is None
