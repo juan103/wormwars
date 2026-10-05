@@ -27,6 +27,18 @@
    "git_commit": "ec6913436bff2ac284c1495197459b23e4e94c49"
   },
   {
+   "file": "20261005T200102Z-f13c42c3.json",
+   "status": "completed",
+   "script": "e3c",
+   "argv": [
+    "project",
+    "--device",
+    "cuda"
+   ],
+   "default_category": "measure",
+   "git_commit": "2c0344e75f3aac8f921b53a577c9af6a8fad9a8c"
+  },
+  {
    "file": "diagnostic-seed-check-20261005.json",
    "status": "diagnostic (reconciled)",
    "script": "experiments/E3-ab-organism/E3c/diagnostics/seed_check.py"
@@ -40,21 +52,21 @@
    "world_ticks": 0,
    "neural_updates": 24960,
    "neural_padding": 3840,
-   "seconds": 10.933704001130536
+   "seconds": 12.671413501026109
   },
   "selection": {
-   "worlds_built": 307200,
-   "world_ticks": 737280000,
-   "neural_updates": 188743680000,
+   "worlds_built": 322560,
+   "world_ticks": 774144000,
+   "neural_updates": 198180864000,
    "neural_padding": 0,
-   "seconds": 13260.149722998729
+   "seconds": 13895.500917798607
   },
   "holdout": {
-   "worlds_built": 9088,
-   "world_ticks": 21811200,
-   "neural_updates": 5740953600,
+   "worlds_built": 9128,
+   "world_ticks": 21907200,
+   "neural_updates": 5765529600,
    "neural_padding": 157286400,
-   "seconds": 609.2389708999544
+   "seconds": 811.1616387004033
   },
   "probe": {
    "worlds_built": 2560,
@@ -62,6 +74,13 @@
    "neural_updates": 1889095680,
    "neural_padding": 314572800,
    "seconds": 215.77324960008264
+  },
+  "calibration": {
+   "worlds_built": 8960,
+   "world_ticks": 21504000,
+   "neural_updates": 5662310400,
+   "neural_padding": 157286400,
+   "seconds": 382.15102889970876
   },
   "diagnostic": {
    "worlds_built": 0,
@@ -72,10 +91,10 @@
   }
  },
  "totals": {
-  "worlds_built": 318848,
-  "world_ticks": 765235200,
-  "neural_updates": 196373754240,
-  "neural_padding": 471863040,
-  "seconds_timed": 14204.648121998645
+  "worlds_built": 343208,
+  "world_ticks": 823699200,
+  "neural_updates": 211497824640,
+  "neural_padding": 629149440,
+  "seconds_timed": 15425.810722998576
  }
 }
