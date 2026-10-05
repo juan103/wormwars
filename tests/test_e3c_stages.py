@@ -30,6 +30,19 @@ def _run(stage, *extra):
                           cwd=ROOT, capture_output=True, text=True, timeout=3600)
 
 
+def _ge_or_skip():
+    """Run the smoke g-e. Off Windows its CPU leg is bitwise against a Windows reference (rule 6; D202), so it may
+    not pass there: then the other legs must pass, and the test that needs it is skipped with the reason."""
+    r = _run("g-e")
+    assert r.returncode == 0, ("g-e", r.stderr[-3000:])
+    ge = json.loads((ROOT / "runs" / "e3c-smoke" / "g-e.json").read_text(encoding="utf-8"))
+    if not ge["passed"]:
+        legs = {k: ge[k] for k in ("cpu", "snapshot_hook", "mazes")}
+        assert sys.platform != "win32", legs
+        assert ge["snapshot_hook"]["identical"] and ge["mazes"]["passed"] and not ge["cpu"]["passed"], legs
+        pytest.skip("g-e's CPU leg is bitwise against a Windows reference (rule 6, D202); training needs g-e")
+
+
 # ------------------------------------------------------------------ P-joint's hash check (§2, §12: sabotaged)
 
 @pytest.mark.skipif(not TF_GENOMES.exists(), reason="needs E3b-1's T-F genomes, which stay local (D200)")
@@ -272,6 +285,9 @@ def test_a_stage_refuses_before_its_prerequisites():
 @pytest.mark.skipif(not TF_GENOMES.exists(), reason="needs E3b-1's T-F genomes, which stay local (D200)")
 def test_a_smoke_of_every_formal_stage():
     for stage in FORMAL:
+        if stage == "g-e":
+            _ge_or_skip()
+            continue
         r = _run(stage)
         assert r.returncode == 0, (stage, r.stdout[-2000:], r.stderr[-4000:])
     out = ROOT / "runs" / "e3c-smoke"
@@ -308,9 +324,9 @@ def test_a_smoke_of_every_formal_stage():
 def test_a_stopped_training_keeps_its_populations_and_its_rerun_reuses_them(monkeypatch):
     """Both reviewers and Amendment 1: populations are saved before the checkpoint plays; a rerun of a stage whose
     training completed reuses them (hash-checked) and redoes only the plays."""
-    for stage in ("project", "g-e"):
-        r = _run(stage)
-        assert r.returncode == 0, (stage, r.stderr[-3000:])
+    r = _run("project")
+    assert r.returncode == 0, ("project", r.stderr[-3000:])
+    _ge_or_skip()
     m = _fresh("e3c_rerun")
     m.use_smoke(type("A", (), {"command": "train-smod"})())
     m.REGISTERED["cap_gpu_hours"] = 30.0
@@ -441,9 +457,9 @@ def test_interruptions_keep_completed_work_and_a_mismatch_stays_refused(monkeypa
     """Both reviewers (D212): a consistency mismatch refuses in attempt 1 and again in a rerun that reuses the
     training; champions and evaluate persist each completed chunk; a stage runs once; the training ids are
     pre-flighted."""
-    for stage in ("project", "g-e"):
-        r = _run(stage)
-        assert r.returncode == 0, (stage, r.stderr[-3000:])
+    r = _run("project")
+    assert r.returncode == 0, ("project", r.stderr[-3000:])
+    _ge_or_skip()
     once = _fresh("e3c_once")  # the smoke's own reset is skipped: a completed stage runs once
     once.use_smoke(type("A", (), {"command": "pilot"})())  # clears only the pilot smoke's records
     once.REGISTERED["cap_gpu_hours"] = 30.0
@@ -553,7 +569,10 @@ def test_the_cap_and_the_last_chunks(monkeypatch):
     """Astra (D214): a stage refused at the cap before it starts leaves no record and no marker (the report reads it
     as never started); a cap reached at the frame's final check keeps the whole result as salvage; champions keeps
     P-joint's first learning point when the second play fails; a corrupt saved archive makes a rerun train again."""
-    for stage in ("project", "g-e", "train-smod", "train-sdense", "train-psel"):
+    r = _run("project")
+    assert r.returncode == 0, ("project", r.stderr[-3000:])
+    _ge_or_skip()
+    for stage in ("train-smod", "train-sdense", "train-psel"):
         r = _run(stage)
         assert r.returncode == 0, (stage, r.stderr[-3000:])
     args = type("A", (), {"device": "cpu", "smoke": True, "guarded": False, "rerun": False, "reason": None})()
@@ -648,7 +667,10 @@ def test_the_cap_and_the_last_chunks(monkeypatch):
 def test_a_failed_champion_save_leaves_a_consistent_record(monkeypatch):
     """Astra: a save that fails adds no record entry, so the record and the files agree and evaluate can load every
     listed champion; a file written just before a kill is merely unreferenced."""
-    for stage in ("project", "g-e", "train-smod", "train-sdense", "train-psel"):
+    r = _run("project")
+    assert r.returncode == 0, ("project", r.stderr[-3000:])
+    _ge_or_skip()
+    for stage in ("train-smod", "train-sdense", "train-psel"):
         r = _run(stage)
         assert r.returncode == 0, (stage, r.stderr[-3000:])
     m = _fresh("e3c_champ_save")

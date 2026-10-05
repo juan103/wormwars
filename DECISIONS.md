@@ -7058,3 +7058,21 @@ of its parts targets behaviour the old code lacked):
 - the killed route reads only a stage whose rerun state is "none", so an interrupted rerun setup gets the
   frame's own message;
 - `save_atomic` uses the frame's `replace`, which retries Windows' transient refusal.
+
+## D218 — The CPU CI was red again from 9d76251: E3c's tests needed g-e to pass on Linux
+
+**Found by the owner** (GitHub's failure emails), again. Five pushes, 9d76251 to 265ed2c, failed GitHub's CPU
+suite. The local suite was green, and the GitHub runs were not checked after those pushes, contrary to D202's
+practice.
+
+**The cause, D202's again:**
+- E3c's stop-and-rerun test runs the smoke `g-e` and then a training stage;
+- on Linux, `g-e`'s CPU leg compares bitwise against a Windows reference (rule 6), so `g-e` does not pass, and
+  training rightly refuses;
+- the other E3c slow tests skip on CI because E3b-1's genomes stay local; this one has no such skip.
+
+**The fix** (tests only, no guarded path): every E3c test that needs `g-e` goes through one helper. Off Windows,
+it asserts that the hook and maze legs passed and that only the CPU leg failed, then skips with the reason. On
+Windows, nothing changes.
+
+**The formal run is unaffected:** `g-e` runs on the registered GPU under Windows.
