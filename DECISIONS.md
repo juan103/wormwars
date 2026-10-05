@@ -6598,3 +6598,77 @@ pre-registration: saving genomes, a scent-dependence reading, a wall-follower re
 
 **Without consensus on the next step, and since the finding bears on what E3c can say, the owner is asked**
 (the delegation: decisions without consensus and scientific-direction questions go to the owner).
+
+## D205 — The owner: replay and probe first; if scent-free, run E3c as designed. The outcomes fixed before the run
+
+**The owner's choices** (2026-10-05, after D204's split):
+- Astra's bounded step comes first;
+- if the champions prove scent-free, E3c runs as designed, with the scent readings interpreting it.
+
+**The step** (exploratory; `scripts/e3c.py replay`, test-first):
+- **The replay:** the pilot's S-dense batch, unchanged:
+  - the same draws, masks, ids and schedule;
+  - the same composition, [96, 8, 8].
+  Every generation's best-genome hash is compared with `pilot.json`. On the CPU smoke the replay matches
+  exactly. On the GPU a match is checked, not promised (rule 6); if the hashes differ, the champions are
+  described as exploratory retraining.
+- **Saved locally:** the final populations and the checkpoint candidates, with their hashes in the record.
+- **The probes,** on the pilot block (no formal block is touched), for the three champions (generation 99),
+  the seed and W2 alone:
+  - intact, and with the noses removed (`attribution.without_scent`);
+  - each wey's maze cell at every tick, giving:
+    - the coverage of the 25 cells;
+    - the tour match: the share of cell-to-cell moves that repeat the move 48 moves earlier. A circuit of the
+      tree scores 1;
+  - the retained fraction: visits with the noses removed / intact.
+- **Also:**
+  - the champions' resting turn offset and K_D;
+  - a sweep of W2 with a constant resting turn (−0.8 to 1.4), a scent-free reference (Fable).
+- **The cap:** E3c's running total may reach 5.0 GPU-hours during this stage, that is the pilot's 2.85 plus
+  about 1.5 plus a margin.
+
+**The outcomes, fixed now, before the run:**
+- **"coverage":** every champion keeps ≥ 0.9 of its visits with the noses removed, covers ≥ 0.95 of its maze
+  and has a tour match ≥ 0.5.
+  - **What follows:** register the coverage hypothesis, narrow the stereo-assembly language, and keep the
+    formal noses-removed reading.
+- **"scent-dependent":** every champion keeps ≤ 0.5.
+  - **What follows:** keep the reading, withdraw the scent-free explanation as the leading account, and make
+    no stereo claim without a more specific probe.
+- **"mixed":** anything else.
+  - **What follows:** register the heterogeneity and the uncertainty, and proceed. There is no open-ended
+    search for a cleaner story.
+- **None of the three** changes the branch, the factor, the schedule or the primary contrasts.
+
+**Whose thresholds:**
+- 0.9 and 0.5 are Fable's classes for the retained fraction;
+- coverage ≥ 0.95 and tour match ≥ 0.5 are Claude's, set before any GPU result.
+
+**Note to D205** (2026-10-05, after both reviewers' code check, `docs/reviews/20261005-E3c-replay-code/`; both
+said "fix first"; all findings taken, test-first, before any GPU use):
+- **The formal replay could not have started** (both). The general pilot-record check demands every guarded
+  path unchanged since the pilot, and the replay's code is a change.
+  - **Now:** a dedicated loader, E3b-0's pattern (D178). It requires the pilot record completed, committed,
+    pinned by hash and from the same environment, and the engine paths (`wormwars`, `configs`,
+    `requirements.txt`) unchanged since its commit. `scripts` is exempt.
+  - The resolved task configuration must also equal the pilot's.
+  - A test makes the scripts check fail and shows that the loader still accepts the pilot.
+- **The tour match now compares directed moves** (Astra). Comparing cells scored 0.51 on a path with no
+  repeated move, and exactly 48 moves left nothing to compare.
+  - **Now:** directed moves, more than 48 needed. This is what D205's wording says ("repeat the move").
+  - Fable's best lag over 44-52 is recorded beside it, as an exploratory companion. The outcome rule uses the
+    lag-48 measure only.
+- **Paths and records:**
+  - every champion's paths are kept, with maze, wey and transition ticks;
+  - the full per-generation hashes are kept;
+  - a partial record is written at checkpoints and each minute, and a failure keeps the hashes so far;
+  - genome files join the rerun's preserved files;
+  - mismatched hashes are labelled "exploratory retraining".
+- **The outcome rule's definitions, made explicit:**
+  - coverage and tour match come from the intact condition;
+  - coverage is averaged over weys and mazes;
+  - the tour match is averaged over weys with more than 48 moves;
+  - "noses removed" leaves the relays' source-occupancy inputs and W2's collision sensing on.
+- **The thresholds are unchanged.** Fable noted that one deviation in a circuit drops the lag-48 match to
+  about 0.66, and two to about 0.3. A true wall-follower can therefore land in "mixed", which is the
+  conservative side.
