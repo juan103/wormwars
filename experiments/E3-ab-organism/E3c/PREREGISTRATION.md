@@ -862,3 +862,23 @@ This extends Amendment 1's point 5, which reads stopped stages through their sal
 - this amendment is committed and pushed before `project`;
 - each stage's record is committed and pushed before the next stage;
 - nothing guarded changes until `report` has run.
+
+**Clarification of Amendment 2** (2026-10-05, after both reviewers' confirmation, D217; before any formal stage
+ran):
+- **The formal code** is at commit 3cb35fb. Since a8627ac it changes only:
+  - the killed-route condition: a rerun state of "none" only;
+  - `save_atomic`'s use of the frame's `replace`.
+
+  Both were suggested by Fable in the confirmation and tested first.
+- **"Every formal stage runs at the commit of this amendment"** means:
+  - every formal stage runs at a pushed descendant of the commit that adds this clarification;
+  - every guarded path (code and this pre-registration) is unchanged since that commit;
+  - each start marker records the stage's own HEAD, since each stage's record is committed and pushed before
+    the next stage;
+  - the guards compare the guarded paths with the earlier stages' commits.
+- **"No stage can start or be rerun" after the ceiling** exempts:
+  - `report`, which is analysis on the CPU and runs after the cap (Amendment 1, point 6);
+  - the frame's handling of a killed rerun, which charges the kill and writes a final record.
+- **A killed first attempt's compute** is charged when its refused rerun is planned (the frame's
+  reconciliation). Only then does the recorded compute show the ceiling reached, and its partial record become
+  readable.
