@@ -7044,3 +7044,17 @@ of its parts targets behaviour the old code lacked):
 - Amendment 2 states the rule and records the formal code commit;
 - both reviewers confirm;
 - then `project`.
+
+## D217 — Amendment 2 confirmed in substance; a dated clarification, and two small code items
+
+**The confirmation** (`docs/reviews/20261005-E3c-amendment-2/`), at 3385a8b.
+- **Both** found D216's code correct.
+- **Both** asked for a dated clarification of Amendment 2, in its text only:
+  - stages run at pushed descendants of the amendment's commit, with every guarded path unchanged, and each
+    marker records its own HEAD, since records are committed between stages;
+  - "no stage can start after the ceiling" exempts `report` and the frame's handling of a killed rerun.
+
+**Also taken** (Fable's optional items, test-first):
+- the killed route reads only a stage whose rerun state is "none", so an interrupted rerun setup gets the
+  frame's own message;
+- `save_atomic` uses the frame's `replace`, which retries Windows' transient refusal.

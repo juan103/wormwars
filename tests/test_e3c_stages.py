@@ -738,6 +738,9 @@ def test_a_killed_stage_read_after_the_cap_passes_the_usual_guards(tmp_path, mon
     monkeypatch.setattr(m.E, "rerun_state", lambda st: "used")  # a killed rerun: the frame's own route
     with pytest.raises(SystemExit):
         m.require_record(formal, {}, "train-psel", stopped_ok=True)
+    monkeypatch.setattr(m.E, "rerun_state", lambda st: "setup")  # an interrupted rerun setup: the frame's route too
+    with pytest.raises(SystemExit):
+        m.require_record(formal, {}, "train-psel", stopped_ok=True)
     monkeypatch.setattr(m.E, "rerun_state", lambda st: "none")
     (tmp_path / "train-psel-partial.json").unlink()
     got = m.require_record(formal, {}, "train-psel", stopped_ok=True)

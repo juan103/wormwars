@@ -745,7 +745,7 @@ def require_record(args, prov, stage: str, stopped_ok: bool) -> dict:
             part, mk = E.partial_path(stage), E.marker_path(stage)
             # a killed rerun goes the frame's way (it charges the kill and writes a final record); a killed first
             # attempt, once the cap forbids its rerun, is read from its partial record under the same guards
-            if not (mk.exists() and cap_exhausted() and E.rerun_state(stage) != "used"):
+            if not (mk.exists() and cap_exhausted() and E.rerun_state(stage) == "none"):  # (Fable, D217)
                 raise
             mprov = json.loads(mk.read_text(encoding="utf-8"))["provenance"]
             if E.formal(args):  # the same guards as any earlier record (both reviewers, D216)
@@ -848,7 +848,7 @@ def save_atomic(path: Path, genome: Genome, **kw) -> Path:
     tmp = path.with_name(path.stem + ".tmp.npz")
     try:
         save_population(tmp, genome, **kw)
-        os.replace(tmp, path)
+        E.replace(tmp, path)  # the frame's replace, retried on Windows' transient refusal (Fable, D217)
     except BaseException:
         tmp.unlink(missing_ok=True)  # never leave a partial archive behind (Fable, D216)
         raise
