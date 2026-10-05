@@ -1,0 +1,12 @@
+{
+ "e3b1_test": {
+  "play_started_organism": 5.83984375,
+  "play_batch_genome": 5.83984375,
+  "seconds": 58.95288562774658
+ },
+ "pilot": {
+  "play_started_organism": 4.82421875,
+  "play_batch_genome": 4.82421875,
+  "seconds": 49.5995888710022
+ }
+}

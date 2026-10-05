@@ -6542,3 +6542,24 @@ GitHub runs. No published result is affected.
    - **Now:** it skips, with the reason, when they are absent.
 
 **The practice:** after a push, the GitHub run is checked as well as the local suite.
+
+## D203 — E3c's pilot: the branch is "mazes"; three findings go to the reviewers before the pre-registration
+
+**The run** (`experiments/E3-ab-organism/E3c/PILOT.md`, `pilot.json`): 2.82 GPU-hours, completed, at e2f0273.
+- **Off the floor** (above W2 alone + 1 = 2.72): every arm.
+  - S-mod: 6.60-6.70 at generation 99;
+  - S-dense: 6.65-6.79;
+  - P-sel: 1 of 3 runs (5.22).
+- **§5's fixed rule** keeps E3c in the mazes, at factor 1.0.
+
+**Findings that the design did not anticipate** (exploratory):
+1. **Both S arms pass the seed** (4.82 on the pilot block) by about 1.8-2.0 visits per wey within 25-99
+   generations. The design registered "P-joint better" as Q2's expected outcome.
+2. **The S champions score almost the same on every maze** (per-maze SD about 0.5, against the seed's 3.7).
+   A maze-independent, possibly scent-free routine would explain it. It is untested: the pilot saved no
+   genomes, and no scripted wall-follower exists among the controls.
+3. **The seed makes 4.82 here and 5.84 on E3b-1's test block.** A diagnostic played it both ways on both
+   blocks and reproduced both numbers exactly, so the difference is the block, not the code.
+
+**Next:** both reviewers are asked about the formal run's changes before the power analysis and the
+pre-registration: saving genomes, a scent-dependence reading, a wall-follower reference.
