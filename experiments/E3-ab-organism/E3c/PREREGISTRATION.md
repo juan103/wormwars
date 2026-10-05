@@ -836,3 +836,29 @@ D212; still before any formal stage ran):
     play, a condition of an evaluation play), and at least once a minute between rollouts. A single rollout
     longer than a minute is not interrupted to write one.
   - **Partial records in every stage,** `g-e` included.
+
+### Amendment 2 (2026-10-05, before any formal stage ran): the formal code, and reading a stage after the cap
+
+**The formal code:** commit a8627ac (`scripts/e3c.py`, `wormwars/e3/e3c_formal.py`). It was written after binding,
+test-first against §12.
+- **Its review:** both reviewers, over five rounds (`docs/reviews/20261005-E3c-formal-code*/`, D211-D216).
+- **What starts the run:** every formal stage runs at the commit of this amendment, which differs from a8627ac
+  only in this text and the decision log. The commit is recorded in every start marker.
+- **What may not change** between `project` and `report`: the guarded paths, this text included.
+
+**Reading a stage after the cap** (Fable, D215-D216). Once E3c's recorded compute reaches the 30-hour ceiling,
+no stage can start or be rerun. Then:
+- **A crashed stage** (stopped, its rerun refused by the cap) is read as final, through its stopped record.
+- **A killed first attempt** is read through its partial record, the last one written.
+  - It passes the same guards as any earlier record: the marker and the partial record committed, the code and
+    the environment unchanged since the marker's commit.
+  - A killed attempt with no partial record yields an empty record, so its readings are "not read".
+- **A killed rerun** keeps the frame's own route, which charges the kill and writes a final record.
+- **Before the ceiling,** both cases still refuse, as the frame's rerun rule requires.
+
+This extends Amendment 1's point 5, which reads stopped stages through their salvaged records.
+
+**The process conditions** (Fable):
+- this amendment is committed and pushed before `project`;
+- each stage's record is committed and pushed before the next stage;
+- nothing guarded changes until `report` has run.
