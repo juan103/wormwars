@@ -73,7 +73,7 @@ def _synthetic(levels: dict, seed_level=5.0, retained=1.0, n_maze=16, rng=None, 
         arms[arm] = {"runs": list(range(len(xs))), "intact": intact, "noses_removed": removed,
                      "turn_offset": [0.5] * len(xs), "K_D_A_at_q0": [0.0] * len(xs)}
     seed_pm = seed_level + 0.3 * rng.standard_normal(n_maze)
-    ev = {"arms": arms, "ab_distance": list(rng.uniform(10, 40, n_maze)),
+    ev = {"arms": arms, "ab_distance": list(rng.uniform(10, 40, n_maze)), "test_ids": list(range(n_maze)),
           "references": {"seed": {"intact": _strain(seed_pm, 0.8, 0.07), "noses_removed": _strain(seed_pm * 0.35, 0.8, 0.05)},
                          "w2_alone": {"intact": _strain(np.full(n_maze, 1.7) + 0.01 * rng.standard_normal(n_maze))},
                          "w2_turn": {"intact": _strain(np.full(n_maze, 5.7))}, "r_shared": {"intact": _strain(np.full(n_maze, 3.0))}}}
@@ -96,9 +96,14 @@ BASE = {"s_mod": [6.7] * 8, "s_dense": [6.72] * 8, "p_sel": [2.3, 5.2, 2.3, 2.2]
 A_ = "approximate (model-based): "
 
 
+def RR(mod, ev, ch, tr, paths=True):
+    """The report on synthetic records; the path files are taken as present unless `paths` is False."""
+    return mod.report_readings(ev, ch, tr, {}, paths_check=(lambda man, n: True) if paths else (lambda man, n: False))
+
+
 def test_the_report_reads_coverers_and_no_relevant_difference(m):
     ev, ch, tr = _synthetic(BASE)
-    r = m.report_readings(ev, ch, tr, {})
+    r = RR(m, ev, ch, tr)
     assert r["primary"]["Q1"]["label"] == A_ + "no relevant difference"
     assert r["primary"]["Q1"]["qualifier"]["s_mod"]["coverers"] == 8  # the qualifier sits inside the reading
     assert r["coverage_hypothesis"]["s_arms"] == "high"
@@ -110,11 +115,11 @@ def test_the_report_reads_coverers_and_no_relevant_difference(m):
 
 def test_the_report_reads_a_difference_both_ways(m):
     ev, ch, tr = _synthetic({"s_mod": [6.7] * 8, "s_dense": [5.2] * 8, "p_sel": [2.3] * 4, "p_joint": [6.7] * 8})
-    r = m.report_readings(ev, ch, tr, {})
+    r = RR(m, ev, ch, tr)
     assert r["primary"]["Q1"]["label"] == A_ + "modular better, beyond the margin"
     assert r["primary"]["Q1"]["exact"]["label"] == "distributions differ (exact test); observed mean higher for modular"
     ev, ch, tr = _synthetic({"s_mod": [5.2] * 8, "s_dense": [6.7] * 8, "p_sel": [2.3] * 4, "p_joint": [6.7] * 8})
-    r = m.report_readings(ev, ch, tr, {})
+    r = RR(m, ev, ch, tr)
     assert r["primary"]["Q1"]["label"] == A_ + "dense better, beyond the margin"
     assert r["primary"]["Q2"]["label"] == A_ + "engineered initialization and tuning better, beyond the margin"
 
@@ -122,28 +127,28 @@ def test_the_report_reads_a_difference_both_ways(m):
 def test_the_report_reads_within_unresolved_and_unclear(m):
     ev, ch, tr = _synthetic({"s_mod": [6.7] * 8, "s_dense": [6.5] * 8, "p_sel": [2.3] * 4, "p_joint": [6.7] * 8},
                             spread=0.01)
-    assert m.report_readings(ev, ch, tr, {})["primary"]["Q1"]["label"] == A_ + "modular better, within the margin"
+    assert RR(m, ev, ch, tr)["primary"]["Q1"]["label"] == A_ + "modular better, within the margin"
     ev, ch, tr = _synthetic({"s_mod": [6.7] * 8, "s_dense": [6.2] * 8, "p_sel": [2.3] * 4, "p_joint": [6.7] * 8},
                             spread=0.01)
-    assert m.report_readings(ev, ch, tr, {})["primary"]["Q1"]["label"] == A_ + "modular better, margin unresolved"
+    assert RR(m, ev, ch, tr)["primary"]["Q1"]["label"] == A_ + "modular better, margin unresolved"
     ev, ch, tr = _synthetic({"s_mod": [6.7] * 8, "s_dense": [6.7] * 8, "p_sel": [2.3] * 4,
                              "p_joint": [4.0, 9.0, 5.0, 8.5, 4.5, 9.5, 6.0, 7.5]})
-    assert m.report_readings(ev, ch, tr, {})["primary"]["Q2"]["label"] == A_ + "unclear"
+    assert RR(m, ev, ch, tr)["primary"]["Q2"]["label"] == A_ + "unclear"
 
 
 def test_the_report_counts_failed_runs_and_reads_the_floor(m):
     ev, ch, tr = _synthetic({"s_mod": [6.7] * 7 + [2.0], "s_dense": [6.7] * 8, "p_sel": [2.3] * 4, "p_joint": [6.7] * 8})
-    r = m.report_readings(ev, ch, tr, {})
+    r = RR(m, ev, ch, tr)
     assert r["primary"]["Q1"]["failed_runs"]["s_mod"] == 1 and r["primary"]["Q1"]["failed_runs_present"] is True
     assert r["primary"]["Q1"]["decomposition"]["successful_runs"] == [7, 8]
     ev, ch, tr = _synthetic({"s_mod": [2.0] * 8, "s_dense": [2.1] * 8, "p_sel": [2.0] * 4, "p_joint": [6.7] * 8})
-    assert m.report_readings(ev, ch, tr, {})["primary"]["Q1"]["label"] == "not read: both at the floor"
+    assert RR(m, ev, ch, tr)["primary"]["Q1"]["label"] == "not read: both at the floor"
 
 
 def test_the_report_reads_nose_dependence(m):
     ev, ch, tr = _synthetic({"s_mod": [6.7] * 8, "s_dense": [6.7] * 8, "p_sel": [2.3] * 4, "p_joint": [7.0] * 8},
                             retained=0.3)
-    r = m.report_readings(ev, ch, tr, {})
+    r = RR(m, ev, ch, tr)
     assert r["nose"]["s_mod"]["classes"]["nose-dependent"] == 8 and r["coverage_hypothesis"]["coverers"] == "not supported"
     assert r["nose"]["p_fixed"]["retained"] == pytest.approx(0.35, abs=0.01)
 
@@ -152,41 +157,41 @@ def test_the_report_reads_nose_dependence(m):
 
 def test_too_few_runs_are_not_read(m):
     ev, ch, tr = _synthetic({**BASE, "s_mod": [6.7] * 5})
-    r = m.report_readings(ev, ch, tr, {})
+    r = RR(m, ev, ch, tr)
     assert r["primary"]["Q1"]["label"] == "not read: too few runs" and r["primary"]["Q2"]["label"] == "not read: too few runs"
     ev, ch, tr = _synthetic({**BASE, "p_joint": [6.7] * 5})
-    r = m.report_readings(ev, ch, tr, {})
+    r = RR(m, ev, ch, tr)
     assert r["primary"]["Q2"]["label"] == "not read: too few runs" and r["primary"]["Q1"]["read"] is True
 
 
 def test_an_incomplete_training_run_is_excluded(m):
     ev, ch, tr = _synthetic(BASE)
     tr["s_mod"] = [r for r in tr["s_mod"] if r["run"] != 3]  # run 3 did not complete its training
-    r = m.report_readings(ev, ch, tr, {})
+    r = RR(m, ev, ch, tr)
     assert r["eligibility"]["s_mod"]["excluded"] == [3] and r["primary"]["Q1"]["qualifier"]["s_mod"]["eligible"] == 7
 
 
 def test_a_missing_checkpoint_curve_is_undefined_not_censored(m):
     ev, ch, tr = _synthetic(BASE)
     tr["s_dense"][2]["learning_curve"] = tr["s_dense"][2]["learning_curve"][:2]
-    r = m.report_readings(ev, ch, tr, {})
+    r = RR(m, ev, ch, tr)
     assert r["cost_curve"]["arms"]["s_dense"]["undefined_runs"] == [2] and len(r["cost_curve"]["arms"]["s_dense"]["runs"]) == 7
 
 
 def test_a_missing_noses_removed_row_is_undefined_never_dropped(m):
     ev, ch, tr = _synthetic(BASE)
     ev["arms"]["s_mod"]["noses_removed"] = ev["arms"]["s_mod"]["noses_removed"][:7]
-    r = m.report_readings(ev, ch, tr, {})
+    r = RR(m, ev, ch, tr)
     assert len(r["nose"]["s_mod"]["champions"]) == 8 and r["nose"]["s_mod"]["classes"]["undefined"] == 1
     assert r["coverage_hypothesis"]["coverers"] == "mixed"
     del ev["arms"]["s_dense"]["noses_removed"]
-    r = m.report_readings(ev, ch, tr, {})  # no crash
+    r = RR(m, ev, ch, tr)  # no crash
     assert r["nose"]["s_dense"]["classes"]["undefined"] == 8
 
 
 def test_one_run_gives_no_loss_interval(m):
     ev, ch, tr = _synthetic({**BASE, "p_sel": [5.0]})
-    r = m.report_readings(ev, ch, tr, {})
+    r = RR(m, ev, ch, tr)
     assert r["nose"]["p_sel"]["loss_ci95"] == "not computed: fewer than 2" and r["nose"]["p_sel"]["no_material_loss"] is None
 
 
@@ -194,16 +199,16 @@ def test_an_unusable_p_fixed_mean_is_a_registered_outcome(m):
     for bad in (float("inf"), 0.0):
         ev, ch, tr = _synthetic(BASE)
         ev["references"]["seed"]["intact"]["visits_per_maze"] = [bad] * 16
-        r = m.report_readings(ev, ch, tr, {})
+        r = RR(m, ev, ch, tr)
         assert r["primary"]["Q1"]["label"] == "not read: P-fixed's mean is not positive"
-        assert r["bootstrap"].startswith("not computed")
+        assert r["bootstrap"]["Q1"].startswith("not computed") and r["bootstrap"]["Q2"].startswith("not computed")
 
 
 def test_the_report_tests_are_not_vacuous(m):
     """Sabotage (rule 9; these tests were written after the report): swapping the arms must change the reading."""
     ev, ch, tr = _synthetic({"s_mod": [6.7] * 8, "s_dense": [5.2] * 8, "p_sel": [2.3] * 4, "p_joint": [6.7] * 8})
     ev["arms"]["s_mod"], ev["arms"]["s_dense"] = ev["arms"]["s_dense"], ev["arms"]["s_mod"]
-    assert m.report_readings(ev, ch, tr, {})["primary"]["Q1"]["label"] != A_ + "modular better, beyond the margin"
+    assert RR(m, ev, ch, tr)["primary"]["Q1"]["label"] != A_ + "modular better, beyond the margin"
 
 
 # ------------------------------------------------------------------ the consistency check and the freeze (sabotaged)
@@ -349,3 +354,145 @@ def test_formal_stages_refuse_before_their_prerequisites(stage):
         cwd=ROOT, capture_output=True, text=True, timeout=600)
     shutil.rmtree(out, ignore_errors=True)
     assert r.returncode != 0 and "has not run" in (r.stderr + r.stdout)
+
+
+
+# ------------------------------------------------------------------ the recheck (both reviewers, D212)
+
+def test_an_unread_contrast_enters_holm_with_p_1_and_nothing_fictitious(m):
+    from wormwars.e3 import e3c_stats as S
+    ev, ch, tr = _synthetic(BASE)
+    full = RR(m, ev, ch, tr)["primary"]["Q2"]  # Q1 readable
+    a = ev["arms"]["s_dense"]
+    for key in ("runs", "intact", "noses_removed", "turn_offset", "K_D_A_at_q0"):
+        a[key] = a[key][:5]  # the same data, S-dense cut to 5 runs
+    tr["s_dense"] = tr["s_dense"][:5]
+    r = RR(m, ev, ch, tr)
+    q2 = r["primary"]["Q2"]
+    assert r["primary"]["Q1"]["label"] == "not read: too few runs"
+    assert q2["p_holm"] == pytest.approx(min(1.0, 2 * q2["p"]))  # Q1 enters Holm with p = 1 (Astra's 0.552)
+    for k in ("estimate", "lo", "hi", "level"):
+        assert q2[k] == pytest.approx(full[k])
+    assert q2["exact"]["p"] == pytest.approx(full["exact"]["p"])
+
+
+def test_truncated_vectors_are_ineligible(m):
+    ev, ch, tr = _synthetic(BASE)
+    for arm in ev["arms"].values():
+        for x in arm["intact"]:
+            x["visits_per_maze"] = x["visits_per_maze"][:15]
+    r = RR(m, ev, ch, tr)
+    assert r["eligibility"]["s_mod"]["eligible"] == 0 and r["primary"]["Q1"]["label"] == "not read: too few runs"
+
+
+def test_missing_paths_make_section_7_3_undefined_but_keep_primary_eligibility(m):
+    ev, ch, tr = _synthetic(BASE)
+    r = RR(m, ev, ch, tr, paths=False)
+    assert r["nose"]["s_mod"]["classes"]["undefined"] == 8 and r["coverage_hypothesis"]["coverers"] == "mixed"
+    assert r["primary"]["Q1"]["read"] is True and r["nose"]["p_fixed"]["class"] == "undefined"
+
+
+def test_missing_references_are_registered_outcomes(m):
+    ev, ch, tr = _synthetic(BASE)
+    del ev["references"]["seed"]
+    assert RR(m, ev, ch, tr)["primary"]["Q1"]["label"] == "not read: P-fixed's play is unavailable"
+    ev, ch, tr = _synthetic(BASE)
+    del ev["references"]["w2_alone"]
+    assert RR(m, ev, ch, tr)["primary"]["Q2"]["label"] == "not read: W2 alone's play is unavailable"
+    ev, ch, tr = _synthetic(BASE)
+    r = RR(m, ev, {}, tr)  # a champions record without its learning-curve references
+    assert r["cost_curve"]["fisher_s_mod_vs_s_dense"].startswith("not computed")
+
+
+def test_a_salvage_shaped_evaluate_record_is_reported(m):
+    ev, ch, tr = _synthetic(BASE)
+    salvage = {"arms": {"s_mod": ev["arms"]["s_mod"]}, "references": {"seed": {"intact": ev["references"]["seed"]["intact"]}},
+               "test_ids": ev["test_ids"], "ab_distance": ev["ab_distance"]}
+    r = RR(m, salvage, ch, tr)
+    assert r["primary"]["Q1"]["label"].startswith("not read") and r["nose"]["p_fixed"]["class"] == "undefined"
+    assert r["eligibility"]["s_dense"]["evaluated"] == 0
+
+
+def test_a_report_with_no_evaluate_record(m):
+    rep = m.report_from({"project": {"admission": {"plan": {}}}, "train-smod": None, "train-sdense": None,
+                         "train-psel": None, "champions": None, "evaluate": None})
+    assert rep["readings"]["primary"]["Q1"]["label"] == "not read: evaluate did not run"
+    assert rep["inputs"]["evaluate"] == "never started"
+
+
+def test_the_bootstrap_against_a_direct_computation(m):
+    ev, ch, tr = _synthetic(BASE)
+    r = RR(m, ev, ch, tr)
+    seed_pm = np.asarray(ev["references"]["seed"]["intact"]["visits_per_maze"])
+    pm = {a: np.array([x["visits_per_maze"] for x in ev["arms"][a]["intact"]]) for a in ("s_mod", "s_dense")}
+    rng = np.random.default_rng([m.REGISTERED["formal"]["bootstrap_seeds"]["contrast"], 1])
+    vals = []
+    for _ in range(m.REGISTERED["formal"]["bootstrap_resamples"]):
+        idx = rng.integers(0, 16, 16)
+        sm = seed_pm[idx].mean()
+        vals.append(((pm["s_mod"][:, idx].mean(1) - sm) / sm).mean() - ((pm["s_dense"][:, idx].mean(1) - sm) / sm).mean())
+    assert r["bootstrap"]["Q1"]["lo"] == pytest.approx(np.percentile(vals, 2.5))
+    assert r["bootstrap"]["Q1"]["hi"] == pytest.approx(np.percentile(vals, 97.5))
+
+
+@pytest.mark.slow
+@pytest.mark.skipif(not TF_GENOMES.exists(), reason="needs E3b-1's T-F genomes, which stay local (D200)")
+def test_interruptions_keep_completed_work_and_a_mismatch_stays_refused(monkeypatch):
+    """Both reviewers (D212): a consistency mismatch refuses in attempt 1 and again in a rerun that reuses the
+    training; champions and evaluate persist each completed chunk; a stage runs once; the training ids are
+    pre-flighted."""
+    for stage in ("project", "g-e"):
+        r = _run(stage)
+        assert r.returncode == 0, (stage, r.stderr[-3000:])
+    once = _fresh("e3c_once")  # the smoke's own reset is skipped: a completed stage runs once
+    once.use_smoke(type("A", (), {"command": "pilot"})())  # clears only the pilot smoke's records
+    once.REGISTERED["cap_gpu_hours"] = 30.0
+    with pytest.raises(SystemExit, match="runs once"):
+        once.cmd_project(type("A", (), {"device": "cpu", "smoke": True, "guarded": False, "rerun": False, "reason": None})())
+    m = _fresh("e3c_interrupt")
+    m.use_smoke(type("A", (), {"command": "train-smod"})())
+    m.REGISTERED["cap_gpu_hours"] = 30.0
+    real = m.MR.play_batch
+
+    def shifted(*a, **k):  # the post-hoc plays differ from the in-loop ones
+        ev = real(*a, **k)
+        ev["visits"] = ev["visits"] + 1
+        return ev
+
+    monkeypatch.setattr(m.MR, "play_batch", shifted)
+    args = type("A", (), {"device": "cpu", "smoke": True, "guarded": False, "rerun": False, "reason": None})()
+    with pytest.raises(RuntimeError, match="differs from the in-loop"):
+        m.cmd_train("train-smod")(args)
+    rerun = type("A", (), {"device": "cpu", "smoke": True, "guarded": False, "rerun": True, "reason": "test: mismatch"})()
+    with pytest.raises(RuntimeError, match="differs from the in-loop"):
+        m.cmd_train("train-smod")(rerun)  # the reused training is checked again: the mismatch stays refused
+    rec = json.loads(m.E.record_path("train-smod").read_text(encoding="utf-8"))
+    assert rec["arms"]["s_mod"]["training_reused_from_attempt_1"] is True
+    monkeypatch.setattr(m.MR, "play_batch", real)
+    for stage in ("train-smod", "train-sdense", "train-psel"):  # a clean slate, then clean training
+        r = _run(stage)
+        assert r.returncode == 0, (stage, r.stderr[-3000:])
+    tr = json.loads((ROOT / "runs" / "e3c-smoke" / "train-smod.json").read_text(encoding="utf-8"))
+    G, W = 12, 2
+    learn = set(range(8002, 8004))
+    ids_ = {int(x) for rr in tr["arms"]["s_mod"]["runs"] for g in range(G)
+            for x in m.EV.train_ids(rr["seed"], g, W, 9_200_000, 1000)}
+    assert tr["mazes"]["checked"] == len(learn | ids_)  # every training id pre-flighted
+    # champions: a stop before the second validation chunk keeps the first
+    m2 = _fresh("e3c_champ")
+    m2.use_smoke(type("A", (), {"command": "champions"})())
+    m2.REGISTERED["cap_gpu_hours"] = 30.0
+    calls = {"n": 0}
+    real2 = m2.MR.play_batch
+
+    def second_fails(*a, **k):
+        calls["n"] += 1
+        if calls["n"] == 2:
+            raise RuntimeError("injected: the second validation chunk")
+        return real2(*a, **k)
+
+    monkeypatch.setattr(m2.MR, "play_batch", second_fails)
+    with pytest.raises(RuntimeError, match="injected"):
+        m2.cmd_champions(args)
+    rec = json.loads(m2.E.record_path("champions").read_text(encoding="utf-8"))
+    assert len(rec["arms"]["s_mod"]["runs"]) == 1 and m2.champions_file("s_mod").exists()

@@ -814,3 +814,25 @@ wording notes:
 - "distributions differ", aligned with the label;
 - the scenarios where only S-dense can fail;
 - §7.3's wording for an empty arm.
+
+**Annotation to Amendment 1** (2026-10-05, after both reviewers' recheck, `docs/reviews/20261005-E3c-formal-code-2/`,
+D212; still before any formal stage ran):
+- **Point 3:** when the stopped attempt's training cannot be verified (a missing file, or a hash that differs),
+  the rerun trains again, and records why.
+- **Point 4's exemption is withdrawn** (both).
+  - `evolve_batch`'s in-loop checkpoints at generations 0 and 299 are saved with the training, before any play.
+  - They are checked against the post-hoc plays in every attempt, a reused training included.
+  - So a mismatch is refused again by the rerun. It cannot pass through a reuse.
+- **Point 5:**
+  - **Stages that never started:** a stage that never started, for example because the cap was reached, is
+    read by the report as "never started", and each reading it would have fed is an explicit "not read".
+  - **Eligibility:** it counts against the registered test block (256 mazes). A champion whose path files are
+    missing, altered or of the wrong dimensions is undefined in §7.3, and still counts for the primary
+    readings.
+  - **A contrast that cannot be read** (too few runs) enters Holm with p = 1. Nothing is substituted for its
+    data.
+- **Point 8:**
+  - **When partial records are written:** at every rollout boundary, after every completed chunk (a validation
+    play, a condition of an evaluation play), and at least once a minute between rollouts. A single rollout
+    longer than a minute is not interrupted to write one.
+  - **Partial records in every stage,** `g-e` included.

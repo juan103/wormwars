@@ -6898,3 +6898,48 @@ and every margin label. Also:
 
 **Next:** both reviewers recheck the fixes and Amendment 1. Then the formal commit is recorded in Amendment 2,
 and the run starts.
+
+## D212 — The recheck of E3c's formal stages: both "fix first" again; fixed test-first, Amendment 1 annotated
+
+**The recheck** (`docs/reviews/20261005-E3c-formal-code-2/`), at 9d76251.
+- **Both** found that Amendment 1's reuse of a training bypassed the consistency check. The in-loop checkpoints
+  had not been persisted, so a mismatch stopped attempt 1, and the rerun skipped the check. Astra reproduced
+  it.
+- **Both** found that stopped `evaluate` or `champions` records could not be reported.
+- **Fable also found:**
+  - the partial-contrast branch padded unreadable arms with zeros, which changed the readable contrast's Holm
+    p. Astra computed 0.276 against the correct 0.552;
+  - the smoke folder kept rerun files, so the slow tests failed on a second run. That made the suite red.
+- **Astra also found:**
+  - durability was per arm, not per chunk;
+  - path and test-block completeness were not checked;
+  - a report could not be made when later stages never started after a cap stop.
+- **Both** also asked that point 3's ambiguity be resolved.
+
+**Taken, test-first:**
+- **The in-loop checkpoints are saved** with the training and checked in every attempt.
+- **A failed verification retrains,** as point 3 says.
+- **Durability per chunk:**
+  - every validation chunk and every evaluation condition is persisted at once, with the champions so far
+    saved each time;
+  - `g-e` has partial records;
+  - `evaluate` writes its metadata and plays the references first.
+- **The report:**
+  - it counts eligibility against the registered test block;
+  - it checks the path files' hashes and dimensions;
+  - it gives every missing input an explicit "not read";
+  - an unread contrast enters Holm with p = 1, and nothing fictitious is used;
+  - each contrast is bootstrapped on its own.
+- **The report runs from whatever records exist,** including stages that never started.
+- **The smoke** cleans its rerun files, and has interior checkpoints (12 generations).
+- **A bug found by the new tests:** `report_from`'s fallback iterated stage names in place of arms. Fixed.
+
+**The tests:**
+- the mismatch is refused in attempt 1 and again after reuse;
+- champions keeps its first chunk after an injected stop;
+- once-only;
+- every training id is pre-flighted;
+- a salvage-shaped evaluate record, a report with no evaluate record, and missing references;
+- truncated vectors and missing paths;
+- the partial contrast's Holm p against the full-data reading;
+- the bootstrap against a direct computation.

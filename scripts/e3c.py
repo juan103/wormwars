@@ -750,7 +750,11 @@ def formal_requires(stage: str):
     def req(args, prov):
         require_engine(args, prov)
         got = {s: E.require_earlier(args, prov, s) for s in must}
-        got.update({s: require_record(args, prov, s, stopped_ok=True) for s in may})
+        for s in may:
+            if stage == "report" and not E.record_path(s).exists() and not E.marker_path(s).exists():
+                got[s] = None  # never started, e.g. after the cap was reached (Amendment 1)
+            else:
+                got[s] = require_record(args, prov, s, stopped_ok=True)
         if "project" in got and stage != "g-e" and not got["project"]["admission"]["admitted"]:
             raise SystemExit("project's projection did not fit even after every cut: E3c does not start (§10)")
         if "g-e" in got and not got["g-e"].get("passed"):
@@ -861,6 +865,7 @@ def cmd_project(args):
         spent = ctx.cap.spent_hours() + (time.perf_counter() - ctx.cap.t_start) / 3600
         remaining = REGISTERED["formal"]["cap_total_gpu_hours"] - spent
         adm = FO.admit(t, remaining)
+        prog.state.update({"fixed_inputs": inputs, "spent_hours_at_decision": spent, "admission": adm})
         return {"fixed_inputs": inputs, "timings_seconds": t, "spent_hours_at_decision": spent,
                 "projection_hours": {str(k): FO.projection_hours(t, FO.plan_after_cuts(k)) for k in range(4)},
                 "admission": adm,
@@ -876,6 +881,7 @@ def cmd_project(args):
 def cmd_ge(args):
     def body(ctx):
         inputs = check_pinned()
+        prog = Progress(ctx, {"fixed_inputs": inputs})
         B1 = _load("e3b1_for_e3c_ge", "e3b1.py")
         B1.SMOKE = SMOKE
         ref = json.loads((ROOT / B1.EQ_REFERENCE).read_text(encoding="utf-8"))
@@ -884,11 +890,13 @@ def cmd_ge(args):
             hook = B1.hook_leg(ctx.cap)
             mazes = B1.maze_leg()
         cpu = B1.EQ.compare(ref, new)
+        prog.state.update(cpu=cpu, snapshot_hook=hook, mazes=mazes)
+        prog.write(force=True)
         with acct.category("calibration"):
             gpu = {"skipped": "smoke"} if SMOKE else B1.gpu_leg(ctx.args.device, ctx.cap)
-        return {"fixed_inputs": inputs, "passed": B1.ge_passed(cpu, gpu, hook, mazes, smoke=SMOKE), "cpu": cpu,
-                "gpu": gpu, "snapshot_hook": hook, "mazes": mazes,
-                "note": "E3b-1's three legs at E3c's formal commit (§5); P-joint trained at f881308"}
+        prog.state.update({"passed": B1.ge_passed(cpu, gpu, hook, mazes, smoke=SMOKE), "gpu": gpu,
+                           "note": "E3b-1's three legs at E3c's formal commit (§5); P-joint trained at f881308"})
+        return dict(prog.state)
 
     return E.run_stage(args, "g-e", formal_requires("g-e"), body)
 
@@ -957,19 +965,25 @@ def train_arm(ctx, arm: str, plan: dict) -> dict:
     prior = _prior_training(stage, arm) if ctx.doc.get("attempt") == 2 else None
     inloop = {}
     if prior is not None:  # Amendment 1: reuse the completed, hash-verified training of the stopped attempt
-        finals, cands, logs = {}, {}, {}
-        for r in prior["runs"]:
-            i = r["run"]
-            for kind in ("final", "candidates"):
-                f = next(x for x in r["genome_files"] if x["kind"] == kind)
-                src = E.attempt1(ROOT / f["path"]) if E.attempt1(ROOT / f["path"]).exists() else ROOT / f["path"]
-                g, _ = load_population(src, spec, cfg.brain)
-                if [genome_hash(g, k) for k in range(g.n_strains)] != f["sha256"]:
-                    raise SystemExit(f"{src.name} differs from its recorded hashes: the training is not reused")
-                (finals if kind == "final" else cands)[i] = g
-            logs[i] = r["log"]
-        entry["training_reused_from_attempt_1"] = True
-    else:
+        try:
+            finals, cands, logs = {}, {}, {}
+            for r in prior["runs"]:
+                i = r["run"]
+                for kind in ("final", "candidates"):
+                    f = next(x for x in r["genome_files"] if x["kind"] == kind)
+                    src = E.attempt1(ROOT / f["path"]) if E.attempt1(ROOT / f["path"]).exists() else ROOT / f["path"]
+                    g, _ = load_population(src, spec, cfg.brain)
+                    if [genome_hash(g, k) for k in range(g.n_strains)] != f["sha256"]:
+                        raise ValueError(f"{src.name} differs from its recorded hashes")
+                    (finals if kind == "final" else cands)[i] = g
+                logs[i] = r["log"]
+                inloop[i] = {int(k): v for k, v in r["inloop_checkpoints"].items()}  # checked again below (both)
+            entry["training_reused_from_attempt_1"] = True
+        except (ValueError, KeyError, OSError, StopIteration) as e:  # Amendment 1, point 3: train again
+            entry["reuse_refused"] = f"{type(e).__name__}: {e}"
+            prior = None
+            inloop = {}
+    if prior is None:
         recs = EV.evolve_batch(cfg, org.iface, spec, [EV.RunSpec(r["run"], r["seed"], 0.0) for r in rs], generations=G,
                                checkpoint_every=10 ** 6, validation_ids=learn, world_seed=seed(), id_base=tr["base"],
                                id_span=tr["span"], device=dev, check=prog.check, category=acct.category,
@@ -998,7 +1012,8 @@ def train_arm(ctx, arm: str, plan: dict) -> dict:
             files.append({"path": str(p.relative_to(ROOT)).replace("\\", "/"), "kind": kind,
                           "sha256": [genome_hash(gg, k) for k in range(gg.n_strains)]})
         runs_out.append({"run": i, "seed": r["seed"], "generations": len(logs[i]), "completed": len(logs[i]) == G,
-                         "log": logs[i], "genome_files": files, "learning_curve": []})
+                         "log": logs[i], "genome_files": files, "learning_curve": [],
+                         "inloop_checkpoints": {str(g): v for g, v in inloop[i].items()}})
     entry["training"] = {"complete": all(x["completed"] for x in runs_out), "runs": runs_out}
     entry["runs"] = runs_out
     live.clear()
@@ -1015,12 +1030,9 @@ def train_arm(ctx, arm: str, plan: dict) -> dict:
                                              "validation_counts": FO_counts(vis[k]),
                                              "sha256": logs[ro["run"]][g]["best_sha256"]})
             prog.write(force=True)
-    for ro in runs_out:
-        if inloop:
-            post = {c["generation"]: c for c in ro["learning_curve"]}
-            ro["checkpoint_consistency"] = check_consistency(inloop[ro["run"]], post)
-        else:
-            ro["checkpoint_consistency"] = "not checked: the training was reused (Amendment 1)"
+    for ro in runs_out:  # always checked, a reused training included (both reviewers; Amendment 1's annotation)
+        post = {c["generation"]: c for c in ro["learning_curve"]}
+        ro["checkpoint_consistency"] = check_consistency(inloop[ro["run"]], post)
     prog.write(force=True)
     return {"arms": {arm: entry}, "checkpoint_generations": gens}
 
@@ -1113,6 +1125,7 @@ def cmd_champions(args):
                             raise SystemExit(f"{f['path']} differs from its recorded hashes")
                         pops[r["run"]] = g
                 per_run, champs = [], []
+                arms[arm] = {"runs": per_run}
                 for i, g in sorted(pops.items()):
                     prog.check()
                     means = play(g, org, val).mean(axis=1)
@@ -1121,11 +1134,9 @@ def cmd_champions(args):
                     per_run.append({"run": i, "validation_means": np.round(means, 6).tolist(), "champion_index": k,
                                     "champion_sha256": genome_hash(g, k)})
                     published[f"{arm}-run{i:02d}"] = grafted_by_name(g, org.ext, k)
-                if champs:
                     save_population(champions_file(arm), Genome.cat(champs), cfg=cfg, stage="champions", arm=arm,
-                                    runs=[x["run"] for x in per_run])
-                arms[arm] = {"runs": per_run}
-                prog.write(force=True)
+                                    runs=[x["run"] for x in per_run])  # the champions so far, saved with each chunk
+                    prog.write(force=True)
             grid = REGISTERED["formal"]["turn_grid"]
             orgs = [w2_turn(con, cfg.brain, r) for r in grid]
             prog.check()
@@ -1159,9 +1170,11 @@ def cmd_champions(args):
             prog.state["learning_curve_references"] = refs
         pub = EXP / "champions-grafted.json"
         E.write_atomic(pub, {"note": "every champion's grafted parameters by name (§6; D200)", "champions": published})
-        return {"fixed_inputs": inputs, **prog.state, "published": str(pub.relative_to(ROOT)).replace("\\", "/"),
-                "compositions": {"validation": "[32, 128, 8] per run", "w2_turn": [len(grid), len(val), REGISTERED["colony"]],
-                                 "p_joint_points": [len(pj_final), len(learn), REGISTERED["colony"]]}}
+        prog.state.update({"fixed_inputs": inputs, "published": str(pub.relative_to(ROOT)).replace("\\", "/"),
+                           "compositions": {"validation": "[32, 128, 8] per run",
+                                            "w2_turn": [len(grid), len(val), REGISTERED["colony"]],
+                                            "p_joint_points": [len(pj_final), len(learn), REGISTERED["colony"]]}})
+        return dict(prog.state)
 
     files = [champions_file(a) for a in ("s_mod", "s_dense", "p_sel", "p_joint")]
     return E.run_stage(args, "champions", formal_requires("champions"), body, local_files=files)
@@ -1207,38 +1220,20 @@ def cmd_evaluate(args):
         test = formal_ids("test")
         ch = ctx.earlier["champions"]
         plan = formal_plan_from(ctx.earlier["project"])
-        out = {"arms": {}, "references": {}}
+        out = {"fixed_inputs": inputs, "arms": {}, "references": {}, "ab_distance": ab_distances(test),
+               "test_ids": [int(x) for x in test], "trails_off_run": plan["trails_off"],
+               "compositions": {"champions": "[runs, 256, 8]", "references": [1, len(test), REGISTERED["colony"]]}}
         prog = Progress(ctx, out)
+        prog.write(force=True)
         with acct.category("final"):
-            for arm in ("s_mod", "s_dense", "p_sel", "p_joint"):
-                runs_ = [r for r in (ch.get("arms") or {}).get(arm, {}).get("runs", [])]
-                if not runs_:
-                    out["arms"][arm] = {"runs": [], "unavailable": "no champions"}
-                    continue
-                org = _org(arm, cx)
-                g, _ = load_population(champions_file(arm), BrainSpec.from_connectome(org.ext), cfg.brain)
-                if [genome_hash(g, k) for k in range(g.n_strains)] != [r["champion_sha256"] for r in runs_]:
-                    raise SystemExit(f"{arm}'s champions differ from the champions record")
-                res = {"runs": [r["run"] for r in runs_], "paths_files": {}}
-                conds = [("intact", lambda i: i, "shared"), ("noses_removed", AT.without_scent, "shared")]
-                if plan["trails_off"]:
-                    conds.append(("trails_off", lambda i: i, "none"))
-                for cond, f, access in conds:
-                    prog.check()
-                    got = play_recorded(cfg, f(org.iface), Brain(_on(g, dev)), g.n_strains, test, dev, access=access,
-                                        keep_paths=cond != "trails_off")
-                    res[cond] = got["strains"]
-                    if "paths" in got:
-                        res["paths_files"][cond] = save_paths(arm, cond, got["paths"])
-                    out["arms"][arm] = res
-                    prog.write(force=True)
-                with acct.category("probe"):
-                    turns = generation0_offsets(g, org, cfg, ref=resting_turn(cx["seed"], cfg))
-                res["turn_offset"], res["K_D_A_at_q0"] = turns["turn_offset"], turns["K_D_A_at_q0"]
-            refs = {"seed": cx["seed"], "w2_alone": w2_alone(con, cfg.brain),
-                    "w2_turn": w2_turn(con, cfg.brain, ch["w2_turn"]["chosen"]), "r_shared": r_shared(con, l1, cfg.brain)}
-            for name, org in refs.items():
+            refs = {"seed": cx["seed"], "w2_alone": w2_alone(con, cfg.brain), "r_shared": r_shared(con, l1, cfg.brain)}
+            if "w2_turn" in ch:
+                refs["w2_turn"] = w2_turn(con, cfg.brain, ch["w2_turn"]["chosen"])
+            else:
+                out["w2_turn_unavailable"] = "the champions record has no W2-turn choice"
+            for name, org in refs.items():  # the references first: every reading needs P-fixed and W2 alone
                 res = {"paths_files": {}}
+                out["references"][name] = res
                 conds = [("intact", lambda i: i, "shared")] + ([("noses_removed", AT.without_scent, "shared")] if name == "seed" else [])
                 if plan["trails_off"] and name in ("seed", "w2_alone"):
                     conds.append(("trails_off", lambda i: i, "none"))
@@ -1249,11 +1244,34 @@ def cmd_evaluate(args):
                     res[cond] = got["strains"][0]
                     if "paths" in got:
                         res["paths_files"][cond] = save_paths(name, cond, got["paths"])
-                out["references"][name] = res
+                    prog.write(force=True)
+            for arm in ("s_mod", "s_dense", "p_sel", "p_joint"):
+                runs_ = [r for r in (ch.get("arms") or {}).get(arm, {}).get("runs", [])]
+                if not runs_:
+                    out["arms"][arm] = {"runs": [], "unavailable": "no champions"}
+                    continue
+                org = _org(arm, cx)
+                g, _ = load_population(champions_file(arm), BrainSpec.from_connectome(org.ext), cfg.brain)
+                if [genome_hash(g, k) for k in range(g.n_strains)] != [r["champion_sha256"] for r in runs_]:
+                    raise SystemExit(f"{arm}'s champions differ from the champions record")
+                res = {"runs": [r["run"] for r in runs_], "paths_files": {}}
+                out["arms"][arm] = res
+                conds = [("intact", lambda i: i, "shared"), ("noses_removed", AT.without_scent, "shared")]
+                if plan["trails_off"]:
+                    conds.append(("trails_off", lambda i: i, "none"))
+                for cond, f, access in conds:
+                    prog.check()
+                    got = play_recorded(cfg, f(org.iface), Brain(_on(g, dev)), g.n_strains, test, dev, access=access,
+                                        keep_paths=cond != "trails_off")
+                    res[cond] = got["strains"]
+                    if "paths" in got:
+                        res["paths_files"][cond] = save_paths(arm, cond, got["paths"])
+                    prog.write(force=True)
+                with acct.category("probe"):
+                    turns = generation0_offsets(g, org, cfg, ref=resting_turn(cx["seed"], cfg))
+                res["turn_offset"], res["K_D_A_at_q0"] = turns["turn_offset"], turns["K_D_A_at_q0"]
                 prog.write(force=True)
-        return {"fixed_inputs": inputs, **out, "ab_distance": ab_distances(test), "test_ids": [int(x) for x in test],
-                "trails_off_run": plan["trails_off"],
-                "compositions": {"champions": "[runs, 256, 8]", "references": [1, len(test), REGISTERED["colony"]]}}
+        return dict(out)
 
     return E.run_stage(args, "evaluate", formal_requires("evaluate"), body)
 
@@ -1265,124 +1283,179 @@ def _visits(entry) -> np.ndarray:
 
 
 def _complete(entry, n: int) -> bool:
-    return entry is not None and len(entry.get("visits_per_maze", [])) == n
+    return isinstance(entry, dict) and len(entry.get("visits_per_maze", [])) == n
 
 
-def report_readings(ev: dict, ch: dict, trained: dict, project: dict, n_test: int | None = None) -> dict:
-    """§7's readings from the records only (one function; tested on synthetic records), with §5's eligibility."""
+def paths_ok(manifest, n_worlds: int) -> bool:
+    """A path file exists, has its recorded sha256 and its registered dimensions (Astra, D212)."""
+    if not manifest:
+        return False
+    f = ROOT / manifest["path"]
+    if not f.exists() or hashlib.sha256(f.read_bytes()).hexdigest() != manifest["sha256"]:
+        return False
+    return list(manifest.get("worlds_weys", [])) == [n_worlds, REGISTERED["colony"]]
+
+
+def contrast_readings(d: dict, run_visits: dict, avail: dict, seed_mean: float, w2: float) -> dict:
+    """The primary contrasts as `e3c_stats.readings` computes them, with a contrast that cannot be read (too few
+    runs) entering the family as unread: p = 1 in Holm, its interval level unchanged, nothing fictitious (both,
+    D212). With both available it is `e3c_stats.readings` itself."""
     from scipy import stats as st
-    n = n_test if n_test is not None else len(ev["references"]["seed"]["intact"]["visits_per_maze"])
-    seed_entry = ev["references"]["seed"].get("intact")
+    if avail["Q1"] and avail["Q2"]:
+        return ES.readings(d=d, seed_mean=seed_mean, run_visits=run_visits, w2_alone=w2)
+    m_lo, m_hi = ES.margins(seed_mean)
+    arms = {"Q1": ("s_mod", "s_dense"), "Q2": ("p_joint", "s_mod")}
+    q1_floor = (avail["Q1"] and max(float(np.mean(run_visits["s_mod"])), float(np.mean(run_visits["s_dense"])))
+                <= w2 + ES.FLOOR_MARGIN)
+    pairs = {q: ((d[arms[q][0]], d[arms[q][1]]) if avail[q] and not (q == "Q1" and q1_floor) else None) for q in arms}
+    res = ES.contrasts(pairs)
+    out = {"margins": {"m_lo": m_lo, "m_hi": m_hi}, "seed_mean": seed_mean}
+    for q, r in res.items():
+        a, b = ES.NAMES[q]
+        if pairs[q] is None:
+            lab = "not read: both at the floor" if (q == "Q1" and q1_floor) else "not read: too few runs"
+            out[q] = {**r, "label": lab, "exact": {"p": None, "label": lab}}
+            continue
+        x, y = pairs[q]
+        p_exact = ES.permutation_p(x, y)
+        rej = p_exact <= ES.ALPHA / 2
+        side = a if np.mean(x) > np.mean(y) else b
+        fails = {arm: ES.failed(run_visits[arm], w2) for arm in arms[q]}
+        ok = {arm: np.asarray(dd)[np.asarray(run_visits[arm], dtype=np.float64) > w2 + ES.FLOOR_MARGIN]
+              for arm, dd in zip(arms[q], (x, y))}
+        lab = ES.label(r["estimate"], r["lo"], r["hi"], r["rejected"], m_lo=m_lo, m_hi=m_hi, a=a, b=b)
+        out[q] = {**r, "label": f"approximate (model-based): {lab}", "label_unqualified": lab,
+                  "exact": {"p": p_exact, "level": ES.ALPHA / 2, "rejected": rej,
+                            "label": (f"distributions differ (exact test); observed mean higher for {side}" if rej
+                                      else "no difference detected (exact)")},
+                  "failed_runs": fails, "failed_runs_present": any(fails.values()),
+                  "decomposition": ES.decomposition(ok[arms[q][0]], ok[arms[q][1]]),
+                  "estimate_visits": r["estimate"] * seed_mean,
+                  "mann_whitney_p": float(st.mannwhitneyu(x, y, alternative="two-sided").pvalue)}
+    out["note"] = "an arm below 6 eligible runs: its contrasts are not read and enter Holm with p = 1 (§5, Amendment 1)"
+    return out
+
+
+def report_readings(ev: dict, ch: dict, trained: dict, project: dict, n_test: int | None = None, paths_check=None) -> dict:
+    """§7's readings from the records only (one function; tested on synthetic records), with §5's eligibility:
+    the registered maze count, the path files, and every unavailable input an explicit outcome."""
+    from scipy import stats as st
+    paths_check = paths_check or paths_ok
+    n = n_test if n_test is not None else len(ev.get("test_ids") or [])
+    refs = ev.get("references") or {}
+    seed_entry = (refs.get("seed") or {}).get("intact")
     seed_pm = _visits(seed_entry) if _complete(seed_entry, n) else None
     seed_mean = float(seed_pm.mean()) if seed_pm is not None else float("nan")
     seed_ok = math.isfinite(seed_mean) and seed_mean > 0
-    w2 = float(_visits(ev["references"]["w2_alone"]["intact"]).mean())
+    w2_entry = (refs.get("w2_alone") or {}).get("intact")
+    w2 = float(_visits(w2_entry).mean()) if _complete(w2_entry, n) else float("nan")
     gens = trained.get("checkpoint_generations") or formal_gens()
-    out = {"seed_mean": seed_mean, "w2_alone": w2, "eligibility": {}}
-    # §5: a run counts only if its training completed and its champion was played intact on every test maze
+    out = {"seed_mean": seed_mean, "w2_alone": w2, "n_test": n, "eligibility": {}}
     arms = {}
     for arm in ("s_mod", "s_dense", "p_sel", "p_joint"):
-        a = ev["arms"].get(arm) or {}
+        a = (ev.get("arms") or {}).get(arm) or {}
         done = ({r["run"] for r in trained.get(arm, [])} if arm != "p_joint" else set(a.get("runs", [])))
+        n_runs = len(a.get("runs", []))
+        pf = a.get("paths_files") or {}
+        paths_good = {c: paths_check(pf.get(c), n_runs * n) for c in ("intact", "noses_removed")}
+
+        def at(key, k):
+            xs = a.get(key) or []
+            return xs[k] if k < len(xs) else None
+
         rows = []
         for k, run in enumerate(a.get("runs", [])):
-            intact = (a.get("intact") or [None] * len(a.get("runs", [])))[k] if k < len(a.get("intact") or []) else None
-            removed = (a.get("noses_removed") or [])[k] if k < len(a.get("noses_removed") or []) else None
-            eligible = run in done and _complete(intact, n)
-            rows.append({"run": run, "eligible": eligible, "intact": intact,
+            intact, removed = at("intact", k), at("noses_removed", k)
+            rows.append({"run": run, "eligible": run in done and _complete(intact, n), "intact": intact,
                          "noses_removed": removed if _complete(removed, n) else None,
-                         "turn_offset": (a.get("turn_offset") or [None] * (k + 1))[k] if k < len(a.get("turn_offset") or []) else None,
-                         "K_D": (a.get("K_D_A_at_q0") or [None] * (k + 1))[k] if k < len(a.get("K_D_A_at_q0") or []) else None,
-                         "trails_off": (a.get("trails_off") or [])[k] if k < len(a.get("trails_off") or []) else None})
+                         "paths_ok": paths_good["intact"] and paths_good["noses_removed"],
+                         "turn_offset": at("turn_offset", k), "K_D": at("K_D_A_at_q0", k), "trails_off": at("trails_off", k)})
         arms[arm] = [r for r in rows if r["eligible"]]
         out["eligibility"][arm] = {"evaluated": len(rows), "eligible": len(arms[arm]),
-                                   "excluded": [r["run"] for r in rows if not r["eligible"]]}
-    run_pm = {arm: np.array([_visits(r["intact"]) for r in rows]) if rows else np.zeros((0, n)) for arm, rows in arms.items()}
+                                   "excluded": [r["run"] for r in rows if not r["eligible"]], "paths_ok": paths_good}
+    run_pm = {arm: (np.array([_visits(r["intact"]) for r in rows]) if rows else np.zeros((0, n))) for arm, rows in arms.items()}
     run_visits = {arm: (v.mean(axis=1) if len(v) else np.zeros(0)) for arm, v in run_pm.items()}
-    enough = {arm: len(arms[arm]) >= 6 for arm in ("s_mod", "s_dense", "p_joint")}
     # the primary contrasts
     if not seed_ok:
-        prim = ES.readings(d={}, seed_mean=seed_mean if math.isfinite(seed_mean) else 0.0, run_visits={}, w2_alone=w2)
+        lab = "not read: P-fixed's mean is not positive" if seed_pm is not None else "not read: P-fixed's play is unavailable"
+        prim = {q: {"read": False, "label": lab, "exact": {"p": None, "label": lab}} for q in ("Q1", "Q2")}
+    elif not math.isfinite(w2):
+        prim = {q: {"read": False, "label": "not read: W2 alone's play is unavailable",
+                    "exact": {"p": None, "label": "not read: W2 alone's play is unavailable"}} for q in ("Q1", "Q2")}
     else:
         d = {arm: (run_visits[arm] - seed_mean) / seed_mean for arm in arms}
+        enough = {arm: len(arms[arm]) >= 6 for arm in ("s_mod", "s_dense", "p_joint")}
         avail = {"Q1": enough["s_mod"] and enough["s_dense"], "Q2": enough["p_joint"] and enough["s_mod"]}
-        if avail["Q1"] and avail["Q2"]:
-            prim = ES.readings(d={k: d[k] for k in ("s_mod", "s_dense", "p_joint")}, seed_mean=seed_mean,
-                               run_visits={k: run_visits[k] for k in ("s_mod", "s_dense", "p_joint")}, w2_alone=w2)
-        else:
-            prim = {"margins": dict(zip(("m_lo", "m_hi"), ES.margins(seed_mean))), "seed_mean": seed_mean}
-            full = None
-            if avail["Q1"] or avail["Q2"]:
-                full = ES.readings(d={k: (d[k] if len(d[k]) >= 2 else np.zeros(2)) for k in ("s_mod", "s_dense", "p_joint")},
-                                   seed_mean=seed_mean, run_visits={k: (run_visits[k] if len(run_visits[k]) >= 2 else np.zeros(2))
-                                                                    for k in ("s_mod", "s_dense", "p_joint")}, w2_alone=w2)
-            for q in ("Q1", "Q2"):
-                prim[q] = full[q] if (avail[q] and full is not None) else {
-                    "read": False, "label": "not read: too few runs", "exact": {"p": None, "label": "not read: too few runs"}}
-            prim["note"] = "§5: fewer than 6 eligible runs in an arm; Holm and the exact test then run over the readable contrasts as computed"
+        prim = contrast_readings({k: d[k] for k in ("s_mod", "s_dense", "p_joint")},
+                                 {k: run_visits[k] for k in ("s_mod", "s_dense", "p_joint")}, avail, seed_mean, w2)
         for q, (a, b) in (("Q1", ("s_mod", "s_dense")), ("Q2", ("p_joint", "s_mod"))):
             if prim.get(q, {}).get("read"):
                 fa, fb = ES.failed(run_visits[a], w2), ES.failed(run_visits[b], w2)
                 prim[q]["failed_fisher_p"] = float(st.fisher_exact([[fa, len(run_visits[a]) - fa],
                                                                     [fb, len(run_visits[b]) - fb]])[1])
     out["primary"] = prim
-    # the maze-paired bootstrap (P-fixed's mean and every d recomputed on each resample)
-    if seed_ok and all(len(run_pm[a]) >= 2 for a in ("s_mod", "s_dense", "p_joint")):
-        rng = np.random.default_rng(REGISTERED["formal"]["bootstrap_seeds"]["contrast"])
-        boots = {"Q1": [], "Q2": []}
+    # the maze-paired bootstrap, each contrast on its own (P-fixed's mean and every d recomputed on each resample)
+    out["bootstrap"] = {}
+    for q, (a, b) in (("Q1", ("s_mod", "s_dense")), ("Q2", ("p_joint", "s_mod"))):
+        if not (seed_ok and prim.get(q, {}).get("read")):
+            out["bootstrap"][q] = "not computed: the contrast is not read"
+            continue
+        rng = np.random.default_rng([REGISTERED["formal"]["bootstrap_seeds"]["contrast"], 1 if q == "Q1" else 2])
+        vals = []
         for _ in range(REGISTERED["formal"]["bootstrap_resamples"]):
             idx = rng.integers(0, n, n)
             sm = seed_pm[idx].mean()
-            dd = {arm: (run_pm[arm][:, idx].mean(axis=1) - sm) / sm for arm in ("s_mod", "s_dense", "p_joint")}
-            boots["Q1"].append(dd["s_mod"].mean() - dd["s_dense"].mean())
-            boots["Q2"].append(dd["p_joint"].mean() - dd["s_mod"].mean())
-        out["bootstrap"] = {q: {"lo": float(np.percentile(v, 2.5)), "hi": float(np.percentile(v, 97.5))} for q, v in boots.items()}
-    else:
-        out["bootstrap"] = "not computed: P-fixed's mean unavailable or fewer than 2 runs"
+            vals.append(((run_pm[a][:, idx].mean(axis=1) - sm) / sm).mean() - ((run_pm[b][:, idx].mean(axis=1) - sm) / sm).mean())
+        out["bootstrap"][q] = {"lo": float(np.percentile(vals, 2.5)), "hi": float(np.percentile(vals, 97.5))}
     # the cost curve (§7.2); a run whose curve lacks a registered checkpoint is undefined there
-    lc_w2, lc_seed = ch["learning_curve_references"]["w2_alone"], ch["learning_curve_references"]["seed"]
+    lcr = (ch or {}).get("learning_curve_references") or {}
     cost = {}
-    for arm in ("s_mod", "s_dense", "p_sel"):
-        per, undefined = [], []
-        for r in trained.get(arm, []):
-            curve = {c["generation"]: c["validation_mean"] for c in r.get("learning_curve", [])}
-            if any(g not in curve for g in gens):
-                undefined.append(r["run"])
-                continue
-            row = {"run": r["run"]}
-            for name, thr in (("w2_plus_1", lc_w2 + 1.0), ("seed", lc_seed)):
-                hit = [g for g in gens if curve[g] > thr]
-                row[name] = hit[0] if hit else float("inf")
-            per.append(row)
-        cost[arm] = {"runs": [{k: (None if v == float("inf") else v) for k, v in x.items()} for x in per],
-                     "undefined_runs": undefined,
-                     **{f"{t}_reached": sum(x[t] != float("inf") for x in per) for t in ("w2_plus_1", "seed")},
-                     **{f"{t}_median": ES.censored_median([x[t] for x in per]) for t in ("w2_plus_1", "seed")}}
-    fisher = {}
-    for t in ("w2_plus_1", "seed"):
-        a, b = cost["s_mod"], cost["s_dense"]
-        na, nb = len(a["runs"]), len(b["runs"])
-        fisher[t] = float(st.fisher_exact([[a[f"{t}_reached"], na - a[f"{t}_reached"]],
-                                           [b[f"{t}_reached"], nb - b[f"{t}_reached"]]])[1]) if na and nb else None
-    order = sorted(fisher, key=lambda t: 1.0 if fisher[t] is None else fisher[t])
-    run_, adj = 0.0, {}
-    for i, t in enumerate(order):
-        run_ = max(run_, min(1.0, (len(order) - i) * (1.0 if fisher[t] is None else fisher[t])))
-        adj[t] = run_
+    if "w2_alone" in lcr and "seed" in lcr:
+        lc_w2, lc_seed = lcr["w2_alone"], lcr["seed"]
+        for arm in ("s_mod", "s_dense", "p_sel"):
+            per, undefined = [], []
+            for r in trained.get(arm, []):
+                curve = {c["generation"]: c["validation_mean"] for c in r.get("learning_curve", [])}
+                if any(g not in curve for g in gens):
+                    undefined.append(r["run"])
+                    continue
+                row = {"run": r["run"]}
+                for name, thr in (("w2_plus_1", lc_w2 + 1.0), ("seed", lc_seed)):
+                    hit = [g for g in gens if curve[g] > thr]
+                    row[name] = hit[0] if hit else float("inf")
+                per.append(row)
+            cost[arm] = {"runs": [{k: (None if v == float("inf") else v) for k, v in x.items()} for x in per],
+                         "undefined_runs": undefined,
+                         **{f"{t}_reached": sum(x[t] != float("inf") for x in per) for t in ("w2_plus_1", "seed")},
+                         **{f"{t}_median": ES.censored_median([x[t] for x in per]) for t in ("w2_plus_1", "seed")}}
+        fisher = {}
+        for t in ("w2_plus_1", "seed"):
+            a, b = cost["s_mod"], cost["s_dense"]
+            na, nb = len(a["runs"]), len(b["runs"])
+            fisher[t] = float(st.fisher_exact([[a[f"{t}_reached"], na - a[f"{t}_reached"]],
+                                               [b[f"{t}_reached"], nb - b[f"{t}_reached"]]])[1]) if na and nb else None
+        order = sorted(fisher, key=lambda t: 1.0 if fisher[t] is None else fisher[t])
+        run_, adj = 0.0, {}
+        for i, t in enumerate(order):
+            run_ = max(run_, min(1.0, (len(order) - i) * (1.0 if fisher[t] is None else fisher[t])))
+            adj[t] = run_
+        thresholds = {"w2_plus_1": lc_w2 + 1.0, "seed": lc_seed}
+    else:
+        fisher, adj, thresholds = "not computed: the learning-curve references are unavailable", None, None
     curves = {arm: {str(r["run"]): [[c["generation"], c["validation_mean"]] for c in r.get("learning_curve", [])]
                     for r in trained.get(arm, [])} for arm in ("s_mod", "s_dense", "p_sel")}
     curves["p_joint"] = {g: {i: v["validation_mean"] for i, v in pts.items()}
-                         for g, pts in (ch.get("p_joint_learning_curve") or {}).items()}
-    out["cost_curve"] = {"arms": cost, "fisher_s_mod_vs_s_dense": fisher, "fisher_holm": adj,
-                         "thresholds": {"w2_plus_1": lc_w2 + 1.0, "seed": lc_seed}, "learning_curves": curves,
+                         for g, pts in ((ch or {}).get("p_joint_learning_curve") or {}).items()}
+    out["cost_curve"] = {"arms": cost, "fisher_s_mod_vs_s_dense": fisher, "fisher_holm": adj, "thresholds": thresholds,
+                         "learning_curves": curves,
                          "checkpoint_consistency": {arm: {str(r["run"]): r.get("checkpoint_consistency") for r in trained.get(arm, [])}
                                                     for arm in ("s_mod", "s_dense", "p_sel")}}
-    # §7.3: nose dependence and the coverage hypothesis; never a dropped champion
+    # §7.3: nose dependence and the coverage hypothesis; a champion without its paths or noses-removed play is
+    # undefined there, never dropped
     m_lo_visits = (ES.margins(seed_mean)[0] * seed_mean) if seed_ok else None
 
-    def coverer(r, retained):
-        a = r["intact"]
-        tm, c = a.get("tour_match"), a.get("coverage")
+    def coverer(entry, retained):
+        tm, c = entry.get("tour_match"), entry.get("coverage")
         if retained is None or tm is None or c is None:
             return None
         return bool(retained >= 0.9 and c >= 0.95 and tm >= 0.5)
@@ -1391,8 +1464,8 @@ def report_readings(ev: dict, ch: dict, trained: dict, project: dict, n_test: in
         if len(L) < 2:
             return {"loss_mean": float(L.mean()) if len(L) else None, "loss_ci95": "not computed: fewer than 2",
                     "no_material_loss": None}
-        s = L.std(ddof=1)
-        ci = st.t.interval(0.95, len(L) - 1, loc=L.mean(), scale=s / np.sqrt(len(L))) if s > 0 else (L.mean(), L.mean())
+        sd = L.std(ddof=1)
+        ci = st.t.interval(0.95, len(L) - 1, loc=L.mean(), scale=sd / np.sqrt(len(L))) if sd > 0 else (L.mean(), L.mean())
         return {"loss_mean": float(L.mean()), "loss_ci95": [float(ci[0]), float(ci[1])],
                 "no_material_loss": bool(m_lo_visits is not None and ci[1] < m_lo_visits)}
 
@@ -1401,16 +1474,16 @@ def report_readings(ev: dict, ch: dict, trained: dict, project: dict, n_test: in
         rows = []
         for r in arms[arm]:
             va = float(_visits(r["intact"]).mean())
-            if r["noses_removed"] is None:
+            if r["noses_removed"] is None or not r["paths_ok"]:
                 rows.append({"run": r["run"], "intact": va, "noses_removed": None, "retained": None, "class": "undefined",
-                             "coverage": r["intact"].get("coverage"), "tour_match": r["intact"].get("tour_match"),
-                             "coverer": None, "loss": None, "maze_differences": None})
+                             "coverage": None, "tour_match": None, "coverer": None, "loss": None, "maze_differences": None,
+                             "why_undefined": "no complete noses-removed play" if r["noses_removed"] is None else "paths missing or altered"})
                 continue
             vb = float(_visits(r["noses_removed"]).mean())
             ret = None if va <= 0 else vb / va
             rows.append({"run": r["run"], "intact": va, "noses_removed": vb, "retained": ret, "class": ES.nose_class(ret),
                          "coverage": r["intact"].get("coverage"), "tour_match": r["intact"].get("tour_match"),
-                         "tour_match_best_lag": r["intact"].get("tour_match_best_lag"), "coverer": coverer(r, ret),
+                         "tour_match_best_lag": r["intact"].get("tour_match_best_lag"), "coverer": coverer(r["intact"], ret),
                          "loss": float((_visits(r["intact"]) - _visits(r["noses_removed"])).mean()),
                          "maze_differences": np.round(_visits(r["intact"]) - _visits(r["noses_removed"]), 6).tolist()})
         L = np.array([x["loss"] for x in rows if x["loss"] is not None])
@@ -1419,15 +1492,15 @@ def report_readings(ev: dict, ch: dict, trained: dict, project: dict, n_test: in
                      "coverers": sum(x["coverer"] is True for x in rows), "coverers_undefined": sum(x["coverer"] is None for x in rows),
                      **loss_reading(L)}
         cover_lists[arm] = [x["coverer"] for x in rows]
-    sref = ev["references"]["seed"]
-    if seed_ok and _complete(sref.get("noses_removed"), n):
+    sref = refs.get("seed") or {}
+    sp = sref.get("paths_files") or {}
+    if seed_ok and _complete(sref.get("noses_removed"), n) and paths_check(sp.get("intact"), n) and paths_check(sp.get("noses_removed"), n):
         sa, sb = seed_pm, _visits(sref["noses_removed"])
         rng2 = np.random.default_rng(REGISTERED["formal"]["bootstrap_seeds"]["seed_loss"])
         lb = [float((sa[i] - sb[i]).mean()) for i in (rng2.integers(0, n, n) for _ in range(REGISTERED["formal"]["bootstrap_resamples"]))]
         ret = float(sb.mean() / sa.mean())
         ci = [float(np.percentile(lb, 2.5)), float(np.percentile(lb, 97.5))]
-        tmp = {"intact": sref["intact"]}
-        nose["p_fixed"] = {"retained": ret, "class": ES.nose_class(ret), "coverer": coverer(tmp, ret),
+        nose["p_fixed"] = {"retained": ret, "class": ES.nose_class(ret), "coverer": coverer(sref["intact"], ret),
                            "loss_mean": float((sa - sb).mean()), "loss_ci95_bootstrap": ci,
                            "no_material_loss": bool(m_lo_visits is not None and ci[1] < m_lo_visits),
                            "maze_differences": np.round(sa - sb, 6).tolist()}
@@ -1441,41 +1514,56 @@ def report_readings(ev: dict, ch: dict, trained: dict, project: dict, n_test: in
     out["nose"] = nose
     out["coverage_hypothesis"] = ES.coverage_rule({k: cover_lists[k] for k in ("s_mod", "s_dense", "p_joint")})
     out["nose_dependence_p_joint_minus_s"] = dep
-    # the qualifiers, inside each primary reading (§7.3)
     qual = {arm: {"nose_classes": nose[arm]["classes"], "coverers": nose[arm]["coverers"], "eligible": len(arms[arm])}
             for arm in ("s_mod", "s_dense", "p_joint")}
     for q, pair in (("Q1", ("s_mod", "s_dense")), ("Q2", ("p_joint", "s_mod"))):
         if isinstance(prim.get(q), dict):
             prim[q]["qualifier"] = {a: qual[a] for a in pair}
     # descriptives (§7.4)
-    ref_means = {}
-    for k, v in ev["references"].items():
-        ref_means[k] = {c: {"visits": float(_visits(v[c]).mean()), "coverage": v[c].get("coverage"),
-                            "tour_match": v[c].get("tour_match")} for c in v if isinstance(v[c], dict) and "visits_per_maze" in v[c]}
-    out["references"] = ref_means
+    out["references"] = {k: {c: {"visits": float(_visits(v[c]).mean()), "coverage": v[c].get("coverage"),
+                                 "tour_match": v[c].get("tour_match")} for c in v if isinstance(v[c], dict) and "visits_per_maze" in v[c]}
+                         for k, v in refs.items()}
     pj_mean = float(run_visits["p_joint"].mean()) if len(run_visits["p_joint"]) else None
-    out["p_sel"] = {"above_floor": int(sum(run_visits["p_sel"] > w2 + 1.0)), "eligible": len(arms["p_sel"]),
+    out["p_sel"] = {"above_floor": int(sum(run_visits["p_sel"] > w2 + 1.0)) if math.isfinite(w2) else None,
+                    "eligible": len(arms["p_sel"]),
                     "runs": [{"run": r["run"], "visits": float(v), "minus_p_fixed": (float(v) - seed_mean) if seed_ok else None,
                               "minus_p_joint_mean": (float(v) - pj_mean) if pj_mean is not None else None}
                              for r, v in zip(arms["p_sel"], run_visits["p_sel"])]}
+    abd = ev.get("ab_distance")
     out["per_champion"] = {arm: [{"run": r["run"],
                                   "spearman_with_seed": (float(st.spearmanr(_visits(r["intact"]), seed_pm).correlation)
                                                          if seed_pm is not None else None),
-                                  "spearman_with_ab_distance": float(st.spearmanr(_visits(r["intact"]), ev["ab_distance"]).correlation),
+                                  "spearman_with_ab_distance": (float(st.spearmanr(_visits(r["intact"]), abd).correlation)
+                                                                if abd and len(abd) == n else None),
                                   "turn_offset": r["turn_offset"], "K_D_A_at_q0": r["K_D"],
                                   **{k: r["intact"].get(k) for k in ("legs", "later_leg_rate", "unvisited_share", "round_trip_share")},
-                                  "trails_off_visits": float(_visits(r["trails_off"]).mean()) if r["trails_off"] else None}
+                                  "trails_off_visits": float(_visits(r["trails_off"]).mean()) if _complete(r["trails_off"], n) else None}
                                  for r in arms[arm]] for arm in arms}
     return out
 
 
+def report_from(earlier: dict) -> dict:
+    """The report from whatever records exist (Amendment 1): a stage that never ran, or whose record lacks what a
+    reading needs, gives that reading an explicit "not read"."""
+    trained = {arm: trained_runs(earlier[ARM_STAGE[arm]], arm) if earlier.get(ARM_STAGE[arm]) else []
+               for arm in ARM_STAGE}
+    trained["checkpoint_generations"] = formal_gens()
+    inputs = {s: (earlier[s].get("outcome") if earlier.get(s) else "never started")
+              for s in REQUIRES["report"][0] + REQUIRES["report"][1]}
+    if not earlier.get("evaluate"):
+        lab = "not read: evaluate did not run"
+        return {"readings": {"primary": {q: {"read": False, "label": lab, "exact": {"p": None, "label": lab}} for q in ("Q1", "Q2")},
+                             "cost_curve": {"learning_curves": {arm: {str(r["run"]): [[c["generation"], c["validation_mean"]]
+                                                                                     for c in r.get("learning_curve", [])]
+                                                                     for r in trained[arm]} for arm in ARM_STAGE}}},
+                "inputs": inputs}
+    return {"readings": report_readings(earlier["evaluate"], earlier.get("champions") or {}, trained, earlier["project"],
+                                        n_test=len(formal_ids("test"))), "inputs": inputs}
+
+
 def cmd_report(args):
     def body(ctx):
-        ev, ch = ctx.earlier["evaluate"], ctx.earlier["champions"]
-        trained = {arm: trained_runs(ctx.earlier[ARM_STAGE[arm]], arm) for arm in ARM_STAGE}
-        trained["checkpoint_generations"] = formal_gens()
-        return {"readings": report_readings(ev, ch, trained, ctx.earlier["project"]),
-                "inputs": {s: ctx.earlier[s].get("outcome") for s in REQUIRES["report"][0] + REQUIRES["report"][1]}}
+        return report_from(ctx.earlier)
 
     return E.run_stage(args, "report", formal_requires("report"), body)
 
@@ -1488,13 +1576,19 @@ def use_smoke(args) -> None:
     R["H"] = 120
     R["ga"].update(population=4, elites=1, truncation=2)
     R["pilot"].update(runs_per_arm=1, G=3, W=2, checkpoint_every=2, train_base=9_100_000, train_span=1000)
-    R["formal"].update(G=6, W=2, blocks={"validation": [8000, 8002], "learning": [8002, 8004], "test": [8004, 8008],
+    R["formal"].update(G=12, W=2, blocks={"validation": [8000, 8002], "learning": [8002, 8004], "test": [8004, 8008],
                                          "benchmark": [8008, 8012]},
                        train={"base": 9_200_000, "span": 1000}, bench_train={"base": 9_300_000, "span": 1000},
                        bootstrap_resamples=200)
     configure()
     stage = getattr(args, "command", "pilot") if args is not None else "pilot"
-    for f in (E.record_path(stage), E.marker_path(stage), E.partial_path(stage)):
+    files = [E.record_path(stage), E.marker_path(stage), E.partial_path(stage)]
+    files += [E.rerun_note(E.record_path(stage))] + [E.attempt1(f) for f in list(files)]
+    if stage in STAGE_ARM:
+        g = [formal_genome_file(STAGE_ARM[stage], r["run"], k) for r in formal_runs(FO.PLAN_FULL)[STAGE_ARM[stage]]
+             for k in ("final", "candidates")]
+        files += g + [E.attempt1(f) for f in g]
+    for f in files:
         if EXP in f.parents:
             f.unlink(missing_ok=True)
 
