@@ -6827,3 +6827,31 @@ all of it, with the 15 040 checks.
 rate nearer 0.025, but needs its own power run, and Fable did not require it. The disclosure stands instead.
 
 **Next:** a confirmation pass by both on draft 4's diff. Then the text binds.
+
+## D210 — E3c's pre-registration binds at 69d7cd5 (both: "bind it")
+
+**The confirmation pass** (`docs/reviews/20261005-E3c-prereg-4/`):
+- **Fable said "bind it"** on draft 4 (66fb6db), with optional wording notes.
+- **Astra said "revise"** for one regression, which Fable also noted: draft 4's `coverage_rule` crashed on an arm
+  with no eligible champion.
+- **The fix** (69d7cd5, test-first: the new test failed with Astra's TypeError first):
+  - such an arm is "unavailable";
+  - the classification is then "mixed" and the P-joint comparison None;
+  - an empty S arm makes the S arms' part "undefined".
+  Fable's wording notes were taken with it.
+- **Astra's recheck:** "bind it". It checked all seven combinations of empty arms.
+
+**What binds,** at 69d7cd5, pushed before any formal stage exists (rule 2):
+- `experiments/E3-ab-organism/E3c/PREREGISTRATION.md`;
+- `wormwars/e3/e3c_stats.py` and `tests/test_e3c_stats.py`;
+- `scripts/e3c_power.py`, `tests/test_e3c_power.py` and `power.json`.
+
+From here, registered text is changed only by dated amendments (§14).
+
+**Next** (§0): the formal stages, written test-first against §12, then reviewed by both. Their commit is recorded
+in a dated amendment and in every start marker. Then `project`, `g-e` and the run.
+
+**The process, for the record:** the pre-registration took four drafts and five review rounds.
+- Every round found real errors: the miscentred power simulation, the intervals, the confirmatory status, and
+  code defects in the coverage rule.
+- Several of them were mine and were introduced while fixing earlier ones. Episodes 55-57 record them.

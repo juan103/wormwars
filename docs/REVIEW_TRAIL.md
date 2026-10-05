@@ -74,6 +74,7 @@ led to several of the findings.
 | 54 | E3c's replay stage: its formal run could not have started (the pilot-record check demanded unchanged scripts, and the replay's code is a script); the tour match compared cells, not directed moves, so a path with no repeated move scored 0.51; paths covered one champion of three | Claude Opus 5.5 | **Fable 5.1** and **Astra 6** (the guard and the paths by both; the tour metric by Astra, with a counterexample) | Each reproduced by a test that failed first; fixed before any GPU use | D205 |
 | 55 | E3c's pre-registration draft 1: the power simulation's failure mixtures shifted the arm means, so its scenarios were mislabelled (a "no difference" Q2 case had P-joint 1.1 visits ahead); the 6-run cut shrank P-joint too; Holm-level intervals were presented as confidence intervals (92.6% joint coverage); §8 misstated rates against power.json | Claude Opus 5.5 | **Astra 6** (the centring, the cut, the intervals, with simulations) and **Fable 5.1** (§8's figures, the binding of unwritten code) | The centring reproduced by a test the old code fails; the power analysis rebuilt and checked against the registered readings | D207 |
 | 56 | E3c's pre-registration draft 2: a contrast counted as confirmatory whenever no failed run was observed, which the simulation itself showed wrong up to 0.34-0.46; the joint error counter omitted false margin assertions; the coverage rule called P-joint "lower" with all its champions unmeasured; D207 and §15 said every required change was taken | Claude Opus 5.5 | **Astra 6** (each item, the coverage case with a counterexample); **Fable 5.1** (the g-e gate, the counts' blind spots) | The counterexample became a failing test; draft 3's exact test checked against a direct enumeration; D207 corrected beside it | D208 |
+| 57 | E3c's pre-registration drafts 3-4: the coverage rule's components still counted unmeasured P-joint champions as a zero share (draft 3), and the fix crashed on an arm with no eligible champion (draft 4); Q2's exact test was presented without saying its null is false on spread alone | Claude Opus 5.5 | **Astra 6** (both code defects, with counterexamples); **Fable 5.1** (the Q2 disclosure; the crash, as a note) | Each reproduced by a test that failed first; Astra's recheck covered all seven empty-arm combinations | D209, D210 |
 
 Episode 6 went unnoticed for a week, through a passing test suite, every milestone report, a
 publication audit, the first public release and Claude's own review of the roadmap on the day it
@@ -108,7 +109,7 @@ food response is 1.55-2.7 times the most responsive graph's, not 1.5-1.8).
   useful.
 - One error (episode 16) was caught by neither a person nor a reviewer but by running the tests on
   another operating system.
-- This is one project and fifty-six episodes: an anecdote about multi-agent review, not a measurement
+- This is one project and fifty-seven episodes: an anecdote about multi-agent review, not a measurement
   of it.
 
 ## In the history

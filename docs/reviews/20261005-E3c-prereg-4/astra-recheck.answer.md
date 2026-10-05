@@ -1,0 +1,3 @@
+**Bind it.** At `69d7cd5`, the fix is correct and complete for the reported regression. I found no introduced error or required change.
+
+All 25 statistics tests pass. I also reproduced the previous revision’s TypeError using the new regression test and checked all seven combinations of empty arms at HEAD. Each gives the intended classification, preserving “high” for fully measured high S arms when only P-joint is empty. The §7.3 amendment and wording changes are consistent with the code and committed data.
