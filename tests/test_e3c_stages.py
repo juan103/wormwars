@@ -510,3 +510,129 @@ def test_the_real_path_validator(tmp_path, monkeypatch):
     assert m3.paths_ok(man, 4) is False and m3.paths_ok(None, 3) is False
     m3.paths_file("s_mod", "intact").write_bytes(b"altered")
     assert m3.paths_ok(man, 3) is False
+
+
+
+# ------------------------------------------------------------------ the second recheck (Astra, D214)
+
+def test_a_report_without_evaluate_keeps_the_cost_curve(m):
+    ev, ch, tr = _synthetic(BASE)
+    earlier = {"project": {}, "evaluate": None, "champions": ch,
+               "train-smod": {"arms": {"s_mod": {"runs": tr["s_mod"]}}},
+               "train-sdense": {"arms": {"s_dense": {"runs": tr["s_dense"]}}},
+               "train-psel": {"arms": {"p_sel": {"runs": tr["p_sel"]}}}}
+    monkey = m.formal_gens
+    m.formal_gens = lambda: GENS
+    try:
+        rep = m.report_from(earlier)
+    finally:
+        m.formal_gens = monkey
+    r = rep["readings"]
+    assert r["primary"]["Q1"]["label"] == "not read: evaluate did not run"
+    assert r["cost_curve"]["arms"]["s_mod"]["w2_plus_1_reached"] == 8 and r["cost_curve"]["fisher_holm"] is not None
+
+
+def test_an_atomic_save_keeps_the_earlier_file(tmp_path, monkeypatch):
+    m4 = _fresh("e3c_atomic")
+    target = tmp_path / "x.npz"
+    target.write_bytes(b"earlier")
+
+    def broken(path, genome, **kw):
+        Path(path).write_bytes(b"partial")
+        raise OSError("injected: the write was interrupted")
+
+    monkeypatch.setattr(m4, "save_population", broken)
+    with pytest.raises(OSError):
+        m4.save_atomic(target, None)
+    assert target.read_bytes() == b"earlier"
+
+
+@pytest.mark.slow
+@pytest.mark.skipif(not TF_GENOMES.exists(), reason="needs E3b-1's T-F genomes, which stay local (D200)")
+def test_the_cap_and_the_last_chunks(monkeypatch):
+    """Astra (D214): a stage refused at the cap before it starts leaves no record and no marker (the report reads it
+    as never started); a cap reached at the frame's final check keeps the whole result as salvage; champions keeps
+    P-joint's first learning point when the second play fails; a corrupt saved archive makes a rerun train again."""
+    for stage in ("project", "g-e", "train-smod", "train-sdense", "train-psel"):
+        r = _run(stage)
+        assert r.returncode == 0, (stage, r.stderr[-3000:])
+    args = type("A", (), {"device": "cpu", "smoke": True, "guarded": False, "rerun": False, "reason": None})()
+    # the final cap check
+    m = _fresh("e3c_cap_final")
+    m.use_smoke(type("A", (), {"command": "champions"})())
+    m.REGISTERED["cap_gpu_hours"] = 30.0
+    flag = {"done": False}
+
+    class Clock:
+        def check(self):
+            if flag["done"]:
+                raise m.E.reg.CapReached("injected: the cap at the final check")
+
+        def spent_hours(self):
+            return 0.0
+
+    real_write = m.E.write_atomic
+
+    def write(path, doc):
+        real_write(path, doc)
+        if Path(path).name == "champions-grafted.json":
+            flag["done"] = True
+
+    monkeypatch.setattr(m.E, "clock", lambda: Clock())
+    monkeypatch.setattr(m.E, "write_atomic", write)
+    with pytest.raises(SystemExit):
+        m.cmd_champions(args)
+    rec = json.loads(m.E.record_path("champions").read_text(encoding="utf-8"))
+    assert rec["outcome"] == m.E.OUTCOMES["cap"] and {"w2_turn", "learning_curve_references", "arms"} <= set(rec)
+    assert len(rec["arms"]["p_joint"]["runs"]) == 8
+    # P-joint's second learning point fails: the first is kept
+    m2 = _fresh("e3c_pj_points")
+    m2.use_smoke(type("A", (), {"command": "champions"})())
+    m2.REGISTERED["cap_gpu_hours"] = 30.0
+    n_val = sum(len(json.loads((ROOT / "runs" / "e3c-smoke" / f"{st}.json").read_text(encoding="utf-8"))["arms"][a]["runs"])
+                for st, a in (("train-smod", "s_mod"), ("train-sdense", "s_dense"), ("train-psel", "p_sel"))) + 8
+    calls = {"n": 0}
+    real = m2.MR.play_batch
+
+    def fail_at_299(*a, **k):
+        calls["n"] += 1
+        if calls["n"] == n_val + 2 + 1:  # the validation chunks, W2-turn, P-joint at 124, then at 299
+            raise RuntimeError("injected: P-joint's 299 play")
+        return real(*a, **k)
+
+    monkeypatch.setattr(m2.MR, "play_batch", fail_at_299)
+    with pytest.raises(RuntimeError, match="injected"):
+        m2.cmd_champions(args)
+    rec = json.loads(m2.E.record_path("champions").read_text(encoding="utf-8"))
+    assert "124" in rec["p_joint_learning_curve"] and "299" not in rec["p_joint_learning_curve"] and "w2_turn" in rec
+    monkeypatch.setattr(m2.MR, "play_batch", real)
+    # a refusal at the cap before the stage starts (after a clean champions run, so only the cap can refuse)
+    r = _run("champions")
+    assert r.returncode == 0, r.stderr[-3000:]
+    m3 = _fresh("e3c_cap_pre")
+    m3.use_smoke(type("A", (), {"command": "evaluate"})())
+    m3.REGISTERED["cap_gpu_hours"] = 0.0
+    with pytest.raises(SystemExit, match="did not start"):
+        m3.cmd_evaluate(args)
+    assert not m3.E.record_path("evaluate").exists() and not m3.E.marker_path("evaluate").exists()
+    # a corrupt saved archive: the rerun trains again (Amendment 1, point 3)
+    m4 = _fresh("e3c_corrupt")
+    m4.use_smoke(type("A", (), {"command": "train-smod"})())
+    m4.REGISTERED["cap_gpu_hours"] = 30.0
+    real4 = m4.MR.play_batch
+
+    def boom(*a, **k):
+        raise RuntimeError("injected: the checkpoint plays fail")
+
+    monkeypatch.setattr(m4.MR, "play_batch", boom)
+    with pytest.raises(RuntimeError, match="injected"):
+        m4.cmd_train("train-smod")(args)
+    monkeypatch.setattr(m4.MR, "play_batch", real4)
+    rec = json.loads(m4.E.record_path("train-smod").read_text(encoding="utf-8"))
+    f = ROOT / rec["arms"]["s_mod"]["runs"][0]["genome_files"][0]["path"]
+    f.write_bytes(f.read_bytes()[:100])  # truncated: not a readable archive
+    rerun = type("A", (), {"device": "cpu", "smoke": True, "guarded": False, "rerun": True, "reason": "test: corrupt"})()
+    m4.cmd_train("train-smod")(rerun)
+    rec = json.loads(m4.E.record_path("train-smod").read_text(encoding="utf-8"))
+    entry = rec["arms"]["s_mod"]
+    assert rec["outcome"] == "completed" and "reuse_refused" in entry and "training_reused_from_attempt_1" not in entry

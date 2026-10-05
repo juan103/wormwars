@@ -21,6 +21,7 @@ import hashlib
 import importlib.util
 import json
 import math
+import os
 import sys
 import time
 from pathlib import Path
@@ -804,6 +805,24 @@ class Progress:
         self.ctx.cap.check()
         self.write()
 
+    def cap(self):
+        """A cap-like object whose `check` also writes the partial record (for `g-e`'s delegated legs: Astra, D214)."""
+        prog = self
+
+        class _Cap:
+            def check(self):
+                prog.check()
+        return _Cap()
+
+
+def save_atomic(path: Path, genome: Genome, **kw) -> Path:
+    """`save_population` to a temporary file, then an atomic replace: an interrupted save never destroys the earlier
+    file (Astra, D214)."""
+    tmp = path.with_name(path.stem + ".tmp.npz")
+    save_population(tmp, genome, **kw)
+    os.replace(tmp, path)
+    return path
+
 
 # ---------------------------------------------------------------------------------------------- project
 
@@ -887,13 +906,15 @@ def cmd_ge(args):
         ref = json.loads((ROOT / B1.EQ_REFERENCE).read_text(encoding="utf-8"))
         with acct.category("calibration"):
             new = B1.EQ.run(ROOT, Path(ROOT / "data" / "cache" / "cook2019_herm.npz"))
-            hook = B1.hook_leg(ctx.cap)
-            mazes = B1.maze_leg()
-        cpu = B1.EQ.compare(ref, new)
-        prog.state.update(cpu=cpu, snapshot_hook=hook, mazes=mazes)
-        prog.write(force=True)
+            prog.state["cpu"] = B1.EQ.compare(ref, new)
+            prog.write(force=True)
+            prog.state["snapshot_hook"] = B1.hook_leg(prog.cap())
+            prog.write(force=True)
+            prog.state["mazes"] = B1.maze_leg()
+            prog.write(force=True)
+        cpu, hook, mazes = prog.state["cpu"], prog.state["snapshot_hook"], prog.state["mazes"]
         with acct.category("calibration"):
-            gpu = {"skipped": "smoke"} if SMOKE else B1.gpu_leg(ctx.args.device, ctx.cap)
+            gpu = {"skipped": "smoke"} if SMOKE else B1.gpu_leg(ctx.args.device, prog.cap())
         prog.state.update({"passed": B1.ge_passed(cpu, gpu, hook, mazes, smoke=SMOKE), "gpu": gpu,
                            "note": "E3b-1's three legs at E3c's formal commit (§5); P-joint trained at f881308"})
         return dict(prog.state)
@@ -979,7 +1000,7 @@ def train_arm(ctx, arm: str, plan: dict) -> dict:
                 logs[i] = r["log"]
                 inloop[i] = {int(k): v for k, v in r["inloop_checkpoints"].items()}  # checked again below (both)
             entry["training_reused_from_attempt_1"] = True
-        except (ValueError, KeyError, OSError, StopIteration) as e:  # Amendment 1, point 3: train again
+        except Exception as e:  # noqa: BLE001 (Amendment 1, point 3: any failed verification, a corrupt archive included, trains again)
             entry["reuse_refused"] = f"{type(e).__name__}: {e}"
             prior = None
             inloop = {}
@@ -1134,8 +1155,8 @@ def cmd_champions(args):
                     per_run.append({"run": i, "validation_means": np.round(means, 6).tolist(), "champion_index": k,
                                     "champion_sha256": genome_hash(g, k)})
                     published[f"{arm}-run{i:02d}"] = grafted_by_name(g, org.ext, k)
-                    save_population(champions_file(arm), Genome.cat(champs), cfg=cfg, stage="champions", arm=arm,
-                                    runs=[x["run"] for x in per_run])  # the champions so far, saved with each chunk
+                    save_atomic(champions_file(arm), Genome.cat(champs), cfg=cfg, stage="champions", arm=arm,
+                                runs=[x["run"] for x in per_run])  # the champions so far, saved with each chunk
                     prog.write(force=True)
             grid = REGISTERED["formal"]["turn_grid"]
             orgs = [w2_turn(con, cfg.brain, r) for r in grid]
@@ -1144,7 +1165,9 @@ def cmd_champions(args):
             chosen = FO.choose_turn(grid, tv)
             prog.state["w2_turn"] = {"grid": grid, "block": "validation", "ids": [int(x) for x in val],
                                      "validation_means": np.round(tv, 6).tolist(), "chosen": chosen}
+            prog.write(force=True)
             pj_curve = {}
+            prog.state["p_joint_learning_curve"] = pj_curve
             for gen, pops in ((124, pj_124), (299, pj_final)):
                 picks, shas = [], {}
                 for i, v in sorted(pops.items()):
@@ -1160,14 +1183,15 @@ def cmd_champions(args):
                 pj_curve[str(gen)] = {str(i): {"validation_mean": float(vis[k].mean()), "sha256": shas[i],
                                                "validation_counts": np.round(vis[k], 6).tolist()}
                                       for k, i in enumerate(sorted(pops))}
-            prog.state["p_joint_learning_curve"] = pj_curve
+                prog.write(force=True)
             refs = {}
+            prog.state["learning_curve_references"] = refs
             for name, org in (("w2_alone", w2_alone(con, cfg.brain)), ("seed", cx["seed"])):
                 prog.check()
                 ev = MR.play(cfg, org.iface, lambda org=org: MO.brain(org, dev), learn, seed(), dev, access="shared")
                 ev1 = {k: (v[None] if isinstance(v, np.ndarray) and v.shape[:1] == (len(learn),) else v) for k, v in ev.items()}
                 refs[name] = float(outcomes(ev1, H)["visits"].mean())
-            prog.state["learning_curve_references"] = refs
+                prog.write(force=True)
         pub = EXP / "champions-grafted.json"
         E.write_atomic(pub, {"note": "every champion's grafted parameters by name (§6; D200)", "champions": published})
         prog.state.update({"fixed_inputs": inputs, "published": str(pub.relative_to(ROOT)).replace("\\", "/"),
@@ -1550,15 +1574,16 @@ def report_from(earlier: dict) -> dict:
     trained["checkpoint_generations"] = formal_gens()
     inputs = {s: (earlier[s].get("outcome") if earlier.get(s) else "never started")
               for s in REQUIRES["report"][0] + REQUIRES["report"][1]}
+    ev = earlier.get("evaluate")
+    if not ev:
+        ev = {"arms": {}, "references": {}, "test_ids": [int(x) for x in formal_ids("test")], "ab_distance": None}
+    readings = report_readings(ev, earlier.get("champions") or {}, trained, earlier.get("project") or {},
+                               n_test=len(formal_ids("test")))
     if not earlier.get("evaluate"):
         lab = "not read: evaluate did not run"
-        return {"readings": {"primary": {q: {"read": False, "label": lab, "exact": {"p": None, "label": lab}} for q in ("Q1", "Q2")},
-                             "cost_curve": {"learning_curves": {arm: {str(r["run"]): [[c["generation"], c["validation_mean"]]
-                                                                                     for c in r.get("learning_curve", [])]
-                                                                     for r in trained[arm]} for arm in ARM_STAGE}}},
-                "inputs": inputs}
-    return {"readings": report_readings(earlier["evaluate"], earlier.get("champions") or {}, trained, earlier["project"],
-                                        n_test=len(formal_ids("test"))), "inputs": inputs}
+        for q in ("Q1", "Q2"):
+            readings["primary"][q] = {"read": False, "label": lab, "exact": {"p": None, "label": lab}}
+    return {"readings": readings, "inputs": inputs}
 
 
 def cmd_report(args):

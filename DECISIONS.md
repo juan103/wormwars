@@ -6964,3 +6964,26 @@ limit. Astra said "fix first", with five items.
 
 **Then:** a recheck by both, Amendment 2 recording the formal commit, and the run. No GPU time has been spent on
 formal stages; E3c's total is still 3.946 of 30.
+
+## D214 — The second recheck's open items closed (D213); to both reviewers again
+
+**Taken, test-first** (the two fast tests were seen failing first; the slow one ran after the patch, and each
+of its parts targets behaviour the old code lacked):
+- **Per-play durability:**
+  - W2-turn's validation result, each of P-joint's learning points and each learning-curve reference are
+    persisted at once;
+  - `g-e` saves each leg as it completes, and its delegated rollouts write progress at every boundary;
+  - champion files are saved atomically, through a temporary file and a replace.
+- **`report_from` with no evaluate record** computes every reading the other records support, the cost curve
+  included. The primary readings say "not read: evaluate did not run".
+- **Any failed verification of a stopped attempt's training,** a corrupt archive included, trains again
+  (Amendment 1, point 3).
+- **The new tests:**
+  - a stage refused at the cap before it starts leaves no record or marker;
+  - a cap reached at the frame's final check keeps the whole result as salvage;
+  - P-joint's first learning point survives a failure in the second;
+  - a truncated archive makes the rerun train again;
+  - an atomic save survives an interrupted write;
+  - the no-evaluate report keeps the cost curve.
+
+**The full suite** was green at d7aae60, before these changes. It is rerun here.
