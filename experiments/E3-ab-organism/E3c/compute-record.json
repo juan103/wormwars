@@ -111,6 +111,18 @@
    "git_commit": "c14f19fcb2a3453956c26c19bdf66c858117878e"
   },
   {
+   "file": "20261006T144515Z-ab60ce92.json",
+   "status": "completed",
+   "script": "e3c",
+   "argv": [
+    "report",
+    "--device",
+    "cuda"
+   ],
+   "default_category": "measure",
+   "git_commit": "54217eb358208827d560c0eeae90fd70112d88f3"
+  },
+  {
    "file": "diagnostic-seed-check-20261005.json",
    "status": "diagnostic (reconciled)",
    "script": "experiments/E3-ab-organism/E3c/diagnostics/seed_check.py"
@@ -124,7 +136,7 @@
    "world_ticks": 0,
    "neural_updates": 24960,
    "neural_padding": 3840,
-   "seconds": 67.40038690157235
+   "seconds": 69.38857950177044
   },
   "selection": {
    "worlds_built": 1911904,
@@ -174,6 +186,6 @@
   "world_ticks": 5008460420,
   "neural_updates": 1280189057920,
   "neural_padding": 1888293120,
-  "seconds_timed": 81520.34299429855
+  "seconds_timed": 81522.33118689875
  }
 }

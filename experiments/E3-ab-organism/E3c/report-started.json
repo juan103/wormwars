@@ -1,0 +1,23 @@
+{
+ "stage": "report",
+ "attempt": 1,
+ "provenance": {
+  "git_commit": "54217eb358208827d560c0eeae90fd70112d88f3",
+  "branch": "roadmap",
+  "dirty": false,
+  "python": "3.13.3",
+  "numpy": "2.4.4",
+  "torch": "2.12.0+cu130",
+  "cuda": "13.0",
+  "gpu": "NVIDIA GeForce RTX 5080",
+  "connectome_cache_sha256": "43b87aa172a0042b9dce734b15bdf1c87efe3a33ac1cc0d9cd03255a60c96d4a",
+  "connectome_source_sha256": "1f4fdbf84746b69b49a8da0816f52787860ce349b638dce37924ba80f90c70c9",
+  "binding_commit": "69d7cd5ec9a0c77e094af903e754a3c881626394",
+  "engine_freeze": {
+   "changed": [],
+   "passes": true
+  },
+  "registered_text_sha256": "553f253d260b80638d9ef72d4654f2ef78372e960ea31d62d04345098d8c3397"
+ },
+ "started_utc": "2026-10-06T14:45:16Z"
+}
