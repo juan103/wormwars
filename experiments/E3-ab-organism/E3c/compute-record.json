@@ -87,6 +87,18 @@
    "git_commit": "5e87abafa3ff9897d972d8f22689fa58daec1fc3"
   },
   {
+   "file": "20261006T131833Z-a1dc091b.json",
+   "status": "completed",
+   "script": "e3c",
+   "argv": [
+    "champions",
+    "--device",
+    "cuda"
+   ],
+   "default_category": "measure",
+   "git_commit": "a12d6d95e22c208e62c9d9744a3aefc8ef19bf83"
+  },
+  {
    "file": "diagnostic-seed-check-20261005.json",
    "status": "diagnostic (reconciled)",
    "script": "experiments/E3-ab-organism/E3c/diagnostics/seed_check.py"
@@ -100,7 +112,7 @@
    "world_ticks": 0,
    "neural_updates": 24960,
    "neural_padding": 3840,
-   "seconds": 63.78120500128716
+   "seconds": 65.68943660147488
   },
   "selection": {
    "worlds_built": 1911904,
@@ -130,6 +142,13 @@
    "neural_padding": 158131200,
    "seconds": 484.74667049967684
   },
+  "final": {
+   "worlds_built": 118272,
+   "world_ticks": 283852800,
+   "neural_updates": 72823603200,
+   "neural_padding": 157286400,
+   "seconds": 4127.589855599916
+  },
   "diagnostic": {
    "worlds_built": 0,
    "world_ticks": 0,
@@ -139,10 +158,10 @@
   }
  },
  "totals": {
-  "worlds_built": 1995819,
-  "world_ticks": 4668697220,
-  "neural_updates": 1191951210880,
-  "neural_padding": 629994240,
-  "seconds_timed": 76354.78479249845
+  "worlds_built": 2114091,
+  "world_ticks": 4952550020,
+  "neural_updates": 1264774814080,
+  "neural_padding": 787280640,
+  "seconds_timed": 80484.28287969856
  }
 }
