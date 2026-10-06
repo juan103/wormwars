@@ -99,6 +99,18 @@
    "git_commit": "a12d6d95e22c208e62c9d9744a3aefc8ef19bf83"
   },
   {
+   "file": "20261006T142740Z-19a9c276.json",
+   "status": "completed",
+   "script": "e3c",
+   "argv": [
+    "evaluate",
+    "--device",
+    "cuda"
+   ],
+   "default_category": "measure",
+   "git_commit": "c14f19fcb2a3453956c26c19bdf66c858117878e"
+  },
+  {
    "file": "diagnostic-seed-check-20261005.json",
    "status": "diagnostic (reconciled)",
    "script": "experiments/E3-ab-organism/E3c/diagnostics/seed_check.py"
@@ -112,7 +124,7 @@
    "world_ticks": 0,
    "neural_updates": 24960,
    "neural_padding": 3840,
-   "seconds": 65.68943660147488
+   "seconds": 67.40038690157235
   },
   "selection": {
    "worlds_built": 1911904,
@@ -131,9 +143,9 @@
   "probe": {
    "worlds_built": 2560,
    "world_ticks": 6144000,
-   "neural_updates": 1889095680,
-   "neural_padding": 314572800,
-   "seconds": 215.77324960008264
+   "neural_updates": 1889272320,
+   "neural_padding": 314580480,
+   "seconds": 216.87409679987468
   },
   "calibration": {
    "worlds_built": 9219,
@@ -143,11 +155,11 @@
    "seconds": 484.74667049967684
   },
   "final": {
-   "worlds_built": 118272,
-   "world_ticks": 283852800,
-   "neural_updates": 72823603200,
-   "neural_padding": 157286400,
-   "seconds": 4127.589855599916
+   "worlds_built": 141568,
+   "world_ticks": 339763200,
+   "neural_updates": 88237670400,
+   "neural_padding": 1258291200,
+   "seconds": 5160.838172700023
   },
   "diagnostic": {
    "worlds_built": 0,
@@ -158,10 +170,10 @@
   }
  },
  "totals": {
-  "worlds_built": 2114091,
-  "world_ticks": 4952550020,
-  "neural_updates": 1264774814080,
-  "neural_padding": 787280640,
-  "seconds_timed": 80484.28287969856
+  "worlds_built": 2137387,
+  "world_ticks": 5008460420,
+  "neural_updates": 1280189057920,
+  "neural_padding": 1888293120,
+  "seconds_timed": 81520.34299429855
  }
 }
