@@ -7076,3 +7076,33 @@ it asserts that the hook and maze legs passed and that only the CPU leg failed, 
 Windows, nothing changes.
 
 **The formal run is unaffected:** `g-e` runs on the registered GPU under Windows.
+
+## D219 — E3c ran to completion; the results drafted for review
+
+**The run** (2026-10-05/06): every formal stage completed, at 22.65 of E3c's 30 GPU-hours (the formal stages
+18.70; the pilot, replay and diagnostic 3.95).
+- `project` admitted the full plan with no cuts.
+- `g-e` passed all four legs.
+- All 28 champions were eligible, and no run failed.
+- Every in-loop checkpoint equalled its post-hoc play: 40 of 40.
+
+**The registered readings** (`report.json`; `RESULTS.md`):
+- **Q1:** "approximate (model-based): no relevant difference", with S-mod − S-dense = −0.048 visits per wey,
+  [−0.120, +0.023]. The exact test: "no difference detected" (p = 0.099).
+- **Q2:** "approximate (model-based): unclear", with P-joint − S-mod = +0.664 visits per wey, [−0.243, +1.570].
+  The exact test: "no difference detected" (p = 0.052, against 0.025).
+- **The coverage hypothesis:** "supported".
+  - All 16 S champions are nose-independent coverers. P-joint's 8 are not: 4 are partial and 4 nose-dependent.
+  - Their loss without noses is 3.28 visits per wey, against about 0 for the S arms.
+- **The cost curve:** the S arms reach P-fixed's level at a median generation of 10-15; Fisher's test finds no
+  S-mod/S-dense difference.
+
+**Descriptive:**
+- P-sel ended above the floor in 4 of 4 runs, three at the from-scratch level, by scent-free circuits that are
+  not full coverers;
+- W2-turn (5.77) beat P-fixed (5.12);
+- P-joint's per-maze scores follow the maze's geometry and depend on the trails. The S arms' do not.
+
+**The owner** paused the roadmap before E4 (2026-10-06).
+
+**Next:** the results review by both reviewers, then publication.
