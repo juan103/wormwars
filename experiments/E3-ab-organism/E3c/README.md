@@ -1,13 +1,15 @@
 # E3c: the assembly comparison in the maze shuttle (pre-registered)
 
-**Status (2026-10-06):** run at 22.65 of 30 GPU-hours; results drafted (`RESULTS.md`), for review by both
-reviewers.
-- **Q1 (modular against dense, from random weights):** "no relevant difference" (approximate); the exact test
-  detects no difference.
-- **Q2 (the engineered start plus its tuning against E's mask from scratch):** "unclear". The tuned
-  engineered organisms are ahead by 0.66 visits per wey on average, with a wide spread.
-- **The coverage hypothesis:** "supported". Every organism trained from random weights solves the maze as a
-  scent-free wall-follower; every tuned engineered organism navigates with its noses.
+**Status (2026-10-06):** run at 22.65 of 30 GPU-hours; reviewed by both reviewers ("fix then publish") and
+corrected (D220). The results are in `RESULTS.md`:
+- **Q1 (modular against dense, from random weights):** "approximate (model-based): no relevant difference". The
+  exact test: "no difference detected (exact)".
+- **Q2 (the engineered start plus its tuning against E's mask from scratch):** "approximate (model-based):
+  unclear". The eight tuned engineered champions averaged 0.66 visits per wey more, with a wide spread.
+- **The coverage hypothesis:** "supported".
+  - All 16 selected champions trained from random weights met the registered coverer criterion: nose-independent,
+    covering the whole tree in a repeated circuit.
+  - None of the 8 tuned engineered champions did. They lose 3.3 visits per wey without their noses.
 
 **The question:** does assembling validated modules make a better or cheaper organism than training one from
 scratch?

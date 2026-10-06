@@ -7106,3 +7106,32 @@ Windows, nothing changes.
 **The owner** paused the roadmap before E4 (2026-10-06).
 
 **Next:** the results review by both reviewers, then publication.
+
+**Correction to D219** (2026-10-06, rule 4). D219 said P-sel ended above the floor in 4 of 4 runs, "three at the
+from-scratch level, by scent-free circuits that are not full coverers".
+- **What is wrong:** the three scored 5.58-6.14, below every S champion (6.59 and up). They exceeded P-fixed
+  instead.
+- **Also:** "scent-free" claims more than the noses-removed reading shows.
+
+## D220 — E3c's results reviewed by both ("fix then publish"); corrected
+
+**The review** (`docs/reviews/20261006-E3c-results/`).
+- **The numbers:** both found them sound. Astra reproduced `report.json` from the records exactly, with the
+  permutation tests, the bootstraps, all 28 champion selections and all 40 checkpoint checks. Fable recomputed
+  the rest by hand.
+- **The corrections were to the prose:**
+  - **P-sel:** "the from-scratch level" was wrong; it is above P-fixed and below every S champion;
+  - **Q1's bound** and the calibration sentence. Observing no failure does not establish the no-failure model;
+  - **Q2:** "similar scores" and the bootstrap gloss read "unclear" as more than it is. The bootstrap resamples
+    mazes, not runs;
+  - **the missing registered items:** the qualifier inside each label, the decomposition, P-sel against P-joint,
+    §11's categories, and "no material loss" marked approximate;
+  - **the Holm row**, labelled as Welch-based;
+  - **coverage:** "holds" became "supported", "quickly" was dropped, and P-joint's mixed classes and its
+    noses-removed scores were stated (Fable's exploratory reading: a large nose-free component);
+  - **the roadmap note:** the horizon idea is untested, and the E4 implication is conditional.
+
+**All corrections are taken.** `RESULTS.md` keeps a Corrections section listing them.
+
+**Next:** publication on main, with the READMEs, ROADMAP and the review trail updated. Then the roadmap pauses
+before E4 (the owner, 2026-10-06).

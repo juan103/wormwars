@@ -94,6 +94,19 @@
     - **Both next steps keep their premise.**
   - **Next in Track E: E3c, the assembly comparison, then E4** (the owner's choice, 2026-10-04, D198), each
     capped at 30 GPU-hours.
+- **E3c, the assembly comparison** (pre-registered, 2026-10-04/06; D198-D220; `experiments/E3-ab-organism/E3c/`).
+  - **The pilot** found that organisms trained from random weights solve the mazes as scent-free
+    wall-followers. A replay and probe confirmed it (D206). The pre-registration took four drafts and five
+    review rounds; the formal code, five more.
+  - **The run used 22.65 of 30 GPU-hours.**
+    - **Q1:** modular against dense from scratch, "approximate (model-based): no relevant difference".
+    - **Q2:** the engineered seed plus tuning against scratch, "approximate (model-based): unclear" (+0.66
+      visits on average).
+    - **The coverage hypothesis:** "supported". Every from-scratch champion is a scent-free coverer; no tuned
+      engineered one is.
+  - **For E4:** its question, whether information crosses between two navigation modules, needs a task where
+    coverage cannot win, and its own validation.
+  - **Paused before E4** (the owner, 2026-10-06).
 
 - **Published on main:**
   - 02's D050 correction, as a Corrections entry (27 September, D063);

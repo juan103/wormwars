@@ -1,6 +1,6 @@
 # E3: the minimal A/B organism
 
-**Status (2026-10-03):**
+**Status (2026-10-06):**
 - **E3a: published on main** (2026-10-02, D170).
   - Its design was agreed (`docs/E3/DESIGN.md` v2.4, D163).
   - Its pre-registration was bound before any stage ran (`E3a/PREREGISTRATION.md`; D164, D165; Amendment
@@ -12,14 +12,20 @@
 - **E3b-1: published** (2026-10-04, D192; `E3b-1/README.md`, `E3b-1/RESULTS.md`). It is the roadmap's E3
   gate: the tuned colony against the frozen seed in mazes. It reads "better" (+0.225 of the seed's mean; +0.069
   at 125 generations, +0.381 at 300), at 18.73 of 24 GPU-hours.
+  - It was pre-registered and bound before any stage ran (D181-D186).
+  - Amendment 1 (infeasible mazes) was added before any score was read (D190, D191).
+  - The code was reviewed by both (D188, D189).
 - **E3b-2: published** (2026-10-04, D197; `E3b-2/RESULTS.md`). It is exploratory: where E3b-1's gain comes from.
   - The tuned colonies still use the latch's switching.
   - Their gain sits mostly in the comparators' co-tuned sensing and gating parameters.
   - E3's assembly comparison and E4 keep their premise.
-- **Next: E3c, the assembly comparison,** then E4 (the owner's choice, D198; 30 GPU-hours each).
-  - It was pre-registered and bound before any stage ran (D181-D186).
-  - Amendment 1 (infeasible mazes) was added before any score was read (D190, D191).
-  - The code was reviewed by both (D188, D189).
+- **E3c: published** (2026-10-06, D220; `E3c/README.md`, `E3c/RESULTS.md`). The assembly comparison,
+  pre-registered (bound at 69d7cd5, two amendments before any formal stage ran), at 22.65 of 30 GPU-hours.
+  - **Q1** (modular against dense, from scratch): "approximate (model-based): no relevant difference".
+  - **Q2** (the engineered seed plus tuning against scratch): "approximate (model-based): unclear".
+  - **The coverage hypothesis:** "supported". Every from-scratch champion is a scent-free coverer of the maze;
+    no tuned engineered one is.
+- **Paused before E4** (the owner, 2026-10-06).
 
 ## E3a's results
 
@@ -94,7 +100,7 @@ silent worm, outside the N2 mask. Nothing here is about worm behaviour.
 - **E3a, the shuttle:** one wey, an open arena, two fixed sources. This folder's first experiment.
 - **E3b:** trails, branching mazes and the colony. It holds the roadmap's E3 gate. E3b-0, the engine and
   feasibility, is published; so are E3b-1, the gate ("better"), and E3b-2, where its gain comes from.
-- **E3c:** the assembly comparison.
+- **E3c:** the assembly comparison, published (2026-10-06).
 
 **The owner's ceilings:** 30 GPU-hours for E3a, and about the same for each of E3b and E3c (D159).
 
