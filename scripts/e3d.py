@@ -73,7 +73,9 @@ REQUIRES = {"project": [], "g-e": ["project"], "calibrate": ["project", "g-e"], 
             "report": ["project", "calibrate"]}
 
 REGISTERED = {
-    "design": DESIGN, "binding_commit": None, "design_sha256": None,  # set by the binding commit (§8)
+    "design": DESIGN,  # §8: the design with Amendment 1, bound at the code commit (D226); the engine frozen there
+    "binding_commit": "8b94c360ebf185127371a1a718df192cfb31991c",
+    "design_sha256": "fe29a9e4c83ff9cf51652731e88155b989ab7b2540f114433a6a18473e5bdf00",
     "maze_seed": 1_190_000, "c": 6, "H": 2400, "colony": 8, "spawns": 4,
     "trail": {"mu": 0.01, "lam": 0.02, "delta": 0.05, "d0": 1.142},
     "k_r": [0, 2, 4], "feasible_floor": 0.5,
