@@ -1,0 +1,112 @@
+{
+ "time_unit": "synchronised wall-clock seconds per category (not GPU kernel time)",
+ "neural_update_unit": "strains x batch x substeps network updates (network size not included)",
+ "attempts": [
+  {
+   "file": "20261010T155028Z-b86f6d3f.json",
+   "status": "completed",
+   "script": "e3d",
+   "argv": [
+    "project",
+    "--device",
+    "cuda"
+   ],
+   "default_category": "measure",
+   "git_commit": "efe3979fb2d71636a43967741ac3a8f9ec260ee5"
+  },
+  {
+   "file": "20261010T155058Z-ba61a77f.json",
+   "status": "failed",
+   "script": "e3d",
+   "argv": [
+    "g-e",
+    "--device",
+    "cuda"
+   ],
+   "default_category": "measure",
+   "git_commit": "5dc3fb329a0bd21cf11b2fe91cb3030a50d68afc"
+  },
+  {
+   "file": "20261010T155110Z-eb3efd9d.json",
+   "status": "completed",
+   "script": "e3d",
+   "argv": [
+    "g-e",
+    "--device",
+    "cuda"
+   ],
+   "default_category": "measure",
+   "git_commit": "5dc3fb329a0bd21cf11b2fe91cb3030a50d68afc"
+  },
+  {
+   "file": "20261010T155839Z-9448e1bb.json",
+   "status": "completed",
+   "script": "e3d",
+   "argv": [
+    "calibrate",
+    "--device",
+    "cuda"
+   ],
+   "default_category": "measure",
+   "git_commit": "954e1b8395b0e48fb53945f093b0865e1f483214"
+  },
+  {
+   "file": "20261010T164023Z-ac66bb39.json",
+   "status": "completed",
+   "script": "e3d",
+   "argv": [
+    "report",
+    "--device",
+    "cuda"
+   ],
+   "default_category": "measure",
+   "git_commit": "85ea8b04d28d085771156c9e531d0bd1f38d8ae3"
+  }
+ ],
+ "failed_attempts": 1,
+ "uncategorised": false,
+ "categories": {
+  "measure": {
+   "worlds_built": 0,
+   "world_ticks": 0,
+   "neural_updates": 0,
+   "neural_padding": 0,
+   "seconds": 16.343116401694715
+  },
+  "calibration": {
+   "worlds_built": 1539,
+   "world_ticks": 333700,
+   "neural_updates": 73984000,
+   "neural_padding": 7398400,
+   "seconds": 307.08150820154697
+  },
+  "selection": {
+   "worlds_built": 53344,
+   "world_ticks": 15978240,
+   "neural_updates": 511303680,
+   "neural_padding": 0,
+   "seconds": 124.04846379952505
+  },
+  "holdout": {
+   "worlds_built": 4128,
+   "world_ticks": 1230080,
+   "neural_updates": 39362560,
+   "neural_padding": 0,
+   "seconds": 6.479924699291587
+  },
+  "final": {
+   "worlds_built": 20736,
+   "world_ticks": 49766400,
+   "neural_updates": 15099494400,
+   "neural_padding": 4246732800,
+   "seconds": 2451.4054239979014
+  }
+ },
+ "totals": {
+  "worlds_built": 79747,
+  "world_ticks": 67308420,
+  "neural_updates": 15724144640,
+  "neural_padding": 4254131200,
+  "seconds_timed": 2905.3584370999597
+ }
+}

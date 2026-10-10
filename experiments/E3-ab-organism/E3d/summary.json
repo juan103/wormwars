@@ -1,0 +1,441 @@
+{
+ "verdict": "E3d: failed at calibration",
+ "choice": {
+  "k_r": null,
+  "verdict": "E3d: failed at calibration",
+  "failures": {
+   "0": [
+    "G1b"
+   ],
+   "2": [
+    "G1b"
+   ],
+   "4": [
+    "G1b"
+   ]
+  }
+ },
+ "gpu_hours": 0.8070440103055444,
+ "k_r": {
+  "0": {
+   "gate": {
+    "follower": 16.53125,
+    "oracle": 42.451171875,
+    "oracle_visited_share": 1.0,
+    "seed": 9.0146484375,
+    "seed_median_legs": 6.8125,
+    "b_max": 2.3369140625,
+    "b_max_member": "walk_p0.5_r1",
+    "failed": [
+     "G1b"
+    ],
+    "verdict": "E3d: failed",
+    "precondition": true
+   },
+   "ratios": {
+    "b_max_over_follower": 0.14136342155009451,
+    "follower_over_oracle": 0.38941798941798944,
+    "seed_minus_b_max": 6.677734375
+   },
+   "first_draw_feasible_share": 0.796875,
+   "single_strain_means": {
+    "wall_left": 0.013671875,
+    "wall_right": 0.0146484375,
+    "w2": 1.7607421875,
+    "w2_turn_-0.8": 0.0341796875,
+    "w2_turn_-0.4": 0.4658203125,
+    "w2_turn_0": 0.7998046875,
+    "w2_turn_0.2": 1.095703125,
+    "w2_turn_0.4": 1.7607421875,
+    "w2_turn_0.6": 1.0556640625,
+    "w2_turn_0.8": 0.24609375,
+    "w2_turn_1": 0.0,
+    "w2_turn_1.2": 0.0,
+    "w2_turn_1.4": 0.0,
+    "w2_turn_1.6": 0.0,
+    "w2_turn_1.8": 0.0,
+    "w2_turn_1.95": 0.0,
+    "w2_m40": 1.6962890625,
+    "w2_m80": 1.8076171875,
+    "walk_p0.5_r0.5": 1.7998046875,
+    "walk_p0.5_r1": 2.3369140625,
+    "walk_p0.5_r2": 2.291015625,
+    "seed_noses": 1.75,
+    "oracle": 42.451171875,
+    "follower_shared": 16.53125,
+    "follower_none": 2.92578125,
+    "seed": 9.0146484375
+   },
+   "multi_strain_blind": {
+    "s_mod_noses": {
+     "min": 0.0,
+     "max": 0.001953125,
+     "mean": 0.0006103515625
+    },
+    "s_dense_noses": {
+     "min": 0.0,
+     "max": 0.0,
+     "mean": 0.0
+    },
+    "p_sel_noses": {
+     "min": 0.0,
+     "max": 0.2646484375,
+     "mean": 0.066162109375
+    },
+    "p_joint_noses": {
+     "min": 0.0,
+     "max": 0.5537109375,
+     "mean": 0.1982421875
+    }
+   },
+   "w2_turn_best": [
+    "w2_turn_0.4",
+    1.7607421875
+   ],
+   "b_max_member_detail": {
+    "round_trip_share": 0.4052734375,
+    "coverage": 0.901746921875,
+    "visited_share": 0.8955078125,
+    "contact_perimeter": 0.44713503125,
+    "contact_ring_a": 0.0533683125,
+    "contact_ring_b": 0.053171421875,
+    "contact_other": 0.0690637578125,
+    "switch_rate": 36.2886556015625,
+    "at_visit": {
+     "ring_a|perimeter": 942,
+     "ring_b|other": 241,
+     "ring_a|ring_b": 76,
+     "perimeter|perimeter": 118,
+     "ring_b|perimeter": 585,
+     "ring_a|other": 313,
+     "ring_b|ring_a": 60,
+     "ring_a|none": 1,
+     "other|other": 45,
+     "ring_a|ring_a": 6,
+     "ring_b|ring_b": 6
+    }
+   },
+   "round_trip_share_blind_top5": [
+    [
+     "walk_p0.5_r1",
+     0.4052734375
+    ],
+    [
+     "walk_p0.5_r2",
+     0.3974609375
+    ],
+    [
+     "w2_m80",
+     0.2802734375
+    ],
+    [
+     "w2",
+     0.275390625
+    ],
+    [
+     "w2_turn_0.4",
+     0.275390625
+    ]
+   ],
+   "follower_shared_detail": {
+    "round_trip_share": 0.5478515625,
+    "no_first_visit_share": 0.052734375
+   },
+   "seed_detail": {
+    "round_trip_share": 0.900390625,
+    "no_first_visit_share": 0.0302734375
+   },
+   "mazes": {
+    "open_share": 0.6940104166666667,
+    "junctions": 14.9609375,
+    "dead_ends": 6.7109375,
+    "detour": 1.6627604166666667,
+    "line_of_sight_share": 0.0791015625,
+    "entrances": 2.10546875,
+    "spawn_candidates": 12.5625,
+    "redrawn_share": 0.203125,
+    "scent_reach_share": 0.99609375
+   }
+  },
+  "2": {
+   "gate": {
+    "follower": 15.833984375,
+    "oracle": 42.62890625,
+    "oracle_visited_share": 1.0,
+    "seed": 9.484375,
+    "seed_median_legs": 7.875,
+    "b_max": 2.349609375,
+    "b_max_member": "walk_p0.5_r2",
+    "failed": [
+     "G1b"
+    ],
+    "verdict": "E3d: failed",
+    "precondition": true
+   },
+   "ratios": {
+    "b_max_over_follower": 0.148390280004934,
+    "follower_over_oracle": 0.37143773481169245,
+    "seed_minus_b_max": 7.134765625
+   },
+   "first_draw_feasible_share": 0.796875,
+   "single_strain_means": {
+    "wall_left": 0.009765625,
+    "wall_right": 0.009765625,
+    "w2": 1.912109375,
+    "w2_turn_-0.8": 0.037109375,
+    "w2_turn_-0.4": 0.6240234375,
+    "w2_turn_0": 0.958984375,
+    "w2_turn_0.2": 1.263671875,
+    "w2_turn_0.4": 1.912109375,
+    "w2_turn_0.6": 1.166015625,
+    "w2_turn_0.8": 0.248046875,
+    "w2_turn_1": 0.0,
+    "w2_turn_1.2": 0.0,
+    "w2_turn_1.4": 0.0,
+    "w2_turn_1.6": 0.0,
+    "w2_turn_1.8": 0.0,
+    "w2_turn_1.95": 0.0,
+    "w2_m40": 1.771484375,
+    "w2_m80": 1.6923828125,
+    "walk_p0.5_r0.5": 1.9228515625,
+    "walk_p0.5_r1": 2.3095703125,
+    "walk_p0.5_r2": 2.349609375,
+    "seed_noses": 1.7841796875,
+    "oracle": 42.62890625,
+    "follower_shared": 15.833984375,
+    "follower_none": 2.3896484375,
+    "seed": 9.484375
+   },
+   "multi_strain_blind": {
+    "s_mod_noses": {
+     "min": 0.0,
+     "max": 0.001953125,
+     "mean": 0.000244140625
+    },
+    "s_dense_noses": {
+     "min": 0.0,
+     "max": 0.0,
+     "mean": 0.0
+    },
+    "p_sel_noses": {
+     "min": 0.0,
+     "max": 0.28125,
+     "mean": 0.0703125
+    },
+    "p_joint_noses": {
+     "min": 0.0,
+     "max": 0.5634765625,
+     "mean": 0.205810546875
+    }
+   },
+   "w2_turn_best": [
+    "w2_turn_0.4",
+    1.912109375
+   ],
+   "b_max_member_detail": {
+    "round_trip_share": 0.4169921875,
+    "coverage": 0.9218207656249999,
+    "visited_share": 0.890625,
+    "contact_perimeter": 0.3950569296875,
+    "contact_ring_a": 0.057817796875,
+    "contact_ring_b": 0.05604372656249999,
+    "contact_other": 0.11913535156249999,
+    "switch_rate": 44.7322590859375,
+    "at_visit": {
+     "ring_a|perimeter": 807,
+     "ring_b|other": 317,
+     "ring_b|ring_a": 80,
+     "ring_a|other": 515,
+     "perimeter|perimeter": 78,
+     "ring_b|perimeter": 477,
+     "ring_a|ring_b": 77,
+     "other|other": 51,
+     "ring_a|none": 1,
+     "ring_a|ring_a": 1,
+     "ring_b|ring_b": 2
+    }
+   },
+   "round_trip_share_blind_top5": [
+    [
+     "walk_p0.5_r2",
+     0.4169921875
+    ],
+    [
+     "walk_p0.5_r1",
+     0.4140625
+    ],
+    [
+     "w2",
+     0.3115234375
+    ],
+    [
+     "w2_turn_0.4",
+     0.3115234375
+    ],
+    [
+     "walk_p0.5_r0.5",
+     0.2978515625
+    ]
+   ],
+   "follower_shared_detail": {
+    "round_trip_share": 0.5341796875,
+    "no_first_visit_share": 0.1025390625
+   },
+   "seed_detail": {
+    "round_trip_share": 0.9306640625,
+    "no_first_visit_share": 0.009765625
+   },
+   "mazes": {
+    "open_share": 0.72734375,
+    "junctions": 16.796875,
+    "dead_ends": 5.1953125,
+    "detour": 1.65234375,
+    "line_of_sight_share": 0.07975260416666666,
+    "entrances": 2.10546875,
+    "spawn_candidates": 8.21875,
+    "redrawn_share": 0.203125,
+    "scent_reach_share": 0.984375
+   }
+  },
+  "4": {
+   "gate": {
+    "follower": 16.4931640625,
+    "oracle": 43.0224609375,
+    "oracle_visited_share": 1.0,
+    "seed": 10.56640625,
+    "seed_median_legs": 8.6875,
+    "b_max": 2.5341796875,
+    "b_max_member": "walk_p0.5_r1",
+    "failed": [
+     "G1b"
+    ],
+    "verdict": "E3d: failed",
+    "precondition": true
+   },
+   "ratios": {
+    "b_max_over_follower": 0.15365030493220438,
+    "follower_over_oracle": 0.38336170695721256,
+    "seed_minus_b_max": 8.0322265625
+   },
+   "first_draw_feasible_share": 0.7890625,
+   "single_strain_means": {
+    "wall_left": 0.0078125,
+    "wall_right": 0.0126953125,
+    "w2": 1.8798828125,
+    "w2_turn_-0.8": 0.0224609375,
+    "w2_turn_-0.4": 0.716796875,
+    "w2_turn_0": 1.0751953125,
+    "w2_turn_0.2": 1.37890625,
+    "w2_turn_0.4": 1.8798828125,
+    "w2_turn_0.6": 1.001953125,
+    "w2_turn_0.8": 0.28515625,
+    "w2_turn_1": 0.0,
+    "w2_turn_1.2": 0.0,
+    "w2_turn_1.4": 0.0,
+    "w2_turn_1.6": 0.0,
+    "w2_turn_1.8": 0.0,
+    "w2_turn_1.95": 0.0,
+    "w2_m40": 1.8974609375,
+    "w2_m80": 1.7939453125,
+    "walk_p0.5_r0.5": 2.0146484375,
+    "walk_p0.5_r1": 2.5341796875,
+    "walk_p0.5_r2": 2.44140625,
+    "seed_noses": 1.884765625,
+    "oracle": 43.0224609375,
+    "follower_shared": 16.4931640625,
+    "follower_none": 2.3701171875,
+    "seed": 10.56640625
+   },
+   "multi_strain_blind": {
+    "s_mod_noses": {
+     "min": 0.0,
+     "max": 0.0,
+     "mean": 0.0
+    },
+    "s_dense_noses": {
+     "min": 0.0,
+     "max": 0.0,
+     "mean": 0.0
+    },
+    "p_sel_noses": {
+     "min": 0.0,
+     "max": 0.2998046875,
+     "mean": 0.074951171875
+    },
+    "p_joint_noses": {
+     "min": 0.0,
+     "max": 0.548828125,
+     "mean": 0.2174072265625
+    }
+   },
+   "w2_turn_best": [
+    "w2_turn_0.4",
+    1.8798828125
+   ],
+   "b_max_member_detail": {
+    "round_trip_share": 0.4521484375,
+    "coverage": 0.9481608125000001,
+    "visited_share": 0.90625,
+    "contact_perimeter": 0.3420894296875,
+    "contact_ring_a": 0.054216734375,
+    "contact_ring_b": 0.0536116953125,
+    "contact_other": 0.14068400000000003,
+    "switch_rate": 51.6487630703125,
+    "at_visit": {
+     "perimeter|perimeter": 118,
+     "ring_a|perimeter": 719,
+     "ring_b|ring_a": 71,
+     "ring_b|other": 424,
+     "ring_a|other": 622,
+     "other|other": 74,
+     "ring_b|perimeter": 471,
+     "ring_a|ring_b": 86,
+     "ring_a|none": 1,
+     "ring_b|ring_b": 7,
+     "ring_a|ring_a": 2
+    }
+   },
+   "round_trip_share_blind_top5": [
+    [
+     "walk_p0.5_r1",
+     0.4521484375
+    ],
+    [
+     "walk_p0.5_r2",
+     0.443359375
+    ],
+    [
+     "walk_p0.5_r0.5",
+     0.3154296875
+    ],
+    [
+     "w2_m40",
+     0.3115234375
+    ],
+    [
+     "w2",
+     0.2958984375
+    ]
+   ],
+   "follower_shared_detail": {
+    "round_trip_share": 0.5810546875,
+    "no_first_visit_share": 0.0751953125
+   },
+   "seed_detail": {
+    "round_trip_share": 0.96484375,
+    "no_first_visit_share": 0.005859375
+   },
+   "mazes": {
+    "open_share": 0.7604166666666667,
+    "junctions": 18.703125,
+    "dead_ends": 3.8125,
+    "detour": 1.6375000000000002,
+    "line_of_sight_share": 0.080078125,
+    "entrances": 2.109375,
+    "spawn_candidates": 5.2109375,
+    "redrawn_share": 0.2109375,
+    "scent_reach_share": 0.95703125
+   }
+  }
+ }
+}

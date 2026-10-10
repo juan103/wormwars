@@ -7406,3 +7406,31 @@ by the binding commit and this record.
 
 **Next:** Astra confirms the two fixes. Then the owner is told before any GPU use.
 
+
+## D229 — E3d run: "E3d: failed at calibration" (G1b at every k_r); results drafted for review
+
+**The confirmation of D228's fixes** (`docs/reviews/20261010-E3d-code-3/`): both reviewers said "run". Fable noted a
+stray control byte in `_normalise`'s replacement string, applied to both texts alike, so the guard is unaffected.
+It was left, as re-binding would gain nothing.
+
+**The owner was told** before GPU use began: the GPU reference, the CUDA smoke, then the formal stages.
+
+**The run:**
+- **The GPU reference** at 40bd50f matched the new engine tick by tick.
+- **The CUDA smoke** of all five stages passed.
+- **`project`** was admitted after the first registered reduction (the walk grid to persistence 0.5).
+- **`g-e`** passed every leg, the full rollout identical on the CPU and the GPU.
+- **`calibrate`:**
+  - **the verdict, "E3d: failed at calibration":** G1b failed at k_r = 0, 2 and 4, with B_max 2.34, 2.35 and
+    2.53, a random walk, against 2.0. G1a, G2, G3 and the precondition passed at every k_r. Confirmation was
+    not played;
+  - **also measured:** the scripted wall-followers make 0.01, E3c's 16 S champions with their noses removed
+    make 0.00, the seed makes 9.0-10.6 and the follower 15.8-16.5.
+- **`report`.**
+
+0.81 of 3 GPU-hours.
+
+**The results draft:** `experiments/E3-ab-organism/E3d/RESULTS.md`, from `summary.json` (`scripts/e3d_summary.py`).
+
+**Next:** the results reviewed by both. Then the owner decides the next construction (design §9); the roadmap
+stays paused before E4.
