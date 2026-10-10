@@ -2,7 +2,7 @@
 
 **Status (2026-10-10):** run at 0.81 of 3 GPU-hours. **"E3d: failed at calibration"**: at every k_r, G1b
 failed, and nothing else did. A random walk reached 2.34-2.53 mean visits per wey against the absolute blind
-limit of 2.0. The results draft (`RESULTS.md`) is under review by both reviewers.
+limit of 2.0. The results (`RESULTS.md`) were reviewed by both reviewers and corrected before publication (D231).
 
 **The question:** can a 6 × 6 maze family be built in which every scent-free control scores well below a scent
 navigator, while navigation still pays? E3c found that organisms trained from random weights solve E3b-1's tree
@@ -17,7 +17,7 @@ openings. A gate on a fixed block decides; it was fixed in advance.
 
 - **The design:** `docs/E3/E3d-DESIGN.md` v2.2, bound at 65b77fb. Amendment 1, its correction and erratum
   are in §11.
-- **The decisions:** D221-D228.
+- **The decisions:** D221-D231 (D230: a connectome-guard false positive on this folder's `calibrate.json`).
 - **The reviews:** `docs/reviews/20261010-E3d-*`.
 - **The sizing:** `scripts/e3d_sizing.py` and `docs/E3/e3d-sizing.json`.
 - **The code:**

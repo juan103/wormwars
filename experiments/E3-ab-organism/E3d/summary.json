@@ -1,5 +1,9 @@
 {
  "verdict": "E3d: failed at calibration",
+ "bootstrap_settings": {
+  "resamples": 2000,
+  "seed": 20261011
+ },
  "choice": {
   "k_r": null,
   "verdict": "E3d: failed at calibration",
@@ -18,6 +22,279 @@
  "gpu_hours": 0.8070440103055444,
  "k_r": {
   "0": {
+   "bootstrap": {
+    "b_max": {
+     "point": 2.3369140625,
+     "interval": [
+      2.2138671875,
+      2.4736816406249997
+     ]
+    },
+    "follower": {
+     "point": 16.53125,
+     "interval": [
+      13.5429443359375,
+      19.638720703125
+     ]
+    },
+    "oracle": {
+     "point": 42.451171875,
+     "interval": [
+      40.8396728515625,
+      43.971728515625
+     ]
+    },
+    "seed": {
+     "point": 9.0146484375,
+     "interval": [
+      8.0847900390625,
+      9.875195312499999
+     ]
+    },
+    "b_max_over_follower": {
+     "point": 0.14136342155009451,
+     "interval": [
+      0.12053342280400409,
+      0.17089492485470437
+     ]
+    },
+    "follower_over_oracle": {
+     "point": 0.38941798941798944,
+     "interval": [
+      0.3266446161841572,
+      0.45160462218347464
+     ]
+    },
+    "seed_minus_b_max": {
+     "point": 6.677734375,
+     "interval": [
+      5.79384765625,
+      7.4795654296875
+     ]
+    },
+    "seed_median_legs": {
+     "point": 6.8125,
+     "interval": [
+      5.5,
+      7.875
+     ]
+    },
+    "oracle_visited_share": {
+     "point": 1.0,
+     "interval": [
+      1.0,
+      1.0
+     ]
+    }
+   },
+   "scent_split": {
+    "goals_flagged": 255,
+    "goals_other": 1,
+    "mazes_both_flagged": 127,
+    "mazes_other": 1,
+    "per_goal": {
+     "follower_shared": {
+      "arrived_flagged": 0.7955882352941176,
+      "arrived_other": 1.0,
+      "arrived_a_flagged": 0.9468503937007874,
+      "arrived_a_other": 1.0,
+      "arrived_b_flagged": 0.6455078125,
+      "arrived_b_other": null
+     },
+     "seed": {
+      "arrived_flagged": 0.9676470588235294,
+      "arrived_other": 1.0,
+      "arrived_a_flagged": 0.969488188976378,
+      "arrived_a_other": 1.0,
+      "arrived_b_flagged": 0.9658203125,
+      "arrived_b_other": null
+     }
+    },
+    "follower_shared": {
+     "both_flagged": {
+      "visits": 16.653543307086615,
+      "no_first_visit_share": 0.0531496062992126
+     },
+     "other": {
+      "visits": 1.0,
+      "no_first_visit_share": 0.0
+     }
+    },
+    "seed": {
+     "both_flagged": {
+      "visits": 9.05511811023622,
+      "no_first_visit_share": 0.03051181102362205
+     },
+     "other": {
+      "visits": 3.875,
+      "no_first_visit_share": 0.0
+     }
+    }
+   },
+   "exact_counts": {
+    "s_mod_noses": [
+     {
+      "total_visits": 0,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 0,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 1,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 1,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 2,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 1,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 0,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 0,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     }
+    ],
+    "s_dense_noses": [
+     {
+      "total_visits": 0,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 0,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 0,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 0,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 0,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 0,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 0,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 0,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     }
+    ],
+    "p_sel_noses": [
+     {
+      "total_visits": 0,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 0,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 0,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 271,
+      "max_colony_mean_legs": 2.0,
+      "round_trip_share": 0.0078125
+     }
+    ],
+    "p_joint_noses": [
+     {
+      "total_visits": 179,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 187,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 0,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 0,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 204,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 217,
+      "max_colony_mean_legs": 0.25,
+      "round_trip_share": 0.0009765625
+     },
+     {
+      "total_visits": 270,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 567,
+      "max_colony_mean_legs": 0.625,
+      "round_trip_share": 0.0068359375
+     }
+    ],
+    "wall_left": [
+     {
+      "total_visits": 14,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     }
+    ],
+    "wall_right": [
+     {
+      "total_visits": 15,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     }
+    ]
+   },
    "gate": {
     "follower": 16.53125,
     "oracle": 42.451171875,
@@ -158,6 +435,279 @@
    }
   },
   "2": {
+   "bootstrap": {
+    "b_max": {
+     "point": 2.349609375,
+     "interval": [
+      2.2158203125,
+      2.4961181640624996
+     ]
+    },
+    "follower": {
+     "point": 15.833984375,
+     "interval": [
+      12.82177734375,
+      18.9804931640625
+     ]
+    },
+    "oracle": {
+     "point": 42.62890625,
+     "interval": [
+      41.04853515625,
+      44.121240234375
+     ]
+    },
+    "seed": {
+     "point": 9.484375,
+     "interval": [
+      8.6306884765625,
+      10.307763671875
+     ]
+    },
+    "b_max_over_follower": {
+     "point": 0.148390280004934,
+     "interval": [
+      0.12487438336526266,
+      0.1814258691605453
+     ]
+    },
+    "follower_over_oracle": {
+     "point": 0.37143773481169245,
+     "interval": [
+      0.3073073226216624,
+      0.43735343039917307
+     ]
+    },
+    "seed_minus_b_max": {
+     "point": 7.134765625,
+     "interval": [
+      6.327978515625,
+      7.8946289062499995
+     ]
+    },
+    "seed_median_legs": {
+     "point": 7.875,
+     "interval": [
+      6.875,
+      8.6875
+     ]
+    },
+    "oracle_visited_share": {
+     "point": 1.0,
+     "interval": [
+      1.0,
+      1.0
+     ]
+    }
+   },
+   "scent_split": {
+    "goals_flagged": 252,
+    "goals_other": 4,
+    "mazes_both_flagged": 124,
+    "mazes_other": 4,
+    "per_goal": {
+     "follower_shared": {
+      "arrived_flagged": 0.7708333333333334,
+      "arrived_other": 0.75,
+      "arrived_a_flagged": 0.903,
+      "arrived_a_other": 0.6666666666666666,
+      "arrived_b_flagged": 0.640748031496063,
+      "arrived_b_other": 1.0
+     },
+     "seed": {
+      "arrived_flagged": 0.9856150793650794,
+      "arrived_other": 1.0,
+      "arrived_a_flagged": 0.99,
+      "arrived_a_other": 1.0,
+      "arrived_b_flagged": 0.9812992125984252,
+      "arrived_b_other": 1.0
+     }
+    },
+    "follower_shared": {
+     "both_flagged": {
+      "visits": 15.504032258064516,
+      "no_first_visit_share": 0.09778225806451613
+     },
+     "other": {
+      "visits": 26.0625,
+      "no_first_visit_share": 0.25
+     }
+    },
+    "seed": {
+     "both_flagged": {
+      "visits": 9.305443548387096,
+      "no_first_visit_share": 0.010080645161290322
+     },
+     "other": {
+      "visits": 15.03125,
+      "no_first_visit_share": 0.0
+     }
+    }
+   },
+   "exact_counts": {
+    "s_mod_noses": [
+     {
+      "total_visits": 0,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 0,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 0,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 0,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 2,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 0,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 0,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 0,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     }
+    ],
+    "s_dense_noses": [
+     {
+      "total_visits": 0,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 0,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 0,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 0,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 0,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 0,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 0,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 0,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     }
+    ],
+    "p_sel_noses": [
+     {
+      "total_visits": 0,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 0,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 0,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 288,
+      "max_colony_mean_legs": 1.5,
+      "round_trip_share": 0.009765625
+     }
+    ],
+    "p_joint_noses": [
+     {
+      "total_visits": 191,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 221,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 0,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 0,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 221,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 196,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 280,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 577,
+      "max_colony_mean_legs": 0.75,
+      "round_trip_share": 0.01171875
+     }
+    ],
+    "wall_left": [
+     {
+      "total_visits": 10,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     }
+    ],
+    "wall_right": [
+     {
+      "total_visits": 10,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     }
+    ]
+   },
    "gate": {
     "follower": 15.833984375,
     "oracle": 42.62890625,
@@ -298,6 +848,279 @@
    }
   },
   "4": {
+   "bootstrap": {
+    "b_max": {
+     "point": 2.5341796875,
+     "interval": [
+      2.3906005859375,
+      2.69140625
+     ]
+    },
+    "follower": {
+     "point": 16.4931640625,
+     "interval": [
+      13.410546875,
+      19.561572265625
+     ]
+    },
+    "oracle": {
+     "point": 43.0224609375,
+     "interval": [
+      41.444287109375,
+      44.513085937499994
+     ]
+    },
+    "seed": {
+     "point": 10.56640625,
+     "interval": [
+      9.678564453125,
+      11.4424072265625
+     ]
+    },
+    "b_max_over_follower": {
+     "point": 0.15365030493220438,
+     "interval": [
+      0.13063969290140093,
+      0.18533024060367032
+     ]
+    },
+    "follower_over_oracle": {
+     "point": 0.38336170695721256,
+     "interval": [
+      0.31906891518227576,
+      0.4464492651034471
+     ]
+    },
+    "seed_minus_b_max": {
+     "point": 8.0322265625,
+     "interval": [
+      7.209912109375,
+      8.863378906249999
+     ]
+    },
+    "seed_median_legs": {
+     "point": 8.6875,
+     "interval": [
+      7.6875,
+      9.8125
+     ]
+    },
+    "oracle_visited_share": {
+     "point": 1.0,
+     "interval": [
+      1.0,
+      1.0
+     ]
+    }
+   },
+   "scent_split": {
+    "goals_flagged": 245,
+    "goals_other": 11,
+    "mazes_both_flagged": 117,
+    "mazes_other": 11,
+    "per_goal": {
+     "follower_shared": {
+      "arrived_flagged": 0.798469387755102,
+      "arrived_other": 0.8068181818181818,
+      "arrived_a_flagged": 0.9293032786885246,
+      "arrived_a_other": 0.8333333333333334,
+      "arrived_b_flagged": 0.6686991869918699,
+      "arrived_b_other": 0.775
+     },
+     "seed": {
+      "arrived_flagged": 0.9933673469387755,
+      "arrived_other": 1.0,
+      "arrived_a_flagged": 0.9938524590163934,
+      "arrived_a_other": 1.0,
+      "arrived_b_flagged": 0.9928861788617886,
+      "arrived_b_other": 1.0
+     }
+    },
+    "follower_shared": {
+     "both_flagged": {
+      "visits": 15.663461538461538,
+      "no_first_visit_share": 0.07158119658119658
+     },
+     "other": {
+      "visits": 25.318181818181817,
+      "no_first_visit_share": 0.11363636363636363
+     }
+    },
+    "seed": {
+     "both_flagged": {
+      "visits": 10.287393162393162,
+      "no_first_visit_share": 0.00641025641025641
+     },
+     "other": {
+      "visits": 13.534090909090908,
+      "no_first_visit_share": 0.0
+     }
+    }
+   },
+   "exact_counts": {
+    "s_mod_noses": [
+     {
+      "total_visits": 0,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 0,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 0,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 0,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 0,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 0,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 0,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 0,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     }
+    ],
+    "s_dense_noses": [
+     {
+      "total_visits": 0,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 0,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 0,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 0,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 0,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 0,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 0,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 0,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     }
+    ],
+    "p_sel_noses": [
+     {
+      "total_visits": 0,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 0,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 0,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 307,
+      "max_colony_mean_legs": 0.75,
+      "round_trip_share": 0.0126953125
+     }
+    ],
+    "p_joint_noses": [
+     {
+      "total_visits": 214,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 228,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 0,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 0,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 259,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 232,
+      "max_colony_mean_legs": 0.125,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 286,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 562,
+      "max_colony_mean_legs": 0.625,
+      "round_trip_share": 0.0029296875
+     }
+    ],
+    "wall_left": [
+     {
+      "total_visits": 8,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     }
+    ],
+    "wall_right": [
+     {
+      "total_visits": 13,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     }
+    ]
+   },
    "gate": {
     "follower": 16.4931640625,
     "oracle": 43.0224609375,

@@ -7455,3 +7455,37 @@ stays paused before E4.
 - **This commit is gated** on pytest's exit code itself.
 
 **CI:** the runs on 85ea8b0 and 8417f25 are expected red on this test; this commit should return CI to green.
+
+## D231 — E3d's results reviewed by both ("fix then publish"); corrected; published
+
+**The review** (`docs/reviews/20261010-E3d-results/`, run 20261010-184511), both "fix then publish":
+- **The verdict:** both recomputed it from the records. Astra also verified all 90 local record files against
+  their committed hashes and computed the registered bootstrap intervals.
+- **The draft's errors:**
+  - the S champions' "no visit at all": S-mod made 5 and 2 visits at k_r = 0 and 2, none completing a leg;
+  - three small numbers;
+  - an untraceable duration;
+  - an over-broad source statement;
+  - "not by following a ring";
+  - "passed by wide margins": G2a's intervals cross ⅓;
+  - the bootstrap and the scent-reach split, missing because the report stage skips them on a calibration
+    failure;
+  - the trail-free follower near the random walk, left in an aside;
+  - the owner section's qualifications.
+
+**All taken.** `scripts/e3d_summary.py` now also computes the registered bootstrap intervals (2 000 resamples,
+seed 20 261 011), the scent-reach split and the exact counts, as additive analyses of the committed records.
+`RESULTS.md` carries a Corrections section.
+
+**A correction to D229** (rule 4): D229 says "E3c's 16 S champions with their noses removed make 0.00". That holds
+to two decimals only. S-mod's champions made 5 and 2 visits in 1 024 weys at k_r = 0 and 2, none completing a
+leg.
+
+**Publication:** consensus (Claude, Astra, Fable) on the corrected results, so main is brought up to date, and
+the owner is informed after (the 2026-09-29 rule).
+- README: the banner, the "Newest" section and the table row;
+- ROADMAP;
+- the E3 README.
+
+**Next:** the owner chooses the next construction (design §9); the roadmap stays paused before E4.
+

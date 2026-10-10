@@ -107,6 +107,17 @@
   - **For E4:** its question, whether information crosses between two navigation modules, needs a task where
     coverage cannot win, and its own validation.
   - **Paused before E4** (the owner, 2026-10-06).
+- **E3d, a maze that wall-following cannot solve** (exploratory task validation, 2026-10-10; D221-D231;
+  `experiments/E3-ab-organism/E3d/`).
+  - **The owner's direction:** better mazes before E4, with no goal touching the perimeter.
+  - **The design:** 6 × 6 mazes with island goals, the owner's choice of size. It took four review rounds and
+    was bound at 65b77fb. Amendment 1, to the scripted wall-follower, was made before any formal play.
+  - **The run used 0.81 of 3 GPU-hours.** "E3d: failed at calibration":
+    - G1b failed at every k_r: a random walk at 2.34-2.53, against 2.0;
+    - every other criterion passed;
+    - wall-following is defeated;
+    - E3c's scent-free champions score almost nothing with their noses removed.
+  - **Next:** the owner chooses the next construction. The roadmap stays paused before E4.
 
 - **Published on main:**
   - 02's D050 correction, as a Corrections entry (27 September, D063);

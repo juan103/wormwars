@@ -1,4 +1,7 @@
-"""E3d's results summary: every number RESULTS.md quotes, derived from the committed records (rule 5).
+"""E3d's results summary: the calibration block's numbers RESULTS.md quotes, derived from the committed records
+(rule 5). Additive analyses the report stage does not compute when calibration fails (both reviewers of the
+draft, D231): every gate quantity's bootstrap interval (design §5: 2 000 resamples, seed 20 261 011, B_max
+recomputed in each), the scent-reach split (§2), and exact visit and leg counts for the noses-removed champions.
 
     python scripts/e3d_summary.py      # writes experiments/E3-ab-organism/E3d/summary.json
 """
@@ -8,9 +11,14 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+import importlib.util
+import sys
+
 import numpy as np
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+from wormwars.e3 import e3d_gate as GT  # noqa: E402
 EXP = ROOT / "experiments" / "E3-ab-organism" / "E3d"
 
 
@@ -18,11 +26,20 @@ def mean(x):
     return float(np.mean(x))
 
 
+def _runner():
+    s = importlib.util.spec_from_file_location("e3d_for_summary", ROOT / "scripts" / "e3d.py")
+    m = importlib.util.module_from_spec(s)
+    s.loader.exec_module(m)
+    return m
+
+
 def main():
+    D = _runner()
     cal = json.loads((EXP / "calibrate.json").read_text(encoding="utf-8"))
     rep = json.loads((EXP / "report.json").read_text(encoding="utf-8"))
     comp = json.loads((EXP / "compute-record.json").read_text(encoding="utf-8"))
-    out = {"verdict": rep["verdict"], "choice": cal["choice"], "gpu_hours": comp["totals"]["seconds_timed"] / 3600,
+    R = {"resamples": 2000, "seed": 20_261_011}  # design §5
+    out = {"verdict": rep["verdict"], "bootstrap_settings": R, "choice": cal["choice"], "gpu_hours": comp["totals"]["seconds_timed"] / 3600,
            "k_r": {}}
     for k, b in cal["blocks"].items():
         g, c = b["gate"], b["conditions"]
@@ -36,7 +53,17 @@ def main():
         top = g["b_max_member"]
         w = c[top]["strains"][0]
         rows = b["mazes"]
+        colony = 8
+        counts = {}
+        for name in ("s_mod_noses", "s_dense_noses", "p_sel_noses", "p_joint_noses", "wall_left", "wall_right"):
+            cond = c[name]
+            counts[name] = [{"total_visits": int(round(sum(st["visits"]) * colony)),
+                             "max_colony_mean_legs": max(st["legs"]),
+                             "round_trip_share": mean(st["round_trip_share"])} for st in cond["strains"]]
         out["k_r"][k] = {
+            "bootstrap": GT.bootstrap(b, R["resamples"], R["seed"]),
+            "scent_split": D.scent_split(b),
+            "exact_counts": counts,
             "gate": {x: g[x] for x in ("follower", "oracle", "oracle_visited_share", "seed", "seed_median_legs", "b_max",
                                        "b_max_member", "failed", "verdict", "precondition")},
             "ratios": {"b_max_over_follower": g["b_max"] / g["follower"], "follower_over_oracle": g["follower"] / g["oracle"],

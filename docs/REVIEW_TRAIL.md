@@ -82,6 +82,7 @@ led to several of the findings.
 | 62 | E3d's design v2.2 confirmed ("bind", both); left: a tick with one new contact not literally covered by the remembered-component rule, a switch rate inflated by pieces of one goal's ring, and "the carving order" listed as random | Claude Opus 5.5 | **Fable 5.1** (Astra 6: "bind", none) | Taken at binding | D225 |
 | 63 | E3d's code: g-e accepted a stale identical record after a failing compare; trajectories and per-visit contact records discarded; scent reach read per maze; two gate quantities without intervals; the tree spawn-candidate count capped at 4; predictions false on zero means; a test passed a stationary "orbit", another never skipped a wall; the readable contact counted components per tick; a tree config built on an island base kept the island fields; "before any play" (CPU smoke plays preceded the amendment) | Claude Opus 5.5 | **Astra 6** (ran all 69 E3d tests and the CPU equivalence itself) and **Fable 5.1**, each independently | Fixed test-first or mutation-checked; a dated correction to Amendment 1; re-bound | D227 |
 | 64 | E3d's review fixes: the scripts guard exempted whole binding lines, so a moved line carrying an extra registry entry passed; the projection's reserve left out the current stage and record saving; reruns would overwrite record files; the correction's wording | Claude Opus 5.5 | **Astra 6** (reproduced the guard bypass) and **Fable 5.1**, each independently | Fixed test-first; an erratum to the correction; re-bound | D228 |
+| 65 | E3d's results draft: "no visit at all" for champions that made 5 and 2 visits; the seed's mean misrounded; an untraceable duration; "every number" from one script; "not by following a ring" beyond the records; "wide margins" where G2a's intervals cross a third; the registered bootstrap and scent-reach split missing on a calibration failure; the trail-free follower near the random walk left in an aside | Claude Opus 5.5 | **Fable 5.1** and **Astra 6**, each independently (Astra verified the 90 record files and computed the intervals) | Corrected before publication, with a Corrections section | D231 |
 
 Episode 6 went unnoticed for a week, through a passing test suite, every milestone report, a
 publication audit, the first public release and Claude's own review of the roadmap on the day it
@@ -116,7 +117,7 @@ food response is 1.55-2.7 times the most responsive graph's, not 1.5-1.8).
   useful.
 - One error (episode 16) was caught by neither a person nor a reviewer but by running the tests on
   another operating system.
-- This is one project and sixty-four episodes: an anecdote about multi-agent review, not a measurement
+- This is one project and sixty-five episodes: an anecdote about multi-agent review, not a measurement
   of it.
 
 ## In the history

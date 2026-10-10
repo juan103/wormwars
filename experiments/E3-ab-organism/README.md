@@ -25,7 +25,11 @@
   - **Q2** (the engineered seed plus tuning against scratch): "approximate (model-based): unclear".
   - **The coverage hypothesis:** "supported". Every from-scratch champion is a scent-free coverer of the maze;
     no tuned engineered one is.
-- **Paused before E4** (the owner, 2026-10-06).
+- **E3d: published** (2026-10-10, D231; `E3d/README.md`, `E3d/RESULTS.md`). An exploratory maze validation
+  for E4: 6 × 6 mazes with island goals.
+  - **"E3d: failed at calibration":** a random walk exceeds the absolute blind limit (2.34-2.53 against 2.0).
+  - **Everything else passed.** Wall-followers and E3c's scent-free champions score almost nothing.
+- **Paused before E4** (the owner, 2026-10-06); the owner chooses the next construction.
 
 ## E3a's results
 
@@ -101,6 +105,7 @@ silent worm, outside the N2 mask. Nothing here is about worm behaviour.
 - **E3b:** trails, branching mazes and the colony. It holds the roadmap's E3 gate. E3b-0, the engine and
   feasibility, is published; so are E3b-1, the gate ("better"), and E3b-2, where its gain comes from.
 - **E3c:** the assembly comparison, published (2026-10-06).
+- **E3d:** a maze validation for E4, published (2026-10-10): "failed at calibration".
 
 **The owner's ceilings:** 30 GPU-hours for E3a, and about the same for each of E3b and E3c (D159).
 
