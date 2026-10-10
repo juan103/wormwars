@@ -225,3 +225,39 @@ def test_spawns_have_no_island_wall_in_their_block_and_keep_their_distance():
         for s in pl.spawns:
             assert I.block_labels(lab, s) <= border
             assert d[s][pl.a] >= 2 and d[s][pl.b] >= 2
+
+
+def _rings_only(c, goals):
+    """Every segment open except three sides of each goal (`goals`: (cell, the open side's neighbour)); the
+    outer frame removed, so no wall is perimeter and every corner post stands alone."""
+    closed = set()
+    for (i, j), keep in goals:
+        closed |= {frozenset(((i, j), n)) for n in ((i - 1, j), (i + 1, j), (i, j - 1), (i, j + 1)) if n != keep}
+    edges = [s for s in I.segments(c) if frozenset(s) not in closed]
+    wall = _raster(c, edges)
+    wall[0, :] = wall[-1, :] = wall[:, 0] = wall[:, -1] = False
+    return M.Maze(c, wall, edges)
+
+
+def test_the_distance_and_spawn_checks_fire():
+    """(1, 1) open east and (1, 3) open west are 2 apart: "distance". (1, 1) and (3, 3), both open north, are 6
+    apart, but every cell's block holds a free-standing post, so no cell can be a spawn: "spawn"."""
+    assert I.failed_check(_rings_only(5, [((1, 1), (1, 2)), ((1, 3), (1, 2))]), (1, 1), (1, 3)) == "distance"
+    assert I.failed_check(_rings_only(5, [((1, 1), (0, 1)), ((3, 3), (2, 3))]), (1, 1), (3, 3)) == "spawn"
+
+
+def test_the_goal_stream_reproduces_exactly():
+    """A, B, the swap and the k_r order come from [run seed, id, 0x15A7, k] in that order (design §2)."""
+    for mid in range(30_000, 30_010):
+        im = I.islands_for(run_seed=SEED, maze_id=mid, c=6, k_r=4)
+        rng = np.random.default_rng([SEED, mid, 0x15A7, im.k])
+        pairs = I._goal_pairs(6)
+        a, b = pairs[int(rng.integers(len(pairs)))]
+        if rng.random() < 0.5:
+            a, b = b, a
+        assert (im.a, im.b) == (a, b)
+        tree = M.generate(np.random.default_rng([SEED, mid, 0x3A11] if im.k == 0 else [SEED, mid, 0x3A11, im.k]), 6)
+        open_ = {frozenset(e) for e in tree.edges} | {frozenset(e) for e in im.carved}
+        pool = [s for s in I.segments(6) if frozenset(s) not in open_ and a not in s and b not in s]
+        order = [pool[i] for i in rng.permutation(len(pool))]
+        assert [frozenset(e) for e in im.extra] == [frozenset(e) for e in order[:4]]

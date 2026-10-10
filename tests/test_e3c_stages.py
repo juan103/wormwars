@@ -302,9 +302,16 @@ def test_a_smoke_of_every_formal_stage():
         tr = json.loads((out / f"{st}.json").read_text(encoding="utf-8"))
         assert all(all(r["checkpoint_consistency"].values()) for a in tr["arms"].values() for r in a["runs"])
         assert all(len(r["learning_curve"]) == len(tr["checkpoint_generations"]) for a in tr["arms"].values() for r in a["runs"])
+    # the engine paths E3c's freeze forbids changing: modified (not added) since the binding commit. E3d (D226) changed
+    # wormwars/config.py and maze_world.py, so from then on the freeze must fail, and E3c's formal stages refuse
+    import subprocess
+    diff = subprocess.run(["git", "diff", "--name-status", "69d7cd5", "HEAD", "--", "wormwars", "configs", "requirements.txt"],
+                          capture_output=True, text=True, cwd=ROOT).stdout.splitlines()
+    modified = sorted(line.split("	", 1)[1] for line in diff if line.strip() and not line.startswith("A"))
     for st in FORMAL:  # every formal marker carries the engine freeze and the registered text's hash
         mk = json.loads((out / f"{st}-started.json").read_text(encoding="utf-8"))
-        assert mk["provenance"]["engine_freeze"]["passes"] is True
+        assert mk["provenance"]["engine_freeze"]["passes"] is (not modified)
+        assert sorted(p for _, p in mk["provenance"]["engine_freeze"]["changed"]) == modified
         assert mk["provenance"]["registered_text_sha256"] == "553f253d260b80638d9ef72d4654f2ef78372e960ea31d62d04345098d8c3397"
     # W2-turn chosen on the validation block only; P-joint's points are the logged generation-bests (§12)
     assert ch["w2_turn"]["block"] == "validation" and ch["w2_turn"]["ids"] == list(range(8000, 8002))

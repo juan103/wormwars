@@ -66,8 +66,7 @@ def maze_config(base: Config | None = None, *, c: int, horizon: int, colony: int
     w.maze_trail_mu, w.maze_trail_lambda, w.maze_trail_delta, w.maze_trail_d0 = (float(mu), float(lam), float(delta),
                                                                                float(d0))
     w.maze_scent_sigma, w.maze_scent_reach, w.maze_trail_access = float(scent_sigma), int(scent_reach), str(access)
-    if family != "tree":
-        w.maze_family, w.maze_extra_openings = str(family), int(k_r)
+    w.maze_family, w.maze_extra_openings = (None, None) if family == "tree" else (str(family), int(k_r))
     return cfg
 
 

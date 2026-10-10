@@ -111,3 +111,19 @@ def test_the_bootstrap_recomputes_b_max_per_resample():
     lo, hi = bs["b_max"]["interval"]
     assert lo >= 1.0 - 1e-12 and hi <= 3.0
     assert set(bs) >= {"b_max", "follower", "oracle", "seed", "b_max_over_follower", "follower_over_oracle", "seed_minus_b_max"}
+
+
+def test_the_bootstrap_covers_every_gate_quantity():
+    bs = GT.bootstrap(_block(seed_legs=[1, 2, 3, 4]), resamples=200, seed=1)
+    assert {"seed_median_legs", "oracle_visited_share"} <= set(bs)
+    assert bs["seed_median_legs"]["point"] == pytest.approx(2.5)
+    lo, hi = bs["seed_median_legs"]["interval"]
+    assert 1 <= lo <= hi <= 4
+
+
+def test_predictions_evaluate_the_inequalities_directly():
+    """Astra: both means zero gives an undefined ratio, but 0 ≤ 0.5 × 0 and 0 ≥ 0.5 × 0 both hold."""
+    zero = {"conditions": {f"{a}_intact": _cond("organism", [0.0] * 4) for a in ("s_mod", "s_dense", "p_joint")}}
+    p = GT.predictions(zero, zero)
+    assert all(p[a]["holds"] for a in ("s_mod", "s_dense", "p_joint"))
+    assert all(p[a]["ratio"] is None for a in ("s_mod", "s_dense", "p_joint"))

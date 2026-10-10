@@ -70,3 +70,11 @@ def test_the_tree_family_still_builds_tree_mazes(iface):
 def test_scramble_is_refused_for_islands(iface):
     with pytest.raises(ValueError, match="scramble"):
         _world(iface, [30_000, 30_001], MW.maze_config(**C6, family="islands", k_r=0), access="scramble")
+
+
+def test_a_tree_config_built_on_an_island_base_is_a_tree_config():
+    """Astra: `maze_config(base=island_cfg, family="tree")` must clear the island fields."""
+    isl = MW.maze_config(**C6, family="islands", k_r=2)
+    tree = MW.maze_config(isl, **C6, family="tree")
+    assert tree.world.maze_family is None and tree.world.maze_extra_openings is None
+    assert tree.to_dict() == MW.maze_config(**C6).to_dict()

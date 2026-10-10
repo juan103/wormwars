@@ -135,8 +135,8 @@ def contact(paths: np.ndarray, wall: np.ndarray, a, b, visit_tick: np.ndarray) -
             x, y = int(ix[w, t]), int(iy[w, t])
             win = lab[max(y - 1, 0):min(y + 2, H), max(x - 1, 0):min(x + 2, W)]
             vals, n = np.unique(win[win > 0], return_counts=True)
-            for v in vals:
-                counts[cls[int(v)]] += 1
+            for k in {cls[int(v)] for v in vals}:  # a tick counts once per class, however many components
+                counts[k] += 1
             if len(vals):
                 if mem not in vals:
                     best = sorted(zip(-n, vals))[0][1]
@@ -324,5 +324,5 @@ def contact_batch(paths: np.ndarray, walls: list, goals: list, visit_tick: np.nd
                 recs.append((name(k, int(remembered[k, w, t])), name(k, int(o))))
             rows.append(recs)
         at_visit.append(rows)
-    return {"share": share, "remembered": remembered, "first_class": first_class, "switches": switches,
-            "switches_by_pair": by_pair, "at_visit": at_visit}
+    return {"share": share, "remembered": remembered, "first_class": first_class, "first_label": np.maximum(first, 0),
+            "switches": switches, "switches_by_pair": by_pair, "at_visit": at_visit}

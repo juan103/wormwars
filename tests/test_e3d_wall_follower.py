@@ -1,10 +1,12 @@
 """E3d's scripted wall-follower and its qualification (docs/E3/E3d-DESIGN.md v2.2 §3).
 
-Privileged wall sensing: the world's wall raster at three probes from the head, a Boolean lookup of the grid
-cell holding each point, outside the grid counting as wall: ahead at 1.5 cells, the hugged side at 1.0 cell
-(90°), ahead on the hugged side at 1.4 cells (45°). Left-handed: the side is θ + 90° and "toward" is a positive
-turn; right-handed mirrors it. Wall ahead → full turn away; side and ahead-side both clear → full turn toward;
-otherwise straight; forward 1. It never reads scent or trail.
+Privileged wall sensing (design §3 and Amendment 1, §11): the world's wall raster along three probe rays from
+the head, a Boolean lookup of the grid cell holding each point at every half cell out to the range (outside
+the grid counts as wall): ahead to 1.5 cells, the hugged side to 1.0 cell (90°), ahead on the hugged side to
+1.4 cells (45°). Left-handed: the side is θ + 90° and "toward" is a positive turn; right-handed mirrors it.
+Wall ahead → full turn away; side and ahead-side both clear → full turn toward, for at most 12 ticks after a
+side probe last sensed a wall, then straight (the search, also before the first wall); otherwise straight;
+forward 1. It never reads scent or trail.
 
 Qualification on hand-built layouts: it acquires a wall from a cell centre, rounds convex corners and isolated
 posts, keeps its component when another lies across a corridor, and tours a tree maze.
@@ -119,6 +121,10 @@ def test_it_rounds_convex_corners_and_isolated_posts(iface, hand):
         centre = lo + size / 2
         assert np.hypot(path[:, 0] - centre, path[:, 1] - centre).max() <= size / 2 + 2.0
         assert np.mean([bool(s) for s in contacts]) >= 0.6
+        # it circulates (Astra: a stationary wey beside the island would pass the bounds above): at least 10
+        # full turns around the island's centre in 2 400 ticks
+        ang = np.unwrap(np.arctan2(path[:, 1] - centre, path[:, 0] - centre))
+        assert abs(ang[-1] - ang[0]) >= 10 * 2 * math.pi
 
 
 @pytest.mark.parametrize("hand", ["left", "right"])
@@ -191,10 +197,12 @@ def test_the_policy_turns_as_specified():
     _, s = MC.wall_follow_turn(wall, torch.tensor([[[12.5, 1.5], [12.5, 12.5]]]), torch.tensor([[math.pi, 0.0]]),
                                "left", torch.tensor([[5, 5]]))
     assert s.tolist() == [[0, 6]]
-    # a 1-cell wall 1 cell ahead with free space beyond: the ray sees it (a single point at 1.5 would not)
+    # a 1-cell wall just ahead with free space beyond: from x = 13.7 the endpoint 1.5 ahead lands at 15.2, past
+    # the wall column [14, 15), so a single point misses it; the ray's 0.5 and 1.0 samples see it (Astra)
     w1 = torch.zeros(1, 25, 25, dtype=torch.bool)
-    w1[0, :, 14] = True  # a wall column at x in [14, 15)
-    assert float(pol(w1, torch.tensor([[[13.3, 12.5]]]), torch.tensor([[0.0]]), "left", never)) == -1.0
+    w1[0, :, 14] = True
+    assert not bool(MC._point(w1, torch.tensor([[[13.7, 12.5]]]), torch.tensor([[0.0]]), MC.AHEAD))
+    assert float(pol(w1, torch.tensor([[[13.7, 12.5]]]), torch.tensor([[0.0]]), "left", never)) == -1.0
     # beside the north wall (y = 1.5), heading −x: the left side is θ + 90° = 3π/2 (−y), whose probe at
     # y = 0.5 is in the wall, and the ahead probe is clear → straight
     t = pol(wall, torch.tensor([[[12.5, 1.5]]]), torch.tensor([[math.pi]]), hand="left")

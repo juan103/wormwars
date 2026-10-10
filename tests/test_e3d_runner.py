@@ -79,7 +79,8 @@ def test_the_binding_guard(D, monkeypatch):
 def _cond(role, *visits):
     return {"role": role, "strains": [{"visits": list(v), "legs": list(np.maximum(np.asarray(v) - 1, 0)),
                                        "visited_share": [1.0] * len(v), "round_trip_share": [0.0] * len(v),
-                                       "no_first_visit_share": [0.0] * len(v)} for v in visits]}
+                                       "no_first_visit_share": [0.0] * len(v), "arrived_a": [1.0] * len(v),
+                                       "arrived_b": [1.0] * len(v)} for v in visits]}
 
 
 MAZES = [{"open_share": 0.7, "junctions": 10, "dead_ends": 6, "detour": 1.5, "line_of_sight_share": 0.25,
@@ -109,3 +110,101 @@ def test_the_report(D):
     failed = D.report_from({"calibrate": {**cal, "choice": {"k_r": None, "verdict": "E3d: failed at calibration",
                                                            "failures": {0: ["G1a"]}}}})
     assert failed["verdict"] == "E3d: failed at calibration"
+
+
+def test_the_registered_design_hash_is_the_designs(D):
+    """A design edit without re-binding fails here, before any stage would refuse it (Fable)."""
+    assert D.REGISTERED["design_sha256"] == D.design_sha256()
+
+
+def test_the_guard_refuses_engine_or_script_changes(D, monkeypatch):
+    args = types.SimpleNamespace(smoke=False, guarded=False)
+    monkeypatch.setitem(D.REGISTERED, "design_sha256", D.design_sha256())
+    monkeypatch.setattr(D, "engine_changes", lambda: ["M\twormwars/e3/islands.py"])
+    with pytest.raises(SystemExit, match="engine changed"):
+        D.require_bound(args)
+    monkeypatch.setattr(D, "engine_changes", lambda: [])
+    monkeypatch.setattr(D, "script_changes", lambda: ["scripts/e2.py"])
+    with pytest.raises(SystemExit, match="scripts changed"):
+        D.require_bound(args)
+
+
+def test_script_changes_ignore_only_the_binding_lines(D, monkeypatch):
+    old = 'A = 1\n    "binding_commit": "x",\n    "design_sha256": "y",\nB = 2\n'
+    files = {"diff": "scripts/e3d.py\n", "old": old, "new": old.replace('"x"', '"z"').replace('"y"', '"w"')}
+
+    def git(*a, root=None):
+        if a[0] == "diff":
+            return files["diff"]
+        return files["old"] if a[1].endswith(":scripts/e3d.py") and not a[1].startswith("HEAD") else files["new"]
+
+    monkeypatch.setattr(D.E.reg, "git", git)
+    monkeypatch.setitem(D.REGISTERED, "binding_commit", "b")
+    assert D.script_changes() == []
+    files["new"] = files["new"].replace("B = 2", "B = 3")
+    assert D.script_changes() == ["scripts/e3d.py"]
+    files["diff"] = "scripts/e3d.py\nscripts/e2.py\n"
+    assert set(D.script_changes()) == {"scripts/e3d.py", "scripts/e2.py"}
+
+
+def test_the_rollout_leg_needs_a_fresh_successful_comparison(D, monkeypatch, tmp_path):
+    """Astra: a stale identical record and a failing subprocess must not pass."""
+    import json
+    monkeypatch.setattr(D, "OUT", tmp_path)
+    rec = tmp_path / "equivalence-cpu.json"
+
+    def fake(write, rc):
+        def run(cmd, **kw):
+            if write is not None:
+                rec.write_text(json.dumps({"identical": write}), encoding="utf-8")
+            return types.SimpleNamespace(returncode=rc, stderr="boom" if rc else "")
+        return run
+
+    rec.write_text(json.dumps({"identical": True}), encoding="utf-8")  # stale
+    assert D.rollout_leg("cpu", "cpu", run=fake(None, 1))["identical"] is False
+    rec.write_text(json.dumps({"identical": True}), encoding="utf-8")  # stale again; a run that writes nothing
+    assert D.rollout_leg("cpu", "cpu", run=fake(None, 0))["identical"] is False
+    assert D.rollout_leg("cpu", "cpu", run=fake(True, 1))["identical"] is False
+    assert D.rollout_leg("cpu", "cpu", run=fake(False, 0))["identical"] is False
+    assert D.rollout_leg("cpu", "cpu", run=fake(True, 0))["identical"] is True
+
+
+def test_the_projection_reserves_spent_hours(D):
+    free = D.projection({"scripted": 0.1, "neural": 0.1, "arm": 0.1, "records": 0.0}, CH)
+    h = free["tried"][0]["hours"]
+    assert free["admitted"] and free["reductions"] == 0
+    tight = D.projection({"scripted": 0.1, "neural": 0.1, "arm": 0.1, "records": 0.0}, CH, reserved_hours=3.0 - h / 2)
+    assert tight["reductions"] >= 1 or not tight["admitted"]
+
+
+def test_the_scent_reach_is_read_per_goal(D):
+    st = lambda a, b: {"visits": [1.0] * 4, "no_first_visit_share": [0.0] * 4, "arrived_a": a, "arrived_b": b}  # noqa: E731
+    block = {"mazes": [{"scent_reach": f} for f in ([True, False], [True, True], [False, False], [False, True])],
+             "conditions": {"follower_shared": {"strains": [st([1.0, 1.0, 0.0, 0.0], [0.0, 1.0, 0.0, 1.0])]},
+                            "seed": {"strains": [st([0.5] * 4, [0.5] * 4)]}}}
+    s = D.scent_split(block)
+    f = s["per_goal"]["follower_shared"]
+    assert s["goals_flagged"] == 4 and s["goals_other"] == 4
+    assert f["arrived_flagged"] == 1.0 and f["arrived_other"] == 0.0
+    assert f["arrived_a_flagged"] == 1.0 and f["arrived_b_other"] == 0.0
+
+
+def test_summarise_maps_worlds_to_strains_and_mazes(D):
+    """Two strains on two mazes: world w = strain · n + maze (play's layout); each strain's per-maze visits are
+    its own worlds' (Fable: the mapping was exercised only by smoke)."""
+    from wormwars.e3 import islands as I
+    ids = [30_000, 30_001]
+    built = [I.maze_for(run_seed=1_190_000, maze_id=m, episode=0, c=6, k_r=0) for m in ids]
+    mazes, pls = [b[0] for b in built] * 2, [b[1] for b in built] * 2
+    H, B = 20, 2
+    vt = np.full((4, B, 4), -1)
+    for w, k in enumerate([1, 2, 3, 4]):  # world w gives each wey k visits
+        vt[w, :, :k] = np.arange(k)
+    paths = np.zeros((4, B, H, 2), dtype=np.float32)
+    for w, pl in enumerate(pls):
+        paths[w] = np.array([2.5 + 4 * pl.spawns[0][1], 2.5 + 4 * pl.spawns[0][0]])
+    tables = {m: D.RC.contact_tables(b[0].wall, b[1].a, b[1].b) for m, b in zip(ids, built)}
+    strains, arrays = D.summarise({"visit_tick": vt}, paths, mazes, pls, ids, 2, tables, H, 6)
+    assert [s["visits"] for s in strains] == [[1.0, 2.0], [3.0, 4.0]]
+    assert arrays["world_ids"].tolist() == ids * 2 and arrays["strain_of_world"].tolist() == [0, 0, 1, 1]
+    assert arrays["visits_contact"].shape == (2 * (1 + 2 + 3 + 4), 6)

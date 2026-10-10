@@ -75,7 +75,7 @@ REQUIRES = {"project": [], "g-e": ["project"], "calibrate": ["project", "g-e"], 
 REGISTERED = {
     "design": DESIGN,  # §8: the design with Amendment 1, bound at the code commit (D226); the engine frozen there
     "binding_commit": "8b94c360ebf185127371a1a718df192cfb31991c",
-    "design_sha256": "fe29a9e4c83ff9cf51652731e88155b989ab7b2540f114433a6a18473e5bdf00",
+    "design_sha256": "25261a9c2ec8184321db7dee6399f7efeffa5df3d9dad7bbdc411cc70b8f57a4",
     "maze_seed": 1_190_000, "c": 6, "H": 2400, "colony": 8, "spawns": 4,
     "trail": {"mu": 0.01, "lam": 0.02, "delta": 0.05, "d0": 1.142},
     "k_r": [0, 2, 4], "feasible_floor": 0.5,
@@ -92,6 +92,7 @@ REGISTERED = {
                       "sha256": "52c3c92ad1f0ef25596a900ead835e4bee3c3673618d6dfd86b8a6214ebfafe3"},
     "arms": ["s_mod", "s_dense", "p_sel", "p_joint"],
     "cap_gpu_hours": 3.0,
+    "ge_allowance_hours": 0.25,  # g-e runs after project; its cost is reserved in the admission (both reviewers)
 }
 
 
@@ -126,8 +127,24 @@ def engine_changes() -> list:
     return [line for line in out.splitlines() if line.strip()]
 
 
+BINDING_LINES = ('"binding_commit":', '"design_sha256":')
+
+
+def script_changes() -> list:
+    """The scripts changed since the binding commit, beyond this runner's two binding lines (both reviewers):
+    any other script, or any other line of this one."""
+    b = REGISTERED["binding_commit"]
+    names = [n for n in E.reg.git("diff", "--name-only", b, "HEAD", "--", "scripts", root=ROOT).splitlines() if n.strip()]
+    bad = [n for n in names if n != "scripts/e3d.py"]
+    if "scripts/e3d.py" in names:
+        keep = lambda t: [ln for ln in t.splitlines() if not any(k in ln for k in BINDING_LINES)]  # noqa: E731
+        if keep(E.reg.git("show", f"{b}:scripts/e3d.py", root=ROOT)) != keep(E.reg.git("show", "HEAD:scripts/e3d.py", root=ROOT)):
+            bad.append("scripts/e3d.py")
+    return bad
+
+
 def require_bound(args) -> None:
-    """The formal stages run only on the bound design and the engine of the binding commit."""
+    """The formal stages run only on the bound design, the engine of the binding commit and its scripts."""
     if not E.formal(args):
         return
     if not REGISTERED["binding_commit"] or not REGISTERED["design_sha256"]:
@@ -137,6 +154,9 @@ def require_bound(args) -> None:
     ch = engine_changes()
     if ch:
         raise SystemExit(f"the engine changed since the binding commit: {ch[:5]}")
+    sc = script_changes()
+    if sc:
+        raise SystemExit(f"scripts changed since the binding commit: {sc[:5]}")
 
 
 def check_champions_record() -> dict:
@@ -274,7 +294,9 @@ def maze_info(family: str, k_r: int, ids) -> dict:
             k, n_cand = im.k, len(IS.spawn_candidates(mz, pl.a, pl.b))
         else:
             mz, pl = MZ.maze_for(run_seed=R["maze_seed"], maze_id=mid, episode=0, c=R["c"], n_spawns=R["spawns"])
-            k, n_cand = MZ.walls_for(run_seed=R["maze_seed"], maze_id=mid, c=R["c"])[1], len(pl.spawns)
+            d = mz.tree_distance()  # E3b-1's spawn candidates: dead ends 2 or more cells from both goals
+            n_cand = sum(1 for s_ in mz.dead_ends() if s_ not in (pl.a, pl.b) and d[s_][pl.a] >= 2 and d[s_][pl.b] >= 2)
+            k = MZ.walls_for(run_seed=R["maze_seed"], maze_id=mid, c=R["c"])[1]
         m = RC.maze_measures(mz, pl)
         rows.append({"id": mid, "redraw": int(k), "a": list(pl.a), "b": list(pl.b), "spawns": [list(s) for s in pl.spawns],
                      "spawn_candidates": n_cand, "scent_reach": [RC.scent_reach(mz, pl.a), RC.scent_reach(mz, pl.b)],
@@ -284,8 +306,13 @@ def maze_info(family: str, k_r: int, ids) -> dict:
             "_tables": tables}
 
 
-def summarise(ev, paths, mazes, placements, ids, S: int, tables: dict, H: int, c: int) -> list:
-    """Per strain, per maze: throughput, discovery, coverage, occupancy and contact (§6)."""
+CLASS_CODE = {"none": 0, **{k: i + 1 for i, k in enumerate(RC.CLASSES)}}
+
+
+def summarise(ev, paths, mazes, placements, ids, S: int, tables: dict, H: int, c: int) -> tuple[list, dict]:
+    """Per strain, per maze: throughput, discovery, coverage, occupancy and contact (§6); and the arrays kept
+    per wey and per visit (Astra): the head cell each tick, the visit ledger, raw entries, the first component
+    acquired, and each visit's remembered and outside classes."""
     n = len(ids)
     vt = ev["visit_tick"]
     th = RC.throughput(vt, H)
@@ -293,7 +320,8 @@ def summarise(ev, paths, mazes, placements, ids, S: int, tables: dict, H: int, c
     disc = RC.discovery(ent, H)
     cov = np.stack([RC.coverage(paths[w], c) for w in range(S * n)]).mean(-1)
     occ = np.stack([RC.occupancy(paths[w], placements[w].a, placements[w].b) for w in range(S * n)]).mean(-1)
-    con = {"share": {k: [] for k in RC.CLASSES}, "switches": [], "first_class": [], "switches_by_pair": [], "at_visit": []}
+    con = {"share": {k: [] for k in RC.CLASSES}, "switches": [], "first_class": [], "switches_by_pair": [], "at_visit": [],
+           "first_label": []}
     step = 256
     for lo in range(0, S * n, step):
         sl = range(lo, min(lo + step, S * n))
@@ -303,6 +331,7 @@ def summarise(ev, paths, mazes, placements, ids, S: int, tables: dict, H: int, c
         for k in RC.CLASSES:
             con["share"][k].append(got["share"][k])
         con["switches"].append(got["switches"])
+        con["first_label"].append(got["first_label"])
         for key in ("first_class", "switches_by_pair", "at_visit"):
             con[key] += got[key]
     share = {k: np.concatenate(v) for k, v in con["share"].items()}
@@ -332,10 +361,26 @@ def summarise(ev, paths, mazes, placements, ids, S: int, tables: dict, H: int, c
                     **{f"contact_{k}": r6(share[k][sl].mean(-1)) for k in RC.CLASSES},
                     "switch_rate": r6(switches[sl].mean(-1) / H * 1000.0),
                     "first_class": fc, "switches_by_pair": pairs, "at_visit": at})
-    return out
+    visits_rows = [(w, b, v, int(vt[w, b, v]), CLASS_CODE[now], CLASS_CODE[before])
+                   for w in range(S * n) for b, recs in enumerate(con["at_visit"][w]) for v, (now, before) in enumerate(recs)]
+    used = int((vt >= 0).sum(-1).max()) if vt.size else 0
+    arrays = {"cells": np.floor(paths).astype(np.int8), "visit_tick": vt[..., :max(used, 1)].astype(np.int32),
+              "entries": ent.astype(np.int32), "first_label": np.concatenate(con["first_label"]).astype(np.int16),
+              "first_class": np.array([[CLASS_CODE[x] for x in row] for row in con["first_class"]], dtype=np.int8),
+              "visits_contact": np.array(visits_rows, dtype=np.int32).reshape(-1, 6),
+              "world_ids": np.tile(np.asarray(ids), S), "strain_of_world": np.repeat(np.arange(S), n),
+              "class_codes": np.array(list(CLASS_CODE))}
+    return out, arrays
 
 
-def play(spec, cfg, con, l1, cx, champions, info, ids, dev, tangent: bool = False) -> dict:
+def save_records(path: Path, arrays: dict) -> dict:
+    """The condition's per-wey and per-visit arrays, saved locally (bulky; not committed), hashed."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    np.savez_compressed(path, **arrays)
+    return {"path": str(path.relative_to(ROOT)).replace("\\", "/"), "sha256": E.sha256_bytes(path)}
+
+
+def play(spec, cfg, con, l1, cx, champions, info, ids, dev, tangent: bool = False, save_as: Path | None = None) -> dict:
     iface, brain, S, access = build(spec, cfg, con, l1, cx, champions, dev)
     n, H, B = len(ids), int(cfg.world.max_ticks), int(cfg.world.weys_per_swarm)
     strain_of = torch.as_tensor(np.repeat(np.arange(S), n), device=dev).view(-1, 1)
@@ -348,8 +393,9 @@ def play(spec, cfg, con, l1, cx, champions, info, ids, dev, tangent: bool = Fals
     w.run()
     ev = w.task_events()
     play_s = time.perf_counter() - t0
-    strains = summarise(ev, rec.paths, w.mazes, w.placements, ids, S, info["_tables"], H, REGISTERED["c"])
-    return {"role": spec["role"], "spec": {k: v for k, v in spec.items() if k not in ("role",)},
+    strains, arrays = summarise(ev, rec.paths, w.mazes, w.placements, ids, S, info["_tables"], H, REGISTERED["c"])
+    kept = save_records(save_as, arrays) if save_as is not None else None
+    return {"records_file": kept, "role": spec["role"], "spec": {k: v for k, v in spec.items() if k not in ("role",)},
             "composition": [S, n, B], "play_seconds": play_s, "seconds": time.perf_counter() - t0,
             "runs": [r["run"] for r in champions.get(spec.get("arm"), [])] if spec["kind"] == "arm" else None,
             **({"tangent_moved_share": float(moved.mean())} if tangent else {}), "strains": strains}
@@ -374,14 +420,15 @@ def play_block(ctx, stage: str, block: str, family: str, k_r: int, champions: di
         ctx.cap.check()
         cfg = cfg_for(family, k_r, spec.get("access", "shared"))
         with acct.category("final" if not tangent else "probe"):
-            res["conditions"][spec["name"]] = play(spec, cfg, con, l1, cx, champions, info, ids, dev, tangent=tangent)
+            res["conditions"][spec["name"]] = play(spec, cfg, con, l1, cx, champions, info, ids, dev, tangent=tangent,
+                                                   save_as=OUT / "records" / f"{stage}-{key}-{spec['name']}.npz")
         E.write_atomic(E.partial_path(stage), {"stage": stage, "partial": True, **state})
     return res
 
 
 # ------------------------------------------------------------------------------------------- the stages
 
-def projection(seconds: dict, champions: dict) -> dict:
+def projection(seconds: dict, champions: dict, reserved_hours: float = 0.0) -> dict:
     """The plan's cost from measured seconds per world (one colony, H ticks): scripted and neural single
     controllers (timed at 128 worlds), champion arms (timed at 8 × 128 worlds) and the records, scaled linearly
     in worlds; after each reduction in turn until it fits the ceiling."""
@@ -413,8 +460,8 @@ def projection(seconds: dict, champions: dict) -> dict:
         finally:
             REGISTERED.clear()
             REGISTERED.update(saved)
-        tried.append({"after_reductions": k, "hours": total / 3600})
-        if total / 3600 <= R["cap_gpu_hours"]:
+        tried.append({"after_reductions": k, "hours": total / 3600, "reserved_hours": reserved_hours})
+        if total / 3600 + reserved_hours <= R["cap_gpu_hours"]:
             return {"admitted": True, "reductions": k, "plan": {kk: R[kk] for kk in ("turn_grid", "walk_grid", "blocks")},
                     "tried": tried}
     return {"admitted": False, "reductions": len(steps) - 1, "plan": None, "tried": tried}
@@ -449,7 +496,9 @@ def cmd_project(args):
         secs["records"] = rec_s / rec_w * H / H_t
         out["seconds_per_world"] = secs
         out["timing"] = {"ticks": H_t, "mazes": n_t, "arm": arm}
-        out.update(projection(secs, champions))
+        spent = E.clock().spent_hours()
+        out["reserved_hours"] = {"spent_before_this_stage": spent, "g-e_allowance": REGISTERED["ge_allowance_hours"]}
+        out.update(projection(secs, champions, reserved_hours=spent + REGISTERED["ge_allowance_hours"]))
         out["first_draw_feasible_share_calibration"] = {}
         for k_r in REGISTERED["k_r"]:
             ks = [IS.islands_for(run_seed=REGISTERED["maze_seed"], maze_id=int(m), c=REGISTERED["c"], k_r=k_r).k
@@ -472,23 +521,29 @@ def cmd_ge(args):
             out["mazes"] = B1.maze_leg()
             out["gpu"] = {"skipped": "smoke"} if SMOKE else B1.gpu_leg(ctx.args.device, ctx.cap)
             legs = {"cpu": "cpu"} if SMOKE else {"cpu": "cpu", "cuda": ctx.args.device}
-            out["full_rollout"] = {}
-            for name, dev in legs.items():
-                refp = REFERENCES / f"equivalence-reference-{name}.json"
-                if not refp.exists():
-                    out["full_rollout"][name] = {"identical": False, "missing_reference": str(refp.relative_to(ROOT))}
-                    continue
-                rec = OUT / f"equivalence-{name}.json"
-                r = subprocess.run([sys.executable, str(ROOT / "scripts" / "e3d_equivalence.py"), "--compare", "--reference",
-                                    str(refp), "--device", dev, "--out", str(rec)], capture_output=True, text=True)
-                got = json.loads(rec.read_text(encoding="utf-8")) if rec.exists() else {"identical": False}
-                out["full_rollout"][name] = {**got, "returncode": r.returncode,
-                                             "reference_sha256": E.sha256_bytes(refp)}
+            out["full_rollout"] = {name: rollout_leg(name, dev) for name, dev in legs.items()}
         out["passed"] = bool(B1.ge_passed(out["cpu"], out["gpu"], out["snapshot_hook"], out["mazes"], smoke=SMOKE)
                              and all(v.get("identical") for v in out["full_rollout"].values()))
         return out
 
     return E.run_stage(args, "g-e", requires("g-e"), body)
+
+
+def rollout_leg(name: str, dev: str, run=subprocess.run) -> dict:
+    """The full-rollout leg against the committed reference. Passes only on a fresh comparison written by a
+    subprocess that exits 0 and reports identical (Astra: a stale record must not pass). The compare runs as a
+    subprocess outside the accounting, so its rollouts are uncounted (rule 8; Fable)."""
+    refp = REFERENCES / f"equivalence-reference-{name}.json"
+    if not refp.exists():
+        return {"identical": False, "missing_reference": str(refp.relative_to(ROOT))}
+    rec = OUT / f"equivalence-{name}.json"
+    rec.unlink(missing_ok=True)
+    r = run([sys.executable, str(ROOT / "scripts" / "e3d_equivalence.py"), "--compare", "--reference", str(refp),
+             "--device", dev, "--out", str(rec)], capture_output=True, text=True)
+    got = json.loads(rec.read_text(encoding="utf-8")) if rec.exists() else {"identical": False, "missing_record": True}
+    return {**got, "identical": bool(r.returncode == 0 and got.get("identical") is True), "returncode": r.returncode,
+            "reference_sha256": E.sha256_bytes(refp), "stderr_tail": (r.stderr or "")[-2000:] if r.returncode else "",
+            "accounting": "uncounted: a subprocess outside wormwars.accounting"}
 
 
 def apply_plan(project: dict) -> None:
@@ -572,10 +627,20 @@ def maze_summary(block: dict) -> dict:
 
 
 def scent_split(block: dict) -> dict:
-    """§2: the shared follower's and the seed's visits and no-first-visit shares, on mazes where both goals'
-    scent reaches the perimeter track and on the others."""
-    both = np.array([all(r["scent_reach"]) for r in block["mazes"]])
-    out = {"mazes_both_flagged": int(both.sum()), "mazes_other": int((~both).sum())}
+    """§2: per goal (Astra), the share of the shared follower's and the seed's weys whose head reached that goal,
+    on goals whose scent reaches the perimeter track and on the others; A and B separately and pooled. Beside it,
+    the whole-maze split (visits and no-first-visit shares on mazes with both goals flagged and the others)."""
+    flags = np.array([r["scent_reach"] for r in block["mazes"]], dtype=bool)  # [mazes, (A, B)]
+    both = flags.all(-1)
+    out = {"goals_flagged": int(flags.sum()), "goals_other": int((~flags).sum()),
+           "mazes_both_flagged": int(both.sum()), "mazes_other": int((~both).sum()), "per_goal": {}}
+    for name in ("follower_shared", "seed"):
+        st = block["conditions"][name]["strains"][0]
+        arr = np.stack([np.asarray(st["arrived_a"]), np.asarray(st["arrived_b"])], axis=-1)
+        grp = lambda m: float(arr[m].mean()) if m.any() else None  # noqa: E731
+        out["per_goal"][name] = {"arrived_flagged": grp(flags), "arrived_other": grp(~flags),
+                                 **{f"arrived_{g}_{lab}": (float(arr[:, k][m[:, k]].mean()) if m[:, k].any() else None)
+                                    for k, g in enumerate("ab") for lab, m in (("flagged", flags), ("other", ~flags))}}
     for name in ("follower_shared", "seed"):
         st = block["conditions"][name]["strains"][0]
         v, z = np.asarray(st["visits"]), np.asarray(st["no_first_visit_share"])

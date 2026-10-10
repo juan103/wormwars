@@ -95,8 +95,8 @@ def predictions(islands, tree) -> dict:
             out[arm] = {"unavailable": True}
             continue
         i, t = _arm_means(islands, arm), _arm_means(tree, arm)
-        ratio = float(i.mean() / t.mean()) if t.mean() > 0 else float("nan")
-        holds = ratio <= 0.5 if arm in S_ARMS else ratio >= 0.5
+        ratio = float(i.mean() / t.mean()) if t.mean() > 0 else None  # reported; the inequality decides
+        holds = i.mean() <= 0.5 * t.mean() if arm in S_ARMS else i.mean() >= 0.5 * t.mean()
         out[arm] = {"islands": float(i.mean()), "tree": float(t.mean()), "ratio": ratio, "holds": bool(holds),
                     "per_champion": [float(a / b) if b > 0 else None for a, b in zip(i, t)]}
     return out
@@ -106,13 +106,15 @@ def bootstrap(block, resamples: int, seed: int) -> dict:
     """95% intervals over resamples of the paired mazes, B_max recomputed as the maximum in each resample."""
     n = len(_per_maze(block, "follower_shared"))
     idx = np.random.default_rng(seed).integers(0, n, size=(resamples, n))
-    keys = ("b_max", "follower", "oracle", "seed", "b_max_over_follower", "follower_over_oracle", "seed_minus_b_max")
+    keys = ("b_max", "follower", "oracle", "seed", "b_max_over_follower", "follower_over_oracle", "seed_minus_b_max",
+            "seed_median_legs", "oracle_visited_share")
 
     def derived(q):
         return {"b_max": q["b_max"], "follower": q["follower"], "oracle": q["oracle"], "seed": q["seed"],
                 "b_max_over_follower": q["b_max"] / q["follower"] if q["follower"] else float("nan"),
                 "follower_over_oracle": q["follower"] / q["oracle"] if q["oracle"] else float("nan"),
-                "seed_minus_b_max": q["seed"] - q["b_max"]}
+                "seed_minus_b_max": q["seed"] - q["b_max"], "seed_median_legs": q["seed_median_legs"],
+                "oracle_visited_share": q["oracle_visited_share"]}
 
     point = derived(quantities(block))
     draws = {k: [] for k in keys}

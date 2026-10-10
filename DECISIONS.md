@@ -7316,3 +7316,59 @@ needed.
 
 **Next:** a code review by both. Then the owner is told before the GPU legs and plays (at most 3 GPU-hours).
 
+## D227 — E3d's code reviewed (Fable "run", Astra "fix first"); every finding fixed; re-bound
+
+**The reviews** (`docs/reviews/20261010-E3d-code/`, run 20261010-155154):
+- **Both:** Amendment 1 is legitimate, and the construction, blind family, B_max, gate, choice of k_r and
+  bootstrap mechanism match the bound design. Astra reran all 69 E3d tests and the CPU equivalence leg.
+- **Fable 5.1, "run":** after the GPU reference, a CUDA g-e and smoke, and headroom for the cap. Non-blocking:
+  the bootstrap misses two gate quantities; the guard ignores `scripts/`; two record nits; tests that cannot
+  fail.
+- **Astra 6, "fix first":** g-e could pass on a stale comparison record after a failing compare (reproduced);
+  trajectories and per-visit records were discarded; the scent reach was read per maze, not per goal; the
+  bootstrap missed two quantities; two reporting errors (the tree spawn-candidate count; predictions on zero
+  means); weak tests; a config bug; "before any play" too broad.
+
+**The fixes** (each with a test seen failing, or a mutant killed):
+- **g-e's full-rollout leg** passes only on a fresh record from a subprocess that exits 0 (`rollout_leg`);
+- **every condition's records are kept locally and hashed** (`runs/e3d/records/*.npz`): each wey's head cell
+  per tick, the visit ledger, raw entries, the first component acquired, and each visit's remembered and
+  outside classes;
+- **the scent reach is read per goal:** arrival at each goal against that goal's flag, A and B separately and
+  pooled; the whole-maze split stays beside it;
+- **the bootstrap** covers G3b's median legs and the oracle's visit share;
+- **the tree spawn-candidate count** is the candidates, not the four drawn;
+- **the predictions** evaluate the inequalities directly; an undefined ratio is reported as none;
+- **the guard** also refuses any script change since the binding commit except the runner's two binding lines;
+  a test holds the registered design hash to the file's;
+- **the projection** reserves the hours already spent plus a g-e allowance of 0.25 h;
+- **a tree config built on an island base** clears the island fields;
+- **the readable contact** counts a tick once per class, and an equal-count tie goes to the smaller label;
+- **tests:**
+  - the orbit must circulate at least 10 times;
+  - the probe example skips the wall at x = 13.7;
+  - the guard's negative cases;
+  - the failed-check branches "distance" and "spawn";
+  - the goal stream reproduced exactly;
+  - the runner's world-to-strain mapping;
+  - the stale-record cases.
+- **A dated correction to Amendment 1** (design §11): "before any formal block play". CPU smoke, qualification
+  and equivalence rollouts preceded it; none used a formal id at the formal horizon.
+
+**An E3c test updated:** E3c's smoke test asserted that its engine freeze passes at HEAD. That held only until
+an engine file changed. E3d modified `wormwars/config.py` and `wormwars/e3/maze_world.py`, so E3c's freeze now
+correctly fails, and its formal stages would refuse to run. The test now holds the recorded freeze to an
+independent `git diff` from E3c's binding commit. E3c's published results are unaffected.
+
+**Recorded, not changed:**
+- **Rule 6:** the formal plays run outside `replay_mode()` in their own recorded compositions. The equivalence
+  leg (1 strain, 8 worlds, 8 weys) does not establish exact replay of them. That is why their trajectories are
+  kept.
+- **Rule 8:** the full-rollout compare runs as a subprocess outside the accounting; its record says so.
+
+**Re-bound:** at the commit of these fixes (the runner's binding lines follow in the next commit). All five
+stages ran again on toy sizes on the CPU.
+
+**Next:** both reviewers check the fixes. Then the owner is told before any GPU use: the GPU reference at
+40bd50f, a CUDA smoke of all five stages, then the formal stages (at most 3 GPU-hours).
+

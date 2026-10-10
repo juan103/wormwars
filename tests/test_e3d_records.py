@@ -206,6 +206,23 @@ def test_the_batched_contact_equals_the_reference_on_island_mazes():
         for cl in R.CLASSES:
             assert np.allclose(batch["share"][cl][k], ref["share"][cl])
         assert batch["first_class"][k] == ref["first_class"]
+        lab, cls = R.component_classes(walls[k], *goals[k])
+        assert [cls[int(v)] if v else "none" for v in batch["first_label"][k]] == ref["first_class"]
         assert batch["switches"][k].tolist() == ref["switches"].tolist()
         assert batch["switches_by_pair"][k] == ref["switches_by_pair"]
         assert batch["at_visit"][k] == ref["at_visit"]
+
+
+def test_an_equal_count_tie_goes_to_the_smaller_label_and_a_class_counts_once_per_tick():
+    """Two 1-cell posts on either side of the head's cell: equal counts, so the smaller label is remembered; and
+    the tick counts once for the class "other", not once per component (Astra)."""
+    wall = np.zeros((13, 13), dtype=bool)
+    wall[0, :] = wall[-1, :] = wall[:, 0] = wall[:, -1] = True
+    wall[6, 4] = wall[6, 6] = True
+    lab, _ = I.components(wall)
+    lo = min(int(lab[6, 4]), int(lab[6, 6]))
+    path = _cells((5.5, 6.5), (9.5, 9.5))
+    ref = R.contact(path, wall, a=(2, 2), b=(0, 0), visit_tick=np.array([[-1]]))
+    bat = R.contact_batch(path[None], [wall], [((2, 2), (0, 0))], np.array([[[-1]]]))
+    assert ref["remembered"][0].tolist() == bat["remembered"][0, 0].tolist() == [lo, lo]
+    assert ref["share"]["other"][0] == pytest.approx(0.5) and bat["share"]["other"][0, 0] == pytest.approx(0.5)

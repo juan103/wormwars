@@ -458,3 +458,10 @@ confirmation block's first 64 mazes (ids 30 200-30 263), at the chosen k_r, repo
 `wormwars/e3/e3d_records.py`, not in `maze_controls` and `maze_measures` as §3, §6 and §7 name them. E3b's
 modules stay untouched. The records' contact is computed by `contact_batch`, which a test holds equal to the
 readable `contact`.
+
+**Correction to Amendment 1** (2026-10-10, after both reviewers' code review, D227; Astra): "before any play"
+should read **before any formal block play**. CPU smoke runs of the stages had played toy mazes (ids 8 000-8 004,
+H = 60, and timing mazes 40 100-40 115) before the amendment's commit. So had the qualification and equivalence
+rollouts. None used a calibration, confirmation or tree-reference id at the formal horizon. The amended policy is
+a declared strong wall-following control, not a proven strongest hugger. Its qualification thresholds are
+engineering criteria, not evidence.
