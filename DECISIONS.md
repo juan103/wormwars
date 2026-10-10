@@ -7135,3 +7135,27 @@ from-scratch level, by scent-free circuits that are not full coverers".
 
 **Next:** publication on main, with the READMEs, ROADMAP and the review trail updated. Then the roadmap pauses
 before E4 (the owner, 2026-10-06).
+
+## D221 — The owner: better mazes before E4; E3d designed (v1, for review)
+
+**The owner,** 2026-10-10:
+- "It seems we need better mazes, right? What's the next step?";
+- earlier: "The E4 needs a maze where no goal touches the perimeter";
+- then "Yes start" on Claude's proposal of a small task-validation step.
+
+**The check behind the design** (on E3c's committed records): in tree mazes, keeping goals off the perimeter
+does not stop wall-followers. E3c's S champions scored 6.59-6.67 on the 11 test mazes with both goals interior,
+against 6.65-6.72 elsewhere. Every wall of a spanning-tree maze is connected to the outer wall.
+
+**E3d** (`docs/E3/E3d-DESIGN.md` v1), exploratory:
+- **The mazes:** loop mazes, with k extra openings in E3b-1's tree, and A and B on island-safe cells, which no
+  perimeter-connected wall touches;
+- **the controls,** scripted, with a new wall-follower;
+- **E3c's 28 frozen champions,** replayed;
+- **k chosen on a calibration block,** then a gate (G1-G3) on a confirmation block, fixed in advance;
+- **a few GPU-hours,** no evolution.
+
+**Sizing** (a CPU sketch): with k = 8 of the 16 closed segments opened, 93% of mazes have at least two
+island-safe cells.
+
+**Next:** the design reviewed by both reviewers.
