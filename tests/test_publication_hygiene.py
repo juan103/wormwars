@@ -94,6 +94,18 @@ def large_square_offence(a) -> bool:
     return a.ndim >= 2 and a.shape[-1] == a.shape[-2] and N_NEURONS < a.shape[-1] <= N_NEURONS + 256
 
 
+MAZE_SIDE_MAX = 8  # the largest maze any experiment plays is 6 × 6 (E3d); 8 leaves a margin
+
+
+def is_maze_spawn_list(key: str, arr) -> bool:
+    """D230: E3d's maze records list each maze's spawn cells, at most 4 [row, column] pairs of a c × c maze, under
+    a key named "spawns". Such a list is a pair list of tiny whole numbers, not a 302-neuron edge list; only it
+    is exempt from the edge-list offence."""
+    a = np.asarray(arr, dtype=np.float64)
+    return (key.endswith(".spawns") and a.ndim == 2 and a.shape[1] == 2 and 1 <= a.shape[0] <= 4
+            and float(a.min()) >= 0 and float(a.max()) < MAZE_SIDE_MAX)
+
+
 def test_no_np_load_enables_pickle():
     """Pickle in np.load is arbitrary code execution on any file a user downloads.
 
@@ -313,6 +325,8 @@ def test_no_committed_file_contains_graph_structure():
         raw = (ROOT / rel).read_bytes()
         for key, arr in numeric_arrays(rel, raw):
             for bad in offences(arr):
+                if "edge list" in bad and is_maze_spawn_list(key, arr):
+                    continue  # a maze's spawn cells (D230)
                 offenders.append(f"{rel} [{key}] {bad}")
     assert not offenders, (
         "committed files contain connectome or control-graph structure:\n  " + "\n  ".join(offenders)
@@ -396,3 +410,14 @@ def test_a_square_matrix_larger_than_the_worm_is_structure():
     assert large_square_offence(np.zeros((4, 310, 310)))
     assert not large_square_offence(np.zeros((10, 10)))
     assert not large_square_offence(np.zeros((332, 8)))
+
+
+def test_the_maze_spawn_exemption_is_narrow():
+    """D230: only a list of at most 4 [row, column] pairs below 8 under a key named "spawns" is exempt from the
+    edge-list offence; a neuron edge list stays an offence whatever its key."""
+    assert is_maze_spawn_list(".blocks.0.mazes[3].spawns", [[0, 4], [5, 2], [3, 0], [1, 5]])
+    assert not is_maze_spawn_list(".blocks.0.mazes[3].spawns", [[0, 4], [5, 2], [3, 0], [1, 5], [2, 2]])  # 5 rows
+    assert not is_maze_spawn_list(".spawns", [[0, 40], [5, 2]])  # an index past any maze
+    assert not is_maze_spawn_list(".edges", [[0, 4], [5, 2]])  # another key
+    edges = np.stack([np.arange(300), np.arange(1, 301)], axis=1)
+    assert not is_maze_spawn_list(".spawns", edges)

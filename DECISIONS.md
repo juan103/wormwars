@@ -7434,3 +7434,24 @@ It was left, as re-binding would gain nothing.
 
 **Next:** the results reviewed by both. Then the owner decides the next construction (design §9); the roadmap
 stays paused before E4.
+
+## D230 — A false positive in the connectome guard, and a commit not gated on its tests
+
+**What happened:**
+- **The connectome guard** (`tests/test_publication_hygiene.py`) flagged E3d's `calibrate.json`, which was
+  committed in 85ea8b0 and pushed. Each maze row lists its spawn cells as `[row, column]` pairs, and up to 4
+  pairs of small whole numbers look like an edge list.
+- **The slip:** hygiene was not run before that record's commit. It did run before D229's commit (8417f25), but
+  the command chained the commit after `echo` rather than after pytest's own exit code, so the commit and push
+  went ahead on a failing test. This is the failure memory "gate on exit status" warns of.
+
+**The fix:**
+- **A narrow exemption in the guard:** a list under a key named `spawns`, with 1-4 rows of pairs, all whole
+  numbers in [0, 8), is exempt from the edge-list offence only.
+- **A test shows the exemption is narrow:** 5 rows, an index of 40, another key, or a 300-row neuron edge list
+  stay offences.
+- **The formal record is not rewritten:** its contents are maze coordinates, not connectome structure (rule 1
+  is not engaged).
+- **This commit is gated** on pytest's exit code itself.
+
+**CI:** the runs on 85ea8b0 and 8417f25 are expected red on this test; this commit should return CI to green.
