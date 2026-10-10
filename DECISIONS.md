@@ -7159,3 +7159,37 @@ against 6.65-6.72 elsewhere. Every wall of a spanning-tree maze is connected to 
 island-safe cells.
 
 **Next:** the design reviewed by both reviewers.
+
+## D222 — E3d's design reviewed ("revise", both); the owner chooses 6 × 6; design v2
+
+**The reviews** (`docs/reviews/20261010-E3d-design/`, run 20261010-130648), both "revise":
+- **Fable 5.1:**
+  - v1's sizing counted mazes with two island-safe cells, not feasible placements;
+  - a spawn could share a corner post with a goal's ring;
+  - G2 (the follower at half the oracle) already fails on E3b-1's trees (16.98 against 34.5);
+  - G1 needs the side-swapping carrier (W2+M40, W2+M80), W2-turn past 1.4 and the S champions with their noses
+    removed;
+  - record component contact; state the scent-reach argument; carved islands as the default; code points.
+- **Astra 6:**
+  - separate the geometric guarantee from the behavioural claim, and forbid one wall component touching both
+    goals;
+  - the spawn claim was wrong: weys start at a cell centre with a random heading;
+  - G1 and G3 over every blind control, the random walk included;
+  - discovery, repeated-journey and maze-ness measures; the smallest qualifying k;
+  - calibration aligned with the gate, the confirmation benchmark declared, absolute criteria;
+  - a champions' contradiction reported as one; fuller tests; a full-rollout rule-7 leg against 40bd50f.
+
+**The recomputed sizing** (`scripts/e3d_sizing.py`, `docs/E3/e3d-sizing.json`): at 5 × 5, island goals can
+only sit in the 3 × 3 interior, and every feasible pair is on opposite sides of it (16 placements). At 6 × 6,
+about 64-72 effective placements, and carved islands are feasible in 65-73% of draws at E3b-1's distance bound.
+
+**The owner** (2026-10-10), asked to choose the maze size: **6 × 6**.
+
+**Design v2** (`docs/E3/E3d-DESIGN.md`) takes every required change:
+- carved islands plus k_r ∈ {0, 2, 4} nested openings, the smallest qualifying k_r;
+- a blind family whose maximum is the benchmark;
+- G1-G3 with absolute limits beside the ratios, each shown on the tree family;
+- the contact, discovery and maze-ness records;
+- a full-rollout rule-7 leg.
+
+**Next:** v2 reviewed by both reviewers.

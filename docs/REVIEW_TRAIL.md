@@ -76,6 +76,7 @@ led to several of the findings.
 | 56 | E3c's pre-registration draft 2: a contrast counted as confirmatory whenever no failed run was observed, which the simulation itself showed wrong up to 0.34-0.46; the joint error counter omitted false margin assertions; the coverage rule called P-joint "lower" with all its champions unmeasured; D207 and §15 said every required change was taken | Claude Opus 5.5 | **Astra 6** (each item, the coverage case with a counterexample); **Fable 5.1** (the g-e gate, the counts' blind spots) | The counterexample became a failing test; draft 3's exact test checked against a direct enumeration; D207 corrected beside it | D208 |
 | 57 | E3c's pre-registration drafts 3-4: the coverage rule's components still counted unmeasured P-joint champions as a zero share (draft 3), and the fix crashed on an arm with no eligible champion (draft 4); Q2's exact test was presented without saying its null is false on spread alone | Claude Opus 5.5 | **Astra 6** (both code defects, with counterexamples); **Fable 5.1** (the Q2 disclosure; the crash, as a note) | Each reproduced by a test that failed first; Astra's recheck covered all seven empty-arm combinations | D209, D210 |
 | 58 | E3c's results draft: P-sel "reach the from-scratch level, 3 of 4, by a scent-free route" (they stayed below every S champion; "scent-free" exceeds the noses-removed reading); Q1 "within 0.1 visit" (the interval reaches −0.120); a calibration claim the registration withdraws; Q2 "similar scores" and a bootstrap gloss reading "unclear" as more; registered qualifier and decomposition missing | Claude Opus 5.5 | **Fable 5.1** and **Astra 6**, each independently (Astra reproduced the whole report from the records) | Recomputed from the records; corrected before publication, with a Corrections section | D220 |
+| 59 | E3d's design v1: a sizing table that counted island-safe cells, not feasible placements (at 5 × 5 the placements are stereotyped); a spawn rule that let a spawn share a post with a goal's ring; a G2 threshold that already fails on trees; a blind benchmark that left out the random walk and the side-swapping carrier; both goals allowed on one island; the spawn claim (a random heading at the cell centre); no discovery, repeated-journey or maze-ness measures | Claude Opus 5.5 | **Fable 5.1** and **Astra 6**, each independently | All taken in v2; the maze size put to the owner with the recomputed sizing (6 × 6 chosen) | D222 |
 
 Episode 6 went unnoticed for a week, through a passing test suite, every milestone report, a
 publication audit, the first public release and Claude's own review of the roadmap on the day it
@@ -110,7 +111,7 @@ food response is 1.55-2.7 times the most responsive graph's, not 1.5-1.8).
   useful.
 - One error (episode 16) was caught by neither a person nor a reviewer but by running the tests on
   another operating system.
-- This is one project and fifty-eight episodes: an anecdote about multi-agent review, not a measurement
+- This is one project and fifty-nine episodes: an anecdote about multi-agent review, not a measurement
   of it.
 
 ## In the history

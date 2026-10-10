@@ -1,0 +1,47 @@
+**Verdict: revise.** The construction is sound in geometry, but three things would make the result uninterpretable as written: the sizing table measures the wrong quantity, the spawn rule has a hole, and gate G2's threshold already fails on the existing tree task. All are design-level fixes. A v2 with the changes below can go to code.
+
+## The five questions
+
+**1. Does island-safe defeat wall-following?** Against a tangential follower, yes, and the margin arithmetic holds. I checked it on the grid layout in `wormwars/e3/maze.py:89-104`. Every wall cell touching the goal's 5 × 5 block is in the same 4-connected component as a block wall, so it is an island too. The nearest perimeter wall cell is therefore at least 5 grid cells from the goal's open block, with 4 open cells between. A head hugging the perimeter at 1 cell must deviate by more than a corridor width to score a visit, which is the head inside the 3 × 3 block per `maze_world.py:378`. The 5 × 5 margin is also the largest margin compatible with the scent, see question 2, so keep it.
+
+What the margin does not cover is component switching, and that is where the real adversaries live:
+
+- **W2's reflex is a bouncer, not a hugger.** Its resting command is 0.4 per `maze_organisms.py:42`. With a turn limit of 0.30 rad per tick and a step of 0.35 cells per tick in `config.py:90-92`, that is an arc of radius about 2.9 cells, about one corridor width. At a convex corner it swings wide and can land on whatever wall is across the side corridor. In a tree that is the same component. In a loop maze it may be an island, and any contact with a goal's island ring leads into the goal block, since the ring is the goal's own border segments and posts.
+- **E3c's coverers turn tighter.** Their resting-turn offsets of +0.44 to +0.60 give arcs near 1.2 to 1.4 cells if they add to W2's command, so they wrap corners better than W2 alone. Which adversary switches components more is an empirical question, which is why the design must measure it rather than argue it. See required change 5.
+- **Random bouncing.** The reflex random walk is already in the set. A more dangerous scent-free strategy is the side-swapping bouncer the codebase already has: the carrier with W2+M40 or W2+M80, where the oscillator periodically flips the hugging side and so crosses corridors on a timer. E3b-0 reported carrier-only variants as blind baselines, so it is cheap. It should be a G1 adversary, because it is within genome bounds and evolution could find it.
+- **The spawn rule has a hole.** "Adjacent to the perimeter component" does not exclude cells whose block also contains island walls. A wey spawns at the cell centre with a random heading per `maze_world.py:214-217`, and W2 latches onto whichever wall its bias meets first. A cell at graph distance 2 from A can share a corner post with A's island ring. The spawn condition should be the mirror of island-safe: no island wall cell in the spawn cell's 5 × 5 block.
+
+**2. Does navigation stay possible and meaningful?** The scent is a path-distance field, `maze_world.py:235-240`, so loops are handled correctly. The constraint that matters is reach. Through the goal's entrance, the perimeter-adjacent corridor is at path distance 5 from the goal centre, where the scent is about 0.25 of the peak, well above the follower's threshold. Around a closed side of the island the path is about 9, where the scent is at or below the threshold. So the perimeter circuit smells an island goal only when passing its entrance-side neighbour, and not at all if that neighbour is itself island-enclosed. This matters because the scripted follower explores as W2 below threshold, `maze_controls.py:74`, as do all of E3's organisms. The design should state this argument and either constrain placements so each goal's scent reaches a perimeter-only cell, or report the share that do not and pre-state how zeros from such mazes are read.
+
+On maze-ness there is a bigger problem than the openings. Island-safe cells are necessarily interior, since an edge cell's border segment is the outer wall. At c = 5 that is 9 cells. With the A-B lower bound of 4 in graph distance, only the two diagonal pairs of the interior's corners qualify unless walls force a detour. So the placements are nearly stereotyped, and the sizing table in §2 counts mazes with two island-safe cells, not mazes with a feasible placement. The true feasible share is much lower, and at k = 6 the redraw would be conditioning on a rare configuration, which distorts the wall distribution. This stereotype is partly inherent in the owner's demand at c = 5. Relaxing the lower bound to 3 gives ten pairs instead of two. Going to c = 6 gives a 16-cell interior at a task change. Either way the owner should decide with the real numbers in front of them.
+
+The horizon can stay. Shorter legs raise every score, and comparability with E3c's champions needs the same H.
+
+**3. Is the procedure sound?** The two-block structure is right. The thresholds are not calibrated against the task they replace. On committed numbers:
+
+| Criterion | On tree mazes | Source |
+|---|---|---|
+| G1: best scent-free ≤ 0.25 × follower | W2-turn 5.77 / 16.98 = 0.34, fails as intended | E3c, E3b-1 results |
+| G2: follower ≥ 50% of oracle | 16.98 / 34.5 = 0.49, fails | E3b-1, E3b-0 results |
+| G3: seed > best scent-free | 5.12 < 5.77, fails | E3c results |
+
+G1 and G3 failing on trees is what makes them informative, and the design should say so. G2 failing on trees means a loop maze that keeps the follower exactly where it is would fail the gate. Set G2 as an absolute level or as a share of the follower's tree level, or lower it to a third of the oracle, and justify the choice. Two smaller points: the k choice uses "the largest gap", which is ambiguous between a difference and a ratio, and G1 is a ratio, so use the ratio for both. And the W2-turn sweep must extend above 1.4, since E3c recorded that point as the grid's edge with the mean still rising, `e3c_formal.py:18`.
+
+On the champions: keep their collapse as a descriptive prediction, but the reason given for excluding them from the gate does not hold for a conservative criterion. A controller selected on another family that still beats this maze scent-free has beaten the maze. Put the 16 S champions with noses removed into G1's adversary set, and keep the intact replay and the prediction descriptive.
+
+**4. Missing pieces.** Controls and equivalence are covered above and below. On construction: the targeted version is now the better default. Choose A and B first, open only the outward segments of their eight corner posts, and add k_r random openings from {0, 2, 4} as the swept parameter. It guarantees island-safety without redraw, keeps the tree elsewhere, and lets the A-B distance be checked on the final graph. Its cost is a stereotyped goal neighbourhood, which the random openings soften. Given the interior-only constraint, random k buys little extra un-designedness. On a simpler route: there is none that keeps the task. The literal reading of the owner's request is refuted by D221's check, a shorter horizon was already judged poor in E3c, and a stricter visit rule hurts navigators as much as circuits.
+
+**5. Code points the design should state** before tests are written. The oracle, the distances and dead ends all derive from `Maze.edges` via `neighbours()`, `maze.py:33-56` and `maze_controls.py:131-142`, so the loop generator must append its openings to `edges`. The scramble mode asserts equal open-cell counts across a batch, `maze_world.py:263-266`, which holds only at fixed k. The openings' stream must be keyed by the redraw index as `walls_for` keys the tree. Rule 7 should name E3b-1's three g-e legs rather than "an E3b-1 play". And the sizing table should be regenerated by a committed script under rule 5.
+
+## Required changes
+
+1. Recompute feasibility with the actual placement constraint, two island-safe cells meeting the distance and spawn rules, per k. Report the placement histogram. Put the interior-corner stereotype and the choice of lower bound or c to the owner.
+2. Spawn cells must contain no island wall cell in their 5 × 5 block.
+3. Recalibrate G2 and state each criterion's value on the tree family, so the gate is shown to be informative.
+4. Widen G1's adversary set: the carrier with W2+M40 and W2+M80, the W2-turn grid extended past 1.4, and the 16 S champions noses removed. Use the ratio for both the k choice and G1.
+5. Record component contact per tick, perimeter against island, and the switch rate per 1 000 ticks for every control and organism. A G1 failure is then attributable to switching, to random coverage, or to the construction.
+6. State the scent-reach argument, and constrain or report placements whose goal scent reaches no perimeter-only cell within 9 path cells.
+7. Decide between random k and the targeted construction on the recomputed feasibility, with targeted plus k_r as the recommended default.
+8. Fix the code points in question 5: edges, the scramble invariant, the redraw stream, the named equivalence legs, and a committed sizing script.
+
+Non-blocking: report the follower under "none" as well as shared, the share of mazes where it makes zero visits, and the wall-follower's own switch rate on trees as part of its §5 check. Pre-state the reading for each way G1 can fail. The champions' prediction should cite "their E3c test-block mean" rather than "E3b-1-maze level".
