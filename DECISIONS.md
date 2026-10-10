@@ -7372,3 +7372,37 @@ stages ran again on toy sizes on the CPU.
 **Next:** both reviewers check the fixes. Then the owner is told before any GPU use: the GPU reference at
 40bd50f, a CUDA smoke of all five stages, then the formal stages (at most 3 GPU-hours).
 
+## D228 — E3d's fixes checked (Fable "run", Astra "fix first", two points); fixed; re-bound
+
+**The check** (`docs/reviews/20261010-E3d-code-2/`, run 20261010-170750): both confirm every D227 fix. Astra reran 81 tests,
+the 106 smoke record files and the CPU equivalence leg.
+- **Astra 6, "fix first":**
+  1. the scripts guard dropped every line containing a binding key, so moving a binding line and appending
+     `"H": 60` to it passed (reproduced);
+  2. the projection's reserve left out the current stage's elapsed time and the cost of saving records.
+- **Fable 5.1, "run",** non-blocking:
+  - reruns would overwrite attempt 1's record files;
+  - the compare's wall time does count (only its worlds, ticks and updates do not);
+  - record saving is untimed;
+  - the correction's wording;
+  - the design-hash line's exemption from the scripts guard.
+
+**The fixes** (each test seen failing):
+- **The guard** compares the whole runner with only the two binding *values* blanked; the hidden-entry case is
+  refused.
+- **The reserve** is earlier attempts plus this stage's elapsed time plus g-e's allowance (`reserved_hours`).
+- **The timing plays save their records,** so saving is timed; their files are then removed.
+- **calibrate and confirm pass their record files to the frame,** so a rerun archives attempt 1's.
+- **The accounting note:** the compare's wall time counts in g-e's seconds; its worlds, ticks and neural updates
+  do not.
+- **An erratum** to the correction (design §11): no formal block's maze was played before the amendment. The
+  equivalence leg's trees 30 000-30 007 at H = 2 400 are not one.
+
+**Stated, not changed:** the design-hash line is exempt from the scripts guard by construction. Between stages,
+the design is frozen by the frame's same-code check, which covers the design file. Before `project`, it is frozen
+by the binding commit and this record.
+
+**Re-bound** at the commit of these fixes. All five stages ran again on toy sizes on the CPU.
+
+**Next:** Astra confirms the two fixes. Then the owner is told before any GPU use.
+

@@ -208,3 +208,28 @@ def test_summarise_maps_worlds_to_strains_and_mazes(D):
     assert [s["visits"] for s in strains] == [[1.0, 2.0], [3.0, 4.0]]
     assert arrays["world_ids"].tolist() == ids * 2 and arrays["strain_of_world"].tolist() == [0, 0, 1, 1]
     assert arrays["visits_contact"].shape == (2 * (1 + 2 + 3 + 4), 6)
+
+
+def test_script_changes_refuse_edits_hidden_on_binding_lines(D, monkeypatch):
+    """Astra: moving a binding line and appending an entry to it is an executable change; only the two binding
+    values may differ."""
+    old = 'R = {\n    "binding_commit": "x",\n    "design_sha256": "y",\n    "H": 2400,\n}\n'
+    hidden = 'R = {\n    "design_sha256": "y",\n    "H": 2400,\n    "binding_commit": "x", "H": 60,\n}\n'
+    files = {"old": old, "new": hidden}
+
+    def git(*a, root=None):
+        if a[0] == "diff":
+            return "scripts/e3d.py\n"
+        return files["new"] if a[1].startswith("HEAD") else files["old"]
+
+    monkeypatch.setattr(D.E.reg, "git", git)
+    monkeypatch.setitem(D.REGISTERED, "binding_commit", "b")
+    assert D.script_changes() == ["scripts/e3d.py"]
+    files["new"] = old.replace('"x"', '"0123abcd"').replace('"y"', '"' + "f" * 64 + '"')
+    assert D.script_changes() == []
+
+
+def test_the_reserve_counts_the_current_stage(D):
+    """Astra: the admission reserves earlier attempts, this stage's own elapsed time and g-e's allowance."""
+    clock = types.SimpleNamespace(spent_hours=lambda: 0.5, t_start=0.0)
+    assert D.reserved_hours(clock, now=360.0) == pytest.approx(0.5 + 0.1 + D.REGISTERED["ge_allowance_hours"])

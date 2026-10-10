@@ -21,6 +21,7 @@ import hashlib
 import importlib.util
 import json
 import math
+import re
 import subprocess
 import sys
 import time
@@ -75,7 +76,7 @@ REQUIRES = {"project": [], "g-e": ["project"], "calibrate": ["project", "g-e"], 
 REGISTERED = {
     "design": DESIGN,  # §8: the design with Amendment 1, bound at the code commit (D226); the engine frozen there
     "binding_commit": "4886ba9903651365a5776c638f67e9132e196131",
-    "design_sha256": "25261a9c2ec8184321db7dee6399f7efeffa5df3d9dad7bbdc411cc70b8f57a4",
+    "design_sha256": "37ee0c39868f074446cca43fd0242ce8bf72e9f90127fdafbade60394e4b4147",
     "maze_seed": 1_190_000, "c": 6, "H": 2400, "colony": 8, "spawns": 4,
     "trail": {"mu": 0.01, "lam": 0.02, "delta": 0.05, "d0": 1.142},
     "k_r": [0, 2, 4], "feasible_floor": 0.5,
@@ -127,7 +128,12 @@ def engine_changes() -> list:
     return [line for line in out.splitlines() if line.strip()]
 
 
-BINDING_LINES = ('"binding_commit":', '"design_sha256":')
+BINDING_VALUE = re.compile(r'("(?:binding_commit|design_sha256)": )"[^"]*"')
+
+
+def _normalise(text: str) -> str:
+    """The runner's text with only the two binding values blanked (Astra: whole lines must not be exempt)."""
+    return BINDING_VALUE.sub(r'"<bound>"', text)
 
 
 def script_changes() -> list:
@@ -137,8 +143,7 @@ def script_changes() -> list:
     names = [n for n in E.reg.git("diff", "--name-only", b, "HEAD", "--", "scripts", root=ROOT).splitlines() if n.strip()]
     bad = [n for n in names if n != "scripts/e3d.py"]
     if "scripts/e3d.py" in names:
-        keep = lambda t: [ln for ln in t.splitlines() if not any(k in ln for k in BINDING_LINES)]  # noqa: E731
-        if keep(E.reg.git("show", f"{b}:scripts/e3d.py", root=ROOT)) != keep(E.reg.git("show", "HEAD:scripts/e3d.py", root=ROOT)):
+        if _normalise(E.reg.git("show", f"{b}:scripts/e3d.py", root=ROOT)) != _normalise(E.reg.git("show", "HEAD:scripts/e3d.py", root=ROOT)):
             bad.append("scripts/e3d.py")
     return bad
 
@@ -467,6 +472,13 @@ def projection(seconds: dict, champions: dict, reserved_hours: float = 0.0) -> d
     return {"admitted": False, "reductions": len(steps) - 1, "plan": None, "tried": tried}
 
 
+def reserved_hours(clock, now: float | None = None) -> float:
+    """The hours the admission reserves (both reviewers): earlier attempts, this stage's own elapsed time, and
+    g-e's allowance."""
+    now = time.perf_counter() if now is None else now
+    return clock.spent_hours() + (now - clock.t_start) / 3600 + REGISTERED["ge_allowance_hours"]
+
+
 def cmd_project(args):
     def body(ctx):
         dev = ctx.args.device
@@ -487,8 +499,10 @@ def cmd_project(args):
             timed.append(("arm", {"name": "t", "role": "blind", "kind": "arm", "arm": arm, "noses": False}))
         secs, rec_s, rec_w = {}, 0.0, 0
         with acct.category("calibration"):
-            for kind, spec in timed:
-                r = play(spec, cfg, con, l1, cx, champions, info, ids, dev)
+            for kind, spec in timed:  # saving the records is timed too, then the timing files are removed
+                tmp = OUT / "records" / f"project-timing-{kind}.npz"
+                r = play(spec, cfg, con, l1, cx, champions, info, ids, dev, save_as=tmp)
+                tmp.unlink(missing_ok=True)
                 worlds = r["composition"][0] * r["composition"][1]
                 secs[kind] = r["play_seconds"] / worlds * H / H_t
                 rec_s, rec_w = rec_s + r["seconds"] - r["play_seconds"], rec_w + worlds
@@ -496,9 +510,10 @@ def cmd_project(args):
         secs["records"] = rec_s / rec_w * H / H_t
         out["seconds_per_world"] = secs
         out["timing"] = {"ticks": H_t, "mazes": n_t, "arm": arm}
-        spent = E.clock().spent_hours()
-        out["reserved_hours"] = {"spent_before_this_stage": spent, "g-e_allowance": REGISTERED["ge_allowance_hours"]}
-        out.update(projection(secs, champions, reserved_hours=spent + REGISTERED["ge_allowance_hours"]))
+        reserve = reserved_hours(ctx.cap)
+        out["reserved_hours"] = {"total": reserve, "spent_before_this_stage": ctx.cap.spent_hours(),
+                                 "g-e_allowance": REGISTERED["ge_allowance_hours"]}
+        out.update(projection(secs, champions, reserved_hours=reserve))
         out["first_draw_feasible_share_calibration"] = {}
         for k_r in REGISTERED["k_r"]:
             ks = [IS.islands_for(run_seed=REGISTERED["maze_seed"], maze_id=int(m), c=REGISTERED["c"], k_r=k_r).k
@@ -543,7 +558,13 @@ def rollout_leg(name: str, dev: str, run=subprocess.run) -> dict:
     got = json.loads(rec.read_text(encoding="utf-8")) if rec.exists() else {"identical": False, "missing_record": True}
     return {**got, "identical": bool(r.returncode == 0 and got.get("identical") is True), "returncode": r.returncode,
             "reference_sha256": E.sha256_bytes(refp), "stderr_tail": (r.stderr or "")[-2000:] if r.returncode else "",
-            "accounting": "uncounted: a subprocess outside wormwars.accounting"}
+            "accounting": ("the compare's wall time counts in g-e's seconds; its worlds, ticks and neural updates are "
+                           "uncounted (a subprocess outside wormwars.accounting; rule 8)")}
+
+
+def stage_records(stage: str) -> list:
+    """A stage's record files, so a rerun archives attempt 1's with its record (Fable)."""
+    return sorted((OUT / "records").glob(f"{stage}-*.npz"))
 
 
 def apply_plan(project: dict) -> None:
@@ -568,7 +589,7 @@ def cmd_calibrate(args):
         state["choice"] = GT.choose_k(gates, feasible, REGISTERED["feasible_floor"])
         return state
 
-    return E.run_stage(args, "calibrate", requires("calibrate"), body)
+    return E.run_stage(args, "calibrate", requires("calibrate"), body, local_files=stage_records("calibrate"))
 
 
 def cmd_confirm(args):
@@ -585,7 +606,7 @@ def cmd_confirm(args):
         play_block(ctx, "confirm", "tangent", "islands", k_r, champions, state["blocks"], "tangent", tangent=True)
         return state
 
-    return E.run_stage(args, "confirm", requires("confirm"), body)
+    return E.run_stage(args, "confirm", requires("confirm"), body, local_files=stage_records("confirm"))
 
 
 def report_from(earlier: dict) -> dict:

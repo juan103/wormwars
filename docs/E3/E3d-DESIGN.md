@@ -465,3 +465,8 @@ H = 60, and timing mazes 40 100-40 115) before the amendment's commit. So had th
 rollouts. None used a calibration, confirmation or tree-reference id at the formal horizon. The amended policy is
 a declared strong wall-following control, not a proven strongest hugger. Its qualification thresholds are
 engineering criteria, not evidence.
+
+**Erratum to that correction** (2026-10-10, D228; Fable): "none used a calibration, confirmation or tree-reference id
+at the formal horizon" is not quite right. The equivalence leg plays trees with ids 30 000-30 007 at H = 2 400.
+The accurate statement: none played a formal block's maze, that is, an island maze at a formal id or the 6 × 6
+tree reference.
