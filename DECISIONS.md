@@ -7224,3 +7224,25 @@ first-draw feasible in 70-73% of draws at E3b-1's distance bound. 71-73 of the 7
 
 **Next:** v2.1 to both reviewers for a last check, then binding and code.
 
+## D224 — E3d's design v2.1 checked (Fable "bind after three corrections", Astra "revise", one change); v2.2
+
+**The reviews** (`docs/reviews/20261010-E3d-design-3/`, run 20261010-135406): both accept the construction,
+the blind family, the blocks and the gate's numbers.
+- **Astra 6, "revise", one required change:** separate goal-block occupancy from physical wall contact. v2.1's
+  goal-ring contact, defined by entering the goal's closed block, made acquisition and switches mix the two:
+  a tree goal would record a switch, and the component before a visit was always the goal's ring.
+- **Fable 5.1, "bind and proceed to code" after three corrections:**
+  - the same pre-visit tautology, and a tie rule;
+  - P-joint's noses-removed range, 2.85-5.96, is from E3c's test block. The 3.65-5.92 beside it was the
+    trails-off condition;
+  - the follower unnamed in G2 and the oracle's precondition.
+
+  Recommended: the rule-7 pins, the goals' entrance counts, a G3a-only reading, the streams, re-binding after
+  an amendment.
+
+**Design v2.2** takes all of them. Contact is now physical, by raster component, with a remembered component, a
+tie rule and the components at each visit. The island family draws its trees from `walls_for`'s own streams,
+so an island maze and the tree family's maze at the same id and index share a tree.
+
+**Next:** both reviewers confirm the diff; then the design is bound and the code is written test-first.
+

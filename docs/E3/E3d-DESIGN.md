@@ -1,7 +1,7 @@
-# E3d: a maze that wall-following cannot solve (design v2.1)
+# E3d: a maze that wall-following cannot solve (design v2.2)
 
-**Status:** v2.1, for a last check by both reviewers, then binding (§8). v1 (40bd50f) and v2 (292508f) were
-each reviewed by both (D222, D223; `docs/reviews/20261010-E3d-design*/`). §10 lists what changed. E3d is
+**Status:** v2.2, for binding (§8). v1 (40bd50f), v2 (292508f) and v2.1 (44b81c0) were each reviewed by both
+(D222-D224; `docs/reviews/20261010-E3d-design*/`). §10 lists what changed. E3d is
 exploratory: it validates a task, and it trains nothing. Its gate and verdict wording are nevertheless fixed
 here before any play, because they decide E4's task.
 
@@ -43,8 +43,12 @@ evolved one might find what the family misses. E4 will report its own blind refe
 
 ## 2. The maze family: carved island goals on a 6 × 6 tree
 
-**The construction** (`maze.islands_for`, new; the tree generator is unchanged). Every draw below comes from
-one stream keyed by (run seed, maze id, redraw index), as `walls_for` keys the tree:
+**The construction** (`maze.islands_for`, new; the tree generator is unchanged). Its draws are keyed by
+(run seed, maze id, redraw index k):
+- **the tree** from `walls_for`'s own streams, [run seed, id, 0x3A11] at k = 0 and [run seed, id, 0x3A11, k]
+  after, so an island maze is carved from the same tree as the tree family's draw at the same id and index;
+- **the goals, the swap and the k_r order** from a second stream, [run seed, id, 0x15A7, k].
+
 1. **The tree:** E3b-1's Wilson spanning tree on the 6 × 6 grid of maze cells (3-wide corridors, 1-cell walls;
    a 25 × 25 grid).
 2. **The goals:** a pair proposed uniformly among the 78 unordered pairs of interior cells (rows and columns
@@ -56,6 +60,7 @@ one stream keyed by (run seed, maze id, redraw index), as `walls_for` keys the t
    - **A consequence:** all eight segments between consecutive neighbours of the goal touch a goal post, so
      every goal sits at the centre of a fully open 3 × 3 "roundabout" (Fable). The goals' neighbourhoods are
      therefore stereotyped; the openings in step 4 do not change that.
+   - **A goal of tree degree 4** has no ring at all, only four isolated posts in an open plaza (Fable).
    - **Other islands:** carving also detaches wall sub-trees hanging off the roundabout's outer posts. They are
      islands too, but not goal rings.
 4. **k_r further openings:** the first k_r of one random order of the remaining closed internal segments,
@@ -72,7 +77,8 @@ one stream keyed by (run seed, maze id, redraw index), as `walls_for` keys the t
    A maze id still infeasible after 64 is an error. Accepted mazes at different k_r may sit at different
    redraw indices, and are then not nested.
 
-**The spawns:** up to 4 cells, drawn per episode by E3b-1's episode stream, among the cells whose closed 5 × 5
+**The spawns:** up to 4 cells, drawn per episode from E3b-1's episode stream [run seed, id, episode, 0x9ACE],
+among the cells whose closed 5 × 5
 block holds no island wall cell (the mirror of island-safe), at graph distance at least 2 from A and B. Weys
 start at a spawn cell's centre with a random heading (`maze_world.py:215`), so a spawn is beside the perimeter
 component, not on its circuit. This is a declared task condition. It favours the perimeter circuit as a blind
@@ -133,8 +139,8 @@ A/B nose channels at gain 0, which carry trail and scent together). Its best mem
 | Noses removed | the frozen seed and all 28 of E3c's champions (S-mod 8, S-dense 8, P-sel 4, P-joint 8) with their noses removed | twenty-nine |
 
 - **The noses-removed row includes the P arms and the seed** (Astra): E3c found P-sel's four champions
-  nose-independent and P-joint's scoring 2.85-5.96 without noses on its probe block (3.65-5.92 on its test
-  block), so they are known scent-free adversaries.
+  nose-independent and P-joint's scoring 2.85-5.96 with their noses removed on its test block
+  (`experiments/E3-ab-organism/E3c/evaluate.json`), so they are known scent-free adversaries.
 - **W2-turn's bound:** |r| < 2, from `carrier_turn`'s atanh(r/2) (`maze_organisms.py:140`). Any r ≥ 1.0 already
   saturates the resting turn at the world's clamp, so the points from 1.0 up differ only in how much left
   collision it takes to unsaturate the reflex (Fable). W2 is played right-handed only: the maze distribution
@@ -187,6 +193,9 @@ genomes and checked by hash. Their noses-removed plays are the blind family's la
 - **the tree reference:** ids 30 200-30 327, the default tree family at c = 6. It separates the island effect
   from the size effect (Fable): a coverer's visits scale with the lap, and the perimeter lap grows from 48
   directed moves at c = 5 to 70 at c = 6, so size alone predicts about 0.69 × for a coverer.
+  - It compares whole maze families, placement rules included, not the carving alone (Astra).
+  - Paired tree-island comparisons use the common ids 30 200-30 327. The predictions' arm-mean ratios over the
+    full blocks are descriptive.
 
 **Choosing k_r** on the calibration block: **the smallest k_r** whose point estimates meet G1-G3 (§5) and the
 oracle's precondition, and whose first-draw feasible share is at least 0.5. The smallest, not the largest gap,
@@ -208,8 +217,8 @@ legs ≥ 2, three visits (A → B → A).
 |---|---|---|---|
 | G1a | B_max ≤ 0.25 × the follower (shared) | the circuit no longer competes | 5.77 / 16.98 = 0.34: fails |
 | G1b | B_max ≤ 2.0 mean visits per wey (one leg) | low blind throughput | 5.77: fails |
-| G2a | the follower ≥ ⅓ of the oracle | navigation remains efficient | 16.98 / 34.5 = 0.49: passes |
-| G2b | the follower ≥ 4.0 mean visits per wey | navigation is absolutely possible | 16.98: passes |
+| G2a | the follower (shared) ≥ ⅓ of the oracle | navigation remains efficient | 16.98 / 34.5 = 0.49: passes |
+| G2b | the follower (shared) ≥ 4.0 mean visits per wey | navigation is absolutely possible | 16.98: passes |
 | G3a | the seed − B_max ≥ max(0.5, 0.10 × the seed) (E3c's dual margin) | the engineered navigator beats the blind family by a practical margin | 5.12 − 5.77 < 0: fails |
 | G3b | the seed's median, over mazes, of the colony-mean legs per wey ≥ 2 (E3b-1's form, `scripts/e3b1.py:1348`) | it shuttles, not only arrives | (not computed) |
 
@@ -219,8 +228,8 @@ legs ≥ 2, three visits (A → B → A).
   reference block gives the paired comparison.
 - **Round trips are reported, not gated:** each blind member's share of weys completing a round trip. §1(a)
   claims a low average throughput, not that every blind wey rarely succeeds (Astra).
-- **The oracle's precondition,** on calibration and confirmation alike: the oracle scores at least the
-  follower's mean and makes a visit in at least 95% of colonies. Otherwise the verdict is **"E3d: not
+- **The oracle's precondition,** on calibration and confirmation alike: the oracle scores at least the shared
+  follower's mean, and at least 95% of its weys make a visit. Otherwise the verdict is **"E3d: not
   evaluable"**: the oracle reference failed to qualify on this family, a fault or a limit of the oracle, to be
   found before anything else is read.
 - **Uncertainty:** each gate quantity is reported with a 95% bootstrap interval, resampling the paired mazes
@@ -239,6 +248,10 @@ identified causes):
 - **a member with noses removed:** a controller evolved on another family solves this one without scent, the
   case E4 cares most about;
 - **visits with little wall contact:** free-space excursions; the trajectories are inspected.
+
+**A G3a failure while G1 passes** can only mean the seed itself scores below about 2.5 visits per wey on the
+family. That is read as a failure of the engineered navigator or of the scent's reach on this family, not of
+the blind family or the construction (Fable).
 
 **The E3c champions** (descriptive; the predictions stated now, against the 6 × 6 tree reference):
 - **The S arms:** each S arm's mean intact visits on the island confirmation block is at most 0.5 × its mean
@@ -261,18 +274,24 @@ The records are observers computed from the rollout's positions and events; they
 - **discovery:** the first tick the head enters each goal's 3 × 3 block, whatever the goal order (a raw entry
   record, new; the world's `first_b_tick` counts only a B visit after A). Nonarrivals are censored at H; the
   share arriving and the censored median are reported;
-- **component contact,** each tick, in three classes (Fable): the perimeter component, a goal ring (A's or
-  B's), another island.
-  - **Goal-ring contact** counts when the head is inside a goal's closed 5 × 5 block, so every visit implies it.
-  - **Other contacts** count when a wall cell of that component lies in the head's 3 × 3 neighbourhood.
-  - **Reported:** each class's share of ticks; the first component acquired; the switch rate (changes of the
-    last-contacted component, per 1 000 ticks); and the class of the last component contacted before each
-    visit;
+- **goal-block occupancy,** a flag separate from contact (Astra): the head inside a goal's closed 5 × 5 block;
+  its share of ticks;
+- **physical component contact** (both reviewers), from the raster's component labels (4-connected):
+  - **contact:** each tick, the components with a wall cell in the head's 3 × 3 neighbourhood;
+  - **classes:** perimeter (touches the grid's border); goal ring (not perimeter, with a cell in a goal's closed
+    5 × 5 block); other island. On a tree every wall is in the perimeter component;
+  - **the remembered component:** unchanged on a tick with no contact; on a tick with several, kept if it is
+    among them, otherwise the one with the most cells in the neighbourhood, ties to the smallest label;
+  - **reported:** each class's share of ticks; the first component acquired and its class; the switch rate
+    (changes of the remembered component after the first acquisition, per 1 000 ticks; zero on a tree); and,
+    at each visit's tick, the remembered component's class and the class of the last remembered component
+    that is not one of the visited goal's ring components (or none);
 - **coverage:** the share of maze cells whose open block the head entered.
 
 E3c's tour match assumed the tree's 48-move circuit, so it is not used; contact and coverage replace it.
 
-**Per maze:** the placement, the redraw index, the number of spawn cells available, the scent-reach flags, and
+**Per maze:** the placement, the redraw index, each goal's entrance count (its tree degree), the number of spawn
+cells available, the scent-reach flags, and
 the maze-ness measures: the open share, the junction (degree ≥ 3) and dead-end counts, the A-B detour (graph
 distance over Manhattan distance), and the share of spawn-goal pairs in direct line of sight. All of these are
 reported over the accepted mazes.
@@ -308,7 +327,9 @@ is fixed in the runner and recorded.
   component, both handednesses, a full tree tour; and a sabotage test that its commands are unchanged when the
   scent field is scaled up;
 - **the records:** on scripted paths, hand-computed legs, round trips, later-leg rates, raw entries with
-  censoring, contact classes, switches, the last component before a visit, and coverage;
+  censoring, goal-block occupancy, contact classes, the tie rule, switches, the components at each visit, and
+  coverage. Hand-computed cases include a centre-line goal entry with no wall nearby, a fragmented ring, and a
+  tree goal (all contacts perimeter, no switches) (Astra);
 - **the maze-ness measures and the scent-reach flag** on hand-built mazes;
 - **W2-turn's bound:** 1.95 accepted, 2.0 refused;
 - **the bootstrap:** B_max recomputed inside each resample;
@@ -319,10 +340,11 @@ is fixed in the runner and recorded.
 - E3c's g-e legs pass again: the CPU equivalence reference and E2's GPU batch;
 - **a new full-rollout leg:** tree-family maze rollouts from 40bd50f against the new code, at zero tolerance,
   comparing positions, headings, goals, visits and events per tick.
-  - **Pinned:** the scripted follower and the seed; maze ids 30 000-30 007; c = 5 and c = 6; H = 2 400;
-    colonies of 8; 8 worlds per chunk; shared trails.
+  - **Pinned:** the scripted follower and the seed; maze run seed 1 190 000; maze ids 30 000-30 007;
+    episode 0; c = 5 and c = 6; H = 2 400; colonies of 8; 8 worlds per chunk; shared trails; float32.
   - **Run on** the CPU, and on the GPU inside `replay_mode()` in that composition.
-  - **The reference** is generated in a worktree at 40bd50f and committed with its hash.
+  - **One driver for both engines:** the new driver, run with `--root` at a worktree of 40bd50f for the
+    reference, as `scripts/e3_equivalence.py` does. The reference is committed with its hash.
 
 **Compute:**
 - no evolution: plays only;
@@ -337,7 +359,8 @@ is fixed in the runner and recorded.
 
 After the last check by both reviewers, this design is committed and pushed, and its commit and the file's
 sha256 are written into `scripts/e3d.py`. `calibrate` refuses unless the design is unchanged and the engine
-matches the commit after `g-e`. Any change after binding is an amendment, added beside the text and dated.
+matches the commit after `g-e`. Any change after binding is an amendment, added beside the text and dated,
+and re-binds at its own commit, as E1's `require_same_code` guard does (`wormwars/registration.py`).
 
 ## 9. What E3d is for
 
@@ -380,3 +403,12 @@ decides.
   (both);
 - **who plays where;** the reductions and a stop rule (Astra);
 - **the rule-7 leg pinned;** binding before `calibrate` (both).
+
+**From v2.1** (both reviews, D224):
+- **contact:** physical contact by raster component, with goal-block occupancy a separate flag; the remembered
+  component, the tie rule and the components at each visit defined (both);
+- **P-joint's noses-removed range** cited correctly (Fable);
+- **the shared follower** named in G2 and the oracle's precondition; the oracle's "a visit" defined (Fable);
+- **the G3a-only reading;** the goals' entrance counts; the streams shared with the tree family; the tree
+  reference's scope (both);
+- **the rule-7 pins** (run seed, episode, dtype, one driver) and re-binding after an amendment (Fable).
