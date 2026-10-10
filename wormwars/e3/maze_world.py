@@ -33,6 +33,7 @@ from torch import Tensor
 from ..config import Config
 from ..fields import sample_bilinear
 from ..world import N_POINTS, P_FRONT_C, P_FRONT_L, P_FRONT_R, P_REAR_L, P_REAR_R, World
+from . import islands as IS
 from . import maze as M
 from .task import shuttle_config
 
@@ -40,13 +41,20 @@ ACCESS = ("shared", "own", "peers", "none", "replay", "scramble")
 HEADING_STREAM = 0x4EAD
 SCRAMBLE_STREAM = 0x5C4A
 LEGS = 256  # visits tracked per wey; running out is an error
+FAMILIES = ("tree", "islands")
 
 
 def maze_config(base: Config | None = None, *, c: int, horizon: int, colony: int = 8, mu: float, lam: float,
                 delta: float, d0: float, access: str = "shared", sliding: bool = True, spawns: int = 4,
-                scent_sigma: float = 3.0, scent_reach: int = 9) -> Config:
+                scent_sigma: float = 3.0, scent_reach: int = 9, family: str = "tree", k_r: int = 0) -> Config:
     """E3a's shuttle configuration (Task N's brain and energy settings, the 5-tick cue, the nose scale 0.35)
-    turned into the maze shuttle: a colony of `colony` weys, the arena 4c + 1 wide, crowding off."""
+    turned into the maze shuttle: a colony of `colony` weys, the arena 4c + 1 wide, crowding off. `family`
+    "tree" (E3b-1's generator, left unset in the configuration) or "islands" (E3d's, with k_r further
+    openings)."""
+    if family not in FAMILIES:
+        raise ValueError(f"unknown maze family {family!r}; known: {FAMILIES}")
+    if family == "tree" and k_r:
+        raise ValueError("k_r further openings belong to the island family")
     cfg = shuttle_config(base, horizon=horizon)
     w = cfg.world
     w.task = "maze_shuttle"
@@ -58,6 +66,8 @@ def maze_config(base: Config | None = None, *, c: int, horizon: int, colony: int
     w.maze_trail_mu, w.maze_trail_lambda, w.maze_trail_delta, w.maze_trail_d0 = (float(mu), float(lam), float(delta),
                                                                                float(d0))
     w.maze_scent_sigma, w.maze_scent_reach, w.maze_trail_access = float(scent_sigma), int(scent_reach), str(access)
+    if family != "tree":
+        w.maze_family, w.maze_extra_openings = str(family), int(k_r)
     return cfg
 
 
@@ -207,7 +217,13 @@ class MazeWorld(World):
         self.mazes, self.placements = [], []
         for w in range(Wn):
             mid, ep = int(self.world_ids[w]), int(self.episodes[w])
-            mz, pl = M.maze_for(run_seed=self.run_seed, maze_id=mid, episode=ep, c=c, n_spawns=int(wcfg.maze_spawns))
+            if wcfg.maze_family in (None, "tree"):
+                mz, pl = M.maze_for(run_seed=self.run_seed, maze_id=mid, episode=ep, c=c, n_spawns=int(wcfg.maze_spawns))
+            elif wcfg.maze_family == "islands":
+                mz, pl, _ = IS.maze_for(run_seed=self.run_seed, maze_id=mid, episode=ep, c=c,
+                                        k_r=int(wcfg.maze_extra_openings), n_spawns=int(wcfg.maze_spawns))
+            else:
+                raise ValueError(f"unknown maze family {wcfg.maze_family!r}")
             self.mazes.append(mz)
             self.placements.append(pl)
             wall[w] = mz.wall
@@ -260,6 +276,8 @@ class MazeWorld(World):
         self._donor = torch.as_tensor(np.maximum(self.donors, 0), device=dev)
         self._coef = torch.as_tensor(self.replay_coef, dtype=dt, device=dev).view(Wn, 1, 1, 1, 1)
         if "scramble" in self._mode:
+            if self.cfg.world.maze_family not in (None, "tree"):
+                raise ValueError("scramble mode needs equal open-cell counts; it is refused for the island family")
             open_flat = (~self._wall).reshape(Wn, -1).cpu().numpy()
             counts = open_flat.sum(1)
             if (counts != counts[0]).any():

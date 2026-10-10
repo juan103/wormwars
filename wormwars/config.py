@@ -187,6 +187,10 @@ class WorldConfig:
     maze_scent_sigma: float | None = None
     maze_scent_reach: int | None = None
     maze_trail_access: str | None = None
+    # E3d's maze family (docs/E3/E3d-DESIGN.md §2): unset means E3b-1's trees; "islands" plays
+    # `wormwars.e3.islands` with maze_extra_openings further openings. Left out of `to_dict` while unset.
+    maze_family: str | None = None
+    maze_extra_openings: int | None = None
 
 
 @dataclass
@@ -360,7 +364,7 @@ _OMITTED_WHILE_UNSET = ("shuttle_separation_min", "shuttle_separation_max", "shu
                         "shuttle_spawn_max", "shuttle_cue_ticks",
                         "maze_cells", "maze_spawns", "maze_sliding", "maze_trail_mu", "maze_trail_lambda",
                         "maze_trail_delta", "maze_trail_d0", "maze_scent_sigma", "maze_scent_reach",
-                        "maze_trail_access")
+                        "maze_trail_access", "maze_family", "maze_extra_openings")
 
 
 def _resolve(f: dataclasses.Field) -> type:

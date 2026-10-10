@@ -7270,3 +7270,49 @@ GPU before the owner is told.
 switch are written; next come the wall-follower, the records, the runner and the rule-7 leg; then a code review
 by both.
 
+## D226 — E3d's code, test-first; Amendment 1 (the wall-follower's search state and probe rays)
+
+**The code** (each test seen failing, or mutation-checked where it first failed only at import):
+- **`wormwars/e3/islands.py`:** the carved island construction, its checks (`failed_check`, sabotaged on
+  hand-built grids because island-safety cannot fail for carved goals), the keying and the spawns;
+- **the world's `maze_family` switch:** unset for trees, so tree configurations and their hashes are unchanged;
+  scramble refused for islands;
+- **`wormwars/e3/e3d_controls.py`:** the scripted wall-follower;
+- **`wormwars/e3/e3d_records.py`:** throughput, discovery, coverage, occupancy, physical contact (a readable
+  reference and a batched version held equal by a test), maze-ness and the scent-reach flag;
+- **`wormwars/e3/e3d_gate.py`:** G1-G3, the precondition, the choice of k_r, the predictions and the bootstrap
+  (B_max recomputed per resample);
+- **`scripts/e3d.py`:** the stages project, g-e, calibrate, confirm and report on E2's frame. All five ran on
+  toy sizes on the CPU;
+- **`scripts/e3d_equivalence.py`:** the full-rollout rule-7 leg.
+
+**Rule 7, the CPU leg:** tree-family rollouts at 40bd50f (a worktree) against the new engine are identical tick
+by tick. That holds for the follower and the seed, at c = 5 and c = 6
+(`experiments/E3-ab-organism/E3d/equivalence-reference-cpu.json`). The GPU reference waits until the owner is
+told that GPU use starts.
+
+**Amendment 1** (design §11, before any play): the qualification tests, which the bound text requires, failed
+the wall-follower as bound in two ways:
+- it circled forever in open space and in a corridor's centre;
+- its single probe point 1.5 cells ahead jumped over 1-cell walls, so it stalled at the spawn in 3 of 10 tree
+  mazes.
+
+The amended policy has a search state (turning toward the side for at most 12 ticks after losing the wall) and
+probes read along their rays. It then passed every qualification test: acquisition, pillars and posts, a
+corridor beside an island, and full tours of 10 tree mazes in about 700-850 ticks.
+
+Two qualification thresholds (the post orbit's contact share and its distance) were set after the first run.
+The test says so.
+
+**Fixed with the amendment, as the bound text leaves it open:** the tangent-start diagnostic plays the blind
+family on the confirmation block's first 64 mazes.
+
+**The projection** times the formal compositions (128 worlds; a champion arm at 8 × 128) over 200 ticks. A
+first draft timed 16 worlds; that would have overstated the batched cost and triggered reductions that are not
+needed.
+
+**Placement:** the wall-follower and the records live in new modules (`e3d_controls`, `e3d_records`), not in
+`maze_controls` and `maze_measures`, so E3b's modules stay untouched.
+
+**Next:** a code review by both. Then the owner is told before the GPU legs and plays (at most 3 GPU-hours).
+

@@ -420,3 +420,41 @@ decides.
 **At binding** (both said "bind" on v2.2, D225): the remembered component on any tick with contact; switches by
 class pair; "the carving order" dropped from the random draws (Fable's non-blocking points). The reference leg
 at 40bd50f calls that commit's own signatures, as `scripts/e3_equivalence.py`'s "only APIs both have" rule says.
+
+## 11. Amendments (after binding; each re-binds at its own commit)
+
+### Amendment 1 (2026-10-10, before any play): the wall-follower's search state and probe rays
+
+**Found by** §3's qualification tests (`tests/test_e3d_wall_follower.py`), which the bound text requires before
+the wall-follower's island results are read. The policy as bound failed them in two ways:
+- **It circled forever** in open space and in a corridor's centre. With both side probes clear it turns
+  toward the hugged side at full turn, and on that circle the side probe always points at the circle's centre,
+  so it never meets a wall. From an open box's centre it never reached a wall in 800 ticks.
+- **It stalled against a wall it never sensed.** A single probe point 1.5 cells ahead jumps over a 1-cell wall
+  and lands in free space beyond, so the policy went straight into a wall that refused the move. Three of ten
+  6 × 6 tree mazes stalled at the spawn.
+
+**The amended policy** (`wormwars/e3/e3d_controls.py`):
+- **Probes read along their rays:** each probe reads the grid cells at every half cell out to its range (ahead:
+  0.5, 1.0, 1.5; side: 0.5, 1.0; ahead-side: 0.5, 1.0, 1.4), any wall counting.
+- **A search state:** "both clear → full turn toward the hugged side" applies only for 12 ticks (3.6 rad at the
+  full turn) after either side probe last sensed a wall; after that, and before the first wall, it goes
+  straight. The counter resets whenever a side probe senses a wall.
+- **Everything else as bound:** the probes' ranges and angles, "wall ahead → full turn away", forward 1, the
+  convention, no scent or trail.
+
+**The qualification after the amendment,** both hands: from an open box's centre at 8 headings it reaches a
+wall within 120 ticks and keeps one within its head's 3 × 3 neighbourhood on at least 90% of later ticks. It
+orbits a 3 × 3 pillar and a single post for 2 400 ticks, touching nothing else. Beside a corridor it never
+contacts the island bar across it. It tours all 36 cells of each of ten 6 × 6 tree mazes in about 700-850
+ticks. The tree mazes are ids 40 000-40 009, not the trees under E3d's blocks. The post test's thresholds were
+set after its first run (§7's tests record this).
+
+**What the bound text leaves open, fixed here:** §3's tangent-start diagnostic plays every blind member on the
+confirmation block's first 64 mazes (ids 30 200-30 263), at the chosen k_r, reported only
+(`e3d_controls.tangent_start`).
+
+**Placement, not policy:** the wall-follower lives in `wormwars/e3/e3d_controls.py` and the records in
+`wormwars/e3/e3d_records.py`, not in `maze_controls` and `maze_measures` as §3, §6 and §7 name them. E3b's
+modules stay untouched. The records' contact is computed by `contact_batch`, which a test holds equal to the
+readable `contact`.
