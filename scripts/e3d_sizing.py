@@ -11,10 +11,14 @@ on it.
 
 **The constructions:**
 - **random k:** k closed internal segments of the Wilson tree opened at random;
-- **carved islands:** A and B drawn among interior cells; every closed wall segment leading away from their four
-  corner posts opened, so each goal's ring is free-standing; then k_r further random openings.
+- **carved islands:** A and B proposed uniformly among interior pairs whose rings share no post; every closed wall
+  segment leading away from their four corner posts opened, so each goal's ring is free-standing; then the first
+  k_r of one random order of the remaining closed segments, the goals' own sides excluded, so k_r = 0, 2 and 4
+  are nested on the same maze (design v2.1, §2).
 
-Seed 20 261 010, 400 mazes per setting.
+Seed 20 261 010, 400 mazes per setting (random openings) or per maze size and bound (carved, nested over k_r).
+Reported: the first-draw feasible share; the placements seen and their effective number; the open share over
+all draws and over accepted ones; the placement histogram (carved).
 """
 
 from __future__ import annotations
@@ -96,7 +100,10 @@ def random_k(rng, c, k, lo):
     return wall, edges, placements(wall, edges, c, lo)
 
 
-def carved(rng, c, k_r, lo):
+def carved(rng, c, k_rs, lo):
+    """One maze: the tree, the goals and the carving drawn once; for each k_r in `k_rs`, the first k_r of one
+    random order of the remaining closed segments (the goals' own sides excluded) opened, nested. Returns, per
+    k_r: (edges, feasible placements of the nominated pair, whether only the distance's lower bound fails)."""
     mz = MZ.generate(rng, c)
     wall, edges = mz.wall.copy(), list(mz.edges)
     interior = [(i, j) for i in range(1, c - 1) for j in range(1, c - 1)]
@@ -122,19 +129,24 @@ def carved(rng, c, k_r, lo):
                     MZ._carve(wall, *s)
                     edges.append(s)
                     open_.add(frozenset(s))
-    closed = [s for s in segments(c) if frozenset(s) not in open_]
-    for idx in rng.choice(len(closed), size=min(k_r, len(closed)), replace=False):
-        MZ._carve(wall, *closed[idx])
-        edges.append(closed[idx])
-        open_.add(frozenset(closed[idx]))
-    ok = [p for p in placements(wall, edges, c, lo) if set(p) == {a, b}]
-    # an infeasible draw: does it fail only the distance's lower bound? (no random draws consumed)
-    lower_only = not ok and any(set(p) == {a, b} for p in placements(wall, edges, c, 1))
-    return wall, edges, ok, lower_only
+    pool = [s for s in segments(c) if frozenset(s) not in open_ and a not in s and b not in s]
+    order = [pool[i] for i in rng.permutation(len(pool))]
+    out = {}
+    for k_r in k_rs:
+        w, e = wall.copy(), list(edges)
+        for seg in order[:k_r]:
+            MZ._carve(w, *seg)
+            e.append(seg)
+        ok = [p for p in placements(w, e, c, lo) if set(p) == {a, b}]
+        # an infeasible draw: does it fail only the distance's lower bound?
+        lower_only = not ok and any(set(p) == {a, b} for p in placements(w, e, c, 1))
+        out[k_r] = (e, ok, lower_only)
+    return out
 
 
 def summarise(rows, c, n_internal):
     feasible = [r for r in rows if r["placements"]]
+    opened = lambda rs: float(np.mean([r["open"] for r in rs])) / n_internal if rs else 0.0
     pos = {}
     for r in feasible:  # each feasible maze draws one placement uniformly: weight 1/len per placement
         for p in r["placements"]:
@@ -144,32 +156,42 @@ def summarise(rows, c, n_internal):
             "effective_placements": float(np.exp(-(w * np.log(w)).sum())) if len(w) else 0.0,
             "top2_share": float(w[:2].sum()) if len(w) else 0.0,
             "mean_placements_per_feasible_maze": float(np.mean([len(r["placements"]) for r in feasible])) if feasible else 0.0,
-            "open_fraction_of_internal_segments": float(np.mean([r["open"] for r in rows])) / n_internal}
+            "open_share_all_draws": opened(rows), "open_share_accepted": opened(feasible),
+            "histogram": {f"{p[0]}-{p[1]}": round(float(v), 3) for p, v in sorted(pos.items())}}
 
 
 def main():
     rng = np.random.default_rng(SEED)
     out = []
-    for c in (5, 6):
+
+    def report(c, lo_name, lo, kind, k, rows):
         n_internal = len(segments(c))
+        sm = summarise(rows, c, n_internal)
+        if kind == "carved":
+            sm["infeasible"] = sum(not r["placements"] for r in rows)
+            sm["infeasible_by_lower_bound_only"] = sum(r["lower_only"] for r in rows)
+        else:
+            del sm["histogram"]
+        out.append({"c": c, "lo": lo_name, "lo_value": lo, "construction": kind, "k": k, **sm})
+        print(f"c={c} lo={lo} {kind:6s} k={k:2d}: feasible {sm['feasible_share']:.2f}, placements seen "
+              f"{sm['distinct_placements']:3d} (effective {sm['effective_placements']:5.1f}, top 2 {sm['top2_share']:.2f}), "
+              f"open {sm['open_share_all_draws']:.2f} all / {sm['open_share_accepted']:.2f} accepted", flush=True)
+
+    for c in (5, 6):
         for lo_name, lo in (("ceil(c/2)+1", math.ceil(c / 2) + 1), ("3", 3)):
-            for kind, ks in (("random", (6, 8, 10)), ("carved", (0, 2, 4))):
-                for k in ks:
-                    rows = []
-                    for _ in range(N_MAZES):
-                        lower_only = False
-                        if kind == "random":
-                            wall, edges, pl = random_k(rng, c, k, lo)
-                        else:
-                            wall, edges, pl, lower_only = carved(rng, c, k, lo)
-                        rows.append({"placements": pl, "open": len({frozenset(e) for e in edges}), "lower_only": lower_only})
-                    s = summarise(rows, c, n_internal)
-                    if kind == "carved":
-                        s["infeasible"] = sum(not r["placements"] for r in rows)
-                        s["infeasible_by_lower_bound_only"] = sum(r["lower_only"] for r in rows)
-                    out.append({"c": c, "lo": lo_name, "lo_value": lo, "construction": kind, "k": k, **s})
-                    print(f"c={c} lo={lo} {kind:6s} k={k:2d}: feasible {s['feasible_share']:.2f}, distinct placements "
-                          f"{s['distinct_placements']:3d} (effective {s['effective_placements']:5.1f}, top 2 {s['top2_share']:.2f}), open {s['open_fraction_of_internal_segments']:.2f}", flush=True)
+            for k in (6, 8, 10):
+                rows = []
+                for _ in range(N_MAZES):
+                    wall, edges, pl = random_k(rng, c, k, lo)
+                    rows.append({"placements": pl, "open": len({frozenset(e) for e in edges}), "lower_only": False})
+                report(c, lo_name, lo, "random", k, rows)
+            ks = (0, 2, 4)
+            by_k = {k: [] for k in ks}
+            for _ in range(N_MAZES):
+                for k, (edges, pl, lower_only) in carved(rng, c, ks, lo).items():
+                    by_k[k].append({"placements": pl, "open": len({frozenset(e) for e in edges}), "lower_only": lower_only})
+            for k in ks:
+                report(c, lo_name, lo, "carved", k, by_k[k])
     path = ROOT / "docs" / "E3" / "e3d-sizing.json"
     path.write_text(json.dumps({"n_mazes": N_MAZES, "seed": SEED, "settings": out}, indent=1), encoding="utf-8", newline="\n")
     print("wrote", path.relative_to(ROOT))

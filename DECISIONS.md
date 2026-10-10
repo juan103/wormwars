@@ -7193,3 +7193,34 @@ about 64-72 effective placements, and carved islands are feasible in 65-73% of d
 - a full-rollout rule-7 leg.
 
 **Next:** v2 reviewed by both reviewers.
+
+## D223 — E3d's design v2 reviewed (Fable "proceed with amendments", Astra "revise"); v2.1
+
+**The reviews** (`docs/reviews/20261010-E3d-design-2/`, run 20261010-133445):
+- **Fable 5.1, "proceed to code, with amendments":**
+  - every v1 change taken;
+  - the k_r openings could open a goal's own sides;
+  - every goal sits in an identical open roundabout, so "the openings soften the neighbourhood" was wrong;
+  - contact needs three classes, and "no island contact is impossible" is false;
+  - the round-trip wording is off by the codebase's leg definition;
+  - a 6 × 6 tree reference is needed, because size alone predicts about 0.69 × for a coverer;
+  - the A/B keying, and the wall-follower's probe rule and turning radius, need stating.
+- **Astra 6, "revise":**
+  - the P arms and the seed with noses removed belong in the blind benchmark; E3c found them nose-free in part;
+  - "rarely completes a round trip" needs a criterion or a narrower claim;
+  - the same false contact reading, and the other readings need qualifying;
+  - the sizing conflated observed support with the placement space, and all draws with accepted ones, and did
+    not nest;
+  - the later-leg rate, G3b's median, raw discovery and the scent flag need definitions;
+  - the streams, the reductions, block membership, the bootstrap of the maximum and the rule-7 pins need fixing.
+
+**Design v2.1** (`docs/E3/E3d-DESIGN.md`) takes every change:
+- **the claim narrowed** to a low average blind throughput, with round trips reported (Astra's alternative);
+- **binding before `calibrate`** (Fable), as E1 did.
+
+**The sizing rerun** with the production sampler's nesting and exclusions. At 6 × 6, carved islands are
+first-draw feasible in 70-73% of draws at E3b-1's distance bound. 71-73 of the 78 pairs were seen, with about
+61-63 effective placements.
+
+**Next:** v2.1 to both reviewers for a last check, then binding and code.
+
