@@ -1,0 +1,1 @@
+Astra 6 at "xhigh" with pinned settings and Fable 5.1 at "high" (run 20261010-140606), the same prompt to both, confirming the corrections in E3d design v2.2 (432fca6). Both: "bind". Astra: no required changes. Fable: three non-blocking wording points (a tick with one new contact; switches by class pair; "the carving order" is not random), taken at binding (D225).

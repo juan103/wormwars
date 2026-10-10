@@ -7246,3 +7246,27 @@ so an island maze and the tree family's maze at the same id and index share a tr
 
 **Next:** both reviewers confirm the diff; then the design is bound and the code is written test-first.
 
+## D225 — E3d's design bound (v2.2; both reviewers: "bind")
+
+**The confirmation** (`docs/reviews/20261010-E3d-design-4/`, run 20261010-140606), on the v2.1 → v2.2
+corrections only:
+- **Astra 6:** "bind", no required changes. It confirmed P-joint's range from `evaluate.json` (2.849-5.962) and
+  the G3a arithmetic (a G3a-only failure means the seed is strictly below 2.5).
+- **Fable 5.1:** "bind", with three non-blocking points, taken at binding:
+  - the remembered-component rule now covers a tick with one new contact;
+  - switches are reported by class pair, since circling a roundabout changes between pieces of one ring;
+  - "the carving order" is dropped from the random draws.
+
+  Fable noted that the reference leg at 40bd50f must call that commit's own signatures.
+
+**Bound:** `docs/E3/E3d-DESIGN.md` v2.2, at the commit that records this decision. `scripts/e3d.py` will carry
+that commit and the file's sha256, and `calibrate` will refuse on any change. Amendments re-bind at their own
+commits.
+
+**Consensus:** Claude, Astra and Fable agree on the bound design. As with every E3d step, nothing runs on the
+GPU before the owner is told.
+
+**Next:** the code, test-first. The construction (`wormwars/e3/islands.py`) and the world's `maze_family`
+switch are written; next come the wall-follower, the records, the runner and the rule-7 leg; then a code review
+by both.
+

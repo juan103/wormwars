@@ -1,7 +1,8 @@
 # E3d: a maze that wall-following cannot solve (design v2.2)
 
-**Status:** v2.2, for binding (§8). v1 (40bd50f), v2 (292508f) and v2.1 (44b81c0) were each reviewed by both
-(D222-D224; `docs/reviews/20261010-E3d-design*/`). §10 lists what changed. E3d is
+**Status:** v2.2, **bound** (§8; D225). v1 (40bd50f), v2 (292508f), v2.1 (44b81c0) and v2.2 (432fca6) were
+each reviewed by both (D222-D225; `docs/reviews/20261010-E3d-design*/`); both said "bind" on v2.2, and the three
+wording points they left are taken here. §10 lists what changed. E3d is
 exploratory: it validates a task, and it trains nothing. Its gate and verdict wording are nevertheless fixed
 here before any play, because they decide E4's task.
 
@@ -280,10 +281,13 @@ The records are observers computed from the rollout's positions and events; they
   - **contact:** each tick, the components with a wall cell in the head's 3 × 3 neighbourhood;
   - **classes:** perimeter (touches the grid's border); goal ring (not perimeter, with a cell in a goal's closed
     5 × 5 block); other island. On a tree every wall is in the perimeter component;
-  - **the remembered component:** unchanged on a tick with no contact; on a tick with several, kept if it is
-    among them, otherwise the one with the most cells in the neighbourhood, ties to the smallest label;
+  - **the remembered component:** unchanged on a tick with no contact; on a tick with contact, kept if it is
+    among the contacted components, otherwise the one with the most cells in the neighbourhood, ties to the
+    smallest label;
   - **reported:** each class's share of ticks; the first component acquired and its class; the switch rate
-    (changes of the remembered component after the first acquisition, per 1 000 ticks; zero on a tree); and,
+    (changes of the remembered component after the first acquisition, per 1 000 ticks; zero on a tree), in
+    total and by class pair, since a wey circling a roundabout changes between pieces of one goal's ring
+    (Fable); and,
     at each visit's tick, the remembered component's class and the class of the last remembered component
     that is not one of the visited goal's ring components (or none);
 - **coverage:** the share of maze cells whose open block the head entered.
@@ -307,8 +311,8 @@ reported over the accepted mazes.
 - `scripts/e3d.py` on E2's frame, with stages `project`, `g-e`, `calibrate`, `confirm` (the confirmation and
   the tree reference) and `report`, inside `wormwars.accounting`.
 
-**The random streams,** fixed: the walls, the goals, the carving order and the k_r order by (run seed, maze id,
-redraw index); the spawns by E3b-1's episode stream (episode 0); the random walk's noise from `ReflexWalk`'s
+**The random streams,** fixed: the walls, the goals, the swap and the k_r order by (run seed, maze id, redraw
+index; the carving itself is deterministic); the spawns by E3b-1's episode stream (episode 0); the random walk's noise from `ReflexWalk`'s
 seed 0. The walk's draws depend on the batch's shape, so each block's composition (worlds per chunk, colony 8)
 is fixed in the runner and recorded.
 
@@ -412,3 +416,7 @@ decides.
 - **the G3a-only reading;** the goals' entrance counts; the streams shared with the tree family; the tree
   reference's scope (both);
 - **the rule-7 pins** (run seed, episode, dtype, one driver) and re-binding after an amendment (Fable).
+
+**At binding** (both said "bind" on v2.2, D225): the remembered component on any tick with contact; switches by
+class pair; "the carving order" dropped from the random draws (Fable's non-blocking points). The reference leg
+at 40bd50f calls that commit's own signatures, as `scripts/e3_equivalence.py`'s "only APIs both have" rule says.
