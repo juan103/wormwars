@@ -1,7 +1,7 @@
-# E3e: E3d's island mazes at 7 × 7 (design v1, for review)
+# E3e: E3d's island mazes at 7 × 7 (design v2)
 
-**Status:** draft v1, for review by both reviewers, then binding. E3e is exploratory: it validates a task, and
-it trains nothing.
+**Status:** v2, after both reviewers' review of v1 ("revise", D233; `docs/reviews/20261011-E3e-design/`). For
+a last check, then binding. E3e is exploratory: it validates a task, and it trains nothing.
 
 **Why it exists** (the owner, 2026-10-11; D232):
 - **E3d failed at calibration** on one criterion, G1b (`experiments/E3-ab-organism/E3d/RESULTS.md`). A random walk
@@ -14,23 +14,29 @@ it trains nothing.
   construction, to make random coverage harder without changing the task.
 
 **What E3e is:** E3d's bound design (`docs/E3/E3d-DESIGN.md` v2.2, with Amendment 1, its correction and its
-erratum in §11), **unchanged except for the differences listed in §1.** E3d's §4 requires fresh calibration and
-confirmation blocks for a revised construction, so E3e plays new ones. Everything this note does not change is
-E3d's text, and is read from it.
+erratum in §11), **unchanged except for the differences listed in §1 and the additions in §1a.** E3d's §4 requires
+fresh calibration and confirmation blocks for a revised construction, so E3e plays new ones. Everything this note
+does not change is E3d's text, and is read from it.
+
+**E3d's text is part of E3e's bound text** (both reviewers): at its last commit, 202666e, with sha256
+`37ee0c39868f074446cca43fd0242ce8bf72e9f90127fdafbade60394e4b4147` (line endings normalised). E3e's runner pins that hash
+beside its own design's and refuses if either file changes.
 
 ## 1. The differences from E3d
 
 | | E3d (bound) | E3e |
 |---|---|---|
 | Maze size c | 6 (a 25 × 25 grid) | **7 (a 29 × 29 grid)** |
-| Interior cells (goal candidates) | rows and columns 1-4: 16 cells, 78 pairs | **rows and columns 1-5: 25 cells**; the pairs whose rings share no post |
+| Interior cells (goal candidates) | rows and columns 1-4: 16 cells, 78 pairs | **rows and columns 1-5: 25 cells, 228 pairs** whose rings share no post |
 | A-B graph distance | [⌈c/2⌉ + 1, 2c] = [4, 12] | **[5, 14]**, the same rule |
 | Maze run seed | 1 190 000 | **1 191 000** |
 | Calibration block | ids 30 000-30 127 | **ids 31 000-31 127** |
 | Confirmation block | ids 30 200-30 455 | **ids 31 200-31 455** |
 | Tree reference | ids 30 200-30 327 at c = 6 | **ids 31 200-31 327 at c = 7** |
 | Tangent diagnostic | ids 30 200-30 263 | **ids 31 200-31 263** |
-| The wall-follower's tree-tour qualification | 10 6 × 6 trees (ids 40 000-40 009) | **the same test also at c = 7**: it enters all 49 cells within 2 400 ticks in at least 9 of 10 trees (ids 40 000-40 009 at c = 7) |
+| Reduction 3 (the tree reference cut) | ids 30 200-30 263 | **ids 31 200-31 263**, still the confirmation's first 64 (both reviewers: E3d's runner hard-coded the old ids) |
+| The verdict wording | "E3d: passed", "E3d: failed", "E3d: not evaluable", "E3d: failed at calibration" | **the same with "E3e"** |
+| The wall-follower's tree-tour qualification | 10 6 × 6 trees (ids 40 000-40 009) | **the same test also at c = 7**: each hand on its own enters all 49 cells within 2 400 ticks in at least 9 of 10 trees (ids 40 000-40 009 at c = 7, run seed 1 190 000, as the c = 6 test). A tour of a 7 × 7 tree is 96 directed moves, about 1 100 ticks at the c = 6 pace. E3d's other qualification tests stay as regressions; their geometry does not depend on c |
 
 **Unchanged** (E3d's text):
 - **the construction:** carved islands, k_r ∈ {0, 2, 4} nested openings excluding the goals' sides, the checks,
@@ -49,8 +55,34 @@ E3d's text, and is read from it.
     reference);
 - **the records** (§6) and the compute ceiling of 3 GPU-hours, with the same reductions in the same order.
 
-**The horizon stays 2 400 ticks.** The owner chose a larger maze, not a shorter horizon. A larger maze lengthens
-every route, so the navigators' scores will fall too; G2a and G2b test that they stay high enough.
+**The horizon stays 2 400 ticks.** The owner chose a larger maze, not a shorter horizon. Typical routes are
+expected to lengthen, so the navigators' scores are expected to fall too; that is an expectation for newly sampled
+mazes, not a guarantee (Astra). G2a and G2b test that they stay high enough.
+
+## 1a. Additions (both reviewers of v1)
+
+- **The coverer arithmetic** (E3d §4's rationale, restated at c = 7): a tree tour is 2(c² − 1) directed moves, 48
+  at c = 5, 70 at c = 6 and 96 at c = 7. So size alone predicts about 70/96 = 0.73 × from c = 6 for a lap-coverer
+  (Fable). For a random walk that covered 90-95% of the 6 × 6 maze, 7 × 7 is a modest step. A G1b margin near
+  2.0 is possible either way.
+- **A pre-stated reading for a G2a failure** (Fable; E3d had readings for G1 and G3a failures only):
+  - **The cause it points to:** "the shared follower falls below a third of the oracle". The scent's reach (9
+    raster steps) and the trail's decay are fixed while routes lengthen, so the follower's discovery cost grows
+    faster than the oracle's route.
+  - **What it means:** navigation by scent and trail becomes too slow within the horizon at this size, not that
+    the blind controls caught up.
+  - **The records to read it from:** discovery, the scent-reach split and the follower's no-first-visit share.
+- **A calibration failure is reported in full** (Astra; D231's correction carried in):
+  - **what the report gives:** each calibration k_r's bootstrap intervals for every gate quantity (2 000 resamples,
+    seed 20 261 011, B_max recomputed in each), its scent-reach split, and exact counts for the champions' blind
+    plays. Confirmation is still skipped;
+  - **a fix in the summary:** it no longer assumes the B_max member is a single-strain condition; a champion
+    named `arm#strain` resolves to its strain.
+- **The projection** is measured at c = 7 by `project`, and its admission decides. The "about 2 h" in §3 is an
+  actual-cost guess from E3d's calibration, not a projection. E3d's projection overstated its calibration (0.98 h
+  projected against 0.68 h actual). At 841 grid cells against 625, E3e's projection may trigger reduction 2 (the
+  W2-turn grid) or 3 (the tree reference cut), both declared in E3d §7. The result names the blind family
+  actually played; its maximum does not bound every possible blind strategy (Astra).
 
 ## 2. Sizing (CPU; no reading depends on it)
 
@@ -69,17 +101,28 @@ are twice as varied.
 
 **No engine change is expected:** `islands.py`, the maze world and the records are general in c.
 
-**`scripts/e3e.py`:** a thin runner that loads `scripts/e3d.py` and overrides:
-- its registry: c, the run seed and the blocks;
-- its folders: `experiments/E3-ab-organism/E3e/`, `runs/e3e/`;
-- its design path, its binding constants, and the runner checked by the scripts guard.
-
-E3d's stages, gate, records and report are reused unchanged.
+**`scripts/e3d.py` parameterised, `scripts/e3e.py` a thin runner** (both reviewers: the override list must be
+complete):
+- **`scripts/e3d.py` gains one experiment record:** the label, the folders (formal and smoke), the design files
+  and their hashes, the runner files the scripts guard checks, and the accounting name. Its defaults are E3d's.
+  Reduction 3's ids are derived from the tree reference block (its first 64 ids), not written out.
+- **`scripts/e3e.py`** sets that record and the registry's c, run seed and blocks, then calls the same stages.
+- **The verdict wording** comes from the record's label. `wormwars/e3/e3d_gate.py` takes the label as an
+  argument, defaulting to "E3d". It is an analysis module, not the rollout engine, so E3d's full-rollout
+  references stand.
+- **The scripts guard** checks both runners against the binding commit, with only the binding values blanked.
+- **E3d's equivalence references are kept** deliberately: the engine is unchanged since E3d's binding. They
+  establish the c = 5 and c = 6 comparisons, not exact replay at c = 7.
 
 **Tests, each seen failing:**
-- the overrides: c = 7, the blocks, the seed, the folders, the design path, the guard checking `scripts/e3e.py`;
-- the c = 7 tree-tour qualification above;
-- the construction's tests run at c = 7 too (interior range, distance bound, feasibility of the calibration ids).
+- **the overrides:** c = 7, the blocks, the seed, the folders (formal and smoke), the accounting name, both
+  design hashes, both runners guarded, reduction 3 at 31 200-31 263;
+- **the labels:** no E3e record or verdict string starts with "E3d:";
+- **the c = 7 tree-tour qualification above,** each hand;
+- **the construction at c = 7:** interior range, the 228 pairs, the distance bound, feasibility of the
+  calibration ids;
+- **the full report on a calibration failure** (intervals, scent split, counts), and the summary's handling of a
+  multi-strain B_max member.
 
 **Rule 7:** `g-e` runs as in E3d. If the engine is unchanged since E3d's binding, its references stand; if
 any engine file changes, a new reference is made from the commit before the change, as in E3d.
@@ -95,9 +138,22 @@ any engine file changes, a new reference is made from the commit before the chan
 - **If it fails,** the failed criteria are reported in the bound wording and the owner decides again. No further
   revision runs without the owner.
 
-## 5. Decisions open for the reviewers
+## 5. Changes from v1 (both reviews, D233)
 
-1. **Is "E3d unchanged except §1"** a sound basis, or does the size change need anything else, for example the
-   horizon or the scent's reach relative to the larger corridors' lengths?
-2. **The wall-follower's qualification at c = 7:** enough, or should all of E3d's qualification tests repeat?
-3. **The thin-runner approach** (overriding E3d's runner) against a copied runner.
+- **E3d's design is bound** by hash and guarded with E3e's own (both).
+- **Every verdict string reads "E3e";** the gate takes a label (Fable).
+- **Reduction 3's ids** come from the tree reference block (both; Astra reproduced the old ids being restored).
+- **The runner is parameterised in full:**
+  - the folders, formal and smoke;
+  - the accounting entry point;
+  - both runners guarded (both).
+- **A calibration failure is reported in full,** and the summary handles a multi-strain B_max member (Astra).
+- **Also added:**
+  - the G2a failure reading;
+  - the projection note and the "2 h" qualified;
+  - the 228 pairs;
+  - the 96-move lap;
+  - the qualification by hand and its seed;
+  - the horizon claim as an expectation (both).
+
+The hygiene exemption's comment ("6 × 6") is updated with E3e's first record; its bound of 8 still holds.

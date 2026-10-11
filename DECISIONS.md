@@ -7510,3 +7510,27 @@ are first-draw feasible in 65% of draws at the distance bound of 5, with 156 goa
 passes, the full plan is about 2 h. The ceiling stays 3 GPU-hours.
 
 **Next:** the design reviewed by both; binding; the code test-first; the owner told before any GPU use.
+
+## D233 — E3e's design reviewed ("revise", both); design v2
+
+**The reviews** (`docs/reviews/20261011-E3e-design/`, run 20261011-100140), both "revise". Both agree the
+scientific settings stand: the horizon, the scent, G1b and G2b, and the grids. Astra built all 384 calibration
+mazes at c = 7 (91, 90 and 88 first-draw accepted).
+
+**The required changes:**
+1. **Bind E3d's design text too:** E3e inherits it, but the guard hashed only one file.
+2. **Relabel every verdict "E3e":** the gate and runner strings read "E3d".
+3. **Reduction 3's ids:** E3d's runner hard-coded 30 200-30 263, which a triggered cut would restore under the
+   new seed (Astra reproduced it). The smoke folder and the accounting entry point were hard-coded too.
+4. **Report a calibration failure in full:** D231's correction (intervals, scent split) must be carried in, and
+   the summary must handle a multi-strain B_max member.
+
+**Fable's points:**
+- G2a, not G1b, is likely the criterion at risk, and it has no pre-stated reading;
+- the projection may cut deeper, and "2 h" is not a projection;
+- the 96-move lap.
+
+**Design v2** (`docs/E3/E3e-DESIGN.md`) takes them all. `scripts/e3d.py` gains an experiment record that E3e's
+thin runner sets. The gate takes a label; it is an analysis module, so E3d's full-rollout references stand.
+
+**Next:** a last check of v2 by both, then binding and the code.
