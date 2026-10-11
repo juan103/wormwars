@@ -78,3 +78,24 @@ def test_a_tree_config_built_on_an_island_base_is_a_tree_config():
     tree = MW.maze_config(isl, **C6, family="tree")
     assert tree.world.maze_family is None and tree.world.maze_extra_openings is None
     assert tree.to_dict() == MW.maze_config(**C6).to_dict()
+
+
+def test_the_horizon_only_stops_the_maze_run(iface):
+    """E3f (D237): truncating a 2 400-tick maze run at 1 800 ticks equals a 1 800-tick run, so the truncation of
+    E3d's saved trajectories that chose E3f's horizon is exact. Every wey's positions and visit ticks agree."""
+    from wormwars.e3 import maze_controls as MC
+    ids = [41_100, 41_101]
+    runs = {}
+    for H in (2400, 1800):
+        cfg = MW.maze_config(c=6, horizon=H, colony=8, mu=0.01, lam=0.02, delta=0.05, d0=1.142, family="islands", k_r=0)
+        brain = MC.follower(iface, cfg)
+        w = MW.MazeWorld(cfg, iface, brain, torch.zeros(len(ids), 1, dtype=torch.long), run_seed=1_192_000,
+                         world_ids=np.asarray(ids), access="shared")
+        pos = []
+        for _ in range(1800):
+            w.tick()
+            pos.append(w.pos[:, 0].clone())
+        runs[H] = (torch.stack(pos), w.task_events()["visit_tick"])
+    assert torch.equal(runs[2400][0], runs[1800][0])
+    vt_long, vt_short = runs[2400][1], runs[1800][1]
+    assert np.array_equal(np.where(vt_long < 1800, vt_long, -1), vt_short)

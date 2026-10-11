@@ -7656,3 +7656,20 @@ appended to `experiments/E3-ab-organism/E3e/RESULTS.md`.
 
 **Next:** E3f's design (a delta from E3d), reviewed by both; a check that nothing in the dynamics reads the horizon
 (Fable's condition for the truncation evidence); binding; the thin runner; the owner told before GPU use.
+
+## D238 — E3f designed (v1, for review); the horizon-truncation check
+
+**E3f** (`docs/E3/E3f-DESIGN.md` v1) is E3d's bound design, pinned by hash, unchanged except:
+- H = 1 800;
+- k_r = 0 only, fixed for maze structure;
+- a fresh seed (1 192 000) and fresh blocks (ids 32 000-32 455);
+- the label "E3f".
+
+It uses a thin runner over `scripts/e3d.py`. If it fails, the owner decides, with no further horizon adjustment.
+
+**The check Fable asked for:** `tests/test_e3d_world.py::test_the_horizon_only_stops_the_maze_run`. A 1 800-tick
+maze run equals the first 1 800 ticks of a 2 400-tick run, positions and visit ticks. The only other use of the
+horizon in the engine allocates E3a's open-shuttle buffers. So the truncation evidence behind E3f's horizon is
+exact.
+
+**Next:** the design reviewed by both; binding; the runner; the owner told before GPU use.
