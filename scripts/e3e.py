@@ -24,7 +24,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 NAME = "e3e"
 BINDING = {
-    "binding_commit": "",  # set by the binding commit
+    "binding_commit": "79de3a11058771a683b2a9b3881dcd1c3a1d9062",  # D234
     "design_sha256": "284a55c4e2905af8a23f61869bfbcee6d48e01b0d40f4f2ab0be24f55bc97d25",  # docs/E3/E3e-DESIGN.md (v2, D234)
     "parent_design_sha256": "37ee0c39868f074446cca43fd0242ce8bf72e9f90127fdafbade60394e4b4147",  # E3d's at 202666e
 }
