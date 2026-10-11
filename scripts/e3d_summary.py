@@ -3,7 +3,8 @@
 draft, D231): every gate quantity's bootstrap interval (design §5: 2 000 resamples, seed 20 261 011, B_max
 recomputed in each), the scent-reach split (§2), and exact visit and leg counts for the noses-removed champions.
 
-    python scripts/e3d_summary.py      # writes experiments/E3-ab-organism/E3d/summary.json
+    python scripts/e3d_summary.py                  # writes experiments/E3-ab-organism/E3d/summary.json
+    python scripts/e3d_summary.py --exp E3e        # E3e's, from its records (D235)
 """
 
 from __future__ import annotations
@@ -20,6 +21,8 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from wormwars.e3 import e3d_gate as GT  # noqa: E402
 EXP = ROOT / "experiments" / "E3-ab-organism" / "E3d"
+if "--exp" in sys.argv:
+    EXP = ROOT / "experiments" / "E3-ab-organism" / sys.argv[sys.argv.index("--exp") + 1]
 
 
 def mean(x):

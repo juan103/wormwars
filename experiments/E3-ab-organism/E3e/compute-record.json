@@ -1,0 +1,100 @@
+{
+ "time_unit": "synchronised wall-clock seconds per category (not GPU kernel time)",
+ "neural_update_unit": "strains x batch x substeps network updates (network size not included)",
+ "attempts": [
+  {
+   "file": "20261011T083554Z-4ad3818c.json",
+   "status": "completed",
+   "script": "e3e",
+   "argv": [
+    "project",
+    "--device",
+    "cuda"
+   ],
+   "default_category": "measure",
+   "git_commit": "7bc9c27348244184ebea21af1de0731136b11878"
+  },
+  {
+   "file": "20261011T083644Z-ad02b18d.json",
+   "status": "completed",
+   "script": "e3e",
+   "argv": [
+    "g-e",
+    "--device",
+    "cuda"
+   ],
+   "default_category": "measure",
+   "git_commit": "fc41f4e9b4ad3264677108afc3ad5c1265b25c74"
+  },
+  {
+   "file": "20261011T084449Z-394e09de.json",
+   "status": "completed",
+   "script": "e3e",
+   "argv": [
+    "calibrate",
+    "--device",
+    "cuda"
+   ],
+   "default_category": "measure",
+   "git_commit": "4277c54315c0e6fdc96f5da53b7fb2890fcdc750"
+  },
+  {
+   "file": "20261011T092004Z-1ddc83ff.json",
+   "status": "completed",
+   "script": "e3e",
+   "argv": [
+    "report",
+    "--device",
+    "cuda"
+   ],
+   "default_category": "measure",
+   "git_commit": "d5a6445c1d36d4f44fcbd6471af330af9c889425"
+  }
+ ],
+ "failed_attempts": 0,
+ "uncategorised": false,
+ "categories": {
+  "measure": {
+   "worlds_built": 0,
+   "world_ticks": 0,
+   "neural_updates": 0,
+   "neural_padding": 0,
+   "seconds": 17.09826329909265
+  },
+  "calibration": {
+   "worlds_built": 1539,
+   "world_ticks": 333700,
+   "neural_updates": 73984000,
+   "neural_padding": 7398400,
+   "seconds": 332.94610100006685
+  },
+  "selection": {
+   "worlds_built": 53344,
+   "world_ticks": 15978240,
+   "neural_updates": 511303680,
+   "neural_padding": 0,
+   "seconds": 128.2956576999277
+  },
+  "holdout": {
+   "worlds_built": 4128,
+   "world_ticks": 1230080,
+   "neural_updates": 39362560,
+   "neural_padding": 0,
+   "seconds": 6.616798700299114
+  },
+  "final": {
+   "worlds_built": 18432,
+   "world_ticks": 44236800,
+   "neural_updates": 12268339200,
+   "neural_padding": 2831155200,
+   "seconds": 2060.1812722003087
+  }
+ },
+ "totals": {
+  "worlds_built": 77443,
+  "world_ticks": 61778820,
+  "neural_updates": 12892989440,
+  "neural_padding": 2838553600,
+  "seconds_timed": 2545.138092899695
+ }
+}

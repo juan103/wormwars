@@ -7564,3 +7564,29 @@ thin runner sets. The gate takes a label; it is an analysis module, so E3d's ful
 - **The 7 × 7 tests:** each hand tours 7 × 7 trees; all 384 calibration constructions build; 228 pairs.
 
 **Next:** the binding commit, a CPU smoke, the owner told before any GPU use, then the formal stages.
+
+## D235 — E3e run: "E3e: failed at calibration" (G1a and G2a at every k_r); results drafted for review
+
+**The owner was told** before GPU use began. The binding commit's comment was kept as at the binding commit, so
+the scripts guard saw only the value change; the guard caught the first attempt.
+
+**The run:**
+- **The CUDA smoke** of all five stages passed.
+- **`project`:** admitted after the second registered reduction (the walk grid; the W2-turn grid). 2.37 h
+  projected, plus 0.25 h reserved.
+- **`g-e`:** passed every leg.
+- **`calibrate`:** "E3e: failed at calibration". G1a and G2a failed at every k_r:
+  - the follower made 4.72-5.61 against the oracle's 35.0-35.5, so G2a's intervals lie wholly below ⅓;
+  - the walk made 1.50-1.64, so G1a failed on its point estimates, with intervals crossing 0.25;
+  - G1b passed (the walk under 2.0), and so did G2b, G3a and G3b.
+- **`report`.**
+
+0.71 of 3 GPU-hours.
+
+**Against E3d:** from 6 × 6 to 7 × 7, the follower lost 66-70% and the seed 56-58%, against 17% for the oracle and
+about 36% for the walk.
+
+**The results draft:** `experiments/E3-ab-organism/E3e/RESULTS.md`, from `summary.json`
+(`scripts/e3d_summary.py --exp E3e`). E3d's `summary.json` is byte-identical after the script's new option.
+
+**Next:** the results reviewed by both; then the owner decides. The roadmap stays paused before E4.
