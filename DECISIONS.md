@@ -7814,3 +7814,32 @@ Small in most ticks; real on rare ticks.
 - **the pilot and power analysis specified.**
 
 **Next:** v2 reviewed by both. No GPU.
+
+## D244 — E4's design v2 reviewed ("revise", narrowly, both); design v3
+
+**The reviews** (`docs/reviews/20261011-E4-design-2/`, run 20261011-190753): both find the architecture sound.
+That covers the output gate, the ungated comparators, the frozen selector, the 32 slots on one connectome, the
+pairing and E4-D's ordering. What both asked to change is the reading layer:
+- **the joint table:** it must map P2's three labels, P1's states, competence and the sign of P1-info, and E4-D's
+  failure may void only nulls;
+- **recruitment:** functional, not a weight band, which collided with the scale rule;
+- **the scale rule:** made reproducible;
+- **mean substitution:** unclipped, with a narrowed claim and a directional read against a module's own signal
+  looping back (Fable);
+- **the sign-flip null** stated as sign symmetry, with mean and margin claims model-based (Astra's counterexample:
+  p = 0.0078 under a zero-mean skewed null in 43% of samples);
+- **the detectable effect:** 1.39 visits at 0.025;
+- **the gate at q = 0;** the frozen selector set named; E4's own frozen mask;
+- **whole-episode effects** with censoring;
+- **the swapped-noses necessity claim** withdrawn.
+
+**Design v3** (`docs/E4/E4-DESIGN.md`, §11) takes them all. Fable judged that v3 can go straight to a
+pre-registration.
+
+**The order from here, all CPU until the owner's word:**
+1. the code, test-first: the output gate (an engine flag, with rule 7), the 32 slots, mean substitution, the
+   evaluation harness and E4-D's feasibility check;
+2. a code review by both;
+3. the pilot, on the GPU, only after the owner says so;
+4. the pre-registration with the pilot's numbers, reviewed by both, bound and pushed;
+5. the formal run.

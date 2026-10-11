@@ -1,7 +1,11 @@
-# E4 / 04c: do the two minds share? (design v2, for review)
+# E4 / 04c: do the two minds share? (design v3)
 
-**Status:** draft v2, after both reviewers' review of v1 ("revise", both; D243;
-`docs/reviews/20261011-E4-design/`). For review again.
+**Status:** v3.
+- **The review trail:** v1 and v2 were reviewed by both ("revise" each time; D243-D244;
+  `docs/reviews/20261011-E4-design*/`).
+- **What v3 changes:** the reading layer (§2's joint table, recruitment, mean substitution, the sign-flip null,
+  the scale rule) and the details in §11, as both reviewers of v2 asked.
+- **Next:** Fable judged that v3 can go straight to a pre-registration, which both reviewers then review.
 - **No GPU** is used until the owner says so (the owner, 2026-10-11). Everything below that needs the GPU waits for
   that word.
 - **The ceiling:** 30 GPU-hours (D198).
@@ -42,14 +46,25 @@ blind references on its own mazes.
 **The organism, E-G:** E3a's E + W2, with one change: **a real output gate.**
 - **The engine change** (`Brain`, an optional flag, off by default): a declared set of edges, each module's
   comparator → motor edges, is multiplied per wey by a gate value.
-  - **The gate value:** g_A = 1 while the latch state q > 0 and 0 otherwise; g_B = 1 − g_A. The mode signal is
+  - **The gate value:** g_A = 1 while the latch state q ≥ 0 and 0 otherwise; g_B = 1 − g_A. The mode signal is
     the latch's sign, an engineered signal, declared as such.
-  - **Switching:** instantaneous at q's sign change; the first mode is A, as the seed's.
+  - **The start:** q starts at exactly 0 (`wormwars/brain.py:402`). With "≥" the first mode is A, as the seed's
+    (both).
+  - **Switching:** instantaneous at q's sign change.
   - **What stays live:** the inactive module's neurons, its sensory inputs and any cross-link outputs.
 - **The comparators are ungated:** biases 0 and Q → comparator edges 0, as E3a's `no_latch` values. Both modules
   compute all the time; only the active one drives the motors.
-- **The selector is frozen in both arms** (Fable): Q's 13 parameters and the relays. The mode signal therefore
-  cannot be evolved away. A gating check on every champion confirms that it switches (§5).
+- **The selector is frozen in both arms** (Fable), so the mode signal cannot be evolved away. The 13 frozen
+  parameters, named (both):
+  - Q's τ, bias and self-weight;
+  - the RA → Q and RB → Q weights;
+  - the relays' τ and biases;
+  - the four Q → comparator gate edges, pinned at 0.
+
+  The comparators' biases are module parameters and stay mutable. The mutable counts per arm are fixed in code and
+  in the pre-registration. A gating check on every champion confirms that it switches (§5).
+- **The frozen mask is E4's own:** `assert_frozen` is called with E4's scales. T-F's original mask does not apply
+  (Astra).
 - **Rule 7:**
   - with the flag off, every engine path is bitwise unchanged: E3d's full-rollout legs, CPU and GPU, and E2's
     batch;
@@ -69,15 +84,20 @@ blind references on its own mazes.
   per-maze visits exactly.
 - **Two subsets,** read separately (both): **sensory links** (from a nose; 16) and **comparator links** (from a
   comparator; 16).
-  - A sensory link can share the other module's raw sense.
-  - A comparator link can share its computed comparison.
-  - With E-G's ungated comparators, both kinds of information exist.
+  - **A difference between them is not read as "raw against computed":** a comparator is a saturated difference of
+    its two noses, so the subsets carry largely the same content (Fable).
 
 **Training:** E3b-1's T-F mask, minus the frozen selector, plus the 32 slots in X+.
 - **Mutation:** factor 0.25 for the inherited parameters, as T-F (Astra).
-- **The cross-links' scale** is set by the pilot's drift measurement (§6). It follows a declared rule: the smallest
-  factor at which a neutral slot's random walk reaches |w| ≥ 1 within G generations. The aim is that a useful slot
-  can be recruited, without a mutational load beyond the pilot's measured generation-1 asymmetry.
+- **The cross-links' scale,** a reproducible rule decided before the formal run (both):
+  - **the candidates:** the factors 0.25, 0.5 and 1.0;
+  - **the choice:** the smallest at which a single neutral slot reaches |w| ≥ 1 by the end of training with
+    probability at least 0.5;
+  - **the lineage:** a simulated champion lineage with the pilot's recorded mutation count, not G, since `breed`
+    copies elites unmutated, and with clipping at w_max.
+  - **The mutation-load bound:** the pilot's generation-1 X+ mean fitness under common random numbers must be within
+    0.25 visits per wey of X0's. If no candidate meets both, the smallest factor meeting the load bound is used and
+    the reach is reported.
 - **The GA:** E3c's frame (population 32, elites 3, truncation 8), with champion selection on a validation block
   from the final population, as E3c.
 - **Runs are paired across arms by run seed** (Fable): run r of X0 and of X+ share the training mazes, and the
@@ -89,27 +109,59 @@ blind references on its own mazes.
 
 **P1, primary: do X+ champions use the cross-links?** (acute, within X+, on the test block)
 - **P1-cut:** intact against all 32 cross-links cut. The per-champion difference is averaged over the test mazes.
-- **P1-info,** mean substitution (Fable): each cross-link is cut, and its time-averaged drive, measured on the
-  validation mazes, is added to its target's bias. This is a genome edit per champion, with no engine change.
-  - **intact − mean-substituted** isolates the informational part;
-  - **mean-substituted − cut** isolates the tonic part.
-- **The test:** the exact sign-flip test across runs (champions are the replicates; mazes and draws are averaged
-  within champions), two-sided.
-- **The confirmatory reading** is on P1-info: "cross-links carry useful information" if it is positive at the
-  test level, and exceeds a practical margin fixed in the pre-registration from the pilot.
-- **Branch A, "cross-links not recruited":** if every cross-link's |w| stays within the neutral-drift band
-  measured in the pilot. In that case P1 is not read as "no information".
+- **P1-info,** mean substitution (Fable; specified by both):
+  - **the edit:** all 32 cross-links are cut jointly, and each target's bias becomes
+    b'_j = b_j + Σ_{i→j} w_ij · mean(tanh v_i);
+  - **the mean:** unconditional, over every tick (substep end-states), wey and maze of the intact champion's
+    validation play under shared trails, with mazes and weys equally weighted;
+  - **no clipping:** the substituted genome is built without `Genome.clamp_`. The brain reads `bias` unclamped, so
+    a clipped bias cannot leave a tonic residue (Fable);
+  - **a check:** a constant-source test where substitution reproduces the original current exactly (Astra).
+- **What P1-info shows,** stated narrowly (both):
+  - **its direct conclusion:** dependence on the state-dependent cross-link currents, beyond a validation-estimated
+    constant replacement. Removing those currents also changes feedback and dynamics, so this is not a pure
+    "information" isolation;
+  - **the confirmatory wording:** "the time-varying signal crossing the module boundary is used".
+  - **"The other module's information is used"** additionally requires the directional read in §4: links into the
+    active module, cut against links out of it. Otherwise a module's own signal looped back through the other
+    (for example A_CL ← B_NL ← A_NL, a delayed copy) could make P1-info positive with nothing of B's crossing
+    (Fable).
+  - **mean-substituted − cut** is reported as the effect of that particular constant replacement. It is not a
+    uniquely identified tonic component (Astra).
+- **The inference** (Astra), two layers as in E3c:
+  - **exact:** the sign-flip test across runs (champions are the replicates; mazes and draws are averaged within
+    champions), two-sided. It is exact under the null that each run's difference is symmetric about 0, not under
+    an arbitrary zero-mean null. Its label is distributional: "the per-run differences are not sign-symmetric
+    (exact)";
+  - **model-based:** the mean and its practical margin, from a t-based paired interval: "approximate
+    (model-based)".
+  - **The calibration** includes zero-mean asymmetric cases (Astra: +1 with probability 0.9 and −9 with 0.1 gives
+    p = 0.0078 in 43% of 8-run samples).
+- **P1's states,** each defined in the pre-registration:
+  - **positive / negative:** exact test at the level, and the model-based interval beyond the margin in that
+    direction;
+  - **practically equivalent:** the model-based interval inside the smaller margin;
+  - **inconclusive:** neither;
+  - **not evaluable:** competence or the assay failed.
+- **Recruitment, defined functionally** (both): a champion's cross-links are "recruited" if its P1-cut effect
+  lies outside the evaluation-noise band measured in the pilot (re-evaluation of the same champion on resampled
+  mazes).
+  - **|w| is descriptive only.** "No detected departure from the neutral weight distribution" is reported as an
+    observation; it never overrides an intervention effect, and it never establishes that search failed.
 - **Branch B, scramble:** permuting weights among the slots is reported descriptively. It shows sensitivity to
   wiring, not information (Astra).
 - **A sabotage check of the cut path** (rule 9): a champion with a known cross-link effect, built by hand, must show
   it.
 
 **P2, secondary: does the option of cross-links raise performance?** (training)
-- **The contrast:** X+ − X0 champion test score, paired by run seed. The paired sign-flip test, a paired interval,
-  and E3c's dual margin defined for E4 (the larger threshold for "beyond", the smaller for "no relevant
-  difference").
-- **Its minimum detectable effect at the chosen R is stated in the pre-registration** (Fable): at E3c's P-joint
-  spread (0.90 visits), unpaired, 8 runs detect about 1.26 visits; pairing may shrink this.
+- **The contrast:** X+ − X0 champion test score, paired by run seed.
+- **The tests:** the paired sign-flip test (exact, distributional) and a t-based paired interval (model-based).
+- **The labels:** E3c's dual margin, defined for E4. "Beyond" uses the larger threshold, "no relevant difference"
+  needs the interval inside the smaller, and anything else is "unclear".
+- **Its minimum detectable effect at the chosen R is stated in the pre-registration:** at E3c's P-joint spread
+  (0.90 visits), unpaired, 8 runs detect about 1.39 visits at a two-sided 0.025 (1.26 at 0.05; Astra). Pairing may
+  shrink this. At that power "no relevant difference" is nearly unreachable (Fable), and the table reads "unclear"
+  as unclear.
 
 **The test levels:**
 - P1-info and P2 are the two confirmatory contrasts, each at 0.025 two-sided.
@@ -117,32 +169,56 @@ blind references on its own mazes.
 - E3c's permutation code, which materialises every permutation, is replaced by an exact enumeration for paired
   data.
 
-**The joint interpretation** (Astra), fixed now:
+**The joint interpretation** (both), fixed now. It covers every state of the readings:
+- **P1:** P1-cut and P1-info each positive, negative, practically equivalent, inconclusive or not evaluable.
+- **P2:** beyond, no relevant difference, unclear or not evaluable.
+- **E4-D's positive control:** working or failed.
 
-| P1-info | P2 | Diagnostic (E4-D) | The reading |
+| P1-cut | P1-info | P2 | The reading |
 |---|---|---|---|
-| positive | positive | — | the cross-links' availability improves performance, and evolved organisms use transferred information |
-| positive | unclear or none | — | evolved organisms use transfer, without a demonstrated advantage over X0 at this budget |
-| none, links recruited | positive | — | a benefit of the larger architecture; the mechanism is unresolved |
-| none, links recruited | none | positive control works | no useful transfer evolved under this task and budget |
-| not recruited | — | — | the cross-links were not recruited; search, not the absence of transfer |
-| any | any | positive control fails | the assay cannot diagnose evolution; unresolved |
+| positive (cutting hurts) | positive | any | evolved organisms use the time-varying signal crossing the boundary. The directional read decides "the other module's information"; P2 is reported beside |
+| positive | equivalent or inconclusive | any | they depend on the cross-links, through a constant drive at least in part. The mechanism is tonic or unresolved |
+| negative (cutting helps) | any | any | the evolved cross-links cost performance on the test block: a maladaptive or overfitted use. Not transfer |
+| equivalent | equivalent | beyond (X+ higher) | a benefit of the larger architecture without acute dependence; the mechanism is unresolved |
+| equivalent | equivalent | no relevant difference, competent arms, E4-D's control working | no practically relevant benefit detected by the registered interventions |
+| equivalent | equivalent | unclear | no acute dependence detected; the training contrast is unresolved |
+| inconclusive | inconclusive | any | unresolved at this budget |
+| any | any | not evaluable (an arm not competent) | the comparison is not evaluable, and the competent arm is described |
+
+- **E4-D's failed positive control voids only the null rows,** where the reading would rest on transfer being
+  possible. It does not void positive P1 or P2 evidence (both).
+- **No row claims that transfer is impossible.** The strongest negative statement is "no practically relevant
+  benefit detected by the registered interventions" (Astra).
 
 ## 3. Trails, crossed with the interventions
 
 - **P1 is measured under shared trails** (primary), own trails and no trails, each per champion (both).
-- **The reading:** if the cut costs more with trails off, the world channel was substituting for the cross-links.
+- **The reading:** a larger cut cost with trails off is consistent with the world channel substituting for the
+  cross-links. It does not uniquely establish that mechanism (Astra).
 - **A benefit only under shared trails** is still transfer; its dependence is reported. Differences between trail
   conditions are not an additive decomposition of neural against environmental causes (Astra).
 - **The seed's and every champion's trails-off split** is measured (D241).
 
-## 4. Shared dependence (descriptive)
+## 4. Shared dependence and the directional read (descriptive)
 
-- **In X+:** cut the cross-link bundle by its source neuron (each of the 8 sources). Read per-mode leg durations
-  (Fable), not leg counts, since B legs start only after A visits.
-- **In X0:** the same deletion matrix measures the remaining leak path. With the output gate it should be near
-  zero; that is a check.
-- **Whole-rollout deletions only:** mode-conditional deletion would need another per-wey engine facility.
+- **The directional read** (it qualifies P1-info's wording, §2): in X+ champions, cut the 16 links **into** the
+  active module against the 16 links **out of** it.
+  - **Which module is active** changes by mode, so the two cuts are applied as two genomes, one with the links into
+    A cut, and one with the links into B cut.
+  - **Both are read as whole-episode effects** on visits.
+  - **"The other module's information"** is supported only if cutting the links into each module costs, in that
+    module's mode, more than cutting the links out of it.
+- **Bundle cuts by source neuron in X+** (each of the 8 sources): whole-episode effects on visits and on leg
+  durations.
+  - **The limit:** whole-rollout interventions change earlier movement, trails and later states, so they measure
+    total episode effects, not direct mode-specific dependence. Matched saved states would be needed for that, and
+    are not built (Astra).
+  - **Censoring:** legs that an intervention prevents from completing are counted as censored at the horizon, not
+    dropped.
+- **In X0:**
+  - cutting the cross-link bundles is a sham, since the weights are already 0: an equivalence check;
+  - deleting a module's neurons measures the total episode effect through every remaining path (world, trails,
+    latch). It is not a "leak" measurement, since the gated outputs carry no current (a test, §1).
 - **Pruning** (D144):
   - the protocol;
   - the preserved function, competence and the latch's switching, within declared tolerances;
@@ -193,7 +269,8 @@ blind references on its own mazes.
 The pilot-informed specification is published before the formal run, which leaves the formal test data untouched.
 
 **The compute** (to be replaced by the pilot's measurements):
-- training at about 0.6 GPU-h per 300-generation run at H = 1 800, from E3c's ledger (about 0.84 h at 2 400);
+- training at about 0.6 GPU-h per 300-generation run at H = 1 800, from E3c's ledger (about 0.84 h at 2 400). This
+  scales by the horizon only; the 6 × 6 arena has 1.4 times the cells, so it may be low (Fable);
 - R = 8-10 per arm gives about 10-12 h;
 - the pilot 2-3 h; the probes and references 3-5 h.
 - **About 20 h,** leaving room under 30. E4-D has its own ceiling.
@@ -210,11 +287,18 @@ decided in E4-D's own design:
     the cue.
 - **Fable's swapped noses:**
   - each module senses the other's scent, with no engine work for the task;
-  - X0 cannot navigate, and X+ only through sensory cross-links;
   - it is a search positive-control, not a naturalistic task.
+  - **Its necessity claim is withdrawn** (Astra). The active module still has the other source's scent, wall
+    sensing, history and trails, so X0 may navigate indirectly. And comparator-origin links can carry processed
+    scent too.
+- **The preference:** Astra's randomised B-mode choice, with timely completion required, and cue reversal, cue
+  shuffling and cross-link removal as controls.
 
-**The order:** E4-D's positive-control feasibility check (CPU) is run **before** the main formal run, so that a null
-in P1 or P2 can be interpreted.
+**The order:** E4-D's positive-control feasibility check (CPU, exploratory engineering) is run **before** the main
+formal run, so that a null in P1 or P2 can be interpreted. A hand-configured success shows architectural feasibility,
+not evolutionary discoverability.
+
+**E4-D's own ceiling needs the owner's word** (Fable): D198's 30 GPU-hours were E4's.
 
 ## 8. Prior results (to be checked before citing)
 
@@ -230,7 +314,7 @@ modularity arises, not transfer between fixed modules (Fable). They are flagged 
 - Mutation "as E3c" is ambiguous; v2 uses T-F's 0.25.
 - Competence is read on validation.
 
-## 10. Decisions open for the reviewers
+## 10. Decisions open for the reviewers of v2 (answered in v3)
 
 1. **The output gate** (the engine change, Q's sign as the mode, the frozen selector): sound, with the leak data
    in §0?
@@ -238,3 +322,21 @@ modularity arises, not transfer between fixed modules (Fable). They are flagged 
 3. **P1-info's mean substitution,** the time-averaging window and its validation source.
 4. **The cross-links' scale rule.**
 5. **E4-D's ordering:** its feasibility check before the main formal run.
+
+## 11. v3's changes (both reviews of v2, D244)
+
+- **The joint table** covers every state of P1-cut, P1-info, P2 and competence. E4-D's failed control voids only
+  nulls (both).
+- **Recruitment is functional;** |w| is descriptive. The scale rule is reproducible: candidates, a quantile, the
+  lineage's mutation count, clipping and a load bound (both).
+- **Mean substitution:** all 32 links jointly, an unconditional validation mean, no clipping, a constant-source
+  check. The claim is narrowed, and the directional read qualifies "the other module's information" (both).
+- **The sign-flip null is stated** (sign symmetry), with model-based mean and margin inference and calibration on
+  asymmetric zero-mean cases. The detectable effect is 1.39 visits at 0.025 (Astra).
+- **The gate at q = 0** (A first). The 13 frozen selector parameters are named, and E4's own frozen mask is used
+  (both).
+- **§4:** whole-episode effects with censoring; the X0 sham defined (Astra).
+- **E4-D:** the swapped-noses necessity claim is withdrawn, the B-mode choice preferred, and its ceiling is the
+  owner's word (both).
+- **Smaller fixes:** the sensory and comparator subsets are not read as "raw against computed"; the timing caveat;
+  trail interactions read as "consistent with" (both).
