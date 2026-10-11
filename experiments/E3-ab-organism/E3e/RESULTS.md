@@ -193,3 +193,11 @@ bd9c869. Each was corrected here:
 - **E3d's files** were missing from the sources. Rule 6's scope and the equivalence leg's c = 5 and c = 6 scope
   were not stated.
 - **"Both reviewers agreed it"** overstated D234.
+
+## Correction (2026-10-11, after publication; D237; Astra)
+
+"With trails off, the follower now sits **at or below** the random walk: 1.55, 1.52 and 1.48, against B_max's
+1.50, 1.51 and 1.64" is literally wrong at k_r = 0 and 2: 1.554 > 1.495 and 1.520 > 1.513. It should read: **the
+trail-free follower is at about the random walk's level** (slightly above it at k_r = 0 and 2, below at 4). Astra's
+paired bootstrap intervals for those differences cross zero, so there is no demonstrated reliable advantage. The
+conclusion that the shared trails carry the separation at 7 × 7 stands.

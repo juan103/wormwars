@@ -7622,3 +7622,37 @@ after.
 
 **Next:** the owner decides after E3d and E3e. The roadmap stays paused before E4.
 
+
+## D237 — After E3d and E3e: one bound validation at 6 × 6, k_r = 0, H = 1 800 (E3f)
+
+**The consultation** (`docs/reviews/20261011-after-E3e/`, run 20261011-123659), with Claude's recommendation put as
+a claim to attack: option 4, E3d's 6 × 6 family as it is.
+- **Fable 5.1: option 4,** but:
+  - choose the horizon from a truncation of E3d's saved trajectories first;
+  - fold the gate into E4 as a precondition stage.
+
+  Fable found Claude's reasons on options 1 and 2 wrong in mechanism or size. "E4's effects must clear the walk"
+  is a category error: the blind references are a precondition of each arm's navigation.
+- **Astra 6: option 2,** one fixed validation at 6 × 6, k_r = 0, H = 1 800, on fresh blocks.
+  - **The evidence:** truncating E3d's saved, hash-verified trajectories at 1 800 ticks passes every criterion
+    (exploratory).
+  - **On option 4:** relaxing G1b after seeing its failure is itself a design fork.
+  - **For E4:** controls specific to transfer and to trails, and real module isolation. The seed's inactive
+    module is suppressed by saturation, not disconnected.
+
+**Checked:** Claude reproduced Astra's truncation from the saved records at k_r = 0. At H = 1 800: B_max 1.761,
+follower ÷ oracle 0.367, B_max ÷ follower 0.151, the seed 6.457, its median legs 4.625. This is a selection on
+E3d's block, labelled exploratory, not a pass.
+
+**Claude's revised position:** Astra's route. The owner, asked to choose between a separate validation and folding
+the check into E4: "Your pick". Claude picked the separate validation, **E3f**:
+- E3d's design unchanged except H = 1 800 and k_r = 0 only;
+- fresh blocks;
+- if it fails, the horizon adjustments stop and the owner decides.
+
+**A correction to E3e** (rule 4; Astra): "the trail-free follower at or below the walk" is literally wrong at
+k_r = 0 and 2. It now reads "at about the walk's level", with no demonstrated difference. A dated Correction is
+appended to `experiments/E3-ab-organism/E3e/RESULTS.md`.
+
+**Next:** E3f's design (a delta from E3d), reviewed by both; a check that nothing in the dynamics reads the horizon
+(Fable's condition for the truncation evidence); binding; the thin runner; the owner told before GPU use.
