@@ -7782,3 +7782,35 @@ owner decides when E4 resumes.
 - **consolidation:** deferred to stage 09.
 
 **Next:** the design reviewed by both. No GPU.
+
+## D243 — E4's design reviewed ("revise", both); the gate leak measured; design v2
+
+**The reviews** (`docs/reviews/20261011-E4-design/`, run 20261011-185131), both "revise":
+- **The modules are not isolated:** E3a's saturation gating leaves the inactive module's noses and motor edges
+  live.
+- **The mode clamp** would probe a modified organism, and needs a per-wey engine facility.
+- **The cross-links are exactly 32,** on one shared connectome with slots at 0.
+- **The matched within-module cut is infeasible:** only 8 within-module links, all load-bearing.
+- **The hazard diagnostic** does not make transfer necessary.
+- **The training contrast is underpowered:** about 1.26 visits detectable at 8 runs (Fable).
+- **Asked for:** a full decision table (Astra) and paired runs (Fable).
+
+**The leak, measured on the CPU** (`scripts/e4_gate_leak.py`, `docs/E4/gate-leak.json`; the seed on 16 fresh
+E3f-family mazes):
+- the inactive module's turn signal is 0.074 at the 99th percentile, against the active module's 1.69;
+- it exceeds 0.2 on 0.35% of ticks, and reaches 0.41 at the 99.9th percentile.
+
+Small in most ticks; real on rare ticks.
+
+**Design v2** (`docs/E4/E4-DESIGN.md`):
+- **the organism E-G:** a real output gate (an optional engine flag, the latch's sign as the declared mode),
+  ungated comparators so both modules compute, and the selector frozen;
+- **the cross-links:** 32 slots on one connectome, read as sensory and comparator subsets; runs paired by seed;
+- **the readings:** P1 (acute: cut and mean substitution) primary, P2 (training) secondary, with a stated
+  minimum detectable effect, test levels compatible with sign-flip tests (R ≥ 7), and a joint interpretation
+  table;
+- **trails crossed with the interventions;**
+- **E4-D separate,** with its feasibility check before the main formal run;
+- **the pilot and power analysis specified.**
+
+**Next:** v2 reviewed by both. No GPU.
