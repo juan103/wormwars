@@ -44,7 +44,8 @@ def main():
     R = {"resamples": 2000, "seed": 20_261_011}  # design §5
     out = {"verdict": rep["verdict"], "bootstrap_settings": R, "choice": cal["choice"], "gpu_hours": comp["totals"]["seconds_timed"] / 3600,
            "k_r": {}}
-    for k, b in cal["blocks"].items():
+    def block_summary(b):
+        """One block's summary (a calibration k_r, or the confirmation block when it was played; D239)."""
         g, c = b["gate"], b["conditions"]
         arms = {}
         for name, cond in c.items():
@@ -63,7 +64,7 @@ def main():
             counts[name] = [{"total_visits": int(round(sum(st["visits"]) * colony)),
                              "max_colony_mean_legs": max(st["legs"]),
                              "round_trip_share": mean(st["round_trip_share"])} for st in cond["strains"]]
-        out["k_r"][k] = {
+        return {
             "bootstrap": GT.bootstrap(b, R["resamples"], R["seed"]),
             "scent_split": D.scent_split(b),
             "exact_counts": counts,
@@ -104,6 +105,12 @@ def main():
                       "redrawn_share": mean([r["redraw"] > 0 for r in rows]),
                       "scent_reach_share": mean([x for r in rows for x in r["scent_reach"]])},
         }
+    for k, b in cal["blocks"].items():
+        out["k_r"][k] = block_summary(b)
+    conf_path = EXP / "confirm.json"
+    if conf_path.exists():  # the confirmation block, summarised as calibration is (Fable, D239)
+        conf = json.loads(conf_path.read_text(encoding="utf-8"))
+        out["confirmation"] = {"k_r": conf.get("k_r"), **block_summary(conf["blocks"]["confirmation"])}
     path = EXP / "summary.json"
     path.write_text(json.dumps(out, indent=1), encoding="utf-8", newline="\n")
     print("wrote", path.relative_to(ROOT))

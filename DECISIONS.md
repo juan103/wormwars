@@ -7673,3 +7673,26 @@ horizon in the engine allocates E3a's open-shuttle buffers. So the truncation ev
 exact.
 
 **Next:** the design reviewed by both; binding; the runner; the owner told before GPU use.
+
+## D239 — E3f's design bound (v1.1; Astra "bind", Fable one wording item taken); the runner
+
+**The review** (`docs/reviews/20261011-E3f-design/`, run 20261011-133016):
+- **Astra 6, "bind":**
+  - Astra reproduced the truncation from all 30 hash-verified record files;
+  - all 128 calibration constructions build, 98 of them first-draw feasible;
+  - the wall-follower tours at 1 800 ticks (686-824 ticks).
+
+  Astra's caveats: state the truncation test's scope; E3f's projection may admit more walk settings than E3d played.
+- **Fable 5.1, "revise", one wording item:** the absolute criteria are counts per horizon, not rescaled. G1b's cap
+  at 1 800 ticks corresponds to about 2.67 per 2 400, above the walk's 2.34 that failed E3d. B_max grows
+  near-linearly with H, so a G1b pass reflects the window; G1a and G2a carry the horizon-robust test.
+  - **Fable's other points:** one stopping-rule formulation; a summary that reports a confirmation block; a
+    sabotage of the truncation test, with the walk added; "seed" disambiguated.
+
+**Design v1.1** (`docs/E3/E3f-DESIGN.md`, §1a) takes all of them. The truncation test now covers the follower and
+the walk, with a sabotage variant. `scripts/e3d_summary.py` summarises a confirmation block as it summarises
+calibration; E3d's and E3e's summaries are unchanged. `scripts/e3f.py` is the thin runner.
+
+**Bound** at the commit that records this decision. The runner's binding commit follows in the next commit.
+
+**Next:** a CPU smoke, the owner told before GPU use, then the formal stages.

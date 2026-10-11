@@ -80,22 +80,33 @@ def test_a_tree_config_built_on_an_island_base_is_a_tree_config():
     assert tree.to_dict() == MW.maze_config(**C6).to_dict()
 
 
-def test_the_horizon_only_stops_the_maze_run(iface):
-    """E3f (D237): truncating a 2 400-tick maze run at 1 800 ticks equals a 1 800-tick run, so the truncation of
-    E3d's saved trajectories that chose E3f's horizon is exact. Every wey's positions and visit ticks agree."""
+def _prefix_run(iface, H, policy, mu=0.01):
     from wormwars.e3 import maze_controls as MC
     ids = [41_100, 41_101]
-    runs = {}
-    for H in (2400, 1800):
-        cfg = MW.maze_config(c=6, horizon=H, colony=8, mu=0.01, lam=0.02, delta=0.05, d0=1.142, family="islands", k_r=0)
-        brain = MC.follower(iface, cfg)
-        w = MW.MazeWorld(cfg, iface, brain, torch.zeros(len(ids), 1, dtype=torch.long), run_seed=1_192_000,
-                         world_ids=np.asarray(ids), access="shared")
-        pos = []
-        for _ in range(1800):
-            w.tick()
-            pos.append(w.pos[:, 0].clone())
-        runs[H] = (torch.stack(pos), w.task_events()["visit_tick"])
-    assert torch.equal(runs[2400][0], runs[1800][0])
-    vt_long, vt_short = runs[2400][1], runs[1800][1]
-    assert np.array_equal(np.where(vt_long < 1800, vt_long, -1), vt_short)
+    cfg = MW.maze_config(c=6, horizon=H, colony=8, mu=mu, lam=0.02, delta=0.05, d0=1.142, family="islands", k_r=0)
+    brain = MC.follower(iface, cfg) if policy == "follower" else MC.WorldScripted(iface, cfg, MC.ReflexWalk(1.0, 1.0, 0.5, seed=0))
+    w = MW.MazeWorld(cfg, iface, brain, torch.zeros(len(ids), 1, dtype=torch.long), run_seed=1_192_000,
+                     world_ids=np.asarray(ids), access="shared")
+    pos = []
+    for _ in range(1800):
+        w.tick()
+        pos.append(w.pos[:, 0].clone())
+    return torch.stack(pos), w.task_events()["visit_tick"]
+
+
+@pytest.mark.parametrize("policy", ["follower", "walk"])
+def test_the_horizon_only_stops_the_maze_run(iface, policy):
+    """E3f (D237-D239): truncating a 2 400-tick maze run at 1 800 ticks equals a 1 800-tick run, positions and visit
+    ticks, for the scripted follower and the random walk (B_max's member) on two CPU mazes. That is the scope: it
+    does not establish replay of formal GPU runs or of every controller and composition."""
+    long_pos, long_vt = _prefix_run(iface, 2400, policy)
+    short_pos, short_vt = _prefix_run(iface, 1800, policy)
+    assert torch.equal(long_pos, short_pos)
+    assert np.array_equal(np.where(long_vt < 1800, long_vt, -1), short_vt)
+
+
+def test_the_horizon_check_can_fail(iface):
+    """Sabotage: a run whose dynamics differ (trail evaporation 0.02, not 0.01) is caught by the same comparison."""
+    a, _ = _prefix_run(iface, 2400, "follower")
+    b, _ = _prefix_run(iface, 1800, "follower", mu=0.02)
+    assert not torch.equal(a, b)
