@@ -342,6 +342,8 @@ class Brain:
         # Optional output gate (E4): two edge sets whose chemical drive is multiplied per wey by g_A = [v_q >= 0]
         # and g_B = 1 - g_A. Unset, the update is unchanged.
         self.output_gate: dict | None = None
+        # E4: called with each substep's end-state [S, B, N] (the padded copy dropped); None, nothing is called
+        self.substep_hook = None
 
     def silence(self, per_strain: list[list[int]] | None) -> "Brain":
         """Clamp the named neurons to zero after every substep, one neuron list per strain.
@@ -483,6 +485,8 @@ class Brain:
                 v = v * mask
             if self.clamp_mask is not None:
                 v = v * self.clamp_mask + self.clamp_value
+            if self.substep_hook is not None:
+                self.substep_hook(v[:1] if pad else v)
         return v[:1] if pad else v
 
     def activity(self, v: Tensor) -> Tensor:

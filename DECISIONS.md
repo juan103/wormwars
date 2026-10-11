@@ -7870,3 +7870,133 @@ later.
 
 **Next:** the arms' masks (X0 and X+ scales, the frozen selector, E4's `assert_frozen`), cut and mean
 substitution, the runner, the evaluation harness and E4-D's feasibility. All on the CPU.
+
+## D246 — E4's code, part 2a (CPU): the arms, the interventions, gated training, source means, the statistics, lineages and the scale rule
+
+**The arms** (`wormwars/e4/arms.py`, `tests/test_e4_arms.py`, each test seen failing first):
+- `scales`: E3b-1's T-F mask at 0.25, minus the 13 frozen selector parameters (design v3 §1); X0 holds the 32
+  slots at scale 0, X+ at `cross_factor`. **A ruling:** X+ refuses to build without its factor, so the scale rule's
+  choice can never be replaced by a default.
+- `assert_frozen` is E4's own, on E4's scales; a moved slot in X0 is caught.
+- `cut` and `mean_substitute` (b'_j = b_j + Σ w_ij · mean(tanh v_i), unclamped). The constant-source check (Astra)
+  holds to 1e-5: a source held at a constant drives every target identically through the links and through the
+  substituted biases.
+- **Pairing:** with one generator seed, X0 and X+ mutants are identical on every shared parameter (a test), as
+  design v3 §1 assumes of `Genome.mutate`.
+
+**Gated training** (`wormwars/e4/train.py`, `tests/test_e4_train.py`): `gated_rollout(gate)` is a `rollout_fn` for
+`evolve_batch` that sets the output gate on each chunk's brain; `gated_brain` does the same for evaluation. Tests:
+the training rollouts equal a hand-hooked rollout and differ from an ungated one (a strain with strong B-motor
+edges); evaluation through `play_batch` agrees with the training path.
+
+**Source means** (`wormwars/e4/means.py`, `tests/test_e4_means.py`): an engine change, `Brain.substep_hook`,
+called with each substep's end-state (the padded copy dropped). Unset, nothing is called.
+- **Rule 7, the CPU leg:** E3d's full-rollout comparison against 40bd50f is identical with the change in place (on
+  a working tree; both legs are rerun at the commit and their records committed beside the gate's).
+- `SourceMeans` averages tanh(v) per strain over every substep end-state and wey; every maze of a strain holds the
+  same weys and ticks, so mazes and weys are weighted equally (design v3 §2).
+
+**The statistics** (`wormwars/e4/stats.py`, `tests/test_e4_stats.py`): the exact paired sign-flip test by chunked
+enumeration (it matches brute force, and its smallest p is 2/2^R), the t interval, the dual margin in visits (0.10
+of a reference mean and 0.5 visits; the reference is the pre-registration's to fix), P1's states and P2's labels.
+- **A ruling:** P2's "no relevant difference" needs only the interval inside the smaller margin, even when the
+  exact test rejects (E3c would say "better, within the margin"); design v3 lists only four P2 labels.
+- **A finding: design v3's joint table is not complete,** although it says it covers every state. It leaves out,
+  for example, P1-cut equivalent with P1-info positive, P1-cut positive with P1-info negative, P1 not evaluable,
+  X0 beyond X+, the null row with E4-D's control failed, and the order of rows when P2 is not evaluable but P1 is
+  positive. `joint` keeps the design's eight rows (D1-D8), puts P1's acute rows first so that positive or negative
+  acute evidence stands when an arm is not competent, and adds eight rows labelled "proposed" (P1-P8). A test
+  checks that every combination gets a row. The pre-registration fixes the table; the reviewers see the proposal.
+
+**Champion lineages** (`wormwars/e4/lineage.py`, `tests/test_e4_lineage.py`): `evolve_batch` keeps no parents,
+so `Capture` wraps the `rollout_fn` and keeps each selection call's results, and `replay` runs `breed` again with
+each run's own generator. A test shows that the replayed final populations equal `evolve_batch`'s, bitwise. Another
+test, with mutation off and a diverse start, shows that every strain equals the ancestor its recorded lineage leads
+to; a sabotage (the parents read from a wrong generator) fails it.
+
+**The scale rule** (`wormwars/e4/scale_rule.py`, `tests/test_e4_scale_rule.py`): the reach of a neutral slot along
+simulated lineages (a clipped Gaussian walk, each recorded lineage weighted equally), the load bound, and the choice.
+- **A finding for the reviewers:** at w_sigma 0.08 and w_max 3, the reach is low at every candidate. Simulated (20 000
+  walks each): 100 mutations give 0.000 / 0.012 / 0.209 at 0.25 / 0.5 / 1.0; 300 give 0.004 / 0.146 / 0.469. Since
+  `breed` copies elites, a lineage holds fewer mutations than generations. So the reach criterion is unlikely to be
+  met, and the fallback, "the smallest factor meeting the load bound", would choose 0.25, at which a neutral slot
+  barely moves. X+ would then be nearly X0 by construction. Possible changes: the largest factor meeting the load
+  bound as the fallback, or larger candidates. The rule is coded as design v3 states it; the pre-registration
+  decides, after the reviewers.
+
+**The evaluation harness** (`wormwars/e4/evaluate.py`, `tests/test_e4_evaluate.py`): the named link subsets (all
+32; into A and into B, the directional read; sensory and comparator; 8 source bundles of 4), each champion's
+condition genomes, and batched gated play under shared, own or no trails, per maze. The gating check counts the
+latch's mode changes per wey (`QFlips`) beside the visits: E-G's agree on every wey of two mazes at H = 1 800. Rule
+9's sabotage of the cut path: a hand-built champion with strong links into A's comparators plays differently when
+they are cut.
+
+**The pilot runner** (`scripts/e4.py pilot`, on E2's stage frame; exploratory, §6): X0 and X+, 4 paired runs each,
+100 generations from 32 copies of E-G, gated. **A ruling:** the arms train as two batches with the same run seeds,
+since `evolve_batch` refuses two runs with one seed and the pairing (the training mazes and the breeding generator)
+is a function of the seed. **A ruling:** X+ trains at 0.5, the middle candidate; the pilot is exploratory and the
+scale rule's choice is made from its numbers. Every run's lineage replay is checked against the run's final
+population before anything else is played. Then each champion (the final population's best on the validation
+block), its lineage's mutations, its conditions on a 128-maze test block under three trail conditions, a second
+128-maze block for the re-evaluation band, the latch's switches, E-G as the reference, the generation-1 load for
+every candidate under common random numbers, and the costs. Its blocks are E4's own (maze seed 1 400 000); the
+formal blocks will be fresh. The CPU smoke (`runs/e4-smoke`, toy sizes) completes.
+
+**Next:** the code review by both; the owner's word before the pilot on the GPU; E4-D's design.
+
+## D247 — E4's code review by both (fix first), and the fixes
+
+**The review** (`docs/reviews/20261011-E4-code/`): both said "fix first". Neither found a bug in the gate's wiring
+(training, checkpoints, evaluation, source means), the mean substitution, the lineage peek or the pairing. Both found
+that the pilot would lose or never collect data the pre-registration needs, and both rejected parts of the joint
+table D246 proposed.
+
+**Fixed, with the tests seen failing first or sabotaged:**
+- **The pilot saves everything** (both): the final populations, the champions, the selection matrices and the
+  parents (`runs/e4/pilot/`, local), generation 0's counts and the per-strain, per-maze validation matrices (selection
+  noise against W and the block's size), the visit ticks of every condition (censored leg durations and the
+  directional read; Astra: `legs` is a count). The partial record is written after every step, and the stage's
+  salvage returns it (Astra). `rerun_kill_tail_seconds` is registered, which E2's kill reconciliation reads; a test
+  shows that the reconciliation works, and fails without it (Astra).
+- **The re-evaluation block plays the same paired conditions, in the same composition** as the test block (both:
+  the recruitment band is the noise of the paired cut effect). The compositions of every phase are recorded; the
+  source means are taken for an arm's champions in one batch, not batches of one (Astra, Fable). X0's sham is
+  bitwise exact within one batch (a test; Fable).
+- **The load first, then X+ at the largest factor meeting the load bound** (Fable rejected training at 0.5, since
+  the P1 numbers must come from a factor the formal run may use; Astra accepted 0.5 only as exploratory). The
+  candidates now run to 4.0 (both).
+- **The scale rule** (both): the smallest candidate meeting reach and load; else the largest meeting the load
+  bound, labelled reach-deficient; else none. The reach is computed for candidate formal horizons, from each
+  lineage's mutated share × the formal G (Fable), not from the pilot's counts as they stand (Astra).
+- **The joint interpretation, rebuilt** (both): each contrast keeps its own reading, and one qualification is keyed
+  on P1-info, which with P2 is confirmatory (design v3 §2); P1-cut qualifies it, and P2 enters only where both acute
+  readings are equivalent. So an evaluable positive P1-info survives P2 being not evaluable, and P2's evidence is
+  kept beside unresolved acute readings (Astra's two counterexamples are tests). D2 is split: "tonic" only when
+  P1-info is equivalent, "unresolved" when inconclusive (both). The proposed rows (C0-C8) carry Astra's wording:
+  "this constant replacement improves performance", with no mechanism resolved. A test fixes the expected row of
+  22 combinations.
+- **Stronger tests** (Astra showed that three passed with broken code): the source means equal an independently
+  read trajectory mean (one substep per tick, read by a world recorder), count every substep, wey and maze, and
+  differ when ungated; `evaluate.play` equals a hand-gated play, differs from an ungated one, and refuses an
+  organism without a gate. Sabotages (the means ungated; the means zeroed) fail the tests.
+- **The gating check** records when each switch happens and matches it to its visit, in order (Astra: equal counts
+  can hide misplaced switches). E-G's switches all follow their visits by exactly one tick (8 mazes, H = 1 800). The
+  tolerance is declared at 5 ticks; descriptive.
+- **Blind references in the pilot** (Astra): E3d's blind members that need no E3c champion, the navigators, the
+  seed and E-G with and without noses, on the validation block, for competence's calibration.
+- **Checkpoints every 10 generations** (Fable). `mean_substitute` refuses the legacy direction (Fable).
+
+**Rulings on the rest:**
+- **The inactive module's motor current is not measured again on rollouts** (Astra asked). The gated edges'
+  current is multiplied by exactly 0 per substep; `tests/test_e4_gate.py` shows that a gated step equals the step
+  with those edges at 0, in both modes, with a sabotage, and E3d's previous-engine comparison covers the engine.
+  Cost if wrong: a leak through some other path, which the switch alignment and X0's sham would not show.
+- **The source means keep every neuron** (Astra suggested the 8 sources only): the cost is small beside the step's
+  matrix product. X0's and E-G's means are no longer computed.
+- **The unset-gate test stays** with rule 7's previous-engine leg beside it (Astra: a same-engine comparison cannot
+  catch a shared regression; the previous-engine leg can).
+- **The end-state means stay as defined** (both): the difference from start-states is a boundary term, at most about
+  2 × 10⁻⁴ per target at H = 1 800 and 32 substeps.
+- **For the pre-registration** (Fable): the pairing after generation 1 is mostly through the mazes, since the same
+  draws land on different parents; P1-cut's level (0.025 in the code) and P1's use of the larger margin must be
+  stated; P1-cut is a qualifier, not a third confirmatory test, so the family stays at P1-info and P2.
