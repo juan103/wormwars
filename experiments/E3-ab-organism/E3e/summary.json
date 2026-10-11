@@ -410,6 +410,47 @@
      0.0947265625
     ]
    ],
+   "navigators": {
+    "follower_shared": {
+     "later_leg_rate": 2.32721075,
+     "first_entry_median_a": {
+      "median_over_mazes_reached": 248.5,
+      "mazes_not_reached": 19
+     },
+     "first_entry_median_b": {
+      "median_over_mazes_reached": 604.5,
+      "mazes_not_reached": 71
+     },
+     "arrived_a": 0.8388671875,
+     "arrived_b": 0.4677734375
+    },
+    "seed": {
+     "later_leg_rate": 1.7649103046875,
+     "first_entry_median_a": {
+      "median_over_mazes_reached": 441.0,
+      "mazes_not_reached": 7
+     },
+     "first_entry_median_b": {
+      "median_over_mazes_reached": 757.5,
+      "mazes_not_reached": 11
+     },
+     "arrived_a": 0.8974609375,
+     "arrived_b": 0.84375
+    },
+    "oracle": {
+     "later_leg_rate": 14.627926734374999,
+     "first_entry_median_a": {
+      "median_over_mazes_reached": 71.5,
+      "mazes_not_reached": 0
+     },
+     "first_entry_median_b": {
+      "median_over_mazes_reached": 135.0,
+      "mazes_not_reached": 0
+     },
+     "arrived_a": 1.0,
+     "arrived_b": 1.0
+    }
+   },
    "follower_shared_detail": {
     "round_trip_share": 0.2626953125,
     "no_first_visit_share": 0.1611328125
@@ -817,6 +858,47 @@
      0.1240234375
     ]
    ],
+   "navigators": {
+    "follower_shared": {
+     "later_leg_rate": 1.9155022031250002,
+     "first_entry_median_a": {
+      "median_over_mazes_reached": 201.0,
+      "mazes_not_reached": 14
+     },
+     "first_entry_median_b": {
+      "median_over_mazes_reached": 738.0,
+      "mazes_not_reached": 82
+     },
+     "arrived_a": 0.8681640625,
+     "arrived_b": 0.4140625
+    },
+    "seed": {
+     "later_leg_rate": 1.8126159453125,
+     "first_entry_median_a": {
+      "median_over_mazes_reached": 425.5,
+      "mazes_not_reached": 6
+     },
+     "first_entry_median_b": {
+      "median_over_mazes_reached": 807.75,
+      "mazes_not_reached": 8
+     },
+     "arrived_a": 0.9287109375,
+     "arrived_b": 0.892578125
+    },
+    "oracle": {
+     "later_leg_rate": 14.7185628203125,
+     "first_entry_median_a": {
+      "median_over_mazes_reached": 69.75,
+      "mazes_not_reached": 0
+     },
+     "first_entry_median_b": {
+      "median_over_mazes_reached": 132.0,
+      "mazes_not_reached": 0
+     },
+     "arrived_a": 1.0,
+     "arrived_b": 1.0
+    }
+   },
    "follower_shared_detail": {
     "round_trip_share": 0.23046875,
     "no_first_visit_share": 0.1318359375
@@ -1224,6 +1306,47 @@
      0.119140625
     ]
    ],
+   "navigators": {
+    "follower_shared": {
+     "later_leg_rate": 2.3050743515625003,
+     "first_entry_median_a": {
+      "median_over_mazes_reached": 208.25,
+      "mazes_not_reached": 14
+     },
+     "first_entry_median_b": {
+      "median_over_mazes_reached": 599.75,
+      "mazes_not_reached": 68
+     },
+     "arrived_a": 0.8515625,
+     "arrived_b": 0.4755859375
+    },
+    "seed": {
+     "later_leg_rate": 1.8819107421875,
+     "first_entry_median_a": {
+      "median_over_mazes_reached": 418.0,
+      "mazes_not_reached": 3
+     },
+     "first_entry_median_b": {
+      "median_over_mazes_reached": 808.0,
+      "mazes_not_reached": 10
+     },
+     "arrived_a": 0.9453125,
+     "arrived_b": 0.8857421875
+    },
+    "oracle": {
+     "later_leg_rate": 14.8320991015625,
+     "first_entry_median_a": {
+      "median_over_mazes_reached": 69.75,
+      "mazes_not_reached": 0
+     },
+     "first_entry_median_b": {
+      "median_over_mazes_reached": 133.25,
+      "mazes_not_reached": 0
+     },
+     "arrived_a": 1.0,
+     "arrived_b": 1.0
+    }
+   },
    "follower_shared_detail": {
     "round_trip_share": 0.2685546875,
     "no_first_visit_share": 0.1484375

@@ -29,7 +29,10 @@
   for E4: 6 × 6 mazes with island goals.
   - **"E3d: failed at calibration":** a random walk exceeds the absolute blind limit (2.34-2.53 against 2.0).
   - **Everything else passed.** Wall-followers and E3c's scent-free champions score almost nothing.
-- **Paused before E4** (the owner, 2026-10-06); the owner chooses the next construction.
+- **E3e: published** (2026-10-11, D236; `E3e/README.md`, `E3e/RESULTS.md`). E3d's design at 7 × 7.
+  - **"E3e: failed at calibration":** G1a and G2a failed. The scent follower falls to 0.13-0.16 of the oracle.
+  - **What passed:** the random walk falls under the absolute limit.
+- **Paused before E4** (the owner, 2026-10-06); the owner decides the next step.
 
 ## E3a's results
 
@@ -106,6 +109,7 @@ silent worm, outside the N2 mask. Nothing here is about worm behaviour.
   feasibility, is published; so are E3b-1, the gate ("better"), and E3b-2, where its gain comes from.
 - **E3c:** the assembly comparison, published (2026-10-06).
 - **E3d:** a maze validation for E4, published (2026-10-10): "failed at calibration".
+- **E3e:** E3d at 7 × 7, published (2026-10-11): "failed at calibration".
 
 **The owner's ceilings:** 30 GPU-hours for E3a, and about the same for each of E3b and E3c (D159).
 

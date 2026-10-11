@@ -81,6 +81,17 @@ def main():
             "round_trip_share_blind_top5": sorted(((n, mean(cond["strains"][0]["round_trip_share"])) for n, cond in c.items()
                                                    if cond["role"] == "blind" and len(cond["strains"]) == 1),
                                                   key=lambda t: -t[1])[:5],
+            "navigators": {name: {
+                "later_leg_rate": mean(c[name]["strains"][0]["later_leg_rate"]),
+                **{f"first_entry_median_{g}": {
+                    "median_over_mazes_reached": (float(np.median([x for x in c[name]["strains"][0][f"first_entry_median_{g}"]
+                                                                    if x is not None]))
+                                                  if any(x is not None for x in c[name]["strains"][0][f"first_entry_median_{g}"])
+                                                  else None),
+                    "mazes_not_reached": sum(x is None for x in c[name]["strains"][0][f"first_entry_median_{g}"])}
+                   for g in "ab"},
+                "arrived_a": mean(c[name]["strains"][0]["arrived_a"]), "arrived_b": mean(c[name]["strains"][0]["arrived_b"])}
+                for name in ("follower_shared", "seed", "oracle")},  # D236: the records E3e's G2a reading names
             "follower_shared_detail": {"round_trip_share": mean(c["follower_shared"]["strains"][0]["round_trip_share"]),
                                        "no_first_visit_share": mean(c["follower_shared"]["strains"][0]["no_first_visit_share"])},
             "seed_detail": {"round_trip_share": mean(c["seed"]["strains"][0]["round_trip_share"]),

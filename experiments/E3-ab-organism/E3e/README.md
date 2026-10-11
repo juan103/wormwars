@@ -6,7 +6,7 @@ G1a failed:
 - **G1a:** the random walk made 0.27-0.32 of the follower's visits;
 - **G1b passed:** the walk made 1.50-1.64 visits, under 2.0. G1b was E3d's failure.
 
-The results (`RESULTS.md`) are under review by both reviewers.
+The results (`RESULTS.md`) were reviewed by both reviewers and corrected before publication (D236).
 
 **The question:** E3d's question, at 7 × 7. The owner chose a larger maze (D232) after E3d's random walk exceeded
 the absolute blind limit at 6 × 6.
@@ -16,7 +16,7 @@ unchanged except for the size, the seed and the blocks.
 
 ## Where things are
 
-- **The decisions:** D232-D235.
+- **The decisions:** D232-D236.
 - **The reviews:** `docs/reviews/20261011-E3e-*`.
 - **The code:**
   - `scripts/e3e.py`, a thin runner over `scripts/e3d.py`;

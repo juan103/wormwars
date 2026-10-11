@@ -7590,3 +7590,35 @@ about 36% for the walk.
 (`scripts/e3d_summary.py --exp E3e`). E3d's `summary.json` is byte-identical after the script's new option.
 
 **Next:** the results reviewed by both; then the owner decides. The roadmap stays paused before E4.
+
+## D236 — E3e's results reviewed by both ("fix then publish"); corrected; published
+
+**The review** (`docs/reviews/20261011-E3e-results/`, run 20261011-112216), both "fix then publish":
+- **The verdict:** both recomputed it. Astra regenerated `summary.json` and all 27 intervals in memory.
+- **The draft's faults:**
+  - one interval endpoint;
+  - G1a's "not decisive", although a G1a failure alone disqualifies a k_r;
+  - the scent-reach split shown at k_r = 0 only, where its direction suited the sentence, with a misdescribed
+    statistic;
+  - the G2a discussion without the discovery and later-leg records the bound reading names;
+  - G2b's and G3b's intervals reaching below their thresholds, unstated;
+  - the trail-free follower at the walk's level, unreported;
+  - the P champions missing from the blind family, and the caveat that the family does not bound every blind
+    strategy;
+  - the comparison's scope;
+  - sources, rule 6 and the equivalence scope;
+  - D234's review overstated.
+
+**All taken.** `scripts/e3d_summary.py` adds the navigators' later-leg rates and censored discovery medians.
+E3d's `summary.json` gains these fields additively; its published numbers are unchanged. `RESULTS.md` carries a
+Corrections section.
+
+**A correction to D235** (rule 4): D235 says the guard "caught the first attempt". No stage attempt was refused.
+The guard refused in Claude's manual check after the binding commit, before any stage ran, and the compute record
+lists four completed attempts.
+
+**Publication:** consensus on the corrected results, so main is brought up to date and the owner is informed
+after.
+
+**Next:** the owner decides after E3d and E3e. The roadmap stays paused before E4.
+

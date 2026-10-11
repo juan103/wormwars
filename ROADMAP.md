@@ -118,6 +118,14 @@
     - wall-following is defeated;
     - E3c's scent-free champions score almost nothing with their noses removed.
   - **Next:** the owner chooses the next construction. The roadmap stays paused before E4.
+- **E3e, E3d's island mazes at 7 × 7** (exploratory, 2026-10-11; D232-D236; `experiments/E3-ab-organism/E3e/`).
+  - **The design:** the owner chose option 1, a larger maze. E3d's design was bound by hash, with c = 7 and fresh
+    blocks; two review rounds.
+  - **The run used 0.71 of 3 GPU-hours.** "E3e: failed at calibration":
+    - G1a and G2a failed at every k_r;
+    - G1b, E3d's failure, passed;
+    - the scent follower collapsed from 16 visits to 5, while the oracle lost 17%.
+  - **Next:** the owner decides. The roadmap stays paused before E4.
 
 - **Published on main:**
   - 02's D050 correction, as a Corrections entry (27 September, D063);
