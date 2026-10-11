@@ -85,11 +85,14 @@ def main():
             "navigators": {name: {
                 "later_leg_rate": mean(c[name]["strains"][0]["later_leg_rate"]),
                 **{f"first_entry_median_{g}": {
-                    "median_over_mazes_reached": (float(np.median([x for x in c[name]["strains"][0][f"first_entry_median_{g}"]
-                                                                    if x is not None]))
-                                                  if any(x is not None for x in c[name]["strains"][0][f"first_entry_median_{g}"])
-                                                  else None),
-                    "mazes_not_reached": sum(x is None for x in c[name]["strains"][0][f"first_entry_median_{g}"])}
+                    # a maze's colony median of first-entry ticks is censored when at most half its weys arrived
+                    # (E3c's censored median); the median over mazes is over the uncensored ones (D241, Astra)
+                    "median_over_uncensored_mazes": (float(np.median([x for x in c[name]["strains"][0][f"first_entry_median_{g}"]
+                                                                       if x is not None]))
+                                                     if any(x is not None for x in c[name]["strains"][0][f"first_entry_median_{g}"])
+                                                     else None),
+                    "mazes_median_censored": sum(x is None for x in c[name]["strains"][0][f"first_entry_median_{g}"]),
+                    "mazes_with_no_arrival": sum(x == 0 for x in c[name]["strains"][0][f"arrived_{g}"])}
                    for g in "ab"},
                 "arrived_a": mean(c[name]["strains"][0]["arrived_a"]), "arrived_b": mean(c[name]["strains"][0]["arrived_b"])}
                 for name in ("follower_shared", "seed", "oracle")},  # D236: the records E3e's G2a reading names
@@ -111,6 +114,23 @@ def main():
     if conf_path.exists():  # the confirmation block, summarised as calibration is (Fable, D239)
         conf = json.loads(conf_path.read_text(encoding="utf-8"))
         out["confirmation"] = {"k_r": conf.get("k_r"), **block_summary(conf["blocks"]["confirmation"])}
+        # the intact champions on both blocks and the tree reference's single-strain means (D241, both reviewers)
+        def arms(b):
+            return {name: {"mean": mean([mean(st["visits"]) for st in cond["strains"]]),
+                           "total_visits_per_champion": [int(round(sum(st["visits"]) * 8)) for st in cond["strains"]]}
+                    for name, cond in b["conditions"].items() if name.endswith("_intact")}
+        tree = conf["blocks"]["tree_reference"]
+        out["intact_champions"] = {"confirmation": arms(conf["blocks"]["confirmation"]), "tree_reference": arms(tree)}
+        out["tree_reference"] = {
+            "single_strain_means": {name: mean(cond["strains"][0]["visits"]) for name, cond in tree["conditions"].items()
+                                    if len(cond["strains"]) == 1},
+            "quantities": {k: v for k, v in GT.quantities(tree).items() if k != "blind_means"},
+            "follower_over_oracle": GT.quantities(tree)["follower"] / GT.quantities(tree)["oracle"],
+            "wall_follower_switch_rate": {n: mean(tree["conditions"][n]["strains"][0]["switch_rate"])
+                                          for n in ("wall_left", "wall_right")}}
+        if "tangent" in conf["blocks"]:
+            out["tangent"] = {"moved_share": {n: c_["tangent_moved_share"] for n, c_ in conf["blocks"]["tangent"]["conditions"].items()
+                                              if "tangent_moved_share" in c_}}
     path = EXP / "summary.json"
     path.write_text(json.dumps(out, indent=1), encoding="utf-8", newline="\n")
     print("wrote", path.relative_to(ROOT))

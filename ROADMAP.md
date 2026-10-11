@@ -126,6 +126,14 @@
     - G1b, E3d's failure, passed;
     - the scent follower collapsed from 16 visits to 5, while the oracle lost 17%.
   - **Next:** the owner decides. The roadmap stays paused before E4.
+- **E3f, 6 × 6 at a horizon of 1 800 ticks** (exploratory, 2026-10-11; D237-D241;
+  `experiments/E3-ab-organism/E3f/`).
+  - **The choice:** after consulting both reviewers, the owner left the choice to Claude, who picked one bound
+    validation. Its horizon was chosen from an exact truncation of E3d's records.
+  - **The run used 1.06 of 3 GPU-hours.** "E3f: passed" on calibration and on fresh confirmation mazes.
+  - **For E4:** this family (6 × 6, k_r = 0, H = 1 800) is the task, with E4's own blind references and trail
+    controls.
+  - **The owner decides when E4 resumes.**
 
 - **Published on main:**
   - 02's D050 correction, as a Corrections entry (27 September, D063);

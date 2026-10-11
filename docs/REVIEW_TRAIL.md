@@ -84,6 +84,7 @@ led to several of the findings.
 | 64 | E3d's review fixes: the scripts guard exempted whole binding lines, so a moved line carrying an extra registry entry passed; the projection's reserve left out the current stage and record saving; reruns would overwrite record files; the correction's wording | Claude Opus 5.5 | **Astra 6** (reproduced the guard bypass) and **Fable 5.1**, each independently | Fixed test-first; an erratum to the correction; re-bound | D228 |
 | 65 | E3d's results draft: "no visit at all" for champions that made 5 and 2 visits; the seed's mean misrounded; an untraceable duration; "every number" from one script; "not by following a ring" beyond the records; "wide margins" where G2a's intervals cross a third; the registered bootstrap and scent-reach split missing on a calibration failure; the trail-free follower near the random walk left in an aside | Claude Opus 5.5 | **Fable 5.1** and **Astra 6**, each independently (Astra verified the 90 record files and computed the intervals) | Corrected before publication, with a Corrections section | D231 |
 | 66 | E3e's results draft: the scent-reach split shown at the one k_r whose direction suited the sentence; the G2a discussion without the discovery and later-leg records its bound reading names; G2b's interval crossing its floor unstated; the trail-free follower at the walk's level unreported; the P champions missing from the blind family; one interval endpoint; "both reviewers agreed" overstating a verbatim-taken change; a refused attempt claimed that the compute record does not show | Claude Opus 5.5 | **Fable 5.1** and **Astra 6**, each independently (Astra regenerated the summary and all 27 intervals) | Corrected before publication, with a Corrections section | D236 |
+| 67 | E3f's results draft: a margin and a share misrounded; the discovery table calling censored colony medians "mazes not reached" (E3e's carried the same mislabel); figures said to come from a script that does not emit them; "match" and "make nothing" for the wall-follower and the S champions; "the navigators' advantage" from trails, measured for the scripted follower only; calibration's G2a interval and the prediction's comparison missing | Claude Opus 5.5 | **Astra 6** (verified 148 record files) and **Fable 5.1**, each independently | Corrected before publication; E3e corrected after publication | D241 |
 
 Episode 6 went unnoticed for a week, through a passing test suite, every milestone report, a
 publication audit, the first public release and Claude's own review of the roadmap on the day it
@@ -118,7 +119,7 @@ food response is 1.55-2.7 times the most responsive graph's, not 1.5-1.8).
   useful.
 - One error (episode 16) was caught by neither a person nor a reviewer but by running the tests on
   another operating system.
-- This is one project and sixty-six episodes: an anecdote about multi-agent review, not a measurement
+- This is one project and sixty-seven episodes: an anecdote about multi-agent review, not a measurement
   of it.
 
 ## In the history

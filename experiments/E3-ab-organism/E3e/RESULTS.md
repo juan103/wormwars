@@ -201,3 +201,19 @@ bd9c869. Each was corrected here:
 trail-free follower is at about the random walk's level** (slightly above it at k_r = 0 and 2, below at 4). Astra's
 paired bootstrap intervals for those differences cross zero, so there is no demonstrated reliable advantage. The
 conclusion that the shared trails carry the separation at 7 × 7 stands.
+
+## Correction (2026-10-11, after publication; D241; Astra's review of E3f)
+
+**The discovery table's parenthetical counts** ("6, 16, 9 mazes not reached" for E3d, "19, 14, 14 not reached" for
+E3e, and the same for B) are **mazes whose colony median first-entry tick is censored**: at most half the colony's
+weys reached the goal (E3c's censored median). They are not mazes that no wey reached.
+
+**The mazes with no arrival at all** for the shared follower (`summary.json`, `mazes_with_no_arrival`):
+
+| | E3d | E3e |
+|---|---|---|
+| A, at k_r = 0 / 2 / 4 | 0 / 1 / 2 | 3 / 3 / 3 |
+| B, at k_r = 0 / 2 / 4 | 30 / 23 / 19 | 30 / 41 / 35 |
+
+The medians shown are over the mazes whose colony median is not censored. The reading (longer discovery at 7 × 7)
+is unchanged.

@@ -2,8 +2,8 @@
 
 > **This is the `roadmap` working branch.** The published record is `main`. This branch holds work
 > in progress beyond it until it is merged. E4s-0, E4s-1, E3a and E3b-0 are on `main` (2026-10-03), E3b-1
-> and E3b-2 (2026-10-04), E3c (2026-10-06), E3d (2026-10-10) and E3e (2026-10-11). The roadmap is paused
-> before E4 (the owner's choice).
+> and E3b-2 (2026-10-04), E3c (2026-10-06), E3d (2026-10-10), and E3e and E3f (2026-10-11). The roadmap is
+> paused before E4 (the owner's choice).
 
 Many parallel 2D worlds on one GPU. In each world, swarms of small creatures called **weys** forage
 and fight. Every wey's brain is a small continuous-time recurrent network whose wiring is the real
@@ -38,24 +38,42 @@ selection acts on team results.
 | [03m](experiments/03m-p4-mechanism/README.md) | What drives 03's history dependence (P4)? | Exploratory; run, reviewed, corrected | N2's history fades more slowly than nearly all the shuffles'; its large food response depends on weight placement and on RIA and AIY; most weight permutations lower its P4, gap junctions narrow its lead, and no tested single or paired deletion removed it |
 | [E2](experiments/E2-optimizer-screen/README.md) | At equal simulator work, does OpenAI-ES find better Task N navigators than 02's GA, with random sampling as a floor? | Published; pre-registered, public before its run | "E2: keep 02's GA": the ES led by 0.12 targets per episode (0.5 needed). The floor fired: random sampling came within 0.36 of the GA, so Task N is diagnosed before E3 builds on it |
 | [E2d](experiments/E2d-taskn-diagnosis/README.md) | Why did random sampling come so close? Noise, the operators, budget and stereo use on Task N | Exploratory; plan and runner reviewed; run, reviewed, corrected | "A non-stereo plateau": no champion of 47 meets the "uses the left-right difference" criterion. No tested change (more worlds, gentler mutation, both, a smaller ES σ) leaves the plateau; gentler mutation improved all 8 paired runs but met the bar only with the failed run 2; the ES is budget-limited |
-| [E3](experiments/E3-ab-organism/README.md) | Can two hand-built stereo modules be composed, with a one-neuron latch remembering which source is next, into an organism that shuttles between two sources; and can evolution find the selector? (E3a, the shuttle; mazes and colonies are E3b) | Published: E3a (pre-registered and public before its run), E3b-0 (exploratory) and E3b-1 (pre-registered, amended once before any score was read); each run, reviewed and corrected. E3b-2 exploratory; run, reviewed, corrected. E3c pre-registered (bound and pushed before its formal run); run, reviewed, corrected. E3d exploratory (a task validation, its gate bound and pushed before its run); run, reviewed, corrected. E3e the same at 7 × 7 | E3a: the engineered organism shuttles at 12.79 visits per episode (97% of a module fed the goal's scent). "Evolution found a working selector in 1 of 8 runs, not reliably"; a blind search over the whole range found working selectors in 7 of 8; the two scored "unclear" apart. Joint tuning added 2.36 visits. E3b-0: in 5 × 5 tree mazes, linear trails help a scripted follower (+3.57 legs per 1 000 ticks) and the seed with a wall reflex (+0.69); peers' trails speed later discoverers; trail direction is not shown to be used; the trail constants are adaptively selected. E3b-1, the E3 gate: tuned colonies "better" than the frozen seed, +0.225 of its mean (+0.069 at 125 generations, +0.381 at 300); more generations and trail dependence helped; the tuned comparators no longer meet the seed's design criteria. E3b-2: the tuned colonies still use the latch's switching (holding it fixed removes 85-87% of their visits); most of the gain comes from the comparators' sensing and gating parameters tuned together. E3c: modular and dense from scratch, "approximate (model-based): no relevant difference"; the tuned engineered organisms against scratch, "approximate (model-based): unclear" (+0.66 visits on average); the coverage hypothesis "supported": every from-scratch champion is a scent-free coverer, no tuned engineered one is. E3d: 6 × 6 mazes with island goals, "failed at calibration": a random walk exceeds the absolute blind limit (2.34-2.53 against 2.0); wall-followers and E3c's scent-free champions score almost nothing. E3e at 7 × 7, "failed at calibration": the walk under the limit (1.50-1.64), but the scent follower falls to 0.13-0.16 of the oracle |
+| [E3](experiments/E3-ab-organism/README.md) | Can two hand-built stereo modules be composed, with a one-neuron latch remembering which source is next, into an organism that shuttles between two sources; and can evolution find the selector? (E3a, the shuttle; mazes and colonies are E3b) | Published: E3a (pre-registered and public before its run), E3b-0 (exploratory) and E3b-1 (pre-registered, amended once before any score was read); each run, reviewed and corrected. E3b-2 exploratory; run, reviewed, corrected. E3c pre-registered (bound and pushed before its formal run); run, reviewed, corrected. E3d exploratory (a task validation, its gate bound and pushed before its run); run, reviewed, corrected. E3e the same at 7 × 7; E3f at 6 × 6 and 1 800 ticks | E3a: the engineered organism shuttles at 12.79 visits per episode (97% of a module fed the goal's scent). "Evolution found a working selector in 1 of 8 runs, not reliably"; a blind search over the whole range found working selectors in 7 of 8; the two scored "unclear" apart. Joint tuning added 2.36 visits. E3b-0: in 5 × 5 tree mazes, linear trails help a scripted follower (+3.57 legs per 1 000 ticks) and the seed with a wall reflex (+0.69); peers' trails speed later discoverers; trail direction is not shown to be used; the trail constants are adaptively selected. E3b-1, the E3 gate: tuned colonies "better" than the frozen seed, +0.225 of its mean (+0.069 at 125 generations, +0.381 at 300); more generations and trail dependence helped; the tuned comparators no longer meet the seed's design criteria. E3b-2: the tuned colonies still use the latch's switching (holding it fixed removes 85-87% of their visits); most of the gain comes from the comparators' sensing and gating parameters tuned together. E3c: modular and dense from scratch, "approximate (model-based): no relevant difference"; the tuned engineered organisms against scratch, "approximate (model-based): unclear" (+0.66 visits on average); the coverage hypothesis "supported": every from-scratch champion is a scent-free coverer, no tuned engineered one is. E3d: 6 × 6 mazes with island goals, "failed at calibration": a random walk exceeds the absolute blind limit (2.34-2.53 against 2.0); wall-followers and E3c's scent-free champions score almost nothing. E3e at 7 × 7, "failed at calibration": the walk under the limit (1.50-1.64), but the scent follower falls to 0.13-0.16 of the oracle. E3f at 6 × 6 and 1 800 ticks: "passed" on fresh mazes (blind 1.74, 0.15 of the follower; the follower 0.36 of the oracle) |
 | [E4s](experiments/E4s-stereo-module/README.md) | After E2d's plateau, can a hand-built stereo module grafted onto N2 steer, and what does evolution do to it? (Ahead of plan; stereo sensing is a game-design choice, not worm biology) | E4s-0 exploratory, E4s-1 pre-registered and public before its run; both run, reviewed, corrected | E4s-1, "supports": with the 4-neuron graft's output, evolved brains end +5.19 targets per episode above the same brains evolved without it (16 of 16 pairs), and +3.79 above random signs fixed for the run. The selected brains use the module at both endpoints in 16 of 16 runs (7.14 on average). Part of the benefit is not stereo use, and transfer into the host was not shown |
 
 Next on the roadmap:
 - **Published 2026-10-02:** E4s-0 and E4s-1, together; then E3a. **2026-10-03:** E3b-0. **2026-10-04:**
   E3b-1, the E3 gate ("better"), and E3b-2, where its gain comes from. **2026-10-06:** E3c, the assembly
   comparison. **2026-10-10:** E3d, a maze validation ("failed at calibration"). **2026-10-11:** E3e, the same
-  at 7 × 7 ("failed at calibration").
+  at 7 × 7 ("failed at calibration"); then E3f, 6 × 6 at a horizon of 1 800 ticks ("passed").
 - **Paused before E4** (the owner, 2026-10-06).
   - E3c found that the maze task is solved by scent-free circuits as well as by navigation.
   - E3d tested a maze family with island goals. It defeats wall-following, but a random walk exceeds its
     absolute blind limit.
   - At 7 × 7 (E3e) the walk falls under that limit, but the scent follower falls below a third of the oracle.
-  - The owner chooses the next step before E4.
+  - At 6 × 6 with a horizon of 1 800 ticks (E3f), the family passes the gate on fresh mazes. E4 can use it.
+  - The owner decides when E4 resumes.
 - **In the biology track:** a confirmatory study of 03m's leads, then 03a's six-neuron proof of
   concept.
 
-## Newest: the island mazes at 7 × 7 (E3e)
+## Newest: a validated maze task for E4 (E3f)
+
+**Exploratory, 1.06 of 3 GPU-hours: "E3f: passed".** The family is 6 × 6 island mazes with no extra openings at
+a horizon of 1 800 ticks. The horizon was chosen from E3d's saved trajectories, then tested on fresh mazes.
+- **Every criterion of E3d's gate held,** on calibration and on 256 fresh confirmation mazes:
+  - the best blind control (a random walk) made 1.74 visits per wey, 0.15 of the scent follower;
+  - the follower made 0.36 of the oracle, the narrowest criterion, with an interval crossing ⅓;
+  - the engineered seed made 6.74, 5 visits above the blind family.
+- **Against 6 × 6 trees at the same horizon:**
+  - on trees, the scripted wall-follower (3.74) and E3c's scent-free champions (about 3.3) beat the seed (2.34);
+  - on the islands they make almost no visits.
+- **Caveats:**
+  - the shorter horizon accounts for most of G1b's pass;
+  - with trails off, the scripted follower beats the walk by only 1.3 visits.
+
+See [E3f's results](experiments/E3-ab-organism/E3f/RESULTS.md).
+
+## The island mazes at 7 × 7 (E3e)
 
 **Exploratory, 0.71 of 3 GPU-hours: "E3e: failed at calibration".** The owner chose a larger maze after E3d. The
 design is E3d's, bound by hash, with c = 7 and fresh blocks.

@@ -418,12 +418,14 @@
     "follower_shared": {
      "later_leg_rate": 7.15482309375,
      "first_entry_median_a": {
-      "median_over_mazes_reached": 168.75,
-      "mazes_not_reached": 6
+      "median_over_uncensored_mazes": 168.75,
+      "mazes_median_censored": 6,
+      "mazes_with_no_arrival": 0
      },
      "first_entry_median_b": {
-      "median_over_mazes_reached": 324.0,
-      "mazes_not_reached": 51
+      "median_over_uncensored_mazes": 324.0,
+      "mazes_median_censored": 51,
+      "mazes_with_no_arrival": 30
      },
      "arrived_a": 0.947265625,
      "arrived_b": 0.6455078125
@@ -431,12 +433,14 @@
     "seed": {
      "later_leg_rate": 4.0424484609375,
      "first_entry_median_a": {
-      "median_over_mazes_reached": 266.25,
-      "mazes_not_reached": 2
+      "median_over_uncensored_mazes": 266.25,
+      "mazes_median_censored": 2,
+      "mazes_with_no_arrival": 0
      },
      "first_entry_median_b": {
-      "median_over_mazes_reached": 553.5,
-      "mazes_not_reached": 3
+      "median_over_uncensored_mazes": 553.5,
+      "mazes_median_censored": 3,
+      "mazes_with_no_arrival": 0
      },
      "arrived_a": 0.9697265625,
      "arrived_b": 0.9658203125
@@ -444,12 +448,14 @@
     "oracle": {
      "later_leg_rate": 17.7120060390625,
      "first_entry_median_a": {
-      "median_over_mazes_reached": 57.75,
-      "mazes_not_reached": 0
+      "median_over_uncensored_mazes": 57.75,
+      "mazes_median_censored": 0,
+      "mazes_with_no_arrival": 0
      },
      "first_entry_median_b": {
-      "median_over_mazes_reached": 112.75,
-      "mazes_not_reached": 0
+      "median_over_uncensored_mazes": 112.75,
+      "mazes_median_censored": 0,
+      "mazes_with_no_arrival": 0
      },
      "arrived_a": 1.0,
      "arrived_b": 1.0
@@ -872,12 +878,14 @@
     "follower_shared": {
      "later_leg_rate": 7.0432485,
      "first_entry_median_a": {
-      "median_over_mazes_reached": 150.25,
-      "mazes_not_reached": 16
+      "median_over_uncensored_mazes": 150.25,
+      "mazes_median_censored": 16,
+      "mazes_with_no_arrival": 1
      },
      "first_entry_median_b": {
-      "median_over_mazes_reached": 353.5,
-      "mazes_not_reached": 50
+      "median_over_uncensored_mazes": 353.5,
+      "mazes_median_censored": 50,
+      "mazes_with_no_arrival": 23
      },
      "arrived_a": 0.8974609375,
      "arrived_b": 0.6435546875
@@ -885,12 +893,14 @@
     "seed": {
      "later_leg_rate": 4.1274793984375,
      "first_entry_median_a": {
-      "median_over_mazes_reached": 245.5,
-      "mazes_not_reached": 0
+      "median_over_uncensored_mazes": 245.5,
+      "mazes_median_censored": 0,
+      "mazes_with_no_arrival": 0
      },
      "first_entry_median_b": {
-      "median_over_mazes_reached": 472.5,
-      "mazes_not_reached": 1
+      "median_over_uncensored_mazes": 472.5,
+      "mazes_median_censored": 1,
+      "mazes_with_no_arrival": 0
      },
      "arrived_a": 0.990234375,
      "arrived_b": 0.9814453125
@@ -898,12 +908,14 @@
     "oracle": {
      "later_leg_rate": 17.778350382812498,
      "first_entry_median_a": {
-      "median_over_mazes_reached": 55.25,
-      "mazes_not_reached": 0
+      "median_over_uncensored_mazes": 55.25,
+      "mazes_median_censored": 0,
+      "mazes_with_no_arrival": 0
      },
      "first_entry_median_b": {
-      "median_over_mazes_reached": 109.0,
-      "mazes_not_reached": 0
+      "median_over_uncensored_mazes": 109.0,
+      "mazes_median_censored": 0,
+      "mazes_with_no_arrival": 0
      },
      "arrived_a": 1.0,
      "arrived_b": 1.0
@@ -1326,12 +1338,14 @@
     "follower_shared": {
      "later_leg_rate": 7.374139171875,
      "first_entry_median_a": {
-      "median_over_mazes_reached": 132.5,
-      "mazes_not_reached": 9
+      "median_over_uncensored_mazes": 132.5,
+      "mazes_median_censored": 9,
+      "mazes_with_no_arrival": 2
      },
      "first_entry_median_b": {
-      "median_over_mazes_reached": 333.0,
-      "mazes_not_reached": 46
+      "median_over_uncensored_mazes": 333.0,
+      "mazes_median_censored": 46,
+      "mazes_with_no_arrival": 19
      },
      "arrived_a": 0.9248046875,
      "arrived_b": 0.6728515625
@@ -1339,12 +1353,14 @@
     "seed": {
      "later_leg_rate": 4.5725444921875,
      "first_entry_median_a": {
-      "median_over_mazes_reached": 230.75,
-      "mazes_not_reached": 0
+      "median_over_uncensored_mazes": 230.75,
+      "mazes_median_censored": 0,
+      "mazes_with_no_arrival": 0
      },
      "first_entry_median_b": {
-      "median_over_mazes_reached": 495.5,
-      "mazes_not_reached": 0
+      "median_over_uncensored_mazes": 495.5,
+      "mazes_median_censored": 0,
+      "mazes_with_no_arrival": 0
      },
      "arrived_a": 0.994140625,
      "arrived_b": 0.9931640625
@@ -1352,12 +1368,14 @@
     "oracle": {
      "later_leg_rate": 17.9401093359375,
      "first_entry_median_a": {
-      "median_over_mazes_reached": 56.75,
-      "mazes_not_reached": 0
+      "median_over_uncensored_mazes": 56.75,
+      "mazes_median_censored": 0,
+      "mazes_with_no_arrival": 0
      },
      "first_entry_median_b": {
-      "median_over_mazes_reached": 108.5,
-      "mazes_not_reached": 0
+      "median_over_uncensored_mazes": 108.5,
+      "mazes_median_censored": 0,
+      "mazes_with_no_arrival": 0
      },
      "arrived_a": 1.0,
      "arrived_b": 1.0

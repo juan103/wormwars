@@ -4,7 +4,7 @@
 met every criterion of E3d's gate, at k_r = 0 and H = 1 800.
 - **G2a,** the follower against the oracle, is the narrowest: 0.361 on confirmation, with an interval crossing ⅓.
 
-The results (`RESULTS.md`) are under review by both reviewers.
+The results (`RESULTS.md`) were reviewed by both reviewers and corrected before publication (D241).
 
 **The question:** E3d's question, at the horizon chosen from E3d's records (D237), on fresh mazes. It is the last
 horizon adjustment in the sequence of E3d, E3e and E3f.
@@ -14,7 +14,7 @@ unchanged except H, k_r, the seed and the blocks.
 
 ## Where things are
 
-- **The decisions:** D237-D240.
+- **The decisions:** D237-D241.
 - **The reviews:** `docs/reviews/20261011-after-E3e/` and `docs/reviews/20261011-E3f-*`.
 - **The code:** `scripts/e3f.py`, a thin runner over `scripts/e3d.py`.
 - **The records** (this folder):

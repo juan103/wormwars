@@ -7727,3 +7727,38 @@ calibration; E3d's and E3e's summaries are unchanged. `scripts/e3f.py` is the th
 
 **Next:** the results reviewed by both, then publication. If they stand, E4 can use this family (6 × 6, k_r = 0,
 H = 1 800). The owner decides when E4 resumes.
+
+## D241 — E3f's results reviewed by both ("fix then publish"); corrected; published
+
+**The review** (`docs/reviews/20261011-E3f-results/`, run 20261011-145538), both "fix then publish":
+- **The verdict:** both recomputed "E3f: passed". Astra verified all 148 local record files against their hashes,
+  recomputed the 18 intervals, and reproduced `summary.json`.
+- **The draft's faults:**
+  - two misroundings;
+  - the discovery table's censored colony medians labelled "mazes not reached". E3e's results carried the same
+    mislabel;
+  - figures said to come from a script that did not emit them;
+  - calibration's G2a interval, and the prediction's comparison with the outcome, missing;
+  - "match" and "make nothing";
+  - "scent-free coverage scores nearly nothing" too broad;
+  - "the navigators' advantage" from trails, measured for the scripted follower only;
+  - "horizon-robust";
+  - the scent split, the pointers, the tangent coverage and the tree context.
+
+**All taken.** `scripts/e3d_summary.py`:
+- renames the discovery keys (`median_over_uncensored_mazes`, `mazes_median_censored`);
+- adds `mazes_with_no_arrival`;
+- adds the intact champions on both blocks, the tree reference's means and the tangent coverage.
+
+E3d's and E3e's `summary.json` change only in those keys and the added field.
+
+**A correction to E3e** (rule 4): its discovery table's counts are censored colony medians. A dated Correction with
+the true no-arrival counts is appended to `experiments/E3-ab-organism/E3e/RESULTS.md`.
+
+**Publication:** consensus on the corrected results, so main is brought up to date and the owner is informed after.
+
+**The outcome of the E3d-E3e-E3f sequence:** E4's task is the 6 × 6 island family, k_r = 0, H = 1 800, validated
+on fresh mazes. E4's design carries the consultation's requirements (D237): its own blind references, competence
+separated from transfer, trail controls with the seed's trails-off split measured, and real module isolation. The
+owner decides when E4 resumes.
+
