@@ -1,0 +1,932 @@
+{
+ "verdict": "E3f: passed",
+ "bootstrap_settings": {
+  "resamples": 2000,
+  "seed": 20261011
+ },
+ "choice": {
+  "k_r": 0,
+  "verdict": "chosen",
+  "failures": {}
+ },
+ "gpu_hours": 1.0553703324721815,
+ "k_r": {
+  "0": {
+   "bootstrap": {
+    "b_max": {
+     "point": 1.7138671875,
+     "interval": [
+      1.6259765625,
+      1.8418212890624999
+     ]
+    },
+    "follower": {
+     "point": 10.41015625,
+     "interval": [
+      8.2253662109375,
+      12.777539062499999
+     ]
+    },
+    "oracle": {
+     "point": 30.9111328125,
+     "interval": [
+      29.6948974609375,
+      32.0948486328125
+     ]
+    },
+    "seed": {
+     "point": 6.751953125,
+     "interval": [
+      6.0389892578125,
+      7.5030029296875
+     ]
+    },
+    "b_max_over_follower": {
+     "point": 0.16463414634146342,
+     "interval": [
+      0.1365521941687034,
+      0.20888310185185185
+     ]
+    },
+    "follower_over_oracle": {
+     "point": 0.3367769247780621,
+     "interval": [
+      0.2709232211917461,
+      0.4028727689217369
+     ]
+    },
+    "seed_minus_b_max": {
+     "point": 5.0380859375,
+     "interval": [
+      4.34560546875,
+      5.725805664062499
+     ]
+    },
+    "seed_median_legs": {
+     "point": 4.6875,
+     "interval": [
+      3.8125,
+      5.9375
+     ]
+    },
+    "oracle_visited_share": {
+     "point": 1.0,
+     "interval": [
+      1.0,
+      1.0
+     ]
+    }
+   },
+   "scent_split": {
+    "goals_flagged": 252,
+    "goals_other": 4,
+    "mazes_both_flagged": 124,
+    "mazes_other": 4,
+    "per_goal": {
+     "follower_shared": {
+      "arrived_flagged": 0.7450396825396826,
+      "arrived_other": 0.75,
+      "arrived_a_flagged": 0.9285714285714286,
+      "arrived_a_other": 1.0,
+      "arrived_b_flagged": 0.5615079365079365,
+      "arrived_b_other": 0.5
+     },
+     "seed": {
+      "arrived_flagged": 0.9543650793650794,
+      "arrived_other": 1.0,
+      "arrived_a_flagged": 0.9722222222222222,
+      "arrived_a_other": 1.0,
+      "arrived_b_flagged": 0.9365079365079365,
+      "arrived_b_other": 1.0
+     }
+    },
+    "follower_shared": {
+     "both_flagged": {
+      "visits": 10.557459677419354,
+      "no_first_visit_share": 0.06854838709677419
+     },
+     "other": {
+      "visits": 5.84375,
+      "no_first_visit_share": 0.125
+     }
+    },
+    "seed": {
+     "both_flagged": {
+      "visits": 6.762096774193548,
+      "no_first_visit_share": 0.028225806451612902
+     },
+     "other": {
+      "visits": 6.4375,
+      "no_first_visit_share": 0.0
+     }
+    }
+   },
+   "exact_counts": {
+    "s_mod_noses": [
+     {
+      "total_visits": 0,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 0,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 0,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 1,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 1,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 1,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 0,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 0,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     }
+    ],
+    "s_dense_noses": [
+     {
+      "total_visits": 0,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 0,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 0,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 0,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 0,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 0,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 3,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 0,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     }
+    ],
+    "p_sel_noses": [
+     {
+      "total_visits": 0,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 0,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 0,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 197,
+      "max_colony_mean_legs": 0.25,
+      "round_trip_share": 0.0029296875
+     }
+    ],
+    "p_joint_noses": [
+     {
+      "total_visits": 147,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 208,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 0,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 0,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 184,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 174,
+      "max_colony_mean_legs": 0.25,
+      "round_trip_share": 0.0009765625
+     },
+     {
+      "total_visits": 268,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     },
+     {
+      "total_visits": 466,
+      "max_colony_mean_legs": 0.875,
+      "round_trip_share": 0.0068359375
+     }
+    ],
+    "wall_left": [
+     {
+      "total_visits": 9,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     }
+    ],
+    "wall_right": [
+     {
+      "total_visits": 10,
+      "max_colony_mean_legs": 0.0,
+      "round_trip_share": 0.0
+     }
+    ]
+   },
+   "gate": {
+    "follower": 10.41015625,
+    "oracle": 30.9111328125,
+    "oracle_visited_share": 1.0,
+    "seed": 6.751953125,
+    "seed_median_legs": 4.6875,
+    "b_max": 1.7138671875,
+    "b_max_member": "walk_p0.5_r1",
+    "failed": [],
+    "verdict": "E3f: passed",
+    "precondition": true
+   },
+   "ratios": {
+    "b_max_over_follower": 0.16463414634146342,
+    "follower_over_oracle": 0.3367769247780621,
+    "seed_minus_b_max": 5.0380859375
+   },
+   "first_draw_feasible_share": 0.765625,
+   "single_strain_means": {
+    "wall_left": 0.0087890625,
+    "wall_right": 0.009765625,
+    "w2": 1.255859375,
+    "w2_turn_-0.8": 0.046875,
+    "w2_turn_-0.4": 0.400390625,
+    "w2_turn_0": 0.6982421875,
+    "w2_turn_0.2": 0.9814453125,
+    "w2_turn_0.4": 1.255859375,
+    "w2_turn_0.6": 0.9130859375,
+    "w2_turn_0.8": 0.2314453125,
+    "w2_turn_1": 0.0,
+    "w2_turn_1.2": 0.0,
+    "w2_turn_1.4": 0.0,
+    "w2_turn_1.6": 0.0,
+    "w2_turn_1.8": 0.0,
+    "w2_turn_1.95": 0.0,
+    "w2_m40": 1.23828125,
+    "w2_m80": 1.2900390625,
+    "walk_p0.25_r0.5": 0.9794921875,
+    "walk_p0.25_r1": 1.6181640625,
+    "walk_p0.25_r2": 1.6416015625,
+    "walk_p0.5_r0.5": 1.3583984375,
+    "walk_p0.5_r1": 1.7138671875,
+    "walk_p0.5_r2": 1.6640625,
+    "walk_p0.8_r0.5": 1.5859375,
+    "walk_p0.8_r1": 1.6650390625,
+    "walk_p0.8_r2": 1.5361328125,
+    "seed_noses": 1.27734375,
+    "oracle": 30.9111328125,
+    "follower_shared": 10.41015625,
+    "follower_none": 3.1298828125,
+    "seed": 6.751953125
+   },
+   "multi_strain_blind": {
+    "s_mod_noses": {
+     "min": 0.0,
+     "max": 0.0009765625,
+     "mean": 0.0003662109375
+    },
+    "s_dense_noses": {
+     "min": 0.0,
+     "max": 0.0029296875,
+     "mean": 0.0003662109375
+    },
+    "p_sel_noses": {
+     "min": 0.0,
+     "max": 0.1923828125,
+     "mean": 0.048095703125
+    },
+    "p_joint_noses": {
+     "min": 0.0,
+     "max": 0.455078125,
+     "mean": 0.1766357421875
+    }
+   },
+   "w2_turn_best": [
+    "w2_turn_0.4",
+    1.255859375
+   ],
+   "b_max_member_detail": {
+    "round_trip_share": 0.251953125,
+    "coverage": 0.839274109375,
+    "visited_share": 0.8173828125,
+    "contact_perimeter": 0.45204209375,
+    "contact_ring_a": 0.051950921875,
+    "contact_ring_b": 0.050787234375000004,
+    "contact_other": 0.06878693749999999,
+    "switch_rate": 35.3814019296875,
+    "at_visit": {
+     "ring_a|other": 237,
+     "ring_b|perimeter": 386,
+     "ring_a|perimeter": 736,
+     "ring_b|other": 161,
+     "perimeter|perimeter": 96,
+     "ring_b|ring_a": 31,
+     "other|other": 38,
+     "ring_a|ring_b": 65,
+     "ring_b|ring_b": 3,
+     "none|none": 1,
+     "ring_a|ring_a": 1
+    }
+   },
+   "round_trip_share_blind_top5": [
+    [
+     "walk_p0.5_r1",
+     0.251953125
+    ],
+    [
+     "walk_p0.8_r1",
+     0.25
+    ],
+    [
+     "walk_p0.5_r2",
+     0.2333984375
+    ],
+    [
+     "walk_p0.25_r2",
+     0.228515625
+    ],
+    [
+     "walk_p0.25_r1",
+     0.224609375
+    ]
+   ],
+   "navigators": {
+    "follower_shared": {
+     "later_leg_rate": 5.933230328125,
+     "first_entry_median_a": {
+      "median_over_mazes_reached": 147.0,
+      "mazes_not_reached": 11
+     },
+     "first_entry_median_b": {
+      "median_over_mazes_reached": 308.5,
+      "mazes_not_reached": 61
+     },
+     "arrived_a": 0.9296875,
+     "arrived_b": 0.560546875
+    },
+    "seed": {
+     "later_leg_rate": 4.073296765625001,
+     "first_entry_median_a": {
+      "median_over_mazes_reached": 253.0,
+      "mazes_not_reached": 1
+     },
+     "first_entry_median_b": {
+      "median_over_mazes_reached": 533.75,
+      "mazes_not_reached": 2
+     },
+     "arrived_a": 0.97265625,
+     "arrived_b": 0.9375
+    },
+    "oracle": {
+     "later_leg_rate": 17.1876876484375,
+     "first_entry_median_a": {
+      "median_over_mazes_reached": 54.5,
+      "mazes_not_reached": 0
+     },
+     "first_entry_median_b": {
+      "median_over_mazes_reached": 113.75,
+      "mazes_not_reached": 0
+     },
+     "arrived_a": 1.0,
+     "arrived_b": 1.0
+    }
+   },
+   "follower_shared_detail": {
+    "round_trip_share": 0.455078125,
+    "no_first_visit_share": 0.0703125
+   },
+   "seed_detail": {
+    "round_trip_share": 0.8134765625,
+    "no_first_visit_share": 0.02734375
+   },
+   "mazes": {
+    "open_share": 0.6921875000000001,
+    "junctions": 14.9296875,
+    "dead_ends": 6.8203125,
+    "detour": 1.7299479166666667,
+    "line_of_sight_share": 0.09147135416666666,
+    "entrances": 2.0859375,
+    "spawn_candidates": 12.71875,
+    "redrawn_share": 0.234375,
+    "scent_reach_share": 0.984375
+   }
+  }
+ },
+ "confirmation": {
+  "k_r": 0,
+  "bootstrap": {
+   "b_max": {
+    "point": 1.744140625,
+    "interval": [
+     1.6791748046875,
+     1.8227661132812498
+    ]
+   },
+   "follower": {
+    "point": 11.60546875,
+    "interval": [
+     10.1059326171875,
+     13.07132568359375
+    ]
+   },
+   "oracle": {
+    "point": 32.11328125,
+    "interval": [
+     31.313916015625,
+     32.9223876953125
+    ]
+   },
+   "seed": {
+    "point": 6.73828125,
+    "interval": [
+     6.28856201171875,
+     7.19044189453125
+    ]
+   },
+   "b_max_over_follower": {
+    "point": 0.15028609895658027,
+    "interval": [
+     0.13381364897174047,
+     0.17398497893592438
+    ]
+   },
+   "follower_over_oracle": {
+    "point": 0.361391558204598,
+    "interval": [
+     0.3180053493518623,
+     0.40369623708728763
+    ]
+   },
+   "seed_minus_b_max": {
+    "point": 4.994140625,
+    "interval": [
+     4.5555908203125,
+     5.43214111328125
+    ]
+   },
+   "seed_median_legs": {
+    "point": 5.1875,
+    "interval": [
+     4.5,
+     5.625
+    ]
+   },
+   "oracle_visited_share": {
+    "point": 1.0,
+    "interval": [
+     1.0,
+     1.0
+    ]
+   }
+  },
+  "scent_split": {
+   "goals_flagged": 509,
+   "goals_other": 3,
+   "mazes_both_flagged": 253,
+   "mazes_other": 3,
+   "per_goal": {
+    "follower_shared": {
+     "arrived_flagged": 0.7870825147347741,
+     "arrived_other": 1.0,
+     "arrived_a_flagged": 0.9308823529411765,
+     "arrived_a_other": 1.0,
+     "arrived_b_flagged": 0.6427165354330708,
+     "arrived_b_other": 1.0
+    },
+    "seed": {
+     "arrived_flagged": 0.9462180746561886,
+     "arrived_other": 1.0,
+     "arrived_a_flagged": 0.957843137254902,
+     "arrived_a_other": 1.0,
+     "arrived_b_flagged": 0.9345472440944882,
+     "arrived_b_other": 1.0
+    }
+   },
+   "follower_shared": {
+    "both_flagged": {
+     "visits": 11.46096837944664,
+     "no_first_visit_share": 0.06966403162055336
+    },
+    "other": {
+     "visits": 23.791666666666668,
+     "no_first_visit_share": 0.0
+    }
+   },
+   "seed": {
+    "both_flagged": {
+     "visits": 6.689723320158103,
+     "no_first_visit_share": 0.042490118577075096
+    },
+    "other": {
+     "visits": 10.833333333333334,
+     "no_first_visit_share": 0.0
+    }
+   }
+  },
+  "exact_counts": {
+   "s_mod_noses": [
+    {
+     "total_visits": 0,
+     "max_colony_mean_legs": 0.0,
+     "round_trip_share": 0.0
+    },
+    {
+     "total_visits": 0,
+     "max_colony_mean_legs": 0.0,
+     "round_trip_share": 0.0
+    },
+    {
+     "total_visits": 0,
+     "max_colony_mean_legs": 0.0,
+     "round_trip_share": 0.0
+    },
+    {
+     "total_visits": 1,
+     "max_colony_mean_legs": 0.0,
+     "round_trip_share": 0.0
+    },
+    {
+     "total_visits": 0,
+     "max_colony_mean_legs": 0.0,
+     "round_trip_share": 0.0
+    },
+    {
+     "total_visits": 1,
+     "max_colony_mean_legs": 0.0,
+     "round_trip_share": 0.0
+    },
+    {
+     "total_visits": 1,
+     "max_colony_mean_legs": 0.0,
+     "round_trip_share": 0.0
+    },
+    {
+     "total_visits": 0,
+     "max_colony_mean_legs": 0.0,
+     "round_trip_share": 0.0
+    }
+   ],
+   "s_dense_noses": [
+    {
+     "total_visits": 0,
+     "max_colony_mean_legs": 0.0,
+     "round_trip_share": 0.0
+    },
+    {
+     "total_visits": 0,
+     "max_colony_mean_legs": 0.0,
+     "round_trip_share": 0.0
+    },
+    {
+     "total_visits": 1,
+     "max_colony_mean_legs": 0.0,
+     "round_trip_share": 0.0
+    },
+    {
+     "total_visits": 0,
+     "max_colony_mean_legs": 0.0,
+     "round_trip_share": 0.0
+    },
+    {
+     "total_visits": 0,
+     "max_colony_mean_legs": 0.0,
+     "round_trip_share": 0.0
+    },
+    {
+     "total_visits": 0,
+     "max_colony_mean_legs": 0.0,
+     "round_trip_share": 0.0
+    },
+    {
+     "total_visits": 1,
+     "max_colony_mean_legs": 0.0,
+     "round_trip_share": 0.0
+    },
+    {
+     "total_visits": 0,
+     "max_colony_mean_legs": 0.0,
+     "round_trip_share": 0.0
+    }
+   ],
+   "p_sel_noses": [
+    {
+     "total_visits": 0,
+     "max_colony_mean_legs": 0.0,
+     "round_trip_share": 0.0
+    },
+    {
+     "total_visits": 0,
+     "max_colony_mean_legs": 0.0,
+     "round_trip_share": 0.0
+    },
+    {
+     "total_visits": 0,
+     "max_colony_mean_legs": 0.0,
+     "round_trip_share": 0.0
+    },
+    {
+     "total_visits": 374,
+     "max_colony_mean_legs": 0.5,
+     "round_trip_share": 0.0029296875
+    }
+   ],
+   "p_joint_noses": [
+    {
+     "total_visits": 266,
+     "max_colony_mean_legs": 0.0,
+     "round_trip_share": 0.0
+    },
+    {
+     "total_visits": 328,
+     "max_colony_mean_legs": 0.0,
+     "round_trip_share": 0.0
+    },
+    {
+     "total_visits": 0,
+     "max_colony_mean_legs": 0.0,
+     "round_trip_share": 0.0
+    },
+    {
+     "total_visits": 0,
+     "max_colony_mean_legs": 0.0,
+     "round_trip_share": 0.0
+    },
+    {
+     "total_visits": 300,
+     "max_colony_mean_legs": 0.0,
+     "round_trip_share": 0.0
+    },
+    {
+     "total_visits": 275,
+     "max_colony_mean_legs": 0.25,
+     "round_trip_share": 0.0
+    },
+    {
+     "total_visits": 400,
+     "max_colony_mean_legs": 0.0,
+     "round_trip_share": 0.0
+    },
+    {
+     "total_visits": 880,
+     "max_colony_mean_legs": 0.875,
+     "round_trip_share": 0.0029296875
+    }
+   ],
+   "wall_left": [
+    {
+     "total_visits": 16,
+     "max_colony_mean_legs": 0.0,
+     "round_trip_share": 0.0
+    }
+   ],
+   "wall_right": [
+    {
+     "total_visits": 14,
+     "max_colony_mean_legs": 0.0,
+     "round_trip_share": 0.0
+    }
+   ]
+  },
+  "gate": {
+   "follower": 11.60546875,
+   "oracle": 32.11328125,
+   "oracle_visited_share": 1.0,
+   "seed": 6.73828125,
+   "seed_median_legs": 5.1875,
+   "b_max": 1.744140625,
+   "b_max_member": "walk_p0.5_r2",
+   "failed": [],
+   "verdict": "E3f: passed",
+   "precondition": true
+  },
+  "ratios": {
+   "b_max_over_follower": 0.15028609895658027,
+   "follower_over_oracle": 0.361391558204598,
+   "seed_minus_b_max": 4.994140625
+  },
+  "first_draw_feasible_share": 0.73046875,
+  "single_strain_means": {
+   "wall_left": 0.0078125,
+   "wall_right": 0.0068359375,
+   "w2": 1.2353515625,
+   "w2_turn_-0.8": 0.03662109375,
+   "w2_turn_-0.4": 0.34716796875,
+   "w2_turn_0": 0.72265625,
+   "w2_turn_0.2": 0.927734375,
+   "w2_turn_0.4": 1.2353515625,
+   "w2_turn_0.6": 0.86083984375,
+   "w2_turn_0.8": 0.18212890625,
+   "w2_turn_1": 0.0,
+   "w2_turn_1.2": 0.0,
+   "w2_turn_1.4": 0.0,
+   "w2_turn_1.6": 0.0,
+   "w2_turn_1.8": 0.0,
+   "w2_turn_1.95": 0.0,
+   "w2_m40": 1.2158203125,
+   "w2_m80": 1.20361328125,
+   "walk_p0.25_r0.5": 0.98486328125,
+   "walk_p0.25_r1": 1.5888671875,
+   "walk_p0.25_r2": 1.6181640625,
+   "walk_p0.5_r0.5": 1.33447265625,
+   "walk_p0.5_r1": 1.69580078125,
+   "walk_p0.5_r2": 1.744140625,
+   "walk_p0.8_r0.5": 1.498046875,
+   "walk_p0.8_r1": 1.7109375,
+   "walk_p0.8_r2": 1.56884765625,
+   "seed_noses": 1.279296875,
+   "oracle": 32.11328125,
+   "follower_shared": 11.60546875,
+   "follower_none": 3.0537109375,
+   "seed": 6.73828125
+  },
+  "multi_strain_blind": {
+   "s_mod_noses": {
+    "min": 0.0,
+    "max": 0.00048828125,
+    "mean": 0.00018310546875
+   },
+   "s_dense_noses": {
+    "min": 0.0,
+    "max": 0.00048828125,
+    "mean": 0.0001220703125
+   },
+   "p_sel_noses": {
+    "min": 0.0,
+    "max": 0.1826171875,
+    "mean": 0.045654296875
+   },
+   "p_joint_noses": {
+    "min": 0.0,
+    "max": 0.4296875,
+    "mean": 0.14947509765625
+   }
+  },
+  "w2_turn_best": [
+   "w2_turn_0.4",
+   1.2353515625
+  ],
+  "b_max_member_detail": {
+   "round_trip_share": 0.26123046875,
+   "coverage": 0.834038625,
+   "visited_share": 0.81591796875,
+   "contact_perimeter": 0.45419811718750003,
+   "contact_ring_a": 0.05631234765625,
+   "contact_ring_b": 0.056347406249999996,
+   "contact_other": 0.0762388671875,
+   "switch_rate": 35.871039484375004,
+   "at_visit": {
+    "ring_a|perimeter": 1378,
+    "ring_b|other": 371,
+    "perimeter|perimeter": 161,
+    "ring_b|perimeter": 765,
+    "ring_a|other": 642,
+    "ring_a|ring_b": 124,
+    "ring_b|ring_a": 61,
+    "ring_b|ring_b": 5,
+    "other|other": 60,
+    "ring_a|ring_a": 3,
+    "ring_a|none": 2
+   }
+  },
+  "round_trip_share_blind_top5": [
+   [
+    "walk_p0.5_r2",
+    0.26123046875
+   ],
+   [
+    "walk_p0.8_r1",
+    0.25048828125
+   ],
+   [
+    "walk_p0.5_r1",
+    0.24951171875
+   ],
+   [
+    "walk_p0.25_r1",
+    0.22705078125
+   ],
+   [
+    "walk_p0.25_r2",
+    0.22412109375
+   ]
+  ],
+  "navigators": {
+   "follower_shared": {
+    "later_leg_rate": 6.8325775664062505,
+    "first_entry_median_a": {
+     "median_over_mazes_reached": 175.25,
+     "mazes_not_reached": 14
+    },
+    "first_entry_median_b": {
+     "median_over_mazes_reached": 312.5,
+     "mazes_not_reached": 104
+    },
+    "arrived_a": 0.93115234375,
+    "arrived_b": 0.6455078125
+   },
+   "seed": {
+    "later_leg_rate": 4.128120765625,
+    "first_entry_median_a": {
+     "median_over_mazes_reached": 263.5,
+     "mazes_not_reached": 6
+    },
+    "first_entry_median_b": {
+     "median_over_mazes_reached": 491.5,
+     "mazes_not_reached": 7
+    },
+    "arrived_a": 0.9580078125,
+    "arrived_b": 0.93505859375
+   },
+   "oracle": {
+    "later_leg_rate": 17.89365396484375,
+    "first_entry_median_a": {
+     "median_over_mazes_reached": 59.5,
+     "mazes_not_reached": 0
+    },
+    "first_entry_median_b": {
+     "median_over_mazes_reached": 113.25,
+     "mazes_not_reached": 0
+    },
+    "arrived_a": 1.0,
+    "arrived_b": 1.0
+   }
+  },
+  "follower_shared_detail": {
+   "round_trip_share": 0.54296875,
+   "no_first_visit_share": 0.06884765625
+  },
+  "seed_detail": {
+   "round_trip_share": 0.81884765625,
+   "no_first_visit_share": 0.0419921875
+  },
+  "mazes": {
+   "open_share": 0.6912760416666667,
+   "junctions": 14.9609375,
+   "dead_ends": 6.89453125,
+   "detour": 1.5920572916666669,
+   "line_of_sight_share": 0.07486979166666666,
+   "entrances": 2.072265625,
+   "spawn_candidates": 12.63671875,
+   "redrawn_share": 0.26953125,
+   "scent_reach_share": 0.994140625
+  }
+ }
+}

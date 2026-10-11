@@ -7696,3 +7696,34 @@ calibration; E3d's and E3e's summaries are unchanged. `scripts/e3f.py` is the th
 **Bound** at the commit that records this decision. The runner's binding commit follows in the next commit.
 
 **Next:** a CPU smoke, the owner told before GPU use, then the formal stages.
+
+## D240 — E3f run: "E3f: passed"; results drafted for review
+
+**The owner was told** before GPU use began.
+
+**The run:**
+- **The CUDA smoke** of all five stages passed.
+- **`project`:** admitted with no reduction, 1.56 h; the whole blind family played.
+- **`g-e`:** passed.
+- **`calibrate`:** passed every criterion: B_max 1.71, follower ÷ oracle 0.337, B_max ÷ follower 0.165.
+- **`confirm`:** the confirmation block passed every criterion, 256 fresh mazes:
+  - B_max 1.74 [1.68, 1.82];
+  - follower ÷ oracle 0.361 [0.318, 0.404];
+  - B_max ÷ follower 0.150 [0.134, 0.174];
+  - the seed 6.74, with median legs 5.19.
+- **`report`:** "E3f: passed".
+
+1.06 of 3 GPU-hours.
+
+**Also measured** (descriptive):
+- **E3c's S champions,** intact, make 1 visit per arm in total on the islands, against about 3 300 per champion on
+  the 6 × 6 tree reference. The S prediction holds.
+- **P-joint's arm** keeps 0.14 × its tree-reference mean. The P-joint prediction (at least 0.5 ×) fails.
+- **On the tree reference,** the scripted wall-follower (3.74) beats the seed (2.34). On the islands it makes 0.01,
+  and the seed makes 6.74.
+
+**The results draft:** `experiments/E3-ab-organism/E3f/RESULTS.md`, from `summary.json`
+(`scripts/e3d_summary.py --exp E3f`, with its confirmation section).
+
+**Next:** the results reviewed by both, then publication. If they stand, E4 can use this family (6 × 6, k_r = 0,
+H = 1 800). The owner decides when E4 resumes.
