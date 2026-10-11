@@ -8000,3 +8000,13 @@ table D246 proposed.
 - **For the pre-registration** (Fable): the pairing after generation 1 is mostly through the mazes, since the same
   draws land on different parents; P1-cut's level (0.025 in the code) and P1's use of the larger margin must be
   stated; P1-cut is a qualifier, not a third confirmatory test, so the family stays at P1-info and P2.
+
+## D248 — Rule 7 for `Brain.substep_hook`: identical, CPU and GPU
+
+E3d's full-rollout comparison against the engine before E3d's code (40bd50f), at 751a849 on a clean tree, tolerance
+zero: identical on the CPU and on the GPU (RTX 5080, `replay_mode()`), all six cases
+(`docs/E4/rule7/hook-compare-{cpu,cuda}-751a849.json`). The output gate's records at c60eac7 are beside them. Both of
+E4's engine changes, the output gate and the substep hook, are unset in every earlier experiment's path.
+
+**Next:** the owner's word before the pilot on the GPU (about 2-3 GPU-hours, inside E4's 30); E4-D's design v1 for
+review by both, and E4-D's own ceiling for the owner.

@@ -1,0 +1,55 @@
+{
+ "identical": true,
+ "cases": {
+  "follower_c5": {
+   "identical": true,
+   "first_differing_tick": null,
+   "visits_total": [
+    984,
+    984
+   ]
+  },
+  "seed_c5": {
+   "identical": true,
+   "first_differing_tick": null,
+   "visits_total": [
+    417,
+    417
+   ]
+  },
+  "config_c5": {
+   "identical": true
+  },
+  "follower_c6": {
+   "identical": true,
+   "first_differing_tick": null,
+   "visits_total": [
+    918,
+    918
+   ]
+  },
+  "seed_c6": {
+   "identical": true,
+   "first_differing_tick": null,
+   "visits_total": [
+    253,
+    253
+   ]
+  },
+  "config_c6": {
+   "identical": true
+  }
+ },
+ "engines": {
+  "reference": {
+   "package": "D:\\Claude\\random\\wormWars-e3d-ref\\wormwars\\__init__.py",
+   "commit": "40bd50fedbf11f9c1a43962bfa989cad5e375945",
+   "dirty": false
+  },
+  "compared": {
+   "package": "D:\\Claude\\random\\wormWars\\wormwars\\__init__.py",
+   "commit": "751a849420924e2e939d3c0921c7a96de68fd7a4",
+   "dirty": false
+  }
+ }
+}
