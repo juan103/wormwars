@@ -125,3 +125,40 @@ def l1_switch(l1: G.Module) -> G.Module:
 def carrier_only() -> G.Module:
     """The carrier with no graft: the blind circle (forward 1.0, turn 0.2)."""
     return _register(G.Module("e3-carrier", (), ()))
+
+
+# --- E4 (docs/E4/E4-DESIGN.md v3 §1) ------------------------------------------------------------------------
+
+def _module_neurons(prefix: str) -> tuple:
+    return tuple(f"E3_{prefix}_{n}" for n in ("NL", "NR", "CL", "CR"))
+
+
+def engineered_gated(l1: G.Module) -> G.Module:
+    """E-G: E with ungated comparators (biases 0, Q → comparator edges 0, as `no_latch`) and the 32 cross-link
+    slots, every directed edge between a neuron of A and a neuron of B, at weight 0. Its modes come from an output
+    gate on each module's comparator → motor edges (`gate_spec`, `Brain.gate_outputs`), not from saturation."""
+    base = _organism(l1, "e4-organism-EG", bias_a=0.0, bias_b=0.0, gate_a=0.0, gate_b=0.0)
+    a, b = _module_neurons("A"), _module_neurons("B")
+    slots = tuple((x, y, 0.0) for src, dst in ((a, b), (b, a)) for x in src for y in dst)
+    m = G.Module(base.name, base.neurons, base.synapses + slots, base.tau, base.bias, base.noses, base.nose_gain,
+                 base.neuron_class)
+    return _register(m)
+
+
+def cross_links(m: G.Module) -> list:
+    """The 32 (pre, post) cross-link slots of `m`, A → B then B → A."""
+    a, b = set(_module_neurons("A")), set(_module_neurons("B"))
+    return [(x, y) for x, y, _ in m.synapses if (x in a and y in b) or (x in b and y in a)]
+
+
+def motor_edges(m: G.Module, module: str) -> list:
+    """A module's comparator → motor edges: from its CL and CR to every target outside the grafted neurons."""
+    comps = {f"E3_{module}_CL", f"E3_{module}_CR"}
+    grafted = set(m.neurons)
+    return [(x, y) for x, y, _ in m.synapses if x in comps and y not in grafted]
+
+
+def gate_spec(ext, m: G.Module) -> dict:
+    """The output gate for `Brain.gate_outputs`: the latch's index and each module's gated edges as index pairs."""
+    pairs = lambda module: [(ext.index(x), ext.index(y)) for x, y in motor_edges(m, module)]  # noqa: E731
+    return {"q": ext.index(Q), "a": pairs("A"), "b": pairs("B")}

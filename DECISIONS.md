@@ -7843,3 +7843,30 @@ pre-registration.
 3. the pilot, on the GPU, only after the owner says so;
 4. the pre-registration with the pilot's numbers, reviewed by both, bound and pushed;
 5. the formal run.
+
+## D245 — E4's code, part 1 (CPU only): the output gate, E-G, its exactness, and a competence check
+
+**The output gate** (`Brain.gate_outputs`, `wormwars/brain.py`): two declared edge sets whose chemical drive is
+multiplied per wey and substep, by g_A = [v_q ≥ 0] for A's set and g_B = 1 − g_A for B's. Every other edge is
+unchanged. Unset, the step's code path is unchanged.
+- **Tests** (`tests/test_e4_gate.py`), each seen failing:
+  - a gated step equals the inactive module's motor edges at 0, in either mode;
+  - q = 0 is mode A, and modes are per wey;
+  - unset is bitwise unchanged;
+  - a sabotage (the wrong module gated) is caught.
+- **Rule 7, the CPU leg:** E3d's full-rollout comparison against 40bd50f is identical with the change in place.
+  The engine tests pass. The GPU leg waits for the owner's word.
+
+**E-G** (`organism.engineered_gated`, `wormwars/e4/organism.py`): E with ungated comparators and the 32 cross-link
+slots at 0, with W2, and its gate attached to the organism. `maze_organisms.Organism` gains an optional `gate`,
+None for every E3 organism, which `brain()` applies.
+- **Tests** (`tests/test_e4_organism.py`): the gate is attached and applied; and with the slots at 0 it plays
+  exactly as E-G built without them, positions and visits.
+
+**A CPU look at E-G's competence** (`scripts/e4_eg_check.py`, `docs/E4/eg-check.json`; 16 fresh mazes, H = 1 800):
+E-G made 5.98 visits per wey (median colony legs 4.1), the seed 5.88 (4.6), the random walk 1.58. So the real gate
+and the ungated comparators cost no competence. This is exploratory; the re-qualification on E4's blocks comes
+later.
+
+**Next:** the arms' masks (X0 and X+ scales, the frozen selector, E4's `assert_frozen`), cut and mean
+substitution, the runner, the evaluation harness and E4-D's feasibility. All on the CPU.

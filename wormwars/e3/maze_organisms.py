@@ -62,6 +62,7 @@ class Organism:
     ext: object
     iface: object
     genome: Genome
+    gate: dict | None = None  # E4's output gate (`Brain.gate_outputs`), applied by `brain`; None for every E3 organism
 
 
 class StartedBrain(Brain):
@@ -83,7 +84,8 @@ def brain(org: "Organism", device="cpu") -> StartedBrain:
     from ..e04a.evolve import moved
     g = org.genome if str(device) == "cpu" else moved(org.genome, device)
     start = {org.ext.index("E3B_M1"): M_START} if "E3B_M1" in org.ext.names else {}
-    return StartedBrain(g, start)
+    b = StartedBrain(g, start)
+    return b.gate_outputs(org.gate) if org.gate is not None else b
 
 
 def _register(m: G.Module) -> G.Module:

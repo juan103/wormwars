@@ -339,6 +339,9 @@ class Brain:
         self.clamp_mask: Tensor | None = None
         self.clamp_value: Tensor | None = None
         self._padded: tuple[Tensor, Tensor] | None = None  # (M, G) doubled for a single strain
+        # Optional output gate (E4): two edge sets whose chemical drive is multiplied per wey by g_A = [v_q >= 0]
+        # and g_B = 1 - g_A. Unset, the update is unchanged.
+        self.output_gate: dict | None = None
 
     def silence(self, per_strain: list[list[int]] | None) -> "Brain":
         """Clamp the named neurons to zero after every substep, one neuron list per strain.
@@ -378,6 +381,30 @@ class Brain:
                 mask[s, 0, int(i)] = 0.0
                 value[s, 0, int(i)] = float(x)
         self.clamp_mask, self.clamp_value = mask, value
+        return self
+
+    def gate_outputs(self, spec: dict | None) -> "Brain":
+        """E4's output gate (docs/E4/E4-DESIGN.md v3 §1): `spec` = {"q": the latch's index, "a": [(pre, post)],
+        "b": [(pre, post)]}. Each listed edge's chemical drive is multiplied, per wey and substep, by g_A = 1 while
+        v_q >= 0 (else 0) for the "a" edges and by g_B = 1 - g_A for the "b" edges. Every other edge, the gated
+        modules' other outputs included, is unchanged. `None` removes the gate."""
+        if spec is None:
+            self.output_gate = None
+            return self
+        n = self.n
+        masks = []
+        for key in ("a", "b"):
+            mk = torch.zeros(n, n, device=self.device, dtype=self.W.dtype)
+            for i, j in spec[key]:
+                # W_drive[s, i, j] carries pre i -> post j under pre_to_post; the legacy direction is transposed
+                if self.cfg.chem_direction == "pre_to_post":
+                    mk[int(i), int(j)] = 1.0
+                else:
+                    mk[int(j), int(i)] = 1.0
+            masks.append(mk)
+        if bool(((masks[0] + masks[1]) > 1).any()):
+            raise ValueError("an edge is gated by both modes")
+        self.output_gate = {"q": int(spec["q"]), "mask_a": masks[0], "mask_b": masks[1]}
         return self
 
     def cut_gap(self, pairs: list[list[tuple[int, int]]]) -> "Brain":
@@ -439,8 +466,17 @@ class Brain:
                 self._padded = (M2, G.repeat(2, 1, 1))
             M, G = self._padded
             v = v.repeat(2, 1, 1)
+        gate = self.output_gate
+        if gate is not None:
+            ma, mb = gate["mask_a"], gate["mask_b"]
+            M_rest, M_a, M_b = M * (1.0 - ma - mb), M * ma, M * mb
         for _ in range(k):
-            chem = torch.bmm(torch.tanh(v), M)
+            t = torch.tanh(v)
+            if gate is None:
+                chem = torch.bmm(t, M)
+            else:
+                g_a = (v[..., gate["q"]:gate["q"] + 1] >= 0).to(v.dtype)  # [S, B, 1], per wey, before the update
+                chem = torch.bmm(t, M_rest) + g_a * torch.bmm(t, M_a) + (1.0 - g_a) * torch.bmm(t, M_b)
             gap = torch.bmm(v, G)  # G symmetric, so no transpose needed
             v = (v + c * (drive + chem + gap)) / den
             if mask is not None:
