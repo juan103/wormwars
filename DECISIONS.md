@@ -7762,3 +7762,23 @@ on fresh mazes. E4's design carries the consultation's requirements (D237): its 
 separated from transfer, trail controls with the seed's trails-off split measured, and real module isolation. The
 owner decides when E4 resumes.
 
+
+## D242 — E4 starts (the owner: "Start"); no GPU until the owner says so; design v1
+
+**The owner,** 2026-10-11, after E3f passed:
+- "Start", for E4;
+- then, during the first reading: "Don't use the GPU yet". No GPU use of any kind until the owner says to go.
+  Design, reviews, code and CPU work go on.
+
+**E4's design v1** (`docs/E4/E4-DESIGN.md`), for review:
+- **the task:** E3f's validated family (6 × 6, k_r = 0, H = 1 800);
+- **the primary question, useful transfer:**
+  - two arms from the seed, cross-links impossible (X0) against possible (X+), all else matched;
+  - **T1:** the champions compared with E3c's statistics;
+  - **T2:** acute cuts and scrambles of the cross-links against matched within-module cuts;
+- **shared dependence:** descriptive, under an evaluation-only mode clamp;
+- **references re-played on E4's mazes,** as a precondition, with trail conditions;
+- **a diagnostic task** where only A senses a hazard B must avoid (E4-D), proposed as a separate step;
+- **consolidation:** deferred to stage 09.
+
+**Next:** the design reviewed by both. No GPU.
