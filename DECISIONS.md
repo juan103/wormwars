@@ -7489,3 +7489,24 @@ the owner is informed after (the 2026-09-29 rule).
 
 **Next:** the owner chooses the next construction (design §9); the roadmap stays paused before E4.
 
+
+## D232 — The owner chooses a 7 × 7 maze; E3e designed (v1, for review)
+
+**The owner,** 2026-10-11, choosing option 1 of the five E3d's results listed: "1". That is a larger maze (7 × 7)
+with the same island construction, to make random coverage harder without changing the task.
+
+**E3e** (`docs/E3/E3e-DESIGN.md` v1) is E3d's bound design unchanged except:
+- c = 7;
+- the interior and the distance bound that follow from it;
+- a fresh run seed (1 191 000) and fresh blocks (ids 31 000-31 455);
+- the wall-follower's tree-tour qualification repeated at c = 7.
+
+It uses a thin runner over `scripts/e3d.py`, and no engine change is expected.
+
+**The sizing at c = 7** (appended to `docs/E3/e3d-sizing.json`; the earlier rows are unchanged): carved islands
+are first-draw feasible in 65% of draws at the distance bound of 5, with 156 goal placements seen.
+
+**A correction to Claude's estimate to the owner:** "about 1 GPU-hour" was the calibration alone. If calibration
+passes, the full plan is about 2 h. The ceiling stays 3 GPU-hours.
+
+**Next:** the design reviewed by both; binding; the code test-first; the owner told before any GPU use.

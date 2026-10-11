@@ -177,7 +177,7 @@ def main():
               f"{sm['distinct_placements']:3d} (effective {sm['effective_placements']:5.1f}, top 2 {sm['top2_share']:.2f}), "
               f"open {sm['open_share_all_draws']:.2f} all / {sm['open_share_accepted']:.2f} accepted", flush=True)
 
-    for c in (5, 6):
+    for c in (5, 6, 7):  # c = 7 appended for E3e (D232); the earlier rows keep their draws
         for lo_name, lo in (("ceil(c/2)+1", math.ceil(c / 2) + 1), ("3", 3)):
             for k in (6, 8, 10):
                 rows = []
