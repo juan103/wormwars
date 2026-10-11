@@ -261,3 +261,15 @@ def test_the_goal_stream_reproduces_exactly():
         pool = [s for s in I.segments(6) if frozenset(s) not in open_ and a not in s and b not in s]
         order = [pool[i] for i in rng.permutation(len(pool))]
         assert [frozenset(e) for e in im.extra] == [frozenset(e) for e in order[:4]]
+
+
+def test_the_7x7_construction():
+    """E3e (D233): 25 interior cells, 228 goal pairs whose rings share no post, the distance bound [5, 14], and
+    every calibration id (31 000-31 127, run seed 1 191 000) builds at each k_r."""
+    assert len(I._goal_pairs(7)) == 228
+    for k_r in (0, 2, 4):
+        for mid in range(31_000, 31_128):
+            im = I.islands_for(run_seed=1_191_000, maze_id=mid, c=7, k_r=k_r)
+            assert 1 <= min(im.a + im.b) and max(im.a + im.b) <= 5
+            assert 5 <= im.maze.tree_distance()[im.a][im.b] <= 14
+            assert I.failed_check(im.maze, im.a, im.b) is None

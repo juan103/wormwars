@@ -94,7 +94,8 @@ def test_the_report(D):
             "s_mod_intact": _cond("organism", [2.0] * 3), "p_joint_intact": _cond("organism", [4.0] * 3)}
     tree = {**good, "s_mod_intact": _cond("organism", [6.0] * 3), "p_joint_intact": _cond("organism", [5.0] * 3)}
     from wormwars.e3 import e3d_gate as GT
-    cal = {"blocks": {"0": {"gate": GT.gate({"conditions": good}), "first_draw_feasible_share": 0.7}},
+    cal = {"blocks": {"0": {"gate": GT.gate({"conditions": good}), "first_draw_feasible_share": 0.7, "conditions": good,
+                            "mazes": MAZES}},
            "choice": {"k_r": 0, "verdict": "chosen", "failures": {}}}
     conf = {"blocks": {"confirmation": {"conditions": good, "mazes": MAZES},
                        "tree_reference": {"conditions": tree, "mazes": MAZES},

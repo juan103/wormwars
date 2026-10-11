@@ -62,11 +62,16 @@ def _load(name: str, file: str):
 E = _load("e2_for_e3d", "e2.py")  # E2's stage frame, configured for E3d's own folders
 X = _load("e3c_for_e3d", "e3c.py")  # E3c's organisms, references and champions (read only)
 
+# The experiment this runner plays (E3e's thin runner sets them with `use_experiment`, D233)
+LABEL, NAME = "E3d", "e3d"
 EXP = ROOT / "experiments" / "E3-ab-organism" / "E3d"
-REFERENCES = EXP  # the committed full-rollout references, read from here in smoke runs too
+REFERENCES = ROOT / "experiments" / "E3-ab-organism" / "E3d"  # the committed full-rollout references (E3d's)
 OUT = ROOT / "runs" / "e3d"
+SMOKE_DIR = ROOT / "runs" / "e3d-smoke"
 DESIGN = "docs/E3/E3d-DESIGN.md"
-GUARDED = ["wormwars", "scripts", "configs", "requirements.txt", DESIGN]
+DESIGNS = {DESIGN: "design_sha256"}  # every bound design file and the registry key holding its sha256
+RUNNERS = ["scripts/e3d.py"]  # the runners the scripts guard compares, binding values blanked
+GUARDED = ["wormwars", "scripts", "configs", "requirements.txt", *DESIGNS]
 SMOKE = False
 STAGES = ["project", "g-e", "calibrate", "confirm", "report"]
 TIMING_TICKS, TIMING_MAZES = 200, 128  # the projection times the formal compositions over 200 ticks
@@ -86,7 +91,7 @@ REGISTERED = {
     "walk_grid": {"persistence": [0.25, 0.5, 0.8], "rate": [0.5, 1.0, 2.0], "speed": 1.0, "seed": 0},
     "reductions": [{"walk_grid": {"persistence": [0.5], "rate": [0.5, 1.0, 2.0], "speed": 1.0, "seed": 0}},
                    {"turn_grid": [-0.8, 0.0, 0.4, 0.8, 1.2, 1.4, 1.95]},
-                   {"blocks.tree_reference": [30_200, 30_264]}],
+                   {"blocks.tree_reference": "first64"}],  # the tree reference's first 64 ids (D233)
     "thresholds": dict(GT.THRESHOLDS),
     "bootstrap": {"resamples": 2000, "seed": 20_261_011},
     "e3c_champions": {"record": "experiments/E3-ab-organism/E3c/champions.json",
@@ -100,10 +105,10 @@ REGISTERED = {
 def configure() -> None:
     E.EXP, E.OUT, E.GUARDED, E.REGISTERED, E.SMOKE = EXP, OUT, GUARDED, REGISTERED, SMOKE
     E.STAGES = STAGES
-    E.OUTCOMES = {**E.OUTCOMES, "stopped": "E3d: not completed (the run stopped)",
-                  "cap": "E3d: not completed (the cap was reached)"}
+    E.OUTCOMES = {**E.OUTCOMES, "stopped": f"{LABEL}: not completed (the run stopped)",
+                  "cap": f"{LABEL}: not completed (the cap was reached)"}
     E.RECORD.update({s: s for s in STAGES})
-    E.WHAT.update({s: f"E3d's {s}" for s in STAGES})
+    E.WHAT.update({s: f"{LABEL}'s {s}" for s in STAGES})
     E.task_config = lambda: cfg_for("islands", 0, "shared")
 
 
@@ -116,10 +121,27 @@ def cfg_for(family: str, k_r: int, access: str):
 configure()
 
 
+def use_experiment(*, label: str, name: str, exp: Path, out: Path, smoke_dir: Path, design: str, designs: dict,
+                   runners: list, registry: dict) -> None:
+    """Point this runner at another experiment that reuses E3d's stages (E3e, D233): its label, folders, bound
+    design files, guarded runners and registry entries."""
+    global LABEL, NAME, EXP, OUT, SMOKE_DIR, DESIGN, DESIGNS, RUNNERS, GUARDED
+    LABEL, NAME, EXP, OUT, SMOKE_DIR = label, name, Path(exp), Path(out), Path(smoke_dir)
+    DESIGN, DESIGNS, RUNNERS = design, dict(designs), list(runners)
+    GUARDED = ["wormwars", "scripts", "configs", "requirements.txt", *DESIGNS]
+    REGISTERED.update(registry)
+    REGISTERED["design"] = design
+    configure()
+
+
 # ------------------------------------------------------------------------------------------- the binding (§8)
 
+def file_sha256(rel: str) -> str:
+    return hashlib.sha256((ROOT / rel).read_bytes().replace(b"\r\n", b"\n")).hexdigest()
+
+
 def design_sha256() -> str:
-    return hashlib.sha256((ROOT / DESIGN).read_bytes().replace(b"\r\n", b"\n")).hexdigest()
+    return file_sha256(DESIGN)
 
 
 def engine_changes() -> list:
@@ -128,23 +150,23 @@ def engine_changes() -> list:
     return [line for line in out.splitlines() if line.strip()]
 
 
-BINDING_VALUE = re.compile(r'("(?:binding_commit|design_sha256)": )"[^"]*"')
+BINDING_VALUE = re.compile(r'("(?:binding_commit|design_sha256)": )"[^"]*"')  # not the parent design's (Fable)
 
 
 def _normalise(text: str) -> str:
     """The runner's text with only the two binding values blanked (Astra: whole lines must not be exempt)."""
-    return BINDING_VALUE.sub(r'"<bound>"', text)
+    return BINDING_VALUE.sub(r'\1"<bound>"', text)
 
 
 def script_changes() -> list:
-    """The scripts changed since the binding commit, beyond this runner's two binding lines (both reviewers):
-    any other script, or any other line of this one."""
+    """The scripts changed since the binding commit, beyond the runners' binding values (both reviewers): any
+    other script, or any other line of a runner in `RUNNERS`."""
     b = REGISTERED["binding_commit"]
     names = [n for n in E.reg.git("diff", "--name-only", b, "HEAD", "--", "scripts", root=ROOT).splitlines() if n.strip()]
-    bad = [n for n in names if n != "scripts/e3d.py"]
-    if "scripts/e3d.py" in names:
-        if _normalise(E.reg.git("show", f"{b}:scripts/e3d.py", root=ROOT)) != _normalise(E.reg.git("show", "HEAD:scripts/e3d.py", root=ROOT)):
-            bad.append("scripts/e3d.py")
+    bad = [n for n in names if n not in RUNNERS]
+    for r in RUNNERS:
+        if r in names and _normalise(E.reg.git("show", f"{b}:{r}", root=ROOT)) != _normalise(E.reg.git("show", f"HEAD:{r}", root=ROOT)):
+            bad.append(r)
     return bad
 
 
@@ -152,10 +174,11 @@ def require_bound(args) -> None:
     """The formal stages run only on the bound design, the engine of the binding commit and its scripts."""
     if not E.formal(args):
         return
-    if not REGISTERED["binding_commit"] or not REGISTERED["design_sha256"]:
-        raise SystemExit("E3d's design is not bound in this runner (§8): refusing")
-    if design_sha256() != REGISTERED["design_sha256"]:
-        raise SystemExit("the design differs from the bound text (with its amendments): refusing")
+    if not REGISTERED["binding_commit"] or not all(REGISTERED.get(k) for k in DESIGNS.values()):
+        raise SystemExit(f"{LABEL}'s design is not bound in this runner (§8): refusing")
+    for path, key in DESIGNS.items():
+        if file_sha256(path) != REGISTERED[key]:
+            raise SystemExit(f"{path} differs from the bound text (with its amendments): refusing")
     ch = engine_changes()
     if ch:
         raise SystemExit(f"the engine changed since the binding commit: {ch[:5]}")
@@ -183,7 +206,7 @@ def requires(stage: str):
         if "g-e" in got and not got["g-e"].get("passed"):
             raise SystemExit("g-e did not pass: nothing is played, and the owner is asked")
         if stage == "confirm" and got["calibrate"]["choice"]["k_r"] is None and not SMOKE:
-            raise SystemExit("calibration chose no k_r ('E3d: failed at calibration'): nothing to confirm (§4)")
+            raise SystemExit(f"calibration chose no k_r ('{LABEL}: failed at calibration'): nothing to confirm (§4)")
         return got
     return req
 
@@ -437,17 +460,10 @@ def projection(seconds: dict, champions: dict, reserved_hours: float = 0.0) -> d
     """The plan's cost from measured seconds per world (one colony, H ticks): scripted and neural single
     controllers (timed at 128 worlds), champion arms (timed at 8 × 128 worlds) and the records, scaled linearly
     in worlds; after each reduction in turn until it fits the ceiling."""
-    import copy
-    R = copy.deepcopy(REGISTERED)
-    steps = [None] + R["reductions"]
+    steps = [None] + REGISTERED["reductions"]
     tried = []
-    for k, red in enumerate(steps):
-        if red:
-            for key, v in red.items():
-                if key.startswith("blocks."):
-                    R["blocks"][key.split(".", 1)[1]] = v
-                else:
-                    R[key] = v
+    for k in range(len(steps)):
+        R = reduced_registry(k)
         saved = dict(REGISTERED)
         REGISTERED.update({kk: R[kk] for kk in ("turn_grid", "walk_grid", "blocks")})
         try:
@@ -470,6 +486,21 @@ def projection(seconds: dict, champions: dict, reserved_hours: float = 0.0) -> d
             return {"admitted": True, "reductions": k, "plan": {kk: R[kk] for kk in ("turn_grid", "walk_grid", "blocks")},
                     "tried": tried}
     return {"admitted": False, "reductions": len(steps) - 1, "plan": None, "tried": tried}
+
+
+def reduced_registry(k: int) -> dict:
+    """The registry after the first k registered reductions, in order. "first64" cuts a block to its first 64 ids,
+    so a reduction follows the experiment's own blocks (D233: E3d's runner had hard-coded its ids)."""
+    import copy
+    R = copy.deepcopy(REGISTERED)
+    for red in R["reductions"][:k]:
+        for key, v in red.items():
+            if key.startswith("blocks."):
+                b = key.split(".", 1)[1]
+                R["blocks"][b] = [R["blocks"][b][0], R["blocks"][b][0] + 64] if v == "first64" else v
+            else:
+                R[key] = v
+    return R
 
 
 def reserved_hours(clock, now: float | None = None) -> float:
@@ -583,10 +614,10 @@ def cmd_calibrate(args):
         gates, feasible = {}, {}
         for k_r in REGISTERED["k_r"]:
             b = play_block(ctx, "calibrate", "calibration", "islands", k_r, champions, state["blocks"], str(k_r))
-            gates[k_r] = GT.gate(b, REGISTERED["thresholds"])
+            gates[k_r] = GT.gate(b, REGISTERED["thresholds"], label=LABEL)
             feasible[k_r] = b["first_draw_feasible_share"]
             b["gate"] = gates[k_r]
-        state["choice"] = GT.choose_k(gates, feasible, REGISTERED["feasible_floor"])
+        state["choice"] = GT.choose_k(gates, feasible, REGISTERED["feasible_floor"], label=LABEL)
         return state
 
     return E.run_stage(args, "calibrate", requires("calibrate"), body, local_files=stage_records("calibrate"))
@@ -601,7 +632,7 @@ def cmd_confirm(args):
         state = {"champions_record": check_champions_record(), "k_r": k_r, "blocks": {},
                  **({"smoke_k_r": "calibration chose none; the smoke plays the first k_r"} if chosen is None else {})}
         b = play_block(ctx, "confirm", "confirmation", "islands", k_r, champions, state["blocks"], "confirmation")
-        b["gate"] = GT.gate(b, REGISTERED["thresholds"])
+        b["gate"] = GT.gate(b, REGISTERED["thresholds"], label=LABEL)
         play_block(ctx, "confirm", "tree_reference", "tree", 0, champions, state["blocks"], "tree_reference")
         play_block(ctx, "confirm", "tangent", "islands", k_r, champions, state["blocks"], "tangent", tangent=True)
         return state
@@ -609,18 +640,44 @@ def cmd_confirm(args):
     return E.run_stage(args, "confirm", requires("confirm"), body, local_files=stage_records("confirm"))
 
 
+def member_strain(block: dict, member: str) -> dict:
+    """A blind member's strain record: "name" for a single-strain condition, "name#s" for strain s (D233)."""
+    name, _, s = member.partition("#")
+    return block["conditions"][name]["strains"][int(s) if s else 0]
+
+
+def calibration_summary(block: dict) -> dict:
+    """A calibration block's report beside its gate (D231 carried in, D233): every gate quantity's bootstrap
+    interval, the scent-reach split, the B_max member's throughput and contact, and exact visit and leg counts for
+    the champions' blind plays."""
+    g = block["gate"]
+    w = member_strain(block, g["b_max_member"]) if g.get("b_max_member") else None
+    counts = {name: [{"total_visits": int(round(sum(st["visits"]) * REGISTERED["colony"])),
+                      "max_colony_mean_legs": max(st["legs"]), "round_trip_share": float(np.mean(st["round_trip_share"]))}
+                     for st in c["strains"]]
+              for name, c in block["conditions"].items() if c["role"] == "blind" and len(c["strains"]) > 1}
+    detail = None if w is None else {
+        "round_trip_share": float(np.mean(w["round_trip_share"])), "visited_share": float(np.mean(w["visited_share"])),
+        **{k: float(np.mean(w[k])) for k in ("coverage", "switch_rate", "contact_perimeter", "contact_ring_a",
+                                              "contact_ring_b", "contact_other") if k in w},
+        **({"at_visit": w["at_visit"]} if "at_visit" in w else {})}
+    return {"bootstrap": GT.bootstrap(block, REGISTERED["bootstrap"]["resamples"], REGISTERED["bootstrap"]["seed"]),
+            "scent_split": scent_split(block), "b_max_member_detail": detail, "exact_counts": counts}
+
+
 def report_from(earlier: dict) -> dict:
     cal, conf = earlier["calibrate"], earlier.get("confirm")
-    out = {"calibration": {k: {"gate": b["gate"], "first_draw_feasible_share": b["first_draw_feasible_share"]}
-                           for k, b in cal["blocks"].items()}, "choice": cal["choice"]}
+    out = {"calibration": {k: {"gate": b["gate"], "first_draw_feasible_share": b["first_draw_feasible_share"],
+                               "summary": calibration_summary(b)} for k, b in cal["blocks"].items()},
+           "choice": cal["choice"]}
     if cal["choice"]["k_r"] is None and not (conf or {}).get("smoke_k_r"):
         out["verdict"] = cal["choice"]["verdict"]
         return out
     if conf is None:
-        out["verdict"] = "E3d: not completed (no confirmation record)"
+        out["verdict"] = f"{LABEL}: not completed (no confirmation record)"
         return out
     isl, tree = conf["blocks"]["confirmation"], conf["blocks"]["tree_reference"]
-    g = GT.gate(isl, REGISTERED["thresholds"])
+    g = GT.gate(isl, REGISTERED["thresholds"], label=LABEL)
     out.update({"verdict": g["verdict"], "gate": g, "failed": g["failed"],
                 "bootstrap": GT.bootstrap(isl, REGISTERED["bootstrap"]["resamples"], REGISTERED["bootstrap"]["seed"]),
                 "tree_reference_gate_quantities": GT.quantities(tree),
@@ -681,7 +738,7 @@ def cmd_report(args):
 
 def use_smoke(args) -> None:
     global EXP, OUT, SMOKE
-    EXP = OUT = ROOT / "runs" / "e3d-smoke"
+    EXP = OUT = SMOKE_DIR
     SMOKE = True
     R = REGISTERED
     R["H"] = 60

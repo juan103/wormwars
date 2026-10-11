@@ -231,3 +231,18 @@ def test_the_tangent_start_diagnostic(iface):
             cx, cy = M.cell_centre(cell)
             assert math.hypot(x - cx, y - cy) == pytest.approx(1.0, abs=1e-5)
     assert moved.mean() > 0.9
+
+
+@pytest.mark.parametrize("hand", ["left", "right"])
+def test_it_tours_a_7x7_tree_maze(iface, hand):
+    """E3e §1 (D233): each hand on its own enters all 49 cells of a 7 × 7 tree within 2 400 ticks in at least 9 of
+    10 trees (ids 40 000-40 009, run seed 1 190 000, as the 6 × 6 test)."""
+    cfg = _cfg(c=7)
+    ids = list(range(40_000, 40_010))
+    world = _world(iface, cfg, MC.wall_follower(iface, cfg, hand=hand), ids)
+    path = _trace(world, 2400)
+    full = 0
+    for w in range(len(ids)):
+        cells = {((int(y) - 1) // 4, (int(x) - 1) // 4) for x, y in path[w] if int(x) % 4 and int(y) % 4}
+        full += len(cells) == 49
+    assert full >= 9

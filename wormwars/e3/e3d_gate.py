@@ -56,18 +56,18 @@ def quantities(block, idx=None) -> dict:
             "b_max": members[arg] if arg else 0.0, "b_max_member": arg, "blind_means": members}
 
 
-def gate(block, th=THRESHOLDS) -> dict:
+def gate(block, th=THRESHOLDS, label: str = "E3d") -> dict:
     q = quantities(block)
     F, O, S, B = q["follower"], q["oracle"], q["seed"], q["b_max"]
     crit = {"G1a": B <= th["g1a"] * F, "G1b": B <= th["g1b"], "G2a": F >= th["g2a"] * O, "G2b": F >= th["g2b"],
             "G3a": S - B >= max(th["g3_abs"], th["g3_rel"] * S), "G3b": q["seed_median_legs"] >= th["g3b"]}
     pre = O >= F and q["oracle_visited_share"] >= th["oracle_visit_share"]
     failed = [k for k in CRITERIA if not crit[k]]
-    verdict = "E3d: not evaluable" if not pre else ("E3d: passed" if not failed else "E3d: failed")
+    verdict = f"{label}: not evaluable" if not pre else (f"{label}: passed" if not failed else f"{label}: failed")
     return {**q, "criteria": crit, "failed": failed, "precondition": bool(pre), "verdict": verdict}
 
 
-def choose_k(gates: dict, feasible: dict, floor: float) -> dict:
+def choose_k(gates: dict, feasible: dict, floor: float, label: str = "E3d") -> dict:
     """The smallest k_r whose gate passes with the precondition met and whose first-draw feasible share is at
     least `floor`; otherwise "failed at calibration", with each k_r's failures."""
     failures = {}
@@ -78,7 +78,7 @@ def choose_k(gates: dict, feasible: dict, floor: float) -> dict:
         if not why:
             return {"k_r": k, "verdict": "chosen", "failures": failures}
         failures[k] = why
-    return {"k_r": None, "verdict": "E3d: failed at calibration", "failures": failures}
+    return {"k_r": None, "verdict": f"{label}: failed at calibration", "failures": failures}
 
 
 def _arm_means(block, arm) -> np.ndarray:

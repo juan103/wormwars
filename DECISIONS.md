@@ -7534,3 +7534,33 @@ mazes at c = 7 (91, 90 and 88 first-draw accepted).
 thin runner sets. The gate takes a label; it is an analysis module, so E3d's full-rollout references stand.
 
 **Next:** a last check of v2 by both, then binding and the code.
+
+## D234 — E3e's design bound (v2; Fable "bind", Astra one wording change taken verbatim); the code
+
+**The last check** (`docs/reviews/20261011-E3e-design-2/`, run 20261011-101501):
+- **Fable 5.1, "bind",** with three code points:
+  - the scripts guard must not blank the parent design's hash, a constant;
+  - one refusal message still said "E3d";
+  - the summary script still read strain 0 of the B_max member.
+- **Astra 6, "revise", one change:** the G2a reading overstated what G2a measures. Astra supplied the
+  replacement wording, which v2 takes verbatim.
+
+**Bound:** `docs/E3/E3e-DESIGN.md` v2 (sha256 in `scripts/e3e.py`), with E3d's design pinned at its sha256
+37ee0c39…, at the commit that records this decision. The runner's binding commit follows in the next commit.
+
+**The code** (each new test seen failing):
+- **`scripts/e3d.py` gains an experiment record** (`use_experiment`): the label, the folders (formal and smoke),
+  the bound design files, the guarded runners and registry entries. Its defaults are E3d's.
+- **Reduction 3 is derived** from the tree reference block's first 64 ids (`reduced_registry`). E3d's own
+  default now reads "first64" for the same ids its `project.json` recorded literally.
+- **The guard** checks every bound design file, and every runner with only the binding commit and the design's
+  own hash blanked. A changed parent hash is refused.
+- **Verdicts carry the label:** the gate's `label` argument and the runner's messages.
+- **A calibration failure is reported in full** (`calibration_summary`): intervals, the scent split, the B_max
+  member resolved by strain, exact counts.
+- **The summary script resolves a multi-strain B_max member;** E3d's `summary.json` is byte-identical after the
+  fix.
+- **`scripts/e3e.py`:** c = 7, seed 1 191 000, ids 31 000-31 455.
+- **The 7 × 7 tests:** each hand tours 7 × 7 trees; all 384 calibration constructions build; 228 pairs.
+
+**Next:** the binding commit, a CPU smoke, the owner told before any GPU use, then the formal stages.

@@ -1,6 +1,6 @@
 # E3e: E3d's island mazes at 7 × 7 (design v2)
 
-**Status:** v2, after both reviewers' review of v1 ("revise", D233; `docs/reviews/20261011-E3e-design/`). For
+**Status:** v2, bound (D234), after both reviewers' review of v1 ("revise", D233; `docs/reviews/20261011-E3e-design/`). For
 a last check, then binding. E3e is exploratory: it validates a task, and it trains nothing.
 
 **Why it exists** (the owner, 2026-10-11; D232):
@@ -65,13 +65,11 @@ mazes, not a guarantee (Astra). G2a and G2b test that they stay high enough.
   at c = 5, 70 at c = 6 and 96 at c = 7. So size alone predicts about 70/96 = 0.73 × from c = 6 for a lap-coverer
   (Fable). For a random walk that covered 90-95% of the 6 × 6 maze, 7 × 7 is a modest step. A G1b margin near
   2.0 is possible either way.
-- **A pre-stated reading for a G2a failure** (Fable; E3d had readings for G1 and G3a failures only):
-  - **The cause it points to:** "the shared follower falls below a third of the oracle". The scent's reach (9
-    raster steps) and the trail's decay are fixed while routes lengthen, so the follower's discovery cost grows
-    faster than the oracle's route.
-  - **What it means:** navigation by scent and trail becomes too slow within the horizon at this size, not that
-    the blind controls caught up.
-  - **The records to read it from:** discovery, the scent-reach split and the follower's no-first-visit share.
+- **A pre-stated reading for a G2a failure** (Fable; the wording Astra's last check gave, verbatim; E3d had
+  readings for G1 and G3a failures only): "A G2a failure means the shared scripted follower falls below the
+  required one-third of oracle throughput on this block. Increased discovery cost associated with fixed scent
+  reach and trail decay is a possible explanation, to check against discovery, scent-reach, no-first-visit and
+  later-leg records—not an identified cause. Blind-control performance is assessed separately by G1."
 - **A calibration failure is reported in full** (Astra; D231's correction carried in):
   - **what the report gives:** each calibration k_r's bootstrap intervals for every gate quantity (2 000 resamples,
     seed 20 261 011, B_max recomputed in each), its scent-reach split, and exact counts for the champions' blind

@@ -127,3 +127,13 @@ def test_predictions_evaluate_the_inequalities_directly():
     p = GT.predictions(zero, zero)
     assert all(p[a]["holds"] for a in ("s_mod", "s_dense", "p_joint"))
     assert all(p[a]["ratio"] is None for a in ("s_mod", "s_dense", "p_joint"))
+
+
+def test_the_verdicts_carry_the_experiments_label():
+    """E3e (D233): the same gate, its verdicts labelled by the experiment that plays it."""
+    assert GT.gate(_block(), TH, label="E3e")["verdict"] == "E3e: passed"
+    assert GT.gate(_block(blind=(3.0, 0.0)), TH, label="E3e")["verdict"] == "E3e: failed"
+    assert GT.gate(_block(oracle=7.0), TH, label="E3e")["verdict"] == "E3e: not evaluable"
+    bad = GT.gate(_block(blind=(3.0, 0.0)), TH)
+    assert GT.choose_k({0: bad}, {0: 0.9}, 0.5, label="E3e")["verdict"] == "E3e: failed at calibration"
+    assert GT.gate(_block(), TH)["verdict"] == "E3d: passed"  # the default stays E3d's

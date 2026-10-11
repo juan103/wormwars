@@ -51,7 +51,7 @@ def main():
             arms[name] = {"min": min(v), "max": max(v), "mean": mean(v)}
         single = {name: mean(cond["strains"][0]["visits"]) for name, cond in c.items() if len(cond["strains"]) == 1}
         top = g["b_max_member"]
-        w = c[top]["strains"][0]
+        w = D.member_strain(b, top)  # "name#strain" resolves to its strain (D233)
         rows = b["mazes"]
         colony = 8
         counts = {}

@@ -1,0 +1,20 @@
+**Verdict: bind.** All three of my required changes, and Astra's fourth, are taken correctly in v2, and I found nothing new that would make the result wrong or uninterpretable. Three small things in the code draft are worth fixing before the binding commit, listed at the end. None is a design change.
+
+## 1. The required changes
+
+- **Both designs bound.** v2 pins E3d's text at sha256 `37ee0c39…`, line endings normalised. That value equals E3d's own registered hash in `scripts/e3d.py:84` and in the committed `project.json`, and `tests/test_e3d_runner.py:118` holds it to the file as it is now. D228 says E3d was re-bound at the commit that added the erratum, so "its last commit, 202666e" is consistent with the record. I had no shell in this session, so I could not run `git log` to confirm the commit literally; the hash is what the guard checks, and that is verified.
+- **Every verdict reads "E3e".** The gate and the k_r choice take a label (`wormwars/e3/e3d_gate.py:59`, `:70`), and the draft runner labels the outcomes, the stage names and the "not completed" string. The design says plainly that the gate is an analysis module, not the rollout engine, and g-e still executes the full-rollout comparison against E3d's references, so "the references stand" is checked at run time rather than assumed.
+- **Reduction 3 follows the experiment's own blocks.** The table gives 31 200-31 263, §3 derives it from the tree reference's first 64 ids, and the draft's `reduced_registry` does exactly that, with the projection now built on it.
+- **A calibration failure is reported in full.** The draft's `calibration_summary` gives each k_r's bootstrap intervals, the scent-reach split, the B_max member's detail through a `name#strain` resolver, and exact counts for the multi-strain blind plays.
+
+## 2. Is anything new wrong?
+
+I checked every new number and claim against files. The c = 7 sizing row matches `e3d-sizing.json` to the rounding shown. The 228 pairs, the 25 cells, the 29 × 29 raster, the [5, 14] bound, the 96-move lap and 48 of 84 segments are right. "About 1 100 ticks" follows from Amendment 1's 700-850 ticks for 70 moves. The projection note is right: 0.98 h is what `project.json`'s seconds per world give for the reduced calibration plan, and 0.68 h is the compute record's "final" category. The G2a reading names records that exist (discovery, the scent-reach split, the no-first-visit share), and the scent's reach is 9 in the world config. No module under `wormwars/e3/` hard-codes the 6 × 6 size. The 7 × 7 tour test is already written per hand, at the stated ids and seed.
+
+## 3. Before the binding commit (code, not design)
+
+The E3e code is being written in the working tree while I review; none of it is in bce1d2c, and `scripts/e3d.py` changed between my two reads. On the draft as it stands:
+
+1. **`BINDING_VALUE` now also blanks `parent_design_sha256`** (`scripts/e3d.py:153`). That value is a constant known today. Exempting it lets someone amend `E3d-DESIGN.md`, update that one value, and still pass `require_bound` at `project`, which is the gap required change 1 closes. Drop it from the regex, and add a changed parent value as a refused case in `test_both_runners_are_guarded`.
+2. **E3d's own default for reduction 3 now reads `"first64"`** where E3d's committed `project.json` recorded `[30200, 30264]`. Same ids, but the runner's E3d defaults no longer match E3d's committed registry verbatim. Either keep the literal in E3d's defaults and let E3e override, or say so in D233.
+3. **One "E3d:" string remains** in the refusal message at `scripts/e3d.py:209`. It is a message, not a record, so the planned test will not catch it; use the label anyway. `scripts/e3d_summary.py:54` still indexes strain 0 of the B_max member; the design promises that fix, and it is not in the draft yet.
