@@ -8030,3 +8030,30 @@ reviewers.
 
 **The pilot** (the owner: "Run the pilot", 2026-10-12; E4-D's ceiling: "decide later") started on the GPU at
 5a58556 (`scripts/e4.py pilot`, cap 3 GPU-hours).
+
+## D250 — E4-D design v2.1 after both reviews of v2 (revise, narrowly)
+
+**The review of v2** (`docs/reviews/20261012-E4-D-design-2/`): both "revise", narrowly; the single-choice trial and
+the exactness argument hold. v2.1 (`docs/E4/E4-D-DESIGN.md`) takes every finding:
+- **the inherited start cue is off** (both): `shuttle_cue_ticks` forces at_b = 1 for 5 ticks, which would drive Q
+  positive and open A's gate while A reads the cue; a sabotage test;
+- **the start-cell rule is operational** (both): grid BFS distances, |d₀ − d₁| ≤ 4, separation within 4 downhill
+  steps, max min(d₀, d₁), row-major ties; its skip count is measured on a 32-maze scouting block, with a 25% limit;
+- **σ_D by a declared rule on the scouting block** (Fable): the smallest of {3, 6, 9, 12} at which the oracle reaches
+  0.75 real-first over all trials and X0 enters on at least 0.75 of trials; untruncated; the actual occluded nose
+  readings reported (Astra);
+- **an oracle ceiling** (Fable): B's noses reading the real candidate, no cross-links, on every block, so a failure is
+  read as "the slots did not carry it" or "the task is infeasible";
+- **shuffling replaced by an exact invariance test** (the cue held fixed; Fable: shuffling's criterion could not
+  fail); **reversal is a mapping check** (Astra);
+- **nose-origin wiring with B's four signed edges** (both); selection by real-first over all trials; the redundant
+  criterion dropped; a percentile bootstrap with a fixed seed; manifests frozen before calibration;
+- **first entries latched per wey,** later events masked; the switch log starts in mode B; the latch's start set in
+  the state, not clamped; the goal pinned at B, and an enumeration test that the assignment reaches only A's noses;
+- **§3 stated structurally** (Fable): A's contributions to non-A neurons are products with exact zeros.
+
+**The pilot's load measurement** (in progress, the partial record): at generation 1, X0's population averages 1.94
+visits per wey; X+ costs 0.21 at factor 0.25, 0.39 at 0.5, 0.65 at 1.0, 0.95 at 2.0 and 1.14 at 4.0. Only 0.25 meets
+the 0.25-visit bound, so the pilot trains X+ at 0.25, by the agreed rule. The bound's level (absolute, against the
+roughly 4 visits that ordinary mutation already costs E-G's population) goes to both reviewers with the pilot's
+results, for the pre-registration.
