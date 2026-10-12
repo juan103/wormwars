@@ -8057,3 +8057,28 @@ visits per wey; X+ costs 0.21 at factor 0.25, 0.39 at 0.5, 0.65 at 1.0, 0.95 at 
 the 0.25-visit bound, so the pilot trains X+ at 0.25, by the agreed rule. The bound's level (absolute, against the
 roughly 4 visits that ordinary mutation already costs E-G's population) goes to both reviewers with the pilot's
 results, for the pre-registration.
+
+## D251 — The pilot's first attempt is stopped and rerun with a 4.5-hour cap; E4-D's feasibility code
+
+**The pilot's first attempt** (started 23:10, 2026-10-12) measured about 56 seconds per generation with the CPU idle
+(65 while CPU tests ran beside it): two arms × 100 generations and the evaluation need about 3.6 GPU-hours, over the
+registered 3. The cap is read when a stage starts, so the attempt would have stopped incomplete during X+'s training.
+The owner asked to give the pilot more than its cap; lowering the ledger's recorded time would have falsified the
+accounting (rule 8), so the attempt was stopped (by the owner; the permission system blocked my stop) and the stage
+is rerun with the cap at 4.5 GPU-hours, the design unchanged (100 generations). The stopped attempt's time is charged
+by E2's kill reconciliation and counts toward the 4.5. Its partial record (the generation-1 load, D250) is kept
+beside, as the frame keeps a stopped attempt's files.
+
+**E4-D's feasibility code** (design v2.1; CPU; not yet reviewed):
+- `wormwars/e4/trial.py`: `TrialWorld`, a subclass of `MazeWorld`, so no engine file changes and every earlier path
+  is untouched (**a ruling:** the design's "flag" became a subclass, which makes rule 7 hold by construction; the
+  rule-7 leg is still run before E4-D's evaluation). The start rule, the channel mapping, the relays silent, the start
+  cue off, the latch at −1, first-entry latching, and `control_genome` (both wirings, B's four signed edges for
+  nose-origin).
+- `wormwars/e4/feasibility.py`: the readout, σ_D's choice, the control's selection, the per-maze bootstrap bound,
+  the reversal mapping check and the verdict.
+- `scripts/e4d.py`: scout, calibrate and evaluate, each once; its smoke completes.
+- Tests (`tests/test_e4d_trial.py`, `tests/test_e4d_feasibility.py`), each seen failing first: among them, X0's
+  bitwise invariance to the assignment over 150 ticks, with three sabotages (the cue into B's noses, the gate removed,
+  a relay leak), each breaking it; the start cue's sabotage turns q positive within 5 ticks.
+- **Next:** the code review by both, then the scouting block.

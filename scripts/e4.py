@@ -99,7 +99,7 @@ REGISTERED = {
               "reach_seed": 20_261_012, "formal_G": [200, 300, 400]},
     "blind": {"turn_grid": [-0.8, -0.4, 0.0, 0.2, 0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8, 1.95],
               "walk_grid": {"persistence": [0.25, 0.5, 0.8], "rate": [0.5, 1.0, 2.0], "speed": 1.0, "seed": 0}},
-    "cap_gpu_hours": 3.0,  # §6: the pilot at 2-3 h; it counts toward E4's 30
+    "cap_gpu_hours": 4.5,  # the owner (2026-10-12) after the first attempt measured 56 s per generation (D251); in E4's 30
     "rerun_kill_tail_seconds": 900,  # E2's kill reconciliation needs it (Astra, code review)
 }
 
