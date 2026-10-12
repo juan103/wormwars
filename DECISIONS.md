@@ -8010,3 +8010,23 @@ E4's engine changes, the output gate and the substep hook, are unset in every ea
 
 **Next:** the owner's word before the pilot on the GPU (about 2-3 GPU-hours, inside E4's 30); E4-D's design v1 for
 review by both, and E4-D's own ceiling for the owner.
+
+## D249 — E4-D design v2 after both reviews of v1; the pilot started
+
+**The review of E4-D v1** (`docs/reviews/20261012-E4-D-design/`): Fable "go to v2 with these changes", Astra
+"revise". Both: repeated shuttle legs leak the assignment (the relays and latch at the real B, history, and the
+one-tick lag between the world's goal and the latch's sign, D247), so the chance level had no bound; chance comes
+from randomisation, not placement; the island family has no unique branch point; the units were missing; the
+feasibility criteria were not frozen. Fable: the cue (scent reach 9 grid cells, about 2 maze cells) was out of range
+at the choice; the relays must ignore the decoy; the decoy is a trap.
+
+**v2** (`docs/E4/E4-D-DESIGN.md`) takes all of it: fresh single-choice trials of one wey, in mode B from the first
+substep (the latch started at −1; E-G's latch holds it, a CPU check), scored at the first candidate entered, every
+maze played under both assignments from identical starts, the relays silent, the scent widened for E4-D (declared),
+a start-cell rule near a decision junction. X0's real-first share of entries is then exactly 0.5 by construction
+(Astra). Two control wirings and four weights are chosen on a calibration block; the pass criteria, including the
+reversal and shuffling controls, are declared; a failure makes a new version with a fresh block. v2 goes to both
+reviewers.
+
+**The pilot** (the owner: "Run the pilot", 2026-10-12; E4-D's ceiling: "decide later") started on the GPU at
+5a58556 (`scripts/e4.py pilot`, cap 3 GPU-hours).
