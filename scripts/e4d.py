@@ -172,7 +172,7 @@ def guard(stage: str, after: tuple = ()) -> dict:
             raise SystemExit("uncommitted changes in the guarded files: commit first")
         for earlier in after:
             doc = read(earlier)
-            reg.require_same_code(doc["provenance"]["commit"], GUARDED)
+            reg.require_same_code(doc["provenance"]["git_commit"], GUARDED)
             if doc["registered"] != json.loads(json.dumps(REGISTERED)):
                 raise SystemExit(f"the registration differs from {earlier}'s: refusing to run")
     return prov

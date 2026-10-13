@@ -8268,3 +8268,18 @@ wirings (with B's four signed edges), the selection, the denominators and the bo
 flag-off comparison), the smoke's forced σ, the runner filtering mazes before the trial world, the starts reported.
 
 **E4-D design v2.3** (`docs/E4/E4-D-DESIGN.md`) records all of it, dated, before anything was played.
+
+## D261 — E4-D's stage guard read the wrong key; scouting is rerun at the fix
+
+The scouting stage ran at c51aacc (CPU, 81 s): no maze skipped, σ_D = 6, X0's real-first share of entries exactly 0.5
+at every σ, the latch held in every trial. Calibration then failed at once: the freeze check read
+`provenance["commit"]`, while the record's key is `git_commit` (the smoke skips the guard, so it could not catch it).
+The fix (`tests/test_e4d_runner.py`, seen failing first on the same error) changes guarded code, so the freeze rightly
+refuses to pair the old scouting record with the new code. The first record is kept beside as
+`E4-D/scout-attempt1.json`, and scouting is rerun at the fixed commit; on the CPU it is deterministic, so the rerun
+must reproduce it exactly, which is checked.
+
+The hygiene guard against redistributing the connectome (rule 1) flagged the scouting records' start cells, 64
+[row, column] pairs on the maze grid, as "edge-list-like", as D230's spawn lists were. A narrow exemption, with its own
+tests, allows only lists under a key ending "start_readings.starts" of whole-number pairs below 33 (the grid's side for
+c ≤ 8); a neuron edge list stays an offence under any other key or with larger indices.

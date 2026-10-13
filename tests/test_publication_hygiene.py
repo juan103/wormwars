@@ -106,6 +106,17 @@ def is_maze_spawn_list(key: str, arr) -> bool:
             and float(a.min()) >= 0 and float(a.max()) < MAZE_SIDE_MAX)
 
 
+GRID_SIDE_MAX = 33  # the maze grid's side, 4c + 1, for c up to 8
+
+
+def is_trial_start_list(key: str, arr) -> bool:
+    """D261: E4-D's scouting records list each trial's start cell, a [row, column] pair on the maze grid (4c + 1 wide),
+    under a key ending "start_readings.starts". Grid cells, not neurons; only that list is exempt."""
+    a = np.asarray(arr, dtype=np.float64)
+    return (key.endswith("start_readings.starts") and a.ndim == 2 and a.shape[1] == 2 and a.shape[0] >= 1
+            and float(a.min()) >= 0 and float(a.max()) < GRID_SIDE_MAX and bool(np.all(a == np.round(a))))
+
+
 def test_no_np_load_enables_pickle():
     """Pickle in np.load is arbitrary code execution on any file a user downloads.
 
@@ -327,6 +338,8 @@ def test_no_committed_file_contains_graph_structure():
             for bad in offences(arr):
                 if "edge list" in bad and is_maze_spawn_list(key, arr):
                     continue  # a maze's spawn cells (D230)
+                if "edge list" in bad and is_trial_start_list(key, arr):
+                    continue  # E4-D's trial start cells (D261)
                 offenders.append(f"{rel} [{key}] {bad}")
     assert not offenders, (
         "committed files contain connectome or control-graph structure:\n  " + "\n  ".join(offenders)
@@ -421,3 +434,14 @@ def test_the_maze_spawn_exemption_is_narrow():
     assert not is_maze_spawn_list(".edges", [[0, 4], [5, 2]])  # another key
     edges = np.stack([np.arange(300), np.arange(1, 301)], axis=1)
     assert not is_maze_spawn_list(".spawns", edges)
+
+
+def test_only_trial_start_lists_are_exempt():
+    """D261: grid-cell pairs below 33 under a key ending "start_readings.starts" are exempt; nothing else is."""
+    starts = [[12, 13], [9, 20], [17, 4]] * 20
+    assert is_trial_start_list(".by_sigma.6.0.start_readings.starts", starts)
+    assert not is_trial_start_list(".by_sigma.6.0.start_readings.edges", starts)  # another key
+    assert not is_trial_start_list(".start_readings.starts", [[12, 40], [9, 20]])  # past any maze grid
+    assert not is_trial_start_list(".start_readings.starts", [[1.5, 2], [3, 4]])  # not whole numbers
+    edges = np.stack([np.arange(300), np.arange(1, 301)], axis=1)
+    assert not is_trial_start_list(".start_readings.starts", edges)
