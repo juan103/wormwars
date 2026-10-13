@@ -107,6 +107,12 @@ def generation1(cfg, iface, base: Genome, sc, ids, dev, *, gate=None, p_mutate=N
             "all_mean": float(s.mean()), "per_replicate_children": np.round(kids.mean(axis=1), 4).tolist()}
 
 
+def save_partial(doc: dict) -> None:
+    """Written after each section, so a failure later keeps what was measured."""
+    OUT.parent.mkdir(parents=True, exist_ok=True)
+    reg.write_json(OUT.with_name(OUT.stem + "-partial.json"), doc, atomic=True)
+
+
 def main_body(dev: str) -> dict:
     t0 = time.perf_counter()
     cfg = cfg_e4()
@@ -129,6 +135,7 @@ def main_body(dev: str) -> dict:
         n_mut = AR.mutable_count(cx, "x0")
         e["x0_one_parameter_per_child_0.25"] = {**generation1(cfg, org.iface, eg, AR.class_scales(cx, "all"), LOAD_IDS, dev,
                                                               gate=org.gate, p_mutate=1.0 / n_mut), "mutable": n_mut}
+        save_partial(out)
         # the 2 x 2 of organism and arena
         seed_org = T.start_organism("seed", con, l1, cfg.brain)
         sc_seed = T.scales(seed_org.ext)
@@ -140,6 +147,7 @@ def main_body(dev: str) -> dict:
         a["eg_tree5_0.25"] = generation1(tcfg, org.iface, eg, AR.class_scales(cx, "all"), TREE_IDS, dev, gate=org.gate)
         a["seed_tree5_unbred"] = generation1(tcfg, seed_org.iface, seed_org.genome, None, TREE_IDS, dev)
         a["seed_tree5_0.25"] = generation1(tcfg, seed_org.iface, seed_org.genome, sc_seed, TREE_IDS, dev)
+        save_partial(out)
         # the saved final X0 populations against E-G on the validation block
         pops, files = [], {}
         for r in range(4):
@@ -149,7 +157,7 @@ def main_body(dev: str) -> dict:
                 pops.append(g)
                 files[f.name] = hashlib.sha256(f.read_bytes()).hexdigest()
         if pops:
-            batch = Genome.cat([eg, *pops])
+            batch = EV.moved(Genome.cat([eg, *pops]), dev)  # the loaded populations are on the CPU
             res = TR.gated_rollout(org.gate)(cfg, org.iface, batch, VAL_IDS, SEED, dev,
                                              chunk_worlds=batch.n_strains * len(VAL_IDS))
             v = np.asarray(res.score)  # [1 + 128, 64]
