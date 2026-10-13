@@ -1,0 +1,81 @@
+{
+ "time_unit": "synchronised wall-clock seconds per category (not GPU kernel time)",
+ "neural_update_unit": "strains x batch x substeps network updates (network size not included)",
+ "attempts": [
+  {
+   "file": "20261013T095002Z-4b6f65f1.json",
+   "status": "completed",
+   "script": "e4d",
+   "argv": [
+    "scout"
+   ],
+   "default_category": "measure",
+   "git_commit": "c51aaccbc0ecbb037956533dd1c10cb0207da6ba"
+  },
+  {
+   "file": "20261013T095152Z-eec9d886.json",
+   "status": "failed",
+   "script": "e4d",
+   "argv": [
+    "calibrate"
+   ],
+   "default_category": "measure",
+   "git_commit": "c51aaccbc0ecbb037956533dd1c10cb0207da6ba"
+  },
+  {
+   "file": "20261013T095425Z-2f41ed4a.json",
+   "status": "completed",
+   "script": "e4d",
+   "argv": [
+    "scout"
+   ],
+   "default_category": "measure",
+   "git_commit": "a700bbd02569891bd3475b2e6f41269c949d06a0"
+  },
+  {
+   "file": "20261013T095548Z-9dfd3f8b.json",
+   "status": "completed",
+   "script": "e4d",
+   "argv": [
+    "calibrate"
+   ],
+   "default_category": "measure",
+   "git_commit": "a700bbd02569891bd3475b2e6f41269c949d06a0"
+  },
+  {
+   "file": "20261013T095814Z-f6b62ca6.json",
+   "status": "completed",
+   "script": "e4d",
+   "argv": [
+    "evaluate"
+   ],
+   "default_category": "measure",
+   "git_commit": "a700bbd02569891bd3475b2e6f41269c949d06a0"
+  }
+ ],
+ "failed_attempts": 1,
+ "uncategorised": false,
+ "categories": {
+  "measure": {
+   "worlds_built": 0,
+   "world_ticks": 0,
+   "neural_updates": 0,
+   "neural_padding": 0,
+   "seconds": 3.980431499425322
+  },
+  "probe": {
+   "worlds_built": 2880,
+   "world_ticks": 1728000,
+   "neural_updates": 110592000,
+   "neural_padding": 55296000,
+   "seconds": 407.4919568011537
+  }
+ },
+ "totals": {
+  "worlds_built": 2880,
+  "world_ticks": 1728000,
+  "neural_updates": 110592000,
+  "neural_padding": 55296000,
+  "seconds_timed": 411.47238830057904
+ }
+}

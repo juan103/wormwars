@@ -1,0 +1,213 @@
+{
+ "stage": "calibrate",
+ "registered": {
+  "design": "docs/E4/E4-D-DESIGN.md",
+  "maze_seed": 1410000,
+  "c": 6,
+  "H_t": 600,
+  "sigmas": [
+   3.0,
+   6.0,
+   9.0,
+   12.0
+  ],
+  "scouting": [
+   51000,
+   51032
+  ],
+  "calibration_from": 51100,
+  "calibration_n": 32,
+  "evaluation_from": 51300,
+  "evaluation_n": 64,
+  "evaluation_end": 51700,
+  "skip_limit": 0.25,
+  "wirings": [
+   "comparator",
+   "nose"
+  ],
+  "weights": [
+   0.05,
+   0.1,
+   0.25,
+   0.5,
+   1.0,
+   2.0,
+   3.0
+  ],
+  "bootstrap": [
+   20261013,
+   10000
+  ]
+ },
+ "provenance": {
+  "git_commit": "a700bbd02569891bd3475b2e6f41269c949d06a0",
+  "branch": "roadmap",
+  "dirty": false,
+  "python": "3.13.3",
+  "numpy": "2.4.4",
+  "torch": "2.12.0+cu130",
+  "cuda": "13.0",
+  "gpu": "NVIDIA GeForce RTX 5080",
+  "connectome_cache_sha256": "43b87aa172a0042b9dce734b15bdf1c87efe3a33ac1cc0d9cd03255a60c96d4a",
+  "connectome_source_sha256": "1f4fdbf84746b69b49a8da0816f52787860ce349b638dce37924ba80f90c70c9"
+ },
+ "sigma_D": 6.0,
+ "results": {
+  "comparator:0.05": {
+   "trials": 64,
+   "entries": 64,
+   "real_first": 34,
+   "decoy_first": 30,
+   "neither": 0,
+   "real_first_all": 0.53125,
+   "entry_rate": 1.0,
+   "real_first_entries": 0.53125
+  },
+  "comparator:0.1": {
+   "trials": 64,
+   "entries": 64,
+   "real_first": 34,
+   "decoy_first": 30,
+   "neither": 0,
+   "real_first_all": 0.53125,
+   "entry_rate": 1.0,
+   "real_first_entries": 0.53125
+  },
+  "comparator:0.25": {
+   "trials": 64,
+   "entries": 64,
+   "real_first": 34,
+   "decoy_first": 30,
+   "neither": 0,
+   "real_first_all": 0.53125,
+   "entry_rate": 1.0,
+   "real_first_entries": 0.53125
+  },
+  "comparator:0.5": {
+   "trials": 64,
+   "entries": 64,
+   "real_first": 38,
+   "decoy_first": 26,
+   "neither": 0,
+   "real_first_all": 0.59375,
+   "entry_rate": 1.0,
+   "real_first_entries": 0.59375
+  },
+  "comparator:1": {
+   "trials": 64,
+   "entries": 64,
+   "real_first": 42,
+   "decoy_first": 22,
+   "neither": 0,
+   "real_first_all": 0.65625,
+   "entry_rate": 1.0,
+   "real_first_entries": 0.65625
+  },
+  "comparator:2": {
+   "trials": 64,
+   "entries": 64,
+   "real_first": 51,
+   "decoy_first": 13,
+   "neither": 0,
+   "real_first_all": 0.796875,
+   "entry_rate": 1.0,
+   "real_first_entries": 0.796875
+  },
+  "comparator:3": {
+   "trials": 64,
+   "entries": 61,
+   "real_first": 53,
+   "decoy_first": 8,
+   "neither": 3,
+   "real_first_all": 0.828125,
+   "entry_rate": 0.953125,
+   "real_first_entries": 0.8688524590163934
+  },
+  "nose:0.05": {
+   "trials": 64,
+   "entries": 64,
+   "real_first": 32,
+   "decoy_first": 32,
+   "neither": 0,
+   "real_first_all": 0.5,
+   "entry_rate": 1.0,
+   "real_first_entries": 0.5
+  },
+  "nose:0.1": {
+   "trials": 64,
+   "entries": 64,
+   "real_first": 32,
+   "decoy_first": 32,
+   "neither": 0,
+   "real_first_all": 0.5,
+   "entry_rate": 1.0,
+   "real_first_entries": 0.5
+  },
+  "nose:0.25": {
+   "trials": 64,
+   "entries": 64,
+   "real_first": 34,
+   "decoy_first": 30,
+   "neither": 0,
+   "real_first_all": 0.53125,
+   "entry_rate": 1.0,
+   "real_first_entries": 0.53125
+  },
+  "nose:0.5": {
+   "trials": 64,
+   "entries": 64,
+   "real_first": 35,
+   "decoy_first": 29,
+   "neither": 0,
+   "real_first_all": 0.546875,
+   "entry_rate": 1.0,
+   "real_first_entries": 0.546875
+  },
+  "nose:1": {
+   "trials": 64,
+   "entries": 64,
+   "real_first": 35,
+   "decoy_first": 29,
+   "neither": 0,
+   "real_first_all": 0.546875,
+   "entry_rate": 1.0,
+   "real_first_entries": 0.546875
+  },
+  "nose:2": {
+   "trials": 64,
+   "entries": 64,
+   "real_first": 40,
+   "decoy_first": 24,
+   "neither": 0,
+   "real_first_all": 0.625,
+   "entry_rate": 1.0,
+   "real_first_entries": 0.625
+  },
+  "nose:3": {
+   "trials": 64,
+   "entries": 64,
+   "real_first": 42,
+   "decoy_first": 22,
+   "neither": 0,
+   "real_first_all": 0.65625,
+   "entry_rate": 1.0,
+   "real_first_entries": 0.65625
+  }
+ },
+ "oracle": {
+  "trials": 64,
+  "entries": 63,
+  "real_first": 58,
+  "decoy_first": 5,
+  "neither": 1,
+  "real_first_all": 0.90625,
+  "entry_rate": 0.984375,
+  "real_first_entries": 0.9206349206349206
+ },
+ "latch_held": true,
+ "choice": {
+  "wiring": "comparator",
+  "w": 3.0
+ },
+ "seconds": 143.23036589985713
+}

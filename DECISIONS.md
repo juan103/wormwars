@@ -8283,3 +8283,21 @@ The hygiene guard against redistributing the connectome (rule 1) flagged the sco
 [row, column] pairs on the maze grid, as "edge-list-like", as D230's spawn lists were. A narrow exemption, with its own
 tests, allows only lists under a key ending "start_readings.starts" of whole-number pairs below 33 (the grid's side for
 c ≤ 8); a neuron edge list stays an offence under any other key or with larger indices.
+
+## D262 — E4-D's feasibility check: passed
+
+The three stages ran on the CPU at a700bbd (`experiments/E4-two-minds/E4-D/`; `scripts/e4d.py`; design v2.3):
+- **Scouting** (rerun after D261) reproduced attempt 1 exactly: no maze skipped (32 of 32), σ_D = 6 (the oracle 0.81
+  real-first over all trials, X0 entering on every trial), X0's real-first share of entries 0.5 at every σ, the latch
+  held in every trial; the manifests frozen.
+- **Calibration** (32 mazes × 2 assignments): the comparator-origin wiring at w = 3 was chosen, 0.828 real-first over
+  all trials. The smallest weights carry nothing: 0.53 at w = 0.05-0.25 (comparator-origin) and 0.50-0.53 (nose-origin);
+  w = 1 gives 0.66, w = 2 0.80. Nose-origin peaks at 0.66. The oracle made 0.906; the latch held.
+- **Evaluation** (64 mazes × 2 assignments, 128 trials): **"passed: the architecture can carry an engineered A → B
+  steering signal through the slots".** The control 0.828 real-first over all trials (127 of 128 entered), its
+  maze-level 95% lower bound 0.781; the oracle 0.875; X0 exactly 0.5; cue reversal 0.164 (the mapping check holds); the
+  cue held fixed 0.492 (bitwise invariant to the assignment); the cue removed 0.5; cross-link removal bitwise X0. Every
+  integrity check held.
+- **For the evolutionary E4-D:** the weights that carry the signal (about 2-3) are about a hundred times the random
+  cross-link steps that already broke E-G in E4's main task (σ about 0.02; D256). Whether selection can climb that far,
+  through sizes that cost, is the evolutionary question.

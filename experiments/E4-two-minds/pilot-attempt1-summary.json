@@ -197,6 +197,11 @@
     7.234399795532227,
     5.265600204467773
    ],
+   "children_mean_generations_1_10": 2.5308728218078613,
+   "children_mean_generations_90_99": 3.075969934463501,
+   "elites_mean_generations_1_10": 5.672916889190674,
+   "elites_mean_generations_90_99": 5.960416793823242,
+   "population_mean_generations_1_10": 2.825439453125,
    "population_mean_by_generation": [
     7.828100204467773,
     2.5028998851776123,
@@ -410,6 +415,11 @@
     5.546899795532227,
     5.828100204467773
    ],
+   "children_mean_generations_1_10": 2.517887830734253,
+   "children_mean_generations_90_99": 2.927694082260132,
+   "elites_mean_generations_1_10": 5.873958110809326,
+   "elites_mean_generations_90_99": 5.647916793823242,
+   "population_mean_generations_1_10": 2.83251953125,
    "population_mean_by_generation": [
     4.593800067901611,
     3.201200008392334,
@@ -623,6 +633,11 @@
     5.156199932098389,
     7.171899795532227
    ],
+   "children_mean_generations_1_10": 2.766972064971924,
+   "children_mean_generations_90_99": 2.993480682373047,
+   "elites_mean_generations_1_10": 5.909895896911621,
+   "elites_mean_generations_90_99": 5.696875095367432,
+   "population_mean_generations_1_10": 3.0616211891174316,
    "population_mean_by_generation": [
     5.3125,
     2.9521000385284424,
@@ -836,6 +851,11 @@
     7.0625,
     5.375
    ],
+   "children_mean_generations_1_10": 2.59375,
+   "children_mean_generations_90_99": 2.8577046394348145,
+   "elites_mean_generations_1_10": 5.501041889190674,
+   "elites_mean_generations_90_99": 5.459374904632568,
+   "population_mean_generations_1_10": 2.8663086891174316,
    "population_mean_by_generation": [
     7.171899795532227,
     3.150899887084961,
@@ -946,6 +966,14 @@
    "breedings": 99
   }
  ],
+ "across_runs": {
+  "population_mean_generations_1_10": 2.896472215652466,
+  "population_mean_generations_90_99": 3.219409227371216,
+  "single_run_generation_means_after_0": [
+   1.48828125,
+   5.1630859375
+  ]
+ },
  "seconds_per_generation_note": "about 56 s per generation (4 runs \u00d7 32 strains \u00d7 8 mazes, H = 1 800) with the CPU idle; 65 s while CPU tests ran beside it (D251)",
  "note": "exploratory; the best of a generation is on its own 8 training mazes, a noisy measure"
 }
