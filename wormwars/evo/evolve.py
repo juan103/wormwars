@@ -64,17 +64,28 @@ def evaluate_on(cfg, iface, genome, ids, run_seed, device, combat_stage=0) -> Ro
     )
 
 
+def ranking(fitness: np.ndarray, tie_rng: np.random.Generator | None = None) -> np.ndarray:
+    """Strains best first. Without `tie_rng`, `np.argsort(-fitness)`, unchanged. With it, exact ties are ordered by
+    one uniform draw per strain from that stream (the evolutionary E4-D, D265: where most strains tie, index order would
+    return the same elites to the parents every generation)."""
+    if tie_rng is None:
+        return np.argsort(-fitness)
+    return np.lexsort((tie_rng.random(len(fitness)), -np.asarray(fitness)))
+
+
 def breed(
     genome: Genome,
     fitness: np.ndarray,
     cfg: Config,
     generator: torch.Generator,
     scales: dict | None = None,
+    tie_rng: np.random.Generator | None = None,
 ) -> Genome:
     """Truncation selection + elitism + Gaussian mutation, bounds re-clamped inside `mutate`.
-    `scales`: optional per-parameter factors on the mutation sigmas (`Genome.mutate`; E4s)."""
+    `scales`: optional per-parameter factors on the mutation sigmas (`Genome.mutate`; E4s).
+    `tie_rng`: optional, exact ties ordered at random (`ranking`); None leaves breeding unchanged."""
     e = cfg.evo
-    order = np.argsort(-fitness)  # best first
+    order = ranking(fitness, tie_rng)  # best first
     elites = order[: e.elites]
     parents = order[: min(e.truncation, len(order))]
 

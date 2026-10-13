@@ -8366,3 +8366,19 @@ The owner (2026-10-13), on design v2 §8: **the margin δ = 0.15** (Fable's prop
 for the formal run (4 runs) only if its children's entry rate holds (Fable's condition); and **a seeded follow-up
 pre-committed**: if L reads "not detected" or "inconclusive", arm S, L seeded at the hand-built comparator-origin wiring
 at w = 0.5, runs under the same rule, registered with L. Recorded in design v2.1.
+
+## D267 — The evolutionary E4-D's code (pilot), for review by both
+
+- **Random tie-breaking** (`wormwars/evo/evolve.py`: `ranking`, `breed(..., tie_rng)`; `evolve_batch(...,
+  random_ties)`; `lineage.replay(..., random_ties)`): exact fitness ties ordered by one uniform draw per strain from a
+  per-run stream keyed by the run seed. **Off by default:** `ranking` without a stream is `np.argsort(-fitness)`, so
+  every earlier run is unchanged. Tests (`tests/test_e4d_ties.py`): the ranking unchanged without a stream; ties
+  shuffled and order kept with one; a random-tie run replayed bitwise; a sabotage (replaying it without the flag) fails.
+- **The trial rollout** (`wormwars/e4/evo_trial.py`): every strain on its mazes under both assignments in one batch;
+  score = the per-maze real-first share, progress zero; the integrity check on link-free strains (off only for the
+  oracle, which distinguishes by design); qualifying ids. Tests: a link-free strain scores only 0 or 0.5 per maze; one
+  genome scores the same wherever it sits in a batch; one strain alone matches the trial world; the integrity check
+  catches the oracle's mapping; the capture keeps entry counts.
+- **The champion rule** (`evo_trial.champion`), with its declared ties, tested.
+- **The pilot runner** (`scripts/e4d_evo.py`): precheck, screen and f, on E2's stage frame; populations saved every 10
+  generations and every lineage replay checked bitwise; smoked on the CPU and the GPU at toy sizes.

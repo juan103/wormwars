@@ -70,6 +70,14 @@ def init_seed(run_seed: int) -> int:
     return 2 * int(run_seed)
 
 
+TIE_STREAM = 0x71E5
+
+
+def tie_rng(run_seed: int) -> np.random.Generator:
+    """A run's stream for ordering exact fitness ties (the evolutionary E4-D, D265)."""
+    return np.random.default_rng([int(run_seed), TIE_STREAM])
+
+
 def breed_seed(run_seed: int) -> int:
     return 2 * int(run_seed) + 1
 
@@ -116,7 +124,7 @@ def _stack_ids(per_run: list[np.ndarray], population: int) -> np.ndarray:
 def evolve_batch(cfg, iface, spec: BrainSpec, runs: list[RunSpec], *, generations: int, checkpoint_every: int,
                  validation_ids: np.ndarray, world_seed: int, id_base: int, id_span: int, device="cpu",
                  rollout_fn=rollout, check=None, category=None, on_checkpoint=None, initial=None,
-                 mutation_scales=None, snapshot_at=()) -> list[RunRecord]:
+                 mutation_scales=None, snapshot_at=(), random_ties: bool = False) -> list[RunRecord]:
     """Evolve every run in `runs` for `generations` generations, in lockstep.
 
     `check()` is called before every rollout (the cap); `category(name)` returns a context manager
@@ -130,7 +138,10 @@ def evolve_batch(cfg, iface, spec: BrainSpec, runs: list[RunSpec], *, generation
 
     E3b-1's hooks: `snapshot_at` lists generation indices whose evaluated population (before that
     generation's selection and mutation) each record keeps in `snapshots`, on the CPU; empty by default,
-    which changes nothing. A non-finite score names its runs: the `FloatingPointError` carries `runs`."""
+    which changes nothing. A non-finite score names its runs: the `FloatingPointError` carries `runs`.
+
+    The evolutionary E4-D's flag: `random_ties` orders exact fitness ties by each run's own stream
+    (`tie_rng`, keyed by the run seed); off by default, which changes nothing."""
     if len({r.run for r in runs}) != len(runs) or len({r.run_seed for r in runs}) != len(runs):
         raise ValueError("every run in a batch needs its own run number and run seed")
     P, W = cfg.evo.population, cfg.evo.worlds_per_strain
@@ -145,6 +156,7 @@ def evolve_batch(cfg, iface, spec: BrainSpec, runs: list[RunSpec], *, generation
             raise ValueError(f"an initial population must hold {P} strains (the population)")
     scales = [None if mutation_scales is None else mutation_scales(r) for r in runs]
     gens = [torch.Generator(device=device).manual_seed(breed_seed(r.run_seed)) for r in runs]
+    ties = [tie_rng(r.run_seed) if random_ties else None for r in runs]
     records = [RunRecord(r) for r in runs]
     R = len(runs)
 
@@ -204,7 +216,7 @@ def evolve_batch(cfg, iface, spec: BrainSpec, runs: list[RunSpec], *, generation
                 on_checkpoint(records, g)
 
         if g < generations - 1:
-            pops = [breed(pops[i], fits[i], cfg, gens[i], scales[i]) for i in range(R)]
+            pops = [breed(pops[i], fits[i], cfg, gens[i], scales[i], ties[i]) for i in range(R)]
         for rec in records:  # wall seconds for the whole batch's generation, checkpoint included
             rec.log[-1]["batch_seconds"] = time.perf_counter() - t_gen
     for i, rec in enumerate(records):
