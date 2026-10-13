@@ -8335,3 +8335,27 @@ design's status records that it was played.
 **Publication:** with the top-level README (a row, the next steps and a "Newest" section), the ROADMAP (E4's status) and
 the review trail (episodes 68-74), E4's main task and E4-D's feasibility check go to `main` by the consensus rule
 (D069); the owner is informed after.
+
+## D265 — The evolutionary E4-D: design v1 reviewed by both (go to v2); design v2
+
+**The review** (`docs/reviews/20261013-E4-D-evo-design/`): both "go to v2 with these changes"; every finding is taken
+in `docs/E4/E4-D-EVO-DESIGN.md` v2:
+- fitness is the real-first count over all 2W trials, with no tie-breaker (both);
+- exact ties are broken at random from a recorded per-run stream (both): `breed`'s `argsort` resolves ties by index,
+  returning E-G's unmutated elites to the parents whenever most strains score 0.5; a flag, off elsewhere, with a test;
+- selection visibility before training (Fable): the formal W is the smallest at which a w = 1 control out-ranks E-G
+  on 90% of maze draws, or the design stops;
+- the slot factor is chosen by the pilot's search performance across 0.25, 1, 2 and 4 (Astra's rule), excluding any
+  factor whose children's entry rate falls below 0.95 of E-G's (Fable's safeguard);
+- the champion from the whole final population, with declared ties (both); E-G played on every block (both); zero
+  progress asserted (Fable); a per-generation integrity check (Fable); independent test blocks per run (Astra);
+- the decision rule: Astra's five states on the t bounds against a margin δ, the sign-flip p beside (one-sided, smallest
+  1/2^R, both); R and G from a power analysis of the whole rule;
+- the positive control repeated on the GPU at the intended compositions (Astra).
+
+**My rulings where they differ:** Astra's t-based states over Fable's sign-flip-plus-bound (the sign-flip test is exact
+only under sign symmetry, and selected champions may be asymmetric); independent test blocks per run (Astra) over a
+shared block (Fable accepted either); Fable's entry-rate safeguard added to Astra's factor rule.
+
+**For the owner** (design v2 §8): the margin δ (0.10, Astra; 0.15, Fable); whether arm F runs (Fable: in the pilot, then
+R = 4; Astra: no); and what a null in L leads to, decided before the formal run (a seeded follow-up arm, Fable).
