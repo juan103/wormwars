@@ -8301,3 +8301,23 @@ The three stages ran on the CPU at a700bbd (`experiments/E4-two-minds/E4-D/`; `s
 - **For the evolutionary E4-D:** the weights that carry the signal (about 2-3) are about a hundred times the random
   cross-link steps that already broke E-G in E4's main task (σ about 0.02; D256). Whether selection can climb that far,
   through sizes that cost, is the evolutionary question.
+
+## D263 — The main task's results review by both (fix then publish); corrections; E4-D's results page
+
+**The review** (`docs/reviews/20261013-E4-results/`): both "fix then publish". Every finding is taken in
+`experiments/E4-two-minds/RESULTS.md` and `README.md`: the untraced figures now come from the regenerated
+`pilot-attempt1-summary.json` (children's, elites' and cross-run means); forecasts are worded as the reviewers'
+judgements; the causal wording is narrowed ("bias-only mutation reproduced nearly all the loss on this block"; the
+ungated loss 1.66 against E-G's 2.06; "every tested factor, 0.25-4.0, on block A"); the composition and block caveats,
+the shares at or above 5, the intervention table's construction, the predicted and observed bias ratio (3 against 4),
+the headroom record's dirty tree, E4-D's denominator, the terms and the contributions are added.
+
+**Corrections** (2026-10-13), quoting what was wrong:
+- D252: "6.3-6.9 in 90-99" for the best strain; it is 6.2-6.9 (run 3: 6.245).
+- D254: "module B alone 2.80"; it is 2.81 (2.8054).
+- D256: "0.05 → 6.73"; it is 6.72 (6.7248). D256: "nose-origin links cut 6.26"; it is 6.25 (6.2548).
+- D258: "about 25.6 of 30" GPU-hours remaining, from the reviews' estimate of 4.4 spent; the records give 4.20 spent
+  and 25.80 remaining.
+
+**E4-D's feasibility results** are written (`experiments/E4-two-minds/E4-D/README.md`), for review by both with the
+revised main-task pages before publication.
