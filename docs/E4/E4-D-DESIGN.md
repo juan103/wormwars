@@ -1,4 +1,4 @@
-# E4-D: a task where transfer is necessary (design v2.1)
+# E4-D: a task where transfer is necessary (design v2.2)
 
 **Status:** v2.1, after both reviews of v1 (D249) and of v2 (both "revise", narrowly; the trial and §3 hold;
 `docs/reviews/20261012-E4-D-design*/`, D250). No code, no compute yet.
@@ -128,6 +128,11 @@ assignment-dependent relay current injected before the entry.
   evaluation block; every attempt is logged. The final configuration and its outcome are committed before E4's
   formal run, since the outcome enters E4's joint table (E4 v3 §2).
 - **Compute:** the check runs under `wormwars.accounting`, on the CPU.
+
+**Amendment, v2.2 (2026-10-13, before anything was played; D258):** the candidate weights become 0.05, 0.1, 0.25, 0.5,
+1, 2 and 3 (Fable, after E4's stage A, D256-D257): the smallest weight that carries the signal is the prior for whether
+evolution can discover it, since random cross-link steps of about 0.02 already break B in E4's main task. The selection
+rule and its ties are unchanged.
 
 ## 5. What it shows, and what it does not
 

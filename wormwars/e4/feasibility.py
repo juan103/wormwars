@@ -18,7 +18,7 @@ import numpy as np
 
 SIGMAS = (3.0, 6.0, 9.0, 12.0)
 WIRINGS = ("comparator", "nose")
-WEIGHTS = (0.5, 1.0, 2.0, 3.0)
+WEIGHTS = (0.05, 0.1, 0.25, 0.5, 1.0, 2.0, 3.0)  # v2.2 adds 0.05, 0.1 and 0.25 (D258)
 LEVEL = 0.75
 BOOT_SEED, BOOT_RESAMPLES = 20_261_013, 10_000
 

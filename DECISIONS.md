@@ -8218,3 +8218,15 @@ direction: its CPU feasibility check (after its code review), then an evolutiona
 pre-registration and budget. Both rank running E4 as designed as poor value (about 20 GPU-hours for a null that would
 mostly read "inconclusive"). Nothing of E4's main run was pre-registered, so this is a direction change recorded here,
 not a broken registration. **It is the owner's decision.**
+
+## D258 — The owner re-scopes E4 to E4-D; E4-D design v2.2
+
+**The owner's decisions** (2026-10-13), after D257's recommendation by both reviewers:
+- **E4's main formal run is dropped.** The main-task pilot, the diagnostics and stage A (about 4.4 GPU-hours) are
+  published as E4's exploratory result. Nothing of the main run was pre-registered.
+- **E4-D is the confirmatory direction:** its CPU feasibility check first (after its code review by both), then, if it
+  passes, an evolutionary E4-D with its own design, review, pre-registration and pilot.
+- **An evolutionary E4-D draws on E4's remaining GPU-hours** (about 25.6 of 30), measured by its pilot first.
+
+**E4-D design v2.2** (before anything was played): the control's candidate weights add 0.05, 0.1 and 0.25 to 0.5-3
+(Fable), so the smallest weight that carries the signal is measured; `feasibility.WEIGHTS` follows.
