@@ -8240,3 +8240,31 @@ chaotic rollout not reproduced across devices, D082.)
 
 **The main task's results** (`experiments/E4-two-minds/RESULTS.md`, exploratory) and the folder's README are written,
 every number from the committed records; for review by both before publication.
+
+## D260 — E4-D's code review by both (fix first), the fixes, and design v2.3
+
+**The review** (`docs/reviews/20261013-E4-D-code/`): both "fix first"; the channel mapping, §3's exactness, the two
+wirings (with B's four signed edges), the selection, the denominators and the bootstrap check out.
+
+**Fixed, each test seen failing first or sabotaged:**
+- **distances to the goal blocks** (`trial.block_distance`; Astra found a maze where the centre-distance rule moved
+  the start); "outside both blocks" declared in place of the undeclared min(d) > 2;
+- **one genome per batch** in the runner, so the reversal, the cue held fixed, cross-link removal and X0's pairs are
+  each compared within one composition;
+- **the latch checked in every trial,** per substep until each world's first entry, and in the verdict;
+- **the verdict reads integrity first** (`feasibility.verdict`): a failed invariance, mapping, cue-fixed, removal or
+  latch check voids the result;
+- **the invariance checks trace every tick** (positions, headings, random projections of the non-A neurons' states);
+- **the freeze enforced:** a later stage refuses unless the earlier records came from the same code and registration;
+  the manifests are bounded ([51 100, 51 300) and [51 300, 51 700)) and checked disjoint;
+- **the oracle on the calibration block;** per-trial start readings kept; the scout's partial file renamed;
+- **tests that can fail:** an entry on the last tick (found, then replayed with the horizon at t + 1 and at t);
+  separation at 4 common steps but not 5; at least one qualifying maze; every channel variant; the enumeration (from
+  identical states, the assignment changes only E3_A_NL's and E3_A_NR's currents); crowding off; a nonzero-slot
+  sabotage (the control at 0.05 breaks X0's invariance); X0's trace run through an entry. Sabotages of the latch and of
+  B's channel fail them.
+
+**Rulings accepted by both:** the subclass instead of a flag (rule 7 by construction; declared in v2.3 in place of §6's
+flag-off comparison), the smoke's forced σ, the runner filtering mazes before the trial world, the starts reported.
+
+**E4-D design v2.3** (`docs/E4/E4-D-DESIGN.md`) records all of it, dated, before anything was played.

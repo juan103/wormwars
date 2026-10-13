@@ -9,7 +9,8 @@
   assignment 0 then 1), and the one-sided 95% percentile bootstrap lower bound over mazes.
 - `reversal_ok`: the control's decoy-first count under cue reversal equals its real-first count without it (a mapping
   check).
-- `verdict`: success needs every criterion of §4.
+- `verdict`: the integrity checks first (a failure voids the result), then §4's performance criteria, read with the
+  oracle beside them.
 """
 
 from __future__ import annotations
@@ -71,10 +72,23 @@ def reversal_ok(normal, reversed_) -> bool:
     return readout(reversed_)["decoy_first"] == readout(normal)["real_first"]
 
 
+INTEGRITY = ("x0_invariant", "reversal_ok", "fixed_cue_invariant", "removal_identical", "latch_held")
+
+
 def verdict(r: dict) -> dict:
-    checks = {"control_real_first_all": r["control"]["real_first_all"] >= LEVEL,
-              "control_bound_above_half": r["control_bound"] > 0.5,
-              "x0_invariant": bool(r["x0_invariant"]), "reversal_mapping": bool(r["reversal_ok"]),
-              "fixed_cue_invariant": bool(r["fixed_cue_invariant"]),
-              "removal_identical_to_x0": bool(r["removal_identical"])}
-    return {"passed": all(checks.values()), "checks": checks}
+    """The integrity checks first (X0's exact invariance, the reversal mapping, the cue held fixed, cross-link removal,
+    the latch held in mode B): any failure voids the result. Then the performance criteria, read with the oracle
+    beside them (both reviewers of the code)."""
+    integrity = {k: bool(r[k]) for k in INTEGRITY}
+    performance = {"control_real_first_all": r["control"]["real_first_all"] >= LEVEL,
+                   "control_bound_above_half": r["control_bound"] > 0.5}
+    if not all(integrity.values()):
+        reading = "void: an integrity check failed (" + ", ".join(k for k, v in integrity.items() if not v) + ")"
+    elif all(performance.values()):
+        reading = "passed: the architecture can carry an engineered A → B steering signal through the slots"
+    elif r["oracle_real_first_all"] >= LEVEL:
+        reading = "failed with a working oracle: the slots, as configured, did not carry the signal"
+    else:
+        reading = "failed with a failed oracle: the task is infeasible as specified (a new version changes the task)"
+    return {"passed": all(integrity.values()) and all(performance.values()), "integrity": integrity,
+            "performance": performance, "reading": reading}

@@ -56,13 +56,28 @@ def test_per_maze_means_pair_the_two_assignments():
     assert F.per_maze(ev, n_mazes=2).tolist() == [0.5, 0.0]
 
 
+OK = {"control": {"real_first_all": 0.8}, "control_bound": 0.7, "x0_invariant": True, "reversal_ok": True,
+      "fixed_cue_invariant": True, "removal_identical": True, "latch_held": True, "oracle_real_first_all": 0.9}
+
+
 def test_the_verdict():
-    ok = {"control": {"real_first_all": 0.8}, "control_bound": 0.7, "x0_invariant": True, "reversal_ok": True,
-          "fixed_cue_invariant": True, "removal_identical": True}
-    assert F.verdict(ok)["passed"]
-    for k, bad in (("control", {"real_first_all": 0.74}), ("control_bound", 0.5), ("x0_invariant", False),
-                   ("reversal_ok", False), ("fixed_cue_invariant", False), ("removal_identical", False)):
-        assert not F.verdict({**ok, k: bad})["passed"], k
+    v = F.verdict(OK)
+    assert v["passed"] and v["reading"].startswith("passed")
+    for k, bad in (("control", {"real_first_all": 0.74}), ("control_bound", 0.5)):
+        assert not F.verdict({**OK, k: bad})["passed"], k
+
+
+@pytest.mark.parametrize("check", ["x0_invariant", "reversal_ok", "fixed_cue_invariant", "removal_identical", "latch_held"])
+def test_a_failed_integrity_check_voids_the_result(check):
+    """Both reviewers: a failed exactness, mapping or latch check is not a slots result."""
+    v = F.verdict({**OK, check: False})
+    assert not v["passed"] and v["reading"].startswith("void")
+
+
+def test_a_performance_failure_is_read_with_the_oracle():
+    weak = {**OK, "control": {"real_first_all": 0.6}}
+    assert "did not carry" in F.verdict(weak)["reading"]
+    assert "infeasible" in F.verdict({**weak, "oracle_real_first_all": 0.6})["reading"]
 
 
 def test_reversal_is_a_mapping_check():

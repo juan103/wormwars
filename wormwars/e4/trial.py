@@ -2,8 +2,9 @@
 
 - `trial_config`: E4's maze family (6 × 6 islands, k_r = 0) with one wey, no trails, the scent untruncated at σ_D,
   and the horizon H_t.
-- `start_cell`: §2's rule on the free grid: |d₀ − d₁| ≤ 4, the downhill sets parting within 4 common steps, the
-  largest min(d₀, d₁), row-major ties; None if no cell qualifies.
+- `block_distance`, `start_cell`: §2's rule on the free grid, with distances to the goal blocks: outside both blocks,
+  |d₀ − d₁| ≤ 4, the downhill sets parting within 4 common steps, the largest min(d₀, d₁), row-major ties; None if no
+  cell qualifies.
 - `TrialWorld`: a `MazeWorld` subclass, so every earlier path is unchanged. The two carved goal sites are the
   candidates, in canonical order; `assign` [worlds] says which is real. The wey starts at the start cell with a
   heading from the trial's own stream, the latch at v_q = −1 (mode B). A's noses read the real candidate (or, for the
@@ -11,6 +12,10 @@
   real one). The relays read nothing, the start cue is off and the goal is pinned at B. The first entry into either
   candidate is latched per wey (its candidate and tick); later events are ignored.
 - `latch_first`, `control_genome` (the two wirings of §4).
+
+Simultaneous entries into both candidates cannot happen (disjoint blocks, one head), so `latch_first`'s tie-break is
+never used. The maze world's own ledgers (visits, the goal's switch before it is re-pinned, deposits) keep running and
+are not read; only the first-entry record is.
 
 Every option that breaks the design (`keep_start_cue`, `relay_leak`, and `b_source="real"` outside the oracle) exists
 for the tests' sabotages and the oracle; the feasibility runner states which it uses.
@@ -60,6 +65,29 @@ def _separates(d0: np.ndarray, d1: np.ndarray, y: int, x: int) -> bool:
     return False
 
 
+def block_distance(mz, cell) -> np.ndarray:
+    """4-neighbour BFS distance over free grid cells from every free cell of the maze cell's 3 × 3 goal block (§2: the
+    distances are to the candidates' goal blocks, not their centres; Astra); inf in walls and where unreachable."""
+    from collections import deque
+    n = mz.wall.shape[0]
+    dist = np.full(mz.wall.shape, np.inf)
+    y0, x0 = 1 + 4 * cell[0], 1 + 4 * cell[1]
+    q = deque()
+    for y in range(y0, y0 + 3):
+        for x in range(x0, x0 + 3):
+            if not mz.wall[y, x]:
+                dist[y, x] = 0
+                q.append((y, x))
+    while q:
+        y, x = q.popleft()
+        for dy, dx in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+            yy, xx = y + dy, x + dx
+            if 0 <= yy < n and 0 <= xx < n and not mz.wall[yy, xx] and np.isinf(dist[yy, xx]):
+                dist[yy, xx] = dist[y, x] + 1
+                q.append((yy, xx))
+    return dist
+
+
 def start_cell(wall: np.ndarray, d0: np.ndarray, d1: np.ndarray):
     """§2's start: the qualifying free grid cell with the largest min(d₀, d₁), row-major ties; None if none."""
     best, best_key = None, None
@@ -68,8 +96,8 @@ def start_cell(wall: np.ndarray, d0: np.ndarray, d1: np.ndarray):
         for x in range(W):
             if wall[y, x] or not (np.isfinite(d0[y, x]) and np.isfinite(d1[y, x])):
                 continue
-            if abs(d0[y, x] - d1[y, x]) > DISTANCE_TOLERANCE or min(d0[y, x], d1[y, x]) <= 2:
-                continue
+            if abs(d0[y, x] - d1[y, x]) > DISTANCE_TOLERANCE or min(d0[y, x], d1[y, x]) <= 0:
+                continue  # outside both goal blocks (v2.3)
             if not _separates(d0, d1, y, x):
                 continue
             key = min(d0[y, x], d1[y, x])
@@ -113,7 +141,7 @@ class TrialWorld(MW.MazeWorld):
         for w, (mz, pl) in enumerate(zip(self.mazes, self.placements)):
             c0, c1 = sorted((tuple(pl.a), tuple(pl.b)))
             self.placements[w] = dataclasses.replace(pl, a=c0, b=c1)
-            s = start_cell(mz.wall, mz.free_distance(c0), mz.free_distance(c1))
+            s = start_cell(mz.wall, block_distance(mz, c0), block_distance(mz, c1))
             if s is None:
                 raise ValueError(f"maze {int(self.world_ids[w])} has no qualifying start cell (skip it)")
             self.starts.append(s)

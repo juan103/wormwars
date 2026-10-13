@@ -1,7 +1,8 @@
-# E4-D: a task where transfer is necessary (design v2.2)
+# E4-D: a task where transfer is necessary (design v2.3)
 
-**Status:** v2.1, after both reviews of v1 (D249) and of v2 (both "revise", narrowly; the trial and §3 hold;
-`docs/reviews/20261012-E4-D-design*/`, D250). No code, no compute yet.
+**Status:** v2.3, after both reviews of v1 (D249) and of v2 (both "revise", narrowly; the trial and §3 hold;
+`docs/reviews/20261012-E4-D-design*/`, D250), v2.2's weights (D258), and v2.3 after both reviews of the code (D260).
+Nothing has been played.
 - **Its purpose** (E4 design v3 §7): to read a null in E4's main task. E4-D is a task where information must cross
   from A to B, with a hand-configured positive control that shows whether the architecture can carry it.
 - **Its order:** the positive control's feasibility check (CPU, exploratory engineering) runs before E4's formal
@@ -133,6 +134,29 @@ assignment-dependent relay current injected before the entry.
 1, 2 and 3 (Fable, after E4's stage A, D256-D257): the smallest weight that carries the signal is the prior for whether
 evolution can discover it, since random cross-link steps of about 0.02 already break B in E4's main task. The selection
 rule and its ties are unchanged.
+
+**Amendment, v2.3 (2026-10-13, before anything was played; D260, after both reviews of the code):**
+- **Distances are to the goal blocks** (as §2 says), by a BFS from every free cell of a block; the code had used the
+  blocks' centres (Astra).
+- **"Outside both goal blocks"** (d₀, d₁ > 0) is declared as part of the start rule; the code had an undeclared
+  min(d₀, d₁) > 2 (both).
+- **Each genome plays alone in its batch** (2n worlds of one strain), so every comparison of §3 and §4 is within one
+  composition (both: the reversal check had crossed compositions).
+- **The latch is checked in every trial,** at every substep until the world's first entry, and enters the verdict.
+- **The verdict reads the integrity checks first** (X0's invariance, the reversal mapping, the cue held fixed,
+  cross-link removal, the latch): a failure voids the result; only then is a performance failure read with the oracle
+  (both).
+- **The invariance checks compare every tick's** position, heading and random projections of the non-A neurons'
+  states, bitwise, not only the endpoints (both).
+- **The oracle is played on the calibration block too** (§4: "on every block").
+- **Rule 7 holds by construction:** E4-D's trial world is a subclass of the maze world, and no engine file changed
+  (`wormwars/e4/trial.py` is new; `wormwars/brain.py`, `wormwars/world.py` and `wormwars/e3/maze_world.py` are
+  untouched by E4-D), so §6's flag-off comparison is not run (Fable accepted; Astra asked that it be run or amended
+  openly: this is the amendment).
+- **Simultaneous entries** into both candidates cannot happen (disjoint blocks, one head); the code's tie-break is
+  never used. The bootstrap's quantile is NumPy's default (linear).
+- **The inherited ledgers** of the maze world (visits, the goal's switch before it is re-pinned, deposits) keep
+  running in a trial; only the first-entry record is read (Astra).
 
 ## 5. What it shows, and what it does not
 
