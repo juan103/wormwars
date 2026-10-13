@@ -8127,3 +8127,22 @@ same 4 generator seeds: E-G unbred and bred with every scale at 0 (must be equal
 one class at a time (w, τ, bias, module A, module B, the gated edges); one parameter per child; the 2 × 2 of organism
 (E-G, E + W2) and arena (6 × 6 islands, 5 × 5 trees at H = 2 400); and the saved final X0 populations against E-G on the
 64-maze validation block. `arms.class_scales` builds the restricted masks (a test, seen failing first).
+
+## D254 — The diagnostics: the load is the biases' alone; no bug; X0's populations end below E-G
+
+`experiments/E4-two-minds/diagnostics.json` (1 304 s on the GPU; generation 1, children only, paired on the pilot's
+8 load mazes and 4 generator seeds):
+- **No defect:** bred with every scale at 0, the children equal E-G exactly (4.031 against 4.031).
+- **The paired load:** E-G makes 4.03 on these 8 mazes, not 6.23 (that was another block: Astra was right). Children at
+  X0's factor 0.25: 1.97; at 0.10: 3.11; at 0.05: 3.60.
+- **By class, at 0.25:** weights only 4.14, τ only 4.16, the gated comparator → motor edges only 4.13, one parameter
+  per child 4.04 (no loss in any); **biases only 1.98 (the whole load)**; module A alone 2.80, module B alone 2.80
+  (each holds 4 of the 8 module biases). A bias step of σ 0.0125 (0.05 × 0.25) is enough.
+- **Not the gate, not the arena:** E + W2 (ungated, E3b-1's T-F mask) loses as much on the 6 × 6 islands (3.66 →
+  2.00), and both organisms lose about a third on 5 × 5 trees at H = 2 400 (E-G 6.59 → 4.38; E + W2 6.52 → 4.34). The
+  load also existed in E3b-1's setting; the comparison with E3b-1's last generation (D253) was not like with like.
+- **The saved final X0 populations** (attempt 1, generation 99) on the 64-maze validation block: E-G 7.63; no strain
+  of any run above it (the runs' best 6.16, 6.52, 7.08, 6.68).
+- **A reading, to be checked by both:** the comparators weigh tiny left-right scent differences, so a small offset
+  moves their balance point. A cross-link weight times its source's mean activity is such an offset, which would
+  explain the cross-links' own load (D250).
