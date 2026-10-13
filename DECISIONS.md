@@ -8082,3 +8082,24 @@ beside, as the frame keeps a stopped attempt's files.
   bitwise invariance to the assignment over 150 ticks, with three sabotages (the cue into B's noses, the gate removed,
   a relay leak), each breaking it; the start cue's sabotage turns q positive within 5 ticks.
 - **Next:** the code review by both, then the scouting block.
+
+## D252 — The pilot's attempt 1 ran to its cap: the GA does not move off E-G at T-F's mutation strength
+
+**What happened.** The first attempt was not stopped in time (D251) and ran to its registered 3-hour cap, which it
+reached, as projected, in X+'s generation 80 ("E4: not completed (the cap was reached)", 10 825 s). X0's 4 runs
+completed 100 generations; their final populations, selection matrices and parents were saved
+(`runs/e4/pilot/`, local). X+'s training was in memory and is lost. **A lesson for the runner:** populations must be
+saved at every checkpoint, not only when an arm completes.
+
+**What it shows** (`scripts/e4_pilot_attempt1.py` → `experiments/E4-two-minds/pilot-attempt1-summary.json`):
+- generation 0 (32 copies of E-G) averages 6.23 visits per wey on its training mazes; from generation 1 the
+  population mean sits near 2.4-3.4 for 100 generations;
+- each generation's best strain (on its own 8 mazes, a noisy measure) averages 6.3-6.7 in generations 0-9 and
+  6.3-6.9 in 90-99, per run: no visible gain over E-G;
+- only 3-19% of a final population reaches 5 visits; the final best strains' lineages carry 22-57 mutations over 99
+  breedings.
+
+So at T-F's mutation strength on E-G's 6 × 6 islands, mutation drags almost every child far below E-G and selection
+holds a few elites near it. If so, P2 and recruitment measure little whatever the cross-link factor. **No GPU is used
+until both reviewers have read this and the way forward is decided;** a change of E4's training scheme may be a
+scientific-direction change for the owner.
