@@ -67,6 +67,9 @@ def class_scales(cx, cls: str, *, factor: float = FACTOR) -> dict:
         keep = {k: torch.ones_like(v, dtype=torch.bool) for k, v in sc.items()}
     elif cls in ("w", "tau", "bias"):
         keep[cls][:] = True
+    elif cls in ("nose_bias", "comparator_bias"):
+        names = ("NL", "NR") if cls == "nose_bias" else ("CL", "CR")
+        keep["bias"][torch.tensor([ext.index(f"E3_{mod}_{n}") for mod in "AB" for n in names])] = True
     elif cls in ("module_A", "module_B"):
         idx = torch.tensor([ext.index(n) for n in O._module_neurons(cls[-1])])
         keep["tau"][idx] = keep["bias"][idx] = True
@@ -76,6 +79,18 @@ def class_scales(cx, cls: str, *, factor: float = FACTOR) -> dict:
     else:
         raise ValueError(f"unknown class {cls!r}")
     return {k: torch.where(keep[k], v, torch.zeros_like(v)) for k, v in sc.items()}
+
+
+def combined_scales(cx, *, bias_factor: float, cross_factor: float = 0.0, inherited: bool = True) -> dict:
+    """The calibrated mask (D255): X0's weights and τ at 0.25, the module biases at `bias_factor`, the 32 slots at
+    `cross_factor` (0 for X0). `inherited=False` freezes everything but the slots (the cross-link-only diagnostic)."""
+    x0 = scales(cx, "x0")
+    sc = {k: v.clone() for k, v in x0.items()}
+    sc["bias"] = x0["bias"] * (bias_factor / FACTOR)
+    if not inherited:
+        sc = {k: torch.zeros_like(v) for k, v in sc.items()}
+    sc["w"][slot_indices(cx)] = float(cross_factor)
+    return sc
 
 
 def mutable_count(cx, arm: str, *, cross_factor: float | None = None) -> int:
@@ -96,6 +111,13 @@ def cut(genome: Genome, links: torch.Tensor) -> Genome:
     w = genome.w.clone()
     w[:, links] = 0.0
     return genome.with_params(w=w)
+
+
+def center(genome: Genome, links: torch.Tensor, means: torch.Tensor) -> Genome:
+    """The links kept, each target's bias minus Σ w_ij · means_i: the links' constant part removed, their
+    fluctuation kept (Astra's fourth condition, D255). Not clamped."""
+    sub = mean_substitute(genome, links, means)
+    return genome.with_params(bias=2 * genome.bias - sub.bias)
 
 
 def mean_substitute(genome: Genome, links: torch.Tensor, means: torch.Tensor) -> Genome:

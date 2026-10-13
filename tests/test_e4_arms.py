@@ -152,3 +152,51 @@ def test_scaled_x0(cx):
     x0 = AR.scales(cx, "x0")
     half = AR.class_scales(cx, "all", factor=0.10)
     assert torch.allclose(half["w"], x0["w"] * (0.10 / 0.25))
+
+
+def test_nose_and_comparator_bias_classes(cx):
+    ext = cx["org"].ext
+    n = AR.class_scales(cx, "nose_bias")["bias"] != 0
+    c = AR.class_scales(cx, "comparator_bias")["bias"] != 0
+    assert int(n.sum()) == 4 and int(c.sum()) == 4 and not torch.any(n & c)
+    assert bool(n[ext.index("E3_A_NL")]) and bool(c[ext.index("E3_B_CR")])
+    assert torch.equal(n | c, AR.class_scales(cx, "bias")["bias"] != 0)
+
+
+def test_combined_factors(cx):
+    """Weights and τ at 0.25, the module biases at `bias_factor`, the slots at `cross_factor` (0: X0)."""
+    x0 = AR.scales(cx, "x0")
+    sc = AR.combined_scales(cx, bias_factor=0.02, cross_factor=0.0)
+    assert torch.equal(sc["w"], x0["w"]) and torch.equal(sc["tau"], x0["tau"])
+    assert torch.allclose(sc["bias"], x0["bias"] * (0.02 / 0.25))
+    sp = AR.combined_scales(cx, bias_factor=0.02, cross_factor=1.0)
+    assert torch.all(sp["w"][AR.slot_indices(cx)] == 1.0)
+
+
+def test_cross_links_only(cx):
+    sc = AR.combined_scales(cx, bias_factor=0.0, cross_factor=0.5, inherited=False)
+    slots = AR.slot_indices(cx)
+    assert torch.all(sc["w"][slots] == 0.5) and int((sc["w"] != 0).sum()) == 32
+    assert torch.all(sc["tau"] == 0) and torch.all(sc["bias"] == 0)
+
+
+def test_centering_removes_the_constant_part(cx):
+    """Astra's fourth condition: links intact, each target's bias minus Σ w_ij · m_i, so a source held at its mean
+    contributes nothing and a deviation passes unchanged."""
+    g = cx["org"].genome
+    ext = cx["org"].ext
+    slots = AR.slot_indices(cx)
+    w = g.w.clone()
+    w[:, slots] = torch.linspace(-2.0, 2.0, len(slots))
+    g = g.with_params(w=w)
+    m = torch.zeros(ext.n)
+    src = [ext.index(n) for n in ("E3_A_NL", "E3_A_NR", "E3_A_CL", "E3_A_CR", "E3_B_NL", "E3_B_NR", "E3_B_CL", "E3_B_CR")]
+    m[src] = 0.3
+    cen = AR.center(g, slots, m)
+    assert torch.equal(cen.w, g.w)
+    W, _ = g.dense()
+    at_mean = m @ W[0] + cen.bias[0]
+    sub = AR.mean_substitute(g, slots, m)
+    cut_drive = m @ AR.cut(g, slots).dense()[0][0] + g.bias[0]
+    assert torch.allclose(at_mean, cut_drive, atol=1e-5)  # at the mean, centred links add nothing beyond the cut
+    assert torch.allclose(sub.bias[0] - g.bias[0], g.bias[0] - cen.bias[0], atol=1e-6)

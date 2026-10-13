@@ -8146,3 +8146,26 @@ one class at a time (w, τ, bias, module A, module B, the gated edges); one para
 - **A reading, to be checked by both:** the comparators weigh tiny left-right scent differences, so a small offset
   moves their balance point. A cross-link weight times its source's mean activity is such an offset, which would
   explain the cross-links' own load (D250).
+
+## D255 — Both reviewers on the diagnostics; the calibration rules; stage A
+
+**The review** (`docs/reviews/20261013-E4-diagnostics/`): both endorse reducing only the module biases' mutation, by a
+declared rule on a fresh block, with weights and τ at 0.25; keeping the 32 free slots (no mirror tying: both showed it
+would not cancel the tonic part; Fable: it would hand evolution the circuit E4 asks whether it finds); no frozen
+biases; the load bound on children, relative to X0's. Fable gave reading 1 a number (the open-loop gain to a turn
+neuron is 18 from a nose bias and 6 from a comparator bias; the loss is linear in σ) and argued that reading 2 does not
+follow, since the within-module nose → comparator weights add the same tonic term and cost nothing; cross-talk is
+likelier. Both: the owner approves a second pilot allowance and the formal run's size.
+
+**The rules, fixed before stage A** (`wormwars/e4/calibration.py`, tests seen failing first):
+- **the bias factor:** of 0.05, 0.02, 0.01, 0.005, the largest whose children keep at least 95% of unmutated E-G
+  (Astra) and are within 0.25 visits of the frozen-bias children (Fable); if none, frozen, flagged; confirmed on a
+  second fresh block, and reconsidered explicitly if it fails, never by searching blocks;
+- **the cross-link load:** X+'s children within min(0.25, 5% of X0's children) of X0's children (Astra's stricter
+  form); the scale rule's reach is reported, and recruitment is read by the cut (Fable: no candidate can reach |w| ≥ 1).
+
+**New pieces:** `arms.class_scales` (nose and comparator biases apart), `arms.combined_scales` (the calibrated mask;
+cross-link-only), `arms.center` (Astra's fourth condition: the links' constant part removed). **Stage A**
+(`scripts/e4_calibrate.py`, about 35 GPU-minutes, inside the pilot's 4.5-hour allowance): the bias split, the bias
+ladder and its confirmation, the cross-link ladder, and reading 2's test (cross-link-only children intact,
+mean-substituted, centred, and with each subset cut). Smoked on the CPU and the GPU at toy size.
