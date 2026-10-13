@@ -8321,3 +8321,17 @@ the headroom record's dirty tree, E4-D's denominator, the terms and the contribu
 
 **E4-D's feasibility results** are written (`experiments/E4-two-minds/E4-D/README.md`), for review by both with the
 revised main-task pages before publication.
+
+## D264 — The pre-publication review by both (fix then publish); E4 published on main
+
+**The review** (`docs/reviews/20261013-E4-prepublication/`): both "fix then publish"; every finding taken. The
+comparator-origin cut improved the mean by 0.39 at factor 0.25 and reduced it by 0.01 at 1.0 (D263's pages, following
+both reviewers' earlier figure, said "rescued little (0.40 and 0.01)"); "1.67 of 3.38", computed before rounding;
+E4-D's page states that the main task was not run, that each maze is played under both assignments, that A is gated off
+until the entry, the σ rule, the start's near-zero lateral cue (median 0.0005 at σ_D = 6; 9.4% of trials with none), the
+calibration's entry counts, and σ's source; the README gives E4-D's rerun procedure against the once-only guard; the
+design's status records that it was played.
+
+**Publication:** with the top-level README (a row, the next steps and a "Newest" section), the ROADMAP (E4's status) and
+the review trail (episodes 68-74), E4's main task and E4-D's feasibility check go to `main` by the consensus rule
+(D069); the owner is informed after.

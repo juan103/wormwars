@@ -123,8 +123,8 @@ cut = E-G" describes the genome, not a separately measured control at the childr
 The figures in brackets are the shares at or above 5. All links cut is E-G, 7.97.
 
 - **The largest rescue among the tested interventions** came from cutting the nose-origin links: about half of the
-  loss at 0.25 (1.67 of 3.39) and under a third at 1.0 (1.74 of 5.90). Cutting the comparator-origin links rescued
-  little (0.40 and 0.01).
+  loss at 0.25 (1.67 of 3.38) and under a third at 1.0 (1.74 of 5.90). Cutting the comparator-origin links improved
+  the mean by 0.39 at factor 0.25 and reduced it by 0.01 at 1.0.
 - **How the conditions were built:** the mean substitution and the centring used each child's source means from a
   separate block C of 8 mazes. The conditions are interventions, not an additive decomposition of the loss.
 - **The mechanism is unresolved** (Astra; a correction to D256's first reading, D257). The nose-origin cut removes the

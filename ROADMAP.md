@@ -133,7 +133,20 @@
   - **The run used 1.06 of 3 GPU-hours.** "E3f: passed" on calibration and on fresh confirmation mazes.
   - **For E4:** this family (6 × 6, k_r = 0, H = 1 800) is the task, with E4's own blind references and trail
     controls.
-  - **The owner decides when E4 resumes.**
+- **E4 / 04c, the main task** (exploratory, 2026-10-11 to 10-13; D242-D263; `experiments/E4-two-minds/`).
+  - **The design:** v3, agreed by both reviewers after two rounds; never pre-registered, since the pilot came first.
+    It has a real output gate, ungated comparators, a frozen selector and 32 cross-link slots, and X0 and X+ are
+    paired by seed.
+  - **The pilot and its follow-ups used 4.20 of 30 GPU-hours.** They showed:
+    - E-G's comparator modules are mutationally fragile, nearly all of it through the module biases;
+    - after 100 generations, no X0 strain beat E-G on validation;
+    - random cross-links cost heavily at every tested size.
+  - **The main formal run was dropped** (the owner, D258), on both reviewers' recommendation: it would most likely
+    have spent about 20 GPU-hours on an inconclusive null.
+  - **E4 is re-scoped to E4-D,** a task where transfer is necessary by construction. Its feasibility check passed on
+    the CPU (D262): a hand-configured cross-link control reaches 0.83 real-first against X0's exact 0.5.
+  - **Next:** an evolutionary E4-D (its design, review, pre-registration and pilot), on E4's remaining 25.80
+    GPU-hours.
 
 - **Published on main:**
   - 02's D050 correction, as a Corrections entry (27 September, D063);
@@ -415,6 +428,10 @@ Track B continues in parallel: 03r, then the mechanism follow-up or closure, the
 - **Bridge 2 (optional, independent of bridge 1):** the shuttle is a memory task by design. If 03r replicates, running it on N2 and matched null ensembles tests whether N2's memory head start matters for behaviour.
 
 ### E4 / 04c: do the two minds share?
+
+*Status, 2026-10-13 (D258-D263):* the main task's formal run was dropped after its pilot; question 2 is pursued in a
+diagnostic task where transfer is necessary (E4-D), whose feasibility check passed. See "Where things stand" above and
+`experiments/E4-two-minds/`.
 
 Three separate questions, from easiest to hardest:
 

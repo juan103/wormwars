@@ -1,0 +1,7 @@
+**Fix then publish.** The substantive earlier findings are addressed. E4-D’s tabulated numbers and feasibility pass are supported.
+
+1. **[RESULTS.md:126](D:/Claude/random/wormWars/experiments/E4-two-minds/RESULTS.md:126): comparator-cut rescue has the wrong sign.** From `calibration.json`, the changes are **+0.392982** and **−0.012123**. Replace “rescued little (0.40 and 0.01)” with “improved the mean by 0.39 at factor 0.25 and reduced it by 0.01 at factor 1.0.” Also change “1.67 of 3.39” to **“1.67 of 3.38”**, calculating before rounding. My earlier review repeated these arithmetic errors.
+
+2. **[E4-D/README.md:17](D:/Claude/random/wormWars/experiments/E4-two-minds/E4-D/README.md:17): the assignment is not drawn randomly.** `scripts/e4d.py:105` explicitly enumerates `[0, 1]` for every maze. Replace with: **“Each maze is played twice, with each candidate designated real once.”**
+
+3. **[README.md:70](D:/Claude/random/wormWars/experiments/E4-two-minds/README.md:70): the reproduction command refuses to run in a fresh checkout.** The committed `scout.json` triggers the existing-record guard; calibration and evaluation have the same restriction. Document a reproduction procedure using a disposable checkout: archive the three reference stage records outside their output paths, remove those copies, then run `scout`, `calibrate`, and `evaluate` and compare against the archived records. “From a clean tree” alone does not solve this.

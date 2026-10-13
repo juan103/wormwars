@@ -2,7 +2,8 @@
 
 **Status:** v2.3, after both reviews of v1 (D249) and of v2 (both "revise", narrowly; the trial and §3 hold;
 `docs/reviews/20261012-E4-D-design*/`, D250), v2.2's weights (D258), and v2.3 after both reviews of the code (D260).
-Nothing has been played.
+Nothing had been played at v2.3. *Played 2026-10-13: scouting (twice, D261), calibration, evaluation; passed
+(D262).*
 - **Its purpose** (E4 design v3 §7): to read a null in E4's main task. E4-D is a task where information must cross
   from A to B, with a hand-configured positive control that shows whether the architecture can carry it.
 - **Its order:** the positive control's feasibility check (CPU, exploratory engineering) runs before E4's formal

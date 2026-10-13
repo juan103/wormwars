@@ -70,6 +70,10 @@ python scripts/e4_pilot_attempt1.py                   # needs the local selectio
 python scripts/e4d.py scout                            # then calibrate, evaluate (CPU; each once, from a clean tree)
 ```
 
+**To rerun E4-D's stages** in a disposable checkout: each stage runs once and refuses if its record exists. Copy
+`experiments/E4-two-minds/E4-D/scout.json`, `calibrate.json` and `evaluate.json` outside the repository, delete them
+from the checkout, run `scout`, `calibrate` and `evaluate`, and compare the new records with the copies.
+
 - **The GPU runs can be repeated exactly** only on the same GPU, in the pinned environment, with the same batch
   composition. These scripts do not use `replay_mode()`, so an exact replay is not claimed (rule 6, D082).
 - **On the CPU the results differ:** the rollouts are chaotic.
