@@ -8169,3 +8169,25 @@ cross-link-only), `arms.center` (Astra's fourth condition: the links' constant p
 (`scripts/e4_calibrate.py`, about 35 GPU-minutes, inside the pilot's 4.5-hour allowance): the bias split, the bias
 ladder and its confirmation, the cross-link ladder, and reading 2's test (cross-link-only children intact,
 mean-substituted, centred, and with each subset cut). Smoked on the CPU and the GPU at toy size.
+
+## D256 — Stage A: no bias factor meets the declared rule; every cross-link factor fails; the cost is cross-talk from A's noses
+
+`experiments/E4-two-minds/calibration.json` (2 061 s on the GPU; generation 1, children only, paired on block A's 16
+mazes and 4 seeds; E-G 7.97 there):
+- **The bias split at 0.25:** nose biases only 3.38, comparator biases only 6.86: losses of 4.6 and 1.1, a ratio of about
+  4, as Fable predicted from the module's gains (18 and 6).
+- **The bias ladder** (weights and τ at 0.25): biases at 0.05 → 6.73, 0.02 → 7.20, 0.01 → 7.40, 0.005 → 7.41, frozen →
+  7.40. **By the declared rule, no factor:** the frozen-bias children keep 93% of E-G, below the 95% condition, so the
+  rule returns "frozen, flagged"; the confirmation on block B fails too (7.50 against 7.98, 94%). The condition that
+  fails is weights' and τ's own load (0.57), not the biases'; Fable's half of the rule alone (within 0.25 of the
+  frozen-bias children) would choose 0.02. Per the rule, this is reconsidered explicitly, with both reviewers.
+- **The cross-link ladder** (biases frozen; X0's children 7.40): X+ at 0.25 → 4.53, 0.5 → 3.09, 1.0 → 2.08, 2.0 → 1.11,
+  4.0 → 0.64. Every factor fails the load bound, by 2.9 visits or more. (D250's 0.21 at 0.25 was measured on a population
+  already at the floor.)
+- **Reading 2's test** (children with only the slots mutated; E-G = all links cut, 7.97): at 0.25, intact 4.58,
+  mean-substituted 5.33, centred 4.98, nose-origin links cut 6.26, comparator-origin links cut 4.98; at 1.0, 2.07, 1.93,
+  1.49, 3.81 and 2.05. Most of the cost comes from the links leaving A's noses, and both the constant and the
+  fluctuating parts cost. A's noses smell A's goal; injected into B while B steers toward B, it is the wrong gradient.
+- **The implication, for both reviewers and then the owner:** in E4's main task, what crosses between the modules is
+  mostly harmful cross-talk, so a null P1 or P2 there would be expected by construction. That is a question of E4's
+  direction, not a calibration detail.
