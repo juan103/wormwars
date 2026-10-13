@@ -8230,3 +8230,13 @@ not a broken registration. **It is the owner's decision.**
 
 **E4-D design v2.2** (before anything was played): the control's candidate weights add 0.05, 0.1 and 0.25 to 0.5-3
 (Fable), so the smallest weight that carries the signal is measured; `feasibility.WEIGHTS` follows.
+
+## D259 — Headroom; the main task's exploratory results written
+
+**Headroom** (`scripts/e4_headroom.py` → `experiments/E4-two-minds/headroom.json`, CPU; Fable's open question, D257): on
+stage A's block, E-G 7.12, the follower 11.29 with shared trails and 3.20 with none, the oracle 32.98. E-G reaches 22% of
+the oracle, so navigation has headroom. (E-G made 7.97 on the same mazes in stage A, on the GPU: the same genome, a
+chaotic rollout not reproduced across devices, D082.)
+
+**The main task's results** (`experiments/E4-two-minds/RESULTS.md`, exploratory) and the folder's README are written,
+every number from the committed records; for review by both before publication.
