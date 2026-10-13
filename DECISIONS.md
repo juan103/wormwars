@@ -8359,3 +8359,10 @@ shared block (Fable accepted either); Fable's entry-rate safeguard added to Astr
 
 **For the owner** (design v2 §8): the margin δ (0.10, Astra; 0.15, Fable); whether arm F runs (Fable: in the pilot, then
 R = 4; Astra: no); and what a null in L leads to, decided before the formal run (a seeded follow-up arm, Fable).
+
+## D266 — The owner's choices for the evolutionary E4-D
+
+The owner (2026-10-13), on design v2 §8: **the margin δ = 0.15** (Fable's proposal); **arm F in the pilot only**, kept
+for the formal run (4 runs) only if its children's entry rate holds (Fable's condition); and **a seeded follow-up
+pre-committed**: if L reads "not detected" or "inconclusive", arm S, L seeded at the hand-built comparator-origin wiring
+at w = 0.5, runs under the same rule, registered with L. Recorded in design v2.1.

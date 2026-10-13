@@ -1,7 +1,7 @@
-# E4-D, evolutionary: does evolution discover transfer when it is necessary? (design v2)
+# E4-D, evolutionary: does evolution discover transfer when it is necessary? (design v2.1)
 
 **Status:** v2, after both reviews of v1 (both "go to v2 with these changes"; `docs/reviews/20261013-E4-D-evo-design/`,
-D265). No code, no compute. Three choices are the owner's (§8).
+D265); v2.1 records the owner's three choices (§8, D266). No code, no compute yet.
 - **Its place:** the owner re-scoped E4 to E4-D (D258). E4-D's feasibility check passed (D262): a hand-configured
   cross-link control carries an engineered A → B signal (0.83 real-first against X0's exact 0.5).
 - **The budget:** E4's remaining 25.80 GPU-hours (D258), measured by a pilot first. The owner is told before every GPU
@@ -117,11 +117,15 @@ transfer from E-G, not that evolution cannot.
 - **Rule 7:** with the tie flag off, `breed` is bitwise unchanged (a test, and E4's lineage replay). The engine is
   unchanged.
 
-## 8. For the owner
+## 8. The owner's choices (2026-10-13, D266)
 
-1. **The margin δ** (a scientific threshold): Astra proposes 0.10 (success above 0.60); Fable 0.15 (about half the
-   control's gain over chance, 0.33).
-2. **Arm F:** Fable would run it in the pilot and keep it at R = 4 if its entry rate holds; Astra would spend its share
-   on L. It halves or doubles the formal cost.
-3. **What a null in L leads to, decided before the formal run** (Fable): a follow-up arm seeded at the control's wiring
-   at w = 0.5 would separate "cannot discover" from "cannot climb"; whether it is in E4's scope and budget.
+1. **The margin δ = 0.15** (success above 0.65; about half the hand-built control's gain over chance). Astra had
+   proposed 0.10.
+2. **Arm F runs in the pilot only** (4 runs, at the chosen factor). It enters the formal run (4 runs) only if its
+   generation-1 children's entry rate is at least 0.9 of E-G's and the pilot's integrity checks hold; otherwise it is
+   reported from the pilot alone.
+3. **A seeded follow-up is pre-committed:** if L reads "transfer not detected" or "inconclusive", arm S runs, the same
+   as L but seeded at the hand-built comparator-origin wiring (A_CL → B_CL, A_CR → B_CR) at w = 0.5 (0.59 in the
+   feasibility calibration, against 0.83 at w = 3). It separates "cannot discover the wiring" from "cannot strengthen
+   it". It is registered with L, with its own readings by the same rule, within E4's remaining budget; it is not run if
+   L reads "found".
