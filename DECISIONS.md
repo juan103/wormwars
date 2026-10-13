@@ -8191,3 +8191,30 @@ mazes and 4 seeds; E-G 7.97 there):
 - **The implication, for both reviewers and then the owner:** in E4's main task, what crosses between the modules is
   mostly harmful cross-talk, so a null P1 or P2 there would be expected by construction. That is a question of E4's
   direction, not a calibration detail.
+
+## D257 — Both reviewers on stage A: recommend re-scoping E4 to E4-D; a correction to D256
+
+**A correction to D256** (2026-10-13), quoting what was wrong:
+- D256 said "Most of the cost comes from the links leaving A's noses" and "A's noses smell A's goal; injected into B
+  while B steers toward B, it is the wrong gradient." **Wrong as stated** (Astra): the nose-origin cut removes the
+  nose-origin links of both modules, into both modules' noses and comparators, and the noses read the trails as well as
+  the scent. What stage A shows is a large cross-link mutation load, with more rescue from removing nose-origin links;
+  the mechanism is unresolved.
+- D256's implication, "what crosses between the modules is mostly harmful cross-talk", **overreaches** (both): random
+  perturbations can harm a circuit even where selected connections could help, and A holds at least one thing B lacks
+  (the gradient away from the goal just left; Fable). Fable's mechanism, as a reading: B's own scent is out of range
+  (9 grid cells) for most of a B-leg, so B's comparators steer on any input of about 0.01-0.02, and that is also the
+  weight at which a link would be functional, so a link that passes the load bound cannot drift to a useful weight.
+- **To report beside every mean** (Fable): the share of children at 5 visits or more (42% at cross-link factor 0.25,
+  28% for nose biases, 100% for bias factors 0.02 and below); the load is mostly the share of children that break.
+- **The bias rule** (both): its 95% condition did regulate the combined load, as Astra intended, and failed on
+  weights' and τ's own load; the incremental criterion would choose 0.02, unconfirmed. Moot if E4 is re-scoped.
+- E-G's single-strain play and the children's 116-strain batch differ in composition (Astra); E-G's exact level beside
+  the children is not established to the last digit.
+
+**The recommendation** (`docs/reviews/20261013-E4-stageA/`; both): **option (ii).** Do not run E4's main formal run;
+publish the main-task pilot, the diagnostics and stage A as E4's exploratory result; make E4-D the confirmatory
+direction: its CPU feasibility check (after its code review), then an evolutionary E4-D with its own design,
+pre-registration and budget. Both rank running E4 as designed as poor value (about 20 GPU-hours for a null that would
+mostly read "inconclusive"). Nothing of E4's main run was pre-registered, so this is a direction change recorded here,
+not a broken registration. **It is the owner's decision.**
