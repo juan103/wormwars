@@ -67,3 +67,50 @@ def test_a_replay_without_the_flag_differs(evolved):
     cfg, runs, start, sc, cap, recs = evolved
     rep = LI.replay(cfg, runs, cap.selections, initial=lambda r: start, mutation_scales=lambda r: sc, device="cpu")
     assert not all(torch.equal(rep[i]["final"].w, rec.final.w) for i, rec in enumerate(recs))
+
+
+def _old_breed(genome, fitness, cfg, generator, scales=None):
+    """`breed` as it was before the evolutionary E4-D (81bc127^), for the flag-off equivalence (Astra)."""
+    e = cfg.evo
+    order = np.argsort(-fitness)
+    elites = order[: e.elites]
+    parents = order[: min(e.truncation, len(order))]
+    n_children = e.population - len(elites)
+    pick = parents[torch.randint(len(parents), (n_children,), generator=generator, device=genome.device).cpu().numpy()]
+    children = genome.select(list(pick))
+    children.mutate(cfg.mutation, generator=generator, scales=scales)
+    return Genome.cat([genome.select(list(elites)), children])
+
+
+def test_tied_fitness_without_a_stream_keeps_index_order():
+    """The contract (Fable): with no stream, tied strains rank in index order, so the elites are the first indices."""
+    assert EVO.ranking(np.zeros(6)).tolist()[:3] == [0, 1, 2]
+
+
+def test_breed_without_a_stream_equals_the_old_breed(evolved):
+    cfg, runs, start, sc, cap, recs = evolved
+    g = start.clone()
+    g = g.with_params(bias=g.bias + torch.arange(g.n_strains, dtype=g.bias.dtype)[:, None] * 1e-3)
+    fit = np.array([0.5, 0.25, 0.5, 0.75, 0.5, 0.0])
+    a_gen, b_gen = torch.Generator().manual_seed(9), torch.Generator().manual_seed(9)
+    a = EVO.breed(g.clone(), fit, cfg, a_gen, sc)
+    b = _old_breed(g.clone(), fit, cfg, b_gen, sc)
+    for k in ("w", "bias", "tau", "g"):
+        assert torch.equal(getattr(a, k), getattr(b, k))
+    assert torch.equal(a_gen.get_state(), b_gen.get_state())
+
+
+def test_the_recovered_parents_with_random_ties(evolved):
+    """With mutation off and a diverse start, each final strain equals the start strain its recorded lineage leads to,
+    under random ties too (both: the final population alone cannot catch a wrong parents record)."""
+    cfg, runs, start, sc, cap, recs = evolved
+    diverse = start.with_params(bias=start.bias + torch.arange(start.n_strains, dtype=start.bias.dtype)[:, None] * 1e-3)
+    zero = {k: torch.zeros_like(v) for k, v in sc.items()}
+    rep = LI.replay(cfg, runs, cap.selections, initial=lambda r: diverse, mutation_scales=lambda r: zero, device="cpu",
+                    random_ties=True)
+    for r in rep:
+        for k in range(cfg.evo.population):
+            j = k
+            for p in reversed(r["parents"]):
+                j = p["source"][j]
+            assert torch.equal(r["final"].bias[k], diverse.bias[j])

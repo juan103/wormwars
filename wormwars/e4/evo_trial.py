@@ -31,13 +31,26 @@ def qualifies(mid: int, seed: int, c: int = 6) -> bool:
 
 
 def qualifying(ids, seed: int) -> np.ndarray:
-    out = []
-    for mid in np.asarray(ids).reshape(-1):
-        m = int(mid)
-        while not qualifies(m, int(seed)):
-            m += 1
-        out.append(m)
-    return np.asarray(out, dtype=np.int64).reshape(np.asarray(ids).shape)
+    """Each id, or the next qualifying id not already used in its row (rows of a 2-D array map independently), so
+    rejected ids never collapse onto a neighbour (Astra)."""
+    arr = np.asarray(ids)
+    rows = arr.reshape(-1, arr.shape[-1]) if arr.ndim else arr.reshape(1, 1)
+    out = np.empty_like(rows, dtype=np.int64)
+    for r, row in enumerate(rows):
+        used = set()
+        for k, mid in enumerate(row):
+            m = int(mid)
+            while m in used or not qualifies(m, int(seed)):
+                m += 1
+            used.add(m)
+            out[r, k] = m
+    return out.reshape(arr.shape)
+
+
+def distinguishes(real_first: np.ndarray, decoy_first: np.ndarray) -> np.ndarray:
+    """[strains]: whether any maze's two trials ([strains, mazes, 2]) give unequal real-first and decoy-first counts.
+    A strain blind to the assignment enters the same candidate under both, so it never does (D265; per maze, Fable)."""
+    return (np.asarray(real_first).sum(axis=2) != np.asarray(decoy_first).sum(axis=2)).any(axis=1)
 
 
 @dataclass
@@ -74,7 +87,7 @@ def trial_rollout(cx, *, a_source: str = "real", b_source: str = "sum", check: b
                           real_first=rf.sum(axis=(1, 2)), decoy_first=df.sum(axis=(1, 2)),
                           neither=2 * W - rf.sum(axis=(1, 2)) - df.sum(axis=(1, 2)))
         free = (genome.w[:, slots.to(genome.w.device)] == 0).all(dim=1).cpu().numpy()
-        bad = np.flatnonzero(free & (res.real_first != res.decoy_first))
+        bad = np.flatnonzero(free & distinguishes(rf, df))
         if check and len(bad):
             raise RuntimeError(f"integrity: link-free strains {bad.tolist()} distinguish the assignments")
         return res

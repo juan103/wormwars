@@ -300,3 +300,15 @@ def test_the_control_wirings(setup):
             w_of(g, "E3_A_NR", "E3_B_CR"), w_of(g, "E3_A_NR", "E3_B_CL")) == (3.0, -3.0, 3.0, -3.0)
     slots = AR.slot_indices(cx)
     assert int((g.w[0, slots] != 0).sum()) == 4
+
+
+def test_the_maze_cache_changes_nothing(setup, monkeypatch):
+    """Fable: trial worlds cache each maze, its distances and its start; a cached world equals an uncached one."""
+    cfg, cx = setup
+    ids, assign = [IDS[0], IDS[0], IDS[1], IDS[2]], [0, 1, 0, 1]
+    cached = _world(cfg, cx, ids, assign)
+    monkeypatch.setattr(TL, "CACHE", False)
+    plain = _world(cfg, cx, ids, assign)
+    for k in ("fields", "pos", "heading", "scent", "_src_lo"):
+        assert torch.equal(getattr(cached, k), getattr(plain, k)), k
+    assert cached.starts == plain.starts and cached.placements == plain.placements

@@ -97,3 +97,21 @@ def test_the_capture_keeps_entry_counts(setup):
     cap(cfg, org.iface, Genome.cat([org.genome.select([0])] * 2), np.stack([IDS, IDS]), SEED, "cpu")
     s = cap.selections[0]
     assert s["neither"].shape == (2,) and s["real_first"].shape == (2,)
+
+
+def test_qualifying_ids_stay_distinct_within_a_row(monkeypatch):
+    """Astra: a rejected id must not map onto a neighbour already in the row."""
+    monkeypatch.setattr(ET, "qualifies", lambda mid, seed, c=6: mid % 3 != 1)  # every id ≡ 1 (mod 3) is rejected
+    row = np.array([10, 11, 12, 13])  # 11 → 12 would collide with 12
+    q = ET.qualifying(row, SEED)
+    assert len(set(q.tolist())) == 4 and all(m % 3 != 1 for m in q)
+    q2 = ET.qualifying(np.stack([row, row]), SEED)
+    assert np.array_equal(q2[0], q2[1]) and len(set(q2[0].tolist())) == 4
+
+
+def test_the_integrity_check_is_per_maze(setup):
+    """Equal totals can hide per-maze differences; the check compares every maze pair (Fable)."""
+    rf = np.array([[[1, 0], [0, 1]]])  # one strain, two mazes: real-first on (assign 0, maze 0) and (assign 1, maze 1)
+    df = np.array([[[0, 1], [1, 0]]])
+    assert ET.distinguishes(rf, df).tolist() == [False]
+    assert ET.distinguishes(np.array([[[1, 0], [0, 0]]]), np.array([[[0, 0], [1, 0]]])).tolist() == [True]

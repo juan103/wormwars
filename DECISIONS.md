@@ -8382,3 +8382,30 @@ at w = 0.5, runs under the same rule, registered with L. Recorded in design v2.1
 - **The champion rule** (`evo_trial.champion`), with its declared ties, tested.
 - **The pilot runner** (`scripts/e4d_evo.py`): precheck, screen and f, on E2's stage frame; populations saved every 10
   generations and every lineage replay checked bitwise; smoked on the CPU and the GPU at toy sizes.
+
+## D268 — The pilot code's review by both (fix first), and the fixes
+
+**The review** (`docs/reviews/20261013-E4-D-evo-code/`): both "fix first"; the fitness, the random ties and their replay,
+the trial layout, the champion rule and the flag-off path are correct by inspection. Every finding is taken:
+- **the entry safeguard on matched mazes** (both): generation 1's elites, unchanged copies of E-G, against its
+  children on the same mazes; generation 0's figure dropped from the rule;
+- **visibility's eligibility is strict out-ranking** (Astra); ties counted one half are reported beside;
+- **everything saved** (both): the selections (every strain, maze and count) every checkpoint and at a stop; the
+  populations every 10 generations and at the last; the finals before the replay; the parents, logs, validation curves
+  and training ids; the validation and assessment scores per maze; every result written to the partial record as it
+  completes;
+- **the full workload's timing** (both): 3 generations of the screen's actual 16-run batch, with breeding and
+  checkpoint validation, on fresh ids; the screen's and f's hours projected; **the W rule now requires affordability**
+  (within 80% of the cap's remainder) as well as visibility;
+- **a maze cache in the trial world** (Fable; `trial.CACHE`): each maze, its distance maps and its start are built once
+  and shared; a test shows cached worlds equal uncached ones; world construction is about 25 times faster (512 worlds:
+  4.73 s against 0.19 s). No engine file changes;
+- **cap checks before every rollout** in every stage (Astra); **stage dependencies verified**: completed, the same
+  code and registration (Astra);
+- **the positive control at the assessment's composition** (one genome per batch); E-G on every block (both);
+- **asserted, not assumed** (Fable): zero progress on every capture; arm L's frozen parameters (`assert_frozen`);
+- **the resolved configuration at the stage's W** (Fable);
+- **tests** (each new one seen failing first, or sabotaged): the ranking's contract pinned (tied fitness without a
+  stream keeps index order); `breed` without a stream equal to the previous implementation, genomes and generator
+  state; the recovered parents under random ties (a sabotage of the replay's peek fails it); a per-maze integrity
+  check; qualifying ids kept distinct within a row (Astra).

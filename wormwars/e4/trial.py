@@ -28,7 +28,10 @@ import dataclasses
 import numpy as np
 import torch
 
+from functools import lru_cache
+
 from ..brain import Genome
+from ..e3 import islands as IS
 from ..e3 import maze_world as MW
 
 TRIAL_HEADING_STREAM = 0x7E1A
@@ -37,6 +40,23 @@ SEPARATION_STEPS = 4
 DISTANCE_TOLERANCE = 4
 A_SOURCES = ("real", "decoy", "fixed0", "none")
 B_SOURCES = ("sum", "real")
+CACHE = True  # trial worlds share each maze, its distances and its start (Fable, D268); False rebuilds them per world
+
+
+@lru_cache(maxsize=8192)
+def _maze(run_seed: int, mid: int, ep: int, c: int, k_r: int, n_spawns: int):
+    """One island maze and its placement, shared by every world that plays it; its `free_distance` is memoized on the
+    instance (the scent builds two distance maps per world otherwise)."""
+    mz, pl, _ = IS.maze_for(run_seed=run_seed, maze_id=mid, episode=ep, c=c, k_r=k_r, n_spawns=n_spawns)
+    mz.free_distance = lru_cache(maxsize=8)(mz.free_distance)
+    return mz, pl
+
+
+@lru_cache(maxsize=8192)
+def _start(run_seed: int, mid: int, ep: int, c: int, k_r: int, n_spawns: int):
+    mz, pl = _maze(run_seed, mid, ep, c, k_r, n_spawns)
+    c0, c1 = sorted((tuple(pl.a), tuple(pl.b)))
+    return start_cell(mz.wall, block_distance(mz, c0), block_distance(mz, c1))
 
 
 def trial_config(*, sigma: float, horizon: int, c: int = 6, base=None):
@@ -136,12 +156,42 @@ class TrialWorld(MW.MazeWorld):
         self.first_tick = torch.full((self.n_worlds, 1), -1, dtype=torch.long, device=self.device)
 
     def _build_maps(self) -> None:
-        super()._build_maps()
+        """`MazeWorld._build_maps` for the island family, through the caches (`CACHE`), then the trial's own placements,
+        start cells and headings. The spawns and the shuttle's headings are not used in a trial."""
+        if not CACHE:
+            super()._build_maps()
+            self._trial_maps(lambda w, mz, c0, c1: start_cell(mz.wall, block_distance(mz, c0), block_distance(mz, c1)))
+            return
+        wcfg = self.cfg.world
+        c = int(wcfg.maze_cells)
+        if wcfg.maze_family != "islands":
+            raise ValueError("a trial plays the island family")
+        if self.side != 4 * c + 1:
+            raise ValueError(f"the arena side {self.side} is not 4c + 1 = {4 * c + 1} (maze_config sets it)")
+        Wn = self.n_worlds
+        wall = np.zeros((Wn, self.H, self.W), dtype=np.float32)
+        self.mazes, self.placements, keys = [], [], []
+        for w in range(Wn):
+            key = (int(self.run_seed), int(self.world_ids[w]), int(self.episodes[w]), c,
+                   int(wcfg.maze_extra_openings), int(wcfg.maze_spawns))
+            mz, pl = _maze(*key)
+            self.mazes.append(mz)
+            self.placements.append(pl)
+            keys.append(key)
+            wall[w] = mz.wall
+        self.food_patch_centres = [np.zeros((0, 2), dtype=np.float32) for _ in range(Wn)]
+        f = self.fields
+        f[:, self.ch.FOOD] = 0
+        f[:, self.ch.HAZARD] = 0
+        f[:, self.ch.WALL] = torch.from_numpy(wall).to(self.device, self.dtype)
+        self._trial_maps(lambda w, mz, c0, c1: _start(*keys[w]))
+
+    def _trial_maps(self, start_of) -> None:
         pos, head = self.pos.clone(), self.heading.clone()
         for w, (mz, pl) in enumerate(zip(self.mazes, self.placements)):
             c0, c1 = sorted((tuple(pl.a), tuple(pl.b)))
             self.placements[w] = dataclasses.replace(pl, a=c0, b=c1)
-            s = start_cell(mz.wall, block_distance(mz, c0), block_distance(mz, c1))
+            s = start_of(w, mz, c0, c1)
             if s is None:
                 raise ValueError(f"maze {int(self.world_ids[w])} has no qualifying start cell (skip it)")
             self.starts.append(s)
