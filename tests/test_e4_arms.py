@@ -127,3 +127,28 @@ def test_mean_substitution_refuses_the_legacy_direction(cx):
     legacy = g.with_params(cfg=dataclasses.replace(g.cfg, chem_direction="post_to_pre"))
     with pytest.raises(ValueError):
         AR.mean_substitute(legacy, AR.slot_indices(cx), torch.zeros(cx["org"].ext.n))
+
+
+def test_class_scales_partition_x0s_mask(cx):
+    """The diagnostics' classes (Fable, pilot review): each a subset of X0's mutable set; w, tau and bias partition it;
+    modules A and B are disjoint; the gated edges are both modules' comparator → motor edges."""
+    x0 = AR.scales(cx, "x0")
+    parts = {k: AR.class_scales(cx, k) for k in ("w", "tau", "bias", "module_A", "module_B", "gated_edges")}
+    for k, sc in parts.items():
+        for p in ("w", "tau", "bias", "g"):
+            assert torch.all((sc[p] != 0) <= (x0[p] != 0)), (k, p)
+            assert torch.all((sc[p] == 0) | (sc[p] == x0[p])), (k, p)
+    for p in ("w", "tau", "bias"):
+        n = sum(int((parts[k][p] != 0).sum()) for k in ("w", "tau", "bias"))
+        assert n == int((x0[p] != 0).sum())
+    a, b = parts["module_A"], parts["module_B"]
+    for p in ("w", "tau", "bias"):
+        assert not torch.any((a[p] != 0) & (b[p] != 0))
+    gated = parts["gated_edges"]["w"] != 0
+    assert int(gated.sum()) == 32 and int((parts["gated_edges"]["bias"] != 0).sum()) == 0
+
+
+def test_scaled_x0(cx):
+    x0 = AR.scales(cx, "x0")
+    half = AR.class_scales(cx, "all", factor=0.10)
+    assert torch.allclose(half["w"], x0["w"] * (0.10 / 0.25))

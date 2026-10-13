@@ -8103,3 +8103,27 @@ So at T-F's mutation strength on E-G's 6 × 6 islands, mutation drags almost eve
 holds a few elites near it. If so, P2 and recruitment measure little whatever the cross-link factor. **No GPU is used
 until both reviewers have read this and the way forward is decided;** a change of E4's training scheme may be a
 scientific-direction change for the owner.
+
+## D253 — Both reviewers on attempt 1: diagnose before choosing; the diagnostics
+
+**The consultation** (`docs/reviews/20261013-E4-pilot-1/`): both recommend diagnosing before any change.
+- **Fable:** finding 1 (the load) is the anomaly. E3b-1's T-F used the same kernel and factor on E + W2, and its
+  population mean rose from 5.20 to 6.46; here one breeding drops E-G's from 6.23 to 1.94. The hard gate (a switch
+  with no graded neighbourhood), the 6 × 6 islands, or a defect in the gated path could explain it. Finding 2 (no gain
+  by 100 generations) matches E3b-1's own record at that point (its gain came between 124 and 299), and the best of 8
+  mazes is mostly noise (E-G's per-maze SD is about 3.7). The load bound is the real design defect: define it on
+  children, relative to X0's. Freezing the modules (B) would be a third arm, not a replacement, unless the owner
+  decides otherwise.
+- **Astra:** the load is real, but "the GA does not move" is too strong, and 6.23 and 1.94 came from different maze
+  blocks. Screen weaker inherited factors (0.10, 0.05) with a zero-mutation bug check; X0 need not improve for P1 or P2
+  to mean something. B makes P2 and P1-cut the same contrast. A follow-up pilot beyond the 4.5 hours needs the owner's
+  approval.
+- **Free, from the saved matrices:** X0's children average 2.5-2.8 in generations 1-10 and 2.9-3.1 in 90-99; the
+  elites 5.5-5.9 and 5.5-6.0.
+
+**The diagnostics** (`scripts/e4_diagnose.py` → `experiments/E4-two-minds/diagnostics.json`; exploratory; about 25
+GPU-minutes, inside the pilot's remaining allowance): generation 1, children only, paired on the same 8 mazes and the
+same 4 generator seeds: E-G unbred and bred with every scale at 0 (must be equal); X0's mask at 0.25, 0.10 and 0.05;
+one class at a time (w, τ, bias, module A, module B, the gated edges); one parameter per child; the 2 × 2 of organism
+(E-G, E + W2) and arena (6 × 6 islands, 5 × 5 trees at H = 2 400); and the saved final X0 populations against E-G on the
+64-maze validation block. `arms.class_scales` builds the restricted masks (a test, seen failing first).

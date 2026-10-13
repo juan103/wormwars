@@ -56,6 +56,28 @@ def scales(cx, arm: str, *, cross_factor: float | None = None) -> dict:
     return sc
 
 
+def class_scales(cx, cls: str, *, factor: float = FACTOR) -> dict:
+    """X0's mask restricted to one class (the pilot's diagnostics, D253): "all", "w", "tau", "bias", "module_A",
+    "module_B" (each module's neurons' τ and bias and every edge touching them) or "gated_edges" (both modules'
+    comparator → motor edges), at `factor` in place of 0.25."""
+    sc = {k: v.clone() * (factor / FACTOR) for k, v in scales(cx, "x0").items()}
+    spec, ext, m = cx["spec"], cx["org"].ext, cx["org"].module
+    keep = {k: torch.zeros_like(v, dtype=torch.bool) for k, v in sc.items()}
+    if cls == "all":
+        keep = {k: torch.ones_like(v, dtype=torch.bool) for k, v in sc.items()}
+    elif cls in ("w", "tau", "bias"):
+        keep[cls][:] = True
+    elif cls in ("module_A", "module_B"):
+        idx = torch.tensor([ext.index(n) for n in O._module_neurons(cls[-1])])
+        keep["tau"][idx] = keep["bias"][idx] = True
+        keep["w"] = torch.isin(spec.chem_i, idx) | torch.isin(spec.chem_j, idx)
+    elif cls == "gated_edges":
+        keep["w"][_edge_indices(cx, O.motor_edges(m, "A") + O.motor_edges(m, "B"))] = True
+    else:
+        raise ValueError(f"unknown class {cls!r}")
+    return {k: torch.where(keep[k], v, torch.zeros_like(v)) for k, v in sc.items()}
+
+
 def mutable_count(cx, arm: str, *, cross_factor: float | None = None) -> int:
     return int(sum(int((v != 0).sum()) for v in scales(cx, arm, cross_factor=cross_factor).values()))
 
