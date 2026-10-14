@@ -1,0 +1,22 @@
+**Verdict: run it.** Every finding from both reviews is resolved as described, the fixes introduced nothing wrong that I can find, and the formal commit can be recorded. Only notes remain; none changes a registered quantity, rule or stage.
+
+## Findings resolved
+
+1. **Earlier amendments protected** (Astra 1). `check_prereg` at `scripts/e4d_evo_formal.py:231-238` holds the text at the bound commit, the formal commit, every predecessor's commit and a rerun's first attempt (`:260-273`). The wiring is right: `requires` passes the predecessor records' commits (`:307`). Test `:383-390` refuses an edited amendment through the formal-commit reference.
+2. **Interrupted rerun setup** (Astra 2, my note). `first_marker` (`:241-247`) falls back to the archived `-attempt1` marker, whose name matches the frame's `attempt1` (`scripts/e2.py:406`) and whose shape matches what `start_marker` writes (`e2.py:320`, a `provenance` key with `git_commit`). A rerun with neither is refused (`:264-265`). The ordering holds: `rerun_plan` (`e2.py:586`) only reconciles compute, `requires` runs at `:593`, `apply_rerun` renames at `:602`. Tests `:402-420`.
+3. **`validate_runs`** (Astra 3). `wormwars/e4/evo_formal.py:155-174`: finite shares in [0, 1] with shape `(POP,)`, binary `(MAZES, 2)` arrays summing to the totals, exactly one outcome per trial, missing keys as `IntegrityError`. I traced the `two_outcomes_and_none` sabotage by hand: with gain 40 the intact block is mazes 0–51 all real-first, 52–62 all decoy-first, 63 neither; the move leaves trial (0, 0) with no outcome and (52, 0) with two, every array binary and every total unchanged, so only the elementwise check catches it. Correct.
+4. **Amendment wording** (Astra 4, my §4 note). The corrections paragraph (`PREREGISTRATION.md:499-508`) matches the code and the test file (300-tick `trial` fixture, three strains).
+5. **My notes.** Smoke blocks in the record (`:764-766`); a missing count key is an integrity error (`evo_formal.py:165-166`).
+
+## Recording the commit
+
+Yes, but **not fb30301**. D277 changed `scripts/` and `wormwars/` after it, and `check` runs `require_same_code(fc, CODE)` (`:262`), a commit-to-HEAD diff, which would refuse. Record `5237304` (HEAD per the session's status, with only untracked `runs/` files dirty), or the commit that archives this review if it touches none of `wormwars`, `scripts`, `configs`, `requirements.txt`. The line must match the regex exactly; the placeholder at `PREREGISTRATION.md:497` has no colon inside the bold, so it correctly does not match. I could not run git in this session, so the "HEAD is 5237304" part rests on the status snapshot.
+
+## Notes, no change required before running
+
+1. **Low.** `prereg_append_only` (`:215`) strips the reference's trailing newlines, so appending characters to a reference text's *last line* without a line break passes the prefix test. One-line tightening: accept `now == ref` or `now.startswith(ref + b"\n")`. Git would show such an edit, and the last line of every reference is a correction bullet or the commit line, so the exposure is small.
+2. **Low.** Amendments appended and then edited at commits no stage ran under are not references, so an edit there is not refused. Those amendments were written after data anyway; checking every commit touching the file since the bound one (`git rev-list c3fe432..HEAD -- <prereg>`) would close it if wanted.
+3. **Low.** `tests/` is not in `CODE` or the dirty check, so an uncommitted edit to `tests/test_e4d_evo_stats.py` is not caught by `require_same_code(BOUND, BOUND_FILES)`, which compares commits only. It cannot change what the stages compute.
+4. **Low.** The test ids 52 100–52 102 (`tests/test_e4d_evo_formal_stages.py:28`) are played under the formal maze seed at 300 ticks and are not in `SPENT`. They sit outside every current block, and the pre-flight resolved all 138 blocks without replacement, so nothing is affected now; adding them to `SPENT` would stop a future layout from reusing them.
+5. **Low.** A ragged `per_maze` list in a record makes `np.asarray` raise `ValueError` (`evo_formal.py:167`), which `is_integrity` does not classify, so a corrupt record would be "stopped" rather than "not evaluable". Only reachable from a corrupt record.
+6. **Untested wiring.** No test exercises `requires` → `check_provenance` with the predecessor commits in formal mode (the dependency tests run as smoke). The two lines are correct on reading.

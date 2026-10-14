@@ -506,3 +506,9 @@ before its assertion; E-G, S₀, the saved final populations, selections and par
 - The provenance check also holds every amendment already in force: the text as of the formal commit, of every
   predecessor stage's commit and of a rerun's first attempt (read from its archived marker when a rerun's setup was
   interrupted) must each survive as a prefix (Astra).
+
+**The formal code, confirmed** (2026-10-14, D278): both reviewers "run it" on 5237304
+(`docs/reviews/20261014-E4-D-evo-formal-code-3/`). Every formal stage refuses unless the code (`wormwars`, `scripts`,
+`configs`, `requirements.txt`) is unchanged since this commit.
+
+**The formal code's commit:** `5237304ffce8251de30a635f27432800db7b091c`

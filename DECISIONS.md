@@ -8591,3 +8591,18 @@ each checked and taken:
 - Fable's notes: smoke records now carry the smoke's own blocks; a missing count key is an integrity error.
 Each new guard was sabotaged once and its test failed. CPU and GPU smokes of all ten stages pass.
 Next: both to confirm; then the formal commit appended to Amendment 1, and the owner's word.
+
+## D278 — The formal code confirmed by both ("run it"); the formal commit recorded
+
+Astra 6 and Fable 5.1 at "high" on 5237304 (`docs/reviews/20261014-E4-D-evo-formal-code-3/`): both "run it", every
+finding of the two earlier code reviews resolved. **The formal code's commit, 5237304, is appended to Amendment 1**;
+every formal stage refuses unless the code is unchanged since it. Fable's low notes are recorded and not taken, since
+none changes a registered quantity, rule or stage and each would move the formal commit:
+- the prefix test strips the reference text's trailing newlines;
+- amendments edited at commits no stage ran under are not references;
+- `tests/` is outside the dirty check;
+- a ragged per-maze list would stop a stage as "stopped" rather than "not evaluable";
+- the provenance wiring in formal mode is untested;
+- the test ids 52 100-52 102 are played under the formal maze seed. They lie outside every block, so they are spent
+  for any future layout.
+**Next: the owner's word before `check`** (§0.4); then `check`, and L's stages if it passes.
