@@ -1,0 +1,74 @@
+{
+ "time_unit": "synchronised wall-clock seconds per category (not GPU kernel time)",
+ "neural_update_unit": "strains x batch x substeps network updates (network size not included)",
+ "attempts": [
+  {
+   "file": "20261014T224004Z-65d3fe41.json",
+   "status": "completed",
+   "script": "e4d-evo-formal",
+   "argv": [
+    "train-f",
+    "--device",
+    "cuda"
+   ],
+   "default_category": "measure",
+   "git_commit": "47525089c44c5d61a09c753b788c17b41e5c3ab7"
+  },
+  {
+   "file": "20261014T230336Z-16db63bd.json",
+   "status": "completed",
+   "script": "e4d-evo-formal",
+   "argv": [
+    "evaluate-f",
+    "--device",
+    "cuda"
+   ],
+   "default_category": "measure",
+   "git_commit": "35799857452065fcacef4e13483c851f8c08e6af"
+  },
+  {
+   "file": "20261014T230737Z-1adf6133.json",
+   "status": "completed",
+   "script": "e4d-evo-formal",
+   "argv": [
+    "report-f",
+    "--device",
+    "cuda"
+   ],
+   "default_category": "measure",
+   "git_commit": "35799857452065fcacef4e13483c851f8c08e6af"
+  }
+ ],
+ "failed_attempts": 0,
+ "uncategorised": false,
+ "categories": {
+  "measure": {
+   "worlds_built": 0,
+   "world_ticks": 0,
+   "neural_updates": 0,
+   "neural_padding": 0,
+   "seconds": 4.196249000029638
+  },
+  "selection": {
+   "worlds_built": 204800,
+   "world_ticks": 122880000,
+   "neural_updates": 3932160000,
+   "neural_padding": 0,
+   "seconds": 1318.8360852999904
+  },
+  "holdout": {
+   "worlds_built": 20160,
+   "world_ticks": 12096000,
+   "neural_updates": 446054400,
+   "neural_padding": 58982400,
+   "seconds": 326.55578249998507
+  }
+ },
+ "totals": {
+  "worlds_built": 224960,
+  "world_ticks": 134976000,
+  "neural_updates": 4378214400,
+  "neural_padding": 58982400,
+  "seconds_timed": 1649.588116800005
+ }
+}
