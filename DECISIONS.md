@@ -8606,3 +8606,22 @@ none changes a registered quantity, rule or stage and each would move the formal
 - the test ids 52 100-52 102 are played under the formal maze seed. They lie outside every block, so they are spent
   for any future layout.
 **Next: the owner's word before `check`** (§0.4); then `check`, and L's stages if it passes.
+
+## D279 — Three record commits pushed without the hygiene tests; CI red; a narrow exemption for per-maze outcomes
+
+The commits of `check`'s, `train-l`'s and L's evaluation and reading records (32d279b, 0864e88, 4752508, 2026-10-14)
+were pushed to `roadmap` **without running the hygiene tests first**, which the delegation requires before every push.
+I committed the records with a chained `git add`/`git commit`/`git push` and no `pytest` in the chain. GitHub's CPU
+suite failed on all three, and I found the failure on 2026-10-15, after the push, by checking CI.
+- **What failed:** `test_no_committed_file_contains_graph_structure` read the records' per-maze outcome arrays as edge
+  lists. Each array is 64 mazes × 2 trials of whole numbers below 302 (`check.json`'s positive control and evaluation
+  path; every run and condition in `evaluate-l.json`).
+- **What they are:** each trial's outcome, 0 or 1, under keys ending `per_maze.real_first`, `per_maze.decoy_first` and
+  `per_maze.neither`. A binary pair names no neuron above 1, so the arrays carry no connectome structure, and nothing
+  was redistributed.
+- **The fix:** a narrow exemption, as for maze spawn cells (D230) and trial start cells (D261). Only binary pair lists
+  under those three keys are exempt. Its test was seen failing first, and a sabotage (dropping the binary condition)
+  failed it. The formal code (`wormwars/`, `scripts/`) is unchanged, so the formal commit still holds. `tests/` is
+  outside the formal provenance check (D278).
+- **From now on,** every record commit runs the hygiene tests first, on the staged tree, and is gated on pytest's own
+  exit code.

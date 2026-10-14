@@ -117,6 +117,18 @@ def is_trial_start_list(key: str, arr) -> bool:
             and float(a.min()) >= 0 and float(a.max()) < GRID_SIDE_MAX and bool(np.all(a == np.round(a))))
 
 
+PER_MAZE_OUTCOMES = (".per_maze.real_first", ".per_maze.decoy_first", ".per_maze.neither")
+
+
+def is_per_maze_outcome_list(key: str, arr) -> bool:
+    """D279: the evolutionary E4-D's records keep each maze's outcome per trial (two trials a maze), 0 or 1, under a
+    key ending "per_maze.real_first", "per_maze.decoy_first" or "per_maze.neither". Binary pairs name no neuron
+    above 1, so they carry no graph; only those lists are exempt."""
+    a = np.asarray(arr, dtype=np.float64)
+    return (key.endswith(PER_MAZE_OUTCOMES) and a.ndim == 2 and a.shape[1] == 2 and a.shape[0] >= 1
+            and bool(np.all((a == 0) | (a == 1))))
+
+
 def test_no_np_load_enables_pickle():
     """Pickle in np.load is arbitrary code execution on any file a user downloads.
 
@@ -340,6 +352,8 @@ def test_no_committed_file_contains_graph_structure():
                     continue  # a maze's spawn cells (D230)
                 if "edge list" in bad and is_trial_start_list(key, arr):
                     continue  # E4-D's trial start cells (D261)
+                if "edge list" in bad and is_per_maze_outcome_list(key, arr):
+                    continue  # the evolutionary E4-D's per-maze trial outcomes (D279)
                 offenders.append(f"{rel} [{key}] {bad}")
     assert not offenders, (
         "committed files contain connectome or control-graph structure:\n  " + "\n  ".join(offenders)
@@ -445,3 +459,18 @@ def test_only_trial_start_lists_are_exempt():
     assert not is_trial_start_list(".start_readings.starts", [[1.5, 2], [3, 4]])  # not whole numbers
     edges = np.stack([np.arange(300), np.arange(1, 301)], axis=1)
     assert not is_trial_start_list(".start_readings.starts", edges)
+
+
+def test_only_per_maze_outcome_lists_are_exempt():
+    """D279: the evolutionary E4-D's records keep each maze's outcome per trial, 0 or 1, under a key ending
+    "per_maze.real_first", "per_maze.decoy_first" or "per_maze.neither". Binary, so no neuron above 1 is named;
+    only those keys are exempt."""
+    outcomes = [[1, 0], [0, 0], [1, 1]] * 20
+    for what in ("real_first", "decoy_first", "neither"):
+        assert is_per_maze_outcome_list(f".runs[3].test.intact.per_maze.{what}", outcomes)
+    assert not is_per_maze_outcome_list(".runs[3].test.intact.per_maze.edges", outcomes)  # another key
+    assert not is_per_maze_outcome_list(".per_maze.real_first", [[1, 2], [0, 1]])  # not binary
+    assert not is_per_maze_outcome_list(".per_maze.real_first", [[0.5, 1], [0, 1]])  # not whole numbers
+    assert not is_per_maze_outcome_list(".per_maze.real_first", [[1, 0, 1], [0, 1, 0]])  # not pairs
+    edges = np.stack([np.arange(300), np.arange(1, 301)], axis=1)
+    assert not is_per_maze_outcome_list(".per_maze.real_first", edges)
