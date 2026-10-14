@@ -115,3 +115,21 @@ def test_the_integrity_check_is_per_maze(setup):
     df = np.array([[[0, 1], [1, 0]]])
     assert ET.distinguishes(rf, df).tolist() == [False]
     assert ET.distinguishes(np.array([[[1, 0], [0, 0]]]), np.array([[[0, 0], [1, 0]]])).tolist() == [True]
+
+
+def test_the_per_maze_counts_are_additive_and_agree(setup):
+    """The formal stages' per-maze, per-assignment counts (pre-registration §0.3, authorized in advance; D273): the
+    existing fields are unchanged and the new arrays sum to them."""
+    cfg, cx = setup
+    org = cx["org"]
+    eg = org.genome.select([0])
+    ctl = TL.control_genome(eg, cx, "comparator", 3.0)
+    res = ET.trial_rollout(cx)(cfg, org.iface, Genome.cat([eg, ctl]), IDS, SEED, "cpu")
+    S, W = 2, len(IDS)
+    for k in ("real_first_maze", "decoy_first_maze", "neither_maze"):
+        assert getattr(res, k).shape == (S, W, 2)
+    assert np.array_equal(res.real_first_maze.sum(axis=(1, 2)), res.real_first)
+    assert np.array_equal(res.decoy_first_maze.sum(axis=(1, 2)), res.decoy_first)
+    assert np.array_equal(res.neither_maze.sum(axis=(1, 2)), res.neither)
+    assert np.array_equal(res.real_first_maze.mean(axis=2), res.score)
+    assert np.all(res.real_first_maze + res.decoy_first_maze + res.neither_maze == 1)

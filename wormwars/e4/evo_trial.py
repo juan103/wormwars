@@ -60,6 +60,11 @@ class TrialResult:
     real_first: np.ndarray  # [strains]: counts over all trials
     decoy_first: np.ndarray
     neither: np.ndarray
+    # [strains, mazes, 2 assignments], 0 or 1 each: additive, for the formal stages' per-maze assertions (the
+    # pre-registration's §0.3, authorized in advance; D273)
+    real_first_maze: np.ndarray | None = None
+    decoy_first_maze: np.ndarray | None = None
+    neither_maze: np.ndarray | None = None
 
 
 def trial_rollout(cx, *, a_source: str = "real", b_source: str = "sum", check: bool = True):
@@ -85,7 +90,9 @@ def trial_rollout(cx, *, a_source: str = "real", b_source: str = "sum", check: b
         df = ev["decoy_first"][:, 0].reshape(S, W, 2)
         res = TrialResult(score=rf.mean(axis=2).astype(np.float64), progress=np.zeros((S, W)),
                           real_first=rf.sum(axis=(1, 2)), decoy_first=df.sum(axis=(1, 2)),
-                          neither=2 * W - rf.sum(axis=(1, 2)) - df.sum(axis=(1, 2)))
+                          neither=2 * W - rf.sum(axis=(1, 2)) - df.sum(axis=(1, 2)),
+                          real_first_maze=rf.astype(np.int64), decoy_first_maze=df.astype(np.int64),
+                          neither_maze=(1 - rf - df).astype(np.int64))
         free = (genome.w[:, slots.to(genome.w.device)] == 0).all(dim=1).cpu().numpy()
         bad = np.flatnonzero(free & distinguishes(rf, df))
         if check and len(bad):

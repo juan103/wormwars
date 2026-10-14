@@ -8523,3 +8523,24 @@ completed"; `cx` in §10; "σ = 0" and "in these simulations" for the tie bound;
 its tests, and `power.json` **bind at this commit** (pushed to `roadmap`). R stays 32 (Fable keep; Astra's preference
 for 40 non-blocking). Next: the formal stage code (§0.2: test-first, reviewed by both, its commit recorded in a dated
 amendment); then the owner's word before `check`.
+
+## D275 — The evolutionary E4-D's formal stage code, for review by both
+
+Written after binding (§0.2), test-first against §10, on new files only plus the one change §0.3 authorized:
+- `scripts/e4d_evo_formal.py`: the ten stages on E2's frame, with §5's dependency table, the owner's word before
+  `check` and S (checked before any start marker), the caps per group (each group's own compute folder and clock), a
+  registered assertion's failure recorded "not evaluable" and final (the frame reruns only "stopped"), a rerun only
+  with a reason naming an infrastructure cause; `check`'s pre-flight, control, formal evaluation path, pilot replay
+  and timing.
+- `wormwars/e4/evo_formal.py`: the registered constants, blocks, runs, seeds, pre-flight, assertions, dependencies and
+  reports (only through `evo_stats`).
+- `wormwars/e4/evo_trial.py`: `TrialResult`'s per-maze, per-assignment counts, additive; the existing fields unchanged
+  (the existing tests pass, and a new one checks the sums).
+- Tests: `tests/test_e4d_evo_formal.py`, `tests/test_e4d_evo_formal_stages.py`; six sabotages of the stage guards
+  (the integrity mapping, S's trigger, the environment, the replay's population comparison, the timing refusal, the
+  cut-is-E-G assertion) each failed its test.
+- **Run:** CPU and GPU smokes of all ten stages at toy sizes (S triggered); the real pre-flight (61 s on the CPU:
+  every block resolves without replacement and the blocks are disjoint); **a dry run of the pilot replay on the GPU,
+  3 generations of the screen's batch** (128 s, outside the compute accounting, added here by hand: about 0.04
+  GPU-hours, E4 now about 6.09 of 30): every run's per-generation best hash and fitness equalled `screen.json`'s.
+Next: review by both; then a dated amendment recording the formal commit, and the owner's word before `check`.
