@@ -8461,3 +8461,32 @@ the registered rule `wormwars/e4/evo_stats.py`, test-first, `tests/test_e4d_evo_
   maze seed 1 420 000; a `check` stage (the control, and a bitwise replay of the pilot's first 10 generations); caps 8
   GPU-hours for L and F, 7 for S (conservative projections 5.7 and 5.1; E4 has 23.95 left). Next: review by both,
   then binding and push; the formal code after binding; the owner's word before any GPU stage.
+
+## D272 — The pre-registration draft 1's review by both ("bind after these fixes"), and draft 2
+
+Astra 6 and Fable 5.1 at "high" (`docs/reviews/20261014-E4-D-evo-prereg/`): both "bind after these fixes"; both
+confirmed the estimand, δ, the bounds, the states' order and R = 32 against the target. Every finding is taken in
+draft 2 (its §12):
+- **S** (both): S₀ is played on every S test block and S is read against its start as well as against chance; the
+  joint L/S wording is a per-state table that keeps "inconclusive" unresolved.
+- **Failures** (both): a registered assertion failing makes the arm "not evaluable", never rerun; infrastructure stops
+  are rerun once with a recorded reason; a second stop or the cap makes it "not completed"; no reduced arm.
+  `evo_stats.reading` refuses malformed gains and a wrong count.
+- **F cannot block L** (Astra): L is trained, evaluated and reported before F starts; separate caps (6 GPU-hours for
+  `check` and L, 1.5 for F, 6 for S).
+- **The rule's tests** (both): Astra's `>=` sabotage passed draft 1's tests; the edges are now tested independently and
+  the sabotage fails them (checked). The sign-flip is counted exactly in integers (draft 1 would have enumerated 2^32
+  patterns at R = 32), checked against enumeration.
+- **`check`** (both): 11 generations with a snapshot at index 10, the local generation-10 populations pinned by digest,
+  the committed checkpoint hashes compared, and the formal composition (16 384 worlds, unchunked) timed with a
+  refusal.
+- **The power analysis** (Astra, Fable), rerun: the approximations disclosed; sensitivity cases added. Structured
+  populations with shared maze effects bracketing the pilot's correlation (0.26-0.39) keep the power at R = 32 at
+  0.94-1.00. Champion-level mixtures with successes at a perfect 0.5, or failures at −0.10, give 0.71 and 0.77 (R = 40:
+  0.80 and 0.85). **R stays 32** (the main grid's rule, both reviewers), with the power stated as conditional on
+  failures near E-G and successes near the pilot's level; the timing constant corrected (the precheck's rate was 16
+  runs, not 8).
+- **Smaller:** the owner's word once (before `check`, and before S); G's rationale is the calibration's condition
+  (the 0.65 crossing is chance at W = 8, Fable); run numbers, the checkpoint block, the training-id range, the guarded
+  files; LB and UB for the bounds.
+Next: draft 2 to both for confirmation.

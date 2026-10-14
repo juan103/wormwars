@@ -19,7 +19,7 @@ success):
 
 **The pilot's calibration** (exploratory, D270): the runs that match the formal arms, L at factor 0.25 (4) and F (4).
 - **The profile:** m_i = (v_i − 0.5) / (v_c − 0.5), clipped to [−1, 1]; v the final population's validation shares, c
-  the champion (256 values; validation noise included, so the profile is conservative).
+  the champion (256 values; validation noise included, which does not make it conservative: Astra, D272).
 - **The success level:** the top gain at which the homogeneous scenario's mean champion test gain equals the 8 pilot
   champions' mean assessment gain.
 - **The overdispersion:** the champions' per-maze pair shares against two independent trials.
@@ -30,6 +30,16 @@ success):
 - **U (spread):** g_r uniform on [0, 2θ], clipped to 0.5;
 - **P (pilot):** the 8 pilot champions' assessment gains resampled (only at their own mean);
 - **μ** from 0 to the pilot's level; μ = 0 is g_r = 0 for every run.
+
+**Its approximations** (Astra, D272), each with a sensitivity case (`sensitivity` in the record):
+- the champion's exact ties are broken at random, not by the final fitness and the norm;
+- the main grid draws each strain's profile independently and gives each strain its own maze effects, while a real
+  population shares its mazes and its members are related (the pilot's within-population correlation of per-maze
+  scores is recorded). **Structured:** whole pilot populations' profiles, a maze effect shared by every strain of a
+  population (σ_s 1 and 1.5, bracketing the pilot's correlation), at μ = 0.25;
+- failures sit at a gain of 0 and successes at the pilot's level. **Champion-level mixtures:** two-point mixtures of
+  champion gains ((0, 0.5), (−0.10, 0.383), (0, 0.383)) at μ = 0.25, with a 128-trial test block;
+- the logistic σ = 1 changes the marginal means and the mixture proportions too; it is not only added maze variance.
 
 **The proposal it supports** (for the pre-registration, reviewed by both): the smallest R in the grid whose probability
 of "practically relevant transfer found" is at least 0.80 at μ = δ + 0.10 = 0.25 in every scenario at σ = 0 and σ = 1
@@ -58,13 +68,15 @@ OUT = EXP / "power.json"
 SEED = 1_430_000
 POP, MAZES = 32, 64
 SIGMAS = (0.0, 1.0)
-RS = (4, 6, 8, 12, 16, 20, 24, 32)
+RS = (4, 6, 8, 12, 16, 20, 24, 32, 40, 48)
 MUS = (0.0, 0.05, 0.10, 0.15, 0.20, 0.25, 0.30, 0.35)
 POOL = 40_000          # simulated runs per (scenario, μ, σ)
 ARMS = 20_000          # simulated arms per (scenario, μ, σ, R)
 BISECT_POOL = 20_000
 H_SD = 0.03
 TARGET, TARGET_ASTRA = 0.25, 0.20
+SHARED = (1.0, 1.5)    # the structured sensitivity's shared maze effect: within-population correlations 0.23 and 0.40 bracket the pilot's 0.26-0.39
+MIXTURES = ((0.0, 0.5), (-0.10, None), (0.0, None))  # None: the pilot's level
 POWER = 0.80
 G = 100
 
@@ -72,9 +84,10 @@ G = 100
 def calibration() -> dict:
     s = json.loads((EXP / "screen.json").read_text(encoding="utf-8"))
     f = json.loads((EXP / "f.json").read_text(encoding="utf-8"))
+    pre = json.loads((EXP / "precheck.json").read_text(encoding="utf-8"))
     chosen = float(s["factor"])
     runs = [("L", r) for r in s["runs"] if float(r["factor"]) == chosen] + [("F", r) for r in f["runs"]]
-    profile, per_run, pair = [], [], []
+    profile, per_run, pair, corr = [], [], [], []
     for arm, r in runs:
         z = np.load(PILOT / f"{arm}-run{int(r['run']):03d}-assessment.npz", allow_pickle=False)
         v = z["validation"].mean(1)
@@ -82,6 +95,7 @@ def calibration() -> dict:
         if not np.isclose(z["assessment"][0].mean(), r["assessment"]["real_first_all"]):
             raise ValueError(f"{arm} run {r['run']}: the assessment file disagrees with the record")
         profile += np.clip((v - 0.5) / (v[c] - 0.5), -1, 1).tolist()
+        corr.append(_within_correlation(z["validation"]))
         pair.append(z["assessment"][0].tolist())
         per_run.append({"arm": arm, "run": int(r["run"]), "champion_validation": float(v[c]),
                         "population_validation_mean": float(v.mean()),
@@ -96,10 +110,24 @@ def calibration() -> dict:
             "overdispersion": {"observed_variance": observed, "two_independent_trials": binomial,
                                "ratio": observed / binomial},
             "pilot_mean_gain": float(np.mean([r["champion_assessment"] for r in per_run]) - 0.5),
+            "within_population_correlation": corr,
+            "precheck_timing": {"seconds_per_generation_W8": float(pre["timing"]["8"]["seconds_per_generation"]),
+                                "runs": int(pre["timing"]["8"]["composition"][0]) // int(s["registered"]["ga"]["population"])},
             "timing": {"screen_runs": len(s["runs"]), "screen_training_seconds": float(s["training_seconds"]),
                        "screen_seconds": float(s["seconds"]), "f_runs": len(f["runs"]),
                        "f_training_seconds": float(f["training_seconds"]), "f_seconds": float(f["seconds"]),
                        "generations": int(s["registered"]["screen"]["G"])}}
+
+
+def _within_correlation(V) -> float:
+    """The mean Pearson correlation of per-maze scores between pairs of a population's strains (constant rows
+    skipped)."""
+    V = np.asarray(V, dtype=np.float64)
+    V = V[V.std(1) > 0]
+    if len(V) < 2:
+        return float("nan")
+    C = np.corrcoef(V)
+    return float(C[np.triu_indices(len(V), 1)].mean())
 
 
 def shares(p, sigma, rng):
@@ -172,8 +200,9 @@ def arm_rates(pool, rng):
 def hours(n_runs, cal, *, conservative):
     """GPU-hours for n_runs batched over G generations, plus their evaluation."""
     t = cal["timing"]
-    if conservative:  # the precheck's 8-run rate per run, with no intercept (it is the higher)
-        per_gen = 42.79 / 8 * n_runs
+    if conservative:  # the precheck's measured per-run rate (16 runs at W = 8), no intercept, times 1.5
+        pc = cal["precheck_timing"]
+        per_gen = 1.5 * pc["seconds_per_generation_W8"] / pc["runs"] * n_runs
     else:  # a line through the pilot's two batches (16 runs, 4 runs)
         b = (t["screen_training_seconds"] - t["f_training_seconds"]) / t["generations"] / (t["screen_runs"] - t["f_runs"])
         a = t["f_training_seconds"] / t["generations"] - b * t["f_runs"]
@@ -181,6 +210,59 @@ def hours(n_runs, cal, *, conservative):
     evaluation = max((t["screen_seconds"] - t["screen_training_seconds"]) / t["screen_runs"],
                      (t["f_seconds"] - t["f_training_seconds"]) / t["f_runs"]) * 2  # the formal controls double it
     return (per_gen * G + evaluation * n_runs) / 3600
+
+
+def simulate_structured(g, profiles, shared, rng, chunk=2000):
+    """As `simulate_runs`, with whole populations' profiles and a maze effect shared by a population's strains on its
+    validation block; also the realised within-population correlation."""
+    out, corr = np.empty(len(g)), []
+    for lo in range(0, len(g), chunk):
+        gg = g[lo:lo + chunk]
+        n = len(gg)
+        m = profiles[rng.integers(0, len(profiles), n)]
+        p = np.clip(0.5 + gg[:, None] * m, 1e-9, 1 - 1e-9)
+        lp = np.log(p) - np.log1p(-p)
+        q = 1 / (1 + np.exp(-(lp[..., None] + shared * rng.standard_normal((n, 1, MAZES)))))
+        y = rng.binomial(2, q) / 2  # [n, POP, MAZES] per-maze pair shares
+        v = y.mean(-1)
+        c = np.argmax(v + rng.random(v.shape) * 1e-9, axis=1)
+        if lo == 0:
+            corr = [_within_correlation(y[i]) for i in range(min(200, n))]
+        pc = lp[np.arange(n), c]
+        qt = 1 / (1 + np.exp(-(pc[:, None] + shared * rng.standard_normal((n, MAZES)))))
+        out[lo:lo + chunk] = rng.binomial(2, qt).sum(-1) / (2 * MAZES) - 0.5
+    return out, float(np.nanmean(corr))
+
+
+def sensitivity(cal, profile, success, rng) -> dict:
+    out = {"structured": [], "mixtures": []}
+    profiles = np.asarray(profile).reshape(-1, POP)
+    for shared in SHARED:
+        for kind in ("H", "M", "U"):
+            seed = SEED + 9000 + int(10 * shared) * 10 + "HMU".index(kind)
+            lo, hi = 0.0, (1.0 if kind == "M" else 0.5)
+            for _ in range(20):
+                mid = (lo + hi) / 2
+                r = np.random.default_rng(seed)
+                m = simulate_structured(tops(kind, mid, r, 4000, success), profiles, shared, r)[0].mean()
+                lo, hi = (mid, hi) if m < TARGET else (lo, mid)
+            theta = (lo + hi) / 2
+            pool, corr = simulate_structured(tops(kind, theta, rng, POOL // 2, success), profiles, shared, rng)
+            out["structured"].append({"scenario": kind, "shared_sigma": shared, "theta": theta,
+                                      "mu_realised": float(pool.mean()), "run_sd": float(pool.std()),
+                                      "within_population_correlation": corr, "rates": arm_rates(pool, rng)})
+            print(f"structured {kind} shared {shared} realised {pool.mean():.4f} corr {corr:.3f} R=32 "
+                  f"{out['structured'][-1]['rates']['32'][ES.STATES[0]]:.3f}", flush=True)
+    for a, b in MIXTURES:
+        b = cal["pilot_mean_gain"] if b is None else b
+        q = (TARGET - a) / (b - a)
+        truth = np.where(rng.random(POOL) < q, b, a)
+        pool = rng.binomial(2 * MAZES, 0.5 + truth) / (2 * MAZES) - 0.5
+        out["mixtures"].append({"failure_gain": a, "success_gain": b, "success_share": q,
+                                "mu_realised": float(pool.mean()), "rates": arm_rates(pool, rng)})
+        print(f"mixture ({a}, {b:.3f}) q {q:.3f} R=32 {out['mixtures'][-1]['rates']['32'][ES.STATES[0]]:.3f}",
+              flush=True)
+    return out
 
 
 def main():
@@ -238,15 +320,17 @@ def main():
                                                   "false at mu=delta": practical(kind, sigma, ES.DELTA, R)}
         row["hours_L_plus_F4"] = hours(R + 4, cal, conservative=False)
         row["hours_L_plus_F4_conservative"] = hours(R + 4, cal, conservative=True)
-        row["hours_S_reserve_conservative"] = hours(R, cal, conservative=True)
+        row["hours_S"] = hours(R, cal, conservative=False)
+        row["hours_S_conservative"] = hours(R, cal, conservative=True)
         table[str(R)] = row
+    sens = sensitivity(cal, profile, success, np.random.default_rng(SEED + 2))
     ok = [R for R in RS if all(v["mu=0.25"] is not None and v["mu=0.25"] >= POWER
                                for k, v in table[str(R)].items() if isinstance(v, dict))]
     doc = {"what": "the evolutionary E4-D's power analysis (design v2.1 §4); exploratory input to the pre-registration",
            "script": "scripts/e4d_evo_power.py", "seed": SEED, "rule": "wormwars.e4.evo_stats (delta %g, one-sided "
            "%g t bounds)" % (ES.DELTA, ES.ALPHA), "population": POP, "mazes_per_block": MAZES, "pool": POOL,
            "arms": ARMS, "h_sd": H_SD, "G": G, "success_top_gain": success, "calibration": cal,
-           "results": results, "summary": table,
+           "results": results, "summary": table, "sensitivity": sens,
            "proposal": {"rule": "the smallest R with P(practically relevant) >= %g at mu = %g in every scenario at "
                                 "sigma 0 and 1" % (POWER, TARGET), "R": ok[0] if ok else None}}
     OUT.write_text(json.dumps(doc, indent=1), encoding="utf-8", newline="\n")
