@@ -452,3 +452,46 @@ New code is test-first (rule 9), at the formal compositions where it matters:
 No registered quantity, rule or stage changed: F's wait on the owner when L is "not evaluable" or "not completed"
 (§5's table; Fable); `control_genome`'s `cx` in §10 (both); "σ = 0" and "in these simulations" for the tie bound
 (Fable, Astra); the pilot's timing ids as a range (Fable); "nominal caps" (Astra).
+
+## Amendment 1 (2026-10-14, before any formal stage ran; D276)
+
+**Why.** The formal code's smokes (D275) kept the formal maze seed (1 420 000), run seeds and §4's block bases at toy
+sizes, so they played some of §4's ids, which §4 requires to be disjoint from the smokes' (Astra, D276):
+- validation ids of L's runs 0-1 (55 000-55 003, 55 128-55 131), F's runs 100-101 (60 000-60 003, 60 128-60 131) and
+  S's runs 200-201 (61 000-61 003, 61 128-61 131); check ids 54 000-54 002 and checkpoint ids 54 100-54 101 (a CPU test
+  also played 54 000-54 002);
+- training ids from 100 000 000-109 999 999 and timing ids from 110 000 000-119 999 999.
+
+No test block was played, and the organisms were toys (40 ticks, populations of 6), so nothing about the formal
+readings was learned. The layout moves anyway, before anything formal runs.
+
+**The new layout** (replacing §4's ids; everything else in §4 stands, with "the pilot's" read as "the pilot's and the
+spent ids above"):
+
+| Block | Ids |
+|---|---|
+| Check | 64 000-64 063 |
+| Checkpoints | 64 100-64 107 |
+| L, run k: validation / test | 65 000 + 128k … + 63 / 65 064 + 128k … + 63 |
+| F, run k: validation / test | 69 200 + 128(k − 100) … + 63 / 69 264 + 128(k − 100) … + 63 |
+| S, run k: validation / test | 70 000 + 128(k − 200) … + 63 / 70 064 + 128(k − 200) … + 63 |
+| Training | 120 000 000-129 999 999 |
+| Timing | 130 000 000-139 999 999 |
+
+The pre-flight refuses the spent ids as it refuses the pilot's; it resolves all 138 blocks without replacement (61 s on
+the CPU). The run seeds stay (§3): a toy smoke's draws under them say nothing about the formal mazes, which are now
+fresh. **Smokes** use their own maze seed (1 429 000), run seeds (from 1 449 000), ids (40 000-43 101) and training
+ranges (from 200 000 000).
+
+**The code review's other changes** (both reviewers "fix first", D276; no registered quantity, rule or stage changes):
+the provenance checks before every stage (the pinned files; this text append-only after the bound text, so dated
+amendments are appended; the rule, its tests and `power.json` unchanged since binding; the code unchanged since the
+formal commit recorded below; a rerun held to its first attempt's code and environment); the pilot's local
+populations required on the tested machine and hashed from their arrays; `train-l`'s timing projection recomputed
+against L's clock before every attempt; complete arms checked before any reading (the registered runs and seeds in
+order, every condition with its per-maze counts); the first attempt's training files kept beside on a rerun;
+selections saved atomically; checkpoint records and every evaluation condition saved as they complete, each condition
+before its assertion; E-G, S₀, the saved final populations, selections and parents checked against earlier records;
+§7.4's tie shares, parent-pool turnover and lineage mutation counts recorded.
+
+**The formal code's commit** is appended below once both reviewers confirm the fixed code.

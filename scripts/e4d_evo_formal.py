@@ -1,33 +1,43 @@
 """The evolutionary E4-D's formal run, as the bound pre-registration fixes it
-(`experiments/E4-two-minds/E4-D-evo/PREREGISTRATION.md`, bound at c3fe432, D274). GPU, after the owner's word.
+(`experiments/E4-two-minds/E4-D-evo/PREREGISTRATION.md`, bound at c3fe432, D274; Amendment 1, D276). GPU, after the
+owner's word.
 
     python scripts/e4d_evo_formal.py check --device cuda --owner-word "<the owner's words and date>"
     python scripts/e4d_evo_formal.py train-l --device cuda      # then evaluate-l, report-l
     python scripts/e4d_evo_formal.py train-f --device cuda      # then evaluate-f, report-f
     python scripts/e4d_evo_formal.py train-s --device cuda --owner-word "..."   # only if report-l triggers S
-    add --smoke for toy sizes in runs/e4d-evo-formal-smoke (never results)
+    add --smoke for toy sizes in runs/e4d-evo-formal-smoke (never results; its own maze seed, seeds and ids)
     a rerun after an infrastructure stop: --rerun --reason "infrastructure: <the cause>"
 
+**Provenance, before any stage starts** (both reviewers, D276): the pinned files hash as registered; the
+pre-registration is the bound text with only additions after it (amendments are appended), committed; the registered
+rule, its tests and `power.json` are unchanged since binding; the code (`wormwars`, `scripts`, `configs`,
+`requirements.txt`) is unchanged since the formal commit that Amendment 1 records; a rerun's code and environment equal
+its first attempt's.
+
 **The stages and their dependencies** are §5's table (`evo_formal.DEPENDS`); every stage refuses unless its
-predecessors completed under the same code, registration and environment (`check`'s), and unless the pinned files
-(§2) hash as registered.
+predecessors completed under the same code, registration and environment (`check`'s).
 - **`check`:** the pre-flight of every block; the positive control (the comparator-origin control at w = 3, E-G and
   the oracle) on the check block; the formal evaluation path on the control (its cue-removed, cue-fixed and cut
   versions and E-G, with every per-maze balance assertion; reversed beside); the pilot's replay (11 generations of the
   screen's batch, snapshot at index 10, against `screen.json`'s generation-10 checkpoint hashes and the local `gen010`
-  populations' registered digest); the formal composition's timing (3 generations of L's batch), whose projection
-  `train-l` must pass.
-- **`train-<arm>`:** the arm's runs in one batch, W = 8, G = 100, random ties; populations and selections saved every
-  10 generations and at the last, each saved population checked against the frozen set; the final populations saved
-  before the lineage replay, which must match bitwise.
-- **`evaluate-<arm>`:** per run, the champion from the whole final population on its validation block, then on its test
-  block, one genome per batch: intact, reversed, removed, fixed, cut and E-G (and S₀ for S), per maze, with the
-  registered assertions.
-- **`report-<arm>`:** the readings, only through `evo_stats` (`evo_formal.report`, `improvement_report`).
+  populations, loaded and hashed from their arrays); the formal composition's timing (3 generations of L's batch).
+- **`train-<arm>`:** the arm's runs in one batch, W = 8, G = 100, random ties; populations, selections and checkpoint
+  records saved every 10 generations and at the last (selections atomically), each saved population checked against
+  the frozen set; the final populations saved before the lineage replay, which must match bitwise. `train-l`
+  recomputes the timing projection against L's clock before every attempt.
+- **`evaluate-<arm>`:** per run, the saved final population and selections checked against the training record; the
+  champion from the whole final population on its validation block; on its test block, one genome per batch: intact,
+  reversed, removed, fixed, cut and E-G (and S₀ for S), per maze, each saved before its assertion; the descriptives of
+  §7.4 (tie shares, parent-pool turnover, the champion's lineage mutations); a complete arm, checked.
+- **`report-<arm>`:** the readings, only through `evo_stats` (`evo_formal.report`, `improvement_report`), on a complete
+  arm.
 
 **Failures** (§5): a registered assertion (`evo_formal.IntegrityError`, the rollout's integrity check, a non-finite
 fitness) records the stage "not evaluable" and is never rerun; an infrastructure stop is rerun once, with a reason
-naming the cause; the caps are per group (`check` and L 8 GPU-hours, F 1.5, S 6), each counting its own attempts.
+naming the cause, and the first attempt's files are kept beside as `-attempt1`; the caps are per group (`check` and L 8
+GPU-hours, F 1.5, S 6), each counting its own attempts. An arm that is "not evaluable" or "not completed" has no
+report: its state is the outcome of its last stage's record.
 """
 
 from __future__ import annotations
@@ -35,6 +45,7 @@ from __future__ import annotations
 import hashlib
 import importlib.util
 import json
+import re
 import sys
 import time
 from pathlib import Path
@@ -70,6 +81,7 @@ E = _load("e2_for_e4d_evo_formal", "e2.py")  # E2's stage frame, configured for 
 X = _load("e3c_for_e4d_evo_formal", "e3c.py")  # E3c's base configuration
 
 PREREG = "experiments/E4-two-minds/E4-D-evo/PREREGISTRATION.md"
+BOUND = "c3fe432"
 PILOT_DIR = ROOT / "experiments" / "E4-two-minds" / "E4-D-evo"
 EXP = PILOT_DIR / "formal"
 OUT_ROOT = ROOT / "runs" / "e4d-evo-formal"
@@ -83,18 +95,25 @@ PINNED = {
     "experiments/E4-two-minds/E4-D-evo/f.json": "4a6cbab8f5140c7f41a661fd15528304ed60e4e1d4c8c186be9ef6bb5cde5640",
     "experiments/E4-two-minds/E4-D-evo/power.json": "85df1b7adb72570a83c231fe78a4f029c5b2106ba38ef147f874dce90c5a45c2",
 }
+BOUND_FILES = ["wormwars/e4/evo_stats.py", "tests/test_e4d_evo_stats.py", "experiments/E4-two-minds/E4-D-evo/power.json"]
+CODE = ["wormwars", "scripts", "configs", "requirements.txt"]
 PILOT_DIGEST = "e5a300013c12ba7b23338cdba9569249e41fa4a1e12ffb9977e7c08c8b5da9b5"
 PILOT_RUNS = [{"factor": f, "run": 100 * j + k, "seed": 1_420_100 + 10 * j + k}
               for j, f in enumerate((0.25, 1.0, 2.0, 4.0)) for k in range(4)]
-GUARDED = ["wormwars", "scripts", "configs", "requirements.txt", PREREG, *PINNED]
+GUARDED = [*CODE, *PINNED]  # the pre-registration is checked append-only instead (Fable, D276)
+FORMAL_COMMIT_RE = re.compile(r"\*\*The formal code's commit:\*\* `([0-9a-f]{7,40})`")
 STAGES = list(FM.DEPENDS)
+OWNER_STAGES = ("check", "train-s")
 SMOKE = False
 REGISTERED = {
-    "preregistration": PREREG, "bound_at": "c3fe432", "maze_seed": FM.MAZE_SEED, "sigma_D": 6.0, "H_t": 600,
-    "ga": {"population": 32, "elites": 3, "truncation": 8,
-           "mutation": {"w_sigma": 0.08, "tau_sigma": 0.15, "bias_sigma": 0.05, "p_mutate": 1.0}},
+    "preregistration": PREREG, "bound_at": BOUND, "amendment": 1, "maze_seed": FM.MAZE_SEED, "sigma_D": 6.0,
+    "H_t": 600, "ga": {"population": 32, "elites": 3, "truncation": 8,
+                       "mutation": {"w_sigma": 0.08, "tau_sigma": 0.15, "bias_sigma": 0.05, "p_mutate": 1.0}},
     "W": 8, "G": 100, "checkpoint_every": 10, "slot_factor": 0.25, "f_bias_factor": 0.02, "s_weight": 0.5,
     "runs": dict(FM.N_RUNS), "seed_base": FM.SEED_BASE, "caps": dict(FM.CAPS),
+    "blocks": {"check": [int(FM.CHECK_IDS[0]), int(FM.CHECK_IDS[-1])],
+               "checkpoints": [int(FM.CHECKPOINT_IDS[0]), int(FM.CHECKPOINT_IDS[-1])], "bases": dict(FM.BASES),
+               "train": list(FM.TRAIN), "timing": list(FM.TIMING)},
     "control_threshold": 0.75, "timing": {"generations": 3, "overhead": 1.2, "share_of_remainder": 0.8},
     "replay": {"generations": 11, "snapshot": 10, "train_base": 70_000_000, "train_span": 10_000_000,
                "checkpoint_ids": [53_700, 53_708], "pilot_digest": PILOT_DIGEST},
@@ -176,6 +195,12 @@ def start_of(cx, arm: str) -> Genome:
     return s0_of(cx) if arm == "S" else eg_of(cx)
 
 
+# ----------------------------------------------------------------------------- provenance
+
+def _lf(b: bytes) -> bytes:
+    return b.replace(b"\r\n", b"\n")
+
+
 def check_pinned() -> None:
     if SMOKE:
         return
@@ -185,7 +210,36 @@ def check_pinned() -> None:
             raise SystemExit(f"{p} does not hash as registered ({got[:12]} against {want[:12]}): refusing")
 
 
-OWNER_STAGES = ("check", "train-s")
+def prereg_append_only(bound_text: bytes, now_text: bytes) -> None:
+    """The pre-registration as bound, with only additions after it (dated amendments are appended; Fable, D276)."""
+    if not _lf(now_text).startswith(_lf(bound_text).rstrip(b"\n")):
+        raise SystemExit("the pre-registration's bound text was changed, not only appended to: refusing")
+
+
+def formal_commit(text: str) -> str:
+    found = FORMAL_COMMIT_RE.findall(text)
+    if not found:
+        raise SystemExit("the pre-registration records no formal code's commit (Amendment 1): refusing")
+    return found[-1]
+
+
+def check_provenance(args, prov: dict, stage: str) -> None:
+    """Before any stage (Astra, D276), the bound inputs and the reviewed code; a rerun against its first attempt."""
+    if SMOKE:
+        return
+    check_pinned()
+    E.require_committed(ROOT / PREREG)
+    import subprocess
+    bound = subprocess.check_output(["git", "show", f"{BOUND}:{PREREG}"], cwd=ROOT)  # bytes: the text is UTF-8
+    now = (ROOT / PREREG).read_bytes()
+    prereg_append_only(bound, now)
+    reg.require_same_code(BOUND, BOUND_FILES)
+    reg.require_same_code(formal_commit(now.decode("utf-8")), CODE)
+    marker = E.marker_path(stage)
+    if marker.exists():  # a rerun: the same code and environment as the first attempt (Astra, D276)
+        first = json.loads(marker.read_text(encoding="utf-8"))["provenance"]
+        reg.require_same_code(first["git_commit"], CODE)
+        reg.require_same_env(first, prov)
 
 
 def owner_word(args, stage: str) -> str | None:
@@ -197,10 +251,18 @@ def owner_word(args, stage: str) -> str | None:
     return None
 
 
+def timing_ok(per_gen_seconds: float, spent_hours: float, cap_hours: float) -> dict:
+    T = REGISTERED["timing"]
+    projected = per_gen_seconds * REGISTERED["G"] * T["overhead"] / 3600
+    allowance = T["share_of_remainder"] * (cap_hours - spent_hours)
+    return {"seconds_per_generation": per_gen_seconds, "projected_hours": projected, "allowance_hours": allowance,
+            "within_cap": bool(projected <= allowance)}
+
+
 def requires(stage: str):
     """§5's table: each predecessor completed, under the same code, registration and environment (`check`'s)."""
     def check(args, prov):
-        check_pinned()
+        check_provenance(args, prov, stage)
         got = {}
         for s in FM.DEPENDS[stage]:
             path = E.record_path(s)
@@ -212,28 +274,36 @@ def requires(stage: str):
                 if rec["registered"] != json.loads(json.dumps(REGISTERED)):
                     raise SystemExit(f"the registration differs from {s}'s")
             got[s] = rec
+        if stage == "check" and not SMOKE and local_gen010() is None:
+            raise SystemExit("the pilot's local generation-10 populations are required on the tested machine (§5.1)")
         if stage != "check":
             chk = E.record_path("check")
             if not chk.exists():
                 raise SystemExit("check has not run")
             c = json.loads(chk.read_text(encoding="utf-8"))
+            got.setdefault("check", c)
             if not SMOKE:
                 reg.require_same_env(c["provenance_at_start"], prov)
-        if stage == "train-l" and not got["check"].get("timing", {}).get("within_cap"):
-            raise SystemExit("check's timing projection exceeds the L cap's allowance: an amendment is needed, and the "
-                             "owner decides (§5)")
+        if stage == "train-l":  # recomputed against L's clock before every attempt (Astra, D276)
+            t = timing_ok(got["check"]["timing"]["seconds_per_generation"], E.clock().spent_hours(),
+                          REGISTERED["caps"]["l"])
+            if not t["within_cap"]:
+                raise SystemExit(f"the timing projection ({t['projected_hours']:.2f} h) exceeds the L cap's allowance "
+                                 f"({t['allowance_hours']:.2f} h): an amendment is needed, and the owner decides (§5)")
         if stage == "train-s" and not FM.s_triggered(got["report-l"]["reading"]):
             raise SystemExit(f"S is not triggered: L reads {got['report-l']['reading'].get('state')!r}")
         return got
     return check
 
 
+# ----------------------------------------------------------------------------- rollouts and checks
+
 def readout(res, k: int = 0) -> dict:
     out = {"real_first": int(res.real_first[k]), "decoy_first": int(res.decoy_first[k]), "neither": int(res.neither[k])}
     n = sum(out.values())
     out.update(trials=n, real_first_all=out["real_first"] / n, entry_rate=(n - out["neither"]) / n)
-    if res.real_first_maze is not None:
-        out["per_maze"] = {"real_first": res.real_first_maze[k].tolist(), "decoy_first": res.decoy_first_maze[k].tolist()}
+    out["per_maze"] = {"real_first": res.real_first_maze[k].tolist(), "decoy_first": res.decoy_first_maze[k].tolist(),
+                       "neither": res.neither_maze[k].tolist()}
     return out
 
 
@@ -249,24 +319,26 @@ def play(ctx, cx, cfg, genome, ids, *, a_source="real", b_source="sum", check=Tr
         raise
 
 
-def evaluate_conditions(ctx, cx, cfg, champ: Genome, ids, *, arm: str | None, start: Genome | None = None) -> dict:
-    """The test block's conditions, one genome per batch, with the registered assertions (§5): per maze, the removed,
-    fixed, cut and E-G conditions balanced; an L or S champion cut equal to E-G, bitwise."""
+def same_genome(a: Genome, b: Genome) -> bool:
+    return all(torch.equal(getattr(a, k).cpu(), getattr(b, k).cpu()) for k in ("w", "bias", "tau", "g"))
+
+
+def evaluate_conditions(ctx, cx, cfg, champ: Genome, ids, *, arm: str | None, start: Genome | None = None,
+                        persist=lambda name, r: None) -> dict:
+    """The test block's conditions, one genome per batch, each saved (`persist`) before its assertion (§5): per maze,
+    the removed, fixed, cut and E-G conditions balanced; an L or S champion cut equal to E-G, bitwise."""
     slots = AR.slot_indices(cx)
     eg = eg_of(cx)
     cut = AR.cut(champ, slots)
-    cut_is_eg = all(torch.equal(getattr(cut, k).cpu(), getattr(eg, k).cpu()) for k in ("w", "bias", "tau", "g"))
-    if arm in ("L", "S") and not cut_is_eg:
+    if arm in ("L", "S") and not same_genome(cut, eg):
         raise FM.IntegrityError(f"an {arm} champion with its slots cut is not E-G")
+    plays = [(name, champ, src) for name, src in FM.CONDITIONS.items()]
+    plays += [("cut", cut, "real"), ("eg", eg, "real")] + ([("start", start, "real")] if start is not None else [])
     out = {}
-    for name, src in FM.CONDITIONS.items():
-        res = play(ctx, cx, cfg, champ, ids, a_source=src)
+    for name, g, src in plays:
+        res = play(ctx, cx, cfg, g, ids, a_source=src)
         out[name] = readout(res)
-        if name in FM.BALANCED:
-            FM.assert_balanced(res.real_first_maze, res.decoy_first_maze, f"{name}")
-    for name, g in (("cut", cut), ("eg", eg)) + ((("start", start),) if start is not None else ()):
-        res = play(ctx, cx, cfg, g, ids)
-        out[name] = readout(res)
+        persist(name, out[name])
         if name in FM.BALANCED:
             FM.assert_balanced(res.real_first_maze, res.decoy_first_maze, name)
     return out
@@ -291,13 +363,29 @@ def checked_rollout(cx, allowed):
     return fn
 
 
+def check_frozen(start: Genome, pop: Genome, sc: dict, label: str) -> None:
+    try:
+        AR.assert_frozen(start, pop, sc)
+    except AssertionError as e:
+        raise FM.IntegrityError(f"{label}: {e}") from e
+
+
+def check_lineage(recs, rep) -> None:
+    for rec, rp in zip(recs, rep, strict=True):
+        if not same_genome(rec.final, rp["final"]):
+            raise FM.IntegrityError(f"run {rec.spec.run}: the lineage replay differs from the run")
+
+
 def save_selections(path: Path, selections: list, runs: list, P: int) -> None:
+    """Atomically: a temporary file, then a replace (Astra, D276)."""
     arrays = {}
     for i, r in enumerate(runs):
         sl = slice(i * P, (i + 1) * P)
         for k in ("score", "real_first", "decoy_first", "neither"):
             arrays[f"{k}_run{r['run']:03d}"] = np.stack([s[k][sl] for s in selections])
-    np.savez_compressed(path, **arrays)
+    tmp = path.with_name(path.stem + ".tmp.npz")
+    np.savez_compressed(tmp, **arrays)
+    E.replace(tmp, path)
 
 
 def population_digest(hashes: list[str]) -> str:
@@ -306,8 +394,9 @@ def population_digest(hashes: list[str]) -> str:
 
 def compare_replay(snapshots: dict, checkpoints: dict, screen: dict, local: dict | None) -> dict:
     """§5.1's replay comparison. `snapshots`: run → the replay's generation-10 strain hashes; `checkpoints`: run → the
-    replay's generation-10 checkpoint sha256; `screen`: the pilot's record; `local`: run → the local `gen010` file's
-    strain hashes, or None where absent. Raises `IntegrityError` on any mismatch."""
+    replay's generation-10 checkpoint sha256; `screen`: the pilot's record; `local`: run → the local `gen010` strain
+    hashes computed from the files' arrays, or None (only outside the tested machine). Raises `IntegrityError` on any
+    mismatch."""
     snap = REGISTERED["replay"]["snapshot"]
     out = {"checkpoints": {}, "populations": "not compared"}
     for r in PILOT_RUNS:
@@ -322,28 +411,28 @@ def compare_replay(snapshots: dict, checkpoints: dict, screen: dict, local: dict
         digest = population_digest([population_digest(local[r["run"]]) for r in PILOT_RUNS])
         if digest != REGISTERED["replay"]["pilot_digest"]:
             raise FM.IntegrityError("the local generation-10 populations do not match the registered digest")
-        out["populations"] = "equal, bitwise (strain hashes), and the registered digest matches"
+        out["populations"] = "equal, bitwise (strain hashes from the arrays), and the registered digest matches"
     return out
 
 
-def local_gen010() -> dict | None:
+def gen010_files() -> dict:
     snap = REGISTERED["replay"]["snapshot"]
-    files = {r["run"]: PILOT_POPS / f"L-run{r['run']:03d}-gen{snap:03d}.npz" for r in PILOT_RUNS}
+    return {r["run"]: PILOT_POPS / f"L-run{r['run']:03d}-gen{snap:03d}.npz" for r in PILOT_RUNS}
+
+
+def local_gen010(spec=None, brain_cfg=None) -> dict | bool | None:
+    """None if any local file is absent; with no spec, True if all are present; with a spec, run → the strain hashes
+    computed from each file's arrays (Astra, D276)."""
+    files = gen010_files()
     if not all(f.exists() for f in files.values()):
         return None
+    if spec is None:
+        return True
     out = {}
     for run, f in files.items():
-        z = np.load(f, allow_pickle=False)
-        out[run] = json.loads(str(z["meta"]))["genome_sha256s"]
+        pop, _ = load_population(f, spec, brain_cfg, "cpu")
+        out[run] = [genome_hash(pop, i) for i in range(pop.n_strains)]
     return out
-
-
-def timing_ok(per_gen_seconds: float, spent_hours: float, cap_hours: float) -> dict:
-    T = REGISTERED["timing"]
-    projected = per_gen_seconds * REGISTERED["G"] * T["overhead"] / 3600
-    allowance = T["share_of_remainder"] * (cap_hours - spent_hours)
-    return {"seconds_per_generation": per_gen_seconds, "projected_hours": projected, "allowance_hours": allowance,
-            "within_cap": bool(projected <= allowance)}
 
 
 # ----------------------------------------------------------------------------- the stages
@@ -355,20 +444,28 @@ def cmd_check(args):
         cfg = cfg_for(REGISTERED["W"])
         cx = context(cfg)
         eg = eg_of(cx)
+        state["eg_sha256"] = genome_hash(eg, 0)
         state["preflight"] = FM.preflight(FM.all_blocks(), lambda ids: ET.qualifying(ids, FM.MAZE_SEED))
         E.write_atomic(E.partial_path("check"), state)
         with acct.category("probe"):
             ids = FM.CHECK_IDS
             ctl = TL.control_genome(eg, cx, "comparator", 3.0)
-            pc = {"control_w3": readout(play(ctx, cx, cfg, ctl, ids)), "eg": readout(play(ctx, cx, cfg, eg, ids)),
-                  "oracle": readout(play(ctx, cx, cfg, eg, ids, b_source="real", check=False))}
+            pc = state["positive_control"] = {}
+            for name, g, kw in (("control_w3", ctl, {}), ("eg", eg, {}),
+                                ("oracle", eg, {"b_source": "real", "check": False})):
+                pc[name] = readout(play(ctx, cx, cfg, g, ids, **kw))
+                E.write_atomic(E.partial_path("check"), state)
             FM.assert_balanced([pc["eg"]["per_maze"]["real_first"]], [pc["eg"]["per_maze"]["decoy_first"]], "E-G")
             if pc["control_w3"]["real_first_all"] < REGISTERED["control_threshold"]:
                 raise FM.IntegrityError(f"the positive control made {pc['control_w3']['real_first_all']:.3f}, below "
                                         f"{REGISTERED['control_threshold']}")
-            state["positive_control"] = pc
-            state["evaluation_path"] = evaluate_conditions(ctx, cx, cfg, ctl, ids, arm=None)
-            E.write_atomic(E.partial_path("check"), state)
+            ev = state["evaluation_path"] = {}
+
+            def persist(name, r):
+                ev[name] = r
+                E.write_atomic(E.partial_path("check"), state)
+
+            evaluate_conditions(ctx, cx, cfg, ctl, ids, arm=None, persist=persist)
         with acct.category("selection"):
             state["replay"] = replay_pilot(ctx, cx, cfg) if not SMOKE else "smoke: not replayed"
             E.write_atomic(E.partial_path("check"), state)
@@ -389,7 +486,7 @@ def replay_pilot(ctx, cx, cfg) -> dict:
     factor = {r["run"]: r["factor"] for r in PILOT_RUNS}
     recs = EV.evolve_batch(cfg, cx["org"].iface, cx["org"].genome.spec, specs, generations=Rp["generations"],
                            checkpoint_every=REGISTERED["checkpoint_every"],
-                           validation_ids=np.arange(*Rp["checkpoint_ids"]), world_seed=FM.MAZE_SEED,
+                           validation_ids=np.arange(*Rp["checkpoint_ids"]), world_seed=1_420_000,
                            id_base=Rp["train_base"], id_span=Rp["train_span"], device=ctx.args.device,
                            rollout_fn=LI.Capture(ET.trial_rollout(cx)), check=ctx.cap.check, category=acct.category,
                            initial=lambda r: start, mutation_scales=lambda r: scales[factor[r.run]],
@@ -398,7 +495,7 @@ def replay_pilot(ctx, cx, cfg) -> dict:
                             for i in range(rec.snapshots[Rp["snapshot"]].n_strains)] for rec in recs}
     cks = {rec.spec.run: next(c["sha256"] for c in rec.checkpoints if c["generation"] == Rp["snapshot"]) for rec in recs}
     screen = json.loads((PILOT_DIR / "screen.json").read_text(encoding="utf-8"))
-    return compare_replay(snaps, cks, screen, local_gen010())
+    return compare_replay(snaps, cks, screen, local_gen010(cx["org"].genome.spec, cfg.brain))
 
 
 def time_formal(ctx, cx, cfg) -> dict:
@@ -431,19 +528,33 @@ def time_formal(ctx, cx, cfg) -> dict:
     return out
 
 
+def pop_dir(arm: str) -> Path:
+    return out_dir(f"train-{arm.lower()}") / "populations"
+
+
 def pop_path(arm: str, run: int, tag: str) -> Path:
-    return out_dir(f"train-{arm.lower()}") / "populations" / f"{arm}-run{run:03d}-{tag}.npz"
+    return pop_dir(arm) / f"{arm}-run{run:03d}-{tag}.npz"
+
+
+def train_files(arm: str) -> list[Path]:
+    """Every file `train-<arm>` writes, kept beside as `-attempt1` on a rerun (Fable, Astra, D276)."""
+    G, every = REGISTERED["G"], REGISTERED["checkpoint_every"]
+    tags = [f"gen{g:03d}" for g in sorted(set(range(0, G, every)) | {G - 1})] + ["final"]
+    return ([pop_dir(arm) / f"{arm}-selections.npz", pop_dir(arm) / f"{arm}-parents.npz"]
+            + [pop_path(arm, r["run"], t) for r in FM.runs(arm) for t in tags])
 
 
 def cmd_train(args, arm: str):
     stage = f"train-{arm.lower()}"
 
     def body(ctx):
-        state = {"stage": stage, "partial": True, "owner_word": owner_word(args, stage)}
+        state = {"stage": stage, "partial": True, "owner_word": owner_word(args, stage), "checkpoints": {}}
         ctx.salvage = lambda: state
         W, G, every = REGISTERED["W"], REGISTERED["G"], REGISTERED["checkpoint_every"]
         cfg = cfg_for(W)
         cx = context(cfg)
+        if genome_hash(eg_of(cx), 0) != ctx.earlier["check"]["eg_sha256"]:
+            raise FM.IntegrityError("E-G differs from check's")
         runs = FM.runs(arm)
         P = cfg.evo.population
         s0 = start_of(cx, arm)
@@ -452,19 +563,18 @@ def cmd_train(args, arm: str):
         specs = [EV.RunSpec(r["run"], r["seed"], 0.0) for r in runs]
         cap = LI.Capture(checked_rollout(cx, FM.check_ids))
         snaps = tuple(sorted(set(range(0, G, every)) | {G - 1}))
-        pdir = pop_path(arm, 0, "x").parent
-        pdir.mkdir(parents=True, exist_ok=True)
-        sel_path = pdir / f"{arm}-selections.npz"
+        pop_dir(arm).mkdir(parents=True, exist_ok=True)
+        sel_path = pop_dir(arm) / f"{arm}-selections.npz"
 
         def on_checkpoint(records, g):
             for rec in records:
                 if g in rec.snapshots:
-                    try:
-                        AR.assert_frozen(start, rec.snapshots[g], sc)
-                    except AssertionError as e:
-                        raise FM.IntegrityError(f"run {rec.spec.run}, generation {g}: {e}") from e
+                    check_frozen(start, rec.snapshots[g], sc, f"run {rec.spec.run}, generation {g}")
                     save_population(pop_path(arm, rec.spec.run, f"gen{g:03d}"), rec.snapshots[g], cfg=cfg,
                                     run=rec.spec.run, generation=g)
+                state["checkpoints"][str(rec.spec.run)] = [
+                    {k: c[k] for k in ("generation", "validation_mean", "validation_counts", "sha256")}
+                    for c in rec.checkpoints]
             save_selections(sel_path, cap.selections, runs, P)
             state["progress"] = {"generation": g}
             E.write_atomic(E.partial_path(stage), state)
@@ -483,25 +593,39 @@ def cmd_train(args, arm: str):
         save_selections(sel_path, cap.selections, runs, P)
         rep = LI.replay(cfg, specs, cap.selections, initial=lambda r: start, mutation_scales=lambda r: sc,
                         device=ctx.args.device, random_ties=True)
-        for rec, rp in zip(recs, rep):
-            if not all(torch.equal(getattr(rec.final, k), getattr(rp["final"], k)) for k in ("w", "bias", "tau", "g")):
-                raise FM.IntegrityError(f"run {rec.spec.run}: the lineage replay differs from the run")
-            try:
-                AR.assert_frozen(start, rec.final, sc)
-            except AssertionError as e:
-                raise FM.IntegrityError(f"run {rec.spec.run}, final: {e}") from e
-        np.savez_compressed(pdir / f"{arm}-parents.npz",
+        check_lineage(recs, rep)
+        for rec in recs:
+            check_frozen(start, rec.final, sc, f"run {rec.spec.run}, final")
+        par_path = pop_dir(arm) / f"{arm}-parents.npz"
+        np.savez_compressed(par_path,
                             **{f"source_run{rp['run']:03d}": np.array([p["source"] for p in rp["parents"]]) for rp in rep},
                             **{f"child_run{rp['run']:03d}": np.array([p["child"] for p in rp["parents"]]) for rp in rep})
         state.update(runs=[{**r, "final_sha256": [genome_hash(rec.final, i) for i in range(rec.final.n_strains)],
-                            "log": rec.log, "checkpoints": [{k: c[k] for k in ("generation", "validation_mean", "sha256")}
-                                                            for c in rec.checkpoints]} for r, rec in zip(runs, recs)],
+                            "log": rec.log} for r, rec in zip(runs, recs)],
                      start_sha256=genome_hash(s0, 0), training_seconds=seconds,
-                     composition=[len(runs) * P, 2 * W, 1], selections=str(sel_path.relative_to(ROOT)))
+                     composition=[len(runs) * P, 2 * W, 1], selections=str(sel_path.relative_to(ROOT)),
+                     selections_sha256=E.sha256_bytes(sel_path), parents_sha256=E.sha256_bytes(par_path))
+        FM.validate_runs(arm, state["runs"], stage="train")
         state.pop("partial", None)
         return state
 
-    return E.run_stage(args, stage, requires(stage), body)
+    return E.run_stage(args, stage, requires(stage), body, local_files=train_files(arm))
+
+
+def load_final(arm: str, run: int, want: list[str], spec, brain_cfg, device) -> Genome:
+    """The saved final population, its strain hashes equal to the training record's, else `IntegrityError`."""
+    final, _ = load_population(pop_path(arm, run, "final"), spec, brain_cfg, device)
+    if [genome_hash(final, i) for i in range(final.n_strains)] != list(want):
+        raise FM.IntegrityError(f"run {run}'s saved final population differs from the training record")
+    return final
+
+
+def champion_of(final: Genome, validation_scores, selection_scores, slots) -> int:
+    """§6: the whole final population on its validation block; ties to the final generation's fitness (the last
+    selection), then the smaller cross-link norm, then the lowest index."""
+    fit = np.asarray(selection_scores)[-1].mean(axis=1)
+    norm = final.w[:, slots.to(final.w.device)].norm(dim=1).cpu().numpy()
+    return ET.champion(np.asarray(validation_scores).mean(axis=1), fit, norm)
 
 
 def cmd_evaluate(args, arm: str):
@@ -514,29 +638,42 @@ def cmd_evaluate(args, arm: str):
         cx = context(cfg)
         spec = cx["org"].genome.spec
         tr = ctx.earlier[f"train-{arm.lower()}"]
+        FM.validate_runs(arm, tr["runs"], stage="train")
+        if genome_hash(eg_of(cx), 0) != ctx.earlier["check"]["eg_sha256"]:
+            raise FM.IntegrityError("E-G differs from check's")
+        sel_path, par_path = pop_dir(arm) / f"{arm}-selections.npz", pop_dir(arm) / f"{arm}-parents.npz"
+        if (E.sha256_bytes(sel_path), E.sha256_bytes(par_path)) != (tr["selections_sha256"], tr["parents_sha256"]):
+            raise FM.IntegrityError("the saved selections or parents differ from the training record")
+        sel = np.load(sel_path, allow_pickle=False)
+        par = np.load(par_path, allow_pickle=False)
         slots = AR.slot_indices(cx)
-        P = cfg.evo.population
-        sel = np.load(pop_path(arm, 0, "x").parent / f"{arm}-selections.npz", allow_pickle=False)
-        s0 = s0_of(cx) if arm == "S" else None
+        s0 = None
+        if arm == "S":
+            s0 = s0_of(cx)
+            if genome_hash(s0, 0) != tr["start_sha256"]:
+                raise FM.IntegrityError("S₀ differs from the training record's start")
         with acct.category("holdout"):
-            for r, rt in zip(FM.runs(arm), tr["runs"]):
-                final, _ = load_population(pop_path(arm, r["run"], "final"), spec, cfg.brain, ctx.args.device)
-                if [genome_hash(final, i) for i in range(final.n_strains)] != rt["final_sha256"]:
-                    raise FM.IntegrityError(f"run {r['run']}'s saved final population differs from the training record")
+            for r, rt in zip(FM.runs(arm), tr["runs"], strict=True):
+                final = load_final(arm, r["run"], rt["final_sha256"], spec, cfg.brain, ctx.args.device)
                 v_ids, t_ids = FM.blocks(arm, r["run"])
                 val = play(ctx, cx, cfg, final, v_ids)
-                fit = sel[f"score_run{r['run']:03d}"][-1].mean(axis=1)
-                norm = final.w[:, slots.to(final.w.device)].norm(dim=1).cpu().numpy()
-                k = ET.champion(val.score.mean(axis=1), fit, norm)
+                scores = sel[f"score_run{r['run']:03d}"]
+                k = champion_of(final, val.score, scores, slots)
                 champ = final.select([k])
-                test = evaluate_conditions(ctx, cx, cfg, champ, t_ids, arm=arm, start=s0)
-                state["runs"].append({**r, "champion_index": k, "champion_sha256": genome_hash(champ, 0),
-                                      "validation_shares": np.round(val.score.mean(axis=1), 6).tolist(),
-                                      "slot_weights": np.round(champ.w[0, slots.to(champ.w.device)].cpu().numpy(),
-                                                               6).tolist(),
-                                      "test": {c: v for c, v in test.items() if c != "start"},
-                                      **({"start": test["start"]} if "start" in test else {})})
-                E.write_atomic(E.partial_path(stage), state)
+                src, ch = par[f"source_run{r['run']:03d}"], par[f"child_run{r['run']:03d}"]
+                entry = {**r, "champion_index": k, "champion_sha256": genome_hash(champ, 0),
+                         "validation_shares": np.round(val.score.mean(axis=1), 6).tolist(),
+                         "slot_weights": np.round(champ.w[0, slots.to(champ.w.device)].cpu().numpy(), 6).tolist(),
+                         "tie_shares": FM.tie_shares(scores), "turnover": FM.turnover(src, ch),
+                         "lineage_mutations": FM.lineage_mutations(src, ch, k), "test": {}}
+                state["runs"].append(entry)
+
+                def persist(name, rd, entry=entry):
+                    (entry.__setitem__("start", rd) if name == "start" else entry["test"].__setitem__(name, rd))
+                    E.write_atomic(E.partial_path(stage), state)
+
+                evaluate_conditions(ctx, cx, cfg, champ, t_ids, arm=arm, start=s0, persist=persist)
+        FM.validate_runs(arm, state["runs"], stage="evaluate")
         state.pop("partial", None)
         return state
 
@@ -575,8 +712,8 @@ COMMANDS = {"check": cmd_check,
             **{f"report-{a.lower()}": (lambda a: lambda args: cmd_report(args, a))(a) for a in "LFS"}}
 
 
-def use_smoke(args) -> None:
-    """Toy sizes in their own folders; never results."""
+def use_smoke(args=None) -> None:
+    """Toy sizes in their own folders, with their own maze seed, run seeds and ids (Astra, D276); never results."""
     global EXP, SMOKE
     EXP = SMOKE_ROOT / "records"
     SMOKE = True
@@ -587,10 +724,12 @@ def use_smoke(args) -> None:
     R["timing"]["generations"] = 2
     R["caps"] = {"l": 1e6, "f": 1e6, "s": 1e6}
     FM.N_RUNS.update({"L": 2, "F": 2, "S": 2})
-    FM.MAZES, FM.TRIALS = 2, 4
-    FM.CHECK_IDS = np.arange(54_000, 54_002)
-    FM.CHECKPOINT_IDS = np.arange(54_100, 54_102)
-    R["runs"] = dict(FM.N_RUNS)
+    FM.MAZES, FM.TRIALS, FM.POP = 2, 4, 6
+    FM.MAZE_SEED, FM.SEED_BASE = 1_429_000, 1_449_000
+    FM.BASES.update({"L": 40_000, "F": 41_000, "S": 42_000})
+    FM.CHECK_IDS, FM.CHECKPOINT_IDS = np.arange(43_000, 43_002), np.arange(43_100, 43_102)
+    FM.TRAIN, FM.TIMING = (200_000_000, 210_000_000), (210_000_000, 220_000_000)
+    R.update(maze_seed=FM.MAZE_SEED, seed_base=FM.SEED_BASE, runs=dict(FM.N_RUNS))
 
 
 def main():

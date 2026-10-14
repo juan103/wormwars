@@ -19,17 +19,18 @@ def test_runs_and_seeds():
         assert all(r["arm"] == arm for r in rs)
 
 
-def test_blocks_follow_the_registration():
+def test_blocks_follow_amendment_1():
     v, t = FM.blocks("L", 0)
-    assert v[0] == 55_000 and v[-1] == 55_063 and t[0] == 55_064 and t[-1] == 55_127
+    assert v[0] == 65_000 and v[-1] == 65_063 and t[0] == 65_064 and t[-1] == 65_127
     v, t = FM.blocks("L", 31)
-    assert v[0] == 55_000 + 128 * 31 and t[-1] == 55_000 + 128 * 31 + 127
+    assert v[0] == 65_000 + 128 * 31 and t[-1] == 65_000 + 128 * 31 + 127 == 69_095
     v, t = FM.blocks("F", 103)
-    assert v[0] == 60_000 + 128 * 3 and t[0] == 60_064 + 128 * 3
+    assert v[0] == 69_200 + 128 * 3 and t[-1] == 69_711
     v, t = FM.blocks("S", 231)
-    assert v[0] == 61_000 + 128 * 31 and t[-1] == 61_000 + 128 * 31 + 127
-    assert list(FM.CHECK_IDS) == list(range(54_000, 54_064))
-    assert list(FM.CHECKPOINT_IDS) == list(range(54_100, 54_108))
+    assert v[0] == 70_000 + 128 * 31 and t[-1] == 74_095
+    assert list(FM.CHECK_IDS) == list(range(64_000, 64_064))
+    assert list(FM.CHECKPOINT_IDS) == list(range(64_100, 64_108))
+    assert FM.TRAIN == (120_000_000, 130_000_000) and FM.TIMING == (130_000_000, 140_000_000)
     with pytest.raises(ValueError):
         FM.blocks("L", 32)
 
@@ -39,8 +40,11 @@ def test_the_blocks_are_disjoint_from_each_other_and_from_the_pilot():
     ids = np.concatenate(list(named.values()))
     assert len(ids) == len(np.unique(ids))
     assert len(named) == 2 + 2 * (32 + 4 + 32)
-    for lo, hi in FM.PILOT_RANGES:
+    for lo, hi in FM.PILOT_RANGES + FM.SPENT:
         assert not np.any((ids >= lo) & (ids < hi))
+    for lo, hi in FM.SPENT:  # the training and timing ranges too
+        for a, b in (FM.TRAIN, FM.TIMING):
+            assert hi <= a or lo >= b
 
 
 def test_the_preflight_records_replacements_and_refuses_collisions():
@@ -51,14 +55,16 @@ def test_the_preflight_records_replacements_and_refuses_collisions():
         FM.preflight(named, resolve=lambda ids: np.where(ids == 12, 20, ids))  # lands in another block
     with pytest.raises(FM.IntegrityError):
         FM.preflight({"a": np.array([53_000])}, resolve=lambda ids: ids)  # a pilot id
+    with pytest.raises(FM.IntegrityError):
+        FM.preflight({"a": np.array([55_001])}, resolve=lambda ids: ids)  # spent by a smoke before Amendment 1
 
 
 def test_training_ids_must_stay_in_range():
-    FM.check_ids(np.array([[100_000_000, 109_999_999]]))
+    FM.check_ids(np.array([[120_000_000, 129_999_999]]))
     FM.check_ids(np.array([FM.CHECKPOINT_IDS]))
-    for bad in (110_000_000, 99_999_999, 55_000):
+    for bad in (130_000_000, 119_999_999, 100_000_000, 65_000):
         with pytest.raises(FM.IntegrityError):
-            FM.check_ids(np.array([[100_000_001, bad]]))
+            FM.check_ids(np.array([[120_000_001, bad]]))
 
 
 def test_per_maze_balance():
@@ -109,26 +115,73 @@ def test_s_is_triggered_only_by_the_two_states():
         assert not FM.s_triggered({"state": st})
 
 
-def _run(gain_k, eg_k=63):
-    return {"test": {"intact": {"real_first": 64 + gain_k, "decoy_first": 64 - gain_k - 2, "neither": 2},
-                     "eg": {"real_first": eg_k, "decoy_first": eg_k, "neither": 128 - 2 * eg_k}}}
+def _cond(rf, df):
+    """Counts and per-maze arrays consistent with them: rf real-first, df decoy-first, the rest neither."""
+    flat = np.array([1] * rf + [2] * df + [0] * (128 - rf - df)).reshape(64, 2)
+    pm = {"real_first": (flat == 1).astype(int).tolist(), "decoy_first": (flat == 2).astype(int).tolist(),
+          "neither": (flat == 0).astype(int).tolist()}
+    return {"real_first": rf, "decoy_first": df, "neither": 128 - rf - df, "per_maze": pm}
+
+
+def _run(gain_k, eg_k=63, r=None, start=None):
+    test = {"intact": _cond(64 + gain_k, 64 - gain_k - 2), "eg": _cond(eg_k, eg_k)}
+    for c in ("reversed", "removed", "fixed", "cut"):
+        test[c] = _cond(60, 60)
+    out = {**(r or {}), "validation_shares": [0.5] * 32, "test": test}
+    if start is not None:
+        out["start"] = _cond(*start)
+    return out
+
+
+def _arm(arm, gains, **kw):
+    return [_run(g, r=r, **kw) for g, r in zip(gains, FM.runs(arm))]
 
 
 def test_the_report_goes_through_the_registered_rule_and_refuses_a_reduced_arm():
-    per_run = [_run(48) for _ in range(31)] + [_run(-1)]
+    per_run = _arm("L", [48] * 31 + [-1])
     rep = FM.report("L", per_run)
     want = ES.reading([48 / 128] * 31 + [-1 / 128], n_expected=32)
     assert rep["reading"]["state"] == want["state"] and rep["reading"]["lb"] == pytest.approx(want["lb"])
     assert rep["gains"][0] == 48 / 128 and rep["minus_eg"][0] == (64 + 48 - 63) / 128
-    with pytest.raises(ValueError):
+    with pytest.raises(FM.IntegrityError):
         FM.report("L", per_run[:31])
-    assert FM.report("F", [_run(40)] * 4)["reading"]["n"] == 4
+    assert FM.report("F", _arm("F", [40] * 4))["reading"]["n"] == 4
+
+
+def test_an_incomplete_or_duplicated_arm_is_refused():
+    """Astra (D276): 32 copies of one run, or a run missing a condition or its per-maze counts, never reach the rule."""
+    good = _arm("L", [40] * 32)
+    with pytest.raises(FM.IntegrityError, match="runs are"):
+        FM.report("L", [good[0]] * 32)
+    for sabotage in (lambda r: r["test"].pop("fixed"), lambda r: r["test"]["cut"].pop("per_maze"),
+                     lambda r: r["validation_shares"].pop(), lambda r: r["test"]["eg"].update(neither=3)):
+        bad = [json_copy(x) for x in good]
+        sabotage(bad[7])
+        with pytest.raises(FM.IntegrityError):
+            FM.report("L", bad)
+
+
+def json_copy(x):
+    import json
+    return json.loads(json.dumps(x))
+
+
+def test_the_descriptives():
+    sc = np.zeros((2, 4, 3))
+    sc[0] = [[1, 1, 1], [1, 1, 1], [0, 0, 0], [0.5, 0.5, 0.5]]  # two tied at 1
+    sc[1] = [[1, 0, 0], [0, 1, 0], [0, 0, 1], [1, 1, 1]]  # three tied at 1/3
+    assert FM.tie_shares(sc) == [0.5, 0.75]
+    source = np.array([[0, 1, 0, 0], [0, 2, 3, 3]])
+    child = np.array([[False, False, True, True], [False, True, True, True]])
+    assert FM.turnover(source, child) == [2 / 3]  # breeding 1 draws on 0, 2, 3; breeding 0 made 2 and 3 as children
+    assert FM.lineage_mutations(source, child, 2) == 2  # strain 2, a child of 3, itself a child of 0
+    assert FM.lineage_mutations(source, child, 0) == 0
 
 
 def test_s_against_its_start():
-    per_run = [{**_run(40), "start": {"real_first": 64 + 10, "decoy_first": 50, "neither": 4}} for _ in range(32)]
+    per_run = _arm("S", [40] * 32, start=(74, 50))
     rep = FM.improvement_report(per_run)
     assert rep["differences"][0] == (40 - 10) / 128
     assert rep["reading"]["state"] == ES.IMPROVEMENT_STATES[0]
-    with pytest.raises(ValueError):
+    with pytest.raises(FM.IntegrityError):
         FM.improvement_report(per_run[:31])

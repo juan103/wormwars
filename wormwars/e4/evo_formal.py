@@ -1,5 +1,6 @@
 """The evolutionary E4-D's formal run: its registered constants and pure helpers, as the bound pre-registration fixes
-them (`experiments/E4-two-minds/E4-D-evo/PREREGISTRATION.md`, D274). The stages are in `scripts/e4d_evo_formal.py`.
+them (`experiments/E4-two-minds/E4-D-evo/PREREGISTRATION.md`, D274), with Amendment 1's block layout (D276: the
+smokes had played some of §4's ids). The stages are in `scripts/e4d_evo_formal.py`.
 
 - **Runs and seeds** (§3): L 0-31, F 100-103, S 200-231; seed 1 440 000 + the run's number.
 - **Blocks** (§4): per run, a 64-maze validation block and the 64 maze ids after it as its test block; the check and
@@ -25,11 +26,14 @@ MAZES = 64
 TRIALS = 2 * MAZES
 FIRST_RUN = {"L": 0, "F": 100, "S": 200}
 N_RUNS = {"L": 32, "F": 4, "S": 32}
-BASES = {"L": 55_000, "F": 60_000, "S": 61_000}
-CHECK_IDS = np.arange(54_000, 54_064)
-CHECKPOINT_IDS = np.arange(54_100, 54_108)
-TRAIN = (100_000_000, 110_000_000)
-TIMING = (110_000_000, 120_000_000)
+BASES = {"L": 65_000, "F": 69_200, "S": 70_000}  # Amendment 1 (D276)
+CHECK_IDS = np.arange(64_000, 64_064)
+CHECKPOINT_IDS = np.arange(64_100, 64_108)
+TRAIN = (120_000_000, 130_000_000)
+TIMING = (130_000_000, 140_000_000)
+# every id a smoke or a test played under the formal maze seed before Amendment 1 (D276): never a formal block
+SPENT = ((54_000, 54_003), (54_100, 54_102), (55_000, 55_004), (55_128, 55_132), (60_000, 60_004), (60_128, 60_132),
+         (61_000, 61_004), (61_128, 61_132), (100_000_000, 120_000_000))
 PILOT_RANGES = ((53_000, 53_064), (53_100, 53_612), (53_700, 53_764), (53_800, 53_864), (70_000_000, 80_000_000),
                 (90_000_000, 100_000_000))
 
@@ -71,7 +75,8 @@ def all_blocks() -> dict:
 
 
 def _in_pilot(ids: np.ndarray) -> np.ndarray:
-    return np.any([(ids >= lo) & (ids < hi) for lo, hi in PILOT_RANGES], axis=0)
+    """The pilot's ranges, and the ids spent before Amendment 1."""
+    return np.any([(ids >= lo) & (ids < hi) for lo, hi in PILOT_RANGES + SPENT], axis=0)
 
 
 def preflight(named: dict, resolve) -> dict:
@@ -86,7 +91,7 @@ def preflight(named: dict, resolve) -> dict:
         if moved:
             replacements[name] = moved
         if np.any(_in_pilot(got)):
-            raise IntegrityError(f"block {name} resolves into the pilot's ids")
+            raise IntegrityError(f"block {name} resolves into the pilot's or the spent ids")
         for i in got.tolist():
             if i in owner and owner[i] != name:
                 raise IntegrityError(f"maze {i} is in blocks {owner[i]} and {name}")
@@ -135,9 +140,37 @@ def _share(c: dict) -> float:
     return int(c["real_first"]) / TRIALS
 
 
+def validate_runs(arm: str, per_run: list[dict], *, stage: str) -> None:
+    """A complete arm (Astra, D276): exactly the registered runs, in order, with their seeds; for evaluations, every
+    condition (S also S₀) with all trials and per-maze, per-assignment counts that sum to its totals, and the whole
+    population's validation shares. Else `IntegrityError`."""
+    want = [(r["run"], r["seed"]) for r in runs(arm)]
+    got = [(int(r.get("run", -1)), int(r.get("seed", -1))) for r in per_run]
+    if got != want:
+        raise IntegrityError(f"{stage}: the runs are {got[:3]}..., not the registered {want[:3]}... ({len(want)})")
+    if stage == "train":
+        return
+    conds = (*CONDITIONS, "cut", "eg")
+    for r in per_run:
+        if len(r.get("validation_shares", ())) != POP:
+            raise IntegrityError(f"run {r['run']}: not every strain of the final population was validated")
+        cs = [(c, r["test"].get(c)) for c in conds] + ([("start", r.get("start"))] if arm == "S" else [])
+        for c, x in cs:
+            if x is None:
+                raise IntegrityError(f"run {r['run']}: the {c} condition is missing")
+            pm = x.get("per_maze") or {}
+            for k in ("real_first", "decoy_first", "neither"):
+                a = np.asarray(pm.get(k, []))
+                if a.shape != (MAZES, 2) or int(a.sum()) != int(x[k]):
+                    raise IntegrityError(f"run {r['run']}, {c}: the per-maze {k} counts are incomplete or disagree")
+            if int(x["real_first"]) + int(x["decoy_first"]) + int(x["neither"]) != TRIALS:
+                raise IntegrityError(f"run {r['run']}, {c}: not {TRIALS} trials")
+
+
 def report(arm: str, per_run: list[dict]) -> dict:
     """§7.1-§7.2 against chance: each run's champion share on its test block minus 0.5, read by `evo_stats.reading`
     with the registered count; the champion minus E-G beside."""
+    validate_runs(arm, per_run, stage="report")
     gains = [_share(r["test"]["intact"]) - 0.5 for r in per_run]
     minus_eg = [_share(r["test"]["intact"]) - _share(r["test"]["eg"]) for r in per_run]
     return {"arm": arm, "gains": gains, "minus_eg": minus_eg,
@@ -146,5 +179,32 @@ def report(arm: str, per_run: list[dict]) -> dict:
 
 def improvement_report(per_run: list[dict]) -> dict:
     """§7.2, S against its start: the champion's share minus S₀'s on the same test block."""
+    validate_runs("S", per_run, stage="report")
     d = [_share(r["test"]["intact"]) - _share(r["start"]) for r in per_run]
     return {"differences": d, "reading": ES.improvement(d, n_expected=N_RUNS["S"], trials=TRIALS)}
+
+
+def tie_shares(scores: np.ndarray) -> list:
+    """[generations, strains, mazes] selection scores → per generation, the share of strains whose fitness equals
+    another's (§7.4)."""
+    out = []
+    for g in np.asarray(scores):
+        f = g.mean(axis=1)
+        out.append(float(np.mean([np.sum(f == x) > 1 for x in f])))
+    return out
+
+
+def turnover(source: np.ndarray, child: np.ndarray) -> list:
+    """Parent-pool turnover (§7.4), per breeding g ≥ 1: of the distinct parents breeding g draws on, the share that
+    breeding g − 1 produced as mutated children (not elites carried over unchanged)."""
+    source, child = np.asarray(source), np.asarray(child).astype(bool)
+    return [float(np.mean(child[g - 1][np.unique(source[g])])) for g in range(1, len(source))]
+
+
+def lineage_mutations(source: np.ndarray, child: np.ndarray, strain: int) -> int:
+    """`lineage.mutations` on the saved arrays."""
+    n, k = 0, int(strain)
+    for src, ch in zip(np.asarray(source)[::-1], np.asarray(child)[::-1]):
+        n += bool(ch[k])
+        k = int(src[k])
+    return n

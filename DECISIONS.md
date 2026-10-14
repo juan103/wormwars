@@ -8544,3 +8544,30 @@ Written after binding (§0.2), test-first against §10, on new files only plus t
   3 generations of the screen's batch** (128 s, outside the compute accounting, added here by hand: about 0.04
   GPU-hours, E4 now about 6.09 of 30): every run's per-generation best hash and fitness equalled `screen.json`'s.
 Next: review by both; then a dated amendment recording the formal commit, and the owner's word before `check`.
+
+## D276 — The formal code's review by both ("fix first"), the fixes, and the pre-registration's Amendment 1
+
+Astra 6 and Fable 5.1 at "high" on e5e928f (`docs/reviews/20261014-E4-D-evo-formal-code/`): both "fix first"; both
+found the numeric path faithful to the bound text. Every finding is taken:
+- **The smokes played formal ids** (Astra): my smokes kept the formal maze seed, run seeds and block bases, so they
+  played some validation, check and checkpoint ids, and drew training and timing ids, of §4's layout (no test block;
+  toy organisms of 40 ticks). **Amendment 1** (appended to the pre-registration, before anything formal ran) moves the
+  whole layout to fresh ids (check 64 000, checkpoints 64 100, L 65 000, F 69 200, S 70 000; training 120 M, timing
+  130 M), the pre-flight refuses the spent ids, and smokes now have their own maze seed, run seeds and ids.
+- **Provenance** (both): before every stage, the pinned files; the pre-registration append-only after its bound text
+  (so amendments stay possible after `check`, Fable); the rule, its tests and `power.json` unchanged since binding; the
+  code unchanged since the formal commit Amendment 1 records; a rerun held to its first attempt's code and
+  environment (Astra).
+- **Recovery and records** (both): the first attempt's training files kept beside on a rerun; selections saved
+  atomically; checkpoint records and each evaluation condition saved as they complete (each before its assertion);
+  E-G, S₀, the saved finals, selections and parents checked against earlier records; §7.4's descriptives recorded.
+- **Correctness guards** (Astra): complete arms checked before any reading (Astra had shown 32 copies of one run read
+  "practically relevant"); `train-l`'s timing projection recomputed against L's clock before every attempt; the local
+  replay comparison required on the tested machine, hashed from the files' arrays (Fable too).
+- **Tests** (both): the balance assertion sabotaged through the stage code (Astra had disabled it and the old test
+  passed); the frozen set, the lineage replay, the champion's last-selection input, a mismatched final population, the
+  exact timing rule, append-only amendments, rerun provenance, smoke isolation. Each new guard was sabotaged once and
+  its test failed.
+- **Run again:** CPU and GPU smokes of all ten stages under the isolated smoke layout; the amended pre-flight (all 138
+  blocks, no replacement).
+Next: the fixed code to both for confirmation; then the formal commit appended to Amendment 1, and the owner's word.
