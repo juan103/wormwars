@@ -8,7 +8,8 @@ derived from the committed records in [`formal/`](formal/) by `scripts/e4d_evo_s
 
 **L, the confirmatory arm: "practically relevant transfer found."** Starting from E-G with the 32 cross-link slots at
 0 and mutating only those slots, selection on the trial's outcome recruited cross-links that carry A's engineered cue
-into B, in all 32 independent runs.
+into B: the registered reading concerns the mean over the 32 runs' champions. Beside it, descriptively, every one of
+the 32 champions beat E-G on its own test block (by at least 40 of 128 trials).
 
 | | L (confirmatory) | F (secondary) |
 |---|---|---|
@@ -20,7 +21,7 @@ into B, in all 32 independent runs.
 | the champions' shares, lowest to highest | 0.805-0.969 | 0.867-0.930 |
 | the champion minus E-G on the same block, mean (lowest) | 0.418 (0.313) | 0.398 (0.375) |
 
-- **The rule:** LB > 0.15, the owner's margin, is the first of §7.1's five states. The interval is approximate
+- **The rule:** LB > 0.15, the owner's margin, is the first state of §7.1's table. The interval is approximate
   (model-based); the sign-flip p is distributional (sign symmetry).
 - **S, the seeded follow-up, was not triggered:** it runs only if L reads "practical gain excluded; transfer not
   detected" or "inconclusive" (§3).
@@ -42,22 +43,26 @@ trials, mean over the champions (lowest-highest):
 | the links **cut** | 0.494 (0.484-0.500) | 0.494 | 0.011 | 0.359 (0.258-0.500) | 0.281 |
 | E-G | 0.494 | 0.494 | 0.011 | 0.492 | 0.016 |
 
-- **The champions use A's cue.** Reversing it sent every champion to the decoy (32 of 32 in L, 4 of 4 in F), with each
-  champion's real-first, decoy-first and neither counts exactly swapped. Holding it fixed left every champion balanced on every maze, as asserted.
+- **The champions use A's cue:** B's input is the same under both assignments, so any share above 0.5 comes from what
+  A senses. Reversing the cue sent every champion to the decoy (32 of 32 in L, 4 of 4 in F), with each champion's
+  real-first, decoy-first and neither counts exactly swapped. That swap is an identity of the paired design (the
+  reversed trial on one assignment is the intact trial on the other), so it checks the evaluation path rather than
+  adding evidence. Holding the cue fixed left every champion balanced on every maze, as asserted.
 - **In L the links carry all of it:** cutting them gave E-G exactly, bitwise, as asserted.
 - **In F** the module itself also evolved, so cutting the links does not give E-G. Cut champions stay balanced on every
   maze (asserted), but enter less (0.28 of trials enter neither candidate, against E-G's 0.016).
-- **Removing the cue mostly stops the evolved champions from entering at all.** In L, 0.81 of trials entered neither
-  candidate; per champion, from 0 to 128 of 128 trials, with 24 of 32 champions at 100 or more. The hand-built control
-  did not do this: with its cue removed it entered all 128 trials, at 0.5 (`formal/check.json`). So the evolved
-  champions do not only steer by A's cue; most of them need it to approach a candidate at all. This was not predicted,
-  and its mechanism was not measured.
+- **With the cue removed, most evolved champions entered neither candidate within the 600-tick trial.** In L, 0.81 of
+  trials entered neither; per champion, from 0 to 128 of 128 trials, with 24 of 32 champions at 100 or more. The
+  hand-built control, on `check`'s maze block (not the champions' test blocks), entered all 128 trials with its cue
+  removed, at 0.5 (`formal/check.json`). So most evolved champions depend on A's cue for entering within the horizon,
+  not only for the choice. Whether they stop moving, wander, or approach without entering was not measured. This was
+  not predicted.
 
 ## How the champions wired the links (§7.4; descriptive)
 
-The hand-built control copies A's comparators into B's comparators (A_CL → B_CL and A_CR → B_CR at w = 3; D262). **The
-evolved champions did not.** Their strongest consistent slots run from A's comparators into **B's noses**, with small
-weights:
+The hand-built control copies A's comparators into B's comparators (A_CL → B_CL and A_CR → B_CR at w = 3; D262).
+**The evolved champions' weights look different.** Their strongest consistent slots run from A's comparators into **B's
+noses**, with small weights:
 
 | slot | L mean weight | L champions with a positive weight |
 |---|---|---|
@@ -73,27 +78,28 @@ exploratory:**
 |---|---|---|---|---|---|
 | A's comparators → B's noses | 0 | **0.45** (0.16-0.87) | **32 of 32** | 0.34 | 4 of 4 |
 | A's comparators → B's comparators | 3 | 0.08 (−0.31-0.52) | 21 of 32 | 0.05 | 3 of 4 |
-| A's noses → B's comparators | 0 | −0.01 (−0.42-0.45) | 15 of 32 | −0.04 | 1 of 4 |
-| A's noses → B's noses | 0 | 0.07 (−0.39-0.49) | 20 of 32 | 0.06 | 3 of 4 |
+| A's noses → B's comparators | 0 | −0.01 (−0.42-0.45) | 15 of 32 | −0.03 | 1 of 4 |
+| A's noses → B's noses | 0 | 0.07 (−0.39-0.49) | 20 of 32 | 0.05 | 3 of 4 |
 
-- **Every champion, in both arms, carries a positive comparator → nose contrast.** The weights are far smaller than
-  the hand-built control's 3: the feasibility check needed w ≈ 2-3 for its comparator-origin wiring (D262). Read
-  descriptively, evolution fed A's steering signal into B's sensory input, upstream of B's comparators, rather than
-  copying it into the comparators.
-- **The other slots are not near zero.** The summed |weight| of each class of 8 slots is about 1.1-1.6 on average,
-  into A as well as into B (`summary.json`, `wiring.by_class`). Much of it may be unselected drift, since most strains
-  tie on fitness (below); this was not measured.
+- **Every champion, in both arms, has a positive comparator → nose contrast.** The weights are far smaller than the
+  hand-built control's 3: the feasibility check needed w ≈ 2-3 for its comparator-origin wiring (D262). This suggests
+  that the champions feed A's steering signal into B's sensory input, upstream of B's comparators. **It was not tested:**
+  the controls cut all 32 links together, so whether this route is necessary or sufficient, and how much the other
+  slots (comparator → comparator included) contribute, is unknown.
+- **The other slots are not near zero.** The summed |weight| of each class of 8 slots (by direction and source neuron)
+  is about 1.1-1.6 on average, into A as well as into B (`summary.json`, `wiring.by_class`). Much of it may be
+  unselected drift, since most strains tie on fitness (below); this was not measured.
 
 ## Training (§7.4; descriptive)
 
 - **The checkpoints** (the 8-maze checkpoint block, 16 trials, noisy): L's mean real-first share rose from 0.50 at
-  generation 0 to 0.72 at 10, 0.81 at 20, 0.87 at 40 and 0.93 at 99. F's rose to 0.78 at 10 and 0.95 at 99.
+  generation 0 to 0.71 at 10, 0.81 at 20, 0.87 at 40 and 0.93 at 99. F's rose to 0.78 at 10 and 0.95 at 99.
 - **The champions' validation shares** (64 mazes each) averaged 0.939 in L, against 0.912 on the fresh test blocks:
-  the champion choice is optimistic by about 0.03 (validation above test in 25 of 32 runs). The registered estimand
-  uses the test block, so this does not enter the reading.
+  the champion choice is optimistic by about 0.03 (validation above test in 24 of 32 runs, equal in 2, below in 6).
+  The registered estimand uses the test block, so this does not enter the reading.
 - **Ties and turnover:** on average 0.95 of a generation's strains tie with another strain's fitness (at least 0.78 in
-  every run's every generation; 16 trial outcomes per strain); 0.89 of each breeding's parents were mutated children of the previous one; a champion's lineage
-  carries a median of 88 mutations (L, 80-94).
+  every run's every generation; 16 trial outcomes per strain); 0.89 of each breeding's parents were mutated children
+  of the previous one; a champion's lineage carries a median of 88 mutations (L, 80-94).
 
 ## The check (§5)
 
@@ -114,7 +120,7 @@ exploratory:**
 | S | not run | 6 |
 
 **E4's total is now about 9.30 of 30 GPU-hours** (6.09 before the formal run, including a 128 s dry run that was not
-recorded automatically and was added by hand, D278).
+recorded automatically and was added by hand, D275; `summary.json`, `compute`).
 
 ## What went wrong along the way, openly
 
@@ -132,8 +138,10 @@ python scripts/e4d_evo_formal.py check --smoke --device cpu     # every stage ha
 python scripts/e4d_evo_summary.py                              # regenerates summary.json from the committed records
 ```
 
-**A formal rerun** needs a disposable checkout: each stage runs once and refuses if its record exists, and `check`
-needs `--owner-word`. The populations and selection matrices stay local (`runs/e4d-evo-formal/`); the records keep
-their sha256. The GPU stages repeat exactly only on the same GPU, in the pinned environment, with the same batch
-composition (rule 6). There, `check` replayed the pilot bitwise, and `train-l` and `train-f` rebuilt every final
-population bitwise from the saved selections.
+**A formal rerun** needs a disposable checkout of a revision whose code equals the formal commit's, such as a2e9ae7
+(later revisions add `scripts/e4d_evo_summary.py`, and every formal stage refuses if `scripts/` or `wormwars/` differ
+from 5237304). Each stage runs once and refuses if its record exists, and `check` needs `--owner-word`. The
+populations and selection matrices stay local (`runs/e4d-evo-formal/`); the records keep their sha256. The GPU
+stages repeat exactly only on the same GPU, in the pinned environment, with the same batch composition (rule 6). There,
+`check` replayed the pilot bitwise, and `train-l` and `train-f` rebuilt every final population bitwise from the saved
+selections.

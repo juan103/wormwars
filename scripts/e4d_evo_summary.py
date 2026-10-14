@@ -24,6 +24,7 @@ EXP = ROOT / "experiments" / "E4-two-minds" / "E4-D-evo"
 FORMAL = EXP / "formal"
 OUT = EXP / "summary.json"
 CONDITIONS = ("intact", "reversed", "removed", "fixed", "cut", "eg")
+TRIALS = 128  # each validation and test block: 64 mazes, both assignments
 HAND_BUILT = {("E3_A_CL", "E3_B_CL"): 3.0, ("E3_A_CR", "E3_B_CR"): 3.0}  # the check's control (w = 3)
 
 
@@ -53,9 +54,9 @@ def wiring(runs: list, names: list) -> dict:
     W = np.asarray([r["slot_weights"] for r in runs], dtype=np.float64)  # [champions, 32]
     idx = {tuple(n): k for k, n in enumerate(names)}
 
-    def cls(pre, post):
+    def cls(pre, post):  # by the slot's direction and its source neuron's kind: "from_comparator" is an origin
         into = "into_B" if post.startswith("E3_B_") else "into_A"
-        origin = "comparator" if pre in O.COMPARATORS else "nose"
+        origin = "from_comparator" if pre in O.COMPARATORS else "from_nose"
         return f"{into}.{origin}"
 
     classes = {}
@@ -106,7 +107,17 @@ def controls(runs: list) -> dict:
     for c in ("removed", "fixed"):
         rf = np.asarray([r["test"][c]["real_first"] for r in runs], dtype=np.float64)
         out[c]["real_first_over_intact"] = spread(rf / intact)
+    neither = np.asarray([r["test"]["removed"]["neither"] for r in runs])
+    out["removed"]["champions_with_100_or_more_neither"] = int((neither >= 100).sum())
     return out
+
+
+def on_grid(share: float, trials: int = TRIALS) -> int:
+    """A share stored to 6 decimals, back to its whole number of trials (the records round `validation_shares`)."""
+    k = round(share * trials)
+    if abs(share * trials - k) > 1e-3:
+        raise ValueError(f"{share} is not a whole number of {trials} trials")
+    return int(k)
 
 
 def checkpoints(train: dict) -> dict:
@@ -123,41 +134,62 @@ def arm(key: str, names: list) -> dict | None:
     if report is None or evaluate is None or train is None:
         return None
     runs = evaluate["runs"]
-    champ = np.asarray([r["test"]["intact"]["real_first_all"] for r in runs])
-    val = np.asarray([max(r["validation_shares"]) for r in runs])
+    test = np.asarray([r["test"]["intact"]["real_first"] for r in runs])
+    val = np.asarray([on_grid(max(r["validation_shares"])) for r in runs])
+    ties = np.asarray([r["tie_shares"] for r in runs])
     return {"reading": report["reading"], "label": report["label"], "outcome": report["outcome"],
             "runs": [{"run": r["run"], "seed": r["seed"], "champion_index": r["champion_index"],
                       "test_real_first": r["test"]["intact"]["real_first"],
                       "test_decoy_first": r["test"]["intact"]["decoy_first"],
                       "test_neither": r["test"]["intact"]["neither"], "gain": g, "minus_eg": m,
-                      "champion_validation_share": float(max(r["validation_shares"])),
+                      "champion_validation_real_first": int(v),
+                      "conditions": {c: {k: r["test"][c][k] for k in ("real_first", "decoy_first", "neither")}
+                                     for c in CONDITIONS},
                       "lineage_mutations": r["lineage_mutations"]}
-                     for r, g, m in zip(runs, report["gains"], report["minus_eg"])],
-            "champion_test_share": spread(champ), "champion_validation_share": spread(val),
-            "validation_minus_test": spread(val - champ),
+                     for r, g, m, v in zip(runs, report["gains"], report["minus_eg"], val)],
+            "champion_test_share": spread(test / TRIALS), "champion_validation_share": spread(val / TRIALS),
+            "validation_minus_test": spread((val - test) / TRIALS),
+            "validation_against_test": {"above": int((val > test).sum()), "equal": int((val == test).sum()),
+                                        "below": int((val < test).sum())},
             "gain": spread(report["gains"]), "minus_eg": spread(report["minus_eg"]),
             "controls": controls(runs), "wiring": wiring(runs, names), "checkpoints": checkpoints(train),
-            "tie_share": spread([np.mean(r["tie_shares"]) for r in runs]),
+            "tie_share": spread(ties.mean(axis=1)), "tie_share_lowest_generation": float(ties.min()),
             "turnover": spread([np.mean(r["turnover"]) for r in runs]),
             "lineage_mutations": spread([r["lineage_mutations"] for r in runs]),
             "training_seconds": train["training_seconds"], "evaluate_seconds": evaluate["seconds"]}
 
 
+BEFORE_FORMAL = {"gpu_hours": 6.09, "source": "D270 (E4 at 6.05 of 30 after the pilot) and D275 (a 128 s dry run "
+                 "of the pilot replay, outside the accounting, about 0.04)"}
+
+
 def compute() -> dict:
-    out = {}
+    out = {"before_formal": BEFORE_FORMAL}
     for key in ("l", "f", "s"):
         rec = load(f"compute-record-{key}.json")
         if rec is not None:
             out[key] = {k: v for k, v in rec.items() if k != "attempts"}
             out[key]["attempts"] = [{k: a[k] for k in ("argv", "status", "git_commit")} for a in rec["attempts"]]
+            out[key]["gpu_hours"] = rec["totals"]["seconds_timed"] / 3600
+    out["e4_total_gpu_hours"] = BEFORE_FORMAL["gpu_hours"] + sum(
+        v["gpu_hours"] for k, v in out.items() if k in ("l", "f", "s"))
     return out
+
+
+def without_per_maze(o):
+    """The check's records without their per-maze arrays: the counts are what the results cite."""
+    if isinstance(o, dict):
+        return {k: without_per_maze(v) for k, v in o.items() if k != "per_maze"}
+    return o
 
 
 def main() -> None:
     check = load("check.json")
     names = slot_names()
     doc = {"source": "experiments/E4-two-minds/E4-D-evo/formal/ (the committed records); scripts/e4d_evo_summary.py",
-           "check": {k: check[k] for k in check if k in ("outcome", "positive_control", "evaluation_path", "timing", "replay")},
+           "check": {**{k: without_per_maze(check[k]) for k in check
+                        if k in ("outcome", "positive_control", "evaluation_path", "timing", "replay")},
+                     "seconds": check["seconds"]},
            "L": arm("l", names), "F": arm("f", names), "S": arm("s", names), "compute": compute()}
     OUT.write_text(json.dumps(doc, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
     print(f"wrote {OUT.relative_to(ROOT)}")

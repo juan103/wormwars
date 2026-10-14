@@ -150,8 +150,8 @@
     after three rounds of review by both (`experiments/E4-two-minds/E4-D-evo/PREREGISTRATION.md`, D271-D274; L 32
     runs, F 4, S 32 if L finds nothing). Its formal code was reviewed by both over three rounds (D275-D278), and the
     formal run (2026-10-14/15, 3.21 GPU-hours, E4 at 9.30 of 30) read L as **"practically relevant transfer found"**
-    (mean gain 0.412, lower bound 0.401 against δ = 0.15; D280); S was not triggered. **Next:** the results' review by
-    both, then publication on main.
+    (mean gain 0.412, lower bound 0.401 against δ = 0.15; D280); S was not triggered. Its results were reviewed by
+    both ("fix then publish", D281) and published on main.
 
 - **Published on main:**
   - 02's D050 correction, as a Corrections entry (27 September, D063);
@@ -436,8 +436,8 @@ Track B continues in parallel: 03r, then the mechanism follow-up or closure, the
 
 *Status, 2026-10-13 (D258-D263):* the main task's formal run was dropped after its pilot; question 2 is pursued in a
 diagnostic task where transfer is necessary (E4-D), whose feasibility check passed. *2026-10-15 (D280):* in the
-evolutionary E4-D, selection recruited the transfer from zero in all 32 pre-registered runs ("practically relevant
-transfer found"; `experiments/E4-two-minds/E4-D-evo/RESULTS.md`). See "Where things stand" above and
+evolutionary E4-D, selection recruited the transfer from zero ("practically relevant transfer found": the 32
+pre-registered runs' champions averaged 0.912 real-first; `experiments/E4-two-minds/E4-D-evo/RESULTS.md`). See "Where things stand" above and
 `experiments/E4-two-minds/`.
 
 Three separate questions, from easiest to hardest:

@@ -35,8 +35,8 @@ def test_a_comparator_to_nose_route_is_read_as_such():
     c = out["contrasts_after_data"]
     assert c["comparator_to_nose"]["values"]["mean"] == pytest.approx(0.5) and c["comparator_to_nose"]["positive"] == 3
     assert c["comparator_to_comparator"]["values"]["mean"] == 0.0
-    assert out["by_class"]["into_B.comparator"]["sum_abs_weight"]["mean"] == pytest.approx(1.0)
-    assert out["by_class"]["into_A.nose"]["sum_abs_weight"]["mean"] == 0.0
+    assert out["by_class"]["into_B.from_comparator"]["sum_abs_weight"]["mean"] == pytest.approx(1.0)
+    assert out["by_class"]["into_A.from_nose"]["sum_abs_weight"]["mean"] == 0.0
 
 
 def cond(rf, df, ne, per_maze_rf, per_maze_df):
@@ -54,3 +54,10 @@ def test_the_control_tallies():
     assert out["reversed"]["decoy_first_exceeds_real_first"] == 2
     assert out["removed"]["balanced_per_maze"] == 2 and out["removed"]["neither"]["mean"] == 0.5
     assert out["fixed"]["real_first_over_intact"]["mean"] == pytest.approx(1 / 3)
+
+
+def test_a_rounded_share_returns_to_its_whole_trials():
+    """The records round validation shares to 6 decimals; 117/128 is stored 0.914062 and must count as 117."""
+    assert S.on_grid(0.914062) == 117 and S.on_grid(0.960938) == 123
+    with pytest.raises(ValueError):
+        S.on_grid(0.9145)

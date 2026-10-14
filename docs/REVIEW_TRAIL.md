@@ -94,6 +94,7 @@ led to several of the findings.
 | 74 | E4's results draft: four misrounded figures; children's and elites' means and an SD from no committed file; forecasts stated as findings; the batch-composition and block caveats missing; the predicted bias ratio misstated (3, not 4) | Claude Opus 5.5 | **Fable 5.1** and **Astra 6**, each independently | Corrected before publication, with dated corrections | D263 |
 | 75 | The evolutionary E4-D's pre-registration drafts 1-2: S compared only with chance, which its seeded start already beats; the rule's tests passed with `>=` edges (verified); a sign-flip that would enumerate 2^32 patterns; integrity failures defined three ways; F able to block L, then S; a replay one generation short; a timing constant from 16 runs divided by 8; the power analysis's approximations untested | Claude Opus 5.5 | **Astra 6** and **Fable 5.1**, each independently | Fixed test-first in drafts 2 and 3, with sabotages; bound after both said "bind as is" | D271-D274 |
 | 76 | The evolutionary E4-D's formal code: its smokes played registered formal ids under the formal maze seed; reports accepted 32 copies of one run (verified); a balance test that passed with the assertion disabled (verified); no provenance guard before `check` or on reruns; a stale timing permission; amendments after `check` unreachable; reruns overwrote the first attempt's files | Claude Opus 5.5 | **Astra 6** and **Fable 5.1**, each independently | Amendment 1 moved the formal layout before anything formal ran; fixed test-first, with sabotages | D276 |
+| 77 | The evolutionary E4-D's results draft: "validation above test in 25 of 32" (a rounding artefact of 6-decimal shares: 24 above, 2 equal; verified); three rounded figures wrong (verified); numbers cited as in `summary.json` that were not; a weight pattern written as the route that carries the effect, never tested by ablation; "need it to approach a candidate" where only entry within 600 ticks was measured; the cue reversal presented as evidence, though it is an identity of the paired design; "in all 32 runs" inside the confirmatory claim, which concerns the mean | Claude Opus 5.5 | **Fable 5.1** (the count, the identity, the scope) and **Astra 6** (the roundings, the mechanism, the entry wording), each recomputing from the records | Recounted from the records; fixed before publication | D281 |
 
 Episode 6 went unnoticed for a week, through a passing test suite, every milestone report, a
 publication audit, the first public release and Claude's own review of the roadmap on the day it
@@ -128,7 +129,7 @@ food response is 1.55-2.7 times the most responsive graph's, not 1.5-1.8).
   useful.
 - One error (episode 16) was caught by neither a person nor a reviewer but by running the tests on
   another operating system.
-- This is one project and seventy-six episodes: an anecdote about multi-agent review, not a measurement
+- This is one project and seventy-seven episodes: an anecdote about multi-agent review, not a measurement
   of it.
 
 ## In the history

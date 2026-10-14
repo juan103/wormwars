@@ -8646,3 +8646,36 @@ F", 2026-10-14). The owner asked to use the GPU between L and F; F's training wa
   (`tests/test_e4d_evo_summary.py`, sabotaged twice); `E4-D-evo/RESULTS.md` and `README.md`; the status lines of the
   README, the ROADMAP and E4's README.
 **Next:** the results to both reviewers; then publication on main if both agree.
+
+
+## D281 — The evolutionary E4-D's results reviewed by both ("fix then publish"); the fixes
+
+Astra 6 and Fable 5.1 at "high" on 7c0ebde (`docs/reviews/20261015-E4-D-evo-results/`). Both "fix then publish". Both
+recomputed the registered readings from the raw records (L 0.412109375, [0.401370, 0.422848]; F 0.390625, [0.357907,
+0.423343]) and found them correct, in the registered wording and limits, with no undisclosed deviation; both found that
+D279's exemption does not weaken the connectome guard. Every finding was checked and taken:
+- **A wrong count** (Fable, verified): "validation above test in 25 of 32" compared 6-decimal validation shares with
+  exact test shares; on the 1/128 grid it is 24 above, 2 equal, 6 below. The summary now converts shares back to whole
+  trials (`on_grid`, tested and sabotaged).
+- **Three wrong roundings** (Astra, verified): F's nose → comparator contrast −0.03 (not −0.04), nose → nose 0.05 (not
+  0.06), L's checkpoint at generation 10 0.71 (not 0.72).
+- **Numbers not in `summary.json`** although RESULTS said all were (both): the champions with 100 or more trials entering
+  neither, the lowest per-generation tie share, check's seconds, the validation counts, the compute before the formal run
+  and E4's total are now in it; per-run counts for every condition too (§7.3). The check's per-maze arrays are dropped
+  from the summary (Fable; the counts stay). The dry run's citation is D275, not D278 (Astra).
+- **The mechanism overclaimed** (both): "evolution fed A's steering signal into B's sensory input" read weights as
+  function; the route was never ablated alone. Now: every champion has a positive comparator → nose contrast, which
+  suggests that route; its necessity, sufficiency and the other slots' share are untested. The slot classes in
+  `summary.json` are renamed by origin (`into_B.from_comparator`) so they do not read as targets.
+- **Entry conflated with approach** (Astra): with the cue removed, champions entered neither candidate within 600
+  ticks; whether they move or approach was not measured. The hand-built comparison is on check's block, now said.
+- **The reversal is an identity of the paired design** (Fable): the reversed trial on one assignment is the intact
+  trial on the other, so its exact swap checks the evaluation path; the evidence for cue use is the share above 0.5.
+- **Scope** (Fable): "in all 32 runs" sat inside the confirmatory statement, which concerns the mean; it is now marked
+  descriptive. "Five states" corrected to §7.1's table.
+- **The rerun instructions** (Astra): a formal rerun needs a revision whose code equals the formal commit's (such as
+  a2e9ae7), since `scripts/e4d_evo_summary.py` was added later.
+**Correction to D280,** whose wording is kept above: "every champion in both arms routes A's comparators into B's noses
+(a positive same-side contrast, 0.16-0.87 in L)" should read "every champion in both arms has a positive comparator →
+nose contrast (0.16-0.87 in L); whether that route carries the effect was not tested".
+**Next:** publication on main (both "fix then publish"; consensus, the owner informed after).
