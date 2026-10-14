@@ -3,7 +3,8 @@
 > **This is the `roadmap` working branch.** The published record is `main`. This branch holds work
 > in progress beyond it until it is merged. E4s-0, E4s-1, E3a and E3b-0 are on `main` (2026-10-03), E3b-1
 > and E3b-2 (2026-10-04), E3c (2026-10-06), E3d (2026-10-10), E3e and E3f (2026-10-11), and E4's main task and
-> E4-D's feasibility check (2026-10-13). Next: an evolutionary E4-D.
+> E4-D's feasibility check (2026-10-13). The evolutionary E4-D: pilot done, pre-registration bound
+> (2026-10-14, D274); next its formal code, then the formal run.
 
 Many parallel 2D worlds on one GPU. In each world, swarms of small creatures called **weys** forage
 and fight. Every wey's brain is a small continuous-time recurrent network whose wiring is the real
@@ -48,7 +49,9 @@ Next on the roadmap:
   comparison. **2026-10-10:** E3d, a maze validation ("failed at calibration"). **2026-10-11:** E3e, the same
   at 7 × 7 ("failed at calibration"); then E3f, 6 × 6 at a horizon of 1 800 ticks ("passed").
 - **2026-10-13:** E4's main task, exploratory: its formal run dropped after the pilot (the owner, on both reviewers'
-  advice); E4-D's feasibility check passed. **Next: an evolutionary E4-D,** on E4's remaining 25.80 GPU-hours.
+  advice); E4-D's feasibility check passed.
+- **2026-10-14:** the evolutionary E4-D's pilot (exploratory: all 20 runs recruited the transfer) and its
+  pre-registration, bound after review by both (D269-D274). **Next: its formal run,** on E4's remaining GPU-hours.
 - **Before E4** (paused by the owner, 2026-10-06, until 10-11):
   - E3c found that the maze task is solved by scent-free circuits as well as by navigation.
   - E3d tested a maze family with island goals. It defeats wall-following, but a random walk exceeds its

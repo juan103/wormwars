@@ -92,6 +92,7 @@ led to several of the findings.
 | 72 | E4-D's designs v1 and v2: repeated shuttle legs leaked the assignment through the relays and latch, so chance had no bound; the cue was out of scent range at the choice; the inherited 5-tick start cue would open A's gate; the shuffling criterion could not fail; no oracle ceiling | Claude Opus 5.5 | **Fable 5.1** and **Astra 6**, each independently | Single-choice trials (v2), then v2.1 | D249-D250 |
 | 73 | E4-D's code: distances to the goals' centres, not their blocks (a maze where the start moved); the reversal check across batch compositions; a failed integrity check read as a scientific result; the freeze recorded but not enforced; tests that passed with the latch disabled or with an always-true separation rule (verified) | Claude Opus 5.5 | **Astra 6** and **Fable 5.1**, each independently | Fixed test-first, with sabotages; v2.3 | D260 |
 | 74 | E4's results draft: four misrounded figures; children's and elites' means and an SD from no committed file; forecasts stated as findings; the batch-composition and block caveats missing; the predicted bias ratio misstated (3, not 4) | Claude Opus 5.5 | **Fable 5.1** and **Astra 6**, each independently | Corrected before publication, with dated corrections | D263 |
+| 75 | The evolutionary E4-D's pre-registration drafts 1-2: S compared only with chance, which its seeded start already beats; the rule's tests passed with `>=` edges (verified); a sign-flip that would enumerate 2^32 patterns; integrity failures defined three ways; F able to block L, then S; a replay one generation short; a timing constant from 16 runs divided by 8; the power analysis's approximations untested | Claude Opus 5.5 | **Astra 6** and **Fable 5.1**, each independently | Fixed test-first in drafts 2 and 3, with sabotages; bound after both said "bind as is" | D271-D274 |
 
 Episode 6 went unnoticed for a week, through a passing test suite, every milestone report, a
 publication audit, the first public release and Claude's own review of the roadmap on the day it
@@ -126,7 +127,7 @@ food response is 1.55-2.7 times the most responsive graph's, not 1.5-1.8).
   useful.
 - One error (episode 16) was caught by neither a person nor a reviewer but by running the tests on
   another operating system.
-- This is one project and seventy-four episodes: an anecdote about multi-agent review, not a measurement
+- This is one project and seventy-five episodes: an anecdote about multi-agent review, not a measurement
   of it.
 
 ## In the history

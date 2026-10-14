@@ -81,8 +81,9 @@ from the checkout, run `scout`, `calibrate` and `evaluate`, and compare the new 
 
 ## Extend it
 
-- **Next, the evolutionary E4-D** (D258): code review, then an evolutionary design, its review, a pre-registration
-  pushed before its pilot, and the pilot, on E4's remaining GPU-hours.
+- **The evolutionary E4-D** (D258): its design (`docs/E4/E4-D-EVO-DESIGN.md`, D265-D266), its exploratory pilot
+  (`E4-D-evo/`, D269-D270: all 20 runs recruited the transfer) and its pre-registration
+  (`E4-D-evo/PREREGISTRATION.md`, bound at D274). Next: the formal stage code, then the formal run.
 - **Routes the main task leaves open:**
   - smaller mutation on the module biases (0.02 met the incremental criterion, unconfirmed);
   - a task where A holds information that B can use in ordinary shuttling.

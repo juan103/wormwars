@@ -145,8 +145,11 @@
     have spent about 20 GPU-hours on an inconclusive null.
   - **E4 is re-scoped to E4-D,** a task where transfer is necessary by construction. Its feasibility check passed on
     the CPU (D262): a hand-configured cross-link control reaches 0.83 real-first against X0's exact 0.5.
-  - **Next:** an evolutionary E4-D (its design, review, pre-registration and pilot), on E4's remaining 25.80
-    GPU-hours.
+  - **The evolutionary E4-D** (on E4's remaining GPU-hours): design v2.1 (D265-D266); its exploratory pilot found
+    the transfer recruited in all 20 runs (D269-D270; 1.85 GPU-hours, E4 at 6.05 of 30); its pre-registration bound
+    after three rounds of review by both (`experiments/E4-two-minds/E4-D-evo/PREREGISTRATION.md`, D271-D274; L 32
+    runs, F 4, S 32 if L finds nothing). **Next:** the formal stage code, test-first and reviewed by both; then the
+    owner's word before `check` and the formal run.
 
 - **Published on main:**
   - 02's D050 correction, as a Corrections entry (27 September, D063);

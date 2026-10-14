@@ -1,8 +1,9 @@
 # The evolutionary E4-D: pre-registration
 
-**Status: draft 3. Nothing here binds yet.** Drafts 1 (1bec549) and 2 (6fca2ce) were reviewed by both
-(`docs/reviews/20261014-E4-D-evo-prereg/` and `-2/`; both times "bind after these fixes", D272-D273); §12 and §13 list
-the changes. It binds at the commit that is pushed after both reviewers agree. From then on, registered text is never changed or removed;
+**Status: draft 3, confirmed by both reviewers ("bind as is", D274); it binds at this commit.** Drafts 1 (1bec549)
+and 2 (6fca2ce) were reviewed by both (`docs/reviews/20261014-E4-D-evo-prereg/` and `-2/`; both times "bind after
+these fixes", D272-D273), and draft 3 (2055ccd) too (`-3/`); §12-§14 list the changes. From now on, registered text is
+never changed or removed;
 amendments are added beside it, dated (AGENTS.md, rule 2).
 
 **Its sources:**
@@ -110,8 +111,8 @@ run's training mazes (`train_ids`) and tie stream (`tie_rng`) are functions of i
 ## 4. The maze blocks and ids
 
 All under maze seed 1 420 000, fresh, disjoint from the pilot's (control 53 000-53 063, visibility 53 100-53 611,
-validation 53 700-53 763, assessment 53 800-53 863; training 70 000 000-79 999 999; timing 90 000 000 onward) and from
-the smokes'.
+validation 53 700-53 763, assessment 53 800-53 863; training 70 000 000-79 999 999; timing 90 000 000-99 999 999) and
+from the smokes'.
 
 | Block | Ids | Use |
 |---|---|---|
@@ -146,7 +147,7 @@ unless its predecessors (below) completed under the same code and registration (
 | `check` | nothing (the pinned files, §2) |
 | `train-l` | `check` |
 | `evaluate-l`, then `report-l` | the stage before it |
-| `train-f` | `report-l` completed (whatever its reading) |
+| `train-f` | `report-l` completed (whatever its reading); if L is "not evaluable" or "not completed", F waits on the owner's decision, by amendment |
 | `evaluate-f`, then `report-f` | the stage before it |
 | `train-s` | `report-l` reading one of §3's two triggering states, and the owner's word; **not F** |
 | `evaluate-s`, then `report-s` | the stage before it |
@@ -335,8 +336,8 @@ variance).
 - **So the 80% is conditional, on modelling assumptions:** runs that fail land near E-G, and successes near the
   pilot's level (its best champion was 0.96, not 1). Nothing in the GA enforces the first (`breed` keeps fitness
   elites, not E-G; Astra, D273). Outside these the power at R = 32 can fall to about 0.7.
-- **Ties bounded** (Astra, D273): always choosing the worst tied validation winner lowers the mean champion gain at the
-  μ = 0.25 placement by at most 0.004 (to 0.246-0.249), and the power at R = 32 is 1.00 (H), 0.87 (M) and 0.97 (U);
+- **Ties bounded** (Astra, D273; σ = 0): in these simulations, always choosing the worst tied validation winner
+  lowers the mean champion gain at the μ = 0.25 placement by at most 0.004 (to 0.246-0.249), and the power at R = 32 is 1.00 (H), 0.87 (M) and 0.97 (U);
   always the best, 1.00, 0.89 and 0.98.
 - **F's 4 runs:** 0.88-0.89 at μ = 0.25 if its runs are homogeneous (H), 0.19-0.28 if mixed or spread. F is
   secondary.
@@ -356,7 +357,8 @@ per-run time, for the extra conditions):
 | S, if triggered: `train-s`, `evaluate-s` (32 runs, with S₀) | 2.3 | 3.9 |
 
 **E4's remaining budget** is 23.95 of 30 GPU-hours (D270). **The caps,** each counting every attempt's recorded
-seconds (`CapClock`): **8 GPU-hours for `check` and L's stages; 1.5 for F's; 6 for S's.** At most 15.5 in all.
+seconds (`CapClock`): **8 GPU-hours for `check` and L's stages; 1.5 for F's; 6 for S's;** nominal caps totalling 15.5
+(the clock is checked before each rollout, so a rollout in flight can overrun a cap by its own length).
 L's cap leaves room for its one permitted rerun at the pilot-based rate; at the conservative rate a late stop could
 leave too little, and then the timing refusal (§5) applies and the owner decides (Fable, D273). A stage
 that reaches its cap stops, the arm reads "not completed (the cap was reached)", and the owner is asked; it is never
@@ -367,7 +369,7 @@ read as a result. F's and S's caps are separate from L's, so neither can consume
 New code is test-first (rule 9), at the formal compositions where it matters:
 - the block layout: every block's ids as §4, disjoint from each other and from the pilot's; the pre-flight's
   replacement rule; a resolved training id outside its range stops the stage;
-- the runs' numbers and seeds as §3; S₀ equals `control_genome(E-G, "comparator", 0.5)` and differs from E-G only in
+- the runs' numbers and seeds as §3; S₀ equals `control_genome(E-G, cx, "comparator", 0.5)` and differs from E-G only in
   the two slots;
 - the cue conditions: reversed, removed and fixed reach A's noses as specified, at a multi-strain composition; the
   real-first and decoy-first counts swap under reversal for a cue-following control;
@@ -444,3 +446,9 @@ New code is test-first (rule 9), at the formal compositions where it matters:
 - **L's cap** 8 GPU-hours (Fable), so its rerun is affordable at the pilot-based rate.
 - **R stays 32:** Fable "keep 32"; Astra prefers 40 but calls it a recommendation, not a blocker, and 32 defensible
   with the conditional wording, which §8 keeps.
+
+## 14. Wording notes from draft 3's review (both "bind as is", D274)
+
+No registered quantity, rule or stage changed: F's wait on the owner when L is "not evaluable" or "not completed"
+(§5's table; Fable); `control_genome`'s `cx` in §10 (both); "σ = 0" and "in these simulations" for the tie bound
+(Fable, Astra); the pilot's timing ids as a range (Fable); "nominal caps" (Astra).

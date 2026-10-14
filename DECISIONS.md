@@ -8512,3 +8512,14 @@ records. All taken in draft 3 (its §13):
 - **R stays 32.** Fable: keep 32. Astra prefers 40 (the harsh mixtures reach 0.80-0.87) but calls it a recommendation,
   not a blocker, with 32 defensible under the conditional wording that §8 keeps.
 Next: draft 3 to both for confirmation.
+
+## D274 — The evolutionary E4-D's pre-registration binds (both "bind as is")
+
+Astra 6 and Fable 5.1 at "high" on draft 3 (`docs/reviews/20261014-E4-D-evo-prereg-3/`): both "bind as is"; both found
+every draft-2 finding resolved correctly and re-verified the pins and §8's numbers. Their wording notes are taken at
+binding, changing no registered quantity, rule or stage (§14): F's wait on the owner when L is "not evaluable" or "not
+completed"; `cx` in §10; "σ = 0" and "in these simulations" for the tie bound; the pilot's timing ids as a range;
+"nominal caps". **The pre-registration** (`experiments/E4-two-minds/E4-D-evo/PREREGISTRATION.md`), `evo_stats.py` with
+its tests, and `power.json` **bind at this commit** (pushed to `roadmap`). R stays 32 (Fable keep; Astra's preference
+for 40 non-blocking). Next: the formal stage code (§0.2: test-first, reviewed by both, its commit recorded in a dated
+amendment); then the owner's word before `check`.
