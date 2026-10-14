@@ -8409,3 +8409,18 @@ the trial layout, the champion rule and the flag-off path are correct by inspect
   stream keeps index order); `breed` without a stream equal to the previous implementation, genomes and generator
   state; the recovered parents under random ties (a sabotage of the replay's peek fails it); a per-maze integrity
   check; qualifying ids kept distinct within a row (Astra).
+
+## D269 — The evolutionary E4-D's precheck: W = 8
+
+`experiments/E4-two-minds/E4-D-evo/precheck.json` (the owner's word, 2026-10-14; 1 044 s, 0.29 GPU-hours, at 4647027):
+- **The positive control on the GPU,** one genome per batch, 64 mazes × 2 assignments: the comparator-origin control at
+  w = 3 made 0.883 real-first over all trials, the oracle 0.867, E-G 0.492 (63 real-first, 63 decoy-first, exactly
+  balanced).
+- **Selection visibility:** at every W (8, 16, 32, 64), each control (w = 0.5, 1, 2) strictly out-ranked E-G on all 8
+  maze draws. Even at w = 0.5 the controls scored 0.56-0.75 against E-G's 0.44-0.50.
+- **The full workload's timing** (16 runs × 32 strains): 42.8 s per generation at W = 8, 46.2 at 16, 77.3 at 32 and
+  155.2 at 64; peak memory 1.4-4.8 GB. Projected screen and f: 1.37 + 0.34 GPU-hours at W = 8, 4.96 + 1.24 at 64.
+- **The formal W for the pilot is 8,** by the declared rule (the smallest W that is visible and affordable within 80%
+  of the cap's remainder, 4.57 hours). A note for the power analysis: W = 16 costs only 8% more per generation (the GPU
+  is underfilled at 8) and halves the fitness's noise; the rule was fixed in advance, so the pilot keeps W = 8 and the
+  formal W is the power analysis's to set.

@@ -1,0 +1,57 @@
+{
+ "time_unit": "synchronised wall-clock seconds per category (not GPU kernel time)",
+ "neural_update_unit": "strains x batch x substeps network updates (network size not included)",
+ "attempts": [
+  {
+   "file": "20261014T054718Z-004e39ca.json",
+   "status": "completed",
+   "script": "e4d-evo",
+   "argv": [
+    "precheck",
+    "--device",
+    "cuda"
+   ],
+   "default_category": "measure",
+   "git_commit": "464702791abd8f04d83a414b6320fac2848ce02c"
+  }
+ ],
+ "failed_attempts": 0,
+ "uncategorised": false,
+ "categories": {
+  "measure": {
+   "worlds_built": 0,
+   "world_ticks": 0,
+   "neural_updates": 0,
+   "neural_padding": 0,
+   "seconds": 1.2599192999999786
+  },
+  "probe": {
+   "worlds_built": 8064,
+   "world_ticks": 4838400,
+   "neural_updates": 162201600,
+   "neural_padding": 7372800,
+   "seconds": 79.62187010000002
+  },
+  "selection": {
+   "worlds_built": 368640,
+   "world_ticks": 221184000,
+   "neural_updates": 7077888000,
+   "neural_padding": 0,
+   "seconds": 899.0688796
+  },
+  "holdout": {
+   "worlds_built": 7680,
+   "world_ticks": 4608000,
+   "neural_updates": 147456000,
+   "neural_padding": 0,
+   "seconds": 65.20008650000005
+  }
+ },
+ "totals": {
+  "worlds_built": 384384,
+  "world_ticks": 230630400,
+  "neural_updates": 7387545600,
+  "neural_padding": 7372800,
+  "seconds_timed": 1045.1507555
+ }
+}
