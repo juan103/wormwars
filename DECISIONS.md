@@ -8625,3 +8625,24 @@ suite failed on all three, and I found the failure on 2026-10-15, after the push
   outside the formal provenance check (D278).
 - **From now on,** every record commit runs the hygiene tests first, on the staged tree, and is gated on pytest's own
   exit code.
+
+## D280 — The evolutionary E4-D's formal run: L "practically relevant transfer found"; F the same; S not triggered
+
+Run as pre-registered (c3fe432; Amendment 1; the formal code 5237304), after the owner's word ("Start check, then L and
+F", 2026-10-14). The owner asked to use the GPU between L and F; F's training waited until the owner said it was free
+(2026-10-15).
+- **`check`** passed: the control 0.875, E-G exactly 0.5, the pilot replayed bitwise, L projected 2.53 GPU-hours.
+- **L** (32 runs): mean real-first 0.912 on the champions' own test blocks; mean gain 0.412, one-sided 95% bounds
+  [0.401, 0.423]; **"practically relevant transfer found"**; sign-flip p = 1/2³². Every champion beat E-G (by 0.313
+  or more). Its controls: the cue reversed, every champion to the decoy; held fixed, balanced; cut, E-G bitwise.
+- **F** (4 runs, secondary): mean gain 0.391 [0.358, 0.423]; "practically relevant transfer found".
+- **S** is not triggered: L's state is not one of its two triggers.
+- **Descriptive, not predicted:** with A's cue removed, most champions stop entering either candidate (0.81 of L's
+  trials), unlike the hand-built control. **Exploratory, chosen after seeing L's data:** every champion in both arms
+  routes A's comparators into B's noses (a positive same-side contrast, 0.16-0.87 in L), not the hand-built
+  comparator copy.
+- **Compute:** check + L 2.75 GPU-hours (cap 8), F 0.46 (cap 1.5); E4 at about 9.30 of 30.
+- **New:** `scripts/e4d_evo_summary.py` → `summary.json` (every number in `RESULTS.md`), with its tests
+  (`tests/test_e4d_evo_summary.py`, sabotaged twice); `E4-D-evo/RESULTS.md` and `README.md`; the status lines of the
+  README, the ROADMAP and E4's README.
+**Next:** the results to both reviewers; then publication on main if both agree.

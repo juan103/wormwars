@@ -3,8 +3,8 @@
 > **This is the `roadmap` working branch.** The published record is `main`. This branch holds work
 > in progress beyond it until it is merged. E4s-0, E4s-1, E3a and E3b-0 are on `main` (2026-10-03), E3b-1
 > and E3b-2 (2026-10-04), E3c (2026-10-06), E3d (2026-10-10), E3e and E3f (2026-10-11), and E4's main task and
-> E4-D's feasibility check (2026-10-13). The evolutionary E4-D: pilot done, pre-registration bound
-> (2026-10-14, D274); next its formal code, then the formal run.
+> E4-D's feasibility check (2026-10-13). The evolutionary E4-D: formal run done (2026-10-15, D280), L reads
+> "practically relevant transfer found"; its results are under review by both before publication.
 
 Many parallel 2D worlds on one GPU. In each world, swarms of small creatures called **weys** forage
 and fight. Every wey's brain is a small continuous-time recurrent network whose wiring is the real
@@ -51,7 +51,11 @@ Next on the roadmap:
 - **2026-10-13:** E4's main task, exploratory: its formal run dropped after the pilot (the owner, on both reviewers'
   advice); E4-D's feasibility check passed.
 - **2026-10-14:** the evolutionary E4-D's pilot (exploratory: all 20 runs recruited the transfer) and its
-  pre-registration, bound after review by both (D269-D274). **Next: its formal run,** on E4's remaining GPU-hours.
+  pre-registration, bound after review by both (D269-D274).
+- **2026-10-15:** the evolutionary E4-D's formal run, as pre-registered (D275-D280): **"practically relevant transfer
+  found"**. In all 32 runs, selection on the slots alone recruited cross-links that carry A's cue into B; the
+  champions made 0.912 real-first on fresh mazes (one-sided 95% lower bound of the gain over 0.5: 0.401, against the
+  margin 0.15). See [its results](experiments/E4-two-minds/E4-D-evo/RESULTS.md).
 - **Before E4** (paused by the owner, 2026-10-06, until 10-11):
   - E3c found that the maze task is solved by scent-free circuits as well as by navigation.
   - E3d tested a maze family with island goals. It defeats wall-following, but a random walk exceeds its
@@ -80,7 +84,14 @@ between them.
 - **Caveats:** exploratory throughout; the main task's figures depend on the maze block, and the cross-link cost was
   measured on one block.
 
-See [E4's results](experiments/E4-two-minds/RESULTS.md) and [E4-D's feasibility check](experiments/E4-two-minds/E4-D/README.md).
+- **The evolutionary E4-D (pre-registered; 2026-10-15):** starting from E-G with the slots at 0 and mutating only
+  them, selection recruited the transfer in all 32 runs: **"practically relevant transfer found"**, mean real-first
+  0.912 on fresh test mazes (lower bound of the gain 0.401 against the owner's margin 0.15). Reversing A's cue sent
+  every champion to the decoy; cutting the links gave E-G exactly. The champions did not copy the hand-built wiring:
+  every one routes A's comparators into B's noses, at small weights (exploratory). 3.21 GPU-hours; E4 at 9.30 of 30.
+
+See [E4's results](experiments/E4-two-minds/RESULTS.md), [E4-D's feasibility check](experiments/E4-two-minds/E4-D/README.md)
+and [the evolutionary E4-D's results](experiments/E4-two-minds/E4-D-evo/RESULTS.md).
 
 ## A validated maze task for E4 (E3f)
 

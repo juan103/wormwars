@@ -8,6 +8,10 @@
 - **E4-D's feasibility check passed** (CPU; D262; [`E4-D/README.md`](E4-D/README.md)). A hand-configured cross-link
   control carries an engineered A → B signal: 0.83 real-first against X0's exact 0.5. The next step is an evolutionary
   E4-D: its own design, review, pre-registration and pilot, on E4's remaining 25.80 GPU-hours (D258).
+- **The evolutionary E4-D (pre-registered; 2026-10-15, D280): "practically relevant transfer found."** From E-G with
+  the slots at 0, selection on the slots alone recruited the transfer in all 32 runs: 0.912 real-first on fresh test
+  mazes, lower bound of the gain 0.401 against the margin 0.15 ([`E4-D-evo/RESULTS.md`](E4-D-evo/RESULTS.md)). E4 has
+  used 9.30 of its 30 GPU-hours.
 
 **The question:** does information crossing between two grafted navigation modules, through 32 optional cross-links,
 come to be used under evolution ([ROADMAP](../../ROADMAP.md), E4 / 04c)?
@@ -83,7 +87,8 @@ from the checkout, run `scout`, `calibrate` and `evaluate`, and compare the new 
 
 - **The evolutionary E4-D** (D258): its design (`docs/E4/E4-D-EVO-DESIGN.md`, D265-D266), its exploratory pilot
   (`E4-D-evo/`, D269-D270: all 20 runs recruited the transfer) and its pre-registration
-  (`E4-D-evo/PREREGISTRATION.md`, bound at D274). Next: the formal stage code, then the formal run.
+  (`E4-D-evo/PREREGISTRATION.md`, bound at D274), its formal code (D275-D278) and its formal run (D279-D280, "practically
+  relevant transfer found"; [`E4-D-evo/README.md`](E4-D-evo/README.md)).
 - **Routes the main task leaves open:**
   - smaller mutation on the module biases (0.02 met the incremental criterion, unconfirmed);
   - a task where A holds information that B can use in ordinary shuttling.
