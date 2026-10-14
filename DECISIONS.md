@@ -8442,3 +8442,22 @@ the pilot's total 1.85 GPU-hours with the precheck; E4's total 6.05 of 30). Expl
   (0.97), so by the owner's rule (D266) **F is kept for the formal run** (4 runs).
 - **Next:** the power analysis and the pre-registration, from these numbers; review by both; bound and pushed before the
   formal run; the owner's word before it.
+
+## D271 — The evolutionary E4-D's power analysis and pre-registration draft 1: R = 32
+
+On the CPU, from the pilot's records (`scripts/e4d_evo_power.py` → `experiments/E4-two-minds/E4-D-evo/power.json`;
+the registered rule `wormwars/e4/evo_stats.py`, test-first, `tests/test_e4d_evo_stats.py`).
+- **The simulation** follows the whole rule (Astra): final populations of 32 calibrated on the pilot's (L at 0.25 and
+  F), the champion chosen on a 64-maze validation block, a fresh 64-maze test block per run, the one-sided t bounds
+  against δ = 0.15. The pilot's champions show no maze overdispersion (0.99 of two independent trials); σ = 1 is a
+  sensitivity case. Scenarios: homogeneous, success-or-failure mixture, uniform spread.
+- **R = 32** is the smallest tested R with at least 0.80 probability of "practically relevant transfer found" at a mean
+  gain of 0.25 (Astra's 0.10 spacing above the owner's δ) in every scenario; 24 misses by the mixture (0.78). At the
+  pilot's own level (0.38) every R from 4 gives 1.00. At a mean gain of 0.20 the mixed scenarios reach only 0.43-0.71.
+  The rule's false "practically relevant" rate at μ = δ is 0.025-0.059.
+- **W = 8 and G = 100 stay the pilot's** (the calibration's conditions; every pilot run cleared 0.65 by generation 6).
+- **The draft** (`experiments/E4-two-minds/E4-D-evo/PREREGISTRATION.md`): L (32 runs, primary), F (4, secondary), S
+  (32, only if L reads "transfer not detected" or "inconclusive"); independent validation and test blocks per run under
+  maze seed 1 420 000; a `check` stage (the control, and a bitwise replay of the pilot's first 10 generations); caps 8
+  GPU-hours for L and F, 7 for S (conservative projections 5.7 and 5.1; E4 has 23.95 left). Next: review by both,
+  then binding and push; the formal code after binding; the owner's word before any GPU stage.

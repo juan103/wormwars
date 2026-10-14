@@ -1,0 +1,4770 @@
+{
+ "what": "the evolutionary E4-D's power analysis (design v2.1 \u00a74); exploratory input to the pre-registration",
+ "script": "scripts/e4d_evo_power.py",
+ "seed": 1430000,
+ "rule": "wormwars.e4.evo_stats (delta 0.15, one-sided 0.05 t bounds)",
+ "population": 32,
+ "mazes_per_block": 64,
+ "pool": 40000,
+ "arms": 20000,
+ "h_sd": 0.03,
+ "G": 100,
+ "success_top_gain": 0.39890177571214736,
+ "calibration": {
+  "source": "the pilot (D270): L at factor 0.25 and F; validation and assessment per maze",
+  "runs": [
+   {
+    "arm": "L",
+    "run": 0,
+    "champion_validation": 0.90625,
+    "population_validation_mean": 0.830322265625,
+    "champion_assessment": 0.890625
+   },
+   {
+    "arm": "L",
+    "run": 1,
+    "champion_validation": 0.9453125,
+    "population_validation_mean": 0.859619140625,
+    "champion_assessment": 0.890625
+   },
+   {
+    "arm": "L",
+    "run": 2,
+    "champion_validation": 0.921875,
+    "population_validation_mean": 0.858642578125,
+    "champion_assessment": 0.875
+   },
+   {
+    "arm": "L",
+    "run": 3,
+    "champion_validation": 0.953125,
+    "population_validation_mean": 0.880859375,
+    "champion_assessment": 0.9140625
+   },
+   {
+    "arm": "F",
+    "run": 900,
+    "champion_validation": 0.921875,
+    "population_validation_mean": 0.8779296875,
+    "champion_assessment": 0.8828125
+   },
+   {
+    "arm": "F",
+    "run": 901,
+    "champion_validation": 0.890625,
+    "population_validation_mean": 0.842041015625,
+    "champion_assessment": 0.828125
+   },
+   {
+    "arm": "F",
+    "run": 902,
+    "champion_validation": 0.9296875,
+    "population_validation_mean": 0.82373046875,
+    "champion_assessment": 0.8828125
+   },
+   {
+    "arm": "F",
+    "run": 903,
+    "champion_validation": 0.8984375,
+    "population_validation_mean": 0.83447265625,
+    "champion_assessment": 0.8984375
+   }
+  ],
+  "profile": [
+   0.980769,
+   0.923077,
+   0.923077,
+   0.903846,
+   0.903846,
+   0.846154,
+   1.0,
+   0.980769,
+   0.807692,
+   0.961538,
+   0.942308,
+   -0.019231,
+   0.807692,
+   0.730769,
+   0.807692,
+   0.846154,
+   0.596154,
+   0.846154,
+   0.942308,
+   0.576923,
+   0.980769,
+   0.846154,
+   0.884615,
+   -0.288462,
+   0.865385,
+   0.980769,
+   0.884615,
+   0.923077,
+   0.923077,
+   0.846154,
+   0.942308,
+   0.923077,
+   0.807018,
+   0.719298,
+   0.982456,
+   0.929825,
+   1.0,
+   0.982456,
+   0.894737,
+   0.964912,
+   0.824561,
+   0.526316,
+   0.736842,
+   0.45614,
+   0.859649,
+   0.894737,
+   0.929825,
+   0.982456,
+   0.877193,
+   0.842105,
+   0.736842,
+   0.736842,
+   0.894737,
+   0.929825,
+   -0.070175,
+   0.859649,
+   0.385965,
+   0.964912,
+   0.929825,
+   0.894737,
+   0.631579,
+   1.0,
+   1.0,
+   0.736842,
+   0.796296,
+   0.925926,
+   0.944444,
+   0.740741,
+   0.925926,
+   1.0,
+   0.851852,
+   0.814815,
+   0.944444,
+   0.574074,
+   0.87037,
+   0.962963,
+   0.962963,
+   0.722222,
+   0.888889,
+   0.777778,
+   0.888889,
+   0.925926,
+   0.944444,
+   0.981481,
+   0.944444,
+   0.722222,
+   0.777778,
+   0.907407,
+   0.925926,
+   0.444444,
+   0.944444,
+   0.907407,
+   0.851852,
+   0.925926,
+   0.851852,
+   0.555556,
+   1.0,
+   0.758621,
+   0.87931,
+   0.775862,
+   0.706897,
+   0.793103,
+   0.896552,
+   0.948276,
+   0.586207,
+   0.844828,
+   0.827586,
+   0.844828,
+   0.844828,
+   0.896552,
+   0.896552,
+   0.931034,
+   0.896552,
+   0.827586,
+   0.862069,
+   0.844828,
+   0.931034,
+   0.827586,
+   0.827586,
+   0.655172,
+   0.896552,
+   0.827586,
+   0.844828,
+   0.827586,
+   0.793103,
+   0.827586,
+   0.87931,
+   0.896552,
+   0.814815,
+   0.962963,
+   0.814815,
+   0.981481,
+   0.87037,
+   0.851852,
+   0.851852,
+   1.0,
+   0.944444,
+   0.851852,
+   0.851852,
+   0.907407,
+   0.814815,
+   0.925926,
+   0.981481,
+   0.777778,
+   0.981481,
+   0.907407,
+   0.907407,
+   0.87037,
+   0.944444,
+   0.907407,
+   0.944444,
+   0.907407,
+   0.944444,
+   0.888889,
+   0.833333,
+   0.888889,
+   0.833333,
+   0.833333,
+   0.925926,
+   0.944444,
+   0.9,
+   0.82,
+   0.9,
+   0.98,
+   0.96,
+   0.84,
+   0.98,
+   0.84,
+   0.92,
+   1.0,
+   0.88,
+   0.94,
+   0.92,
+   0.94,
+   0.88,
+   0.84,
+   0.72,
+   0.96,
+   0.9,
+   0.86,
+   0.9,
+   0.82,
+   0.82,
+   0.98,
+   0.84,
+   0.9,
+   0.8,
+   0.98,
+   0.9,
+   0.54,
+   0.78,
+   0.78,
+   0.909091,
+   0.872727,
+   0.8,
+   0.818182,
+   -0.181818,
+   0.672727,
+   0.654545,
+   0.909091,
+   0.909091,
+   0.8,
+   0.927273,
+   0.909091,
+   0.527273,
+   0.909091,
+   0.818182,
+   0.927273,
+   0.509091,
+   0.872727,
+   0.563636,
+   0.909091,
+   0.981818,
+   0.381818,
+   0.854545,
+   0.545455,
+   0.763636,
+   0.8,
+   0.818182,
+   0.618182,
+   0.745455,
+   1.0,
+   0.763636,
+   0.8,
+   0.843137,
+   0.843137,
+   0.901961,
+   0.882353,
+   0.862745,
+   0.803922,
+   0.901961,
+   0.705882,
+   0.980392,
+   0.921569,
+   0.921569,
+   -0.039216,
+   0.843137,
+   1.0,
+   0.862745,
+   0.862745,
+   0.960784,
+   0.843137,
+   0.882353,
+   0.862745,
+   0.882353,
+   0.862745,
+   0.843137,
+   0.705882,
+   0.843137,
+   0.72549,
+   0.882353,
+   0.941176,
+   0.823529,
+   0.882353,
+   0.823529,
+   1.0
+  ],
+  "champion_pair_shares": [
+   [
+    0.5,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    0.5,
+    0.5,
+    1.0,
+    1.0,
+    0.5,
+    0.5,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    0.5,
+    1.0,
+    0.5,
+    0.5,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    0.5,
+    0.5,
+    0.5,
+    0.5,
+    0.5,
+    0.5,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0
+   ],
+   [
+    0.5,
+    0.5,
+    0.5,
+    1.0,
+    0.5,
+    1.0,
+    0.5,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    0.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    0.5,
+    1.0,
+    0.5,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    0.5,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    0.5,
+    1.0,
+    0.5,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    0.5,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    0.5,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0
+   ],
+   [
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    0.5,
+    1.0,
+    1.0,
+    0.5,
+    0.5,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    0.5,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    0.5,
+    0.5,
+    0.5,
+    0.5,
+    1.0,
+    0.5,
+    0.5,
+    1.0,
+    0.5,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    0.5,
+    1.0,
+    0.5,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    0.5,
+    1.0,
+    0.5,
+    1.0,
+    1.0,
+    1.0,
+    0.5,
+    1.0,
+    1.0
+   ],
+   [
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    0.5,
+    0.5,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    0.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    0.5,
+    0.5,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    0.5,
+    1.0,
+    0.5,
+    1.0,
+    0.5,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    0.5,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    0.5,
+    1.0,
+    1.0
+   ],
+   [
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    0.5,
+    1.0,
+    0.5,
+    0.5,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    0.5,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    0.5,
+    1.0,
+    1.0,
+    1.0,
+    0.5,
+    0.5,
+    0.5,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    0.5,
+    1.0,
+    1.0,
+    0.5,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    0.5,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    0.0,
+    1.0,
+    1.0,
+    0.5,
+    1.0,
+    1.0,
+    1.0,
+    0.5,
+    1.0,
+    1.0
+   ],
+   [
+    0.0,
+    1.0,
+    1.0,
+    1.0,
+    0.5,
+    0.5,
+    0.5,
+    0.5,
+    1.0,
+    1.0,
+    0.5,
+    0.5,
+    0.5,
+    1.0,
+    1.0,
+    0.5,
+    1.0,
+    1.0,
+    0.5,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    0.5,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    0.5,
+    1.0,
+    0.5,
+    0.5,
+    0.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    0.5,
+    1.0,
+    1.0,
+    1.0,
+    0.5,
+    1.0,
+    1.0,
+    0.5,
+    0.5,
+    1.0,
+    1.0,
+    1.0,
+    0.5,
+    1.0,
+    1.0
+   ],
+   [
+    0.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    0.5,
+    1.0,
+    0.5,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    0.5,
+    1.0,
+    0.5,
+    1.0,
+    0.5,
+    1.0,
+    1.0,
+    0.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    0.5,
+    1.0,
+    0.5,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    0.5,
+    1.0,
+    0.5,
+    1.0,
+    1.0,
+    0.5,
+    0.5,
+    1.0,
+    1.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.5,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    0.5,
+    1.0,
+    0.5,
+    0.5,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    0.5,
+    1.0,
+    1.0,
+    1.0,
+    0.5,
+    0.5,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    0.5,
+    0.5,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    0.5,
+    1.0,
+    1.0,
+    1.0,
+    0.5,
+    1.0,
+    1.0,
+    1.0,
+    0.5,
+    1.0,
+    1.0,
+    1.0,
+    0.5,
+    1.0,
+    1.0
+   ]
+  ],
+  "overdispersion": {
+   "observed_variance": 0.0511474609375,
+   "two_independent_trials": 0.05145263671875,
+   "ratio": 0.9940688018979834
+  },
+  "pilot_mean_gain": 0.3828125,
+  "timing": {
+   "screen_runs": 16,
+   "screen_training_seconds": 3812.9123435,
+   "screen_seconds": 4127.8293953,
+   "f_runs": 4,
+   "f_training_seconds": 1392.7357579,
+   "f_seconds": 1468.7545927,
+   "generations": 100
+  }
+ },
+ "results": [
+  {
+   "scenario": "H",
+   "sigma": 0.0,
+   "mu_target": 0.0,
+   "feasible": true,
+   "theta": 0.0,
+   "mu_realised": -0.000175390625,
+   "run_sd": 0.044154482059924845,
+   "rates": {
+    "4": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.05115,
+     "transfer detected; its practical size unresolved": 5e-05,
+     "practical gain excluded; transfer not detected": 0.9485,
+     "inconclusive": 0.0003,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "6": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.0492,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.9508,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "8": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.05125,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.94875,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "12": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.04895,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.95105,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "16": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.0485,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.9515,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "20": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.04845,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.95155,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "24": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.0488,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.9512,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "32": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.04935,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.95065,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    }
+   }
+  },
+  {
+   "scenario": "H",
+   "sigma": 0.0,
+   "mu_target": 0.05,
+   "feasible": true,
+   "theta": 0.0556635104585439,
+   "mu_realised": 0.04967265625,
+   "run_sd": 0.05168960091875008,
+   "rates": {
+    "4": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.3934,
+     "transfer detected; its practical size unresolved": 0.04755,
+     "practical gain excluded; transfer not detected": 0.50065,
+     "inconclusive": 0.0584,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "6": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.64245,
+     "transfer detected; its practical size unresolved": 0.00755,
+     "practical gain excluded; transfer not detected": 0.34915,
+     "inconclusive": 0.00085,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "8": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.7867,
+     "transfer detected; its practical size unresolved": 0.00075,
+     "practical gain excluded; transfer not detected": 0.21255,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "12": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.9293,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.0707,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "16": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.97755,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.02245,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "20": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.9934,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.0066,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "24": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.9983,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.0017,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "32": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.9999,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.0001,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    }
+   }
+  },
+  {
+   "scenario": "H",
+   "sigma": 0.0,
+   "mu_target": 0.1,
+   "feasible": true,
+   "theta": 0.11087136785499752,
+   "mu_realised": 0.0995001953125,
+   "run_sd": 0.05227248074861377,
+   "rates": {
+    "4": {
+     "practically relevant transfer found": 0.00065,
+     "weak transfer found": 0.384,
+     "transfer detected; its practical size unresolved": 0.497,
+     "practical gain excluded; transfer not detected": 0.05205,
+     "inconclusive": 0.0663,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "6": {
+     "practically relevant transfer found": 0.0002,
+     "weak transfer found": 0.6438,
+     "transfer detected; its practical size unresolved": 0.34425,
+     "practical gain excluded; transfer not detected": 0.01055,
+     "inconclusive": 0.0012,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "8": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.79425,
+     "transfer detected; its practical size unresolved": 0.2047,
+     "practical gain excluded; transfer not detected": 0.00105,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "12": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.9317,
+     "transfer detected; its practical size unresolved": 0.0683,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "16": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.9787,
+     "transfer detected; its practical size unresolved": 0.0213,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "20": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.9943,
+     "transfer detected; its practical size unresolved": 0.0057,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "24": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.99825,
+     "transfer detected; its practical size unresolved": 0.00175,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "32": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.9998,
+     "transfer detected; its practical size unresolved": 0.0002,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    }
+   }
+  },
+  {
+   "scenario": "H",
+   "sigma": 0.0,
+   "mu_target": 0.15,
+   "feasible": true,
+   "theta": 0.16433719429187477,
+   "mu_realised": 0.150246875,
+   "run_sd": 0.05206754988451601,
+   "rates": {
+    "4": {
+     "practically relevant transfer found": 0.0548,
+     "weak transfer found": 0.04865,
+     "transfer detected; its practical size unresolved": 0.88955,
+     "practical gain excluded; transfer not detected": 0.0004,
+     "inconclusive": 0.0066,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "6": {
+     "practically relevant transfer found": 0.05175,
+     "weak transfer found": 0.0481,
+     "transfer detected; its practical size unresolved": 0.90015,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "8": {
+     "practically relevant transfer found": 0.0547,
+     "weak transfer found": 0.0489,
+     "transfer detected; its practical size unresolved": 0.8964,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "12": {
+     "practically relevant transfer found": 0.05375,
+     "weak transfer found": 0.0492,
+     "transfer detected; its practical size unresolved": 0.89705,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "16": {
+     "practically relevant transfer found": 0.05435,
+     "weak transfer found": 0.0458,
+     "transfer detected; its practical size unresolved": 0.89985,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "20": {
+     "practically relevant transfer found": 0.0558,
+     "weak transfer found": 0.0476,
+     "transfer detected; its practical size unresolved": 0.8966,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "24": {
+     "practically relevant transfer found": 0.05115,
+     "weak transfer found": 0.04595,
+     "transfer detected; its practical size unresolved": 0.9029,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "32": {
+     "practically relevant transfer found": 0.05445,
+     "weak transfer found": 0.04365,
+     "transfer detected; its practical size unresolved": 0.9019,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    }
+   }
+  },
+  {
+   "scenario": "H",
+   "sigma": 0.0,
+   "mu_target": 0.2,
+   "feasible": true,
+   "theta": 0.21581949316896498,
+   "mu_realised": 0.1996939453125,
+   "run_sd": 0.05122227379734002,
+   "rates": {
+    "4": {
+     "practically relevant transfer found": 0.44885,
+     "weak transfer found": 0.0003,
+     "transfer detected; its practical size unresolved": 0.5508,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 5e-05,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "6": {
+     "practically relevant transfer found": 0.6636,
+     "weak transfer found": 5e-05,
+     "transfer detected; its practical size unresolved": 0.33635,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "8": {
+     "practically relevant transfer found": 0.7955,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.2045,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "12": {
+     "practically relevant transfer found": 0.92985,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.07015,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "16": {
+     "practically relevant transfer found": 0.9784,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.0216,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "20": {
+     "practically relevant transfer found": 0.99435,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.00565,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "24": {
+     "practically relevant transfer found": 0.99825,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.00175,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "32": {
+     "practically relevant transfer found": 0.99995,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 5e-05,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    }
+   }
+  },
+  {
+   "scenario": "H",
+   "sigma": 0.0,
+   "mu_target": 0.25,
+   "feasible": true,
+   "theta": 0.2675465859938413,
+   "mu_realised": 0.2499091796875,
+   "run_sd": 0.05033220320921283,
+   "rates": {
+    "4": {
+     "practically relevant transfer found": 0.8989,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.1011,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "6": {
+     "practically relevant transfer found": 0.9895,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.0105,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "8": {
+     "practically relevant transfer found": 0.99925,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.00075,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "12": {
+     "practically relevant transfer found": 1.0,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "16": {
+     "practically relevant transfer found": 1.0,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "20": {
+     "practically relevant transfer found": 1.0,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "24": {
+     "practically relevant transfer found": 1.0,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "32": {
+     "practically relevant transfer found": 1.0,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    }
+   }
+  },
+  {
+   "scenario": "H",
+   "sigma": 0.0,
+   "mu_target": 0.3,
+   "feasible": true,
+   "theta": 0.3178557886276394,
+   "mu_realised": 0.3000052734375,
+   "run_sd": 0.04886291544599302,
+   "rates": {
+    "4": {
+     "practically relevant transfer found": 0.99475,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.00525,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "6": {
+     "practically relevant transfer found": 1.0,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "8": {
+     "practically relevant transfer found": 1.0,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "12": {
+     "practically relevant transfer found": 1.0,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "16": {
+     "practically relevant transfer found": 1.0,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "20": {
+     "practically relevant transfer found": 1.0,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "24": {
+     "practically relevant transfer found": 1.0,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "32": {
+     "practically relevant transfer found": 1.0,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    }
+   }
+  },
+  {
+   "scenario": "H",
+   "sigma": 0.0,
+   "mu_target": 0.35,
+   "feasible": true,
+   "theta": 0.36677874787710607,
+   "mu_realised": 0.34943359375,
+   "run_sd": 0.04699193990868898,
+   "rates": {
+    "4": {
+     "practically relevant transfer found": 0.9999,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.0001,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "6": {
+     "practically relevant transfer found": 1.0,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "8": {
+     "practically relevant transfer found": 1.0,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "12": {
+     "practically relevant transfer found": 1.0,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "16": {
+     "practically relevant transfer found": 1.0,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "20": {
+     "practically relevant transfer found": 1.0,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "24": {
+     "practically relevant transfer found": 1.0,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "32": {
+     "practically relevant transfer found": 1.0,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    }
+   }
+  },
+  {
+   "scenario": "M",
+   "sigma": 0.0,
+   "mu_target": 0.0,
+   "feasible": true,
+   "theta": 0.0,
+   "mu_realised": 7.34375e-05,
+   "run_sd": 0.04418696519412039,
+   "rates": {
+    "4": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.04995,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.94935,
+     "inconclusive": 0.0007,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "6": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.05205,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.94795,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "8": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.0488,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.9512,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "12": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.04875,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.95125,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "16": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.05015,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.94985,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "20": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.0504,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.9496,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "24": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.0506,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.9494,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "32": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.05085,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.94915,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    }
+   }
+  },
+  {
+   "scenario": "M",
+   "sigma": 0.0,
+   "mu_target": 0.05,
+   "feasible": true,
+   "theta": 0.13019838789477944,
+   "mu_realised": 0.0490650390625,
+   "run_sd": 0.13507366129444615,
+   "rates": {
+    "4": {
+     "practically relevant transfer found": 0.00025,
+     "weak transfer found": 0.02825,
+     "transfer detected; its practical size unresolved": 0.0094,
+     "practical gain excluded; transfer not detected": 0.55175,
+     "inconclusive": 0.41035,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "6": {
+     "practically relevant transfer found": 0.0003,
+     "weak transfer found": 0.0203,
+     "transfer detected; its practical size unresolved": 0.03435,
+     "practical gain excluded; transfer not detected": 0.4219,
+     "inconclusive": 0.52315,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "8": {
+     "practically relevant transfer found": 0.0001,
+     "weak transfer found": 0.0177,
+     "transfer detected; its practical size unresolved": 0.07205,
+     "practical gain excluded; transfer not detected": 0.5827,
+     "inconclusive": 0.32745,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "12": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.02305,
+     "transfer detected; its practical size unresolved": 0.1638,
+     "practical gain excluded; transfer not detected": 0.70125,
+     "inconclusive": 0.1119,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "16": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.1283,
+     "transfer detected; its practical size unresolved": 0.1745,
+     "practical gain excluded; transfer not detected": 0.691,
+     "inconclusive": 0.0062,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "20": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.29875,
+     "transfer detected; its practical size unresolved": 0.1173,
+     "practical gain excluded; transfer not detected": 0.5839,
+     "inconclusive": 5e-05,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "24": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.44225,
+     "transfer detected; its practical size unresolved": 0.0718,
+     "practical gain excluded; transfer not detected": 0.48595,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "32": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.6517,
+     "transfer detected; its practical size unresolved": 0.02735,
+     "practical gain excluded; transfer not detected": 0.32095,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    }
+   }
+  },
+  {
+   "scenario": "M",
+   "sigma": 0.0,
+   "mu_target": 0.1,
+   "feasible": true,
+   "theta": 0.26135425409302115,
+   "mu_realised": 0.0995341796875,
+   "run_sd": 0.1728351589779028,
+   "rates": {
+    "4": {
+     "practically relevant transfer found": 0.00445,
+     "weak transfer found": 0.01535,
+     "transfer detected; its practical size unresolved": 0.05595,
+     "practical gain excluded; transfer not detected": 0.2878,
+     "inconclusive": 0.63645,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "6": {
+     "practically relevant transfer found": 0.00605,
+     "weak transfer found": 0.0082,
+     "transfer detected; its practical size unresolved": 0.1687,
+     "practical gain excluded; transfer not detected": 0.16105,
+     "inconclusive": 0.656,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "8": {
+     "practically relevant transfer found": 0.00415,
+     "weak transfer found": 0.00445,
+     "transfer detected; its practical size unresolved": 0.29215,
+     "practical gain excluded; transfer not detected": 0.25715,
+     "inconclusive": 0.4421,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "12": {
+     "practically relevant transfer found": 0.00285,
+     "weak transfer found": 0.01025,
+     "transfer detected; its practical size unresolved": 0.551,
+     "practical gain excluded; transfer not detected": 0.2779,
+     "inconclusive": 0.158,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "16": {
+     "practically relevant transfer found": 0.00215,
+     "weak transfer found": 0.09345,
+     "transfer detected; its practical size unresolved": 0.6493,
+     "practical gain excluded; transfer not detected": 0.24145,
+     "inconclusive": 0.01365,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "20": {
+     "practically relevant transfer found": 0.00145,
+     "weak transfer found": 0.2303,
+     "transfer detected; its practical size unresolved": 0.62835,
+     "practical gain excluded; transfer not detected": 0.13985,
+     "inconclusive": 5e-05,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "24": {
+     "practically relevant transfer found": 0.00075,
+     "weak transfer found": 0.33205,
+     "transfer detected; its practical size unresolved": 0.5923,
+     "practical gain excluded; transfer not detected": 0.0749,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "32": {
+     "practically relevant transfer found": 0.00055,
+     "weak transfer found": 0.46595,
+     "transfer detected; its practical size unresolved": 0.5143,
+     "practical gain excluded; transfer not detected": 0.0192,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    }
+   }
+  },
+  {
+   "scenario": "M",
+   "sigma": 0.0,
+   "mu_target": 0.15,
+   "feasible": true,
+   "theta": 0.39791045105084777,
+   "mu_realised": 0.1515009765625,
+   "run_sd": 0.1912170562070642,
+   "rates": {
+    "4": {
+     "practically relevant transfer found": 0.0253,
+     "weak transfer found": 0.00595,
+     "transfer detected; its practical size unresolved": 0.14885,
+     "practical gain excluded; transfer not detected": 0.123,
+     "inconclusive": 0.6969,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "6": {
+     "practically relevant transfer found": 0.0393,
+     "weak transfer found": 0.0024,
+     "transfer detected; its practical size unresolved": 0.36195,
+     "practical gain excluded; transfer not detected": 0.0488,
+     "inconclusive": 0.54755,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "8": {
+     "practically relevant transfer found": 0.03945,
+     "weak transfer found": 0.0011,
+     "transfer detected; its practical size unresolved": 0.5616,
+     "practical gain excluded; transfer not detected": 0.08045,
+     "inconclusive": 0.3174,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "12": {
+     "practically relevant transfer found": 0.0434,
+     "weak transfer found": 0.0025,
+     "transfer detected; its practical size unresolved": 0.8104,
+     "practical gain excluded; transfer not detected": 0.0668,
+     "inconclusive": 0.0769,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "16": {
+     "practically relevant transfer found": 0.04245,
+     "weak transfer found": 0.02175,
+     "transfer detected; its practical size unresolved": 0.8889,
+     "practical gain excluded; transfer not detected": 0.0397,
+     "inconclusive": 0.0072,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "20": {
+     "practically relevant transfer found": 0.0444,
+     "weak transfer found": 0.042,
+     "transfer detected; its practical size unresolved": 0.9015,
+     "practical gain excluded; transfer not detected": 0.0121,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "24": {
+     "practically relevant transfer found": 0.04195,
+     "weak transfer found": 0.04995,
+     "transfer detected; its practical size unresolved": 0.9052,
+     "practical gain excluded; transfer not detected": 0.0029,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "32": {
+     "practically relevant transfer found": 0.04685,
+     "weak transfer found": 0.05,
+     "transfer detected; its practical size unresolved": 0.9027,
+     "practical gain excluded; transfer not detected": 0.00045,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    }
+   }
+  },
+  {
+   "scenario": "M",
+   "sigma": 0.0,
+   "mu_target": 0.2,
+   "feasible": true,
+   "theta": 0.5294749666936696,
+   "mu_realised": 0.202330078125,
+   "run_sd": 0.1947316984555733,
+   "rates": {
+    "4": {
+     "practically relevant transfer found": 0.0795,
+     "weak transfer found": 0.00205,
+     "transfer detected; its practical size unresolved": 0.26995,
+     "practical gain excluded; transfer not detected": 0.0474,
+     "inconclusive": 0.6011,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "6": {
+     "practically relevant transfer found": 0.13285,
+     "weak transfer found": 0.00065,
+     "transfer detected; its practical size unresolved": 0.5055,
+     "practical gain excluded; transfer not detected": 0.0114,
+     "inconclusive": 0.3496,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "8": {
+     "practically relevant transfer found": 0.1641,
+     "weak transfer found": 0.00015,
+     "transfer detected; its practical size unresolved": 0.6688,
+     "practical gain excluded; transfer not detected": 0.01635,
+     "inconclusive": 0.1506,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "12": {
+     "practically relevant transfer found": 0.211,
+     "weak transfer found": 0.00025,
+     "transfer detected; its practical size unresolved": 0.76175,
+     "practical gain excluded; transfer not detected": 0.0086,
+     "inconclusive": 0.0184,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "16": {
+     "practically relevant transfer found": 0.2529,
+     "weak transfer found": 0.0017,
+     "transfer detected; its practical size unresolved": 0.74085,
+     "practical gain excluded; transfer not detected": 0.00305,
+     "inconclusive": 0.0015,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "20": {
+     "practically relevant transfer found": 0.3023,
+     "weak transfer found": 0.003,
+     "transfer detected; its practical size unresolved": 0.69395,
+     "practical gain excluded; transfer not detected": 0.00075,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "24": {
+     "practically relevant transfer found": 0.3397,
+     "weak transfer found": 0.00175,
+     "transfer detected; its practical size unresolved": 0.6585,
+     "practical gain excluded; transfer not detected": 5e-05,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "32": {
+     "practically relevant transfer found": 0.43255,
+     "weak transfer found": 0.00125,
+     "transfer detected; its practical size unresolved": 0.5662,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    }
+   }
+  },
+  {
+   "scenario": "M",
+   "sigma": 0.0,
+   "mu_target": 0.25,
+   "feasible": true,
+   "theta": 0.6505167125724256,
+   "mu_realised": 0.2490310546875,
+   "run_sd": 0.1859977240965665,
+   "rates": {
+    "4": {
+     "practically relevant transfer found": 0.188,
+     "weak transfer found": 0.0005,
+     "transfer detected; its practical size unresolved": 0.3654,
+     "practical gain excluded; transfer not detected": 0.014,
+     "inconclusive": 0.4321,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "6": {
+     "practically relevant transfer found": 0.30815,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.52195,
+     "practical gain excluded; transfer not detected": 0.0015,
+     "inconclusive": 0.1684,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "8": {
+     "practically relevant transfer found": 0.38285,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.5646,
+     "practical gain excluded; transfer not detected": 0.003,
+     "inconclusive": 0.04955,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "12": {
+     "practically relevant transfer found": 0.5081,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.4887,
+     "practical gain excluded; transfer not detected": 0.0004,
+     "inconclusive": 0.0028,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "16": {
+     "practically relevant transfer found": 0.61415,
+     "weak transfer found": 0.0002,
+     "transfer detected; its practical size unresolved": 0.3856,
+     "practical gain excluded; transfer not detected": 5e-05,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "20": {
+     "practically relevant transfer found": 0.7164,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.2836,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "24": {
+     "practically relevant transfer found": 0.7828,
+     "weak transfer found": 5e-05,
+     "transfer detected; its practical size unresolved": 0.21715,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "32": {
+     "practically relevant transfer found": 0.8857,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.1143,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    }
+   }
+  },
+  {
+   "scenario": "M",
+   "sigma": 0.0,
+   "mu_target": 0.3,
+   "feasible": true,
+   "theta": 0.7801196691580117,
+   "mu_realised": 0.29706171875,
+   "run_sd": 0.16346796643132971,
+   "rates": {
+    "4": {
+     "practically relevant transfer found": 0.3696,
+     "weak transfer found": 5e-05,
+     "transfer detected; its practical size unresolved": 0.39895,
+     "practical gain excluded; transfer not detected": 0.0021,
+     "inconclusive": 0.2293,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "6": {
+     "practically relevant transfer found": 0.58405,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.36435,
+     "practical gain excluded; transfer not detected": 0.00015,
+     "inconclusive": 0.05145,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "8": {
+     "practically relevant transfer found": 0.68895,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.30305,
+     "practical gain excluded; transfer not detected": 0.0003,
+     "inconclusive": 0.0077,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "12": {
+     "practically relevant transfer found": 0.83635,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.1635,
+     "practical gain excluded; transfer not detected": 5e-05,
+     "inconclusive": 0.0001,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "16": {
+     "practically relevant transfer found": 0.9268,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.0732,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "20": {
+     "practically relevant transfer found": 0.9661,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.0339,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "24": {
+     "practically relevant transfer found": 0.9846,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.0154,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "32": {
+     "practically relevant transfer found": 0.99725,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.00275,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    }
+   }
+  },
+  {
+   "scenario": "M",
+   "sigma": 0.0,
+   "mu_target": 0.35,
+   "feasible": true,
+   "theta": 0.9140966408886015,
+   "mu_realised": 0.35006953125,
+   "run_sd": 0.11236028672352512,
+   "rates": {
+    "4": {
+     "practically relevant transfer found": 0.6992,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.24975,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.05105,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "6": {
+     "practically relevant transfer found": 0.8988,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.09785,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.00335,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "8": {
+     "practically relevant transfer found": 0.94965,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.05035,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "12": {
+     "practically relevant transfer found": 0.9926,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.0074,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "16": {
+     "practically relevant transfer found": 0.9993,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.0007,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "20": {
+     "practically relevant transfer found": 0.9998,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.0002,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "24": {
+     "practically relevant transfer found": 0.99995,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 5e-05,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "32": {
+     "practically relevant transfer found": 1.0,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    }
+   }
+  },
+  {
+   "scenario": "U",
+   "sigma": 0.0,
+   "mu_target": 0.0,
+   "feasible": true,
+   "theta": 0.0,
+   "mu_realised": 0.0002326171875,
+   "run_sd": 0.04427495354941294,
+   "rates": {
+    "4": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.04805,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.951,
+     "inconclusive": 0.00095,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "6": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.0522,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.9478,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "8": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.0539,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.9461,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "12": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.0503,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.9497,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "16": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.05415,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.94585,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "20": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.05295,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.94705,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "24": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.0539,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.9461,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "32": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.05375,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.94625,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    }
+   }
+  },
+  {
+   "scenario": "U",
+   "sigma": 0.0,
+   "mu_target": 0.05,
+   "feasible": true,
+   "theta": 0.05645711603574455,
+   "mu_realised": 0.0501490234375,
+   "run_sd": 0.05319429140618833,
+   "rates": {
+    "4": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.3686,
+     "transfer detected; its practical size unresolved": 0.0535,
+     "practical gain excluded; transfer not detected": 0.5083,
+     "inconclusive": 0.0696,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "6": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.6133,
+     "transfer detected; its practical size unresolved": 0.0094,
+     "practical gain excluded; transfer not detected": 0.3762,
+     "inconclusive": 0.0011,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "8": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.7715,
+     "transfer detected; its practical size unresolved": 0.0007,
+     "practical gain excluded; transfer not detected": 0.2278,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "12": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.9244,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.0756,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "16": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.97505,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.02495,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "20": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.99295,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.00705,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "24": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.9983,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.0017,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "32": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.99975,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.00025,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    }
+   }
+  },
+  {
+   "scenario": "U",
+   "sigma": 0.0,
+   "mu_target": 0.1,
+   "feasible": true,
+   "theta": 0.11035954183898866,
+   "mu_realised": 0.1006962890625,
+   "run_sd": 0.07381366910985669,
+   "rates": {
+    "4": {
+     "practically relevant transfer found": 0.00435,
+     "weak transfer found": 0.1446,
+     "transfer detected; its practical size unresolved": 0.5018,
+     "practical gain excluded; transfer not detected": 0.1064,
+     "inconclusive": 0.24285,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "6": {
+     "practically relevant transfer found": 0.00125,
+     "weak transfer found": 0.31335,
+     "transfer detected; its practical size unresolved": 0.57895,
+     "practical gain excluded; transfer not detected": 0.0765,
+     "inconclusive": 0.02995,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "8": {
+     "practically relevant transfer found": 0.00045,
+     "weak transfer found": 0.47925,
+     "transfer detected; its practical size unresolved": 0.4909,
+     "practical gain excluded; transfer not detected": 0.0282,
+     "inconclusive": 0.0012,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "12": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.6905,
+     "transfer detected; its practical size unresolved": 0.3083,
+     "practical gain excluded; transfer not detected": 0.0012,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "16": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.81665,
+     "transfer detected; its practical size unresolved": 0.1832,
+     "practical gain excluded; transfer not detected": 0.00015,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "20": {
+     "practically relevant transfer found": 5e-05,
+     "weak transfer found": 0.89635,
+     "transfer detected; its practical size unresolved": 0.1036,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "24": {
+     "practically relevant transfer found": 5e-05,
+     "weak transfer found": 0.9402,
+     "transfer detected; its practical size unresolved": 0.05975,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "32": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.98185,
+     "transfer detected; its practical size unresolved": 0.01815,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    }
+   }
+  },
+  {
+   "scenario": "U",
+   "sigma": 0.0,
+   "mu_target": 0.15,
+   "feasible": true,
+   "theta": 0.1621087130624801,
+   "mu_realised": 0.149769921875,
+   "run_sd": 0.09824754200663474,
+   "rates": {
+    "4": {
+     "practically relevant transfer found": 0.0579,
+     "weak transfer found": 0.0321,
+     "transfer detected; its practical size unresolved": 0.64035,
+     "practical gain excluded; transfer not detected": 0.0261,
+     "inconclusive": 0.24355,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "6": {
+     "practically relevant transfer found": 0.0508,
+     "weak transfer found": 0.0426,
+     "transfer detected; its practical size unresolved": 0.86015,
+     "practical gain excluded; transfer not detected": 0.0119,
+     "inconclusive": 0.03455,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "8": {
+     "practically relevant transfer found": 0.0526,
+     "weak transfer found": 0.04915,
+     "transfer detected; its practical size unresolved": 0.8918,
+     "practical gain excluded; transfer not detected": 0.00335,
+     "inconclusive": 0.0031,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "12": {
+     "practically relevant transfer found": 0.05095,
+     "weak transfer found": 0.0507,
+     "transfer detected; its practical size unresolved": 0.89825,
+     "practical gain excluded; transfer not detected": 0.0001,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "16": {
+     "practically relevant transfer found": 0.0456,
+     "weak transfer found": 0.05235,
+     "transfer detected; its practical size unresolved": 0.90205,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "20": {
+     "practically relevant transfer found": 0.0506,
+     "weak transfer found": 0.05075,
+     "transfer detected; its practical size unresolved": 0.89865,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "24": {
+     "practically relevant transfer found": 0.0493,
+     "weak transfer found": 0.0519,
+     "transfer detected; its practical size unresolved": 0.8988,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "32": {
+     "practically relevant transfer found": 0.0484,
+     "weak transfer found": 0.0514,
+     "transfer detected; its practical size unresolved": 0.9002,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    }
+   }
+  },
+  {
+   "scenario": "U",
+   "sigma": 0.0,
+   "mu_target": 0.2,
+   "feasible": true,
+   "theta": 0.21405026852153242,
+   "mu_realised": 0.2000806640625,
+   "run_sd": 0.12611838029909064,
+   "rates": {
+    "4": {
+     "practically relevant transfer found": 0.1362,
+     "weak transfer found": 0.0116,
+     "transfer detected; its practical size unresolved": 0.6184,
+     "practical gain excluded; transfer not detected": 0.0078,
+     "inconclusive": 0.226,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "6": {
+     "practically relevant transfer found": 0.1887,
+     "weak transfer found": 0.008,
+     "transfer detected; its practical size unresolved": 0.77705,
+     "practical gain excluded; transfer not detected": 0.00195,
+     "inconclusive": 0.0243,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "8": {
+     "practically relevant transfer found": 0.23865,
+     "weak transfer found": 0.0056,
+     "transfer detected; its practical size unresolved": 0.75305,
+     "practical gain excluded; transfer not detected": 0.0005,
+     "inconclusive": 0.0022,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "12": {
+     "practically relevant transfer found": 0.33325,
+     "weak transfer found": 0.0031,
+     "transfer detected; its practical size unresolved": 0.66365,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "16": {
+     "practically relevant transfer found": 0.43575,
+     "weak transfer found": 0.0007,
+     "transfer detected; its practical size unresolved": 0.56355,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "20": {
+     "practically relevant transfer found": 0.516,
+     "weak transfer found": 0.00065,
+     "transfer detected; its practical size unresolved": 0.48335,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "24": {
+     "practically relevant transfer found": 0.58335,
+     "weak transfer found": 0.00025,
+     "transfer detected; its practical size unresolved": 0.4164,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "32": {
+     "practically relevant transfer found": 0.7096,
+     "weak transfer found": 5e-05,
+     "transfer detected; its practical size unresolved": 0.29035,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    }
+   }
+  },
+  {
+   "scenario": "U",
+   "sigma": 0.0,
+   "mu_target": 0.25,
+   "feasible": true,
+   "theta": 0.2621413834858686,
+   "mu_realised": 0.2493833984375,
+   "run_sd": 0.15341326219992102,
+   "rates": {
+    "4": {
+     "practically relevant transfer found": 0.2182,
+     "weak transfer found": 0.00425,
+     "transfer detected; its practical size unresolved": 0.565,
+     "practical gain excluded; transfer not detected": 0.0035,
+     "inconclusive": 0.20905,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "6": {
+     "practically relevant transfer found": 0.34555,
+     "weak transfer found": 0.0022,
+     "transfer detected; its practical size unresolved": 0.63575,
+     "practical gain excluded; transfer not detected": 0.00085,
+     "inconclusive": 0.01565,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "8": {
+     "practically relevant transfer found": 0.4681,
+     "weak transfer found": 0.0011,
+     "transfer detected; its practical size unresolved": 0.5293,
+     "practical gain excluded; transfer not detected": 0.0001,
+     "inconclusive": 0.0014,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "12": {
+     "practically relevant transfer found": 0.66065,
+     "weak transfer found": 0.0001,
+     "transfer detected; its practical size unresolved": 0.33925,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "16": {
+     "practically relevant transfer found": 0.7907,
+     "weak transfer found": 0.00015,
+     "transfer detected; its practical size unresolved": 0.20915,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "20": {
+     "practically relevant transfer found": 0.8747,
+     "weak transfer found": 0.0001,
+     "transfer detected; its practical size unresolved": 0.1252,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "24": {
+     "practically relevant transfer found": 0.926,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.074,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "32": {
+     "practically relevant transfer found": 0.9766,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.0234,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    }
+   }
+  },
+  {
+   "scenario": "U",
+   "sigma": 0.0,
+   "mu_target": 0.3,
+   "feasible": true,
+   "theta": 0.33184647443704307,
+   "mu_realised": 0.3014037109375,
+   "run_sd": 0.16884691442585287,
+   "rates": {
+    "4": {
+     "practically relevant transfer found": 0.33235,
+     "weak transfer found": 0.0019,
+     "transfer detected; its practical size unresolved": 0.49935,
+     "practical gain excluded; transfer not detected": 0.0015,
+     "inconclusive": 0.1649,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "6": {
+     "practically relevant transfer found": 0.5415,
+     "weak transfer found": 0.0008,
+     "transfer detected; its practical size unresolved": 0.4484,
+     "practical gain excluded; transfer not detected": 0.0001,
+     "inconclusive": 0.0092,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "8": {
+     "practically relevant transfer found": 0.7028,
+     "weak transfer found": 0.00035,
+     "transfer detected; its practical size unresolved": 0.29665,
+     "practical gain excluded; transfer not detected": 5e-05,
+     "inconclusive": 0.00015,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "12": {
+     "practically relevant transfer found": 0.8821,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.1179,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "16": {
+     "practically relevant transfer found": 0.9601,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.0399,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "20": {
+     "practically relevant transfer found": 0.9847,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.0153,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "24": {
+     "practically relevant transfer found": 0.9952,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.0048,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "32": {
+     "practically relevant transfer found": 0.99935,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.00065,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    }
+   }
+  },
+  {
+   "scenario": "U",
+   "sigma": 0.0,
+   "mu_target": 0.35,
+   "feasible": true,
+   "theta": 0.44189249095506966,
+   "mu_realised": 0.3487578125,
+   "run_sd": 0.16837313585729158,
+   "rates": {
+    "4": {
+     "practically relevant transfer found": 0.48055,
+     "weak transfer found": 0.00095,
+     "transfer detected; its practical size unresolved": 0.4098,
+     "practical gain excluded; transfer not detected": 0.0006,
+     "inconclusive": 0.1081,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "6": {
+     "practically relevant transfer found": 0.73445,
+     "weak transfer found": 0.00015,
+     "transfer detected; its practical size unresolved": 0.2617,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0037,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "8": {
+     "practically relevant transfer found": 0.87295,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.1269,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.00015,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "12": {
+     "practically relevant transfer found": 0.97495,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.02505,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "16": {
+     "practically relevant transfer found": 0.99545,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.00455,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "20": {
+     "practically relevant transfer found": 0.9993,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.0007,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "24": {
+     "practically relevant transfer found": 0.9997,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.0003,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "32": {
+     "practically relevant transfer found": 1.0,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    }
+   }
+  },
+  {
+   "scenario": "P",
+   "sigma": null,
+   "mu_target": 0.3828125,
+   "feasible": true,
+   "mu_realised": 0.3828125,
+   "run_sd": 0.0234375,
+   "rates": {
+    "4": {
+     "practically relevant transfer found": 1.0,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "6": {
+     "practically relevant transfer found": 1.0,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "8": {
+     "practically relevant transfer found": 1.0,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "12": {
+     "practically relevant transfer found": 1.0,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "16": {
+     "practically relevant transfer found": 1.0,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "20": {
+     "practically relevant transfer found": 1.0,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "24": {
+     "practically relevant transfer found": 1.0,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "32": {
+     "practically relevant transfer found": 1.0,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    }
+   }
+  },
+  {
+   "scenario": "H",
+   "sigma": 1.0,
+   "mu_target": 0.0,
+   "feasible": true,
+   "theta": 0.0,
+   "mu_realised": -6.81640625e-05,
+   "run_sd": 0.047502601230670675,
+   "rates": {
+    "4": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.04795,
+     "transfer detected; its practical size unresolved": 5e-05,
+     "practical gain excluded; transfer not detected": 0.9507,
+     "inconclusive": 0.0013,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "6": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.048,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.952,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "8": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.0501,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.9499,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "12": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.04855,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.95145,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "16": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.05175,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.94825,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "20": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.04605,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.95395,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "24": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.04695,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.95305,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "32": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.0504,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.9496,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    }
+   }
+  },
+  {
+   "scenario": "H",
+   "sigma": 1.0,
+   "mu_target": 0.05,
+   "feasible": true,
+   "theta": 0.0680601557251066,
+   "mu_realised": 0.049440234375,
+   "run_sd": 0.05269789610830724,
+   "rates": {
+    "4": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.37915,
+     "transfer detected; its practical size unresolved": 0.04895,
+     "practical gain excluded; transfer not detected": 0.50685,
+     "inconclusive": 0.06505,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "6": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.6269,
+     "transfer detected; its practical size unresolved": 0.00825,
+     "practical gain excluded; transfer not detected": 0.3638,
+     "inconclusive": 0.00105,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "8": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.77525,
+     "transfer detected; its practical size unresolved": 0.0004,
+     "practical gain excluded; transfer not detected": 0.22435,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "12": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.9179,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.0821,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "16": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.97375,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.02625,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "20": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.991,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.009,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "24": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.9976,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.0024,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "32": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.9998,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.0002,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    }
+   }
+  },
+  {
+   "scenario": "H",
+   "sigma": 1.0,
+   "mu_target": 0.1,
+   "feasible": true,
+   "theta": 0.133106840075925,
+   "mu_realised": 0.0997970703125,
+   "run_sd": 0.052973681727555996,
+   "rates": {
+    "4": {
+     "practically relevant transfer found": 0.0008,
+     "weak transfer found": 0.37215,
+     "transfer detected; its practical size unresolved": 0.49865,
+     "practical gain excluded; transfer not detected": 0.05655,
+     "inconclusive": 0.07185,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "6": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.62725,
+     "transfer detected; its practical size unresolved": 0.36045,
+     "practical gain excluded; transfer not detected": 0.01095,
+     "inconclusive": 0.00135,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "8": {
+     "practically relevant transfer found": 5e-05,
+     "weak transfer found": 0.78025,
+     "transfer detected; its practical size unresolved": 0.21895,
+     "practical gain excluded; transfer not detected": 0.00075,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "12": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.92765,
+     "transfer detected; its practical size unresolved": 0.07235,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "16": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.9796,
+     "transfer detected; its practical size unresolved": 0.0204,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "20": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.9943,
+     "transfer detected; its practical size unresolved": 0.0057,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "24": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.9984,
+     "transfer detected; its practical size unresolved": 0.0016,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "32": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.99985,
+     "transfer detected; its practical size unresolved": 0.00015,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    }
+   }
+  },
+  {
+   "scenario": "H",
+   "sigma": 1.0,
+   "mu_target": 0.15,
+   "feasible": true,
+   "theta": 0.19508240628056228,
+   "mu_realised": 0.1500337890625,
+   "run_sd": 0.053001048121255105,
+   "rates": {
+    "4": {
+     "practically relevant transfer found": 0.05185,
+     "weak transfer found": 0.04595,
+     "transfer detected; its practical size unresolved": 0.8933,
+     "practical gain excluded; transfer not detected": 0.00045,
+     "inconclusive": 0.00845,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "6": {
+     "practically relevant transfer found": 0.05295,
+     "weak transfer found": 0.0474,
+     "transfer detected; its practical size unresolved": 0.89965,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "8": {
+     "practically relevant transfer found": 0.05295,
+     "weak transfer found": 0.0465,
+     "transfer detected; its practical size unresolved": 0.90055,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "12": {
+     "practically relevant transfer found": 0.0542,
+     "weak transfer found": 0.04915,
+     "transfer detected; its practical size unresolved": 0.89665,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "16": {
+     "practically relevant transfer found": 0.0508,
+     "weak transfer found": 0.047,
+     "transfer detected; its practical size unresolved": 0.9022,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "20": {
+     "practically relevant transfer found": 0.05245,
+     "weak transfer found": 0.04875,
+     "transfer detected; its practical size unresolved": 0.8988,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "24": {
+     "practically relevant transfer found": 0.05,
+     "weak transfer found": 0.0467,
+     "transfer detected; its practical size unresolved": 0.9033,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "32": {
+     "practically relevant transfer found": 0.05095,
+     "weak transfer found": 0.0456,
+     "transfer detected; its practical size unresolved": 0.90345,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    }
+   }
+  },
+  {
+   "scenario": "H",
+   "sigma": 1.0,
+   "mu_target": 0.2,
+   "feasible": true,
+   "theta": 0.25368707883171737,
+   "mu_realised": 0.2000341796875,
+   "run_sd": 0.0528903975826992,
+   "rates": {
+    "4": {
+     "practically relevant transfer found": 0.43215,
+     "weak transfer found": 0.00035,
+     "transfer detected; its practical size unresolved": 0.56735,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.00015,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "6": {
+     "practically relevant transfer found": 0.6307,
+     "weak transfer found": 5e-05,
+     "transfer detected; its practical size unresolved": 0.36925,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "8": {
+     "practically relevant transfer found": 0.7714,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.2286,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "12": {
+     "practically relevant transfer found": 0.91585,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.08415,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "16": {
+     "practically relevant transfer found": 0.97165,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.02835,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "20": {
+     "practically relevant transfer found": 0.9915,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.0085,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "24": {
+     "practically relevant transfer found": 0.99705,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.00295,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "32": {
+     "practically relevant transfer found": 0.99985,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.00015,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    }
+   }
+  },
+  {
+   "scenario": "H",
+   "sigma": 1.0,
+   "mu_target": 0.25,
+   "feasible": true,
+   "theta": 0.30776337278075516,
+   "mu_realised": 0.250091015625,
+   "run_sd": 0.05248221789947709,
+   "rates": {
+    "4": {
+     "practically relevant transfer found": 0.87605,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.12395,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "6": {
+     "practically relevant transfer found": 0.9839,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.0161,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "8": {
+     "practically relevant transfer found": 0.99845,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.00155,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "12": {
+     "practically relevant transfer found": 1.0,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "16": {
+     "practically relevant transfer found": 1.0,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "20": {
+     "practically relevant transfer found": 1.0,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "24": {
+     "practically relevant transfer found": 1.0,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "32": {
+     "practically relevant transfer found": 1.0,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    }
+   }
+  },
+  {
+   "scenario": "H",
+   "sigma": 1.0,
+   "mu_target": 0.3,
+   "feasible": true,
+   "theta": 0.35732829687185585,
+   "mu_realised": 0.300230078125,
+   "run_sd": 0.052052198003408885,
+   "rates": {
+    "4": {
+     "practically relevant transfer found": 0.991,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.009,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "6": {
+     "practically relevant transfer found": 0.9999,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.0001,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "8": {
+     "practically relevant transfer found": 1.0,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "12": {
+     "practically relevant transfer found": 1.0,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "16": {
+     "practically relevant transfer found": 1.0,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "20": {
+     "practically relevant transfer found": 1.0,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "24": {
+     "practically relevant transfer found": 1.0,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "32": {
+     "practically relevant transfer found": 1.0,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    }
+   }
+  },
+  {
+   "scenario": "H",
+   "sigma": 1.0,
+   "mu_target": 0.35,
+   "feasible": true,
+   "theta": 0.40069149644114077,
+   "mu_realised": 0.349878125,
+   "run_sd": 0.05206808043321743,
+   "rates": {
+    "4": {
+     "practically relevant transfer found": 0.99945,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.00055,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "6": {
+     "practically relevant transfer found": 1.0,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "8": {
+     "practically relevant transfer found": 1.0,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "12": {
+     "practically relevant transfer found": 1.0,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "16": {
+     "practically relevant transfer found": 1.0,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "20": {
+     "practically relevant transfer found": 1.0,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "24": {
+     "practically relevant transfer found": 1.0,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "32": {
+     "practically relevant transfer found": 1.0,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    }
+   }
+  },
+  {
+   "scenario": "M",
+   "sigma": 1.0,
+   "mu_target": 0.0,
+   "feasible": true,
+   "theta": 0.0,
+   "mu_realised": 0.000327734375,
+   "run_sd": 0.047868278456269384,
+   "rates": {
+    "4": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.05135,
+     "transfer detected; its practical size unresolved": 0.0001,
+     "practical gain excluded; transfer not detected": 0.9461,
+     "inconclusive": 0.00245,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "6": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.0492,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.9508,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "8": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.0512,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.9488,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "12": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.0518,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.9482,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "16": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.0528,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.9472,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "20": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.0521,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.9479,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "24": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.05495,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.94505,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "32": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.0538,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.9462,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    }
+   }
+  },
+  {
+   "scenario": "M",
+   "sigma": 1.0,
+   "mu_target": 0.05,
+   "feasible": true,
+   "theta": 0.14235167717561126,
+   "mu_realised": 0.049465625,
+   "run_sd": 0.1295009580457443,
+   "rates": {
+    "4": {
+     "practically relevant transfer found": 0.0006,
+     "weak transfer found": 0.02825,
+     "transfer detected; its practical size unresolved": 0.0139,
+     "practical gain excluded; transfer not detected": 0.51035,
+     "inconclusive": 0.4469,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "6": {
+     "practically relevant transfer found": 0.00025,
+     "weak transfer found": 0.02085,
+     "transfer detected; its practical size unresolved": 0.04705,
+     "practical gain excluded; transfer not detected": 0.4191,
+     "inconclusive": 0.51275,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "8": {
+     "practically relevant transfer found": 0.00015,
+     "weak transfer found": 0.01695,
+     "transfer detected; its practical size unresolved": 0.09685,
+     "practical gain excluded; transfer not detected": 0.60925,
+     "inconclusive": 0.2768,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "12": {
+     "practically relevant transfer found": 0.0001,
+     "weak transfer found": 0.04995,
+     "transfer detected; its practical size unresolved": 0.17545,
+     "practical gain excluded; transfer not detected": 0.70005,
+     "inconclusive": 0.07445,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "16": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.1974,
+     "transfer detected; its practical size unresolved": 0.1561,
+     "practical gain excluded; transfer not detected": 0.64335,
+     "inconclusive": 0.00315,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "20": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.3765,
+     "transfer detected; its practical size unresolved": 0.092,
+     "practical gain excluded; transfer not detected": 0.5315,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "24": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.51475,
+     "transfer detected; its practical size unresolved": 0.0559,
+     "practical gain excluded; transfer not detected": 0.42935,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "32": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.70085,
+     "transfer detected; its practical size unresolved": 0.0176,
+     "practical gain excluded; transfer not detected": 0.28155,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    }
+   }
+  },
+  {
+   "scenario": "M",
+   "sigma": 1.0,
+   "mu_target": 0.1,
+   "feasible": true,
+   "theta": 0.2866024230606854,
+   "mu_realised": 0.0985556640625,
+   "run_sd": 0.16256185838747986,
+   "rates": {
+    "4": {
+     "practically relevant transfer found": 0.00805,
+     "weak transfer found": 0.01095,
+     "transfer detected; its practical size unresolved": 0.07195,
+     "practical gain excluded; transfer not detected": 0.24605,
+     "inconclusive": 0.663,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "6": {
+     "practically relevant transfer found": 0.00815,
+     "weak transfer found": 0.00675,
+     "transfer detected; its practical size unresolved": 0.2016,
+     "practical gain excluded; transfer not detected": 0.1553,
+     "inconclusive": 0.6282,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "8": {
+     "practically relevant transfer found": 0.0051,
+     "weak transfer found": 0.0041,
+     "transfer detected; its practical size unresolved": 0.3468,
+     "practical gain excluded; transfer not detected": 0.2512,
+     "inconclusive": 0.3928,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "12": {
+     "practically relevant transfer found": 0.00235,
+     "weak transfer found": 0.02355,
+     "transfer detected; its practical size unresolved": 0.5926,
+     "practical gain excluded; transfer not detected": 0.26555,
+     "inconclusive": 0.11595,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "16": {
+     "practically relevant transfer found": 0.00175,
+     "weak transfer found": 0.13615,
+     "transfer detected; its practical size unresolved": 0.64865,
+     "practical gain excluded; transfer not detected": 0.208,
+     "inconclusive": 0.00545,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "20": {
+     "practically relevant transfer found": 0.0007,
+     "weak transfer found": 0.28865,
+     "transfer detected; its practical size unresolved": 0.59915,
+     "practical gain excluded; transfer not detected": 0.1115,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "24": {
+     "practically relevant transfer found": 0.00075,
+     "weak transfer found": 0.38175,
+     "transfer detected; its practical size unresolved": 0.5603,
+     "practical gain excluded; transfer not detected": 0.0572,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "32": {
+     "practically relevant transfer found": 0.0004,
+     "weak transfer found": 0.5194,
+     "transfer detected; its practical size unresolved": 0.4654,
+     "practical gain excluded; transfer not detected": 0.0148,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    }
+   }
+  },
+  {
+   "scenario": "M",
+   "sigma": 1.0,
+   "mu_target": 0.15,
+   "feasible": true,
+   "theta": 0.42812231788411736,
+   "mu_realised": 0.147746484375,
+   "run_sd": 0.17663219839018082,
+   "rates": {
+    "4": {
+     "practically relevant transfer found": 0.03215,
+     "weak transfer found": 0.00535,
+     "transfer detected; its practical size unresolved": 0.1752,
+     "practical gain excluded; transfer not detected": 0.1046,
+     "inconclusive": 0.6827,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "6": {
+     "practically relevant transfer found": 0.04295,
+     "weak transfer found": 0.0015,
+     "transfer detected; its practical size unresolved": 0.41105,
+     "practical gain excluded; transfer not detected": 0.04715,
+     "inconclusive": 0.49735,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "8": {
+     "practically relevant transfer found": 0.0419,
+     "weak transfer found": 0.00115,
+     "transfer detected; its practical size unresolved": 0.61585,
+     "practical gain excluded; transfer not detected": 0.07205,
+     "inconclusive": 0.26905,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "12": {
+     "practically relevant transfer found": 0.0406,
+     "weak transfer found": 0.00615,
+     "transfer detected; its practical size unresolved": 0.8409,
+     "practical gain excluded; transfer not detected": 0.05685,
+     "inconclusive": 0.0555,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "16": {
+     "practically relevant transfer found": 0.03775,
+     "weak transfer found": 0.03295,
+     "transfer detected; its practical size unresolved": 0.89545,
+     "practical gain excluded; transfer not detected": 0.03145,
+     "inconclusive": 0.0024,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "20": {
+     "practically relevant transfer found": 0.0405,
+     "weak transfer found": 0.0538,
+     "transfer detected; its practical size unresolved": 0.89745,
+     "practical gain excluded; transfer not detected": 0.00825,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "24": {
+     "practically relevant transfer found": 0.03985,
+     "weak transfer found": 0.05955,
+     "transfer detected; its practical size unresolved": 0.89775,
+     "practical gain excluded; transfer not detected": 0.00285,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "32": {
+     "practically relevant transfer found": 0.04015,
+     "weak transfer found": 0.0604,
+     "transfer detected; its practical size unresolved": 0.89925,
+     "practical gain excluded; transfer not detected": 0.0002,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    }
+   }
+  },
+  {
+   "scenario": "M",
+   "sigma": 1.0,
+   "mu_target": 0.2,
+   "feasible": true,
+   "theta": 0.5771497967652977,
+   "mu_realised": 0.199553125,
+   "run_sd": 0.17530976145365523,
+   "rates": {
+    "4": {
+     "practically relevant transfer found": 0.1137,
+     "weak transfer found": 0.00125,
+     "transfer detected; its practical size unresolved": 0.31025,
+     "practical gain excluded; transfer not detected": 0.03065,
+     "inconclusive": 0.54415,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "6": {
+     "practically relevant transfer found": 0.15965,
+     "weak transfer found": 0.00035,
+     "transfer detected; its practical size unresolved": 0.55435,
+     "practical gain excluded; transfer not detected": 0.00915,
+     "inconclusive": 0.2765,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "8": {
+     "practically relevant transfer found": 0.1762,
+     "weak transfer found": 0.00015,
+     "transfer detected; its practical size unresolved": 0.70975,
+     "practical gain excluded; transfer not detected": 0.0104,
+     "inconclusive": 0.1035,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "12": {
+     "practically relevant transfer found": 0.22705,
+     "weak transfer found": 0.0002,
+     "transfer detected; its practical size unresolved": 0.7577,
+     "practical gain excluded; transfer not detected": 0.00535,
+     "inconclusive": 0.0097,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "16": {
+     "practically relevant transfer found": 0.2773,
+     "weak transfer found": 0.0024,
+     "transfer detected; its practical size unresolved": 0.71895,
+     "practical gain excluded; transfer not detected": 0.00115,
+     "inconclusive": 0.0002,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "20": {
+     "practically relevant transfer found": 0.32825,
+     "weak transfer found": 0.00205,
+     "transfer detected; its practical size unresolved": 0.66965,
+     "practical gain excluded; transfer not detected": 5e-05,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "24": {
+     "practically relevant transfer found": 0.36915,
+     "weak transfer found": 0.0015,
+     "transfer detected; its practical size unresolved": 0.62935,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "32": {
+     "practically relevant transfer found": 0.4539,
+     "weak transfer found": 0.00035,
+     "transfer detected; its practical size unresolved": 0.54575,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    }
+   }
+  },
+  {
+   "scenario": "M",
+   "sigma": 1.0,
+   "mu_target": 0.25,
+   "feasible": true,
+   "theta": 0.721279548946768,
+   "mu_realised": 0.249296875,
+   "run_sd": 0.16046835062632872,
+   "rates": {
+    "4": {
+     "practically relevant transfer found": 0.28055,
+     "weak transfer found": 0.00035,
+     "transfer detected; its practical size unresolved": 0.3805,
+     "practical gain excluded; transfer not detected": 0.0064,
+     "inconclusive": 0.3322,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "6": {
+     "practically relevant transfer found": 0.3889,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.5123,
+     "practical gain excluded; transfer not detected": 0.00125,
+     "inconclusive": 0.09755,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "8": {
+     "practically relevant transfer found": 0.4471,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.5302,
+     "practical gain excluded; transfer not detected": 0.00085,
+     "inconclusive": 0.02185,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "12": {
+     "practically relevant transfer found": 0.60175,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.39715,
+     "practical gain excluded; transfer not detected": 0.00015,
+     "inconclusive": 0.00095,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "16": {
+     "practically relevant transfer found": 0.7246,
+     "weak transfer found": 5e-05,
+     "transfer detected; its practical size unresolved": 0.2753,
+     "practical gain excluded; transfer not detected": 5e-05,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "20": {
+     "practically relevant transfer found": 0.81325,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.18675,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "24": {
+     "practically relevant transfer found": 0.86865,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.13135,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "32": {
+     "practically relevant transfer found": 0.94325,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.05675,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    }
+   }
+  },
+  {
+   "scenario": "M",
+   "sigma": 1.0,
+   "mu_target": 0.3,
+   "feasible": true,
+   "theta": 0.8699085689149797,
+   "mu_realised": 0.30045546875,
+   "run_sd": 0.12305806276271818,
+   "rates": {
+    "4": {
+     "practically relevant transfer found": 0.5733,
+     "weak transfer found": 5e-05,
+     "transfer detected; its practical size unresolved": 0.3123,
+     "practical gain excluded; transfer not detected": 0.00025,
+     "inconclusive": 0.1141,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "6": {
+     "practically relevant transfer found": 0.73105,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.2559,
+     "practical gain excluded; transfer not detected": 5e-05,
+     "inconclusive": 0.013,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "8": {
+     "practically relevant transfer found": 0.81935,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.1795,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.00115,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "12": {
+     "practically relevant transfer found": 0.94365,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.05635,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "16": {
+     "practically relevant transfer found": 0.98345,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.01655,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "20": {
+     "practically relevant transfer found": 0.99575,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.00425,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "24": {
+     "practically relevant transfer found": 0.9989,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.0011,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "32": {
+     "practically relevant transfer found": 0.99985,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.00015,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    }
+   }
+  },
+  {
+   "scenario": "M",
+   "sigma": 1.0,
+   "mu_target": 0.35,
+   "feasible": false
+  },
+  {
+   "scenario": "U",
+   "sigma": 1.0,
+   "mu_target": 0.0,
+   "feasible": true,
+   "theta": 0.0,
+   "mu_realised": -0.0003369140625,
+   "run_sd": 0.047541270898257666,
+   "rates": {
+    "4": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.0513,
+     "transfer detected; its practical size unresolved": 5e-05,
+     "practical gain excluded; transfer not detected": 0.94765,
+     "inconclusive": 0.001,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "6": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.0494,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.9506,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "8": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.04875,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.95125,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "12": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.0463,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.9537,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "16": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.04955,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.95045,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "20": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.04845,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.95155,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "24": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.04525,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.95475,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "32": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.04525,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.95475,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    }
+   }
+  },
+  {
+   "scenario": "U",
+   "sigma": 1.0,
+   "mu_target": 0.05,
+   "feasible": true,
+   "theta": 0.06736015970818698,
+   "mu_realised": 0.049330078125,
+   "run_sd": 0.05622897118723716,
+   "rates": {
+    "4": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.32465,
+     "transfer detected; its practical size unresolved": 0.0615,
+     "practical gain excluded; transfer not detected": 0.5269,
+     "inconclusive": 0.08695,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "6": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.564,
+     "transfer detected; its practical size unresolved": 0.01415,
+     "practical gain excluded; transfer not detected": 0.41975,
+     "inconclusive": 0.0021,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "8": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.7153,
+     "transfer detected; its practical size unresolved": 0.0016,
+     "practical gain excluded; transfer not detected": 0.2831,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "12": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.8829,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.1171,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "16": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.95495,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.04505,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "20": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.9844,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.0156,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "24": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.9947,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.0053,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "32": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.9993,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.0007,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    }
+   }
+  },
+  {
+   "scenario": "U",
+   "sigma": 1.0,
+   "mu_target": 0.1,
+   "feasible": true,
+   "theta": 0.13057264336384833,
+   "mu_realised": 0.0992140625,
+   "run_sd": 0.07634639048659754,
+   "rates": {
+    "4": {
+     "practically relevant transfer found": 0.0045,
+     "weak transfer found": 0.131,
+     "transfer detected; its practical size unresolved": 0.4732,
+     "practical gain excluded; transfer not detected": 0.11775,
+     "inconclusive": 0.27355,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "6": {
+     "practically relevant transfer found": 0.0013,
+     "weak transfer found": 0.2871,
+     "transfer detected; its practical size unresolved": 0.56995,
+     "practical gain excluded; transfer not detected": 0.10065,
+     "inconclusive": 0.041,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "8": {
+     "practically relevant transfer found": 0.00065,
+     "weak transfer found": 0.4638,
+     "transfer detected; its practical size unresolved": 0.4926,
+     "practical gain excluded; transfer not detected": 0.0407,
+     "inconclusive": 0.00225,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "12": {
+     "practically relevant transfer found": 5e-05,
+     "weak transfer found": 0.68765,
+     "transfer detected; its practical size unresolved": 0.3087,
+     "practical gain excluded; transfer not detected": 0.0036,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "16": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.8184,
+     "transfer detected; its practical size unresolved": 0.18125,
+     "practical gain excluded; transfer not detected": 0.00035,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "20": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.88905,
+     "transfer detected; its practical size unresolved": 0.11095,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "24": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.9379,
+     "transfer detected; its practical size unresolved": 0.0621,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "32": {
+     "practically relevant transfer found": 0.0,
+     "weak transfer found": 0.979,
+     "transfer detected; its practical size unresolved": 0.021,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    }
+   }
+  },
+  {
+   "scenario": "U",
+   "sigma": 1.0,
+   "mu_target": 0.15,
+   "feasible": true,
+   "theta": 0.19129679608158767,
+   "mu_realised": 0.1518341796875,
+   "run_sd": 0.10451684016995655,
+   "rates": {
+    "4": {
+     "practically relevant transfer found": 0.05465,
+     "weak transfer found": 0.03115,
+     "transfer detected; its practical size unresolved": 0.6125,
+     "practical gain excluded; transfer not detected": 0.02725,
+     "inconclusive": 0.27445,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "6": {
+     "practically relevant transfer found": 0.0506,
+     "weak transfer found": 0.04065,
+     "transfer detected; its practical size unresolved": 0.84615,
+     "practical gain excluded; transfer not detected": 0.01495,
+     "inconclusive": 0.04765,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "8": {
+     "practically relevant transfer found": 0.05485,
+     "weak transfer found": 0.0426,
+     "transfer detected; its practical size unresolved": 0.8922,
+     "practical gain excluded; transfer not detected": 0.00545,
+     "inconclusive": 0.0049,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "12": {
+     "practically relevant transfer found": 0.0535,
+     "weak transfer found": 0.0466,
+     "transfer detected; its practical size unresolved": 0.8997,
+     "practical gain excluded; transfer not detected": 0.0002,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "16": {
+     "practically relevant transfer found": 0.05375,
+     "weak transfer found": 0.04535,
+     "transfer detected; its practical size unresolved": 0.9009,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "20": {
+     "practically relevant transfer found": 0.05835,
+     "weak transfer found": 0.0448,
+     "transfer detected; its practical size unresolved": 0.89685,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "24": {
+     "practically relevant transfer found": 0.05755,
+     "weak transfer found": 0.0457,
+     "transfer detected; its practical size unresolved": 0.89675,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "32": {
+     "practically relevant transfer found": 0.05895,
+     "weak transfer found": 0.04045,
+     "transfer detected; its practical size unresolved": 0.9006,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    }
+   }
+  },
+  {
+   "scenario": "U",
+   "sigma": 1.0,
+   "mu_target": 0.2,
+   "feasible": true,
+   "theta": 0.24089742614887655,
+   "mu_realised": 0.200644921875,
+   "run_sd": 0.13562731211520584,
+   "rates": {
+    "4": {
+     "practically relevant transfer found": 0.1175,
+     "weak transfer found": 0.012,
+     "transfer detected; its practical size unresolved": 0.594,
+     "practical gain excluded; transfer not detected": 0.0107,
+     "inconclusive": 0.2658,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "6": {
+     "practically relevant transfer found": 0.16535,
+     "weak transfer found": 0.0087,
+     "transfer detected; its practical size unresolved": 0.783,
+     "practical gain excluded; transfer not detected": 0.004,
+     "inconclusive": 0.03895,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "8": {
+     "practically relevant transfer found": 0.2103,
+     "weak transfer found": 0.0072,
+     "transfer detected; its practical size unresolved": 0.77815,
+     "practical gain excluded; transfer not detected": 0.0011,
+     "inconclusive": 0.00325,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "12": {
+     "practically relevant transfer found": 0.30695,
+     "weak transfer found": 0.00275,
+     "transfer detected; its practical size unresolved": 0.6902,
+     "practical gain excluded; transfer not detected": 0.0001,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "16": {
+     "practically relevant transfer found": 0.3952,
+     "weak transfer found": 0.0014,
+     "transfer detected; its practical size unresolved": 0.6034,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "20": {
+     "practically relevant transfer found": 0.4658,
+     "weak transfer found": 0.00105,
+     "transfer detected; its practical size unresolved": 0.53315,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "24": {
+     "practically relevant transfer found": 0.5446,
+     "weak transfer found": 0.00045,
+     "transfer detected; its practical size unresolved": 0.45495,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "32": {
+     "practically relevant transfer found": 0.66405,
+     "weak transfer found": 0.0001,
+     "transfer detected; its practical size unresolved": 0.33585,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    }
+   }
+  },
+  {
+   "scenario": "U",
+   "sigma": 1.0,
+   "mu_target": 0.25,
+   "feasible": true,
+   "theta": 0.28962683374993503,
+   "mu_realised": 0.2497232421875,
+   "run_sd": 0.16448461695009262,
+   "rates": {
+    "4": {
+     "practically relevant transfer found": 0.1876,
+     "weak transfer found": 0.00585,
+     "transfer detected; its practical size unresolved": 0.5512,
+     "practical gain excluded; transfer not detected": 0.00505,
+     "inconclusive": 0.2503,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "6": {
+     "practically relevant transfer found": 0.3059,
+     "weak transfer found": 0.00315,
+     "transfer detected; its practical size unresolved": 0.66215,
+     "practical gain excluded; transfer not detected": 0.0016,
+     "inconclusive": 0.0272,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "8": {
+     "practically relevant transfer found": 0.415,
+     "weak transfer found": 0.0014,
+     "transfer detected; its practical size unresolved": 0.58095,
+     "practical gain excluded; transfer not detected": 0.0003,
+     "inconclusive": 0.00235,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "12": {
+     "practically relevant transfer found": 0.605,
+     "weak transfer found": 0.00025,
+     "transfer detected; its practical size unresolved": 0.39475,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "16": {
+     "practically relevant transfer found": 0.74925,
+     "weak transfer found": 0.0001,
+     "transfer detected; its practical size unresolved": 0.25065,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "20": {
+     "practically relevant transfer found": 0.83485,
+     "weak transfer found": 0.0001,
+     "transfer detected; its practical size unresolved": 0.16505,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "24": {
+     "practically relevant transfer found": 0.89805,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.10195,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "32": {
+     "practically relevant transfer found": 0.9611,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.0389,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    }
+   }
+  },
+  {
+   "scenario": "U",
+   "sigma": 1.0,
+   "mu_target": 0.3,
+   "feasible": true,
+   "theta": 0.36652734014205635,
+   "mu_realised": 0.30110546875,
+   "run_sd": 0.17683155449857313,
+   "rates": {
+    "4": {
+     "practically relevant transfer found": 0.3039,
+     "weak transfer found": 0.0023,
+     "transfer detected; its practical size unresolved": 0.496,
+     "practical gain excluded; transfer not detected": 0.00195,
+     "inconclusive": 0.19585,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "6": {
+     "practically relevant transfer found": 0.5072,
+     "weak transfer found": 0.00055,
+     "transfer detected; its practical size unresolved": 0.47885,
+     "practical gain excluded; transfer not detected": 0.0004,
+     "inconclusive": 0.013,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "8": {
+     "practically relevant transfer found": 0.66945,
+     "weak transfer found": 0.00035,
+     "transfer detected; its practical size unresolved": 0.32955,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.00065,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "12": {
+     "practically relevant transfer found": 0.86035,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.13965,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "16": {
+     "practically relevant transfer found": 0.9452,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.0548,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "20": {
+     "practically relevant transfer found": 0.97845,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.02155,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "24": {
+     "practically relevant transfer found": 0.992,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.008,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "32": {
+     "practically relevant transfer found": 0.999,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.001,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    }
+   }
+  },
+  {
+   "scenario": "U",
+   "sigma": 1.0,
+   "mu_target": 0.35,
+   "feasible": true,
+   "theta": 0.49205819168128073,
+   "mu_realised": 0.3506611328125,
+   "run_sd": 0.17392322953268782,
+   "rates": {
+    "4": {
+     "practically relevant transfer found": 0.4653,
+     "weak transfer found": 0.0007,
+     "transfer detected; its practical size unresolved": 0.40755,
+     "practical gain excluded; transfer not detected": 0.0006,
+     "inconclusive": 0.12585,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "6": {
+     "practically relevant transfer found": 0.71345,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.2808,
+     "practical gain excluded; transfer not detected": 0.0001,
+     "inconclusive": 0.00565,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "8": {
+     "practically relevant transfer found": 0.85715,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.1428,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 5e-05,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "12": {
+     "practically relevant transfer found": 0.96955,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.03045,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "16": {
+     "practically relevant transfer found": 0.99405,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.00595,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "20": {
+     "practically relevant transfer found": 0.999,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.001,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "24": {
+     "practically relevant transfer found": 0.99975,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.00025,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    },
+    "32": {
+     "practically relevant transfer found": 1.0,
+     "weak transfer found": 0.0,
+     "transfer detected; its practical size unresolved": 0.0,
+     "practical gain excluded; transfer not detected": 0.0,
+     "inconclusive": 0.0,
+     "mc_se_max": 0.0035355339059327377
+    }
+   }
+  }
+ ],
+ "summary": {
+  "4": {
+   "H sigma=0": {
+    "mu=0.25": 0.8989,
+    "mu=0.20": 0.44885,
+    "false at mu=delta": 0.0548
+   },
+   "M sigma=0": {
+    "mu=0.25": 0.188,
+    "mu=0.20": 0.0795,
+    "false at mu=delta": 0.0253
+   },
+   "U sigma=0": {
+    "mu=0.25": 0.2182,
+    "mu=0.20": 0.1362,
+    "false at mu=delta": 0.0579
+   },
+   "H sigma=1": {
+    "mu=0.25": 0.87605,
+    "mu=0.20": 0.43215,
+    "false at mu=delta": 0.05185
+   },
+   "M sigma=1": {
+    "mu=0.25": 0.28055,
+    "mu=0.20": 0.1137,
+    "false at mu=delta": 0.03215
+   },
+   "U sigma=1": {
+    "mu=0.25": 0.1876,
+    "mu=0.20": 0.1175,
+    "false at mu=delta": 0.05465
+   },
+   "hours_L_plus_F4": 0.6984384272870371,
+   "hours_L_plus_F4_conservative": 1.2760880699444446,
+   "hours_S_reserve_conservative": 0.6380440349722223
+  },
+  "6": {
+   "H sigma=0": {
+    "mu=0.25": 0.9895,
+    "mu=0.20": 0.6636,
+    "false at mu=delta": 0.05175
+   },
+   "M sigma=0": {
+    "mu=0.25": 0.30815,
+    "mu=0.20": 0.13285,
+    "false at mu=delta": 0.0393
+   },
+   "U sigma=0": {
+    "mu=0.25": 0.34555,
+    "mu=0.20": 0.1887,
+    "false at mu=delta": 0.0508
+   },
+   "H sigma=1": {
+    "mu=0.25": 0.9839,
+    "mu=0.20": 0.6307,
+    "false at mu=delta": 0.05295
+   },
+   "M sigma=1": {
+    "mu=0.25": 0.3889,
+    "mu=0.20": 0.15965,
+    "false at mu=delta": 0.04295
+   },
+   "U sigma=1": {
+    "mu=0.25": 0.3059,
+    "mu=0.20": 0.16535,
+    "false at mu=delta": 0.0506
+   },
+   "hours_L_plus_F4": 0.8323528792916667,
+   "hours_L_plus_F4_conservative": 1.5951100874305555,
+   "hours_S_reserve_conservative": 0.9570660524583334
+  },
+  "8": {
+   "H sigma=0": {
+    "mu=0.25": 0.99925,
+    "mu=0.20": 0.7955,
+    "false at mu=delta": 0.0547
+   },
+   "M sigma=0": {
+    "mu=0.25": 0.38285,
+    "mu=0.20": 0.1641,
+    "false at mu=delta": 0.03945
+   },
+   "U sigma=0": {
+    "mu=0.25": 0.4681,
+    "mu=0.20": 0.23865,
+    "false at mu=delta": 0.0526
+   },
+   "H sigma=1": {
+    "mu=0.25": 0.99845,
+    "mu=0.20": 0.7714,
+    "false at mu=delta": 0.05295
+   },
+   "M sigma=1": {
+    "mu=0.25": 0.4471,
+    "mu=0.20": 0.1762,
+    "false at mu=delta": 0.0419
+   },
+   "U sigma=1": {
+    "mu=0.25": 0.415,
+    "mu=0.20": 0.2103,
+    "false at mu=delta": 0.05485
+   },
+   "hours_L_plus_F4": 0.9662673312962963,
+   "hours_L_plus_F4_conservative": 1.9141321049166669,
+   "hours_S_reserve_conservative": 1.2760880699444446
+  },
+  "12": {
+   "H sigma=0": {
+    "mu=0.25": 1.0,
+    "mu=0.20": 0.92985,
+    "false at mu=delta": 0.05375
+   },
+   "M sigma=0": {
+    "mu=0.25": 0.5081,
+    "mu=0.20": 0.211,
+    "false at mu=delta": 0.0434
+   },
+   "U sigma=0": {
+    "mu=0.25": 0.66065,
+    "mu=0.20": 0.33325,
+    "false at mu=delta": 0.05095
+   },
+   "H sigma=1": {
+    "mu=0.25": 1.0,
+    "mu=0.20": 0.91585,
+    "false at mu=delta": 0.0542
+   },
+   "M sigma=1": {
+    "mu=0.25": 0.60175,
+    "mu=0.20": 0.22705,
+    "false at mu=delta": 0.0406
+   },
+   "U sigma=1": {
+    "mu=0.25": 0.605,
+    "mu=0.20": 0.30695,
+    "false at mu=delta": 0.0535
+   },
+   "hours_L_plus_F4": 1.2340962353055556,
+   "hours_L_plus_F4_conservative": 2.552176139888889,
+   "hours_S_reserve_conservative": 1.9141321049166669
+  },
+  "16": {
+   "H sigma=0": {
+    "mu=0.25": 1.0,
+    "mu=0.20": 0.9784,
+    "false at mu=delta": 0.05435
+   },
+   "M sigma=0": {
+    "mu=0.25": 0.61415,
+    "mu=0.20": 0.2529,
+    "false at mu=delta": 0.04245
+   },
+   "U sigma=0": {
+    "mu=0.25": 0.7907,
+    "mu=0.20": 0.43575,
+    "false at mu=delta": 0.0456
+   },
+   "H sigma=1": {
+    "mu=0.25": 1.0,
+    "mu=0.20": 0.97165,
+    "false at mu=delta": 0.0508
+   },
+   "M sigma=1": {
+    "mu=0.25": 0.7246,
+    "mu=0.20": 0.2773,
+    "false at mu=delta": 0.03775
+   },
+   "U sigma=1": {
+    "mu=0.25": 0.74925,
+    "mu=0.20": 0.3952,
+    "false at mu=delta": 0.05375
+   },
+   "hours_L_plus_F4": 1.501925139314815,
+   "hours_L_plus_F4_conservative": 3.190220174861111,
+   "hours_S_reserve_conservative": 2.552176139888889
+  },
+  "20": {
+   "H sigma=0": {
+    "mu=0.25": 1.0,
+    "mu=0.20": 0.99435,
+    "false at mu=delta": 0.0558
+   },
+   "M sigma=0": {
+    "mu=0.25": 0.7164,
+    "mu=0.20": 0.3023,
+    "false at mu=delta": 0.0444
+   },
+   "U sigma=0": {
+    "mu=0.25": 0.8747,
+    "mu=0.20": 0.516,
+    "false at mu=delta": 0.0506
+   },
+   "H sigma=1": {
+    "mu=0.25": 1.0,
+    "mu=0.20": 0.9915,
+    "false at mu=delta": 0.05245
+   },
+   "M sigma=1": {
+    "mu=0.25": 0.81325,
+    "mu=0.20": 0.32825,
+    "false at mu=delta": 0.0405
+   },
+   "U sigma=1": {
+    "mu=0.25": 0.83485,
+    "mu=0.20": 0.4658,
+    "false at mu=delta": 0.05835
+   },
+   "hours_L_plus_F4": 1.769754043324074,
+   "hours_L_plus_F4_conservative": 3.8282642098333337,
+   "hours_S_reserve_conservative": 3.190220174861111
+  },
+  "24": {
+   "H sigma=0": {
+    "mu=0.25": 1.0,
+    "mu=0.20": 0.99825,
+    "false at mu=delta": 0.05115
+   },
+   "M sigma=0": {
+    "mu=0.25": 0.7828,
+    "mu=0.20": 0.3397,
+    "false at mu=delta": 0.04195
+   },
+   "U sigma=0": {
+    "mu=0.25": 0.926,
+    "mu=0.20": 0.58335,
+    "false at mu=delta": 0.0493
+   },
+   "H sigma=1": {
+    "mu=0.25": 1.0,
+    "mu=0.20": 0.99705,
+    "false at mu=delta": 0.05
+   },
+   "M sigma=1": {
+    "mu=0.25": 0.86865,
+    "mu=0.20": 0.36915,
+    "false at mu=delta": 0.03985
+   },
+   "U sigma=1": {
+    "mu=0.25": 0.89805,
+    "mu=0.20": 0.5446,
+    "false at mu=delta": 0.05755
+   },
+   "hours_L_plus_F4": 2.037582947333333,
+   "hours_L_plus_F4_conservative": 4.466308244805555,
+   "hours_S_reserve_conservative": 3.8282642098333337
+  },
+  "32": {
+   "H sigma=0": {
+    "mu=0.25": 1.0,
+    "mu=0.20": 0.99995,
+    "false at mu=delta": 0.05445
+   },
+   "M sigma=0": {
+    "mu=0.25": 0.8857,
+    "mu=0.20": 0.43255,
+    "false at mu=delta": 0.04685
+   },
+   "U sigma=0": {
+    "mu=0.25": 0.9766,
+    "mu=0.20": 0.7096,
+    "false at mu=delta": 0.0484
+   },
+   "H sigma=1": {
+    "mu=0.25": 1.0,
+    "mu=0.20": 0.99985,
+    "false at mu=delta": 0.05095
+   },
+   "M sigma=1": {
+    "mu=0.25": 0.94325,
+    "mu=0.20": 0.4539,
+    "false at mu=delta": 0.04015
+   },
+   "U sigma=1": {
+    "mu=0.25": 0.9611,
+    "mu=0.20": 0.66405,
+    "false at mu=delta": 0.05895
+   },
+   "hours_L_plus_F4": 2.573240755351852,
+   "hours_L_plus_F4_conservative": 5.742396314750001,
+   "hours_S_reserve_conservative": 5.104352279777778
+  }
+ },
+ "proposal": {
+  "rule": "the smallest R with P(practically relevant) >= 0.8 at mu = 0.25 in every scenario at sigma 0 and 1",
+  "R": 32
+ }
+}
