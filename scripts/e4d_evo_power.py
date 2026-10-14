@@ -32,7 +32,9 @@ success):
 - **μ** from 0 to the pilot's level; μ = 0 is g_r = 0 for every run.
 
 **Its approximations** (Astra, D272), each with a sensitivity case (`sensitivity` in the record):
-- the champion's exact ties are broken at random, not by the final fitness and the norm;
+- the champion's exact ties are broken at random, not by the final fitness and the norm. **Ties bounded** (Astra,
+  D273): among the tied validation winners, the lowest and the highest true probability, at the main grid's θ for
+  μ = 0.25 (σ = 0);
 - the main grid draws each strain's profile independently and gives each strain its own maze effects, while a real
   population shares its mazes and its members are related (the pilot's within-population correlation of per-maze
   scores is recorded). **Structured:** whole pilot populations' profiles, a maze effect shared by every strain of a
@@ -145,14 +147,20 @@ def shares(p, sigma, rng):
     return (n[..., 1] + 2 * n[..., 2]) / (2 * MAZES)
 
 
-def simulate_runs(g, profile, sigma, rng, chunk=4000):
-    """The champions' test gains for runs with top gains g."""
+def simulate_runs(g, profile, sigma, rng, chunk=4000, ties="random"):
+    """The champions' test gains for runs with top gains g; the validation winners' exact ties at random, or to the
+    lowest ("worst") or highest ("best") true probability."""
     out = np.empty(len(g))
     for lo in range(0, len(g), chunk):
         gg = g[lo:lo + chunk]
         p = 0.5 + gg[:, None] * rng.choice(profile, size=(len(gg), POP))
         v = shares(p, sigma, rng)
-        c = np.argmax(v + rng.random(v.shape) * 1e-9, axis=1)
+        if ties == "random":
+            c = np.argmax(v + rng.random(v.shape) * 1e-9, axis=1)
+        else:
+            top = v == v.max(axis=1, keepdims=True)
+            c = (np.argmin(np.where(top, p, np.inf), axis=1) if ties == "worst"
+                 else np.argmax(np.where(top, p, -np.inf), axis=1))
         out[lo:lo + chunk] = shares(p[np.arange(len(gg)), c], sigma, rng) - 0.5
     return out
 
@@ -234,8 +242,18 @@ def simulate_structured(g, profiles, shared, rng, chunk=2000):
     return out, float(np.nanmean(corr))
 
 
-def sensitivity(cal, profile, success, rng) -> dict:
-    out = {"structured": [], "mixtures": []}
+def sensitivity(cal, profile, success, rng, results) -> dict:
+    out = {"structured": [], "mixtures": [], "ties": []}
+    for kind in ("H", "M", "U"):
+        theta = next(r["theta"] for r in results if r["scenario"] == kind and r["sigma"] == 0.0
+                     and r["mu_target"] == TARGET and r["feasible"])
+        for ties in ("worst", "best"):
+            g = tops(kind, theta, rng, POOL, success)
+            pool = simulate_runs(g, np.asarray(profile), 0.0, rng, ties=ties)
+            out["ties"].append({"scenario": kind, "ties": ties, "theta": theta, "mu_realised": float(pool.mean()),
+                                "run_sd": float(pool.std()), "rates": arm_rates(pool, rng)})
+            print(f"ties {ties} {kind} realised {pool.mean():.4f} R=32 "
+                  f"{out['ties'][-1]['rates']['32'][ES.STATES[0]]:.3f}", flush=True)
     profiles = np.asarray(profile).reshape(-1, POP)
     for shared in SHARED:
         for kind in ("H", "M", "U"):
@@ -323,7 +341,7 @@ def main():
         row["hours_S"] = hours(R, cal, conservative=False)
         row["hours_S_conservative"] = hours(R, cal, conservative=True)
         table[str(R)] = row
-    sens = sensitivity(cal, profile, success, np.random.default_rng(SEED + 2))
+    sens = sensitivity(cal, profile, success, np.random.default_rng(SEED + 2), results)
     ok = [R for R in RS if all(v["mu=0.25"] is not None and v["mu=0.25"] >= POWER
                                for k, v in table[str(R)].items() if isinstance(v, dict))]
     doc = {"what": "the evolutionary E4-D's power analysis (design v2.1 §4); exploratory input to the pre-registration",

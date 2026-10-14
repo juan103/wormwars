@@ -8490,3 +8490,25 @@ draft 2 (its §12):
   (the 0.65 crossing is chance at W = 8, Fable); run numbers, the checkpoint block, the training-id range, the guarded
   files; LB and UB for the bounds.
 Next: draft 2 to both for confirmation.
+
+## D273 — The pre-registration draft 2's review by both ("bind after these fixes"), and draft 3
+
+Astra 6 and Fable 5.1 at "high" (`docs/reviews/20261014-E4-D-evo-prereg-2/`): both "bind after these fixes", with
+narrower findings; Fable found all ten of its draft-1 findings resolved and every number in §8-§9 matching the
+records. All taken in draft 3 (its §13):
+- **S** no longer depends on F (Astra): every stage's dependencies are a table; S needs L's triggering report and the
+  owner's word.
+- **S against its start** has a registered function, `evo_stats.improvement` (differences in [−1, 1], the grid, the
+  count, a strict LB > 0), test-first; `reading` stays for comparisons with chance (both).
+- **The per-maze counts** need an additive change to `evo_trial.TrialResult`, authorized in advance with its
+  equivalence check (Fable); the formal code's files are named.
+- **`check`** exercises the formal evaluation path's assertions on the control before L is trained, so a defect there
+  cannot cost the primary arm (Fable); the replay's inputs are complete; a mismatch is not rerunnable.
+- **Ties** (Astra) bounded in the power analysis: choosing the worst tied winner lowers the mean gain by at most 0.004
+  and the power at R = 32 to 0.87 (M); the best, 0.89. The analysis was rerun; its main grid is unchanged, and its
+  sensitivity cases moved within their noise (harsh mixtures 0.71 and 0.79 at R = 32).
+- **Smaller:** environment equality across stages; every composition; non-finite fitness is an integrity failure;
+  near-E-G failures stated as an assumption; L's cap 8 GPU-hours (15.5 in all of 23.95).
+- **R stays 32.** Fable: keep 32. Astra prefers 40 (the harsh mixtures reach 0.80-0.87) but calls it a recommendation,
+  not a blocker, with 32 defensible under the conditional wording that §8 keeps.
+Next: draft 3 to both for confirmation.

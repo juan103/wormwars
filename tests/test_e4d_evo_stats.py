@@ -106,3 +106,27 @@ def test_the_sign_flip_at_r_32_is_fast_and_exact():
     p = ES.sign_flip_one_sided(d)
     assert time.perf_counter() - t < 5
     assert p == pytest.approx(2 / 2 ** 32)  # no flip, or only the negative run's
+
+
+def test_improvement_reads_the_paired_lower_bound():
+    d = np.array([10, 12, 8, 9, 11, 10]) / 128
+    r = ES.improvement(d, n_expected=6)
+    q = stats.t.ppf(0.95, 5)
+    assert r["lb"] == pytest.approx(d.mean() - q * d.std(ddof=1) / math.sqrt(6))
+    assert r["state"] == "the GA improved on the seeded wiring"
+    assert ES.improvement(np.array([3, -4, 1, -2, 0, 2]) / 128, n_expected=6)["state"] == \
+        "no improvement on the seeded wiring detected"
+
+
+def test_improvement_accepts_the_paired_range_and_refuses_malformed():
+    assert ES.improvement(np.array([100, 90, 110]) / 128, n_expected=3)["n"] == 3  # differences above 0.5 are valid
+    for bad in ([0.3, float("nan"), 0.2], [1.2, 0.2, 0.1], [0.3, 0.2 + 1 / 1000, 0.1]):
+        with pytest.raises(ValueError):
+            ES.improvement(bad, n_expected=3)
+    with pytest.raises(ValueError):
+        ES.improvement(np.array([10, 12]) / 128, n_expected=3)
+
+
+def test_improvement_edge_is_strict():
+    assert ES.improvement_state(0.0) == "no improvement on the seeded wiring detected"
+    assert ES.improvement_state(1e-12) == "the GA improved on the seeded wiring"

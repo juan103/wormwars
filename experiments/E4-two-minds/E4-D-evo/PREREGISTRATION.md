@@ -1,8 +1,8 @@
 # The evolutionary E4-D: pre-registration
 
-**Status: draft 2, for the reviewers' confirmation. Nothing here binds yet.** Draft 1 (1bec549) was reviewed by both
-(`docs/reviews/20261014-E4-D-evo-prereg/`; both "bind after these fixes", D272); §12 lists the changes. It binds at the
-commit that is pushed after both reviewers agree. From then on, registered text is never changed or removed;
+**Status: draft 3. Nothing here binds yet.** Drafts 1 (1bec549) and 2 (6fca2ce) were reviewed by both
+(`docs/reviews/20261014-E4-D-evo-prereg/` and `-2/`; both times "bind after these fixes", D272-D273); §12 and §13 list
+the changes. It binds at the commit that is pushed after both reviewers agree. From then on, registered text is never changed or removed;
 amendments are added beside it, dated (AGENTS.md, rule 2).
 
 **Its sources:**
@@ -20,9 +20,14 @@ Choices made after seeing the pilot are listed in §11.
    - the power analysis, `scripts/e4d_evo_power.py` → `power.json`.
 2. **The formal stages (§5) are written after binding:** test-first, against §10's list; reviewed by both; their
    commit recorded in a dated amendment and in every formal stage's start marker.
-3. **What the formal stage code may not change:** this text, `evo_stats.py`, `power.json`, and the engine paths
-   (`wormwars/` outside the new formal stage code, `configs`, `requirements.txt`). A change to them is an amendment,
-   with an equivalence check where it touches the engine (rule 7). The formal script's guarded files include this
+3. **The formal stage code** is new files only: `scripts/e4d_evo_formal.py`, `wormwars/e4/evo_formal.py` and their
+   tests. **One change elsewhere is authorized in advance** (Fable, D273): `evo_trial.TrialResult` gains per-maze,
+   per-assignment real-first, decoy-first and neither arrays ([strains, mazes, 2]; the rollout already computes them
+   for its integrity check), additive only. Its equivalence check: every existing field bitwise unchanged on the
+   existing CPU tests' compositions, and `check`'s replay (§5). **What the formal stage code may not change:** this
+   text, `evo_stats.py`, `power.json`, and the engine paths (`wormwars/` outside the files above, `configs`,
+   `requirements.txt`). Any other change to them is an amendment, with an equivalence check where it touches the
+   engine (rule 7). The formal script's guarded files include this
    text, `evo_stats.py`, `power.json` and §2's pinned files; every stage refuses if any of them differs from its
    registered state.
 4. **The owner's word:** before `check` (it covers the L and F stages that follow it in §5's order), and again before
@@ -72,7 +77,7 @@ which the power analysis is calibrated (§11).
 | the pilot's `precheck.json` | d30506c306f4911455bace0ba4b773aac0e026c12a8eca34dadfd87c5a3c11c3 |
 | the pilot's `screen.json` | efcbf2c931e55c0e1270e54b44711a9efc3b68534cd39b9660ac80bad75b42a5 |
 | the pilot's `f.json` | 4a6cbab8f5140c7f41a661fd15528304ed60e4e1d4c8c186be9ef6bb5cde5640 |
-| `power.json` | 46d579ed56a67c8b18f923852a36b99e854390776a5cb118d1157c7b42702d2a |
+| `power.json` | 85df1b7adb72570a83c231fe78a4f029c5b2106ba38ef147f874dce90c5a45c2 |
 
 **The pilot's generation-10 populations** (local, `runs/e4d-evo/pilot/L-run*-gen010.npz`, gitignored), for `check`:
 each population's digest is the sha256 of its 32 strains' `genome_sha256s` (as recorded in the file) concatenated in
@@ -92,7 +97,7 @@ order; the 16 digests concatenated in run order (0-3, 100-103, 200-203, 300-303)
 - **F** is `combined_scales(bias_factor=0.02, cross_factor=0.25)`, as in the pilot; it was kept by the owner's rule
   (D266, D270). Its champions are compared with their own cut versions, which are not E-G.
 - **S** is the owner's pre-committed follow-up (D266): the hand-built comparator-origin wiring at w = 0.5 (0.59 in the
-  feasibility calibration), `control_genome(E-G, "comparator", 0.5)`. **It is triggered only if L reads "practical
+  feasibility calibration), `control_genome(E-G, cx, "comparator", 0.5)`. **It is triggered only if L reads "practical
   gain excluded; transfer not detected" or "inconclusive"** (design §8). If L is "not evaluable" or "not completed",
   S is not triggered and the owner is asked.
 - **No X0 is trained** (design §2): any assignment-blind policy scores at most 0.5 over all trials under paired
@@ -130,27 +135,54 @@ the smokes'.
 ## 5. The stages, in order
 
 **The frame:** E2's, as in the pilot: a start marker carrying the formal commit; the once-only rule; partial records
-as results complete; a salvage record if a stage stops. Each stage refuses unless its predecessors completed under the
-same code and registration (§0.3), and the cap is checked before every rollout.
+as results complete; a salvage record if a stage stops; the cap checked before every rollout. Each stage refuses
+unless its predecessors (below) completed under the same code and registration (§0.3) **and the same environment**
+(`require_same_env`: Python, NumPy, PyTorch, CUDA, the GPU), as `check` recorded it; a rerun is held to the same.
 
-**The order:** `check` → `train-l` → `evaluate-l` → `report-l` → `train-f` → `evaluate-f` → `report-f`, then, only if
-triggered (§3) and after the owner's word, `train-s` → `evaluate-s` → `report-s`. L's reading never waits on F, and F
-or S never changes it.
+**The order and the dependencies** (explicit; Astra, D273):
+
+| Stage | Requires |
+|---|---|
+| `check` | nothing (the pinned files, §2) |
+| `train-l` | `check` |
+| `evaluate-l`, then `report-l` | the stage before it |
+| `train-f` | `report-l` completed (whatever its reading) |
+| `evaluate-f`, then `report-f` | the stage before it |
+| `train-s` | `report-l` reading one of §3's two triggering states, and the owner's word; **not F** |
+| `evaluate-s`, then `report-s` | the stage before it |
+
+L's reading never waits on F or S, and F's failure, of any kind, cannot block S.
+
+**Compositions** (strains per batch, worlds per strain, weys): training [runs × 32, 16, 1], one `TrialWorld` per
+generation (`trial_rollout` does not chunk); the training checkpoints, each run's generation-best on the checkpoint
+block, [runs, 16, 1]; the champion's choice, one run's final population per batch, [32, 128, 1]; every test-block
+condition, one genome per batch, [1, 128, 1].
+
+**The test conditions** map to the trial's A sources: intact `real`; reversed `decoy`; removed `none`; held fixed
+`fixed0` (candidate 0 of the sorted placement); the oracle (only in `check`) has B read `real`.
 
 1. **`check`** (GPU, minutes):
    - **the positive control** on the check block, one genome per batch: the comparator-origin control at w = 3, E-G
      and the oracle. It passes if the control's real-first share is at least 0.75 and E-G's real-first and decoy-first
      counts are equal per maze (the pilot's precheck: 0.883, and 63 = 63). The oracle is exempt from the balance
      assertion by design (its B reads the real candidate) and is played with that check off.
-   - **the pilot's replay:** the screen's batch (all 16 runs, their seeds, factors and composition [512, 16, 1], its
-     validation ids 53 700-53 707 for the checkpoints) through `evolve_batch` with 11 generations and a snapshot at
-     index 10. Each run's generation-10 population must equal the local `gen010` population bitwise (§2's digest),
-     and each run's generation-10 checkpoint candidate's sha256 must equal `screen.json`'s (rule 6: same GPU,
-     environment and composition).
+   - **the formal evaluation path:** the w = 3 control's cue-removed, cue-fixed and cut versions, and E-G, on the
+     check block through the formal evaluate code at its composition, with every per-maze balance assertion of this
+     section; the control's reversed condition beside (descriptive). A failure here asks the owner; no arm is
+     affected (Fable, D273).
+   - **the pilot's replay:** the screen's batch exactly as the pilot ran it: its 16 runs (0-3, 100-103, 200-203,
+     300-303) with their seeds (1 420 100 + 10j + k) and slot factors (0.25, 1, 2, 4), 32 copies of E-G as the
+     initial population, composition [512, 16, 1], the pilot's training ids (base 70 000 000, span 10 000 000), its
+     checkpoint ids 53 700-53 707, random ties; `evolve_batch` with 11 generations and a snapshot at index 10. Each
+     run's generation-10 checkpoint candidate's sha256 must equal `screen.json`'s, and each run's generation-10
+     population must equal the local `gen010` population bitwise (§2's digest; rule 6: same GPU, environment and
+     composition). Where the local files are absent (outside the tested machine) that comparison is recorded "not
+     compared" and the committed one still binds; on the tested machine they are required. A replay mismatch is not
+     rerun: it needs an amendment.
    - **the formal composition's timing:** 3 generations of L's batch ([1 024, 16, 1]; `trial_rollout` plays the whole
      batch as one `TrialWorld` of 16 384 worlds, without chunking) on timing ids, recording seconds per generation and
      peak memory. `train-l` refuses if 100 generations at that rate, plus 20% for checkpoints and saving, exceed 80% of
-     the L cap's remainder (§9).
+     the L cap's remainder (§9); a refusal needs an amendment, and the owner decides.
    - **On any failure** nothing else runs, and the owner is asked.
 2. **`train-l`:** L's 32 runs in one batch, random ties. Populations and the selections so far saved every 10
    generations and at the last; the final populations saved before the lineage replay, which must match bitwise; the
@@ -168,7 +200,10 @@ or S never changes it.
 
 **The registered assertions.** Each failure raises a dedicated integrity error; the stage stops; **the arm reads "not
 evaluable"**; it is never rerun, and the owner is asked:
-- every generation, every strain whose slots are all zero has equal real-first and decoy-first counts;
+- every generation, every strain whose slots are all zero has equal real-first and decoy-first counts (after
+  generation 0 at p = 1.0 only unmutated elites qualify, so this is a weak guard; the per-evaluation balance below is
+  the main one: Fable, D273);
+- every fitness finite (`evolve_batch`'s non-finite score error is an integrity failure);
 - the frozen sets, bitwise, in every saved population; the lineage replay, bitwise; shaping zero;
 - in every evaluation, for each maze: the cue-removed and cue-fixed champions, the cut champion and E-G each have
   equal real-first and decoy-first counts (an assignment-blind policy enters the same candidate under both
@@ -178,7 +213,8 @@ evaluable"**; it is never rerun, and the owner is asked:
 
 **Stops that are not integrity failures.** A stage that stops for infrastructure (a crash, a driver failure, the
 machine) is rerun once, as a whole, from the same seeds and batch membership; the rerun needs a recorded reason
-naming the infrastructure cause, and the frame refuses a second rerun or a rerun after an integrity error. A second
+naming the infrastructure cause, and the frame refuses a second rerun or a rerun after an integrity error. `check`
+is rerunnable only after an infrastructure stop, never after a mismatch or a failed assertion. A second
 stop makes the arm **"not completed"**; reaching a cap makes it **"not completed (the cap was reached)"**. In either
 case the owner is asked, and nothing is read.
 
@@ -225,8 +261,9 @@ from E-G, not that evolution cannot.
   - **S against chance:** the same rule on its 32 champions' gains, reported as **"after seeded initialization"**
     (S₀ already carries some transfer, so this label alone says nothing about what the GA did).
   - **S against its start** (both reviewers): per run, the champion's real-first share minus S₀'s on the same test
-    block; the one-sided 95% t lower bound of the mean across the 32 runs. LB > 0: **"the GA improved on the seeded
-    wiring"**; otherwise **"no improvement on the seeded wiring detected"**.
+    block (in [−1, 1], whole trials out of 128); the one-sided 95% t lower bound of the mean across exactly 32 runs
+    (`evo_stats.improvement(d, n_expected=32)`). LB > 0, strictly: **"the GA improved on the seeded wiring"**;
+    otherwise **"no improvement on the seeded wiring detected"**.
 - **Read with L's** (S runs only after these two L states):
 
 | L | S against its start | The joint wording |
@@ -290,14 +327,17 @@ variance).
 - **Ties:** the simulation breaks the champion's exact ties at random, not by the final fitness and the norm.
 - **Structure:** the main grid draws strains independently, each with its own maze effects; the pilot's populations
   show a within-population correlation of per-maze scores of 0.26-0.39. With whole pilot populations' profiles and a
-  maze effect shared by every strain of a population (σ_s 1 and 1.5: correlations 0.25-0.26 and 0.40-0.42), the
-  power at μ = 0.25 and R = 32 is 1.00 (H), 0.94-0.98 (M) and 0.95 (U).
+  maze effect shared by every strain of a population (σ_s 1 and 1.5: correlations 0.24-0.26 and 0.40-0.43), the
+  power at μ = 0.25 and R = 32 is 1.00 (H), 0.94-0.98 (M) and 0.94-0.96 (U).
 - **Other failure and success levels** (champion-level two-point mixtures at μ = 0.25, a 128-trial test block): at
-  R = 32: failures at 0 and successes at the pilot's level, 0.89; failures at 0 and successes at a perfect 0.5, 0.71;
-  failures at −0.10 (harmful) and successes at the pilot's level, 0.77. R = 40 would give 0.80 and 0.85 there.
-- **So the 80% is conditional** on runs that fail landing near E-G (an L population keeps E-G-like strains, so its
-  champion cannot easily sit far below 0) and successes near the pilot's level (its best champion was 0.96, not 1).
-  Outside these the power at R = 32 can fall to about 0.7.
+  R = 32: failures at 0 and successes at the pilot's level, 0.90; failures at 0 and successes at a perfect 0.5, 0.71;
+  failures at −0.10 (harmful) and successes at the pilot's level, 0.79. R = 40 would give 0.80 and 0.87 there.
+- **So the 80% is conditional, on modelling assumptions:** runs that fail land near E-G, and successes near the
+  pilot's level (its best champion was 0.96, not 1). Nothing in the GA enforces the first (`breed` keeps fitness
+  elites, not E-G; Astra, D273). Outside these the power at R = 32 can fall to about 0.7.
+- **Ties bounded** (Astra, D273): always choosing the worst tied validation winner lowers the mean champion gain at the
+  μ = 0.25 placement by at most 0.004 (to 0.246-0.249), and the power at R = 32 is 1.00 (H), 0.87 (M) and 0.97 (U);
+  always the best, 1.00, 0.89 and 0.98.
 - **F's 4 runs:** 0.88-0.89 at μ = 0.25 if its runs are homogeneous (H), 0.19-0.28 if mixed or spread. F is
   secondary.
 - **S:** its 32 runs are read by the same rule, but its run distribution starts from S₀ and need not resemble L's, so
@@ -316,7 +356,9 @@ per-run time, for the extra conditions):
 | S, if triggered: `train-s`, `evaluate-s` (32 runs, with S₀) | 2.3 | 3.9 |
 
 **E4's remaining budget** is 23.95 of 30 GPU-hours (D270). **The caps,** each counting every attempt's recorded
-seconds (`CapClock`): **6 GPU-hours for `check` and L's stages; 1.5 for F's; 6 for S's.** At most 13.5 in all. A stage
+seconds (`CapClock`): **8 GPU-hours for `check` and L's stages; 1.5 for F's; 6 for S's.** At most 15.5 in all.
+L's cap leaves room for its one permitted rerun at the pilot-based rate; at the conservative rate a late stop could
+leave too little, and then the timing refusal (§5) applies and the owner decides (Fable, D273). A stage
 that reaches its cap stops, the arm reads "not completed (the cap was reached)", and the owner is asked; it is never
 read as a result. F's and S's caps are separate from L's, so neither can consume L's.
 
@@ -335,7 +377,11 @@ New code is test-first (rule 9), at the formal compositions where it matters:
 - the order and refusals: a stage refuses without its completed predecessors, under changed guarded files or
   registration, with an existing start marker, for a second rerun, for a rerun without an infrastructure reason, and
   after an integrity error; S's stages refuse unless `report-l` exists and reads one of the two triggering states;
-- the reports: computed only through `evo_stats.reading` with `n_expected`; a reduced arm is refused;
+- the reports: every comparison with chance only through `evo_stats.reading` with `n_expected`, S against its
+  start only through `evo_stats.improvement`; a reduced arm is refused;
+- the dependencies and the environment: every row of §5's table, including that an F failure does not block S, and
+  a refusal under a changed environment;
+- the formal evaluation path's assertions in `check`, on the GPU at the evaluation composition;
 - `check`: the replay comparison fails on a perturbed population and on a wrong snapshot index (sabotage checks); the
   timing refusal fires on an inflated projection.
 
@@ -380,3 +426,21 @@ New code is test-first (rule 9), at the formal compositions where it matters:
   the owner's word stated once (§0.4), the bounds renamed LB and UB (the arm is L).
 - **G's rationale** (Fable): the calibration's condition only (§11); the descriptive learning curve is on the
   checkpoint block, labelled noisy (§7.4).
+
+## 13. Changes from draft 2 (both reviews, D273)
+
+- **S's dependencies** (Astra, high): explicit per stage; S needs L's triggering report and the owner's word, not F.
+- **S against its start** (both): a registered function, `evo_stats.improvement` (range [−1, 1], the grid, the count,
+  the strict edge), with tests; the reports' "only through `reading`" is limited to comparisons with chance.
+- **The per-maze counts** (Fable): the one authorized additive change to `TrialResult`, with its equivalence check;
+  the formal code's files named; the condition-to-source mapping written out.
+- **`check`** (Fable): the formal evaluation path and its assertions exercised on the control before L is trained;
+  the replay's inputs complete (the pilot's training ids, factors, start); absent local files recorded "not
+  compared"; a mismatch not rerunnable; a timing refusal goes to the owner.
+- **The environment and compositions** (Astra): environment equality across stages and reruns; every composition.
+- **Ties** (Astra): bounded in the power analysis by the worst and best tied winner.
+- **Failures** (Fable): non-finite fitness is an integrity failure; the zero-slot check's weakness stated.
+- **The power's conditions** (Astra): near-E-G failures are a modelling assumption, not a property of the GA.
+- **L's cap** 8 GPU-hours (Fable), so its rerun is affordable at the pilot-based rate.
+- **R stays 32:** Fable "keep 32"; Astra prefers 40 but calls it a recommendation, not a blocker, and 32 defensible
+  with the conditional wording, which §8 keeps.

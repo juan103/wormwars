@@ -5,6 +5,7 @@
   sign-flip p beside, labelled distributional. Malformed gains are refused (non-finite, outside [−0.5, 0.5], off the
   1/128 grid of a 128-trial block, or a count other than the registered one; both reviewers, D272).
 - `states`: the same states for many simulated arms at once (the power analysis), as indices into `STATES`.
+- `improvement`: S against its start, the paired champion − S₀ differences' one-sided lower bound (D273).
 """
 
 from __future__ import annotations
@@ -108,3 +109,27 @@ def reading(d, *, delta: float = DELTA, alpha: float = ALPHA, evaluable: bool = 
             "state": STATES[state_of(lo, hi, delta)], "interval_label": "approximate (model-based)",
             "sign_flip_p_one_sided": sign_flip_one_sided(d, trials=trials),
             "sign_flip_label": "distributional (sign symmetry)"}
+
+
+IMPROVEMENT_STATES = ("the GA improved on the seeded wiring", "no improvement on the seeded wiring detected")
+
+
+def improvement_state(lb: float) -> str:
+    """S against its start (D273): LB > 0, strictly."""
+    return IMPROVEMENT_STATES[0] if lb > 0 else IMPROVEMENT_STATES[1]
+
+
+def improvement(d, *, n_expected: int, alpha: float = ALPHA, trials: int = TRIALS) -> dict:
+    """S against its start (pre-registration §7.2; both reviewers, D272-D273): per run, the champion's real-first share
+    minus S₀'s on the same test block, in [−1, 1] on the 1/`trials` grid; exactly `n_expected` runs; the one-sided
+    1 − α t lower bound of the mean."""
+    d = np.asarray(d, dtype=np.float64)
+    if d.ndim != 1 or len(d) != n_expected or len(d) < 2:
+        raise ValueError(f"{d.size} paired differences, not the registered {n_expected}")
+    if not np.all(np.isfinite(d)) or np.any(np.abs(d) > 1):
+        raise ValueError("a paired difference is not finite or lies outside [-1, 1]")
+    if not _on_grid(d, trials):
+        raise ValueError(f"a paired difference is not a whole number of trials out of {trials}")
+    m, lo, hi = bounds(d, alpha=alpha)
+    return {"n": len(d), "mean": float(m), "lb": float(lo), "alpha_one_sided": alpha,
+            "state": improvement_state(float(lo)), "interval_label": "approximate (model-based)"}
