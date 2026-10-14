@@ -8424,3 +8424,21 @@ the trial layout, the champion rule and the flag-off path are correct by inspect
   of the cap's remainder, 4.57 hours). A note for the power analysis: W = 16 costs only 8% more per generation (the GPU
   is underfilled at 8) and halves the fitness's noise; the rule was fixed in advance, so the pilot keeps W = 8 and the
   formal W is the power analysis's to set.
+
+## D270 — The evolutionary E4-D's pilot: evolution recruits the transfer in every run
+
+The screen and f ran on the GPU at 1ea0d91's code (the owner's word, 2026-10-14; `experiments/E4-two-minds/E4-D-evo/`;
+the pilot's total 1.85 GPU-hours with the precheck; E4's total 6.05 of 30). Exploratory; the formal runs are fresh.
+- **The screen** (arm L, only the 32 slots mutate; 4 runs per slot factor, 100 generations, W = 8, random ties; 4 128 s):
+  all 16 champions beat E-G (0.492 on both blocks, 63 real-first against 63 decoy-first) on the 64-maze assessment
+  block, and 15 of 16 reached 0.85 or more. Medians by factor: 0.89 (0.25), 0.91 (1), 0.92 (2), 0.88 (4). The champions
+  match or beat the hand-built control (0.83-0.88). At factor 0.25 their largest |w| is about 0.5, spread over many slots.
+- **The factor is 0.25,** by the declared rule: it is the only factor whose generation-1 children keep at least 0.95 of
+  the elites' entry rate (0.98 against 0.94). At 1, 2 and 4 the children's entry fell to 0.81, 0.56 and 0.31 of trials,
+  against the elites' 1.0: larger random steps break B.
+- **Arm F** (weights and τ at 0.25, the module biases at 0.02, the slots at 0.25; 4 runs; 1 469 s): champions 0.83-0.90;
+  each champion with its links cut is exactly balanced (real-first equal to decoy-first), as its isolation requires, and
+  enters less often than E-G (0.37-0.48 real-first over all trials). Its children kept 0.98 of the elites' entry rate
+  (0.97), so by the owner's rule (D266) **F is kept for the formal run** (4 runs).
+- **Next:** the power analysis and the pre-registration, from these numbers; review by both; bound and pushed before the
+  formal run; the owner's word before it.
