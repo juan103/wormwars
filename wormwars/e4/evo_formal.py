@@ -152,17 +152,24 @@ def validate_runs(arm: str, per_run: list[dict], *, stage: str) -> None:
         return
     conds = (*CONDITIONS, "cut", "eg")
     for r in per_run:
-        if len(r.get("validation_shares", ())) != POP:
-            raise IntegrityError(f"run {r['run']}: not every strain of the final population was validated")
+        v = np.asarray(r.get("validation_shares", ()), dtype=np.float64)
+        if v.shape != (POP,) or not np.all(np.isfinite(v)) or np.any((v < 0) | (v > 1)):
+            raise IntegrityError(f"run {r['run']}: the final population's validation shares are incomplete or invalid")
         cs = [(c, r["test"].get(c)) for c in conds] + ([("start", r.get("start"))] if arm == "S" else [])
         for c, x in cs:
             if x is None:
                 raise IntegrityError(f"run {r['run']}: the {c} condition is missing")
             pm = x.get("per_maze") or {}
+            arrs = {}
             for k in ("real_first", "decoy_first", "neither"):
-                a = np.asarray(pm.get(k, []))
-                if a.shape != (MAZES, 2) or int(a.sum()) != int(x[k]):
+                if k not in x or k not in pm:
+                    raise IntegrityError(f"run {r['run']}, {c}: the {k} count is missing")
+                a = np.asarray(pm[k])
+                if a.shape != (MAZES, 2) or not np.isin(a, (0, 1)).all() or int(a.sum()) != int(x[k]):
                     raise IntegrityError(f"run {r['run']}, {c}: the per-maze {k} counts are incomplete or disagree")
+                arrs[k] = a
+            if not np.all(arrs["real_first"] + arrs["decoy_first"] + arrs["neither"] == 1):  # one outcome per trial
+                raise IntegrityError(f"run {r['run']}, {c}: a trial has no outcome or more than one (Astra, D277)")
             if int(x["real_first"]) + int(x["decoy_first"]) + int(x["neither"]) != TRIALS:
                 raise IntegrityError(f"run {r['run']}, {c}: not {TRIALS} trials")
 

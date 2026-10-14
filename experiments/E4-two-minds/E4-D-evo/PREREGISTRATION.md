@@ -495,3 +495,14 @@ before its assertion; E-G, S₀, the saved final populations, selections and par
 §7.4's tie shares, parent-pool turnover and lineage mutation counts recorded.
 
 **The formal code's commit** is appended below once both reviewers confirm the fixed code.
+
+**Amendment 1, corrections (2026-10-14, D277; both reviewers of the fixed code):**
+- "The organisms were toys (40 ticks, populations of 6)" was too broad. That holds for the smokes. The CPU tests that
+  played check ids 54 000-54 002 used the trial's 300-tick test configuration, with up to three strains (E-G and
+  comparator-origin controls at w = 1 and 3), not evolved organisms (Astra). No test block was played either way, and
+  those ids are spent.
+- The new layout replaces §4's training-id range in its last bullet too: resolved training ids must lie in
+  [120 000 000, 130 000 000) (Fable).
+- The provenance check also holds every amendment already in force: the text as of the formal commit, of every
+  predecessor stage's commit and of a rerun's first attempt (read from its archived marker when a rerun's setup was
+  interrupted) must each survive as a prefix (Astra).

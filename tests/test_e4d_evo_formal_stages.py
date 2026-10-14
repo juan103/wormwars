@@ -151,21 +151,17 @@ def test_the_formal_commit_is_read_from_the_amendment(S):
 
 
 def test_a_rerun_is_held_to_its_first_attempts_code_and_environment(S, monkeypatch):
-    monkeypatch.setattr(S, "SMOKE", False)
-    for name in ("check_pinned",):
-        monkeypatch.setattr(S, name, lambda: None)
-    monkeypatch.setattr(S.E, "require_committed", lambda p: None)
-    monkeypatch.setattr(S, "prereg_append_only", lambda a, b: None)
-    monkeypatch.setattr(S, "formal_commit", lambda t: "f")
+    refs = {}
+    _provenance_stubs(S, monkeypatch, refs)
     seen = []
     monkeypatch.setattr(S.reg, "require_same_code", lambda c, g, **k: seen.append(c))
     marker = S.E.marker_path("train-l")
     marker.parent.mkdir(parents=True, exist_ok=True)
     marker.write_text(json.dumps({"provenance": {"git_commit": "first", "torch": "2.12.0"}}), encoding="utf-8")
-    S.check_provenance(None, {"torch": "2.12.0"}, "train-l")
-    assert "first" in seen
+    S.check_provenance(SimpleNamespace(rerun=True), {"torch": "2.12.0"}, "train-l")
+    assert "first" in seen and "first" in refs
     with pytest.raises(SystemExit, match="environment"):
-        S.check_provenance(None, {"torch": "2.13.0"}, "train-l")
+        S.check_provenance(SimpleNamespace(rerun=True), {"torch": "2.13.0"}, "train-l")
 
 
 def test_an_integrity_failure_is_not_evaluable_and_never_rerun(S):
@@ -382,3 +378,43 @@ def test_a_final_population_that_differs_from_the_training_record_raises(trial, 
     assert S.same_genome(got, pop)
     with pytest.raises(FM.IntegrityError, match="differs from the training record"):
         S.load_final("L", 0, want[::-1], cx["org"].genome.spec, cx["org"].genome.cfg, "cpu")
+
+
+def test_an_edited_amendment_is_refused(S):
+    """Astra (D277): the text at every reference commit (the bound one, the formal commit, earlier stages' and the first
+    attempt's) must survive as a prefix, so an earlier amendment cannot be rewritten either."""
+    bound = b"# T\n\nbound\n"
+    formal = bound + b"\n## Amendment 1\n\nids 64 000\n"
+    S.check_prereg(formal + b"\nmore\n", {"c3fe432": bound, "fb30301": formal})
+    with pytest.raises(SystemExit, match="fb30301"):
+        S.check_prereg(bound + b"\n## Amendment 1\n\nids 65 000\n", {"c3fe432": bound, "fb30301": formal})
+
+
+def _provenance_stubs(S, monkeypatch, refs):
+    monkeypatch.setattr(S, "SMOKE", False)
+    monkeypatch.setattr(S, "check_pinned", lambda: None)
+    monkeypatch.setattr(S.E, "require_committed", lambda p: None)
+    monkeypatch.setattr(S, "formal_commit", lambda t: "f")
+    monkeypatch.setattr(S, "prereg_at", lambda c: refs.setdefault(c, b""))
+    monkeypatch.setattr(S.reg, "require_same_code", lambda c, g, **k: None)
+
+
+def test_an_interrupted_rerun_setup_is_held_to_the_archived_marker(S, monkeypatch):
+    """Astra (D277): after the frame has archived the first marker as -attempt1, the comparison reads it."""
+    refs = {}
+    _provenance_stubs(S, monkeypatch, refs)
+    marker = S.E.marker_path("check")
+    marker.parent.mkdir(parents=True, exist_ok=True)
+    S.E.attempt1(marker).write_text(json.dumps({"provenance": {"git_commit": "first", "torch": "2.12.0"}}),
+                                    encoding="utf-8")
+    S.check_provenance(SimpleNamespace(rerun=True), {"torch": "2.12.0"}, "check")
+    assert {"first", "f", "c3fe432"} <= set(refs)  # the first attempt's, the formal and the bound texts
+    with pytest.raises(SystemExit, match="environment"):
+        S.check_provenance(SimpleNamespace(rerun=True), {"torch": "2.13.0"}, "check")
+
+
+def test_a_rerun_without_any_first_marker_is_refused(S, monkeypatch):
+    _provenance_stubs(S, monkeypatch, {})
+    with pytest.raises(SystemExit, match="first attempt"):
+        S.check_provenance(SimpleNamespace(rerun=True), {}, "check")
+    S.check_provenance(SimpleNamespace(rerun=False), {}, "check")  # a first attempt needs none

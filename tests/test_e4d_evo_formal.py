@@ -185,3 +185,39 @@ def test_s_against_its_start():
     assert rep["reading"]["state"] == ES.IMPROVEMENT_STATES[0]
     with pytest.raises(FM.IntegrityError):
         FM.improvement_report(per_run[:31])
+
+
+def test_malformed_observations_are_refused():
+    """Astra (D277): NaN validation shares; a maze whose assignment is missing and another double-counted (totals
+    unchanged); a non-binary entry; a missing count key."""
+    good = _arm("L", [40] * 32)
+    FM.report("L", good)
+
+    def nan_validation(r):
+        r["validation_shares"][3] = float("nan")
+
+    def double_count(r):
+        pm = r["test"]["intact"]["per_maze"]
+        k = next(i for i in range(64) if pm["real_first"][i] == [1, 1])
+        pm["real_first"][k] = [2, 0]  # same total, one assignment double-counted and the other missing
+
+    def non_binary(r):
+        pm = r["test"]["eg"]["per_maze"]
+        pm["neither"][0] = [pm["neither"][0][0] + 1, pm["neither"][0][1] - 1] if pm["neither"][0][1] else [2, -1]
+
+    def missing_key(r):
+        r["test"]["cut"].pop("decoy_first")
+
+    def two_outcomes_and_none(r):
+        """Every array binary and every total unchanged: one trial moves its real-first entry onto a trial that already
+        has a decoy-first one."""
+        pm = r["test"]["intact"]["per_maze"]
+        i = next(m for m in range(64) if pm["real_first"][m][0] == 1)
+        j = next(m for m in range(64) if pm["decoy_first"][m][0] == 1 and pm["real_first"][m][0] == 0)
+        pm["real_first"][i][0], pm["real_first"][j][0] = 0, 1
+
+    for sabotage in (nan_validation, double_count, non_binary, missing_key, two_outcomes_and_none):
+        bad = [json_copy(x) for x in good]
+        sabotage(bad[5])
+        with pytest.raises(FM.IntegrityError):
+            FM.report("L", bad)

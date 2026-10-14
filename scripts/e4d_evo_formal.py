@@ -223,23 +223,54 @@ def formal_commit(text: str) -> str:
     return found[-1]
 
 
-def check_provenance(args, prov: dict, stage: str) -> None:
-    """Before any stage (Astra, D276), the bound inputs and the reviewed code; a rerun against its first attempt."""
+def prereg_at(commit: str) -> bytes:
+    import subprocess
+    return subprocess.check_output(["git", "show", f"{commit}:{PREREG}"], cwd=ROOT)  # bytes: the text is UTF-8
+
+
+def check_prereg(now: bytes, refs: dict) -> None:
+    """The text at every reference commit survives as a prefix: the bound text and every amendment already in force
+    (Astra, D277)."""
+    for commit, text in refs.items():
+        try:
+            prereg_append_only(text, now)
+        except SystemExit:
+            raise SystemExit(f"the pre-registration as of {commit} was changed, not only appended to: refusing") from None
+
+
+def first_marker(stage: str):
+    """The first attempt's start marker, or its archived copy when a rerun's setup was interrupted (Astra, D277)."""
+    m = E.marker_path(stage)
+    if m.exists():
+        return m
+    a = E.attempt1(m)
+    return a if a.exists() else None
+
+
+def check_provenance(args, prov: dict, stage: str, predecessors=()) -> None:
+    """Before any stage (Astra, D276-D277): the bound inputs and the reviewed code; the pre-registration append-only
+    against the bound commit, the formal commit, the predecessors' commits and a rerun's first attempt; a rerun's code
+    and environment against its first attempt's."""
     if SMOKE:
         return
     check_pinned()
     E.require_committed(ROOT / PREREG)
-    import subprocess
-    bound = subprocess.check_output(["git", "show", f"{BOUND}:{PREREG}"], cwd=ROOT)  # bytes: the text is UTF-8
     now = (ROOT / PREREG).read_bytes()
-    prereg_append_only(bound, now)
+    fc = formal_commit(now.decode("utf-8"))
+    refs = {BOUND: prereg_at(BOUND), fc: prereg_at(fc)}
     reg.require_same_code(BOUND, BOUND_FILES)
-    reg.require_same_code(formal_commit(now.decode("utf-8")), CODE)
-    marker = E.marker_path(stage)
-    if marker.exists():  # a rerun: the same code and environment as the first attempt (Astra, D276)
-        first = json.loads(marker.read_text(encoding="utf-8"))["provenance"]
+    reg.require_same_code(fc, CODE)
+    m = first_marker(stage)
+    if m is None and getattr(args, "rerun", False):
+        raise SystemExit("a rerun, but no first attempt's start marker (nor its archived copy): refusing")
+    if m is not None:
+        first = json.loads(m.read_text(encoding="utf-8"))["provenance"]
+        refs[first["git_commit"]] = prereg_at(first["git_commit"])
         reg.require_same_code(first["git_commit"], CODE)
         reg.require_same_env(first, prov)
+    for c in predecessors:
+        refs.setdefault(c, prereg_at(c))
+    check_prereg(now, refs)
 
 
 def owner_word(args, stage: str) -> str | None:
@@ -262,7 +293,6 @@ def timing_ok(per_gen_seconds: float, spent_hours: float, cap_hours: float) -> d
 def requires(stage: str):
     """§5's table: each predecessor completed, under the same code, registration and environment (`check`'s)."""
     def check(args, prov):
-        check_provenance(args, prov, stage)
         got = {}
         for s in FM.DEPENDS[stage]:
             path = E.record_path(s)
@@ -274,6 +304,7 @@ def requires(stage: str):
                 if rec["registered"] != json.loads(json.dumps(REGISTERED)):
                     raise SystemExit(f"the registration differs from {s}'s")
             got[s] = rec
+        check_provenance(args, prov, stage, [r["provenance_at_start"]["git_commit"] for r in got.values()])
         if stage == "check" and not SMOKE and local_gen010() is None:
             raise SystemExit("the pilot's local generation-10 populations are required on the tested machine (§5.1)")
         if stage != "check":
@@ -730,6 +761,9 @@ def use_smoke(args=None) -> None:
     FM.CHECK_IDS, FM.CHECKPOINT_IDS = np.arange(43_000, 43_002), np.arange(43_100, 43_102)
     FM.TRAIN, FM.TIMING = (200_000_000, 210_000_000), (210_000_000, 220_000_000)
     R.update(maze_seed=FM.MAZE_SEED, seed_base=FM.SEED_BASE, runs=dict(FM.N_RUNS))
+    R["blocks"] = {"check": [int(FM.CHECK_IDS[0]), int(FM.CHECK_IDS[-1])],
+                   "checkpoints": [int(FM.CHECKPOINT_IDS[0]), int(FM.CHECKPOINT_IDS[-1])], "bases": dict(FM.BASES),
+                   "train": list(FM.TRAIN), "timing": list(FM.TIMING)}  # the smoke's own (Fable, D277)
 
 
 def main():

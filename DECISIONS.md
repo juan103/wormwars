@@ -8571,3 +8571,23 @@ found the numeric path faithful to the bound text. Every finding is taken:
 - **Run again:** CPU and GPU smokes of all ten stages under the isolated smoke layout; the amended pre-flight (all 138
   blocks, no replacement).
 Next: the fixed code to both for confirmation; then the formal commit appended to Amendment 1, and the owner's word.
+
+## D277 — The fixed formal code's review: Fable "run it", Astra "fix first"; the fixes
+
+Astra 6 and Fable 5.1 at "high" on fb30301 (`docs/reviews/20261014-E4-D-evo-formal-code-2/`). Fable: "run it", every
+finding resolved, Amendment 1 adequate, notes only. Astra: "fix first" on three medium points and one wording point,
+each checked and taken:
+- **Earlier amendments were not protected:** the append-only check compared only with the bound text. It now holds the
+  text as of the bound commit, the formal commit, every predecessor's commit and a rerun's first attempt (Astra changed
+  Amendment 1's ids in memory and the old check passed).
+- **An interrupted rerun setup skipped the first-attempt comparison:** the first attempt's marker is now read from its
+  archived copy when needed, and a rerun with neither is refused (Fable noted the same).
+- **`validate_runs` checked totals only:** it now requires finite validation shares in [0, 1], binary per-assignment
+  counts and exactly one outcome per trial; Astra had shown NaN shares, and a missing assignment offset by a doubled
+  one, reading "practically relevant". A sharper sabotage (one trial with two outcomes and one with none, all arrays
+  binary and totals unchanged) fails the test only through the new elementwise check.
+- **Amendment 1's wording:** a dated correction (the CPU tests that played check ids were 300-tick trials of E-G and
+  controls, not toys; the training-id bullet; the stronger provenance), appended.
+- Fable's notes: smoke records now carry the smoke's own blocks; a missing count key is an integrity error.
+Each new guard was sabotaged once and its test failed. CPU and GPU smokes of all ten stages pass.
+Next: both to confirm; then the formal commit appended to Amendment 1, and the owner's word.
