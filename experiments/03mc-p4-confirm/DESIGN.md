@@ -1,299 +1,420 @@
-# 03mc: a confirmatory test of 03m's leads on P4 (design v1)
+# 03mc: a confirmatory test of 03m's leads on P4 (design v2)
 
-**Status:** design v1, written 2026-10-15 for review by Astra 6 and Fable 5.1. Not a pre-registration.
-Nothing in it has run. The owner chose Track B next on 2026-10-15 ("let's go to the biology track
-first"; D285). The label 03mc ("03m, confirmatory") is proposed here; ROADMAP's Track B leaves the
-label to the pre-registration.
+**Status:** design v2, 2026-10-16, for a second review by Astra 6 and Fable 5.1. Not a pre-registration;
+nothing fresh has been drawn or run.
+- **v1** (`6e948d7`, D285): both reviewers said "revise" (run 20261015-232952, D286). §11 lists the changes.
+- **The owner's go:** Track B next, on 2026-10-15 ("let's go to the biology track first"; D285).
+- **The label** 03mc ("03m, confirmatory") is proposed here. ROADMAP's Track B leaves the label to the
+  pre-registration.
 
 ## 0. Why, and what is already known
 
 Experiments 03 and 03r found that random, unevolved brains wired as N2 show more history dependence
 (P4) than brains wired as five kinds of shuffled graph. 03 was borderline; 03r replicated it (D080).
-**03m** (exploratory, D113-D116) looked for what drives it. After review, its corrected summary
-(`experiments/03m-p4-mechanism/RESULTS.md`, Corrections) left these leads:
-1. **Gap junctions:** with gap junctions off in every brain, N2's P4 rises by +0.014; each of 80 null
-   graphs rises by more (+0.051 to +0.143). N2's lead over the shuffles narrows.
-2. **RIA and AIY:** deleting the RIA pair cuts N2's response (P4's denominator) by 62% and its
-   numerator by 62%. Deleting the AIY pair cuts them by 53% and 53%. P4 moves by +0.005 and −0.004.
-   These are the two largest response cuts among N2's 95 bilateral pairs. The next is ASE, at 31%.
-3. **Weight placement:** under 64 permutations of N2's weight magnitudes over its own edges, every
-   response falls to the null range. P4 falls too: 59 of 64 permutations are below N2.
+**03m** (exploratory, D113-D116) looked for what drives it. Its corrected summary
+(`experiments/03m-p4-mechanism/RESULTS.md`, Corrections) left five leads. Both reviewers recomputed
+every figure below from 03m's committed files (D286):
+1. **Gap junctions:** with gap junctions off in every brain, N2's P4 rises by +0.0144, while each of
+   80 null graphs rises by +0.051 to +0.143. N2's lead over the shuffles narrows.
+2. **RIA and AIY:**
+   - Deleting the RIA pair cuts N2's response (P4's denominator) by 61.7% and its numerator by 61.5%;
+     P4 moves by +0.005.
+   - Deleting the AIY pair cuts them by 52.8% and 53.1%; P4 moves by −0.004.
+   - These are the two largest response cuts among N2's 95 bilateral pairs. The third is ASE, at 31.1%.
+3. **Weight placement:** 64 permutations of N2's weight magnitudes over its own edges were measured
+   under two genome designs.
+   - Every permutation's response is below the pooled null maximum.
+   - In each design, 59 of the 64 permutations have P4 below N2's.
+   - The permutations' median keeps 60% (independent design) and 58% (paired) of N2's excess P4
+     over the pooled null median.
 4. **Slower relaxation:** after the ramp, N2 keeps a larger share of the rising-minus-falling
-   difference than all 80 null graphs at every recorded tick from 5 to 50. At tick 300, 2 of the 80
-   keep more.
-5. **Saturation:** N2's turn read-out neurons work at a lower tanh slope than all 80 null graphs. Part
-   of P4 may therefore come from the read-out's nonlinearity.
+   difference than all 80 null graphs at every recorded tick from 5 to 50. At tick 30, N2 keeps
+   0.470; the nearest null graphs keep 0.427 (SH-10007), 0.415 (SH-recip-50002) and 0.397
+   (SH-recip-50014). At tick 300, two graphs keep more than N2: SH-10007 and SH-mirror-40014.
+5. **Saturation:** N2's turn read-out neurons work at a lower tanh slope than all 80 null graphs.
 
 Both reviewers of 03m's results proposed a confirmatory follow-up
-(`docs/reviews/20260929-061029-03m-results/`):
-- **Astra** proposed two narrow questions:
-  - RIA and AIY, with matched controls, an equivalence margin for P4, and numerator and denominator
-    analysed jointly;
-  - retained separation, with a registered endpoint and graph-level inference.
-- **Fable** proposed five:
-  - gap junctions off, ranked against each ensemble with gap junctions off;
-  - RIA and AIY: a response cut of at least 40%, with P4 within 0.02; degree-matched controls; the
-    same pairs in null graphs; the double deletion;
-  - N2's rank among at least 256 fresh permutations;
-  - per-ensemble ranks at 300 ticks, with at least 64 graphs each;
-  - P4 on the read-out's state before the tanh.
-- **Not registered:** neither wants "no deletion removes P4" registered (Fable: "better described than
-  tested"), or a claim of stable states without a stronger protocol (Astra).
+(`docs/reviews/20260929-061029-03m-results/`). This design takes up their proposals, with three
+replacements, each stated where it applies:
+- **Tick 300 is secondary, not the endpoint** (Fable proposed it): it is a likely failure, §4 Q-D.
+- **The specificity reference is all 95 pairs plus degree-matched controls,** rather than random
+  degree-matched pairs alone: §4 Q-B.
+- **"Thresholds from matched manipulated nulls"** (Fable) become Q-A's paired change, ranked against
+  each null graph's own change under the same manipulation.
 
-This design takes up all of those suggestions.
+Neither reviewer wanted "no deletion removes P4" registered, nor a claim of stable states; neither is.
 
 ## 1. Disclosures
 
 - **Everything 03, 03r and 03m measured is known.** Every hypothesis here comes from 03m's data, and
-  so do the choices that matter: the endpoint tick in Q-D, the margins in Q-B, and which questions are
-  primary. What makes the study confirmatory is new data only: fresh genomes for every graph (N2's
-  included), fresh null graphs, and fresh permutations, all registered and pushed before any is drawn.
-- **Measured for this design:** the history probe's GPU time, on N2 with 03's genomes. It is 13.0 s
-  for 2 048 genomes with one row per strain, and 6.6 s with the rising and falling histories as two
-  rows of one strain (§5). No fresh genome, graph or permutation has been drawn.
+  so do the choices that matter:
+  - Q-D's endpoint tick;
+  - Q-B's margins;
+  - which questions are primary.
+
+  What makes the study confirmatory is only the new data: fresh genomes for every graph (N2's
+  included), fresh null graphs and fresh permutations, all registered and pushed before any is drawn.
+- **Measured for this design, on old inputs only (03's genomes, 03m's panel):**
+  - the history probe's GPU time (D285);
+  - the two-row probe's deviation from 03m's one-row outputs, on N2, the 80 panel graphs, and three
+    N2 conditions (§5, `equivalence.json`);
+  - the probability of passing (§6, `power.py`, `power.json`), simulated from 03m's committed
+    summaries and its local per-genome arrays (their hashes recorded).
 
 ## 2. What stays exactly as in 03
 
 These stay as in 03, so that the effect tested is the one 03, 03r and 03m measured:
 - **The probe:**
   - 03's stimulus bank (`experiments/03-generation0/pilot.json`);
-  - the rising and falling ramps (0.25 and 1.75 times the final food level, 100 ticks of hold, a
-    10-tick ramp);
+  - the ramps: 0.25 and 1.75 times the final food level, 100 ticks of hold, a 10-tick ramp;
   - the raw turn read-out;
   - the interface M0.
 - **P4:** the mean |rising − falling| at the ramp's end over the mean |steady contrast|, averaged in
   float64.
-- **Exclusion:** a denominator below 10⁻⁴, or not finite, makes the measurement invalid.
-- **Genomes:** 2 048 random genomes per graph, drawn as 03 drew them (`Genome.random`, seed from the
-  graph's name).
-- **The null ensembles:** 03's five samplers (SH, SH-route, SH-class, SH-mirror, SH-recip), with
-  their validation rules (plateau, acceptance floor, Jaccard ceiling, disclosed substitution).
+- **Exclusion:** a denominator below 10⁻⁴, or not finite, makes a P4 invalid.
+- **Genomes:** 2 048 random genomes per graph, drawn as 03 drew them (`Genome.random`; seed from the
+  graph's name and the salt).
+- **The null ensembles:** 03's five samplers (SH, SH-route, SH-class, SH-mirror, SH-recip), with their
+  validation rules: plateau, acceptance floor, Jaccard ceiling, disclosed substitution.
 
-## 3. What is new
+## 3. What is new: seeds and freshness
 
 | | 03 | 03r | 03m | **03mc** |
 |---|---|---|---|---|
 | genome salt | none | "03r:" | none (03's genomes) | **"03mc:"** |
-| ensemble seeds | 10 000 + i, ... | 1 010 000 + i, ... | 03's | **2 010 000 + i, 2 020 000 + i, ... 2 050 000 + i** |
+| ensemble seeds | 10 000 + i, ... | 1 010 000 + i, ... | 03's | **2 010 000 + i, ... 2 050 000 + i** |
 | plateau chains | 90 000-90 003 | 1 090 000-1 090 003 | | **2 090 000-2 090 003** |
 | graphs per ensemble | 128 | 128 (256 SH-route) | 16 (decay) | **128** |
-| permutation seeds | 1-3 | 4-6, fresh secondary | 100-163 | **1 000-1 255** |
+| permutation seeds | 1-3 | 4-6, then `_gseed(name) + 2` | 100-163 | **1 000-1 255** |
+| Q-B's extra N2 genome batches | | | | **31 batches: names "N2#1" ... "N2#31", salt "03mc:"** |
 
-- **Substitutions:** a substitution after a sampler failure adds 100 000, as in 03, and stays clear of
-  every earlier seed.
-- **Graph files:** they stay local, as in 03 (they carry permuted anatomical weights). The record and
-  the manifests, with raw and content hashes, are committed.
-- **Collisions:** the build refuses any graph array identical to one of 03's, 03r's or 03m's, and any
-  permutation seed already used.
-- **Smoke runs** use a separate salt ("03mc-smoke:"), separate graph seeds (2 900 000 + i) and
-  separate permutation seeds (9 000 +), and never touch a formal input (E3b-1's lesson).
+**The freshness audit** runs in the build, before anything is measured. Any failure stops the build;
+it is reported, and resolved only by a dated amendment. The audit:
+- computes every derived genome seed this study will use: N2, the 640 graphs, the 31 batches, and the
+  substitutes if any;
+- requires them to be distinct from each other and from every derived seed of 03, 03r and 03m (all
+  their graph names under their salts). `genome_seed` keeps 31 bits, so a new salt alone does not
+  guarantee distinct seeds (Astra);
+- requires every permutation seed to be distinct from 03's, 03r's (including every
+  `_gseed(name) + 2`), 03m's, and the smoke seeds;
+- requires every new graph's array content to be distinct from every other new graph's, and from
+  every graph in 03's and 03r's committed content manifests.
+
+Also:
+- **Substitutions:** a substitution after a sampler failure adds 100 000, as in 03.
+- **Graph files** stay local, as in 03 (they carry permuted anatomical weights). The record and the
+  manifests, with raw and content hashes, are committed.
+- **Smoke runs** use the salt "03mc-smoke:", graph seeds 2 900 000 + i and permutation seeds from
+  9 000, and never touch a formal input (E3b-1's lesson).
 
 ## 4. The questions
 
-Four primary questions (Q-A to Q-D) are tested under Holm at a familywise α = 0.05 (§6). Each has
-wording fixed for both outcomes.
+Four primary questions (Q-A to Q-D) form one family under Holm at a familywise α = 0.05, one-sided in
+each predicted direction (§6). Every outcome has fixed wording; the cases that cut across questions
+(Holm stopping, a failed replication) are in §6.
 
 ### Q-A. Does N2's lead depend on gap junctions? (primary)
 
-- **Measure:** for every graph, ΔP4 = P4 with every gap junction's weight set to zero, minus intact P4.
-  Both are measured on the same 2 048 genomes. 03m switched them off the same way (`g = 0`).
-- **Prediction:** N2's ΔP4 is lower than the ΔP4 of every ensemble's graphs.
+- **Measure:** for every graph, ΔP4 = P4 with every gap junction's weight set to zero (`g = 0`, as in
+  03m), minus intact P4. Both are measured on the same 2 048 genomes.
+  - N2 is measured exactly as each null graph is, on its first batch of 2 048 genomes. The rank test's
+    exchangeability needs the same precision.
+  - A graph counts only if both its P4s are valid; so does N2.
+- **Prediction:** N2's ΔP4 is unusually small relative to every ensemble's.
 - **Test:**
-  - for each ensemble, r = the number of valid graphs with ΔP4 ≤ N2's;
-  - the rank p is (r + 1)/(n + 1);
+  - for each ensemble, r = the number of counted graphs with ΔP4 ≤ N2's, and the rank p is
+    (r + 1)/(n + 1);
   - the question's p is the maximum over the five ensembles (intersection-union, as 03r's primary).
 - **Outcome wording:**
-  - pass: "N2's P4 lead over each null ensemble depends partly on gap junctions: switching them off
-    raises N2's P4 less than every ensemble's";
-  - fail: "not confirmed: N2's change with gap junctions off is not lower than every ensemble's".
-  - Each ensemble's own count and rank p are reported in both cases.
-- **Secondary, with 03r's single-signal verdicts:** N2's P4 with gap junctions off against each
-  ensemble's with gap junctions off. This says whether N2 is still distinctive without them; 03m
-  suggests it may not be, since 5 of 80 null graphs matched or exceeded it.
+  - pass: "N2's P4 changed unusually little when gap junctions were switched off, relative to each
+    ensemble: [r of n] graphs per ensemble changed as little or less";
+  - and, only if the intact P4 replicates here (§4, replication): "N2's P4 lead over each ensemble
+    narrows without gap junctions, by [the change in the median gap, per ensemble]";
+  - fail: "the registered criterion was not met: [r of n] graphs per ensemble changed as little as N2
+    or less".
+- **Secondary, with 03r's single-signal verdicts:** N2's gaps-off P4 against each ensemble's gaps-off
+  P4. In 03m, 5 of 80 null graphs matched or exceeded it.
 - **What it cannot show:**
-  - A smaller rise could reflect N2 starting nearer a ceiling: 03m's null P4s rise towards N2's level.
-    Both levels are reported, so the reader can see that.
-  - Switching gap junctions off removes a coupling; it does not show which gap junctions matter.
+  - A small change does not say why. N2 may start near a level the shuffles rise towards, and 03m's
+    nulls with a higher intact P4 rose less (a slope of −0.26 over the 80 graphs). The levels are
+    reported beside the changes.
+  - It does not say which gap junctions matter.
 
-### Q-B. RIA and AIY: a response cut that leaves P4 in place (primary)
+### Q-B. RIA and AIY: a response cut with P4 kept (primary)
 
-- **Deletions in N2:**
-  - the RIA pair, the AIY pair, and both pairs together, each as 03m deleted them
-    (`wormwars/deletion.py`: every edge and gap junction touching the neuron, and its bias);
-  - also every other bilateral pair (93), as the reference set below.
-- **Per deletion, with the same 2 048 genomes as intact N2:**
-  - the response's fractional fall, 1 − den_deleted / den_intact;
-  - the numerator's fractional fall;
-  - ΔP4.
-  - Intervals come from a paired bootstrap over genomes (10 000 resamples, seed fixed).
-- **The registered claim, for RIA and for AIY separately (both must hold):**
-  - **(i)** the response falls by more than 40% (Fable's figure; 03m: 62% and 53%), tested one-sided
-    on the bootstrap;
-  - **(ii)** |ΔP4| < 0.02, tested as an equivalence (two one-sided tests, each at 5%).
-    - **Why 0.02:** it is about three times the SE of N2's P4 at 2 048 genomes (0.006) and a fifth of
-      N2's lead over the pooled null median (0.93 against 0.82).
-    - It is not specific to RIA and AIY: in 03m, 94 of 95 pair deletions changed P4 by less than 0.02.
-      The claim is the conjunction, a large cut in both terms with their ratio kept, not the
-      equivalence alone.
-  - The question's p is the largest of the four component p-values (two pairs × two parts). Bootstrap
-    p-values are floored at 1/10 001.
+- **Genomes:** 32 batches of 2 048 genomes for N2 (65 536 in all):
+  - batch 0 is N2's genomes for every other question;
+  - batches 1-31 come from the names "N2#1" ... "N2#31".
+  - The uncertainty in the change of P4 under a deletion was underestimated in v1. At 2 048 genomes,
+    03m's AIY change has a paired bootstrap SE of 0.012 (Astra).
+- **Conditions, in every batch:** intact; the RIA pair deleted; the AIY pair deleted; both pairs; and
+  eight degree-matched control pairs (below).
+  - A deletion is 03m's: every edge and gap junction touching the neuron, and its bias.
+  - Each condition runs as its own probe, in the registered composition.
+  - An empty deletion in batch 0 must reproduce batch 0's intact terms exactly; otherwise the run
+    stops.
+- **Estimates:** ratios of means pooled over all 65 536 genomes:
+  - the response cut, 1 − den_deleted / den_intact;
+  - the numerator's cut;
+  - ΔP4 = P4_deleted − P4_intact.
+- **The bootstrap:** 10 000 resamples of the 65 536 genome indices, with the same indices for every
+  condition (paired), from `numpy.random.default_rng(20261016)`.
+  - Each estimate is recomputed per resample; its SE is the SD over resamples.
+  - A resample with an invalid denominator is dropped and counted. More than 1% dropped withholds
+    Q-B.
+- **The tests:** normal-theory tests with the bootstrap SE (z = estimate distance over SE, one-sided
+  p = Φ(−z)):
+  - cut: p_cut = Φ(−(cut − 0.40)/SE_cut);
+  - equivalence: p_eq = max(Φ(−(ΔP4 + 0.02)/SE_Δ), Φ(−(0.02 − ΔP4)/SE_Δ)) (two one-sided tests);
+  - the question's p is the largest of p_cut and p_eq, for RIA and for AIY: four values,
+    intersection-union. Holm then applies to that p (§6); no part is passed at a fixed 5% (Astra).
+- **Margins:**
+  - **40%** sits between the third-largest pair cut in 03m (ASE, 31%) and AIY's 53%, so it also
+    separates RIA and AIY from every other pair.
+  - **0.02** in P4 is about a fifth of N2's lead over the pooled null median (0.93 against 0.82),
+    and the lead is what the study is about. A deletion that moved P4 by less than that would leave
+    most of the lead in place.
+  - With the cut above 40%, |ΔP4| < 0.02 bounds the numerator's cut to within about one percentage
+    point of the response's (Fable). The claim is "approximately in proportion", not exact
+    proportionality (Astra).
+  - The margin is not specific to RIA and AIY: in 03m, 94 of 95 pair deletions moved P4 by less than
+    0.02. The claim is the conjunction.
 - **Outcome wording:**
-  - pass: "deleting the RIA pair, or the AIY pair, cuts N2's response by more than 40%, and P4 stays
-    within 0.02: the history signal falls in proportion";
-  - fail: the parts that failed, by name.
+  - pass: "Deleting the RIA pair, or the AIY pair, cuts N2's response by more than 40% while P4 stays
+    within 0.02: the history signal falls approximately in proportion";
+  - fail: "the registered criterion was not met:" then each failed part, for example "AIY's change
+    in P4 was not shown to be within 0.02 ([estimate, interval])".
+- **Degree-matched controls (secondary, a test outside the family):**
+  - For each of RIA and AIY: the four bilateral pairs nearest in total degree (chemical in + out +
+    gap, summed over both neurons, from the connectome). The turn read-out pairs, RIA and AIY are
+    excluded; ties are broken alphabetically.
+  - This gives AIB, AVJ, RIM and AVH for RIA (degree 135; theirs 141, 119, 116, 114), and AWB, RIF,
+    RIP and RIV for AIY (degree 58; theirs 59, 59, 59, 57). The code derives the list and asserts it.
+  - The claim: RIA's cut exceeds each of its four controls' cuts (one-sided bootstrap tests, Holm
+    over the four at 0.05), and the same for AIY.
 - **Secondary, descriptive:**
-  - **Specificity:** RIA's and AIY's rank among all 95 pair deletions by response cut (03m: first and
-    second).
-  - **Joint analysis** (Astra): the numerator's and the response's falls, with their paired interval;
-    the double deletion's falls.
-  - **The same deletions in null graphs** (Fable): RIA, AIY and both, deleted in the first 32 graphs
-    of each ensemble. Each graph's fractional response fall is reported, and N2's rank among them. The
-    neurons exist by name in every null graph; their wiring is shuffled. This asks whether the cut
-    comes from N2's wiring around RIA and AIY, or from what the shuffles keep (each sampler keeps
-    some degree structure).
-  - **The factorial** (Astra): RIA, AIY and both, deleted in N2 under the first 32 of Q-C's
-    permutations. Does the cut depend on where the weights sit?
-- **Not registered:** whether any deletion removes the elevated P4 (both reviewers). The full
-  95-pair screen is reported descriptively.
+  - all 95 pair deletions on batch 0, with RIA's and AIY's ranks by response cut;
+  - the double deletion's cuts and ΔP4;
+  - the numerator's and response's cuts side by side, with paired intervals (Astra).
+- **The same deletions in null graphs (secondary, descriptive):** RIA, AIY and both, deleted in the
+  first 32 graphs of each ensemble.
+  - Reported: each graph's response cut, and N2's rank among them.
+  - The neurons exist by name in every null graph, with shuffled wiring. This asks whether the cut
+    comes from N2's wiring around them, or from what each sampler keeps (some degree structure).
+- **The factorial (secondary, descriptive):** RIA, AIY and both, deleted in N2 under the first 32 of
+  Q-C's permutations, on batch 0.
+  - The contrast: N2's cut minus the permutations' mean cut, with a bootstrap interval over
+    permutations (Astra).
+  - It asks whether the cut depends on where the weights sit. It is descriptive, so no claim that
+    "weight placement acts through RIA and AIY" can come from it.
+- **Not registered:** whether any deletion removes the elevated P4 (both reviewers).
 
-### Q-C. Does the weight placement set the response? (primary)
+### Q-C. Is N2's response unusually high against its own weight placements? (primary)
 
-- **Permutations:** 256 fresh permutations of N2's weight magnitudes over its own edges, chemical and
-  gap magnitudes each within their own type, seeds 1 000-1 255. The design is paired: N2's own
-  2 048 genome draws, with only the magnitudes permuted (03m's paired design: signs, biases and time
-  constants unchanged).
-- **Prediction:** N2's response is above every permutation's (03m: all 128 permutations fell to the
-  null range).
-- **Test:**
-  - r = the number of valid permutations with a response ≥ N2's;
-  - p = (r + 1)/257.
+- **Permutations:** 256 fresh permutations of N2's weight magnitudes over its own edges (chemical and
+  gap magnitudes each within their own type), seeds 1 000-1 255. The design is paired: batch 0's
+  genome draws, with only the magnitudes permuted; signs, biases and time constants are unchanged.
+- **Prediction:** N2's response is unusually high relative to the permutations.
+- **Test:** r = the number of valid permutations with a response ≥ N2's, and the rank p is
+  (r + 1)/(n + 1), with n the number of valid permutations (Astra).
 - **Outcome wording:**
-  - pass: "the placement of N2's weight magnitudes sets its large response: N2's response is above
-    that of [n − r] of n permutations";
-  - fail: the count.
-- **Secondary, with a test but outside the primary family:** N2's P4 rank among the same permutations,
-  with the same rank p. 03m's 59 of 64 predicts a rank p near 0.08, so this test has little power,
-  and this is said in advance.
-- **Secondary, descriptive:** the share of N2's excess P4 over the pooled null median that the
-  permutations' median keeps (03m: about 60%), with a bootstrap interval over permutations.
+  - pass: "N2's response is unusually high relative to permutations of its weight magnitudes: [r of n]
+    permutations reached it";
+  - fail: "the registered criterion was not met: [r of n] permutations reached N2's response".
+  - A pass does not show that the placement accounts for the whole response.
+- **Secondary, a test outside the family:** N2's P4 rank among the same permutations, with the same
+  rank p. 03m's 59 of 64 points to a rank p near 0.08, so this test has little power, and that is
+  said in advance.
+- **Secondary, descriptive:** the share of N2's excess P4 over the pooled fresh null median that the
+  permutations' median keeps, with a bootstrap interval over permutations.
 
-### Q-D. Does N2's history fade more slowly? (primary)
+### Q-D. Does N2 keep more of its history difference at tick 30? (primary)
 
 - **Measure:** after the ramp, the final input is held for 300 ticks, as in 03m. For each graph, the
-  retained share at tick t is mean|rising − falling| at t over the same at tick 0 (a ratio of means
-  over genomes).
-- **Primary endpoint: the retained share at tick 30.**
-  - **Chosen with 03m's curves in view:** N2 was above all 80 null graphs at every tick from 5 to 50.
-    Tick 30 is three ramp-lengths after the ramp ends.
-  - **Tick 300 is not the endpoint:** there, 2 of 80 null graphs (in SH and SH-mirror) kept more than
-    N2, and the slowly relaxing SH-mirror and SH-recip graphs make a tick-300 test likely to fail
-    (§6).
-- **Prediction:** N2's retained share at tick 30 is above every ensemble's.
-- **Test:** the rank p and intersection-union, as in Q-A, counting graphs with a share ≥ N2's.
+  retained share at tick t is mean|rising − falling| at t over the same at tick 0: a ratio of means
+  over genomes.
+  - A graph counts only if its P4 is valid and its tick-0 mean is at least 10⁻⁴; the same holds for
+    N2.
+- **Endpoint: the retained share at tick 30.**
+  - **Chosen with 03m's curves in view:** N2 was above all 80 null graphs at every tick from 5 to 50
+    (§0). Tick 30 has the highest simulated pass probability among ticks 10-50 (§6), and it is three
+    ramp-lengths after the ramp ends.
+  - **Not tick 300:** at tick 300 the slowly relaxing graphs make the test a likely failure.
+- **Prediction:** N2's retained share at tick 30 is unusually large relative to every ensemble's.
+- **Test:** rank p and intersection-union, as in Q-A, counting graphs with a share ≥ N2's.
 - **Outcome wording:**
-  - pass: "N2's history difference fades more slowly than every ensemble's: 30 ticks after the ramp it
-    keeps a larger share";
-  - fail: the counts.
-- **Secondary, with tests outside the primary family:** the same rank test at ticks 10, 50, 100 and
-  300.
+  - pass: "N2 retained an unusually large share of its history difference 30 ticks after the ramp,
+    relative to each ensemble: [r of n] graphs per ensemble retained as much or more";
+  - fail: "the registered criterion was not met: ...".
+  - A pass is about one time point. It does not separate a slower relaxation from a plateau or a
+    differently shaped transient, and it does not mean that every null graph or every N2 genome keeps
+    less (Astra).
+- **Secondary, tests outside the family:** the same rank test at ticks 10, 50, 100 and 300. At tick
+  300 a failure is expected.
 - **Secondary, descriptive:**
   - the full curve;
-  - the share of genomes with more than 10% of their starting difference left at tick 300 (among
-    those starting above 10⁻³);
-  - the absolute count of genomes that have settled with separation left (Fable).
-  - Settling uses 03m's rule: the full state's range over each of the last 10 ticks, below 10⁻⁴.
-- **Not claimed:** stable states. A ten-tick settling test cannot show lasting stability (Astra).
+  - among genomes starting above 10⁻³, the share with more than 10% of their difference left at tick
+    300;
+  - the absolute count of genomes settled with separation left (Fable). Settling is 03m's rule: the
+    largest range of any neuron's state, over each of the last 10 ticks and both histories, below
+    10⁻⁴.
+- **Not claimed:** stable states (Astra). A ten-tick test cannot show lasting stability.
 
-### Q-E. Is P4 an artefact of the read-out's saturation? (secondary, with a verdict)
+### Q-E. Does P4's distinctiveness survive a read-out before the tanh? (secondary, with a verdict)
 
 - **Measure:** P4 computed on the turn read-out neurons' state before the tanh: the mean of v over the
-  turn-plus neurons minus the mean over the turn-minus neurons. It comes from the same run as the
-  standard P4.
-- **Verdict:** N2's pre-tanh P4 against each ensemble's, by 03r's single-signal rule (the rank p over
-  five ensembles at α = 0.05, the effect-margin gate).
+  turn-plus neurons minus the mean over the turn-minus neurons, from the same run as the standard P4.
+  - The same floor applies: a pre-tanh denominator below 10⁻⁴ makes it invalid, with counts reported.
+  - The tanh stays in the recurrent dynamics (`brain.py`, `torch.tanh(v)` before the chemical term).
+    Only the final observation changes, so this is robustness to the read-out map, not a test of
+    saturation in the network (Astra).
+- **Verdict:** 03r's single-signal rule: the rank p over five ensembles at α = 0.05, with the
+  effect-margin gate.
 - **Outcome wording:**
-  - "distinctive relative to every ensemble on the pre-tanh read-out: the read-out's saturation does
-    not explain N2's elevated P4";
-  - or "not distinctive on the pre-tanh read-out: N2's elevated P4 depends on the read-out's
-    nonlinearity".
+  - "P4's distinctiveness persists on the pre-tanh read-out";
+  - or "pre-tanh distinctiveness was not established", with the failing gates named;
+  - or 03r's "withheld" wording.
 - **Also reported:** the mean tanh slope of the turn read-out neurons, N2 against each ensemble.
 
 ### The third replication of P4 (secondary, with a verdict)
 
-N2's intact P4 against the five fresh ensembles, by 03r's single-signal rule, reported alongside 03's
-and 03r's. It is secondary because 03r already replicated it, but every primary question reads
-differently if it fails here, so it is reported first.
+N2's intact P4 against the five fresh ensembles, by 03r's single-signal rule, reported first and
+alongside 03's and 03r's. If it is not "distinctive relative to every ensemble", Q-A's "lead narrows"
+sentence is not used, and RESULTS says first that the lead itself did not replicate here.
 
 ## 5. Procedure and composition
 
-- **The probe batch:**
-  - the rising and falling histories run as two rows of each strain (B = 2), sharing the strain's
-    matrices; 03 ran them one after the other with one row;
-  - the brain's dynamics are unchanged, and the rows do not interact;
-  - this halves the GPU time, because the step is bound by reading the dense matrices.
-- **Equivalence check, before the formal run (rule 7):** on N2 and the first 8 graphs of each of 03's
-  ensembles, with 03's genomes, the B = 2 probe must reproduce 03's committed numerator and
-  denominator to a relative 10⁻⁵, declared here. Exactness is not expected; 03m's own reproduction at
-  B = 1 was exact.
-- **One long run per graph and condition:**
-  - 100 ticks of hold, the 10-tick ramp, then 300 ticks of the final input;
-  - P4 is read at the ramp's end;
-  - the steady contrast and the pre-tanh terms come from the same run.
-  - A second, standard-length run gives P4 with gap junctions off.
-- **Composition:** 2 048 strains × 2 rows per batch, every formal measurement. Exactness is claimed
-  only within it.
-- **Order** (cheapest and most central first, so a cap hit loses the least):
-  1. the equivalence check;
-  2. N2: intact and long, gaps off, the 95 pair deletions and the double deletion;
-  3. Q-C's 256 permutations, then the factorial;
-  4. the ensembles, interleaved (SH-route, SH-class, SH-mirror, SH-recip, SH, then the next index),
+- **The two-row probe** (`wormwars/exp03/twin.py`):
+  - the rising and falling histories run as two rows of each strain, sharing its matrices; 03 ran
+    them one after the other, with one row;
+  - the brain step is unchanged, and the rows do not interact (a test checks row 0 against a one-row
+    run, and another checks that swapping the starts flips every sign);
+  - the step is bound by reading the dense matrices, so the time halves: 6.6 s against 13.0 s for
+    2 048 genomes (D285).
+- **Deviation from 03m's one-row outputs, measured on old inputs** (`scripts/p4mc_equivalence.py`,
+  `equivalence.json`; 0.52 GPU-hours on 2026-10-15/16, counted in its own accounting record). Old inputs
+  means 03's genomes for N2 and 03m's 80 panel graphs, plus N2 with gap junctions off, with the RIA pair
+  deleted, and under 03m's paired permutation 100. The worst cases over all 81 graphs:
+
+  | output | worst relative deviation |
+  |---|---|
+  | P4's numerator and denominator, against 03's committed supplement | 2.0 × 10⁻⁷ |
+  | per genome: the ramp-end difference, the steady contrast | 7.2 × 10⁻⁶, 4.3 × 10⁻⁶ |
+  | per genome: the difference at tick 30; the whole curve to tick 300 | 2.2 × 10⁻⁵; 1.3 × 10⁻⁴ |
+  | per genome: tanh slopes; the holds' settling range | 1.1 × 10⁻⁶; 2.7 × 10⁻⁵ |
+  | per genome, the three N2 conditions: ramp end, steady contrast; their P4 terms | 7.6 × 10⁻⁷; 4.6 × 10⁻⁸ |
+  | per genome: the follow-up's settling range (near zero, so relative deviations are large) | 0.33 |
+
+  - Per-genome figures are the largest absolute difference over the largest |reference value|.
+  - **Settling labels:** checked separately (an uncounted 1.6-minute run, D286). On N2, SH-10007,
+    SH-recip-50015 (the worst range deviation) and SH-mirror-40003, no genome changed its settled
+    label (0 of 2 048 each), and no genome changed its "separation remaining" label. The counts of
+    genomes settled with separation left were identical: 26, 171, 0 and 37.
+- **Declared tolerances for the formal pre-run check:**
+  - **Aggregates:** P4's terms against 03's committed supplement, and each graph's retained share at
+    tick 30 against 03m's, within a relative 10⁻⁵ (50 times the worst measured).
+  - **Per genome:** the ramp end, the steady contrast, tick 30, the slopes and the hold ranges within
+    10⁻⁴ (at least 4.5 times the worst measured); the curve within 2 × 10⁻³ (15 times).
+  - **Settling:** the count of genomes settled with separation left, identical on N2.
+  - The check runs on N2 and the first 4 graphs of each of 03's ensembles (old inputs), plus N2 with
+    gap junctions off, the RIA pair deleted, and 03m's paired permutation 100.
+  - **If it fails, nothing formal runs.** The failure is reported, and a dated amendment decides,
+    reviewed by both. The measured deviations are reported whatever they are.
+- **Runs per graph:**
+  - one long run of 100 ticks of hold, the 10-tick ramp and 300 ticks of the final input; P4, the
+    pre-tanh terms, the curve, settling and saturation all come from it;
+  - one standard-length run with gap junctions off.
+- **Composition:** 2 048 strains × 2 rows per batch, in every formal measurement. The first graphs of the
+  equivalence run took about 100 s each, against 22 s later; they coincided with CPU-heavy tests on the
+  same machine, which can slow the GPU's kernel launches (not isolated). Nothing else runs on the machine
+  during the formal run. Rerunning is
+  expected to agree within the declared tolerances; no exact repeat is claimed (no `replay_mode`;
+  Astra).
+- **Order** (the primaries first; within them, the cheapest first):
+  1. the pre-run check;
+  2. N2's batch 0: long run and gaps off;
+  3. Q-C's 256 permutations;
+  4. Q-B's 32 batches;
+  5. the ensembles, interleaved (SH-route, SH-class, SH-mirror, SH-recip, SH, then the next index),
      so a stop leaves balanced ensembles;
-  5. the null-graph deletions.
-- **Writes:** every unit is written as it completes, with its provenance (the clean pushed commit, the
-  GPU, the environment, the connectome's raw hash), as in 03m.
+  6. the secondaries: the 95 pair deletions on batch 0, the factorial, the null-graph deletions.
+- **Writes:**
+  - each unit is written as it completes, with its provenance (the clean pushed commit, the GPU, the
+    environment, the connectome's raw hash);
+  - per-genome arrays stay local, with their hashes committed;
+  - every input is pinned: configuration, stimulus bank, interface, measurement code. A resume refuses
+    a changed input.
 
-## 6. Statistics and multiplicity
+## 6. Statistics, multiplicity and the probability of passing
 
-- **The primary family is Q-A to Q-D, under Holm at a familywise α = 0.05** (one-sided, in each
-  question's predicted direction).
-  - Holm's thresholds are 0.0125, 0.0167, 0.025 and 0.05, in order of p.
-  - With 128 graphs per ensemble, a rank p ≤ 0.0125 needs r = 0 in the worst ensemble, ≤ 0.025 needs
-    r ≤ 2, and ≤ 0.05 needs r ≤ 5.
-  - Q-B's and Q-C's p-values are expected to be the smallest (Q-C's is at best 1/257), so they take
-    the strict thresholds.
-- **Rough pass probabilities, from 03m's 16 graphs per ensemble** (a log-normal plug-in per ensemble;
-  it ignores the fit's uncertainty and N2's own sampling, so treat it as a sketch):
-  - Q-D at tick 30 passes with probability about 0.99 at r ≤ 5 in every ensemble, about 0.93 at
-    64 graphs;
-  - at tick 300, below 0.01.
-  - Q-A: N2's ΔP4 was below all 80 null graphs, by a factor of 3.5 to the nearest.
-  - Q-B and Q-C: 03m's effects are many bootstrap SEs from the thresholds.
-  - The weakest link is Q-D's SH-recip, whose predicted chance of a graph above N2 is about 1.5% per
-    graph.
-  - A proper calculation (simulating fresh N2 genomes too) belongs in the pre-registration.
+- **One family, Holm at α = 0.05: Q-A, Q-B, Q-C, Q-D** (both reviewers kept Holm).
+  - With 128 graphs per ensemble, the thresholds 0.0125, 0.0167, 0.025 and 0.05 need r = 0, r ≤ 1,
+    r ≤ 2 and r ≤ 5 in the worst ensemble.
+  - A question that is withheld or not measured enters with p = 1 (as `report.py` does for
+    incomplete signals), so the family keeps four members.
+- **Reported for every question:** the raw p and the Holm-adjusted p, every component gate, the
+  estimates with intervals, and the planned, attempted, completed, invalid and valid counts.
+- **Cross-question wording:**
+  - **Holm stops:** a question whose own p met 0.05 but not its Holm threshold reads "met α = 0.05
+    alone, but not its Holm threshold: not confirmed under the registered familywise rule".
+  - **A failed replication:** see §4.
+- **The probability of passing** (`power.py`, `power.json`):
+  - **What it is:** a model built from 03m's data, simulating the whole Holm procedure.
+    - Q-A's null changes come from a regression of change on intact P4 over 03m's 80 graphs,
+      extrapolated to 03's and 03r's intact P4s (Fable).
+    - Q-D's tails come from a normal per ensemble on log retained share, with the fit's uncertainty.
+    - Q-B's true values are drawn from 03m's estimates and their SEs.
+    - N2's sampling uncertainty enters every question.
+    - The questions are drawn independently.
+  - **Results, from 20 000 simulated studies with Q-B at 65 536 genomes:**
+
+    | | alone at 0.05 | under Holm |
+    |---|---|---|
+    | Q-A | 0.99 | 0.97 |
+    | Q-B | 0.78 | 0.77 |
+    | Q-C | 1.00 | 1.00 |
+    | Q-D | 0.85 | 0.78 |
+    | all four | | 0.64 |
+
+  - **Q-B's limit** is the uncertainty in 03m's own estimate of AIY's change in P4 (−0.004 ± 0.012),
+    not the fresh sample. Under Holm, Q-B would pass 0.01 of the time at 2 048 genomes and 0.60 at
+    16 384.
+  - **Q-D's limit** is the tails of five ensembles estimated from 16 graphs each.
+  - The v1 sketch's 0.99 for Q-D was wrong: it ignored the fit's uncertainty and gave Q-D Holm's
+    most lenient slot (both reviewers).
+  - A fixed sequence (C, A, D, B, each at 0.05 after the previous passes) gives Q-D 0.84 and Q-B
+    0.65. Holm is kept: it does not let one failure block the rest.
 - **Completeness:**
-  - at least 120 valid graphs in each ensemble, and a valid N2 intact, gaps-off and at tick 30;
-    otherwise Q-A, Q-D, Q-E and the replication are withheld and the counts are reported;
-  - Q-B needs valid intact, RIA and AIY measurements; Q-C needs at least 240 valid permutations.
-- **Secondary tests** carry their own α = 0.05 and are labelled as outside the family.
+  - at least 120 counted graphs per ensemble for each of Q-A, Q-D, Q-E and the replication, judged
+    separately; otherwise that question is withheld, with its counts;
+  - Q-B needs its 32 batches, with at most 1% of bootstrap resamples dropped;
+  - Q-C needs at least 240 valid permutations.
+- **Secondary tests** carry their own α = 0.05 and sit outside any familywise guarantee.
 
 ## 7. Compute and cap
 
-Estimates from the timings in §1, at 6.6 s per standard probe (B = 2) and about 23.5 s per long run:
-
 | Part | Units | GPU-hours |
 |---|---|---|
-| equivalence check | 41 graphs | 0.1 |
-| N2: long run, gaps off, 96 deletions | 98 probes | 0.2 |
-| Q-C: 256 permutations; factorial 32 × 3 | 352 probes | 0.65 |
-| ensembles: 640 graphs, long run + gaps off | 640 × 30 s | 5.3 |
-| null-graph deletions: 160 graphs × 3 | 480 probes | 0.9 |
-| **total** | | **about 7.2** |
+| pre-run check (old inputs) | 21 graphs + 3 conditions | 0.15 |
+| N2 batch 0: long run, gaps off | 2 runs | 0.01 |
+| Q-C: 256 permutations | 256 probes | 0.47 |
+| Q-B: 32 batches × 12 conditions | 384 probes | 0.70 |
+| ensembles: 640 graphs, long run + gaps off | 640 × 30 s | 5.35 |
+| secondary: 95 pairs, factorial 32 × 3, null deletions 160 × 3 | 671 probes | 1.23 |
+| graph build (CPU) | 640 graphs + plateau chains | 0.4 |
+| **total** | | **about 8.3** |
 
-- **The cap is 10 GPU-hours,** registered in code and counted by the accounting across attempts. A
-  stop withholds what is incomplete and reports it.
-- **The graph build** runs on the CPU, about 0.4 hours, in the same accounting.
+- **The cap is 10 hours**, registered in code. It counts every formal command's synchronised wall
+  time in the accounting (`CapClock`; wall time, not GPU kernel time), across all attempts: failed
+  ones, restarts and the build.
+- **It is checked before every unit:** a graph, a batch's condition, a permutation. A unit begun under
+  the cap runs to completion, so the overrun is at most one unit (under a minute).
+- **A stop is administrative, not an observation:** what is incomplete is withheld and reported. The
+  four primaries keep p = 1 for anything unmeasured.
+- **No continuation depends on an outcome:** the order is fixed, and nothing is added or rerun
+  because of a result.
 - **The owner is told before the formal run starts.**
+- The measurements for this design (timing, `equivalence.json`) are counted separately and reported.
 
 ## 8. What this cannot establish
 
@@ -302,16 +423,60 @@ Estimates from the timings in §1, at 6.6 s per standard probe (B = 2) and about
 - **Anything about behaviour,** about evolved brains, or about the worm.
 - **Independence from 03, 03r and 03m:** the same connectome, the same samplers, the same probe. A
   probe-specific effect or a systematic code error would recur here too (as 03r said of itself).
-- **A full account of the hypotheses' origin:** they were chosen after 03m's data, and only the new
+- **That the hypotheses were chosen in advance:** they were chosen after 03m's data, and only the new
   draws make the tests confirmatory.
 
-## 9. Questions for the reviewers
+## 9. Code and tests (rule 9)
 
-1. Is Holm over Q-A to Q-D right, or should each be its own family?
-2. Q-D's endpoint: tick 30, chosen with 03m's curves in view, or a different summary (for example, the
-   mean retained share over ticks 0-50)?
-3. Q-B: are the 40% and 0.02 margins justified? And is a conjunction of equivalence and cut the right
-   form for "a cut in both terms with their ratio kept"?
-4. Q-A: is comparing changes (ΔP4) the right test, given the possible ceiling? Should the gaps-off
-   levels be primary instead?
-5. Anything missing that a reader would need to trust a pass, or a failure.
+- **`wormwars/exp03/twin.py`, the two-row probe:**
+  - against `measures.history` on the CPU at a relative 10⁻⁵ (in the test, 6 genomes);
+  - the long follow-up keeps the ramp end and the steady contrast;
+  - the pre-tanh read-out;
+  - row isolation and the row swap;
+  - sabotage checks: a reversed steady contrast and a shared input row were both caught by these tests
+    (D286).
+- **Still to write, test-first, for the pre-registration's code review:**
+  - the build and its freshness audit, with a sabotage check (a planted collision);
+  - the matched-control rule;
+  - the bootstrap and the tests;
+  - the rank tests;
+  - Holm with missing questions;
+  - the cap and unit boundaries;
+  - the stop and resume behaviour;
+  - the report's wording for every case.
+
+## 10. Questions for the reviewers
+
+1. Are v1's findings fixed (§11)?
+2. Q-B's equivalence tests at 65 536 genomes: is a normal-theory test with a paired bootstrap SE
+   acceptable, or should the p-value come from the bootstrap distribution itself?
+3. The degree-matched controls: is total degree the right match, and four per target the right
+   number?
+4. Is anything still missing for a reader to trust a pass or a failure?
+
+## 11. Changes from v1 (review 20261015-232952, D286)
+
+- **Q-B's power** (Astra): 32 batches of 2 048 genomes; the bootstrap and tests specified exactly; no
+  part passed at a fixed 5%. "Approximately in proportion" replaces "in proportion" (Astra). The 40%
+  margin is explained as a specificity threshold, and the 0.02 margin by the lead (Fable, Astra).
+- **The probability of passing** is now simulated for the whole Holm procedure, with Q-A's
+  extrapolation and Q-D's fit uncertainty (both). The table in §6 replaces v1's sketch.
+- **The equivalence check** was measured on old inputs before the tolerances were set, and covers
+  per-genome outputs, the curve, settling, slopes, and the gaps-off, deletion and permutation
+  conditions (both). It has a stop rule. Tests now cover row isolation and the row swap.
+- **Wording:** every outcome now has a fixed sentence, including Holm stopping and a failed
+  replication (Fable). Q-A, Q-C, Q-D and Q-E no longer claim more than their tests can show (Astra,
+  Fable).
+- **03m's figures:** "all 128 permutations" is corrected to 64 under two designs (both), and both
+  percentages are given (60% and 58%).
+- **Rules:**
+  - validity rules for Q-A, Q-D and the pre-tanh P4;
+  - Q-C's denominator is (r + 1)/(n + 1);
+  - missing questions enter with p = 1;
+  - counts reported at each stage.
+- **The order:** the secondaries now run after every primary (both).
+- **Freshness:** the audit covers derived genome seeds, 03r's hash-derived permutation seeds, and
+  content within the new panel (Astra, Fable).
+- **The cap:** what it counts, unit boundaries, administrative stops, and no outcome-dependent
+  continuation (Astra).
+- **The replacements of reviewers' proposals** are stated in §0 (Fable).

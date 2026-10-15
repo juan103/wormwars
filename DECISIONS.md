@@ -8775,3 +8775,35 @@ Track B's order is unchanged since D094: a confirmatory study of 03m's leads, th
 - **Chosen with 03m's data in view, and said so:** Q-D's endpoint at tick 30 (N2 above all 80 null graphs at ticks
   5-50; at tick 300 two graphs keep more), Q-B's margins (Fable's 40% and 0.02).
 **Next:** the design to both reviewers; the owner is told before any formal GPU run.
+
+
+## D286 — 03mc's design v1 reviewed by both ("revise"); design v2, with the probability of passing and the probe's equivalence measured
+
+Astra 6 and Fable 5.1 at "high" on 6e948d7 (run 20261015-232952; `runs/consult-d285-log.txt` stays local). Both
+"revise"; both recomputed 03m's figures from the committed files and found them right except one. Every finding was
+checked and taken (DESIGN.md §11):
+- **Q-B was underpowered** (Astra, from 03m's local arrays): at 2 048 genomes AIY's change in P4 has a paired
+  bootstrap SE of 0.012, so the ±0.02 equivalence would usually fail. v2 uses 32 batches of 2 048 N2 genomes for Q-B
+  and specifies the bootstrap and the tests exactly; no part passes at a fixed 5%.
+- **The probability of passing** (both): v1's sketch ignored the fit's uncertainty and Holm's ordering. `power.py`
+  now simulates the whole procedure (Q-A's changes extrapolated to 03's and 03r's intact P4s, as Fable asked):
+  under Holm, Q-A 0.97, Q-B 0.77, Q-C 1.00, Q-D 0.78, all four 0.64. Q-B's limit is 03m's own uncertainty about
+  AIY's true change. **Correction to D285 and design v1,** whose wording is kept: Q-D's "about 0.99" was wrong.
+- **The two-row probe's equivalence was measured** on old inputs before any tolerance was declared (Fable): 81
+  graphs and three N2 conditions (`scripts/p4mc_equivalence.py`, `equivalence.json`, 0.52 GPU-hours, counted).
+  P4's terms agree with 03's supplement to 2.0e-7 relative; per genome, 7.2e-6 at the ramp's end and 1.3e-4 over
+  the 300-tick curve. A further uncounted 1.6-minute run on four graphs found no genome changing its settling label.
+  Tolerances are declared from these with margins, and a failed pre-run check stops everything.
+- **Wording, rules and order:** fixed sentences for every outcome, including Holm stopping and a failed
+  replication; Q-A, Q-C, Q-D and Q-E narrowed to what their tests show; validity rules; Q-C's (r + 1)/(n + 1);
+  missing questions enter Holm with p = 1; the secondaries run after all primaries; degree-matched controls
+  defined (four per target, by total degree); the freshness audit covers derived seeds and content; the cap's
+  rules.
+- **Restated from 03m** (both): "all 128 permutations" in v1 was 64 permutations under two designs, as 03m's
+  correction already said.
+- **Tests:** the probe has six CPU tests, including row isolation and the row swap; two sabotages (a reversed steady
+  contrast, one input row for both histories) were both caught.
+- **After the runs,** the hygiene test caught `np.load` without `allow_pickle=False` in `power.py` and the
+  equivalence script; that is the only change since they ran. `power.py` was rerun and wrote an identical
+  `power.json`; the equivalence run was not repeated.
+**Next:** design v2 to both reviewers.
