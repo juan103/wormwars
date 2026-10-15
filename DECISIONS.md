@@ -8758,3 +8758,20 @@ source. Astra: "fix first", with two findings, both checked and taken:
 followed" was true of E3d's only until this fix.
 Fable also noted that D258's "about 4.4 GPU-hours" differs from the records' 4.20; D263 already corrects it.
 **Next:** main (Fable "publish"; Astra's two findings taken, small and verified), the owner informed after.
+
+
+## D285 — Track B starts: the owner's choice; 03mc's design v1, a confirmatory test of 03m's leads
+
+The owner, 2026-10-15, choosing between Track B and the v2.2 items: "alright let's go to the biology track first".
+Track B's order is unchanged since D094: a confirmatory study of 03m's leads, then 03a's six-neuron proof of concept.
+- **Design v1** (`experiments/03mc-p4-confirm/DESIGN.md`) takes up both reviewers' proposals from 03m's results review
+  (`docs/reviews/20260929-061029-03m-results/`): four primary questions under Holm (gap junctions, RIA and AIY,
+  weight placement, slower relaxation), saturation and a third replication of P4 as secondaries with verdicts.
+  Fresh genomes (salt "03mc:"), fresh ensembles (seeds 2 010 000 + i ...), fresh permutations (1 000-1 255).
+- **Measured for the design, nothing else:** the history probe on N2 with 03's genomes takes 13.0 s at one row per
+  strain and 6.6 s with the rising and falling histories as two rows (the step reads dense matrices, so the second
+  row is nearly free). Estimate about 7.2 GPU-hours; proposed cap 10. A first timing at 4-8 copies of the probe set
+  ran out of GPU memory into shared memory and was stopped; nothing from it was used.
+- **Chosen with 03m's data in view, and said so:** Q-D's endpoint at tick 30 (N2 above all 80 null graphs at ticks
+  5-50; at tick 300 two graphs keep more), Q-B's margins (Fable's 40% and 0.02).
+**Next:** the design to both reviewers; the owner is told before any formal GPU run.
