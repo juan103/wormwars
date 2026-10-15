@@ -80,7 +80,8 @@ named. A change that breaks one should say so openly.
 6. **Exactness is claimed only where it is tested.** See
    [`docs/REPRODUCIBILITY.md`](docs/REPRODUCIBILITY.md):
    - CPU runs repeat exactly on the same machine and platform (a Windows CPU reference differs on
-     GitHub's Linux runners, D202, D218);
+     GitHub's Linux runners, D202, D218). *Corrected 2026-10-15 (D282, D283): this said "CPU runs repeat
+     exactly", with no limit to one machine and platform;*
    - CUDA runs are exact only on the same GPU, in the pinned environment, with the same batch
      composition, and inside `replay_mode()` where claimed;
    - a batch's composition is the tuple (strains per chunk, worlds per strain, weys per world).

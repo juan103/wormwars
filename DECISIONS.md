@@ -8715,3 +8715,32 @@ against the files before it was taken. Registered texts, designs, results and ar
 - **Checked:** every relative link and anchor on the living pages resolves (a script, sabotaged with two bad links,
   which it caught).
 **Next:** the diff to both reviewers before main; the owner chooses between Track B and the v2.2 items.
+
+
+## D283 — D282's documentation reviewed by both ("fix first"); the fixes; a correction to D282
+
+Astra 6 and Fable 5.1 at "high" on b51ae1a (run 20261015-094543; `runs/consult-d282-log.txt` stays local, as for
+earlier consults). Both "fix first". Both found the change documentation-only, with registered texts, results and
+reviews untouched, and the E4 figures correct against the records. Every finding was checked and taken:
+- **The unevolved-duplicate control did run** (both; `docs/E4/E4-DESIGN.md:233` defines it as E-G, which served in
+  the pilot and in E4-D). Only the selector-removed control has not run; cross-links impossible ran as X0.
+- **Question 2 in the main task** (Fable; D243, E4's RESULTS): the matched within-module cut was judged infeasible at
+  design v2, before any pilot, not dropped with the formal run; the pilot did train X+, but the arm was lost at its
+  cap. The line now says so. Shared dependence cites D242-D244.
+- **The list's scope** (Astra): the later biology questions, in v3 at 4e40471, are now named; the pruning protocol is
+  marked as added in D144.
+- **Survey v2** (Astra): its absence here does not show that its corrections were never applied; now "cannot be
+  checked from this repository".
+- **A contradiction** (Fable): the status section's 03m line ("possible, not planned") gets a dated note.
+- **Machine catches** (both): the README no longer counts them ("for example"); the trail's summary names D279 as a
+  process lapse outside its table.
+- **Smaller:** the E3 status line's date (written 10-15); E4's 6.05 and 9.30 reconciled through D275's dry run
+  (6.09); the 10-14 pilot and pre-registration marked as reaching `main` on 10-15; README's E3d and E2 sections no
+  longer say "next" for what followed; E3b-1's open question narrowed after E3b-2; AGENTS' rule 6 gets a dated
+  correction quoting the replaced "CPU runs repeat exactly" (Astra, rule 4).
+**Correction to D282,** whose wording is kept above: "in E4, shared dependence, question 2 in the main task,
+consolidation (moved to 09), the duplication fates, two controls and the pruning protocol" should read "... the
+duplication fates, the selector-removed control and the pruning protocol (added in D144)"; and "survey v2's
+corrections (the survey is not in the repository)" should read "survey v2 (not committed here, so its corrections
+cannot be checked)".
+**Next:** a confirmation pass by both, then main, the owner informed after.

@@ -99,7 +99,8 @@ python scripts/e3b1.py project --device cuda           # formal: then g-e, train
 - **Open questions:**
   - **Why T-F gained more:** at 125 generations its champions matched T-A's (S-worlds), so the extra
     generations look like the reason. That is descriptive, not tested.
-  - **What the tuned organisms use** in place of the designed selector.
+  - **How the tuned comparators work,** now that they no longer meet the seed's design criteria (E3b-2 found the
+    latch's switching still in use).
   - **Whether weys follow a trail's direction.**
   - **Why replayed and scrambled peer fields hurt.**
 - **After E3b-2:** E3c, the assembly comparison ([`../E3c/`](../E3c/README.md)), then E3d-E3f and E4

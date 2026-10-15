@@ -57,8 +57,9 @@ selection acts on team results.
   at 7 × 7 ("failed at calibration"); then E3f, 6 × 6 at a horizon of 1 800 ticks ("passed").
 - **2026-10-13:** E4's main task, exploratory: its formal run dropped after the pilot (the owner, on both reviewers'
   advice); E4-D's feasibility check passed.
-- **2026-10-14:** the evolutionary E4-D's pilot (exploratory: all 20 runs recruited the transfer) and its
-  pre-registration, bound after review by both (D269-D274).
+- **2026-10-14, on the `roadmap` branch** (on `main` with the formal run, 10-15): the evolutionary E4-D's pilot
+  (exploratory: all 20 runs recruited the transfer) and its pre-registration, bound after review by both
+  (D269-D274).
 - **2026-10-15:** the evolutionary E4-D's formal run, as pre-registered (D275-D281): **"practically relevant transfer
   found"**: with only the slots mutating, the 32 runs' champions made a mean 0.912 real-first on fresh mazes
   (one-sided 95% lower bound of the gain over 0.5: 0.401, against the margin 0.15). See
@@ -151,7 +152,7 @@ navigators score too little at 7 × 7. See [E3e's results](experiments/E3-ab-org
     6 × 6 tree reference were not run, so the islands are not separated from the size change;
   - **the scent follower without trails:** 2.4-2.9, near the random walk.
 
-See [E3d's results](experiments/E3-ab-organism/E3d/RESULTS.md). The owner chooses the next construction.
+See [E3d's results](experiments/E3-ab-organism/E3d/RESULTS.md). The owner then chose a larger maze, E3e (above).
 
 ## Assembled or from scratch? (E3c)
 
@@ -230,7 +231,7 @@ corrections. Its successor, E3b-1, asks whether evolution improves the seed in t
 
 **At equal simulator work, an evolution strategy did not beat experiment 02's genetic algorithm by
 the margin fixed in advance, and random sampling came close enough to both that the task itself is
-diagnosed next.** In the wording fixed in advance: *"E2: keep 02's GA (unshaped fitness; the ES did
+diagnosed next** (E2d, above in the table). In the wording fixed in advance: *"E2: keep 02's GA (unshaped fitness; the ES did
 not satisfy both replacement criteria after paying for its tuning)"*.
 
 - **The screen:** 04a's task, 8 runs per method, each method given about 2.13 million episodes of
@@ -706,8 +707,8 @@ first reading of its floor result that called the optimizers' gains "little" (D1
 caught failure paths in its runner (D188, D189), and Astra 6 caught an audit check, written by Claude
 Code, that had played a test maze before the evaluation (D191). Both caught an over-reading of its probes
 (D192). In the evolutionary E4-D, Astra 6 found that its smoke tests had played registered formal ids before any
-formal stage ran (D276), and Fable 5.1 a validation count off by rounding in its results draft (D281). Two errors
-were caught by a machine: the first automatic test run on Linux showed that 03's graph files rebuild byte for byte
+formal stage ran (D276), and Fable 5.1 a validation count off by rounding in its results draft (D281). Machines caught
+errors too. For example, the first automatic test run on Linux showed that 03's graph files rebuild byte for byte
 only on Windows (D106), and the automatic tests failed on three record commits that Claude Code had pushed without
 running them (D279). The full list, with
 commits: [`docs/REVIEW_TRAIL.md`](docs/REVIEW_TRAIL.md).

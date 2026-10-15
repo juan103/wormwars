@@ -12,21 +12,25 @@
   started. Both need the GPU and wait for the owner's word.
 - **Waiting for the owner:** the items carried over from v2.2 (at the end): the plasticity experiment, task
   specificity, and the owner's question about worm-like tasks under worm-like plasticity.
-- **What v3 planned that has not run** (checked against DECISIONS.md, 2026-10-15):
+- **What v3 planned that has not run** (checked against DECISIONS.md, 2026-10-15; later amendments are marked):
   - **Track B:** the two studies above; bridge 1 (deferred by both reviewers in E1's design, D077) and bridge 2,
-    which 03r's replication gave priority. No Track E experiment has run on null graphs, so the five null ensembles have not
-    yet served as its controls. The memory thread's predictions (a larger early N2 advantage on tasks that need memory,
-    shrinking over generations) are untested.
+    which 03r's replication gave priority. No Track E experiment has run on null graphs, so the five null
+    ensembles have not yet served as its controls. The memory thread's predictions (a larger early N2 advantage on
+    tasks that need memory, shrinking over generations) are untested. None of the later biology questions (below)
+    has started.
   - **E3:** the cumulative reuse cost of modules (E3c's "Not shown").
   - **E4:**
-    - question 1, shared dependence (designed in D242, not run);
-    - question 2 in the main task: evolving with and without cross-links, and cuts against matched within-module
-      cuts (dropped with the formal run, D258);
+    - question 1, shared dependence (designed in D242-D244, not run);
+    - question 2 in the main task: no completed contrast of training with and without cross-links (the pilot's X+
+      arm was lost at its cap), and no acute cuts or substitutions of evolved cross-links; both were dropped with
+      the formal run (D258). The matched within-module cut was judged infeasible at design v2 and replaced (D243);
     - question 3, consolidation (moved to stage 09, as v3 allows);
-    - each run's gene-duplication fate, the controls with the selector removed and with the unevolved duplicates,
-      and the pruning protocol (D144).
-  - **Related work:** survey v2 is not in the repository, so its corrections have not been applied (nothing here
-    cites it); the memory thread's literature comparison; the collective-behaviour survey that stages 05-08 need.
+    - each run's gene-duplication fate, and the control with the selector removed. The other two controls ran:
+      cross-links impossible as X0, and the unevolved duplicates as E-G, in the pilot and in E4-D;
+    - the pruning protocol (added in D144).
+  - **Related work:** survey v2 is not committed here, so whether its corrections were applied cannot be checked
+    from this repository (nothing here cites it); the memory thread's literature comparison; the
+    collective-behaviour survey that stages 05-08 need.
   - **Stages 05-09:** no design yet.
 
 - **E4s, a hand-built stereo module, ahead of plan** (the owner, 2026-09-30; D139-D144). E2d's
@@ -171,7 +175,7 @@
   - **E4 is re-scoped to E4-D,** a task where transfer is necessary by construction. Its feasibility check passed on
     the CPU (D262): a hand-configured cross-link control reaches 0.83 real-first against X0's exact 0.5.
   - **The evolutionary E4-D** (on E4's remaining GPU-hours): design v2.1 (D265-D266); its exploratory pilot found
-    the transfer recruited in all 20 runs (D269-D270; 1.85 GPU-hours, E4 at 6.05 of 30); its pre-registration bound
+    the transfer recruited in all 20 runs (D269-D270; 1.85 GPU-hours, E4 at 6.05 of 30, and 6.09 after D275's dry run); its pre-registration bound
     after three rounds of review by both (`experiments/E4-two-minds/E4-D-evo/PREREGISTRATION.md`, D271-D274; L 32
     runs, F 4, S 32 if L finds nothing). Its formal code was reviewed by both over three rounds (D275-D278), and the
     formal run (2026-10-14/15, 3.21 GPU-hours, E4 at 9.30 of 30) read L as **"practically relevant transfer found"**
@@ -268,7 +272,8 @@
   shuffles'; its large food response depends on the placement of its weights and on RIA and AIY
   (whose deletion cuts the history signal in proportion); most weight permutations lower N2's P4 below
   the shuffles' 95th percentile, and its lead narrows with gap junctions off; no tested single or
-  bilateral-pair deletion removed it. A confirmatory study is possible, not planned.
+  bilateral-pair deletion removed it. A confirmatory study is possible, not planned. *(2026-10-15: it is next in
+  Track B, as ordered after D094; D282.)*
 - **Documentation for outsiders:** every experiment folder now has a README with its question,
   result, caveats and exact commands to rerun it, and [`AGENTS.md`](AGENTS.md) describes the
   repository and its rules. Others are welcome to take any open question here, and to get there
@@ -439,7 +444,7 @@ Track B continues in parallel: 03r, then the mechanism follow-up or closure, the
   - the latch may be one self-exciting extra neuron, validated in our integrator;
   - the inactive module's semantics are declared in advance;
   - the navigation artefact follows E4s's rule.
-- *Status, 2026-10-11:* built in the order below (E3a: frozen modules with a fixed selector, then an evolved
+- *Status (written 2026-10-15):* built in the order below (E3a: frozen modules with a fixed selector, then an evolved
   selector, then joint tuning); the trails and peer-signal controls (E3b-0); the gate passed (E3b-1, "better",
   D192); the assembly comparison ran as E3c (D198-D220). The cumulative reuse cost was not measured, and bridge 2
   has not run.
@@ -639,8 +644,8 @@ The first social experiments use colonies of clones: one genome for every wey, e
   - cite the Creamer et al. preprint by version;
   - describe named neurons as solving gene correspondence, not co-adaptation.
 
-  *(2026-10-15: survey v2 is not in the repository. Its corrections have not been applied, and nothing here cites
-  it.)*
+  *(2026-10-15: survey v2 is not committed here, so whether these corrections were applied cannot be checked from
+  this repository. Nothing here cites it.)*
 - **ENOMAD** (Churchland and Garcia-Ojalvo) is the closest prior work. Read it in full before E2.
 - **The E4s literature review** (`docs/reviews/20261001-literature-review/`, 2026-10-01; two reviews,
   Claude Opus and Astra 6, not verified by us as a whole). Each claim is verified before it is cited.

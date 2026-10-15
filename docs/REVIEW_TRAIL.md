@@ -129,7 +129,8 @@ food response is 1.55-2.7 times the most responsive graph's, not 1.5-1.8).
   useful.
 - Three errors were caught by neither a person nor a reviewer: episode 16 by running the tests on
   another operating system, episode 27 by a script's own disjointness test, and part of episode 46 by
-  the formal run itself.
+  the formal run itself. Outside the table, GitHub's automatic tests caught record commits pushed without
+  running them (D279), a process lapse rather than a wrong claim.
 - This is one project and seventy-seven episodes: an anecdote about multi-agent review, not a measurement
   of it.
 
