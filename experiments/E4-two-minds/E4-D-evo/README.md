@@ -27,7 +27,7 @@ the cue (`../E4-D/README.md`); this asks whether a GA finds one.
 | the formal records | [`formal/`](formal/): each stage's start marker and record, and the compute records |
 | the summary | [`summary.json`](summary.json), from `scripts/e4d_evo_summary.py` |
 | the code | `wormwars/e4/evo_trial.py`, `evo_stats.py`, `evo_formal.py`; `scripts/e4d_evo.py` (pilot), `scripts/e4d_evo_formal.py` (formal) |
-| the reviews | `docs/reviews/20261014-E4-D-evo-prereg*`, `20261014-E4-D-evo-formal-code*` and `20261015-E4-D-evo-results` |
+| the reviews | `docs/reviews/20261013-E4-D-evo-design`, `20261013-E4-D-evo-code`, `20261014-E4-D-evo-prereg*`, `20261014-E4-D-evo-formal-code*` and `20261015-E4-D-evo-results` |
 | the decisions | D265-D281 |
 
 **What stays local:** the populations and selection matrices (`runs/e4d-evo-formal/`). The records keep their sha256.

@@ -93,12 +93,14 @@ python scripts/e3b1.py project --device cuda           # formal: then g-e, train
 
 ## Extend it
 
-- **Next: E3b-2** (exploratory; D193): knock out or freeze parts of the tuned champions to see where the gain
-  comes from. The parts are the latch, the comparators, the reflex and the turn biases.
+- **E3b-2 followed** (exploratory; D193-D197; [`../E3b-2/README.md`](../E3b-2/README.md)): holding the latch fixed
+  removes 85-87% of the tuned champions' visits, and the gain sits mostly in the comparators' co-tuned sensing
+  and gating parameters.
 - **Open questions:**
   - **Why T-F gained more:** at 125 generations its champions matched T-A's (S-worlds), so the extra
     generations look like the reason. That is descriptive, not tested.
   - **What the tuned organisms use** in place of the designed selector.
   - **Whether weys follow a trail's direction.**
   - **Why replayed and scrambled peer fields hurt.**
-- **After E3b-2:** the roadmap's E3 assembly comparison (E3c) or E4.
+- **After E3b-2:** E3c, the assembly comparison ([`../E3c/`](../E3c/README.md)), then E3d-E3f and E4
+  ([`../../E4-two-minds/`](../../E4-two-minds/README.md)).

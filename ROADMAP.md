@@ -2,7 +2,32 @@
 
 *27 September 2026. Replaces v2. Written from roadmap v2, Astra 6's review of v2, and Claude Code's status report of the same day. A local v2.2 exists on the `roadmap` branch and was not seen when this version was written, so merge anything it adds. (Merged: see "Carried over from v2.2" below. Four factual corrections were made on installation; they are listed in D062.) This is a living document, not a pre-registration. When a result changes it, the change is recorded here with the reason.*
 
-## Status, 1 October 2026 (updates the section below; that section's later edits are recorded in DECISIONS.md)
+## Status, 1-15 October 2026 (updates the section below; that section's later edits are recorded in DECISIONS.md)
+
+**Where things stand, 15 October 2026** (D282):
+- **Track E has run its schedule through E4.** Everything after E4 is direction, not schedule (the tripwire,
+  below). In E4's diagnostic task, evolution recruited the transfer between the two modules (D280). The main maze
+  task's formal run was dropped (D258).
+- **Track B is next:** a confirmatory study of 03m's leads, then 03a's six-neuron proof of concept. Neither has
+  started. Both need the GPU and wait for the owner's word.
+- **Waiting for the owner:** the items carried over from v2.2 (at the end): the plasticity experiment, task
+  specificity, and the owner's question about worm-like tasks under worm-like plasticity.
+- **What v3 planned that has not run** (checked against DECISIONS.md, 2026-10-15):
+  - **Track B:** the two studies above; bridge 1 (deferred by both reviewers in E1's design, D077) and bridge 2,
+    which 03r's replication gave priority. No Track E experiment has run on null graphs, so the five null ensembles have not
+    yet served as its controls. The memory thread's predictions (a larger early N2 advantage on tasks that need memory,
+    shrinking over generations) are untested.
+  - **E3:** the cumulative reuse cost of modules (E3c's "Not shown").
+  - **E4:**
+    - question 1, shared dependence (designed in D242, not run);
+    - question 2 in the main task: evolving with and without cross-links, and cuts against matched within-module
+      cuts (dropped with the formal run, D258);
+    - question 3, consolidation (moved to stage 09, as v3 allows);
+    - each run's gene-duplication fate, the controls with the selector removed and with the unevolved duplicates,
+      and the pruning protocol (D144).
+  - **Related work:** survey v2 is not in the repository, so its corrections have not been applied (nothing here
+    cites it); the memory thread's literature comparison; the collective-behaviour survey that stages 05-08 need.
+  - **Stages 05-09:** no design yet.
 
 - **E4s, a hand-built stereo module, ahead of plan** (the owner, 2026-09-30; D139-D144). E2d's
   plateau means E3 has no stereo navigator. The owner asked for one to be built by hand and settled by
@@ -164,7 +189,12 @@
   - E2d, exploratory (30 September, D138);
   - E4s-0 and E4s-1 together (2 October, D155);
   - E3a, with its pre-registration, results and corrections (2 October, D170);
-  - E3b-0, exploratory, with its amendments, results and corrections (3 October, D180).
+  - E3b-0, exploratory, with its amendments, results and corrections (3 October, D180);
+  - E3b-1, pre-registered, and E3b-2, exploratory (4 October, D192, D197);
+  - E3c, pre-registered (6 October, D220);
+  - E3d, exploratory (10 October, D231); E3e and E3f, exploratory (11 October, D236, D241);
+  - E4's main task, exploratory, and E4-D's feasibility check (13 October, D264);
+  - the evolutionary E4-D, pre-registered (15 October, D281).
 - **T0 (correctness) is closed** (D083). On CUDA, results repeated exactly for the same batch
   composition in the tested configurations; exact reproduction is guaranteed only inside
   `replay_mode()`. A chunk holding a single strain can differ from the same strain in a larger
@@ -251,6 +281,8 @@
 
 ## Where the project stands
 
+*The owner's text of 27 September, kept with dated annotations. The current state is in the Status section above.*
+
 - **Experiment 01 / 01b.** Real C. elegans wiring (N2) against shuffled (SH) and random (RD) graphs on a foraging game. 01b is the rerun after a chemical-synapse direction bug was fixed. The README states exactly what it establishes; in particular, it does not establish faster improvement.
 - **Experiment 02 (published).** The primary prediction failed: champions did not meaningfully use the left-right food difference. Its pre-registration's mirror-symmetry reasoning was wrong: the turn read-out is dorsal minus ventral, so symmetric wiring gives no left-right comparison for free. Correction D050 is prepared as a Corrections entry in 02's RESULTS.md on main *(published 27 September)*.
 - **02b (re-analysis of 02's champions, reviewed, not yet on main *(published 28 September, D085)*):**
@@ -305,8 +337,9 @@ Failure in one track says nothing about the other. Track E may include optional 
      non-stereo plateau.
      - E4s-0, the diagnostics, comes before E3.
      - E4s-1, the comparator graft under evolution, runs in parallel with E3.
-5. **E3:** the minimal A/B organism (04b).
-6. **E4:** does useful information cross between the two modules (04c)?
+5. **E3:** the minimal A/B organism (04b). *(Done: E3a to E3f, 2-11 October.)*
+6. **E4:** does useful information cross between the two modules (04c)? *(Done, 11-15 October: the main task
+   exploratory, its formal run dropped; transfer found in the diagnostic task, E4-D, D280.)*
 
 Track B continues in parallel: 03r, then the mechanism follow-up or closure, then the 03a redesign. *(29 September: 03r replicated, and 03m ran as the exploratory follow-up. Next in Track B: a confirmatory 03m study, then 03a's six-neuron proof of concept.)*
 
@@ -406,6 +439,10 @@ Track B continues in parallel: 03r, then the mechanism follow-up or closure, the
   - the latch may be one self-exciting extra neuron, validated in our integrator;
   - the inactive module's semantics are declared in advance;
   - the navigation artefact follows E4s's rule.
+- *Status, 2026-10-11:* built in the order below (E3a: frozen modules with a fixed selector, then an evolved
+  selector, then joint tuning); the trails and peer-signal controls (E3b-0); the gate passed (E3b-1, "better",
+  D192); the assembly comparison ran as E3c (D198-D220). The cumulative reuse cost was not measured, and bridge 2
+  has not run.
 
 - **The organism:** two copies of the validated navigation module. A-related observations go to one copy and B-related observations to the other.
 - **The selector:** a set-reset latch. A confirmed visit to A switches to "go to B", and a confirmed visit to B switches to "go to A". It is engineered starting structure, labelled hybrid.
@@ -437,7 +474,7 @@ Track B continues in parallel: 03r, then the mechanism follow-up or closure, the
 *Status, 2026-10-13 (D258-D263):* the main task's formal run was dropped after its pilot; question 2 is pursued in a
 diagnostic task where transfer is necessary (E4-D), whose feasibility check passed. *2026-10-15 (D280):* in the
 evolutionary E4-D, selection recruited the transfer from zero ("practically relevant transfer found": the 32
-pre-registered runs' champions averaged 0.912 real-first; `experiments/E4-two-minds/E4-D-evo/RESULTS.md`). See "Where things stand" above and
+pre-registered runs' champions averaged 0.912 real-first; `experiments/E4-two-minds/E4-D-evo/RESULTS.md`). See the Status section above and
 `experiments/E4-two-minds/`.
 
 Three separate questions, from easiest to hardest:
@@ -601,6 +638,9 @@ The first social experiments use colonies of clones: one genome for every wey, e
   - drop the 43% animal-to-animal variability as a recovery ceiling;
   - cite the Creamer et al. preprint by version;
   - describe named neurons as solving gene correspondence, not co-adaptation.
+
+  *(2026-10-15: survey v2 is not in the repository. Its corrections have not been applied, and nothing here cites
+  it.)*
 - **ENOMAD** (Churchland and Garcia-Ojalvo) is the closest prior work. Read it in full before E2.
 - **The E4s literature review** (`docs/reviews/20261001-literature-review/`, 2026-10-01; two reviews,
   Claude Opus and Astra 6, not verified by us as a whole). Each claim is verified before it is cited.
@@ -627,6 +667,8 @@ The first social experiments use colonies of clones: one genome for every wey, e
   result is reported in the wording fixed in advance.
 - **The minimal A/B organism fails:** diagnose sensing, objective, controller capacity and optimizer progress separately before adding capability.
 - **04c finds no useful transfer:** report it, and check whether the latch or the module interfaces block transfer before concluding anything about evolution.
+  - *2026-10-15:* in the diagnostic task, E4-D, evolution found the transfer (D280). In the main task the question
+    stays open: its formal run was dropped (D258).
 - **Infrastructure keeps growing while the first organism does not exist:** the tripwire applies. Stop and ship the minimal A/B organism.
 
 ## Carried over from v2.2

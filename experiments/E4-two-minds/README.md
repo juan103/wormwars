@@ -1,13 +1,13 @@
 # E4 / 04c: do the two minds share?
 
-**Status (2026-10-13):**
+**Status (2026-10-15):**
 - **The main task's formal run was not run.** Both reviewers judged it poor value and recommended against spending its
   estimated 20 GPU-hours. The owner re-scoped E4 to its diagnostic task, **E4-D**, where information must cross from
   module A to module B by construction (D257-D258). The main task's pilot and follow-ups (4.20 GPU-hours) are published
   as exploratory: [`RESULTS.md`](RESULTS.md).
 - **E4-D's feasibility check passed** (CPU; D262; [`E4-D/README.md`](E4-D/README.md)). A hand-configured cross-link
-  control carries an engineered A → B signal: 0.83 real-first against X0's exact 0.5. The next step is an evolutionary
-  E4-D: its own design, review, pre-registration and pilot, on E4's remaining 25.80 GPU-hours (D258).
+  control carries an engineered A → B signal: 0.83 real-first against X0's exact 0.5. The evolutionary E4-D followed,
+  on E4's remaining 25.80 GPU-hours (D263; D265-D281).
 - **The evolutionary E4-D (pre-registered; 2026-10-15, D280): "practically relevant transfer found."** From E-G with
   the slots at 0, selection on the slots alone recruited the transfer: the 32 champions' mean real-first 0.912 on fresh
   test mazes, lower bound of the gain 0.401 against the margin 0.15 ([`E4-D-evo/RESULTS.md`](E4-D-evo/RESULTS.md)). E4 has
@@ -36,26 +36,30 @@ come to be used under evolution ([ROADMAP](../../ROADMAP.md), E4 / 04c)?
 
 ## Where things are
 
-- **The decisions:** D242-D263.
+- **The decisions:** D242-D264; the evolutionary E4-D's, D265-D281.
 - **The reviews:** `docs/reviews/` `20261011-E4-design*`, `20261011-E4-code`, `20261013-E4-pilot-1`,
-  `20261013-E4-diagnostics`, `20261013-E4-stageA`, `20261013-E4-results`, and E4-D's `20261012-E4-D-design*` and
-  `20261013-E4-D-code`.
+  `20261013-E4-diagnostics`, `20261013-E4-stageA`, `20261013-E4-results`, `20261013-E4-prepublication`, and
+  E4-D's `20261012-E4-D-design*` and `20261013-E4-D-code`.
 - **The library:** `wormwars/e4/`:
   - the gated organism and the arms;
   - the interventions and lineages;
   - the statistics and the evaluation harness;
-  - E4-D's trial world and rules.
+  - E4-D's trial world and rules;
+  - the evolutionary E4-D's trial rollout, decision rule and formal constants (`evo_trial.py`, `evo_stats.py`,
+    `evo_formal.py`).
 
   The output gate and the substep hook live in `wormwars/brain.py`.
 - **The scripts:**
   - `scripts/e4.py` (the pilot) and `scripts/e4_pilot_attempt1.py`;
   - `scripts/e4_diagnose.py`, `scripts/e4_calibrate.py` and `scripts/e4_headroom.py`;
-  - E4-D's `scripts/e4d.py`.
+  - `scripts/e4_eg_check.py` and `scripts/e4_gate_leak.py` (they write `docs/E4/eg-check.json` and
+    `gate-leak.json`);
+  - E4-D's `scripts/e4d.py`, and the evolutionary E4-D's `scripts/e4d_evo*.py`.
 - **The records** (this folder):
   - the pilot's attempt 1: `pilot.json`, `pilot-started.json`, `pilot-partial.json`;
   - `pilot-attempt1-summary.json`, `diagnostics.json`, `calibration.json`, `headroom.json`;
   - the compute records;
-  - E4-D's records in `E4-D/`.
+  - E4-D's records in `E4-D/`, and the evolutionary E4-D's in `E4-D-evo/` (its README).
 - **Rule 7:** `docs/E4/rule7/` (the output gate and the substep hook, CPU and GPU, identical). E4-D's trial world is a
   subclass that changes no engine file (v2.3).
 

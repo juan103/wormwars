@@ -148,7 +148,8 @@ publication and both while the repository was private:
    removed from every commit; it is regenerated from its seed instead.
 
 Either rewrite changes every commit hash, so **the commit hashes inside the bundles no longer exist
-in this repository**. They are mapped to their final replacements in
+in this repository** *(note, 2026-10-15: this holds for the bundles written before the rewrites; later ones, such
+as 01b's at 5161e76 and 02's at 225e8f8, record commits that exist)*. They are mapped to their final replacements in
 `experiments/01-foraging-n2-vs-controls/commit-hash-map.txt`, which composes both rewrites so the
 original hash maps straight to the final one.
 

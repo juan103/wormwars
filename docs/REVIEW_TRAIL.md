@@ -127,8 +127,9 @@ food response is 1.55-2.7 times the most responsive graph's, not 1.5-1.8).
   Confirming each one took execution.
 - Reviewers make errors too. Checking before adopting a finding was part of what made the reviews
   useful.
-- One error (episode 16) was caught by neither a person nor a reviewer but by running the tests on
-  another operating system.
+- Three errors were caught by neither a person nor a reviewer: episode 16 by running the tests on
+  another operating system, episode 27 by a script's own disjointness test, and part of episode 46 by
+  the formal run itself.
 - This is one project and seventy-seven episodes: an anecdote about multi-agent review, not a measurement
   of it.
 

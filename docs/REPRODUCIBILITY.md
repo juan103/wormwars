@@ -134,3 +134,7 @@ a test comparing a world alone with the same world in a batch of 4 failed once, 
 40 positions after 40 ticks, and passed on other runs of the same code. So on the CPU too, agreement
 across batch compositions is approximate and processor-dependent; exact agreement is claimed only
 within one composition.
+
+*Added 2026-10-15 (D202, D218):* E3b-1's per-tick CPU state hashes, recorded on Windows, differ on GitHub's
+Linux runners at the same composition (inferred from the CI logs, not reproduced on Linux). So CPU exactness is
+claimed on one machine and platform only.

@@ -23,11 +23,13 @@ what comes next.
 | `wormwars/e1/`, `wormwars/e04a/`, `wormwars/e2/` | Track E's code: Task N and its scripted controllers (E1); the lockstep batch of evolutionary runs (04a); the ES, random sampling and their batched loops (E2). |
 | `wormwars/registration.py` | The shared pre-registration guards: provenance, the formal-run checks, start markers, the cap clock. |
 | `wormwars/graft.py`, `wormwars/e4s/` | E4s: grafting extra neurons onto a connectome (with a registry for the publication guard); the comparator ladder, its carrier and E4s-0's diagnostics; E4s-1's arms and registered readings. |
-| `wormwars/e3/` | E3: the shuttle task, the organisms, the latch, the probe, the assays and the readings (E3a); the tree mazes and the maze world, the maze-ready organisms (seeds, W1, W2, M), the scripted controls, the measures and the simulation drivers (E3b-0); the tuning mask, the start organisms and the registered statistics (`tuning.py`), batched evaluation (`play_batch`) and the infeasible-maze redraw (`maze.walls_for`) (E3b-1). |
+| `wormwars/e3/` | E3: the shuttle task, the organisms, the latch, the probe, the assays and the readings (E3a); the tree mazes and the maze world, the maze-ready organisms (seeds, W1, W2, M), the scripted controls, the measures and the simulation drivers (E3b-0); the tuning mask, the start organisms and the registered statistics (`tuning.py`), batched evaluation (`play_batch`) and the infeasible-maze redraw (`maze.walls_for`) (E3b-1); the attributions and lesions (`attribution.py`, E3b-2); the assembly arms, formal plan and statistics (`assembly.py`, `e3c_formal.py`, `e3c_stats.py`, E3c); the island mazes, wall-follower, records and gate (`islands.py`, `e3d_*.py`, E3d, reused by E3e and E3f). |
+| `wormwars/e4/` | E4: the gated organism E-G, the arms and interventions, lineages, the scale and calibration rules, the statistics and the evaluation harness (the main task); E4-D's trial world and feasibility rules; the evolutionary E4-D's trial rollout, decision rule and formal constants (`evo_trial.py`, `evo_stats.py`, `evo_formal.py`). |
+| `wormwars/config.py`, `calibration.py`, `deletion.py`, `recorder.py`, `viewer.py`, `analysis/` | Configuration, per-graph motor gains, true neuron deletion (D044; used by 03m), trajectory recording and the headless viewer, and the ablation, geometry and bootstrap analyses of the early experiments. |
 | `scripts/` | Entry points. The evolution drivers write a run bundle (config, hashes, versions, commit); `exp03.py` records provenance per measurement instead. The experiment drivers write a compute record. |
 | `experiments/<id>/` | One folder per experiment, each with a README: design, pre-registration, results, reviews, and the committed summary data. |
 | `runs/` | Run outputs. Small summaries are committed; bulky files, such as most genome `.npz` files, stay local. |
-| `docs/` | Reproducibility (`REPRODUCIBILITY.md`), the foundations work (`foundations/`: T0 correctness, T1 throughput), design notes (`E1/`), archived reviews (`reviews/`), and the review trail. |
+| `docs/` | Reproducibility (`REPRODUCIBILITY.md`), the foundations work (`foundations/`: T0 correctness, T1 throughput), design notes and plans (`E1/`, `E2/`, `E3/`, `E4/`, `E4s/`), the early results and their C-numbered corrections (`RESULTS.md`), archived reviews (`reviews/`), and the review trail. |
 | `DECISIONS.md` | Every non-trivial decision, numbered (D001…), with its reason and who caught what. |
 | `ROADMAP.md` | What comes next, and why. A living document, not a pre-registration. |
 | `tests/` | The test suite. |
@@ -77,7 +79,8 @@ named. A change that breaks one should say so openly.
    in the repository, or to a script that regenerates it.
 6. **Exactness is claimed only where it is tested.** See
    [`docs/REPRODUCIBILITY.md`](docs/REPRODUCIBILITY.md):
-   - CPU runs repeat exactly;
+   - CPU runs repeat exactly on the same machine and platform (a Windows CPU reference differs on
+     GitHub's Linux runners, D202, D218);
    - CUDA runs are exact only on the same GPU, in the pinned environment, with the same batch
      composition, and inside `replay_mode()` where claimed;
    - a batch's composition is the tuple (strains per chunk, worlds per strain, weys per world).
@@ -101,7 +104,8 @@ named. A change that breaks one should say so openly.
 ## Where to start
 
 - **To check a result:** start at the experiment's README, then read its `RESULTS.md` and
-  `PREREGISTRATION.md`. The committed `report.json` or `analysis.json` holds the numbers.
+  `PREREGISTRATION.md`. The committed `report.json`, `summary.json` or the stage records the README
+  names hold the numbers.
 - **To rerun an experiment:** follow the experiment README's "Reproduce it" section. Compare
   against the committed summaries.
 - **To extend the work:** read `ROADMAP.md` and the "Extend it" section of the nearest experiment.

@@ -106,13 +106,12 @@ python scripts/e1.py gate --smoke
 
 ## Extend it
 
-- **04a:** evolve an N2 navigator on Task N, with its own pre-registration (ROADMAP.md, "E1 /
-  04a"). It should measure the champions' effective steering gain against the gain curve in
-  RESULTS.md.
+- **04a followed** (D103-D112; [`../04a-navigation-primitive/`](../04a-navigation-primitive/README.md)):
+  "passed", with weak navigators (2.0-2.8 targets per episode, 23-32% of an oracle).
 - **Line-shaped sources, bends and junctions:** the checks E3 begins with.
 - **Tune the blind baselines on wider grids** before any closer comparison.
 
 ## Record
 
-Decisions D077-D078 (the design), D094-D099 (the pre-registration and its five reviews), and
-D100-D101 (the results and their review). The reviews are in `docs/reviews/*E1*`.
+Decisions D077-D078 (the design), D095-D099 (the pre-registration and its five reviews),
+D100-D101 (the results and their review), and D102 (published on main). The reviews are in `docs/reviews/*E1*`.

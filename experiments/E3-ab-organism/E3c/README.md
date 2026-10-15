@@ -32,8 +32,8 @@ assemblies of stereo navigators.
 - **The pilot, its replay and probe:** `PILOT.md`, `pilot.json`, `replay.json`, `diagnostics/`.
 - **The power analysis:** `power.json` (`scripts/e3c_power.py`).
 - **The results:** `RESULTS.md`, from `report.json`.
-- **The decisions:** D198-D218.
-- **The reviews:** `docs/reviews/20261004-E3c-*`, `20261005-E3c-*`.
+- **The decisions:** D198-D220.
+- **The reviews:** `docs/reviews/20261004-E3c-*`, `20261005-E3c-*`, `20261006-E3c-results`.
 - **The code:**
   - `wormwars/e3/assembly.py`: the arms' draws and masks;
   - `wormwars/e3/e3c_stats.py`: the registered statistics;

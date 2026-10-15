@@ -8679,3 +8679,39 @@ D279's exemption does not weaken the connectome guard. Every finding was checked
 (a positive same-side contrast, 0.16-0.87 in L)" should read "every champion in both arms has a positive comparator →
 nose contrast (0.16-0.87 in L); whether that route carries the effect was not tested".
 **Next:** publication on main (both "fix then publish"; consensus, the owner informed after).
+
+
+## D282 — The documentation brought up to date, page by page, after E4; what v3 planned that has not run
+
+**The owner, 2026-10-15,** after asking what is missing from the original roadmap (v3, 4e40471): "can you first go
+[page by page] and update the documentation?" Every living page was checked against DECISIONS.md: the top README,
+ROADMAP, AGENTS, every experiment README, `docs/REPRODUCIBILITY.md`, the review trail's summary, T0's and T1's status
+lines, PLAN and PROVENANCE. A subagent audited the pages other than the README and ROADMAP; each finding was checked
+against the files before it was taken. Registered texts, designs, results and archived reviews are unchanged.
+- **ROADMAP:** a "where things stand" summary at the top of the status section, with what v3 planned that has not
+  run: in Track B, the confirmatory 03m study, 03a, both bridges (bridge 1 deferred in D077), null ensembles as Track
+  E's controls, and the memory thread's predictions; in E3, the cumulative reuse cost; in E4, shared dependence,
+  question 2 in the main task, consolidation (moved to 09), the duplication fates, two controls and the pruning
+  protocol; survey v2's corrections (the survey is not in the repository), the memory thread's literature comparison
+  and the collective-behaviour survey; stages 05-09. Also: the "Published on main" list completed from E3b-1 to the
+  evolutionary E4-D; the sequence's E3 and E4 marked done; a status line under E3; a broken pointer ("Where things
+  stand") fixed; dated notes on 04c's "no useful transfer" branch and on survey v2; the 27 September section marked
+  as the owner's text, annotated.
+- **The top README:** "Next on the roadmap" now says what is next (the biology track) and keeps the October log
+  under its own heading; E4's row and section lead with the evolutionary E4-D; "How to help" adds its compute,
+  records and open questions; the limitations, the commands (four smokes, each run and passing; the E4-D smoke on a
+  fresh folder, since it refuses where its record exists), and "How this was made" are brought up to date, including
+  the machine-caught D279.
+- **The experiment READMEs:** stale "next" lines in E1's, 03's, 03a's, E3b-0's, E3b-1's, E3's, E4's and E4-D's;
+  decision ranges in E1's (D095, not D094), E3c's and E4's; review lists in E3c's, E4's and E4-D-evo's; E4's library,
+  scripts and records; E3's design list; 03a's superseded budget rule struck through, with D094.
+- **AGENTS:** layout rows for `wormwars/e4/`, E3's later modules and six older modules never listed; `docs/`'s
+  contents; rule 6's CPU exactness limited to one machine and platform (D202, D218); "where to start" names
+  `summary.json`.
+- **Elsewhere:** REPRODUCIBILITY gets a dated note on the Windows-Linux CPU difference; the review trail counts three
+  errors caught by neither a person nor a reviewer (episodes 16, 27 and part of 46); T0 states its closure (D083);
+  PROVENANCE notes that only bundles written before the history rewrites carry missing commits (01b's 5161e76 and
+  02's 225e8f8 exist).
+- **Checked:** every relative link and anchor on the living pages resolves (a script, sabotaged with two bad links,
+  which it caught).
+**Next:** the diff to both reviewers before main; the owner chooses between Track B and the v2.2 items.

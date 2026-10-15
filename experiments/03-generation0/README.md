@@ -130,9 +130,10 @@ the food information helps even without evolution.
   world. Nothing shows the memory is useful.
 - **What produces P4 is not known.** The readings 03 cannot yet tell apart ([`RESULTS.md`](RESULTS.md)):
   slow relaxation; hysteresis or multistability; nonlinear saturation; and a steady-state contrast
-  measured after a finite 100-tick warm-up rather than at a verified equilibrium. Finding out is
-  the next Track B experiment: delete neurons and connections, compare gap junctions with chemical
-  synapses, and try inputs other than food ([`ROADMAP.md`](../../ROADMAP.md#03-and-03r)).
+  measured after a finite 100-tick warm-up rather than at a verified equilibrium. 03m took an
+  exploratory first look (D113-D116; [`../03m-p4-mechanism/`](../03m-p4-mechanism/README.md)) and found leads,
+  not a mechanism; a confirmatory study of its leads is next in Track B
+  ([`ROADMAP.md`](../../ROADMAP.md#03-and-03r)).
 - **The null ensembles move weights as well as wiring,** so the result is not a pure wiring
   effect.
 - **02b is related, but not the same measurement.** Selection made 02's champions' turning
@@ -305,6 +306,8 @@ worktree **after** `run`: before it, the untracked file would make `run` refuse 
   where the history effect lives (deletions), gap junctions or chemical synapses, inputs other
   than food, and what gives N2's random brains their stronger response. It needs its own
   pre-registration.
+  - [03m](../03m-p4-mechanism/README.md) took an exploratory first look and found leads, not a mechanism. A
+    confirmatory study of its leads is next in Track B, with its own pre-registration.
 - **Wiring versus weights:** two of three weight permutations kept P4 high and one did not. These
   are single draws, and no causal feature is isolated (RESULTS, exploratory).
 - **Readings the design cannot yet tell apart:** slow relaxation, hysteresis or multistability,

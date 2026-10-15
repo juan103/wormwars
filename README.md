@@ -33,18 +33,25 @@ selection acts on team results.
 | [02b](experiments/02b-champion-analysis/README.md) | What did 02's champions actually learn? | Published; exploratory re-analysis | They circle and slow down on food. Selection built a slow memory of recent food. It does not revise 02 |
 | [03](experiments/03-generation0/README.md) | Before any evolution, do N2's random brains differ from five null ensembles? | Published; pre-registered | History dependence (P4) is distinctive, but borderline: one more routing-matched graph at or above N2 would have failed the test (Holm p 0.047, then 0.070) |
 | [03r](experiments/03r-replication/README.md) | A full, separately pre-registered replication of 03 | Published; pre-registered | "Replicated under the registered single-signal test and under 03's original three-signal rule." |
-| [03a](experiments/03a-self-consistency/README.md) | Can a missing neuron's wiring be predicted from the rest of the brain plus a task? | Draft; a six-neuron proof of concept capped at 72 GPU-hours is planned (D094), not yet scheduled | None yet. As drafted, its searches alone need about 785 GPU-hours at 02's throughput, plus about 37 for whole-brain evolution |
+| [03a](experiments/03a-self-consistency/README.md) | Can a missing neuron's wiring be predicted from the rest of the brain plus a task? | Draft; a six-neuron proof of concept capped at 72 GPU-hours is planned (D094), in Track B after a confirmatory 03m study; not started | None yet. As drafted, its searches alone need about 785 GPU-hours at 02's throughput, plus about 37 for whole-brain evolution |
 | [E1](experiments/E1-navigation/README.md) | Can a scripted navigator reach moved targets on unseen layouts, beat blind search, and use the cue? The positive control before evolving a navigator | Published; pre-registered, public before its run | "E1 positive control: passed": 8.68 targets per episode (98.7% of an oracle); 0.03 with a mirrored decoy |
 | [04a](experiments/04a-navigation-primitive/README.md) | Can evolution, from random weights on the N2 wiring, produce a brain that reaches moved targets, beats blind search and uses the cue? | Published; pre-registered, public before its run | "04a: passed": 8 of 12 shaped runs (4 of 4 unshaped); the champions use the cue but are weak navigators (2.0-2.8 targets, 23-32% of an oracle) |
 | [03m](experiments/03m-p4-mechanism/README.md) | What drives 03's history dependence (P4)? | Exploratory; run, reviewed, corrected | N2's history fades more slowly than nearly all the shuffles'; its large food response depends on weight placement and on RIA and AIY; most weight permutations lower its P4, gap junctions narrow its lead, and no tested single or paired deletion removed it |
 | [E2](experiments/E2-optimizer-screen/README.md) | At equal simulator work, does OpenAI-ES find better Task N navigators than 02's GA, with random sampling as a floor? | Published; pre-registered, public before its run | "E2: keep 02's GA": the ES led by 0.12 targets per episode (0.5 needed). The floor fired: random sampling came within 0.36 of the GA, so Task N is diagnosed before E3 builds on it |
 | [E2d](experiments/E2d-taskn-diagnosis/README.md) | Why did random sampling come so close? Noise, the operators, budget and stereo use on Task N | Exploratory; plan and runner reviewed; run, reviewed, corrected | "A non-stereo plateau": no champion of 47 meets the "uses the left-right difference" criterion. No tested change (more worlds, gentler mutation, both, a smaller ES σ) leaves the plateau; gentler mutation improved all 8 paired runs but met the bar only with the failed run 2; the ES is budget-limited |
 | [E3](experiments/E3-ab-organism/README.md) | Can two hand-built stereo modules be composed, with a one-neuron latch remembering which source is next, into an organism that shuttles between two sources; and can evolution find the selector? (E3a, the shuttle; mazes and colonies are E3b) | Published: E3a (pre-registered and public before its run), E3b-0 (exploratory) and E3b-1 (pre-registered, amended once before any score was read); each run, reviewed and corrected. E3b-2 exploratory; run, reviewed, corrected. E3c pre-registered (bound and pushed before its formal run); run, reviewed, corrected. E3d exploratory (a task validation, its gate bound and pushed before its run); run, reviewed, corrected. E3e the same at 7 × 7; E3f at 6 × 6 and 1 800 ticks | E3a: the engineered organism shuttles at 12.79 visits per episode (97% of a module fed the goal's scent). "Evolution found a working selector in 1 of 8 runs, not reliably"; a blind search over the whole range found working selectors in 7 of 8; the two scored "unclear" apart. Joint tuning added 2.36 visits. E3b-0: in 5 × 5 tree mazes, linear trails help a scripted follower (+3.57 legs per 1 000 ticks) and the seed with a wall reflex (+0.69); peers' trails speed later discoverers; trail direction is not shown to be used; the trail constants are adaptively selected. E3b-1, the E3 gate: tuned colonies "better" than the frozen seed, +0.225 of its mean (+0.069 at 125 generations, +0.381 at 300); more generations and trail dependence helped; the tuned comparators no longer meet the seed's design criteria. E3b-2: the tuned colonies still use the latch's switching (holding it fixed removes 85-87% of their visits); most of the gain comes from the comparators' sensing and gating parameters tuned together. E3c: modular and dense from scratch, "approximate (model-based): no relevant difference"; the tuned engineered organisms against scratch, "approximate (model-based): unclear" (+0.66 visits on average); the coverage hypothesis "supported": every from-scratch champion is a scent-free coverer, no tuned engineered one is. E3d: 6 × 6 mazes with island goals, "failed at calibration": a random walk exceeds the absolute blind limit (2.34-2.53 against 2.0); wall-followers and E3c's scent-free champions score almost nothing. E3e at 7 × 7, "failed at calibration": the walk under the limit (1.50-1.64), but the scent follower falls to 0.13-0.16 of the oracle. E3f at 6 × 6 and 1 800 ticks: "passed" on fresh mazes (blind 1.74, 0.15 of the follower; the follower 0.36 of the oracle) |
-| [E4](experiments/E4-two-minds/README.md) | Does information crossing between two grafted navigation modules, through 32 optional cross-links, come to be used under evolution? (04c) | Exploratory: the main task's pilot and follow-ups, reviewed and corrected; its formal run dropped (the owner, on both reviewers' advice). E4-D, a task where transfer is necessary: its feasibility check passed (CPU) | One round of mutation leaves E-G's children far below it, nearly all through the module biases (on one block); after 100 generations no X0 strain beat E-G on validation; random cross-links cost heavily at every tested size. In E4-D a hand-configured cross-link control reaches 0.83 real-first against X0's exact 0.5, at weights about a hundred times the random steps that cost in the main task |
+| [E4](experiments/E4-two-minds/README.md) | Does information crossing between two grafted navigation modules, through 32 optional cross-links, come to be used under evolution? (04c) | Exploratory: the main task's pilot and follow-ups, reviewed and corrected; its formal run dropped (the owner, on both reviewers' advice). E4-D, a task where transfer is necessary: its feasibility check passed (CPU). The evolutionary E4-D: pre-registered (public before its run); run, reviewed, corrected | The evolutionary E4-D, "practically relevant transfer found": with only the 32 cross-link slots mutating from 0, the 32 runs' champions made a mean 0.912 real-first on fresh mazes (lower bound of the gain 0.401, against a margin of 0.15); cutting the links gave E-G exactly. The main task: one round of mutation leaves E-G's children far below it, nearly all through the module biases (on one block); after 100 generations no X0 strain beat E-G on validation; random cross-links cost heavily at every tested size. In E4-D a hand-configured cross-link control reaches 0.83 real-first against X0's exact 0.5, at weights about a hundred times the random steps that cost in the main task |
 | [E4s](experiments/E4s-stereo-module/README.md) | After E2d's plateau, can a hand-built stereo module grafted onto N2 steer, and what does evolution do to it? (Ahead of plan; stereo sensing is a game-design choice, not worm biology) | E4s-0 exploratory, E4s-1 pre-registered and public before its run; both run, reviewed, corrected | E4s-1, "supports": with the 4-neuron graft's output, evolved brains end +5.19 targets per episode above the same brains evolved without it (16 of 16 pairs), and +3.79 above random signs fixed for the run. The selected brains use the module at both endpoints in 16 of 16 runs (7.14 on average). Part of the benefit is not stereo use, and transfer into the host was not shown |
 
-Next on the roadmap:
-- **Published 2026-10-02:** E4s-0 and E4s-1, together; then E3a. **2026-10-03:** E3b-0. **2026-10-04:**
+**Next on the roadmap:**
+- **Track E has run its schedule through E4;** what follows E4 is direction, not schedule.
+- **In the biology track:** a confirmatory study of 03m's leads, then 03a's six-neuron proof of concept. Neither
+  has started.
+- [`ROADMAP.md`](ROADMAP.md)'s status section lists what v3 planned that has not run, and what waits for the
+  owner's decision.
+
+**Published so far in October:**
+- **2026-10-02:** E4s-0 and E4s-1, together; then E3a. **2026-10-03:** E3b-0. **2026-10-04:**
   E3b-1, the E3 gate ("better"), and E3b-2, where its gain comes from. **2026-10-06:** E3c, the assembly
   comparison. **2026-10-10:** E3d, a maze validation ("failed at calibration"). **2026-10-11:** E3e, the same
   at 7 × 7 ("failed at calibration"); then E3f, 6 × 6 at a horizon of 1 800 ticks ("passed").
@@ -52,22 +59,31 @@ Next on the roadmap:
   advice); E4-D's feasibility check passed.
 - **2026-10-14:** the evolutionary E4-D's pilot (exploratory: all 20 runs recruited the transfer) and its
   pre-registration, bound after review by both (D269-D274).
-- **2026-10-15:** the evolutionary E4-D's formal run, as pre-registered (D275-D280): **"practically relevant transfer
-  found"**: with only the slots mutating, the 32 runs' champions made a mean 0.912 real-first on fresh mazes (one-sided 95% lower bound of the gain over 0.5: 0.401, against the
-  margin 0.15). See [its results](experiments/E4-two-minds/E4-D-evo/RESULTS.md).
+- **2026-10-15:** the evolutionary E4-D's formal run, as pre-registered (D275-D281): **"practically relevant transfer
+  found"**: with only the slots mutating, the 32 runs' champions made a mean 0.912 real-first on fresh mazes
+  (one-sided 95% lower bound of the gain over 0.5: 0.401, against the margin 0.15). See
+  [its results](experiments/E4-two-minds/E4-D-evo/RESULTS.md).
 - **Before E4** (paused by the owner, 2026-10-06, until 10-11):
   - E3c found that the maze task is solved by scent-free circuits as well as by navigation.
   - E3d tested a maze family with island goals. It defeats wall-following, but a random walk exceeds its
     absolute blind limit.
   - At 7 × 7 (E3e) the walk falls under that limit, but the scent follower falls below a third of the oracle.
   - At 6 × 6 with a horizon of 1 800 ticks (E3f), the family passes the gate on fresh mazes. E4 used it.
-- **In the biology track:** a confirmatory study of 03m's leads, then 03a's six-neuron proof of
-  concept.
 
-## Newest: E4, do the two minds share? (exploratory)
+## Newest: E4, do the two minds share?
 
-**4.20 of 30 GPU-hours.** E4 grafted two navigation modules, one active at a time, with 32 optional cross-links
+**9.30 of 30 GPU-hours.** E4 grafted two navigation modules, one active at a time, with 32 optional cross-links
 between them.
+
+**The evolutionary E4-D (pre-registered; run 2026-10-14/15):** one wey must choose the real of two goals that only module A
+can tell apart, while module B steers. Starting from E-G with the slots at 0 and mutating only them, selection
+recruited the transfer: **"practically relevant transfer found"**, the 32 champions' mean real-first 0.912 on fresh
+test mazes (lower bound of the gain 0.401 against the owner's margin 0.15). Every champion beat E-G, and cutting the
+links gave E-G exactly. Their weights differ from the hand-built wiring: every one has a positive comparator → nose
+contrast, at small weights (exploratory; that route's role was not tested). With A's cue removed, most champions
+entered neither goal within the trial. 3.21 GPU-hours.
+
+**Before it, exploratory (4.20 GPU-hours):**
 - **The main task:**
   - the modules are mutationally fragile: one round of mutation took E-G's children from 4.03 to 1.97 visits per wey
     on 8 paired mazes, and bias-only mutation reproduced nearly all of it;
@@ -80,15 +96,9 @@ between them.
   while module B steers. A hand-configured control passed the feasibility check (CPU): 0.83 real-first against X0's
   exact 0.5, with every integrity check holding. It needs link weights of about 2-3, about a hundred times the random
   steps that cost in the main task.
-- **Caveats:** exploratory throughout; the main task's figures depend on the maze block, and the cross-link cost was
-  measured on one block.
-
-- **The evolutionary E4-D (pre-registered; 2026-10-15):** starting from E-G with the slots at 0 and mutating only
-  them, selection recruited the transfer: **"practically relevant transfer found"**, the 32 champions' mean
-  real-first 0.912 on fresh test mazes (lower bound of the gain 0.401 against the owner's margin 0.15); every champion
-  beat E-G, and cutting the links gave E-G exactly. Their weights differ from the hand-built wiring: every one has a
-  positive comparator → nose contrast, at small weights (exploratory; that route's role was not tested). 3.21
-  GPU-hours; E4 at 9.30 of 30.
+- **Caveats:** the main task's figures depend on the maze block, and the cross-link cost was measured on one block.
+  The evolutionary E4-D's limits are its registered ones: an engineered cue, 32 links between engineered modules,
+  and this GA at this budget.
 
 See [E4's results](experiments/E4-two-minds/RESULTS.md), [E4-D's feasibility check](experiments/E4-two-minds/E4-D/README.md)
 and [the evolutionary E4-D's results](experiments/E4-two-minds/E4-D-evo/RESULTS.md).
@@ -368,12 +378,13 @@ archived verbatim. Our bottleneck is compute: everything so far ran on one consu
 GPU. If you have more, you can get to the next answers first, and we would count that as a good
 outcome. Useful things anyone can do:
 
-- **Replicate on other hardware.** 03 took 19.75 GPU-hours, 03r 23.95, 04a 2.91 and E3b-1 18.73, on one
-  RTX 5080, and their READMEs give the commands. CUDA results are exact only on the same GPU, so an independent
-  replication is a real test.
+- **Replicate on other hardware.** 03 took 19.75 GPU-hours, 03r 23.95, 04a 2.91, E3b-1 18.73 and the
+  evolutionary E4-D 3.21, on one RTX 5080, and their READMEs give the commands. CUDA results are exact only on
+  the same GPU, so an independent replication is a real test.
 - **Re-analyse without a GPU.** Every verdict can be checked from committed files (`report.json`,
   `analysis.json`, `records.jsonl`, E1's `gate.json` and 04a's `evaluation.json` with their event
-  tables, and E3b-1's `evaluate.json` with its per-maze arrays).
+  tables, E3b-1's `evaluate.json` with its per-maze arrays, and the evolutionary E4-D's `formal/` records,
+  from which `scripts/e4d_evo_summary.py` rebuilds its `summary.json`).
 - **Take an open question from [`ROADMAP.md`](ROADMAP.md):**
   - [the mechanism behind 03's history dependence](ROADMAP.md#03-and-03r): 03m took an
     exploratory first look, and its RESULTS.md lists what a confirmatory study would register;
@@ -383,6 +394,8 @@ outcome. Useful things anyone can do:
   - [which optimizer finds better navigators](ROADMAP.md#e2-short-optimizer-screen) (E2);
   - [03a's redesign](ROADMAP.md#03a-redesign-after-03r-before-any-confirmatory-run), which does
     not fit our compute;
+  - [what E4 left open](ROADMAP.md#e4--04c-do-the-two-minds-share): whether the evolved comparator → nose route
+    carries the transfer, shared dependence, and transfer in the main maze task;
   - [the later biology questions](ROADMAP.md#later-biology-questions-unscheduled).
 - **Try the variants** listed under "Extend it" in each experiment's README.
 - **Check us.** Open an issue with the file, the line and what you expected. Most errors so far were
@@ -488,9 +501,9 @@ chemotaxis samples concentration over time while moving. The sensor and motor ma
 neurons is chosen by hand.
 
 **Track E's organisms are engineered.** E4s grafts a hand-built stereo module onto N2. E3 builds its
-organism from such modules on a silent worm, whose own neurons do nothing. Their results are about tuning
-hand-built circuits in a game, not about the worm's wiring or behaviour. Stereo sensing itself is a
-game-design choice.
+organism from such modules on a silent worm, whose own neurons do nothing, and E4 joins two of them with
+cross-links. Their results are about tuning hand-built circuits in a game, not about the worm's wiring or
+behaviour. Stereo sensing itself is a game-design choice.
 
 **Numerics.** 01b ran with 8 integrator substeps. Motor read-out errors above 0.05, against 32
 substeps, are rare (0 to 8 of 1440 weys, depending on the inputs used), and their effect on fitness
@@ -562,6 +575,10 @@ python scripts/e04a.py project --smoke               # 04a's pipeline at tiny si
 python scripts/e3a.py project --smoke                # E3a's pipeline at tiny sizes (then g-e, g0, ...)
 python scripts/e3b0.py stage-a --smoke --device cpu  # E3b-0's maze pipeline at tiny sizes (then stage-b, ...)
 python scripts/e3b1.py project --smoke --device cpu  # E3b-1's pipeline at tiny sizes (then g-e, train-ta, ...)
+python scripts/e3c.py project --smoke --device cpu   # E3c's pipeline at tiny sizes (then g-e, train-smod, ...)
+python scripts/e3f.py project --smoke --device cpu   # E3f's validation at tiny sizes (then g-e, calibrate, ...)
+python scripts/e4.py pilot --smoke --device cpu      # E4's main-task pilot at tiny sizes
+python scripts/e4d_evo_formal.py check --smoke --device cpu   # the evolutionary E4-D's stages at tiny sizes
 ```
 
 The evolution scripts (`evolve_forage`, `coevolve`, `experiment`, `exp02`) write a run bundle (config, dataset hashes, package versions, git commit, seed
@@ -652,7 +669,7 @@ This project was designed and built almost entirely by AI models, directed by a 
 - Claude Fable 5.1 (Anthropic), in conversation: turned those ideas into the experimental design and
   specification, and reviewed the results. Later, consulted read-only, it reviewed experiment 01b
   before publication (D033), and since then every design, pre-registration and write-up: 02, 03,
-  03r, T0, T1, E1, 04a, 03m, E2, E2d, E4s, E3a, E3b-0 and E3b-1.
+  03r, T0, T1, E1, 04a, 03m, E2, E2d, E4s, E3a to E3f, and E4.
 - Astra 6 (a GPT model from OpenAI): adversarial review of the specification, which produced the
   statistical design, the resource accounting rules and the numerical stability requirements.
   Reviewing the roadmap, it found that the chemical synapses of experiment 01 ran backwards (D031),
@@ -664,7 +681,7 @@ This project was designed and built almost entirely by AI models, directed by a 
   the reversed synapses, ran experiment 01b, and acted on its review. It also designed,
   pre-registered, ran and wrote up experiment 02, which the owner delegated to it end to end,
   with the two reviewers standing in for approval at each stage; then, with the roadmap delegated,
-  03, 03r, the engineering work (T0, T1), E1, 04a, 03m, E2, E2d, E4s, E3a, E3b-0 and E3b-1.
+  03, 03r, the engineering work (T0, T1), E1, 04a, 03m, E2, E2d, E4s, E3a to E3f, and E4.
 - Claude Sonnet 5.5 (Anthropic), through the Claude CLI: a literature report for E4s's first designs.
   Most of its sources were search snippets and nobody checked its claims. It was wrongly called "a
   deep research" (corrected, D143).
@@ -688,9 +705,11 @@ review, including a false claim that every test had been seen failing first (D11
 first reading of its floor result that called the optimizers' gains "little" (D125). In E3b-1, they
 caught failure paths in its runner (D188, D189), and Astra 6 caught an audit check, written by Claude
 Code, that had played a test maze before the evaluation (D191). Both caught an over-reading of its probes
-(D192). One error was
-caught by a machine: the first automatic test run on Linux
-showed that 03's graph files rebuild byte for byte only on Windows (D106). The full list, with
+(D192). In the evolutionary E4-D, Astra 6 found that its smoke tests had played registered formal ids before any
+formal stage ran (D276), and Fable 5.1 a validation count off by rounding in its results draft (D281). Two errors
+were caught by a machine: the first automatic test run on Linux showed that 03's graph files rebuild byte for byte
+only on Windows (D106), and the automatic tests failed on three record commits that Claude Code had pushed without
+running them (D279). The full list, with
 commits: [`docs/REVIEW_TRAIL.md`](docs/REVIEW_TRAIL.md).
 
 The design and implementation came from Anthropic models and the specification review from an OpenAI

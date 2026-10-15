@@ -82,6 +82,8 @@ The comparator-origin wiring at w = 3 was chosen; it entered a candidate on 61 o
 - **For the evolutionary E4-D:** the weights that carry the signal (about 2-3) are about a hundred times the random
   cross-link steps that already cost heavily in E4's main task (cross-link factor 0.25 of the weight σ 0.08, about
   0.02; `../pilot.json`; the ladder in `../calibration.json`). Whether selection
-  can climb that far is the question.
+  can climb that far is the question. *(2026-10-15: the evolutionary E4-D answered it: selection on the slots
+  alone recruited the transfer, at weights far smaller than the hand-built control's 3; `../E4-D-evo/README.md`,
+  D280.)*
 
 **Compute:** CPU only (`compute-record.json`).

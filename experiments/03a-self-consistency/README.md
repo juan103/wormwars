@@ -5,6 +5,9 @@
 > revisited after 03r, using measured throughput (about 2 times experiment 02's), not the
 > hoped-for 5 times. Until then, no code specific to 03a, no feasibility pilot and no
 > pre-registration tag exist.
+>
+> *Updated 2026-09-29 (D094): now planned as a six-neuron proof of concept capped at 72 GPU-hours, after a
+> confirmatory study of 03m's leads; not started.*
 
 **Status:** draft v3.2 (2026-09-25), not run, not scheduled (D062). *Updated 2026-09-29:* it becomes a six-neuron proof of concept capped at 72 GPU-hours (the owner, D094), planned in the biology track after a confirmatory study of 03m's leads · **Run:** none · **Commit:**
 none · **Compute:** none spent. The draft as written is estimated at about 31 million genome
@@ -106,7 +109,8 @@ draft v2 and folded into v3):
 
 ## Caveats and open problems
 
-- **The throughput gap** above is why 03a is not scheduled (D062).
+- **The throughput gap** above kept 03a unscheduled (D062) until the owner cut it to a six-neuron proof of
+  concept capped at 72 GPU-hours (D094), after a confirmatory study of 03m's leads; not started.
 - **The 02b risk** (roadmap v3): the connections that make neurons critical, to sensor and motor
   neurons, are ones v3.2 keeps fixed. The redesign must either search the targets' interface
   connections or pick targets whose criticality does not come only from interface adjacency.
@@ -142,8 +146,10 @@ Roadmap v3's redesign list ([`ROADMAP.md`](../../ROADMAP.md#03a-redesign-after-0
     pilot must show that solutions to the task use interneurons.
   - **The 02b risk:** search interface connections, or choose targets accordingly.
   - **Nulls:** experiment 03's validated ensembles, with several graphs each.
-  - **Budget:** fit the design to measured throughput; shrink the panel (24, then 16, then 12) or
-    the searches before extending the cap, and say which was cut.
+  - **Budget:** ~~fit the design to measured throughput; shrink the panel (24, then 16, then 12) or
+    the searches before extending the cap, and say which was cut.~~ *Superseded by the owner's
+    decision (D094): six neurons (3 high, 2 medium, 1 low relevance), capped at 72 GPU-hours with the
+    pilot; if it does not fit, the searches or null arms are cut, not the six neurons.*
   - **Wording:** animal-to-animal variability is not a ceiling on recovery from one fixed graph.
 - **After 03a:** a full map runs only if 03a separates the three outcomes. Later ideas from the
   draft: more tasks, leave-k-out, missing synapses, and a full self-consistent-field loop.
@@ -153,7 +159,7 @@ Roadmap v3's redesign list ([`ROADMAP.md`](../../ROADMAP.md#03a-redesign-after-0
 - Design: [`DRAFT.md`](DRAFT.md); notes: [`NOTES_FROM_02.md`](NOTES_FROM_02.md).
 - Decisions ([`DECISIONS.md`](../../DECISIONS.md)): D044 (silencing is not deletion), D045 (draft
   v3), D046 (Fable's review of v3), D047 (Astra's review of v3.1; disagreements), D062 (not
-  scheduled). Related: D043 (the generation-0 study as experiment 03), D050 (the "about 2 times,
+  scheduled), D094 (a six-neuron proof of concept, 72 GPU-hours). Related: D043 (the generation-0 study as experiment 03), D050 (the "about 2 times,
   not 5" throughput).
 - Reviews (`docs/reviews/`): `20260925-163118-roadmap` (v2), `20260925-172550-v3` (v3),
   `20260925-174815-v31` (v3.1).

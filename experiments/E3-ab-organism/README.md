@@ -1,6 +1,6 @@
 # E3: the minimal A/B organism
 
-**Status (2026-10-06):**
+**Status (2026-10-15):**
 - **E3a: published on main** (2026-10-02, D170).
   - Its design was agreed (`docs/E3/DESIGN.md` v2.4, D163).
   - Its pre-registration was bound before any stage ran (`E3a/PREREGISTRATION.md`; D164, D165; Amendment
@@ -34,7 +34,8 @@
   - **What passed:** the random walk falls under the absolute limit.
 - **E3f: published** (2026-10-11, D241; `E3f/README.md`, `E3f/RESULTS.md`). E3d's design at 6 × 6, k_r = 0 and
   H = 1 800, on fresh mazes: **"E3f: passed"**. This is E4's task.
-- **Paused before E4** (the owner, 2026-10-06); the owner decides when E4 resumes.
+- **E4 followed** (2026-10-11 to 10-15; D242-D281; [`../E4-two-minds/README.md`](../E4-two-minds/README.md)), on
+  E3f's maze family.
 
 ## E3a's results
 
@@ -122,5 +123,6 @@ silent worm, outside the N2 mask. Nothing here is about worm behaviour.
   D156-D163.
 - **The geometry check:** `scripts/e3_geometry_check.py` and `docs/E3/geometry-check.json`.
 - **The module it builds on:** E4s-0's L1 (`../E4s-stereo-module/E4s-0/module.json`).
-- **E3b's plans and design:** `docs/E3/E3b-0-PLAN.md` and `docs/E3/E3b-1-DESIGN.md`; each experiment's
+- **E3b's design, plans and literature check:** `docs/E3/E3b-DESIGN.md`, `E3b-LITERATURE.md`, `E3b-0-PLAN.md`,
+  `E3b-1-DESIGN.md` and `E3b-2-PLAN.md`; E3c-E3f's designs are named in their folders, and each experiment's
   folder holds its own records.

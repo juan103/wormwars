@@ -19,7 +19,7 @@ usable task and a usable signal at all? E3b-0 tunes nothing.
 
 **The caveat:** the trail constants were chosen after the qualification rule changed twice. Both changes
 were reviewed before they ran, but everything chosen is adaptively selected. The GPU leg of the engine's
-equivalence check is still owed.
+equivalence check passed later, in E3b-1's `g-e` stage (`../E3b-1/g-e.json`).
 
 ## What it is
 - **The task:** a 5 × 5 tree maze (Wilson's algorithm, 3-wide corridors) and a colony of 8 weys. Each wey
