@@ -1,8 +1,10 @@
-# 03mc: a confirmatory test of 03m's leads on P4 (design v2)
+# 03mc: a confirmatory test of 03m's leads on P4 (design v2.1)
 
-**Status:** design v2, 2026-10-16, for a second review by Astra 6 and Fable 5.1. Not a pre-registration;
-nothing fresh has been drawn or run.
-- **v1** (`6e948d7`, D285): both reviewers said "revise" (run 20261015-232952, D286). §11 lists the changes.
+**Status:** design v2.1, 2026-10-16, for a confirmation pass by Astra 6 and Fable 5.1. Not a
+pre-registration; nothing fresh has been drawn or run.
+- **v1** (`6e948d7`, D285): both reviewers said "revise" (run 20261015-232952, D286).
+- **v2** (`1673ad5`, D286): Fable "ready for the pre-registration", with three things to do first;
+  Astra "revise" (run 20261016-001758, D287). §11 lists the changes in each version.
 - **The owner's go:** Track B next, on 2026-10-15 ("let's go to the biology track first"; D285).
 - **The label** 03mc ("03m, confirmatory") is proposed here. ROADMAP's Track B leaves the label to the
   pre-registration.
@@ -56,10 +58,15 @@ Neither reviewer wanted "no deletion removes P4" registered, nor a claim of stab
   included), fresh null graphs and fresh permutations, all registered and pushed before any is drawn.
 - **Measured for this design, on old inputs only (03's genomes, 03m's panel):**
   - the history probe's GPU time (D285);
-  - the two-row probe's deviation from 03m's one-row outputs, on N2, the 80 panel graphs, and three
-    N2 conditions (§5, `equivalence.json`);
+  - the two-row probe's deviation from one-row references (§5): on N2, the 80 panel graphs and three
+    N2 conditions (`equivalence.json`), then on the pre-run check set with every declared tolerance
+    (`equivalence-check.json`). Both ran on uncommitted code over a committed HEAD (6e948d7 and
+    1673ad5; `dirty: true` in their stamps). The only later change to the first run's script was
+    `allow_pickle=False` (D286). The formal pre-run check reruns at the bound commit (Fable);
   - the probability of passing (§6, `power.py`, `power.json`), simulated from 03m's committed
     summaries and its local per-genome arrays (their hashes recorded).
+- **Reviewers' own runs:** in the review of v2, Astra ran its own checks on this machine, on old inputs
+  (84 s of GPU, counted in its session, not in this study's accounting).
 
 ## 2. What stays exactly as in 03
 
@@ -147,8 +154,8 @@ each predicted direction (§6). Every outcome has fixed wording; the cases that 
   - batches 1-31 come from the names "N2#1" ... "N2#31".
   - The uncertainty in the change of P4 under a deletion was underestimated in v1. At 2 048 genomes,
     03m's AIY change has a paired bootstrap SE of 0.012 (Astra).
-- **Conditions, in every batch:** intact; the RIA pair deleted; the AIY pair deleted; both pairs; and
-  eight degree-matched control pairs (below).
+- **Conditions, in every batch:** intact; the RIA pair deleted; the AIY pair deleted; both pairs. The
+  degree-matched controls come from batch 0's 95-pair screen (below).
   - A deletion is 03m's: every edge and gap junction touching the neuron, and its bias.
   - Each condition runs as its own probe, in the registered composition.
   - An empty deletion in batch 0 must reproduce batch 0's intact terms exactly; otherwise the run
@@ -190,8 +197,20 @@ each predicted direction (§6). Every outcome has fixed wording; the cases that 
     excluded; ties are broken alphabetically.
   - This gives AIB, AVJ, RIM and AVH for RIA (degree 135; theirs 141, 119, 116, 114), and AWB, RIF,
     RIP and RIV for AIY (degree 58; theirs 59, 59, 59, 57). The code derives the list and asserts it.
-  - The claim: RIA's cut exceeds each of its four controls' cuts (one-sided bootstrap tests, Holm
-    over the four at 0.05), and the same for AIY.
+    The tie-break decides RIA's fourth control: PVP also has 114 (Fable).
+  - **Why total degree:** it is a coarse structural match that needs no choice of direction or synapse
+    type. Matching on chemical in-degree alone would follow RIA's and AIY's place on the
+    sensory-to-steering route more closely; the conclusions are about these named controls, not about
+    every pair of their degree (Fable, Astra).
+  - **The controls are measured in the 95-pair screen on batch 0,** so they cost no extra probes. In
+    03m their cuts are all below ASE's 31%, against RIA's 62% and AIY's 53%, so batch 0's precision is
+    enough (Fable).
+  - **The claim, for each target:** RIA's cut exceeds every one of its four controls' cuts, and the
+    same for AIY.
+    - Each comparison is a paired difference in cut, divided by its bootstrap SE (batch 0's 2 048
+      genomes, 10 000 resamples, the same seed as Q-B): p = Φ(−difference/SE).
+    - The claim's p is the largest of the four (intersection-union), at 0.05, outside the family
+      (Fable, Astra).
 - **Secondary, descriptive:**
   - all 95 pair deletions on batch 0, with RIA's and AIY's ranks by response cut;
   - the double deletion's cuts and ΔP4;
@@ -237,7 +256,9 @@ each predicted direction (§6). Every outcome has fixed wording; the cases that 
     N2.
 - **Endpoint: the retained share at tick 30.**
   - **Chosen with 03m's curves in view:** N2 was above all 80 null graphs at every tick from 5 to 50
-    (§0). Tick 30 has the highest simulated pass probability among ticks 10-50 (§6), and it is three
+    (§0). Among ticks 10-50, the simulated pass probabilities of ticks 20, 30 and 40 are within
+    simulation error of each other, and above ticks 10 and 50 (`power.json`, "Q-D by tick"; v2 said
+    tick 30 had the highest, which the committed table does not show). Tick 30 is also three
     ramp-lengths after the ramp ends.
   - **Not tick 300:** at tick 300 the slowly relaxing graphs make the test a likely failure.
 - **Prediction:** N2's retained share at tick 30 is unusually large relative to every ensemble's.
@@ -245,7 +266,8 @@ each predicted direction (§6). Every outcome has fixed wording; the cases that 
 - **Outcome wording:**
   - pass: "N2 retained an unusually large share of its history difference 30 ticks after the ramp,
     relative to each ensemble: [r of n] graphs per ensemble retained as much or more";
-  - fail: "the registered criterion was not met: ...".
+  - fail: "the registered criterion was not met: [r of n] graphs per ensemble retained as much as N2
+    or more".
   - A pass is about one time point. It does not separate a slower relaxation from a plateau or a
     differently shaped transient, and it does not mean that every null graph or every N2 genome keeps
     less (Astra).
@@ -291,10 +313,18 @@ sentence is not used, and RESULTS says first that the lead itself did not replic
     run, and another checks that swapping the starts flips every sign);
   - the step is bound by reading the dense matrices, so the time halves: 6.6 s against 13.0 s for
     2 048 genomes (D285).
-- **Deviation from 03m's one-row outputs, measured on old inputs** (`scripts/p4mc_equivalence.py`,
-  `equivalence.json`; 0.52 GPU-hours on 2026-10-15/16, counted in its own accounting record). Old inputs
-  means 03's genomes for N2 and 03m's 80 panel graphs, plus N2 with gap junctions off, with the RIA pair
-  deleted, and under 03m's paired permutation 100. The worst cases over all 81 graphs:
+- **Deviation from one-row references, measured on old inputs** (`scripts/p4mc_equivalence.py`):
+  - **The first run** (`equivalence.json`, 0.52 GPU-hours): 03's genomes for N2 and 03m's 80 panel
+    graphs, plus N2 with gap junctions off, with the RIA pair deleted, and under 03m's paired
+    permutation 100. It compared per-genome outputs and P4's terms.
+  - **The second run** (`equivalence-check.json`, 0.24 GPU-hours, after the review of v2): the pre-run
+    check set, which is N2, the first 4 graphs of each ensemble, SH-mirror-40015 (the worst settling
+    deviation), SH-10007 and SH-recip-50015, plus the three conditions. It adds what the first run
+    lacked (both reviewers): each graph's aggregate retained share at tick 30 against 03m's
+    `decay.json`; the pre-tanh terms against a one-row sequential reference; and the settling labels,
+    genome by genome. Every comparison is judged against the declared tolerances below; all passed.
+
+  The worst cases, over both runs:
 
   | output | worst relative deviation |
   |---|---|
@@ -303,21 +333,29 @@ sentence is not used, and RESULTS says first that the lead itself did not replic
   | per genome: the difference at tick 30; the whole curve to tick 300 | 2.2 × 10⁻⁵; 1.3 × 10⁻⁴ |
   | per genome: tanh slopes; the holds' settling range | 1.1 × 10⁻⁶; 2.7 × 10⁻⁵ |
   | per genome, the three N2 conditions: ramp end, steady contrast; their P4 terms | 7.6 × 10⁻⁷; 4.6 × 10⁻⁸ |
-  | per genome: the follow-up's settling range (near zero, so relative deviations are large) | 0.33 |
+  | per genome: the follow-up's settling range (near zero, so relative deviations are large) | 0.33 (SH-mirror-40015) |
+  | each graph's retained share at tick 30 (second run) | 4.1 × 10⁻⁷ |
+  | pre-tanh: per genome, ramp end and steady contrast; the terms (second run) | 3.9 × 10⁻⁶, 4.8 × 10⁻⁶; 2.1 × 10⁻⁷ |
+  | settling labels changed: settled, separation remaining, both (second run, 24 graphs) | 0, 0, 0 |
 
   - Per-genome figures are the largest absolute difference over the largest |reference value|.
-  - **Settling labels:** checked separately (an uncounted 1.6-minute run, D286). On N2, SH-10007,
-    SH-recip-50015 (the worst range deviation) and SH-mirror-40003, no genome changed its settled
-    label (0 of 2 048 each), and no genome changed its "separation remaining" label. The counts of
-    genomes settled with separation left were identical: 26, 171, 0 and 37.
+  - **Settling labels:** first checked by an uncounted 1.6-minute run on four graphs (D286), which named
+    SH-recip-50015 as the worst range deviation. That was wrong: it is SH-mirror-40015 (Astra). The
+    second run checks all 24 graphs of the check set, SH-mirror-40015 included. No genome changed any
+    label, and the counts of genomes settled with separation left matched 03m's: N2 26, SH-10007 171,
+    SH-mirror-40003 37.
 - **Declared tolerances for the formal pre-run check:**
-  - **Aggregates:** P4's terms against 03's committed supplement, and each graph's retained share at
-    tick 30 against 03m's, within a relative 10⁻⁵ (50 times the worst measured).
-  - **Per genome:** the ramp end, the steady contrast, tick 30, the slopes and the hold ranges within
-    10⁻⁴ (at least 4.5 times the worst measured); the curve within 2 × 10⁻³ (15 times).
-  - **Settling:** the count of genomes settled with separation left, identical on N2.
-  - The check runs on N2 and the first 4 graphs of each of 03's ensembles (old inputs), plus N2 with
-    gap junctions off, the RIA pair deleted, and 03m's paired permutation 100.
+  These are declared in the script (`TOL`, `LABELS`):
+  - **Aggregates:** within a relative 10⁻⁵. This covers P4's terms against 03's committed supplement
+    (49 times the worst measured), each graph's retained share at tick 30 against 03m's (25 times), and
+    the pre-tanh terms against the one-row reference (47 times).
+  - **Per genome:** within 10⁻⁴ for the ramp end, the steady contrast, tick 30, the slopes and the
+    pre-tanh terms (at least 4.5 times the worst measured); within 3 × 10⁻⁴ for the holds' settling
+    range (11 times); within 2 × 10⁻³ for the curve (15 times).
+  - **Settling labels:** at most 2 of 2 048 genomes of any graph may change any label. More would
+    indicate a fault, not rounding; one genome crossing the 10⁻⁴ threshold should not halt the study
+    over a secondary count (Fable).
+  - **The check set:** as in the second run, `--set check`.
   - **If it fails, nothing formal runs.** The failure is reported, and a dated amendment decides,
     reviewed by both. The measured deviations are reported whatever they are.
 - **Runs per graph:**
@@ -359,62 +397,85 @@ sentence is not used, and RESULTS says first that the lead itself did not replic
     alone, but not its Holm threshold: not confirmed under the registered familywise rule".
   - **A failed replication:** see §4.
 - **The probability of passing** (`power.py`, `power.json`):
-  - **What it is:** a model built from 03m's data, simulating the whole Holm procedure.
-    - Q-A's null changes come from a regression of change on intact P4 over 03m's 80 graphs,
-      extrapolated to 03's and 03r's intact P4s (Fable).
-    - Q-D's tails come from a normal per ensemble on log retained share, with the fit's uncertainty.
-    - Q-B's true values are drawn from 03m's estimates and their SEs.
-    - N2's sampling uncertainty enters every question.
-    - The questions are drawn independently.
+  - **What it is:** model-based predictive pass probabilities. They are predictions under the models
+    below, not established operating characteristics (Astra). The whole Holm procedure is simulated.
+    - **N2's quantities are drawn jointly** (v2.1, Astra). One paired bootstrap over 03m's 2 048 N2
+      genomes, which are the same genomes in every 03m array, gives their covariance: Q-A's change,
+      Q-D's share, RIA's and AIY's cuts and changes in P4, and N2's response.
+      - The correlations reach 0.45 between RIA's and AIY's changes in P4, and 0.38 between Q-A's change
+        and RIA's.
+      - Batch 0 is shared between the questions; Q-B pools it with 31 more batches.
+    - **Q-A:** the null changes come from a regression of change on intact P4 over 03m's 80 graphs,
+      extrapolated to 03's and 03r's intact P4s (Fable). The coefficients and the residual SD are drawn
+      from their posterior; the slope is −0.26, SE 0.03.
+    - **Q-D:** per ensemble, a normal on log retained share, its mean and SD drawn from the
+      reference-prior posterior (p(μ, σ²) ∝ 1/σ²).
+    - **Q-C** is now modelled, not assumed: the permutations' log responses come from a normal fitted to
+      03m's 64 paired permutations (mean −3.72, SD 0.28), against N2's drawn response (log −2.05).
+    - **A sensitivity** replaces the graph-level normals with Student t on 5 degrees of freedom at the
+      same SD (Astra: the tails matter for an extreme-rank test).
   - **Results, from 20 000 simulated studies with Q-B at 65 536 genomes:**
 
-    | | alone at 0.05 | under Holm |
-    |---|---|---|
-    | Q-A | 0.99 | 0.97 |
-    | Q-B | 0.78 | 0.77 |
-    | Q-C | 1.00 | 1.00 |
-    | Q-D | 0.85 | 0.78 |
-    | all four | | 0.64 |
+    | | normal, alone at 0.05 | normal, under Holm | t₅, under Holm |
+    |---|---|---|---|
+    | Q-A | 0.98 | 0.96 | 0.92 |
+    | Q-B | 0.77 | 0.76 | 0.76 |
+    | Q-C | 1.00 | 1.00 | 1.00 |
+    | Q-D | 0.85 | 0.78 | 0.74 |
+    | all four | | 0.63 | 0.62 |
 
   - **Q-B's limit** is the uncertainty in 03m's own estimate of AIY's change in P4 (−0.004 ± 0.012),
-    not the fresh sample. Under Holm, Q-B would pass 0.01 of the time at 2 048 genomes and 0.60 at
-    16 384.
+    not the fresh sample. Under Holm, Q-B passes 0.60 of the time at 16 384 genomes (v2's
+    independent model gave 0.01 at 2 048).
   - **Q-D's limit** is the tails of five ensembles estimated from 16 graphs each.
   - The v1 sketch's 0.99 for Q-D was wrong: it ignored the fit's uncertainty and gave Q-D Holm's
     most lenient slot (both reviewers).
-  - A fixed sequence (C, A, D, B, each at 0.05 after the previous passes) gives Q-D 0.84 and Q-B
-    0.65. Holm is kept: it does not let one failure block the rest.
+  - A fixed sequence (C, A, D, B, each at 0.05 after the previous passes) gives Q-D 0.83 and Q-B
+    0.64. Holm is kept: it does not let one failure block the rest.
+  - **By tick** (Q-D alone, 5 000 simulated studies each): 0.68 at tick 10, 0.83 at 20, 0.85 at 30,
+    0.85 at 40, 0.78 at 50. Ticks 20-40 are within simulation error of each other (about ±0.01).
 - **Completeness:**
   - at least 120 counted graphs per ensemble for each of Q-A, Q-D, Q-E and the replication, judged
     separately; otherwise that question is withheld, with its counts;
   - Q-B needs its 32 batches, with at most 1% of bootstrap resamples dropped;
   - Q-C needs at least 240 valid permutations.
 - **Secondary tests** carry their own α = 0.05 and sit outside any familywise guarantee.
+- **Intervals** (Astra): every descriptive interval is a 95% percentile bootstrap interval with 10 000
+  resamples. The resampling unit and seed depend on the quantity:
+  - N2's quantities: genomes, paired across conditions, seed 20261016;
+  - quantities over permutations (the factorial contrast, Q-C's kept share of the excess P4):
+    permutations, seed 20261017;
+  - the null-graph deletions: graphs, seed 20261018.
+- **Q-B's SEs are treated as known** in its normal-theory tests (Fable). Q-B's 90% percentile
+  intervals are reported beside the tests as a check, not as a test.
 
 ## 7. Compute and cap
 
 | Part | Units | GPU-hours |
 |---|---|---|
-| pre-run check (old inputs) | 21 graphs + 3 conditions | 0.15 |
+| pre-run check (old inputs; `scripts/p4mc_equivalence.py --set check`) | 24 graphs + 3 conditions | 0.25 |
 | N2 batch 0: long run, gaps off | 2 runs | 0.01 |
 | Q-C: 256 permutations | 256 probes | 0.47 |
-| Q-B: 32 batches × 12 conditions | 384 probes | 0.70 |
+| Q-B: 32 batches × 4 conditions | 128 probes | 0.23 |
 | ensembles: 640 graphs, long run + gaps off | 640 × 30 s | 5.35 |
 | secondary: 95 pairs, factorial 32 × 3, null deletions 160 × 3 | 671 probes | 1.23 |
 | graph build (CPU) | 640 graphs + plateau chains | 0.4 |
-| **total** | | **about 8.3** |
+| **total** | | **about 7.9** |
 
 - **The cap is 10 hours**, registered in code. It counts every formal command's synchronised wall
   time in the accounting (`CapClock`; wall time, not GPU kernel time), across all attempts: failed
   ones, restarts and the build.
-- **It is checked before every unit:** a graph, a batch's condition, a permutation. A unit begun under
-  the cap runs to completion, so the overrun is at most one unit (under a minute).
+- **It is checked before every unit:** a graph's build, a graph's measurement, a batch's condition, a
+  permutation. A unit begun under the cap runs to completion, so the overrun is at most one unit: about
+  30 s for a measurement, under a minute for a graph's build (Astra). The report runs after the cap's
+  last check and simulates nothing.
 - **A stop is administrative, not an observation:** what is incomplete is withheld and reported. The
   four primaries keep p = 1 for anything unmeasured.
 - **No continuation depends on an outcome:** the order is fixed, and nothing is added or rerun
   because of a result.
 - **The owner is told before the formal run starts.**
-- The measurements for this design (timing, `equivalence.json`) are counted separately and reported.
+- The measurements for this design (timing, `equivalence.json`, `equivalence-check.json`) are counted
+  separately and reported.
 
 ## 8. What this cannot establish
 
@@ -433,28 +494,61 @@ sentence is not used, and RESULTS says first that the lead itself did not replic
   - the long follow-up keeps the ramp end and the steady contrast;
   - the pre-tanh read-out;
   - row isolation and the row swap;
-  - sabotage checks: a reversed steady contrast and a shared input row were both caught by these tests
-    (D286).
+  - the pre-tanh terms against a one-row sequential reference (v2.1, Fable, Astra);
+  - sabotage checks: a reversed steady contrast and a shared input row were caught (D286), and so was
+    swapping the turn-plus and turn-minus neurons in the pre-tanh read-out (D287).
+- **`wormwars/exp03/mc.py`, the statistics** (written test-first after v2's review; 13 tests):
+  - the rank p in both directions, with invalid values dropped;
+  - intersection-union with a missing ensemble;
+  - Holm with stopping and a missing question;
+  - Q-B's paired bootstrap, including a sabotage check of the pairing, and its tests;
+  - the matched controls, on a toy graph and on the connectome;
+  - the freshness audit with planted collisions, including permutation seeds compared as generator
+    seeds (2 × seed + type, as `brain._apply_magnitude_mode` uses them), and the content check.
+- **`scripts/p4mc_equivalence.py`:** the pre-run check, with its tolerances in code.
 - **Still to write, test-first, for the pre-registration's code review:**
-  - the build and its freshness audit, with a sabotage check (a planted collision);
-  - the matched-control rule;
-  - the bootstrap and the tests;
-  - the rank tests;
-  - Holm with missing questions;
+  - the build command around the audit (an `03mc` instance of 03's builder is added to
+    `scripts/exp03.py`);
+  - the runner;
   - the cap and unit boundaries;
   - the stop and resume behaviour;
   - the report's wording for every case.
 
 ## 10. Questions for the reviewers
 
-1. Are v1's findings fixed (§11)?
-2. Q-B's equivalence tests at 65 536 genomes: is a normal-theory test with a paired bootstrap SE
-   acceptable, or should the p-value come from the bootstrap distribution itself?
-3. The degree-matched controls: is total degree the right match, and four per target the right
-   number?
-4. Is anything still missing for a reader to trust a pass or a failure?
+1. Are v2's findings fixed (§11, "From v2")?
+2. Does anything still block writing the pre-registration from this design?
 
-## 11. Changes from v1 (review 20261015-232952, D286)
+Answered in v2's review (kept): the normal-theory tests with a paired bootstrap SE are acceptable at
+65 536 genomes (both); total degree and four controls per target are acceptable, with conclusions
+limited to the named controls (both).
+
+## 11. Changes
+
+### From v2 (review 20261016-001758, D287)
+
+- **The equivalence check** (both): the second run adds each graph's aggregate tick-30 share, the
+  pre-tanh terms against a one-row reference, and the settling labels genome by genome, on the pre-run
+  check set. Every tolerance is declared in code and judged; all passed. The settling rule allows at
+  most 2 label changes per graph (Fable). The worst settling graph was misnamed (SH-mirror-40015, not
+  SH-recip-50015; Astra). The hold-range tolerance was raised to 3 × 10⁻⁴; v2 said "at least 4.5 times"
+  where it was 3.8 (both).
+- **A pre-tanh reference test,** with a sabotage check (both).
+- **The power model** (Astra): N2's quantities are drawn jointly from one paired bootstrap; Q-A's
+  regression has posterior draws; Q-C is modelled; there is a heavier-tailed sensitivity; the results
+  are called model-based predictive probabilities. Q-D's tick comparison is now committed (both), and
+  it does not single out tick 30, so the claim that it did is withdrawn.
+- **Q-B's controls** (both): they come from batch 0's 95-pair screen (Fable; saves 0.47 GPU-hours); the
+  claim is intersection-union, with a paired-difference test; the PVP tie is stated; total degree is
+  explained.
+- **Intervals and SEs** (both): methods, levels, resampling units and seeds are declared; Q-B's SE is
+  treated as known, with a percentile interval beside it.
+- **Wording:** Q-D's failure sentence is written out (Fable).
+- **The cap:** the overrun bound covers builds, and the report simulates nothing (Astra).
+- **Disclosures:** both equivalence runs were on uncommitted code (Fable); Astra's own 84 s of GPU in
+  its review.
+
+### From v1 (review 20261015-232952, D286)
 
 - **Q-B's power** (Astra): 32 batches of 2 048 genomes; the bootstrap and tests specified exactly; no
   part passed at a fixed 5%. "Approximately in proportion" replaces "in proportion" (Astra). The 40%

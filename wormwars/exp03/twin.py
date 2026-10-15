@@ -14,6 +14,7 @@ from __future__ import annotations
 import numpy as np
 import torch
 
+from ..accounting import counted
 from ..brain import Brain, Genome
 from .measures import _current, _readout
 
@@ -34,6 +35,7 @@ class _Range:
         return r.reshape(r.shape[0], -1).amax(dim=1).cpu().numpy()
 
 
+@counted("probe")
 def history(genome: Genome, cfg, iface, bank: dict, rising_start=0.25, falling_start=1.75, warm=100, span=10,
             follow=5, every=10, extra=(5,), window=10) -> dict:
     """Per genome: the raw turn's rising-minus-falling difference at the ramp's end ("final") and `extra[0]`

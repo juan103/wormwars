@@ -1,14 +1,18 @@
-"""03mc: the two-row history probe (`wormwars/exp03/twin.py`) against 03m's one-row outputs, on old inputs only.
+"""03mc: the two-row history probe (`wormwars/exp03/twin.py`) against one-row references, on old inputs only.
 
-    python scripts/p4mc_equivalence.py --device cuda      # writes experiments/03mc-p4-confirm/equivalence.json
-    python scripts/p4mc_equivalence.py --smoke            # CPU, 8 genomes, two graphs, runs/p4mc-equivalence-smoke/
+    python scripts/p4mc_equivalence.py --set check --device cuda   # the pre-run check set -> equivalence-check.json
+    python scripts/p4mc_equivalence.py --set panel --device cuda   # all of 03m's 80 panel graphs and N2
+    python scripts/p4mc_equivalence.py --set check --smoke         # CPU, 8 genomes, runs/p4mc-equivalence-smoke/
 
-Measured before the pre-registration, so its tolerances can be declared from measured deviations with a margin
-(Fable and Astra, design review v1). Every input is 03's or 03m's: 03's genomes for N2 and the first 16 graphs
-of each of 03's ensembles (03m's decay panel), N2 with gap junctions off, N2 with the RIA pair deleted, and N2
-paired with 03m's permutation seed 100. Nothing fresh is drawn. Compared, per genome where 03m kept arrays:
-the ramp-end difference, the steady contrast, the follow-up curve to tick 300, the settling ranges and the
-tanh slopes; and P4's terms against 03's committed supplement."""
+Every input is 03's or 03m's: 03's genomes for N2 and 03m's panel graphs, N2 with gap junctions off, N2 with the
+RIA pair deleted, and N2 paired with 03m's permutation seed 100. Nothing fresh is drawn. The references:
+- 03m's per-genome arrays (`runs/p4m/*.npz`, local): the ramp-end difference, the steady contrast, the follow-up
+  curve to tick 300, the settling ranges and the tanh slopes, and from them the settling labels;
+- 03m's committed `decay.json`: each graph's retained share at tick 30 (an aggregate);
+- 03's committed supplement: P4's numerator and denominator;
+- the pre-tanh read-out, which 03m never recorded: a one-row sequential run written here (`one_row_pre`).
+The tolerances are declared in TOL (DESIGN.md §5) and every comparison is marked passed or failed; the formal
+pre-run check is this script's `check` set at the bound commit (Fable, Astra, design reviews v1-v2)."""
 
 from __future__ import annotations
 
@@ -25,18 +29,36 @@ import torch
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from wormwars import accounting as acct  # noqa: E402
+from wormwars.brain import Brain  # noqa: E402
 from wormwars.deletion import delete_neurons  # noqa: E402
+from wormwars.exp03 import measures as M  # noqa: E402
 from wormwars.exp03 import twin  # noqa: E402
 
 _spec = importlib.util.spec_from_file_location("p4m_for_equivalence", ROOT / "scripts" / "p4m.py")
 P = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(P)
 
+# Declared tolerances (DESIGN.md §5), relative: aggregates as |got - ref| / |ref|; per-genome arrays as the
+# largest absolute difference over the largest |reference|. Settling labels: at most LABELS genomes of a graph
+# may change label; more indicates a fault, not rounding.
+TOL = {"terms": 1e-5, "share30": 1e-5, "pre_terms": 1e-5,
+       "final": 1e-4, "steady_contrast": 1e-4, "curve_tick30": 1e-4, "slope_hold": 1e-4, "slope_ramp": 1e-4,
+       "pre_final": 1e-4, "pre_steady_contrast": 1e-4, "hold_state_range": 3e-4, "curve": 2e-3,
+       "condition_final": 1e-4, "condition_steady_contrast": 1e-4, "condition_terms": 1e-5}
+LABELS = 2
+SETTLE, START_FLOOR, REMAINING = 1e-4, 1e-3, 0.10  # 03m's settling rule and "separation remaining" (PLAN.md Q4)
+# The pre-run check set: N2, the first 4 graphs of each ensemble, and the three graphs with the worst settling
+# deviation or the most settled-with-separation genomes in the first, 81-graph run (D287).
+EXTRA = ["SH-mirror-40015", "SH-10007", "SH-recip-50015"]
+
 
 def rel(a, b) -> float:
-    """The largest absolute difference over the largest |reference|: one number per array."""
     a, b = np.asarray(a, dtype=np.float64), np.asarray(b, dtype=np.float64)
     return float(np.max(np.abs(a - b)) / max(float(np.max(np.abs(b))), 1e-30))
+
+
+def rel1(a: float, b: float) -> float:
+    return abs(a - b) / abs(b)
 
 
 def terms(final, steady) -> dict:
@@ -44,92 +66,146 @@ def terms(final, steady) -> dict:
     return {"numerator": float(f.mean()), "denominator": float(s.mean())}
 
 
-def term_rel(got: dict, want: dict) -> dict:
-    return {k: abs(got[k] - want[k]) / abs(want[k]) for k in ("numerator", "denominator")}
+def labels(diff, end_range) -> dict:
+    """03m's labels per genome: settled, separation remaining (among those starting above the floor), both."""
+    d = np.abs(np.asarray(diff, np.float64))
+    settled = np.asarray(end_range) < SETTLE
+    remaining = (d[0] >= START_FLOOR) & (d[-1] > REMAINING * d[0])
+    return {"settled": settled, "remaining": remaining, "both": settled & remaining}
+
+
+@acct.counted("probe")
+def one_row_pre(genome, cfg, iface, bank, warm=100, span=10) -> dict:
+    """The pre-tanh terms from two one-row runs, the way 03 ran its histories: the turn-plus neurons' mean state
+    minus the turn-minus neurons', after the hold and at the ramp's end."""
+    brain = Brain(genome)
+    s, n, dev = genome.n_strains, genome.spec.n, genome.device
+    food = (bank["food_left"] + bank["food_right"]) / 2
+    at = lambda lv: M._current(iface, cfg, dict(bank, food_left=lv, food_right=lv), n, s, dev)  # noqa: E731
+    plus, minus = list(iface.turn_plus), list(iface.turn_minus)
+    out = {}
+    for name, start in (("rising", 0.25 * food), ("falling", 1.75 * food)):
+        v = brain.initial_state(1)
+        for _ in range(warm):
+            v = brain.step(v, at(start))
+        hold = v[:, 0, plus].mean(-1) - v[:, 0, minus].mean(-1)
+        for t in range(span):
+            v = brain.step(v, at(start + (food - start) * (t + 1) / span))
+        out[name] = (hold.cpu().numpy(), (v[:, 0, plus].mean(-1) - v[:, 0, minus].mean(-1)).cpu().numpy())
+    return {"final": out["rising"][1] - out["falling"][1], "steady_contrast": out["falling"][0] - out["rising"][0]}
+
+
+def judge(row: dict) -> dict:
+    """Mark each measured deviation against its declared tolerance."""
+    fails = [k for k, v in row["deviation"].items() if k in TOL and v > TOL[k]]
+    fails += [f"labels.{k}" for k, v in row.get("label_changes", {}).items() if v > LABELS]
+    row["failed"] = fails
+    row["passed"] = not fails
+    return row
 
 
 def main():
     ap = argparse.ArgumentParser(allow_abbrev=False)
+    ap.add_argument("--set", choices=["check", "panel"], default="check")
     ap.add_argument("--device", default="cuda")
     ap.add_argument("--smoke", action="store_true")
     args = ap.parse_args()
     smoke = args.smoke
     dev = "cpu" if smoke else args.device
     n = 8 if smoke else None
-    out_path = (ROOT / "runs" / "p4mc-equivalence-smoke" / "equivalence.json" if smoke
-                else ROOT / "experiments" / "03mc-p4-confirm" / "equivalence.json")
+    out_dir = ROOT / "runs" / "p4mc-equivalence-smoke" if smoke else ROOT / "experiments" / "03mc-p4-confirm"
+    out_path = out_dir / f"equivalence-{args.set}.json"
     con, bank, iface = P.setup(dev)
     sup = P.supplement("03")
-    dec = np.load(ROOT / "runs" / "p4m" / "decay-per-genome.npz", allow_pickle=False)
-    syn = np.load(ROOT / "runs" / "p4m" / "synapses-per-genome.npz", allow_pickle=False)
-    les = np.load(ROOT / "runs" / "p4m" / "lesions-per-genome.npz", allow_pickle=False)
-    wts = np.load(ROOT / "runs" / "p4m" / "weights-per-genome.npz", allow_pickle=False)
+    decay = json.loads((ROOT / "experiments" / "03m-p4-mechanism" / "decay.json").read_text(encoding="utf-8"))["graphs"]
+    load = lambda f: np.load(ROOT / "runs" / "p4m" / f"{f}-per-genome.npz", allow_pickle=False)  # noqa: E731
+    dec, syn, les, wts = load("decay"), load("synapses"), load("lesions"), load("weights")
+    ref_ticks = [int(x) for x in dec["ticks"]]
     sl = slice(None) if n is None else slice(0, n)
-    doc = {"what": "03mc: the two-row probe against 03m's one-row outputs, old inputs only", "stamp": P.stamp(),
-           "device": dev, "genomes": n or 2048, "graphs": {}, "conditions": {}}
+    if args.set == "panel":
+        names = P.panel_names(16)
+    else:
+        names = P.panel_names(4) + EXTRA
+    if smoke:
+        names = names[:2]
+    doc = {"what": "03mc: the two-row probe against one-row references, old inputs only", "set": args.set,
+           "stamp": P.stamp(), "device": dev, "genomes": n or 2048, "tolerances": TOL, "label_changes_allowed": LABELS,
+           "graphs": {}, "conditions": {}}
     t0 = time.perf_counter()
-    names = P.panel_names(1 if smoke else 16)
     with acct.category("probe"):
         for name in names:
             g, cfg = P.probe_genomes(con, name, dev, n=n)
             h = twin.history(g, cfg, iface, bank, follow=300, every=10, extra=(5,), window=10)
+            pre = one_row_pre(g, cfg, iface, bank)
             key = name.replace("-", "_")
             ref_diff = dec[f"{key}|diff"][:, sl]
-            row = {"ticks_match": list(h["ticks"]) == [int(x) for x in dec["ticks"]],
-                   "final": rel(h["raw_turn"]["final"], ref_diff[0]),
-                   "steady_contrast": rel(h["raw_turn"]["steady_contrast"], dec[f"{key}|steady_contrast"][sl]),
-                   "curve": rel(h["diff"], ref_diff),
-                   "curve_tick30": rel(h["diff"][h["ticks"].index(30)], ref_diff[list(dec["ticks"]).index(30)]),
-                   "end_state_range": rel(h["end_state_range"], dec[f"{key}|end_state_range"][sl]),
-                   "hold_state_range": rel(h["hold_state_range"], dec[f"{key}|hold_state_range"][sl]),
-                   "slope_hold": rel(h["slope_hold"], dec[f"{key}|slope_hold"][sl]),
-                   "slope_ramp": rel(h["slope_ramp"], dec[f"{key}|slope_ramp"][sl])}
+            t30, r30 = h["ticks"].index(30), ref_ticks.index(30)
+            share = float(np.abs(h["diff"][t30]).astype(np.float64).mean() / np.abs(h["diff"][0]).astype(np.float64).mean())
+            mad = decay[name]["mean_abs_difference"]
+            got_t = terms(h["raw_turn"]["final"], h["raw_turn"]["steady_contrast"])
+            got_pre = terms(h["pre_turn"]["final"], h["pre_turn"]["steady_contrast"])
+            ref_pre = terms(pre["final"], pre["steady_contrast"])
+            dev_ = {"final": rel(h["raw_turn"]["final"], ref_diff[0]),
+                    "steady_contrast": rel(h["raw_turn"]["steady_contrast"], dec[f"{key}|steady_contrast"][sl]),
+                    "curve": rel(h["diff"], ref_diff), "curve_tick30": rel(h["diff"][t30], ref_diff[r30]),
+                    "hold_state_range": rel(h["hold_state_range"], dec[f"{key}|hold_state_range"][sl]),
+                    "end_state_range": rel(h["end_state_range"], dec[f"{key}|end_state_range"][sl]),
+                    "slope_hold": rel(h["slope_hold"], dec[f"{key}|slope_hold"][sl]),
+                    "slope_ramp": rel(h["slope_ramp"], dec[f"{key}|slope_ramp"][sl]),
+                    "pre_final": rel(h["pre_turn"]["final"], pre["final"]),
+                    "pre_steady_contrast": rel(h["pre_turn"]["steady_contrast"], pre["steady_contrast"]),
+                    "pre_terms": max(rel1(got_pre[k], ref_pre[k]) for k in got_pre)}
             if not smoke:
-                row["terms_vs_03_supplement"] = term_rel(terms(h["raw_turn"]["final"], h["raw_turn"]["steady_contrast"]),
-                                                         {"numerator": sup[name]["P4_turn_numerator"],
-                                                          "denominator": sup[name]["P4_turn_denominator"]})
-            doc["graphs"][name] = row
-            print(name, {k: (f"{v:.1e}" if isinstance(v, float) else v) for k, v in row.items() if k != "terms_vs_03_supplement"},
-                  flush=True)
+                dev_["terms"] = max(rel1(got_t["numerator"], sup[name]["P4_turn_numerator"]),
+                                    rel1(got_t["denominator"], sup[name]["P4_turn_denominator"]))
+                dev_["share30"] = rel1(share, mad[r30] / mad[0])
+            a = labels(h["diff"], h["end_state_range"])
+            b = labels(ref_diff, dec[f"{key}|end_state_range"][sl])
+            row = {"ticks_match": list(h["ticks"]) == ref_ticks, "deviation": dev_,
+                   "label_changes": {k: int((a[k] != b[k]).sum()) for k in a},
+                   "label_counts": {k: [int(a[k].sum()), int(b[k].sum())] for k in a},
+                   "share30": [share, mad[r30] / mad[0]], "pre_P4": got_pre["numerator"] / got_pre["denominator"]}
+            doc["graphs"][name] = judge(row)
+            print(name, "passed" if row["passed"] else f"FAILED {row['failed']}",
+                  {k: f"{v:.1e}" for k, v in dev_.items()}, row["label_changes"], flush=True)
         g, cfg = P.probe_genomes(con, "N2", dev, n=n)
         idx = {nm: i for i, nm in enumerate(con.names)}
+        lab = list(les["labels"])
         conds = {
             "gap junctions off": (lambda: g.with_params(g=torch.zeros_like(g.g)), cfg,
                                   syn["gap junctions off|final"][sl], syn["gap junctions off|steady"][sl]),
             "pair RIA deleted": (lambda: delete_neurons(g, [[idx["RIAL"], idx["RIAR"]]] * g.n_strains), cfg,
-                                 les["final"][list(les["labels"]).index("pair RIA")][sl],
-                                 les["steady"][list(les["labels"]).index("pair RIA")][sl]),
-        }
+                                 les["final"][lab.index("pair RIA")][sl], les["steady"][lab.index("pair RIA")][sl])}
         gp, cp = P.probe_genomes(con, "N2perm100", dev, graph=con, n=n, seed_name="N2")
         conds["N2perm100, paired"] = (lambda: gp, cp, wts["paired|N2perm100|final"][sl], wts["paired|N2perm100|steady"][sl])
         for label, (make, c, f_ref, s_ref) in conds.items():
             h = twin.history(make(), c, iface, bank, follow=5)
-            doc["conditions"][label] = {"final": rel(h["raw_turn"]["final"], f_ref),
-                                        "steady_contrast": rel(h["raw_turn"]["steady_contrast"], s_ref),
-                                        "terms": term_rel(terms(h["raw_turn"]["final"], h["raw_turn"]["steady_contrast"]),
-                                                          terms(f_ref, s_ref))}
-            print(label, doc["conditions"][label], flush=True)
+            got, ref = terms(h["raw_turn"]["final"], h["raw_turn"]["steady_contrast"]), terms(f_ref, s_ref)
+            row = {"deviation": {"condition_final": rel(h["raw_turn"]["final"], f_ref),
+                                 "condition_steady_contrast": rel(h["raw_turn"]["steady_contrast"], s_ref),
+                                 "condition_terms": max(rel1(got[k], ref[k]) for k in got)}}
+            doc["conditions"][label] = judge(row)
+            print(label, "passed" if row["passed"] else f"FAILED {row['failed']}", row["deviation"], flush=True)
     worst = {}
-    for row in doc["graphs"].values():
-        for k, v in row.items():
-            if isinstance(v, float):
-                worst[k] = max(worst.get(k, 0.0), v)
-            elif isinstance(v, dict):
-                for kk, vv in v.items():
-                    worst[f"{k}.{kk}"] = max(worst.get(f"{k}.{kk}", 0.0), vv)
-    for label, row in doc["conditions"].items():
-        for k, v in row.items():
-            if isinstance(v, float):
-                worst[f"{label}.{k}"] = v
-            else:
-                for kk, vv in v.items():
-                    worst[f"{label}.{k}.{kk}"] = vv
-    doc["worst"] = worst
+    for rows in (doc["graphs"], doc["conditions"]):
+        for name, row in rows.items():
+            for k, v in row["deviation"].items():
+                if v >= worst.get(k, (-1.0, ""))[0]:
+                    worst[k] = (v, name)
+            for k, v in row.get("label_changes", {}).items():
+                if v >= worst.get(f"labels.{k}", (-1, ""))[0]:
+                    worst[f"labels.{k}"] = (v, name)
+    doc["worst"] = {k: {"value": v, "where": w} for k, (v, w) in sorted(worst.items())}
     doc["all_ticks_match"] = all(r["ticks_match"] for r in doc["graphs"].values())
+    doc["passed"] = doc["all_ticks_match"] and all(r["passed"] for rr in (doc["graphs"], doc["conditions"])
+                                                   for r in rr.values())
     doc["seconds"] = time.perf_counter() - t0
-    out_path.parent.mkdir(parents=True, exist_ok=True)
+    out_dir.mkdir(parents=True, exist_ok=True)
     out_path.write_text(json.dumps(doc, indent=1, allow_nan=False) + "\n", encoding="utf-8", newline="\n")
-    print(json.dumps(worst, indent=1))
+    print(json.dumps(doc["worst"], indent=1))
+    print("PASSED" if doc["passed"] else "FAILED")
+    if not doc["passed"] and not smoke:
+        raise SystemExit("the two-row probe is outside a declared tolerance")
 
 
 if __name__ == "__main__":

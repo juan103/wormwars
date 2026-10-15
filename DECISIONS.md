@@ -8807,3 +8807,43 @@ checked and taken (DESIGN.md §11):
   equivalence script; that is the only change since they ran. `power.py` was rerun and wrote an identical
   `power.json`; the equivalence run was not repeated.
 **Next:** design v2 to both reviewers.
+
+
+## D287 — 03mc's design v2 reviewed (Fable "ready", with three things first; Astra "revise"); design v2.1; corrections to D286
+
+Astra 6 and Fable 5.1 at "high" on 1673ad5 (run 20261016-001758; `runs/consult-d286-log.txt` stays local).
+**Fable:** "ready for the pre-registration", with three things to do first (measure the aggregate tick-30 share,
+commit the tick comparison, commit the settling check) and text fixes. **Astra:** "revise". Astra reproduced
+`power.json` exactly and found the Holm loop, the Q-D posterior and Q-B's two-stage draw correct. It also ran its own
+checks on this machine, on old inputs (84 s of GPU, outside this study's accounting). Every finding was checked:
+- **The equivalence check omitted two promised outputs** (both): the aggregate retained share at tick 30 and the
+  pre-tanh read-out. `scripts/p4mc_equivalence.py` now declares every tolerance in code, judges each comparison, adds
+  both, adds a one-row pre-tanh reference and the settling labels genome by genome, and has a `check` set: N2, four
+  graphs per ensemble, and the three worst or busiest settling graphs. Its run (`equivalence-check.json`, 0.24
+  GPU-hours) passed everything: tick-30 share worst 4.1e-7, pre-tanh terms 2.1e-7, no label changed on any graph.
+  Settling now allows at most 2 label changes per graph instead of an identical count (Fable).
+- **A pre-tanh reference test** (both): `tests/test_exp03_twin.py` checks the pre-tanh terms against a one-row
+  sequential reference; swapping the turn-plus and turn-minus neurons was caught.
+- **The power model drew the questions independently** (Astra: RIA's and AIY's changes correlate at 0.44; Q-A's
+  change and RIA's at 0.40; Q-C was assumed). `power.py` now draws N2's quantities jointly from one paired
+  bootstrap, gives Q-A's regression posterior draws, models Q-C, adds a Student-t sensitivity, and calls the results
+  model-based predictive probabilities. Under Holm: Q-A 0.96, Q-B 0.76, Q-C 1.00, Q-D 0.78, all four 0.63 (t₅: 0.92,
+  0.76, 1.00, 0.74; 0.62).
+- **The tick comparison** (both): now committed (`power.json`, "Q-D by tick"). Ticks 20, 30 and 40 are within
+  simulation error (0.83-0.85 alone), so v2's "tick 30 has the highest simulated pass probability" is withdrawn.
+  Tick 30 stays, as chosen.
+- **Text:** the hold-range margin was 3.8 times, not "at least 4.5" (both); the tolerance is raised to 3e-4. Q-D's
+  failure sentence is written out. Q-B's controls come from batch 0's screen and form an intersection-union claim
+  with a paired-difference test; the PVP tie is stated (Fable). Interval methods and seeds are declared. The cap's
+  overrun bound covers builds. Both equivalence runs were on uncommitted code over a committed HEAD (Fable).
+- **Code begun for the pre-registration's review** (test-first): `wormwars/exp03/mc.py` (rank tests,
+  intersection-union, Holm with missing questions, Q-B's paired bootstrap and tests, matched controls, the
+  freshness audit and content check; 13 tests, the audit sabotaged with planted collisions); an `03mc` instance and
+  a smoke instance of 03's builder in `scripts/exp03.py`.
+**Corrections to D286,** whose wording is kept above:
+- "Every finding was checked and taken" was too broad. At v2, two of Astra's v1 findings were only partly met: the
+  power model still drew the questions independently, and the equivalence check lacked the aggregate share and the
+  pre-tanh terms (Astra).
+- "A further uncounted 1.6-minute run on four graphs" was described in DESIGN v2 as covering "SH-recip-50015 (the
+  worst range deviation)"; the worst is SH-mirror-40015 (Astra), now in the check set.
+**Next:** a confirmation pass by both on v2.1; then the pre-registration and the rest of the code.

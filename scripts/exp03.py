@@ -66,6 +66,26 @@ INSTANCES = {
             "max_hours": 32.0,  # 03r v3 (D061): headroom to about 150 s per graph
             "min_graphs": {"SH": 120, "SH-route": 240, "SH-class": 120, "SH-mirror": 120, "SH-recip": 120},
             "fresh_secondary_permutation": True, "pin_connectome": True},
+    # 03mc (experiments/03mc-p4-confirm/DESIGN.md §3): only the build is used, through scripts/p4mc.py, which
+    # measures P4 alone; the world, calibration and validation seeds are set apart but never used.
+    "03mc": {"exp": "03mc-p4-confirm", "out": "runs/p4mc",
+             "seed_base": {"SH": 2_010_000, "SH-route": 2_020_000, "SH-class": 2_030_000, "SH-mirror": 2_040_000,
+                           "SH-recip": 2_050_000},
+             "n": {"SH": 128, "SH-route": 128, "SH-class": 128, "SH-mirror": 128, "SH-recip": 128},
+             "plateau_seeds": range(2_090_000, 2_090_004),
+             "worlds": 995_000_000, "run_seed": 7, "genome_salt": "03mc:", "calibration_seed": 2003,
+             "validation_seed": 2004, "real": ["N2"], "max_hours": 10.0,
+             "min_graphs": {"SH": 120, "SH-route": 120, "SH-class": 120, "SH-mirror": 120, "SH-recip": 120},
+             "fresh_secondary_permutation": True, "pin_connectome": True},
+    "03mc-smoke": {"exp": "../runs/p4mc-smoke/record", "out": "runs/p4mc-smoke",
+                   "seed_base": {"SH": 2_900_000, "SH-route": 2_910_000, "SH-class": 2_920_000, "SH-mirror": 2_930_000,
+                                 "SH-recip": 2_940_000},
+                   "n": {"SH": 2, "SH-route": 2, "SH-class": 2, "SH-mirror": 2, "SH-recip": 2},
+                   "plateau_seeds": range(2_990_000, 2_990_004),
+                   "worlds": 996_000_000, "run_seed": 8, "genome_salt": "03mc-smoke:", "calibration_seed": 2903,
+                   "validation_seed": 2904, "real": ["N2"], "max_hours": 1.0,
+                   "min_graphs": {"SH": 2, "SH-route": 2, "SH-class": 2, "SH-mirror": 2, "SH-recip": 2},
+                   "fresh_secondary_permutation": True, "pin_connectome": True},
 }
 
 

@@ -108,3 +108,31 @@ def test_swapping_the_starts_flips_every_sign(parts):
     for k in ("final", "steady_contrast"):
         assert np.allclose(a["raw_turn"][k], -b["raw_turn"][k], atol=1e-6)
     assert np.allclose(a["diff"], -b["diff"], atol=1e-6)
+
+
+def sequential_pre(g, cfg, iface, bank, start, food, warm=100, span=10):
+    """A one-row reference for the pre-tanh read-out: the turn-plus neurons' mean state minus the turn-minus
+    neurons', after the hold and at the ramp's end, written out from the neuron lists (Fable, Astra, review v2)."""
+    from wormwars.brain import Brain
+    brain = Brain(g)
+    s, n = g.n_strains, g.spec.n
+    at = lambda lv: M._current(iface, cfg, dict(bank, food_left=lv, food_right=lv), n, s, "cpu")  # noqa: E731
+    v = brain.initial_state(1)
+    for _ in range(warm):
+        v = brain.step(v, at(start))
+    plus, minus = list(iface.turn_plus), list(iface.turn_minus)
+    hold = v[:, 0, plus].mean(-1) - v[:, 0, minus].mean(-1)
+    for t in range(span):
+        v = brain.step(v, at(start + (food - start) * (t + 1) / span))
+    return hold.numpy(), (v[:, 0, plus].mean(-1) - v[:, 0, minus].mean(-1)).numpy()
+
+
+def test_the_pre_tanh_terms_match_a_one_row_reference(parts):
+    from wormwars.exp03 import twin
+    p, con, bank, iface, g, cfg = parts
+    food = (bank["food_left"] + bank["food_right"]) / 2
+    h_r, f_r = sequential_pre(g, cfg, iface, bank, 0.25 * food, food)
+    h_f, f_f = sequential_pre(g, cfg, iface, bank, 1.75 * food, food)
+    h = twin.history(g, cfg, iface, bank, follow=5)
+    assert rel(h["pre_turn"]["final"], f_r - f_f) < TOL
+    assert rel(h["pre_turn"]["steady_contrast"], h_f - h_r) < TOL
