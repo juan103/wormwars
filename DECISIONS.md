@@ -8744,3 +8744,17 @@ duplication fates, the selector-removed control and the pruning protocol (added 
 corrections (the survey is not in the repository)" should read "survey v2 (not committed here, so its corrections
 cannot be checked)".
 **Next:** a confirmation pass by both, then main, the owner informed after.
+
+
+## D284 — The confirmation pass on D282-D283: Fable "publish", Astra two findings, fixed; a correction to D283
+
+Astra 6 and Fable 5.1 at "high" on 798148f (run 20261015-095359). Fable: "publish", every D283 fix checked against its
+source. Astra: "fix first", with two findings, both checked and taken:
+- **"None of the later biology questions has started" was too broad:** experiment 03's five validated ensembles
+  (its pre-registration, `wormwars/exp03/samplers.py`) began the family of named nulls. ROADMAP now names the four
+  that have not started.
+- **The README's E2 section still said the task "is diagnosed next".** It now says it was, in E2d, with a link.
+**Correction to D283,** whose wording is kept above: "README's E3d and E2 sections no longer say 'next' for what
+followed" was true of E3d's only until this fix.
+Fable also noted that D258's "about 4.4 GPU-hours" differs from the records' 4.20; D263 already corrects it.
+**Next:** main (Fable "publish"; Astra's two findings taken, small and verified), the owner informed after.

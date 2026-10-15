@@ -230,9 +230,9 @@ corrections. Its successor, E3b-1, asks whether evolution improves the seed in t
 ## Which optimizer for the next stage? (E2)
 
 **At equal simulator work, an evolution strategy did not beat experiment 02's genetic algorithm by
-the margin fixed in advance, and random sampling came close enough to both that the task itself is
-diagnosed next** (E2d, above in the table). In the wording fixed in advance: *"E2: keep 02's GA (unshaped fitness; the ES did
-not satisfy both replacement criteria after paying for its tuning)"*.
+the margin fixed in advance, and random sampling came close enough to both that the task itself was
+diagnosed next,** in [E2d](experiments/E2d-taskn-diagnosis/README.md). In the wording fixed in advance: *"E2: keep
+02's GA (unshaped fitness; the ES did not satisfy both replacement criteria after paying for its tuning)"*.
 
 - **The screen:** 04a's task, 8 runs per method, each method given about 2.13 million episodes of
   selection. OpenAI-ES paid for its own tuning pilot out of that. Each run's champion was tested once

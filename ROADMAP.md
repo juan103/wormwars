@@ -16,8 +16,9 @@
   - **Track B:** the two studies above; bridge 1 (deferred by both reviewers in E1's design, D077) and bridge 2,
     which 03r's replication gave priority. No Track E experiment has run on null graphs, so the five null
     ensembles have not yet served as its controls. The memory thread's predictions (a larger early N2 advantage on
-    tasks that need memory, shrinking over generations) are untested. None of the later biology questions (below)
-    has started.
+    tasks that need memory, shrinking over generations) are untested. Of the later biology questions (below),
+    topology × optimizer × normalisation, activity-anchored fitness, a neuromodulatory layer, and temporal against
+    stereo sensing have not started; experiment 03's five validated ensembles began the family of named nulls.
   - **E3:** the cumulative reuse cost of modules (E3c's "Not shown").
   - **E4:**
     - question 1, shared dependence (designed in D242-D244, not run);
