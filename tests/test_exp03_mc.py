@@ -126,3 +126,27 @@ def test_the_content_check_names_duplicates_within_and_against_old():
     c = mc.content_check({"a": "h1", "b": "h2", "c": "h1"}, old_hashes={"h2"})
     assert not c["ok"] and c["within_new"] == [["a", "c"]] and c["against_old"] == ["b"]
     assert mc.content_check({"a": "h1"}, {"h2"})["ok"]
+
+
+def test_a_non_finite_n2_never_passes():
+    """Fable (review v2.1): with N2 not finite, both comparisons are false, so r = 0 would read as a pass."""
+    for bad in (np.nan, np.inf, -np.inf):
+        r = mc.rank_p(np.array([0.1, 0.2]), bad, at_or_below=True)
+        assert r["p"] == 1.0 and r["n2_valid"] is False
+
+
+def test_the_full_sample_estimate_is_held_to_the_floor():
+    f = np.full(100, 1e-6)
+    s = np.full(100, 1e-6)  # a denominator below 1e-4: invalid
+    b = mc.paired_bootstrap(f, s, f, s, resamples=10, seed=0)
+    assert b["valid"] is False
+
+
+def test_the_audit_finds_a_03r_secondary_permutation_seed_passed_as_a_permutation_seed():
+    """Fable (review v2.1): 03r's secondary permutation used `_gseed(name) + 2` as a permutation seed; the build
+    passes every such seed in `old_perm_seeds`, so a new permutation seed equal to one is found."""
+    from wormwars.exp03.measures import genome_seed
+    planted = genome_seed("SH-1010000", "03r:") + 2
+    a = mc.freshness_audit({"03mc:": ["N2"]}, {"03r:": ["SH-1010000"]}, new_perm_seeds=[planted],
+                           old_perm_seeds=[planted])
+    assert not a["ok"] and a["permutation_collisions"] == [planted]

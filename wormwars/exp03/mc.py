@@ -19,12 +19,15 @@ MARGIN_P4 = 0.02  # Q-B: |change in P4| must be below this
 def rank_p(values, n2: float, at_or_below: bool) -> dict:
     """The rank p of N2 against one reference set: r counts the valid references at or below N2's value
     (`at_or_below`, Q-A) or at or above it (Q-C, Q-D, the single-signal rule); p = (r + 1)/(n + 1), with n the
-    number of valid references. Non-finite values are invalid and leave n."""
+    number of valid references. Non-finite values are invalid and leave n. A non-finite N2 gives p = 1: with both
+    comparisons false, r = 0 would otherwise read as a pass (Fable, review v2.1)."""
     v = np.asarray(values, dtype=np.float64)
     ok = np.isfinite(v)
     v = v[ok]
+    if n2 is None or not math.isfinite(float(n2)):
+        return {"r": None, "n": int(len(v)), "invalid": int((~ok).sum()), "p": 1.0, "n2_valid": False}
     r = int((v <= n2).sum() if at_or_below else (v >= n2).sum())
-    return {"r": r, "n": int(len(v)), "invalid": int((~ok).sum()), "p": (r + 1) / (len(v) + 1)}
+    return {"r": r, "n": int(len(v)), "invalid": int((~ok).sum()), "p": (r + 1) / (len(v) + 1), "n2_valid": True}
 
 
 def intersection_union(per_ensemble: dict) -> float:
@@ -71,7 +74,11 @@ def paired_bootstrap(f_int, s_int, f_del, s_del, resamples: int = 10_000, seed: 
             raise ValueError("paired arrays must have one value per genome in each condition")
     ni, di = ratio_terms(f_int, s_int)
     nd, dd = ratio_terms(f_del, s_del)
-    est = {"cut": 1 - dd / di, "numerator_cut": 1 - nd / ni, "dP4": nd / dd - ni / di,
+    valid = bool(all(math.isfinite(x) for x in (ni, di, nd, dd)) and di >= floor and dd >= floor)
+    if not valid:  # the full-sample estimate is held to the floor too (Fable, review v2.1)
+        return {"valid": False, "genomes": n, "numerator_intact": ni, "denominator_intact": di,
+                "numerator_deleted": nd, "denominator_deleted": dd}
+    est = {"valid": True, "cut": 1 - dd / di, "numerator_cut": 1 - nd / ni, "dP4": nd / dd - ni / di,
            "P4_intact": ni / di, "P4_deleted": nd / dd, "genomes": n}
     af, as_, bf, bs = (np.abs(np.asarray(x, dtype=np.float64)) for x in (f_int, s_int, f_del, s_del))
     rng = np.random.default_rng(seed)

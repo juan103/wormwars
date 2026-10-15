@@ -17,6 +17,7 @@ pre-run check is this script's `check` set at the bound commit (Fable, Astra, de
 from __future__ import annotations
 
 import argparse
+import hashlib
 import importlib.util
 import json
 import sys
@@ -40,16 +41,23 @@ _spec.loader.exec_module(P)
 
 # Declared tolerances (DESIGN.md §5), relative: aggregates as |got - ref| / |ref|; per-genome arrays as the
 # largest absolute difference over the largest |reference|. Settling labels: at most LABELS genomes of a graph
-# may change label; more indicates a fault, not rounding.
+# may change any label (counted once per genome, whichever labels change; Astra, review v2.1); more indicates a
+# fault, not rounding.
 TOL = {"terms": 1e-5, "share30": 1e-5, "pre_terms": 1e-5,
        "final": 1e-4, "steady_contrast": 1e-4, "curve_tick30": 1e-4, "slope_hold": 1e-4, "slope_ramp": 1e-4,
        "pre_final": 1e-4, "pre_steady_contrast": 1e-4, "hold_state_range": 3e-4, "curve": 2e-3,
        "condition_final": 1e-4, "condition_steady_contrast": 1e-4, "condition_terms": 1e-5}
 LABELS = 2
 SETTLE, START_FLOOR, REMAINING = 1e-4, 1e-3, 0.10  # 03m's settling rule and "separation remaining" (PLAN.md Q4)
-# The pre-run check set: N2, the first 4 graphs of each ensemble, and the three graphs with the worst settling
-# deviation or the most settled-with-separation genomes in the first, 81-graph run (D287).
+# The pre-run check set: N2, the first 4 graphs of each ensemble, and three more: SH-mirror-40015, the worst
+# settling deviation in the first, 81-graph run; SH-10007, the most settled-with-separation genomes; and
+# SH-recip-50015, kept from design v2, which misnamed it as the worst deviation (D287, D288).
 EXTRA = ["SH-mirror-40015", "SH-10007", "SH-recip-50015"]
+# The local reference arrays, as `power.json` hashed them at design time (Fable, review v2.1): the check refuses
+# other references. `weights` is not in power.json; its hash is recorded, not asserted.
+REFERENCE_SHA256 = {"synapses": "2196e3ba8d9ad92587409de63746ea9224c5bbb73a53e357f11397ce4ba999f2",
+                    "decay": "c6a0ab6eefaff4d4ff118e01931cf8b205d9f8951589336bd5fe47608d6d2d92",
+                    "lesions": "c46b330da17da4ac20a796d1094258165dfc4ddca09e757ca0ebd3a2316b372f"}
 
 
 def rel(a, b) -> float:
@@ -95,10 +103,19 @@ def one_row_pre(genome, cfg, iface, bank, warm=100, span=10) -> dict:
     return {"final": out["rising"][1] - out["falling"][1], "steady_contrast": out["falling"][0] - out["rising"][0]}
 
 
+def label_changes(a: dict, b: dict) -> dict:
+    """Genomes whose labels differ, per label and in all (`any`: a genome counted once, whichever labels change)."""
+    out = {k: int((a[k] != b[k]).sum()) for k in a}
+    out["any"] = int(np.logical_or.reduce([a[k] != b[k] for k in a]).sum())
+    return out
+
+
 def judge(row: dict) -> dict:
-    """Mark each measured deviation against its declared tolerance."""
+    """Mark each measured deviation against its declared tolerance, and the genomes with any changed label against
+    LABELS."""
     fails = [k for k, v in row["deviation"].items() if k in TOL and v > TOL[k]]
-    fails += [f"labels.{k}" for k, v in row.get("label_changes", {}).items() if v > LABELS]
+    if row.get("label_changes", {}).get("any", 0) > LABELS:
+        fails.append("labels.any")
     row["failed"] = fails
     row["passed"] = not fails
     return row
@@ -109,16 +126,25 @@ def main():
     ap.add_argument("--set", choices=["check", "panel"], default="check")
     ap.add_argument("--device", default="cuda")
     ap.add_argument("--smoke", action="store_true")
+    ap.add_argument("--out", default=None, help="the record's file name in the output folder (the formal pre-run "
+                                                 "check writes prerun-check.json, keeping the design-time records)")
     args = ap.parse_args()
     smoke = args.smoke
     dev = "cpu" if smoke else args.device
     n = 8 if smoke else None
     out_dir = ROOT / "runs" / "p4mc-equivalence-smoke" if smoke else ROOT / "experiments" / "03mc-p4-confirm"
-    out_path = out_dir / f"equivalence-{args.set}.json"
+    out_path = out_dir / (args.out or f"equivalence-{args.set}.json")
+    if not smoke and out_path.exists():
+        raise SystemExit(f"{out_path.name} exists: a record is never overwritten (Fable, review v2.1); choose --out")
     con, bank, iface = P.setup(dev)
     sup = P.supplement("03")
     decay = json.loads((ROOT / "experiments" / "03m-p4-mechanism" / "decay.json").read_text(encoding="utf-8"))["graphs"]
     load = lambda f: np.load(ROOT / "runs" / "p4m" / f"{f}-per-genome.npz", allow_pickle=False)  # noqa: E731
+    ref_sha = {k: hashlib.sha256((ROOT / "runs" / "p4m" / f"{k}-per-genome.npz").read_bytes()).hexdigest()
+               for k in ("synapses", "decay", "lesions", "weights")}
+    wrong = {k: v for k, v in REFERENCE_SHA256.items() if ref_sha[k] != v}
+    if wrong:
+        raise SystemExit(f"the local reference arrays differ from those power.json hashed: {sorted(wrong)}")
     dec, syn, les, wts = load("decay"), load("synapses"), load("lesions"), load("weights")
     ref_ticks = [int(x) for x in dec["ticks"]]
     sl = slice(None) if n is None else slice(0, n)
@@ -129,7 +155,7 @@ def main():
     if smoke:
         names = names[:2]
     doc = {"what": "03mc: the two-row probe against one-row references, old inputs only", "set": args.set,
-           "stamp": P.stamp(), "device": dev, "genomes": n or 2048, "tolerances": TOL, "label_changes_allowed": LABELS,
+           "stamp": P.stamp(), "reference_sha256": ref_sha, "device": dev, "genomes": n or 2048, "tolerances": TOL, "label_changes_allowed": LABELS,
            "graphs": {}, "conditions": {}}
     t0 = time.perf_counter()
     with acct.category("probe"):
@@ -162,7 +188,7 @@ def main():
             a = labels(h["diff"], h["end_state_range"])
             b = labels(ref_diff, dec[f"{key}|end_state_range"][sl])
             row = {"ticks_match": list(h["ticks"]) == ref_ticks, "deviation": dev_,
-                   "label_changes": {k: int((a[k] != b[k]).sum()) for k in a},
+                   "label_changes": label_changes(a, b),
                    "label_counts": {k: [int(a[k].sum()), int(b[k].sum())] for k in a},
                    "share30": [share, mad[r30] / mad[0]], "pre_P4": got_pre["numerator"] / got_pre["denominator"]}
             doc["graphs"][name] = judge(row)

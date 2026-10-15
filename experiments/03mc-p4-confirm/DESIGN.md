@@ -1,10 +1,13 @@
-# 03mc: a confirmatory test of 03m's leads on P4 (design v2.1)
+# 03mc: a confirmatory test of 03m's leads on P4 (design v2.2)
 
-**Status:** design v2.1, 2026-10-16, for a confirmation pass by Astra 6 and Fable 5.1. Not a
-pre-registration; nothing fresh has been drawn or run.
+**Status:** design v2.2, 2026-10-16, agreed as the basis of the pre-registration. Not a pre-registration;
+nothing fresh has been drawn or run.
 - **v1** (`6e948d7`, D285): both reviewers said "revise" (run 20261015-232952, D286).
 - **v2** (`1673ad5`, D286): Fable "ready for the pre-registration", with three things to do first;
-  Astra "revise" (run 20261016-001758, D287). §11 lists the changes in each version.
+  Astra "revise" (run 20261016-001758, D287).
+- **v2.1** (`b8ed3ae`, D287): Fable "ready for the pre-registration"; Astra "revise", for three narrow
+  corrections and no change to the hypotheses, sample sizes or tests (run 20261016-010052, D288). v2.2
+  makes them, with Fable's small items. §11 lists the changes in each version.
 - **The owner's go:** Track B next, on 2026-10-15 ("let's go to the biology track first"; D285).
 - **The label** 03mc ("03m, confirmatory") is proposed here. ROADMAP's Track B leaves the label to the
   pre-registration.
@@ -256,9 +259,11 @@ each predicted direction (§6). Every outcome has fixed wording; the cases that 
     N2.
 - **Endpoint: the retained share at tick 30.**
   - **Chosen with 03m's curves in view:** N2 was above all 80 null graphs at every tick from 5 to 50
-    (§0). Among ticks 10-50, the simulated pass probabilities of ticks 20, 30 and 40 are within
-    simulation error of each other, and above ticks 10 and 50 (`power.json`, "Q-D by tick"; v2 said
-    tick 30 had the highest, which the committed table does not show). Tick 30 is also three
+    (§0). Among ticks 10-50, ticks 30 and 40 have nearly equal simulated pass probabilities (0.846 and
+    0.848), tick 20 is slightly lower (0.831, about two Monte Carlo SEs below), and ticks 10 and 50 are
+    lower still (`power.json`, "Q-D by tick"). v2 said tick 30 had the highest, which the committed
+    table does not show, and v2.1 called ticks 20-40 tied, which it does not show either (both
+    reviewers). Tick 30 is also three
     ramp-lengths after the ramp ends.
   - **Not tick 300:** at tick 300 the slowly relaxing graphs make the test a likely failure.
 - **Prediction:** N2's retained share at tick 30 is unusually large relative to every ensemble's.
@@ -350,12 +355,20 @@ sentence is not used, and RESULTS says first that the lead itself did not replic
     (49 times the worst measured), each graph's retained share at tick 30 against 03m's (25 times), and
     the pre-tanh terms against the one-row reference (47 times).
   - **Per genome:** within 10⁻⁴ for the ramp end, the steady contrast, tick 30, the slopes and the
-    pre-tanh terms (at least 4.5 times the worst measured); within 3 × 10⁻⁴ for the holds' settling
+    pre-tanh terms (about 4.5 times the worst measured, 4.47 at tick 30); within 3 × 10⁻⁴ for the holds' settling
     range (11 times); within 2 × 10⁻³ for the curve (15 times).
-  - **Settling labels:** at most 2 of 2 048 genomes of any graph may change any label. More would
-    indicate a fault, not rounding; one genome crossing the 10⁻⁴ threshold should not halt the study
-    over a secondary count (Fable).
-  - **The check set:** as in the second run, `--set check`.
+  - **Settling labels:** at most 2 of 2 048 genomes of any graph may change any label, each genome
+    counted once whichever labels change (v2.2: v2.1's code counted each label separately, so four
+    genomes could pass; Astra). More would indicate a fault, not rounding; one genome crossing the 10⁻⁴
+    threshold should not halt the study over a secondary count (Fable).
+  - **The check set:** as in the second run, `--set check`. SH-recip-50015 is in it because design v2
+    misnamed it as the worst deviation; it is kept, not chosen for a reason of its own (Fable).
+  - **The references are pinned:** the check refuses local reference arrays whose sha256 differs from
+    those `power.json` recorded, and records all four hashes (Fable).
+  - **The formal pre-run check writes `prerun-check.json`** (`--out`), and a record is never
+    overwritten, so the design-time records stay as quoted here (Fable).
+  - The committed `equivalence-check.json` predates two of these changes: it has no `any` count and no
+    reference hashes. Every label count in it is 0, so the union is 0 too.
   - **If it fails, nothing formal runs.** The failure is reported, and a dated amendment decides,
     reviewed by both. The measured deviations are reported whatever they are.
 - **Runs per graph:**
@@ -426,14 +439,15 @@ sentence is not used, and RESULTS says first that the lead itself did not replic
 
   - **Q-B's limit** is the uncertainty in 03m's own estimate of AIY's change in P4 (−0.004 ± 0.012),
     not the fresh sample. Under Holm, Q-B passes 0.60 of the time at 16 384 genomes (v2's
-    independent model gave 0.01 at 2 048).
+    independent model gave 0.01 at 2 048: `power.json` at 1673ad5).
   - **Q-D's limit** is the tails of five ensembles estimated from 16 graphs each.
   - The v1 sketch's 0.99 for Q-D was wrong: it ignored the fit's uncertainty and gave Q-D Holm's
     most lenient slot (both reviewers).
   - A fixed sequence (C, A, D, B, each at 0.05 after the previous passes) gives Q-D 0.83 and Q-B
     0.64. Holm is kept: it does not let one failure block the rest.
-  - **By tick** (Q-D alone, 5 000 simulated studies each): 0.68 at tick 10, 0.83 at 20, 0.85 at 30,
-    0.85 at 40, 0.78 at 50. Ticks 20-40 are within simulation error of each other (about ±0.01).
+  - **By tick** (Q-D alone, 5 000 simulated studies each, SE about 0.005): 0.680 at tick 10, 0.831 at
+    20, 0.846 at 30, 0.848 at 40, 0.780 at 50. Ticks 30 and 40 are nearly tied; tick 20 is slightly
+    lower.
 - **Completeness:**
   - at least 120 counted graphs per ensemble for each of Q-A, Q-D, Q-E and the replication, judged
     separately; otherwise that question is withheld, with its counts;
@@ -516,14 +530,26 @@ sentence is not used, and RESULTS says first that the lead itself did not replic
 
 ## 10. Questions for the reviewers
 
-1. Are v2's findings fixed (§11, "From v2")?
-2. Does anything still block writing the pre-registration from this design?
+None open. The pre-registration is reviewed next, with the runner's code.
 
 Answered in v2's review (kept): the normal-theory tests with a paired bootstrap SE are acceptable at
 65 536 genomes (both); total degree and four controls per target are acceptable, with conclusions
 limited to the named controls (both).
 
 ## 11. Changes
+
+### From v2.1 (review 20261016-010052, D288)
+
+- **The settling gate** counts each genome once, whichever labels change, with Astra's counterexample as
+  a regression test (Astra).
+- **The tick comparison** is reported as it stands: ticks 30 and 40 are nearly tied, and tick 20 is
+  slightly lower (both).
+- **Margins:** "about 4.5 times" (4.47) for the per-genome tolerances (both).
+- **The pre-run check** writes `prerun-check.json` and never overwrites a record; it pins its local
+  references to `power.json`'s hashes; the reason SH-recip-50015 is in the set is stated (Fable).
+- **`mc.py`:** a non-finite N2 gives p = 1; the full-sample bootstrap estimate is held to the
+  denominator floor; the audit test plants a 03r secondary permutation seed (Fable).
+- **A citation:** v2's 0.01 for Q-B at 2 048 genomes is in `power.json` at 1673ad5 (Fable).
 
 ### From v2 (review 20261016-001758, D287)
 

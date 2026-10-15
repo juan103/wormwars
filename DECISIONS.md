@@ -8847,3 +8847,27 @@ checks on this machine, on old inputs (84 s of GPU, outside this study's account
 - "A further uncounted 1.6-minute run on four graphs" was described in DESIGN v2 as covering "SH-recip-50015 (the
   worst range deviation)"; the worst is SH-mirror-40015 (Astra), now in the check set.
 **Next:** a confirmation pass by both on v2.1; then the pre-registration and the rest of the code.
+
+
+## D288 — The confirmation pass on 03mc's design v2.1: Fable "ready", Astra three narrow corrections; design v2.2 agreed
+
+Astra 6 and Fable 5.1 at "high" on b8ed3ae (run 20261016-010052; `runs/consult-d287-log.txt` stays local). Fable:
+"ready for the pre-registration", with small items for the pre-registration and its code. Astra: "revise", for three
+narrow corrections and no change to the hypotheses, sample sizes or tests ("no additional design blocker found"). Both
+re-derived every quoted number from `equivalence-check.json` and `power.json`, and Astra reproduced `power.json`
+exactly. Every finding was checked and taken (DESIGN.md §11, "From v2.1"):
+- **The settling gate counted each label separately** (Astra, with a counterexample through the actual functions:
+  four genomes changed, and the gate passed). It now counts each genome once, whichever labels change, and the
+  counterexample is a regression test (`tests/test_p4mc_equivalence.py`, seen failing first). The recorded run had
+  no change at all, so its pass stands.
+- **The tick comparison** (both): ticks 30 and 40 are nearly tied (0.846, 0.848); tick 20 is about two Monte Carlo
+  SEs lower (0.831). **Correction to D287,** whose wording is kept: "Ticks 20, 30 and 40 are within simulation error"
+  should read "ticks 30 and 40 are nearly tied, and tick 20 is slightly lower".
+- **"At least 4.5 times"** was 4.47 (both); now "about 4.5".
+- **Fable's items:** the formal pre-run check writes `prerun-check.json` and never overwrites a record; it refuses
+  local reference arrays that differ from `power.json`'s hashes; the reason SH-recip-50015 is in the check set is
+  stated (it is kept from v2's misnaming); `mc.rank_p` gives p = 1 for a non-finite N2, and the full-sample
+  bootstrap estimate is held to the floor (both seen failing first); the audit test plants a 03r secondary
+  permutation seed; v2's 0.01 is cited to 1673ad5.
+**Consensus on the design:** Fable "ready"; Astra's three corrections are made. Next: the pre-registration and the
+runner, reviewed together by both before anything fresh is drawn; the owner is told before the formal run.
