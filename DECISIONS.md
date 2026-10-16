@@ -9197,3 +9197,29 @@ comparators; 5 brains per arm and an exact-permutation imprinting family (Holm, 
 the null arm cut; interneuron use as a pilot gate; a history-erase probe that keeps the current input; the pilot
 split into development and a frozen check; about 56 of 72 GPU-hours at 420 episodes per second. The task stays,
 with history use measured rather than assumed; whether it should be a gate is put back to both reviewers.
+
+## D304 — 03a's design v6 after round 2; a slow-memory check; the history gate goes to the owner
+
+**Round 2** (run 20261016-182131, archived in `docs/reviews/20261016-03a-design-v5/`): Fable 5.1 "ready for the
+pre-registration, with small fixes"; Astra 6 "revise". Both recomputed the D303 numbers and the budget from the
+committed records. Every finding is taken in v6 (`experiments/03a-self-consistency/DESIGN.md` §12). The ones that
+change the design: v5's four-brain cut would have made its per-target imprinting test unpassable under Holm (1/70 >
+0.01; Astra), so the cut is removed and family 2 becomes one pooled permutation test (Fable's option) with its null,
+floor, exclusions and a simulated-null validation stated (Astra); v5's "history erase" was undefined and its
+calibrators could not calibrate it, so it is replaced by a bounded-history replay probe (Astra's design) calibrated on
+no-memory, one-tick and slow-memory controllers (Fable); the resolution gate was still defined at 64 worlds (Astra);
+the interneuron gate moves to the MIP brain's fresh re-measurement of the high targets (Astra); the stratified null is
+fully specified (both); the search is told counts "of each connection type", never of each kind (Fable).
+
+**The slow-memory check (Fable's suggestion), 2026-10-16:** KTS, the memoryless KT family plus a turn when the level
+is below its exponential average over T ticks (162 points per T), on the same tuning and check worlds as D303. On the
+real scent: T = 2, 5, 10, 20, 50 score 2.62, 2.69, 2.18, 1.58, 1.17 (T = 1 is KTM, 2.84). Under jitter r = 2: 0.63,
+1.56, 1.63, 1.59, 1.18. 04a's champions: 2.26 real, 2.25 at r = 2. So a slow comparison reaches the champions' level,
+but at that level every memory controller tried loses a quarter or more at r = 2 and the champions do not. Their
+history use stays unshown. 03a's exploratory GPU time is now 0.53 hours (0.46 recorded,
+`experiments/03a-self-consistency/development-records/compute.json`; about 0.07 estimated, D303).
+
+**Not agreed, so the owner decides (delegation: no consensus):** whether evolved brains' use of history gates the
+pilot. Fable: measure it, gate on interneuron use, which the hypothesis needs. Astra: the roadmap's "a task that
+requires memory" makes useful history a feasibility requirement; otherwise narrow the requirement explicitly. v6 is
+written for the first, with the gate written out as pilot criterion 8 for the second.
