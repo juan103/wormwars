@@ -1,0 +1,1 @@
+Astra 6 and Fable 5.1 at "high" (run 20261016-035222), the same prompt to both, narrow pass on the diff e136fe3..e728abe (draft 4). Fable "bind"; Astra one reporting error in a descriptive note, fixed in code (D293). Bound at 4dff311 (D294).

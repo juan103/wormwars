@@ -1,0 +1,89 @@
+{
+ "time_unit": "synchronised wall-clock seconds per category (not GPU kernel time)",
+ "neural_update_unit": "strains x batch x substeps network updates (network size not included)",
+ "attempts": [
+  {
+   "file": "20261016T020408Z-91dd5af7.json",
+   "status": "completed",
+   "script": "p4mc",
+   "argv": [
+    "build",
+    "pre"
+   ],
+   "default_category": "measure",
+   "git_commit": "feb265375b0c22187e6a97a1d3d090870156c1c1"
+  },
+  {
+   "file": "20261016T020409Z-c8707391.json",
+   "status": "completed",
+   "experiment": "03mc",
+   "command": "build",
+   "default_category": "measure",
+   "git_commit": "feb265375b0c22187e6a97a1d3d090870156c1c1"
+  },
+  {
+   "file": "20261016T021950Z-2a9ffe26.json",
+   "status": "completed",
+   "script": "p4mc",
+   "argv": [
+    "build",
+    "post"
+   ],
+   "default_category": "measure",
+   "git_commit": "feb265375b0c22187e6a97a1d3d090870156c1c1"
+  },
+  {
+   "file": "20261016T054001Z-b7da503a.json",
+   "status": "completed",
+   "script": "p4mc",
+   "argv": [
+    "check",
+    "--device",
+    "cuda",
+    "--owner-word",
+    "Start 03mc (owner, 2026-10-16)"
+   ],
+   "default_category": "probe",
+   "git_commit": "afa39a1185f45b096f13a250b95bfa234d7bd98d"
+  },
+  {
+   "file": "20261016T055552Z-fb465d58.json",
+   "status": "completed",
+   "script": "p4mc",
+   "argv": [
+    "run",
+    "--device",
+    "cuda",
+    "--owner-word",
+    "Start 03mc (owner, 2026-10-16)"
+   ],
+   "default_category": "probe",
+   "git_commit": "a5b44e2a2677cf668bb05fb7232c3c28854e6976"
+  }
+ ],
+ "failed_attempts": 0,
+ "uncategorised": false,
+ "categories": {
+  "measure": {
+   "worlds_built": 0,
+   "world_ticks": 0,
+   "neural_updates": 0,
+   "neural_padding": 0,
+   "seconds": 941.8517428999476
+  },
+  "probe": {
+   "worlds_built": 0,
+   "world_ticks": 0,
+   "neural_updates": 61722460160,
+   "neural_padding": 0,
+   "seconds": 26879.165740699973
+  }
+ },
+ "totals": {
+  "worlds_built": 0,
+  "world_ticks": 0,
+  "neural_updates": 61722460160,
+  "neural_padding": 0,
+  "seconds_timed": 27821.01748359992
+ }
+}

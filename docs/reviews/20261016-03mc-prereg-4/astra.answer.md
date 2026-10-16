@@ -1,0 +1,11 @@
+**fix first** — one small reporting error introduced by this diff. Both draft-3 findings are fixed.
+
+1. **New error: a partial double deletion falsely labels Q-B withheld.** At [mc_report.py:151](D:/Claude/random/wormWars/wormwars/exp03/mc_report.py:151), the descriptive note unconditionally says “the question is withheld.” Removing only `qb/1/both` from the saved smoke record in memory produces `Q-B.complete = true` and a non-null p-value, alongside that contradictory note. The statistical behavior correctly follows [PREREGISTRATION.md:170](D:/Claude/random/wormWars/experiments/03mc-p4-confirm/PREREGISTRATION.md:170): missing double deletions do not withhold Q-B. Remove the withholding clause or derive it from Q-B’s final status; add a regression test for this case. **The registered rule needs no change.**
+
+2. **Measurement-input binding is fixed.** [p4mc.py:196](D:/Claude/random/wormWars/scripts/p4mc.py:196) now includes both measurement inputs in the comparison against `code_commit`. The underlying guard compares committed versions, closing the original clean-but-changed-input loophole. The targeted regression passed; simulated committed differences for each input were rejected.
+
+3. **Available Q-B estimates are now retained correctly.** [mc_report.py:135](D:/Claude/random/wormWars/wormwars/exp03/mc_report.py:135) reports intact and paired counts and bootstraps the available paired batches. Removing `qb/1/AIY` from the saved smoke record retained its estimate and intervals, reported two intact batches and one paired batch, and kept Q-B withheld. Removing `qb/1/intact` also behaved correctly. The targeted regression passed.
+
+4. **The remaining changes check out.** The Holm wording regression passed; an extra `pair/XYZ` was rejected at [p4mc.py:755](D:/Claude/random/wormWars/scripts/p4mc.py:755). The repeat-check wording matches the comparison, and failure now precedes equivalence work. All **63/63** saved array hashes match. Both attempts record clean `e728abe`; the [resume compute record:26](D:/Claude/random/wormWars/runs/p4mc-smoke/compute/20261016T015159Z-a569c09a.json:26) records **588,800 neural updates**, confirming actual continuation.
+
+Three targeted tests passed. No GPU work, fresh graphs or genomes, or file changes.

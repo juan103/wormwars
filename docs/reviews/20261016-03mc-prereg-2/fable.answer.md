@@ -1,0 +1,26 @@
+**Verdict: bind.** Every finding from my draft-1 review is fixed as D290 describes, I found no new error in the guards or the registered statistics, and the code does what draft 2 says. The items below are small; 1 and 2 are best folded into the binding commit since the code is not yet bound, and none needs an amendment if left.
+
+**Your findings, checked one by one**
+
+1. Build push check: `guards` now calls `require_pins` and `require_pushed` for build and report (`scripts/p4mc.py:197-199`); `require_pushed` is factored out and `require_formal` still calls it (`wormwars/registration.py:78-97`); tested at `tests/test_registration.py:131`. Fixed.
+2. Empty-deletion stop vs resume: `check_resume` refuses on the terminal outcome and on recorded intact/empty terms that differ (`p4mc.py:606-610`); the run raises after writing the outcome (`p4mc.py:692-705`); tested at `tests/test_p4mc.py:110`. Fixed.
+3. Report guarded, hashes checked, no overwrite: `cmd_report` runs the full stage guard including pushed records, loads arrays only through `array_loader` (`p4mc.py:576-584`), and time-stamps a second report (`p4mc.py:726-728`). Fixed.
+4. Q-A lead sentence: computed from ensemble medians in `lead_change` (`wormwars/exp03/mc_report.py:155-169`), gated on `replicated`, with the "did not narrow in every ensemble" branch (`mc_report.py:203-209`); the prereg §6 text matches; tested at `tests/test_p4mc.py:236-260`. Fixed.
+5. Planned/measured/valid counts: `rank_question` reports planned and measured beside n (`mc_report.py:96-99`); Q-C reports all three (`mc_report.py:300`). Fixed.
+6. Fresh draw without the runner: `instance_command_allowed` (`scripts/exp03.py:793-808`) admits only the rebuild and a build whose token equals `bound.json`'s commit; the runner passes it after its guards (`p4mc.py:310`); tested without a build (`tests/test_p4mc.py:263`). Fixed. Note the token is public, so this stops accidents, not intent, which is the right threat model here.
+7. Repeat check: `repeat_check` runs 03's N2 genomes intact twice and the empty deletion once at 2 048 × 2, `follow=5`, the same shape as `qb/0/intact` and `qb/0/empty`, which are consecutive units in the plan (`p4mc.py:354-367`, `452-457`); `require_check` demands it passed on CUDA at 2 048 (`p4mc.py:411-412`). Fixed.
+8. Guard tests: added for `bound`, `require_build`, `require_check`, the chain, the named code commit, the lock and the loader. `guards` as a whole and the "not an ancestor" branch still have no unit test; D290 says they were sabotaged by hand. Partly fixed, acceptable.
+9. Ambiguities: response defined (§3), Q-C's reference named (§6), validation failures stop the study (§3), per-stage environments (§9), the single-shot check (§5), the Holm step-down note (§6). Fixed.
+
+**Also verified:** the pinned reference hashes equal `power.json`'s; the single-signal rule uses 03r's `single_signal` with effect seed 1 and 1 000 draws; graph files are checked against `graphs_manifest.json` at load (`exp03.py:400-412`); the smoke's intact and empty units hash identically and its resume and second report went through.
+
+**Findings**
+
+1. **The degree-matched controls path in the report has never run.** `mc_report.py:350-354` executes only when every control's `pair/` unit exists; the smoke's three pairs (ADA, ADE, ADF) are not controls and the synthetic test has no pair units, so a crash there would surface first in the formal report and need a code amendment. Fix: add "AIB" and "AWB" to the smoke's pairs, or give the synthetic set the eight control pairs and assert `complete`.
+2. **A descriptive label differs from the text.** §7 says each ensemble's median cut comes "with an interval"; `mc_report.py:402` reports the median and a bootstrap interval of the mean, honestly named `mean_cut_95`. Fix either side: pass `transform=lambda m: m` to `_boot_ci` for a median interval, or say "median, with a bootstrap interval of the mean" in §7.
+3. **The one-shot check can be burnt without any GPU work.** The start marker and `prerun-repeat.json` are written (`p4mc.py:380-384`) before `EQ.main` verifies the local reference hashes (`scripts/p4mc_equivalence.py:155-159`). A missing or stale `runs/p4m/*.npz` ends the single permitted check with no measurement. §5 already says an amendment decides, so this is not a rule breach. Cheap mitigation: run the reference-hash comparison before the marker; it draws nothing.
+4. **The smoke run did not run the committed code.** Its provenance is `c0f1020` with `dirty: true` (`runs/p4mc-smoke/record/build.json:5-7`), that is, the working tree before `8b77b57`. Rerun the CPU smoke on the binding commit so the record matches the bound code. Minutes.
+5. **Minor inconsistency:** Q-A's genome interval applies no denominator floor per resample (`mc_report.py:283-286`) while Q-D's does (`mc_report.py:324`). With a valid N2 at 2 048 genomes a sub-floor resample is improbable. Harmless; note it or align it.
+6. `experiments/03mc-p4-confirm/README.md:3` still says draft 1; update at binding.
+
+**Could not check:** I have no shell in this session, so I ran no diff, no tests and no audit; I read the current files and compared them with my archived draft-1 review. I could not verify the twelve sabotage checks, that the smoke's uncommitted tree equals `8b77b57`, or anything on the GPU.

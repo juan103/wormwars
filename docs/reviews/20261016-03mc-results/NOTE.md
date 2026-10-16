@@ -1,0 +1,1 @@
+Astra 6 and Fable 5.1 at "high" (run 20261016-151642), the same prompt to both, on 03mc's RESULTS.md draft 1 at 3e65ef6 (D299). Both "fix then publish"; no registered verdict changes. Every finding was checked and taken (D300).

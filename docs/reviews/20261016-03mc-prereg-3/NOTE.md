@@ -1,0 +1,1 @@
+Astra 6 and Fable 5.1 at "high" (run 20261016-034232), the same prompt to both, confirmation pass on draft 3 at e136fe3. Fable "bind"; Astra "fix first" for two, both taken with Fable's small items (D292).

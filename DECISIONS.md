@@ -9107,3 +9107,31 @@ from `report.json` before committing; the check caught and fixed four wordings (
 from a rounded print, the slope range, the eligibility threshold, and "raises P4 everywhere", now "in N2 and in the
 typical null graph"). The README's status now points to it. **Next:** a review by Astra 6 and Fable 5.1, then
 publication on main whatever the outcome.
+
+
+## D300 — 03mc's results reviewed by both ("fix then publish"); the fixes; the reviews archived
+
+Astra 6 and Fable 5.1 at "high" on 3e65ef6 (run 20261016-151642; `docs/reviews/20261016-03mc-results/`). Both: "fix
+then publish"; both found every registered sentence quoted correctly and no registered verdict wrong. Astra checked
+104 values against `measurements.json`. Every finding was checked against `report.json`, the code or the accounting
+before it was taken:
+- **N2's replication interval was labelled 95%;** it is N2 ± 1.645 × SE, a 90% normal interval (`mc_report.py:60`)
+  (both).
+- **Registered reporting missing:** each ensemble's median ΔP4 beside Q-A (§6; a range had been given) (both); the
+  null-graph deletions (§7; none of the 15 comparisons has a null graph reaching N2's cut) (both); a table of
+  per-ensemble components and counts, and an index of the records `report.json` holds that RESULTS does not reproduce
+  (Astra).
+- **Roundings:** SH-mirror's effect interval ends at 0.088, not 0.089; the run took 7.22 hours, not 7.23 (Astra).
+- **Wording:** "every number comes from report.json" narrowed to the study's statistics, with the other sources named,
+  and the accounting aggregate committed as `compute-record.json` (Astra); "N2's lead" was used for both the mean- and
+  the median-based difference (Fable); a note on why Q-C passes with an adjusted p above its threshold (Fable); "food
+  response" defined once as the registered response (Fable); the double deletion given 90% intervals like the rest of
+  its table (Fable); the 0.875 comparison now says how many null graphs are at or above it (4 to 30 of 128), so it is
+  not read as the elevation surviving (Fable); the eligibility threshold's ≥ against the text's "above" disclosed
+  (Fable).
+- **Noted, no effect here:** `mc_report.share()` does not consult a unit's valid flag (Fable); every unit is valid.
+- **Archived late:** 03mc's design and pre-registration reviews (D285-D293) and the documentation reviews of D283-D284
+  had not been copied to `docs/reviews/`, as AGENTS.md rule 10 requires; they are now, verbatim, with a note each.
+*Correction (2026-10-16), D299's wording kept above:* "every secondary test and the descriptives" overstated draft 1,
+which omitted the null-graph deletions and gave several registered items only as ranges.
+**Next:** publication on main (consensus "fix then publish"; the owner is informed after).
