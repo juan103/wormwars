@@ -485,3 +485,58 @@ def test_a_report_never_replaces_an_existing_file(r, tmp_path):
     second = r.reserve_report_path(tmp_path)
     third = r.reserve_report_path(tmp_path)
     assert len({first, second, third}) == 3 and first.name == "report.json"
+
+
+def test_the_measurement_inputs_are_pinned_to_the_binding(r, monkeypatch):
+    """Astra (review of draft 3): a committed change to the stimulus bank or the remaps after binding was admitted;
+    they are now compared against the code commit like the code."""
+    seen = []
+    monkeypatch.setattr(r, "SMOKE", False)
+    monkeypatch.setattr(r, "bound", lambda: {"commit": "aaaaaaa", "code_commit": "aaaaaaa"})
+    monkeypatch.setattr(r.subprocess, "run", lambda *a, **k: r.subprocess.CompletedProcess(a, 0))
+    monkeypatch.setattr(r, "prereg_versions", lambda c: [b"x\n"])
+    monkeypatch.setattr(r, "check_prereg_chain", lambda v, n: None)
+    monkeypatch.setattr(r.reg, "require_same_code", lambda c, paths: seen.append(list(paths)))
+    monkeypatch.setattr(r.reg, "require_pins", lambda p: None)
+    monkeypatch.setattr(r.reg, "require_pushed", lambda p: None)
+    r.guards(type("A", (), {"device": "cpu"})(), {}, "build")
+    assert any(set(r.MEASUREMENT_INPUTS) <= set(p) for p in seen)
+
+
+def test_an_incomplete_qb_still_reports_its_available_paired_batches(r):
+    """Astra (review of draft 3): a missing batch suppressed the deletion's estimate; the confirmatory question stays
+    withheld, and a descriptive estimate from the complete pairs is reported, labelled."""
+    from wormwars.exp03 import mc_report
+    doc, names, arrays = synthetic(n2_gap_change=0.0, n2_share=0.5)
+    del doc["units"]["qb/1/AIY"]
+    rep = mc_report.build(doc, names, arrays.__getitem__, registered(r), {"graphs": 6, "permutations": 4}, effect_boot=20)
+    aiy = rep["Q-B"]["per_deletion"]["AIY"]
+    assert rep["Q-B"]["p"] is None and not aiy["complete"]
+    assert aiy["intact_batches_measured"] == 2 and aiy["paired_batches"] == 1
+    d = aiy["descriptive_available_batches"]
+    assert d["genomes"] == 400 and d["cut"] == pytest.approx(0.5)
+
+
+def test_qb_failure_names_parts_against_the_holm_threshold(r):
+    """Fable (review of draft 3): a part between its Holm threshold and 0.05 was not named."""
+    from wormwars.exp03 import mc_report
+    bt = {"cut": 0.5, "cut_q05_q95": [0.45, 0.55], "dP4": 0.01, "dP4_q05_q95": [-0.001, 0.021]}
+    res = {"p": 0.03, "per_deletion": {"RIA": {"tests": {"p_cut": 1e-6, "p_eq": 0.03}, "bootstrap": bt},
+                                       "AIY": {"tests": {"p_cut": 1e-6, "p_eq": 1e-4}, "bootstrap": bt}}}
+    holm = {"B": {"passed": False, "alone_at_alpha": True, "threshold": 0.0125}}
+    w = mc_report.wording("B", res, holm, replicated=True)
+    assert "RIA's change in P4 was not shown to be within 0.02" in w and "AIY" not in w
+
+
+def test_the_report_refuses_units_outside_the_plan(r, tmp_path, monkeypatch):
+    r.use_smoke(True)
+    try:
+        monkeypatch.setattr(r, "out_dir", lambda: tmp_path)
+        units = [{"id": "qb/0/intact"}]
+        recs = {u: {"arrays_sha256": r.save_arrays(r.array_path(u), {"final": np.ones(2, np.float32)})}
+                for u in ("qb/0/intact", "pair/XYZ")}
+        doc = {"attempts": [], "smoke": True, "registered": r.REGISTERED, "plan": units, "inputs": {}, "units": recs}
+        with pytest.raises(SystemExit, match="not in the plan"):
+            r.validate_measurements(doc, None, units, {})
+    finally:
+        r.use_smoke(False)

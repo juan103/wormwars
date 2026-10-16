@@ -134,13 +134,23 @@ def question_b(units, load, registered, batches) -> dict:
     withhold Q-B (PREREGISTRATION §6)."""
     B = registered["bootstrap"]
     out, comps, complete = {}, [], True
+    intact = [b for b in range(batches) if f"qb/{b}/intact" in units]
     for cond in ("RIA", "AIY", "both"):
         present = sum(f"qb/{b}/{cond}" in units for b in range(batches))
         valid = sum(1 for b in range(batches) if units.get(f"qb/{b}/{cond}", {}).get("valid"))
-        counts = {"batches_planned": batches, "batches_measured": present, "batches_valid": valid}
+        paired = [b for b in intact if f"qb/{b}/{cond}" in units]
+        counts = {"batches_planned": batches, "batches_measured": present, "batches_valid": valid,
+                  "intact_batches_measured": len(intact), "paired_batches": len(paired)}
         arr = _qb_arrays(units, load, batches, cond)
         if arr is None:
-            out[cond] = {"complete": False, **counts}
+            desc = None
+            if paired:  # Astra (review of draft 3): a descriptive estimate from the complete pairs, never a test
+                a = [np.concatenate([load(f"qb/{b}/{k}")[q] for b in paired]).astype(np.float64)
+                     for k, q in (("intact", "final"), ("intact", "steady"), (cond, "final"), (cond, "steady"))]
+                d = mc.paired_bootstrap(*a, resamples=B["resamples"], seed=B["genomes_seed"])
+                desc = {"note": "descriptive, from the batches measured in both conditions; the question is withheld",
+                        "batches": paired, **d}
+            out[cond] = {"complete": False, **counts, "descriptive_available_batches": desc}
             complete = complete and cond == "both"
             continue
         bt = mc.paired_bootstrap(*arr, resamples=B["resamples"], seed=B["genomes_seed"])
@@ -184,15 +194,17 @@ def wording(q: str, res: dict, holm: dict, replicated: bool) -> str:
             return ("Deleting the RIA pair, or the AIY pair, cuts N2's response by more than 40% while P4 stays within "
                     "0.02: the history signal falls approximately in proportion.")
         parts = []
+        thr = h.get("threshold", 0.05)  # a part is named if it misses the question's Holm threshold (Fable)
         for cond in ("RIA", "AIY"):
             t, b = pd[cond]["tests"], pd[cond]["bootstrap"]
-            if t["p_cut"] > 0.05:
+            if t["p_cut"] > thr:
                 parts.append(f"{cond}'s cut was not shown to exceed 40% ({b['cut']:.3f}, 90% interval "
                              f"{b['cut_q05_q95'][0]:.3f} to {b['cut_q05_q95'][1]:.3f})")
-            if t["p_eq"] > 0.05:
+            if t["p_eq"] > thr:
                 parts.append(f"{cond}'s change in P4 was not shown to be within 0.02 ({b['dP4']:+.4f}, 90% interval "
                              f"{b['dP4_q05_q95'][0]:+.4f} to {b['dP4_q05_q95'][1]:+.4f})")
-        base = "the registered criterion was not met: " + ("; ".join(parts) if parts else "see the components")
+        base = "the registered criterion was not met: " + (
+            "; ".join(parts) if parts else "each component met its test; Holm's step-down stopped at an earlier question")
         return _holm_stop(base, h)
     if q == "C":
         r = res["per"]

@@ -77,7 +77,7 @@ REGISTERED = {
     "controls": {"RIA": ["AIB", "AVJ", "RIM", "AVH"], "AIY": ["AWB", "RIF", "RIP", "RIV"]},
 }
 SMOKE_SIZES = {"genomes": 8, "graphs_per_ensemble": 2, "qb_batches": 2, "permutation_seeds": [9000, 9002],
-               "factorial_permutations": 2, "null_deletion_graphs_per_ensemble": 1, "pairs": 3, "cap_hours": 1.0,
+               "factorial_permutations": 2, "null_deletion_graphs_per_ensemble": 1, "cap_hours": 1.0,
                "min_graphs": 2, "min_permutations": 2}
 SMOKE = False
 
@@ -193,7 +193,7 @@ def guards(args, prov: dict, stage: str) -> str | None:
     now = (ROOT / PREREG).read_bytes()
     check_prereg_chain(prereg_versions(bd["commit"]), now)
     check_code_commit_named(now, bd)
-    reg.require_same_code(bd["code_commit"], CODE)
+    reg.require_same_code(bd["code_commit"], [*CODE, *MEASUREMENT_INPUTS])  # the inputs are bound too (Astra)
     if stage in ("check", "run"):
         reg.require_formal(args.device, prov)
     else:  # the build (CPU) and the report: the pinned environment, committed and pushed
@@ -387,10 +387,10 @@ def cmd_check(args):
     rep = repeat_check(device)
     reg.write_json(exp / "prerun-repeat.json", {**rep, "provenance": prov, "bound_commit": b,
                                                 "inputs": inputs_digest(names)})
+    if not rep["passed"] and not SMOKE:  # before the equivalence set: nothing formal can follow anyway (Fable)
+        raise SystemExit("the probe does not repeat bitwise at the registered composition: nothing formal runs")
     argv = ["--set", "check", "--device", device, "--record", "prerun-check.json"]
     EQ.main(argv + (["--smoke"] if SMOKE else []))
-    if not rep["passed"] and not SMOKE:
-        raise SystemExit("the probe does not repeat bitwise at the registered composition: nothing formal runs")
 
 
 def require_check(code_commit: str | None, prov: dict | None = None, digest: dict | None = None) -> None:
@@ -752,6 +752,9 @@ def validate_measurements(doc: dict, b: str | None, units: list, digest: dict) -
         raise SystemExit("the measurements' registered settings or smoke identity differ: refusing")
     if doc["plan"] != units:
         raise SystemExit("the measurements' plan differs from the registered plan: refusing")
+    extra = set(doc["units"]) - {u["id"] for u in units}
+    if extra:
+        raise SystemExit(f"units not in the plan: {sorted(extra)[:5]}: refusing (Fable, review of draft 3)")
     if doc["inputs"] != digest:
         raise SystemExit("the measurement inputs differ from those the run recorded: refusing")
     load = array_loader(doc["units"])

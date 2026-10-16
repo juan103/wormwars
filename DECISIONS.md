@@ -8983,3 +8983,26 @@ strengthened twice):
   before binding (Fable).
 **Next:** commit; the smoke run on the committed code; a short confirmation pass by both on draft 3, since binding
 freezes the text and the build after it draws the fresh graphs; then binding.
+
+
+## D292 — The confirmation pass on 03mc's draft 3: Fable "bind", Astra two findings; draft 4
+
+Astra 6 and Fable 5.1 at "high" on e136fe3 (run 20261016-034232; `runs/consult-d291-log.txt` stays local). Fable: "bind",
+every item checked fixed, six small items. Astra: "fix first" for two (the other three draft-2 findings confirmed fixed;
+63 of 63 smoke array hashes and all four reference hashes match). Every finding was taken, test-first (each new test
+seen failing):
+- **The measurement inputs were not bound** (Astra, reproduced in memory): the stimulus bank and the remaps were under
+  the clean-tree check but not compared against the bound commit, so a committed change after binding passed. They
+  are now compared with the code, against the code commit.
+- **A withheld Q-B dropped its estimate** (Astra): a deletion missing a batch is now estimated descriptively from the
+  batches measured in both conditions, labelled, with the intact and paired batch counts; the question stays
+  withheld.
+- **Fable's items:**
+  - §5's repeat check is stated as what the code compares (the ramp end and the steady contrast);
+  - Q-B's failure sentence names the parts that miss its Holm threshold, not 0.05;
+  - the report refuses units outside the plan;
+  - a failed repeat check now stops before the 0.25-hour equivalence set;
+  - a dead smoke key is removed;
+  - the smoke run now includes a resume that continues from a partial record.
+**Next:** commit, the smoke run on the committed code with a partial resume, then binding (Fable "bind" on drafts 2 and
+3; Astra's two narrow findings fixed and tested).

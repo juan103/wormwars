@@ -1,8 +1,9 @@
 # 03mc: pre-registration of a confirmatory test of 03m's leads on P4
 
-**Status:** draft 3, 2026-10-16. Draft 1 (`c0f1020`, D289) was reviewed with the code by Astra 6 and Fable 5.1
+**Status:** draft 4, 2026-10-16. Draft 1 (`c0f1020`, D289) was reviewed with the code by Astra 6 and Fable 5.1
 (run 20261016-023227): both "fix first"; every finding was taken (D290). Draft 2 (`8b77b57`): Fable "bind", Astra
-"fix first" for five findings (run 20261016-032746); every finding is taken (D291). It becomes
+"fix first" for five findings (run 20261016-032746); every finding was taken (D291). Draft 3 (`e136fe3`): Fable
+"bind", Astra "fix first" for two (run 20261016-034232); both are taken, with Fable's small items (D292). It becomes
 binding at the commit recorded in `bound.json` (committed after binding, since a commit cannot name itself). After
 binding this text is never changed. Amendments are appended below it, dated, and the runner refuses any other change
 (`scripts/p4mc.py`, `prereg_append_only`).
@@ -134,7 +135,8 @@ check`) and writes `prerun-check.json`.
   SH-recip-50015, with 03's genomes; and N2 with gap junctions off, with the RIA pair deleted, and under 03m's paired
   permutation 100.
 - **The repeat check:** on 03's N2 genomes (old inputs), at the registered composition, the intact probe twice and
-  the empty deletion once must agree bit for bit (`prerun-repeat.json`). The run's empty-deletion stop needs this
+  the empty deletion once must agree bit for bit on the ramp-end difference and the steady contrast, the two terms
+  the stop compares (`prerun-repeat.json`). The run's empty-deletion stop needs this
   (Fable).
 - **The tolerances,** as declared in the script (`TOL`, `LABELS`):
   - **aggregates within a relative 10⁻⁵:** P4's terms against 03's supplement, the tick-30 share against 03m's,
@@ -167,7 +169,9 @@ question enters with p = 1, so the family keeps four members.
 - **Q-A and Q-D:** a valid N2, and at least 120 valid graphs in every ensemble.
 - **Q-B:** every batch's intact, RIA and AIY units, and a valid bootstrap. The double deletion is descriptive, and its
   absence does not withhold Q-B.
-- A withheld question still reports its counts and whatever estimates and intervals are available.
+- A withheld question still reports its counts and whatever estimates and intervals are available. For Q-B, a
+  deletion missing some batch is estimated descriptively from the batches measured in both conditions, labelled as
+  such, with the intact and paired batch counts.
 - **Q-C:** a valid N2 reference and at least 240 valid permutations.
 
 Otherwise the question is withheld. Every question reports, per ensemble where it applies, its planned, measured and
@@ -206,7 +210,9 @@ valid counts separately.
 - **Reported beside the tests:** the 90% percentile intervals, as a check, not as a test.
 - **Pass:** "Deleting the RIA pair, or the AIY pair, cuts N2's response by more than 40% while P4 stays within 0.02:
   the history signal falls approximately in proportion."
-- **Fail:** "the registered criterion was not met:" then each failed part, with its estimate and 90% interval.
+- **Fail:** "the registered criterion was not met:" then each part whose p exceeds Q-B's Holm threshold, with its
+  estimate and 90% interval (if every part met it, the sentence says Holm's step-down stopped at an earlier
+  question).
 
 ### Q-C
 
@@ -309,7 +315,8 @@ and AIY.
 - the bound commit (and any code commit) is an ancestor of HEAD;
 - every committed version of this file since binding grows from the one before, and the working file from the last.
   Additions start on lines of their own, so an amendment, once committed, can be neither edited nor removed;
-- the code (`wormwars`, `scripts`, `configs`, `requirements.txt`) is unchanged since the bound commit. If the code
+- the code (`wormwars`, `scripts`, `configs`, `requirements.txt`) and the measurement inputs (03's stimulus bank,
+  `experiments/02-screening/remaps.json`) are unchanged since the bound commit. If the code
   must change after binding, an amendment says why and names the new code's commit, `bound.json` gains it as
   `code_commit`, and the code is checked against that commit instead (as E4-D's Amendment 1 did); a `code_commit`
   that no amendment names is refused;
