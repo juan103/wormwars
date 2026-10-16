@@ -8871,3 +8871,38 @@ exactly. Every finding was checked and taken (DESIGN.md §11, "From v2.1"):
   permutation seed; v2's 0.01 is cited to 1673ad5.
 **Consensus on the design:** Fable "ready"; Astra's three corrections are made. Next: the pre-registration and the
 runner, reviewed together by both before anything fresh is drawn; the owner is told before the formal run.
+
+
+## D289 — 03mc's pre-registration draft 1 and its runner, for review together
+
+Written from design v2.2 (D288). Nothing fresh drawn: the only new runs are CPU smoke runs in `runs/p4mc-smoke/` (their
+own salt, seeds and graphs) and the formal seed audit, which hashes planned names only.
+- **`PREREGISTRATION.md` draft 1:** the rules of DESIGN v2.2 (which keeps the reasons; the pre-registration governs).
+  Binding is recorded in `bound.json`, committed after the binding commit; an amendment that moves the code records
+  `code_commit` there, as E4-D's Amendment 1 did.
+- **`scripts/p4mc.py`:** `audit`, `build` (the freshness audit before and after 03's builder, `exp03.py build
+  --instance 03mc`; content checked against 03's and 03r's manifests; validation rules), `check` (the pre-run check,
+  `prerun-check.json`), `run` (the registered order, one record per unit in `measurements.json`, per-genome arrays
+  local with their sha256, the cap before every unit, resumable with code, environment, inputs and plan checked, the
+  empty-deletion stop) and `report` (`wormwars/exp03/mc_report.py`: every question, Holm with missing questions at
+  p = 1, the fixed wordings, the secondaries; 03r's `single_signal` for the replication, Q-E and gaps-off levels).
+- **Smoke, end to end on the CPU:** build (10 graphs, audit, content and validation passed), check, run (58 of 58
+  units), report (every wording produced).
+- **The formal seed audit** (`p4mc.py audit`): 2 016 planned derived seeds, none among the 4 530 of 03, 03r, 03m and
+  the smoke runs; no permutation collision.
+- **Rule 9, stated plainly:** the runner and the report were written before their tests (`tests/test_p4mc.py`, 10
+  tests). Each behaviour tested was then sabotaged once; five of six sabotages were caught at first. The sixth
+  (secondary units marked primary) was not, so the test was strengthened, and it now fails on it.
+- **A weakness found by the new tests:** the append-only check compared prefixes after stripping the trailing newline,
+  so text added to the end of the bound text's last line would have passed. `p4mc.prereg_append_only` now requires
+  additions to start on a line of their own. E4-D's runner (`scripts/e4d_evo_formal.py`), already used, has the old
+  check; its amendment was appended on new lines (its run is done), so nothing there depended on the weakness.
+- **Statistics added test-first:** percentile intervals in `mc.paired_bootstrap` and `mc.cut_difference` (the
+  controls' paired test).
+- **The pre-run check's file flag** is `--record`, not `--out`: the accounting's `run_script` reads `--out` as its
+  folder.
+- **A fragile T0 test:** `test_committed_n2_genomes_pass_the_hash_check` read every local `runs/**/*.npz` with "N2" in
+  its name as a genome file, so 03mc's smoke arrays (`N2__long.npz`) failed it locally (not on CI, which has no such
+  files). It now skips files without a `meta` entry, which genome files always carry.
+**Next:** the pre-registration and the code to both reviewers; then binding, the build, and the owner's word before
+the GPU stages.

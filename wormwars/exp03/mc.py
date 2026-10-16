@@ -92,9 +92,29 @@ def paired_bootstrap(f_int, s_int, f_del, s_del, resamples: int = 10_000, seed: 
         cuts.append(1 - b_d / a_d)
         ncuts.append(1 - b_n / a_n)
         dps.append(b_n / b_d - a_n / a_d)
+    q = lambda x, lo, hi: [float(np.quantile(x, lo)), float(np.quantile(x, hi))] if len(x) else [None, None]  # noqa: E731
     est.update(cut_se=float(np.std(cuts)), numerator_cut_se=float(np.std(ncuts)), dP4_se=float(np.std(dps)),
-               resamples=resamples, dropped=dropped, seed=seed)
+               cut_q05_q95=q(cuts, 0.05, 0.95), dP4_q05_q95=q(dps, 0.05, 0.95),
+               cut_q025_q975=q(cuts, 0.025, 0.975), numerator_cut_q025_q975=q(ncuts, 0.025, 0.975),
+               dP4_q025_q975=q(dps, 0.025, 0.975), resamples=resamples, dropped=dropped, seed=seed)
     return est
+
+
+def cut_difference(s_int, s_a, s_b, resamples: int = 10_000, seed: int = 20261016) -> dict:
+    """The paired difference of two deletions' response cuts on the same genomes, cut_a - cut_b =
+    (den_b - den_a) / den_int, with its bootstrap SE and the one-sided p for cut_a > cut_b (DESIGN §4, the
+    degree-matched controls). A zero SE gives 0 or 1 exactly."""
+    i0, a, b = (np.abs(np.asarray(x, dtype=np.float64)) for x in (s_int, s_a, s_b))
+    diff = float((b.mean() - a.mean()) / i0.mean())
+    rng = np.random.default_rng(seed)
+    n = len(i0)
+    ds = []
+    for _ in range(resamples):
+        i = rng.integers(0, n, n)
+        ds.append((b[i].mean() - a[i].mean()) / i0[i].mean())
+    se = float(np.std(ds))
+    p = (0.0 if diff > 0 else 1.0) if se <= 0 else _sf(diff / se)
+    return {"difference": diff, "se": se, "p": p, "resamples": resamples, "seed": seed}
 
 
 def _sf(z: float) -> float:

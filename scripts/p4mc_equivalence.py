@@ -121,21 +121,22 @@ def judge(row: dict) -> dict:
     return row
 
 
-def main():
+def main(argv=None):
+    """`argv` lets the formal runner (`scripts/p4mc.py check`) call the check inside its own accounting."""
     ap = argparse.ArgumentParser(allow_abbrev=False)
     ap.add_argument("--set", choices=["check", "panel"], default="check")
     ap.add_argument("--device", default="cuda")
     ap.add_argument("--smoke", action="store_true")
-    ap.add_argument("--out", default=None, help="the record's file name in the output folder (the formal pre-run "
+    ap.add_argument("--record", default=None, help="the record's file name in the output folder (the formal pre-run "
                                                  "check writes prerun-check.json, keeping the design-time records)")
-    args = ap.parse_args()
+    args = ap.parse_args(argv)
     smoke = args.smoke
     dev = "cpu" if smoke else args.device
     n = 8 if smoke else None
     out_dir = ROOT / "runs" / "p4mc-equivalence-smoke" if smoke else ROOT / "experiments" / "03mc-p4-confirm"
-    out_path = out_dir / (args.out or f"equivalence-{args.set}.json")
+    out_path = out_dir / (args.record or f"equivalence-{args.set}.json")
     if not smoke and out_path.exists():
-        raise SystemExit(f"{out_path.name} exists: a record is never overwritten (Fable, review v2.1); choose --out")
+        raise SystemExit(f"{out_path.name} exists: a record is never overwritten (Fable, review v2.1); choose --record")
     con, bank, iface = P.setup(dev)
     sup = P.supplement("03")
     decay = json.loads((ROOT / "experiments" / "03m-p4-mechanism" / "decay.json").read_text(encoding="utf-8"))["graphs"]

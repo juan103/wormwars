@@ -185,7 +185,10 @@ def test_committed_n2_genomes_pass_the_hash_check(parts):
     files = [p for p in ROOT.glob("runs/**/*.npz") if "N2" in p.name]
     assert files
     for f in files:
-        meta = json.loads(str(np.load(f, allow_pickle=False)["meta"]))
+        with np.load(f, allow_pickle=False) as z:
+            if "meta" not in z.files:  # not a genome file (e.g. 03mc's per-unit arrays, D289)
+                continue
+            meta = json.loads(str(z["meta"]))
         if meta.get("graph") != spec.label:
             continue
         load_genome(f, spec)  # raises on a hash mismatch

@@ -150,3 +150,27 @@ def test_the_audit_finds_a_03r_secondary_permutation_seed_passed_as_a_permutatio
     a = mc.freshness_audit({"03mc:": ["N2"]}, {"03r:": ["SH-1010000"]}, new_perm_seeds=[planted],
                            old_perm_seeds=[planted])
     assert not a["ok"] and a["permutation_collisions"] == [planted]
+
+
+def test_paired_bootstrap_reports_percentile_intervals():
+    rng = np.random.default_rng(4)
+    n = 2000
+    s = np.abs(rng.normal(1, 0.3, n))
+    f = 0.9 * s * np.abs(rng.normal(1, 0.2, n))
+    b = mc.paired_bootstrap(f, s, 0.5 * f * np.abs(rng.normal(1, 0.1, n)), 0.5 * s * np.abs(rng.normal(1, 0.1, n)),
+                            resamples=400, seed=5)
+    lo, hi = b["dP4_q05_q95"]
+    assert lo < b["dP4"] < hi
+    lo, hi = b["cut_q05_q95"]
+    assert lo < b["cut"] < hi
+
+
+def test_the_cut_difference_is_paired_and_signed():
+    rng = np.random.default_rng(6)
+    n = 3000
+    s = np.abs(rng.normal(1, 0.4, n))
+    d = mc.cut_difference(s, 0.4 * s, 0.9 * s, resamples=300, seed=7)  # cuts 0.6 and 0.1
+    assert d["difference"] == pytest.approx(0.5)
+    assert d["se"] < 1e-9 and d["p"] == 0.0
+    flipped = mc.cut_difference(s, 0.9 * s, 0.4 * s, resamples=300, seed=7)
+    assert flipped["difference"] == pytest.approx(-0.5) and flipped["p"] == 1.0

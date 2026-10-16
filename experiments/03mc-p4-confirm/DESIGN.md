@@ -365,7 +365,7 @@ sentence is not used, and RESULTS says first that the lead itself did not replic
     misnamed it as the worst deviation; it is kept, not chosen for a reason of its own (Fable).
   - **The references are pinned:** the check refuses local reference arrays whose sha256 differs from
     those `power.json` recorded, and records all four hashes (Fable).
-  - **The formal pre-run check writes `prerun-check.json`** (`--out`), and a record is never
+  - **The formal pre-run check writes `prerun-check.json`** (`--record`; not `--out`, which the accounting reads as its folder), and a record is never
     overwritten, so the design-time records stay as quoted here (Fable).
   - The committed `equivalence-check.json` predates two of these changes: it has no `any` count and no
     reference hashes. Every label count in it is 0, so the union is 0 too.
