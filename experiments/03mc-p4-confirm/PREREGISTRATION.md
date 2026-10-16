@@ -1,7 +1,8 @@
 # 03mc: pre-registration of a confirmatory test of 03m's leads on P4
 
-**Status:** draft 2, 2026-10-16. Draft 1 (`c0f1020`, D289) was reviewed with the code by Astra 6 and Fable 5.1
-(run 20261016-023227): both "fix first"; every finding is taken (D290). It becomes
+**Status:** draft 3, 2026-10-16. Draft 1 (`c0f1020`, D289) was reviewed with the code by Astra 6 and Fable 5.1
+(run 20261016-023227): both "fix first"; every finding was taken (D290). Draft 2 (`8b77b57`): Fable "bind", Astra
+"fix first" for five findings (run 20261016-032746); every finding is taken (D291). It becomes
 binding at the commit recorded in `bound.json` (committed after binding, since a commit cannot name itself). After
 binding this text is never changed. Amendments are appended below it, dated, and the runner refuses any other change
 (`scripts/p4mc.py`, `prereg_append_only`).
@@ -147,8 +148,11 @@ check`) and writes `prerun-check.json`.
 - **The check runs once.** Its start marker is written before it runs; a check that stops before writing its records
   is not rerun either, and an amendment decides.
 - **The run admits a check only if:** both records passed; the set is `check`, on CUDA, at 2 048 genomes; the
-  references are pinned; the check ran on committed code equal to the code that runs now; and its start marker
-  exists.
+  references are pinned; both ran on committed code equal to the code that runs now, in the same environment (Python,
+  NumPy, PyTorch, CUDA, GPU, connectome cache), on the same measurement inputs (the graph manifests, 03's stimulus
+  bank, the remaps, the interface); and its start marker exists.
+- **The reference arrays are verified before the start marker,** so a missing or stale reference cannot use up the
+  one check.
 
 ## 6. The primary questions
 
@@ -163,6 +167,7 @@ question enters with p = 1, so the family keeps four members.
 - **Q-A and Q-D:** a valid N2, and at least 120 valid graphs in every ensemble.
 - **Q-B:** every batch's intact, RIA and AIY units, and a valid bootstrap. The double deletion is descriptive, and its
   absence does not withhold Q-B.
+- A withheld question still reports its counts and whatever estimates and intervals are available.
 - **Q-C:** a valid N2 reference and at least 240 valid permutations.
 
 Otherwise the question is withheld. Every question reports, per ensemble where it applies, its planned, measured and
@@ -316,8 +321,10 @@ and AIY.
 - **The build** runs on the CPU. `exp03.py` itself refuses a formal 03mc build without the token the runner passes
   after these checks.
 - **The check and the run** need CUDA on the registered GPU (RTX 5080) and the owner's word.
-- **The report** simulates nothing. It checks each unit's arrays against their recorded sha256 and never overwrites
-  an earlier report (a later one gets a time stamp).
+- **The report** simulates nothing. Before any statistic, it checks that `measurements.json` belongs to this binding,
+  registered settings, plan and inputs, that every attempt ran the current code, clean, and that every completed
+  unit's arrays hash as recorded. It never replaces an earlier report: each new one gets an exclusively created file.
+  A run stopped at the empty deletion stays reportable.
 - **The run** takes an exclusive lock, records any array file it replaces after an interruption, and resumes only
   with the first attempt's code, environment, inputs, registered settings and full plan, and with every completed
   unit's arrays as recorded. It never resumes after the empty-deletion stop.

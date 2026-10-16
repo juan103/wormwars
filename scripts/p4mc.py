@@ -109,6 +109,8 @@ use_smoke(False)
 BUILD_RECORDS = ["build.json", "ensembles.json", "graphs_manifest.json", "graphs_content_manifest.json"]
 CHECK_RECORDS = ["prerun-check.json", "prerun-repeat.json"]
 RECORD_DIR = "experiments/03mc-p4-confirm"
+MEASUREMENT_INPUTS = ["experiments/03-generation0/pilot.json", "experiments/02-screening/remaps.json"]  # (Astra)
+ENV_COMPARE = ("python", "numpy", "torch", "cuda", "gpu", "connectome_cache_sha256")
 
 
 def bound() -> dict:
@@ -162,7 +164,7 @@ def check_code_commit_named(now: bytes, bd: dict) -> None:
 
 def guarded(stage: str) -> list[str]:
     """What must be committed (and, for every stage, pushed) before a stage starts."""
-    g = [*CODE, PREREG, f"{RECORD_DIR}/bound.json"]
+    g = [*CODE, PREREG, f"{RECORD_DIR}/bound.json", *MEASUREMENT_INPUTS]
     if stage in ("check", "run", "report"):
         g += [f"{RECORD_DIR}/{f}" for f in BUILD_RECORDS]
     if stage in ("run", "report"):
@@ -376,21 +378,25 @@ def cmd_check(args):
     for f in CHECK_RECORDS:
         if not SMOKE and (EXP_FORMAL / f).exists():
             raise SystemExit(f"{f} exists: the pre-run check has run and is not rerun")
+    EQ.check_references()  # before the one-shot marker: a stale reference must not use up the check (Fable)
+    names = {e: v[:R("graphs_per_ensemble")] for e, v in ensemble_names().items()}
     if not SMOKE:
         reg.start_marker(out_dir() / "markers", "check", {**prov, "owner_word": word, "bound_commit": b})
     cap_clock().check()
     device = "cpu" if SMOKE else args.device
     rep = repeat_check(device)
-    reg.write_json(exp / "prerun-repeat.json", {**rep, "provenance": prov, "bound_commit": b})
+    reg.write_json(exp / "prerun-repeat.json", {**rep, "provenance": prov, "bound_commit": b,
+                                                "inputs": inputs_digest(names)})
     argv = ["--set", "check", "--device", device, "--record", "prerun-check.json"]
     EQ.main(argv + (["--smoke"] if SMOKE else []))
     if not rep["passed"] and not SMOKE:
         raise SystemExit("the probe does not repeat bitwise at the registered composition: nothing formal runs")
 
 
-def require_check(code_commit: str | None) -> None:
+def require_check(code_commit: str | None, prov: dict | None = None, digest: dict | None = None) -> None:
     """The registered pre-run check passed on the current code, at the registered set and device, with the pinned
-    references, and the repeat check passed (Astra, Fable, prereg review)."""
+    references, and the repeat check passed (Astra, Fable, prereg review); both ran on clean code, in the current
+    environment, on the current measurement inputs (Astra, review of draft 2)."""
     if SMOKE:
         return
     pc, pr = EXP_FORMAL / "prerun-check.json", EXP_FORMAL / "prerun-repeat.json"
@@ -410,6 +416,15 @@ def require_check(code_commit: str | None) -> None:
         problems.append("the check ran on uncommitted code")
     if not r.get("passed") or not str(r.get("device", "")).startswith("cuda") or r.get("genomes") != 2048:
         problems.append("the repeat check did not pass at the registered composition")
+    if r.get("provenance", {}).get("dirty", True):
+        problems.append("the repeat check ran on uncommitted code")
+    if prov is not None:
+        for k in ENV_COMPARE:
+            if stamp.get(k) != prov.get(k) or r.get("provenance", {}).get(k) != prov.get(k):
+                problems.append(f"the environment differs from the check's ({k})")
+                break
+    if digest is not None and r.get("inputs") != digest:
+        problems.append("the measurement inputs differ from the check's")
     if problems:
         raise SystemExit("the pre-run check does not admit the run: " + "; ".join(problems))
     for commit in {stamp.get("git_commit"), r.get("provenance", {}).get("git_commit")}:
@@ -463,8 +478,8 @@ def plan(con, names: dict) -> list[dict]:
                 u += [{"id": f"graph/{g}/long", "kind": "long", "graph": g, "seed_name": g, "cfg": g, "primary": True},
                       {"id": f"graph/{g}/gaps", "kind": "gaps", "graph": g, "seed_name": g, "cfg": g, "primary": True}]
     pairs = [k for k in screen_pairs(con) if k not in ("RIA", "AIY")]
-    if SMOKE:
-        pairs = pairs[:SMOKE_SIZES["pairs"]]
+    if SMOKE:  # the smoke screen is the eight controls, so the report's controls path runs (Fable)
+        pairs = [k for ks in REGISTERED["controls"].values() for k in ks]
     for k in pairs:
         u.append({"id": f"pair/{k}", "kind": "std", "graph": "N2", "seed_name": "N2", "cfg": "N2", "delete": k,
                   "primary": False})
@@ -653,15 +668,15 @@ def cmd_run(args):
     b = guards(args, prov, "run")
     word = owner_word(args)
     require_build(b)
-    require_check(None if SMOKE else bound()["code_commit"])
     device = "cpu" if SMOKE else args.device
     n = R("genomes")
     names = ensemble_names()
     names = {e: v[:R("graphs_per_ensemble")] for e, v in names.items()}
+    digest = inputs_digest(names)
+    require_check(None if SMOKE else bound()["code_commit"], prov, digest)
     con, bank, iface = setup(device)
     units = plan(con, names)
     path = exp_dir() / "measurements.json"
-    digest = inputs_digest(names)
     with RunLock(out_dir() / "run.lock"):
         if path.exists():
             doc = json.loads(path.read_text(encoding="utf-8"))
@@ -707,6 +722,43 @@ def cmd_run(args):
 
 # ----------------------------------------------------------------------------- report
 
+def reserve_report_path(directory: Path) -> Path:
+    """`report.json`, or the first free `report-<time>-<k>.json`, created exclusively, so no report is ever replaced
+    (Astra, review of draft 2: a seconds-resolution name alone could collide)."""
+    directory.mkdir(parents=True, exist_ok=True)
+    stamp = time.strftime("%Y%m%dT%H%M%SZ", time.gmtime())
+    for k in range(10_000):
+        p = directory / ("report.json" if k == 0 else f"report-{stamp}-{k}.json")
+        try:
+            with open(p, "x", encoding="utf-8"):
+                return p
+        except FileExistsError:
+            continue
+    raise SystemExit("no free report name")
+
+
+def validate_measurements(doc: dict, b: str | None, units: list, digest: dict) -> None:
+    """Before the report (Astra, review of draft 2): the measurements belong to this binding, settings, plan and
+    inputs, every attempt ran the current code, and every completed unit's arrays hash as recorded. A run stopped at
+    the empty deletion stays reportable."""
+    if not SMOKE:
+        if doc.get("bound_commit") != b:
+            raise SystemExit("measurements.json was written under another binding: refusing")
+        for a in doc["attempts"]:
+            reg.require_same_code(a["provenance"]["git_commit"], CODE)
+            if a["provenance"].get("dirty"):
+                raise SystemExit("an attempt ran on uncommitted code: refusing")
+    if doc.get("smoke") != SMOKE or doc.get("registered") != REGISTERED:
+        raise SystemExit("the measurements' registered settings or smoke identity differ: refusing")
+    if doc["plan"] != units:
+        raise SystemExit("the measurements' plan differs from the registered plan: refusing")
+    if doc["inputs"] != digest:
+        raise SystemExit("the measurement inputs differ from those the run recorded: refusing")
+    load = array_loader(doc["units"])
+    for uid in doc["units"]:
+        load(uid)
+
+
 def cmd_report(args):
     """Guarded like every formal stage, without the GPU (Fable, Astra, prereg review); each unit's arrays are
     checked against their recorded hash before use; a report is never overwritten (a later one gets a time stamp)."""
@@ -718,14 +770,13 @@ def cmd_report(args):
         raise SystemExit("no measurements.json")
     doc = json.loads(path.read_text(encoding="utf-8"))
     names = {e: v[:R("graphs_per_ensemble")] for e, v in ensemble_names().items()}
+    validate_measurements(doc, b, plan(load_connectome(), names), inputs_digest(names))
     rep = mc_report.build(doc, names, array_loader(doc["units"]), REGISTERED,
                           minimum={"graphs": R("min_graphs"), "permutations": R("min_permutations")},
                           effect_boot=100 if SMOKE else 1000)
     rep["provenance"], rep["bound_commit"] = prov, b
     rep["written_utc"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
-    out = exp_dir() / "report.json"
-    if out.exists():
-        out = exp_dir() / f"report-{time.strftime('%Y%m%dT%H%M%SZ', time.gmtime())}.json"
+    out = reserve_report_path(exp_dir())
     reg.write_json(out, rep, atomic=True)
     print(out.name)
     print(json.dumps(rep["headline"], indent=1))

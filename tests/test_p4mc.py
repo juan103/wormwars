@@ -155,7 +155,7 @@ def test_summaries_hold_shares_to_validity(r):
 
 # ----------------------------------------------------------------------------- the report, on synthetic records
 
-def synthetic(n2_gap_change, n2_share, k=6, perms=4, batches=2, seed=1):
+def synthetic(n2_gap_change, n2_share, k=6, perms=4, batches=2, seed=1, controls=False):
     """A complete synthetic measurement set: N2 and k graphs per ensemble, permutations, Q-B batches."""
     from wormwars.exp03 import mc
     rng = np.random.default_rng(seed)
@@ -198,6 +198,16 @@ def synthetic(n2_gap_change, n2_share, k=6, perms=4, batches=2, seed=1):
         put(f"qb/{b}/intact", fi, si)
         for cond, keep in (("RIA", 0.4), ("AIY", 0.5), ("both", 0.25)):
             put(f"qb/{b}/{cond}", fi * keep, si * keep)
+            if b == 0 and cond == "both" and controls:
+                for e in names:  # null-graph deletions for the first 5 graphs: skewed cuts (0, 0, 0, 0, 0.9)
+                    for j, g in enumerate(names[e][:5]):
+                        ul = units[f"graph/{g}/long"]
+                        al = arrays[f"graph/{g}/long"]
+                        for c in ("RIA", "AIY", "both"):
+                            keep = 0.1 if j == 4 else 1.0
+                            put(f"null/{g}/{c}", al["final"].astype(float) * keep, al["steady"].astype(float) * keep)
+                for k_ in ("AIB", "AVJ", "RIM", "AVH", "AWB", "RIF", "RIP", "RIV"):
+                    put(f"pair/{k_}", fi * 0.9, si * 0.9)
     return {"units": units, "plan": plan, "attempts": [], "smoke": True}, names, arrays
 
 
@@ -207,7 +217,7 @@ REG = None
 def registered(r):
     reg_ = dict(r.REGISTERED)
     reg_["factorial_permutations"] = 2
-    reg_["null_deletion_graphs_per_ensemble"] = 2
+    reg_["null_deletion_graphs_per_ensemble"] = 5
     reg_["bootstrap"] = {**reg_["bootstrap"], "resamples": 200}
     return reg_
 
@@ -334,7 +344,7 @@ def test_a_forged_or_stale_check_does_not_admit_the_run(r, tmp_path, monkeypatch
         r.require_check("abc")
     good = {"passed": True, "set": "check", "device": "cuda", "genomes": 2048,
             "reference_sha256": dict(r.EQ.REFERENCE_SHA256), "stamp": {"dirty": False, "git_commit": "c1"}}
-    rep = {"passed": True, "device": "cuda", "genomes": 2048, "provenance": {"git_commit": "c1"}}
+    rep = {"passed": True, "device": "cuda", "genomes": 2048, "provenance": {"git_commit": "c1", "dirty": False}}
     for bad in ({"device": "cpu"}, {"set": "panel"}, {"genomes": 8}, {"stamp": {"dirty": True, "git_commit": "c1"}}):
         (tmp_path / "prerun-check.json").write_text(json.dumps({**good, **bad}))
         (tmp_path / "prerun-repeat.json").write_text(json.dumps(rep))
@@ -353,6 +363,46 @@ def test_a_forged_or_stale_check_does_not_admit_the_run(r, tmp_path, monkeypatch
     (tmp_path / "markers").mkdir()
     (tmp_path / "markers" / "check-started.json").write_text("{}")
     r.require_check("abc")
+    # Astra (review of draft 2): the environment, the measurement inputs and a clean repeat record are compared too
+    env = {"python": "3.13.1", "numpy": "2", "torch": "2.12", "cuda": "13.0", "gpu": "RTX 5080", "connectome_cache_sha256": "h"}
+    (tmp_path / "prerun-check.json").write_text(json.dumps({**good, "stamp": {**good["stamp"], **env}}))
+    (tmp_path / "prerun-repeat.json").write_text(json.dumps({**rep, "provenance": {**rep["provenance"], **env},
+                                                             "inputs": {"pilot": "1"}}))
+    r.require_check("abc", env, {"pilot": "1"})
+    with pytest.raises(SystemExit, match="environment"):
+        r.require_check("abc", {**env, "torch": "2.13"}, {"pilot": "1"})
+    with pytest.raises(SystemExit, match="inputs"):
+        r.require_check("abc", env, {"pilot": "2"})
+    (tmp_path / "prerun-repeat.json").write_text(json.dumps({**rep, "provenance": {**rep["provenance"], **env, "dirty": True},
+                                                             "inputs": {"pilot": "1"}}))
+    with pytest.raises(SystemExit, match="uncommitted"):
+        r.require_check("abc", env, {"pilot": "1"})
+
+
+def test_the_report_validates_the_measurements_and_every_array(r, tmp_path, monkeypatch):
+    """Astra (review of draft 2): the report checked arrays only when a statistic loaded them (25 smoke units never),
+    and never checked the measurements' settings, plan or inputs."""
+    r.use_smoke(True)
+    try:
+        monkeypatch.setattr(r, "out_dir", lambda: tmp_path)
+        units = [{"id": "qb/0/intact"}, {"id": "perm/9000"}]
+        recs = {}
+        for u in units:
+            recs[u["id"]] = {"arrays_sha256": r.save_arrays(r.array_path(u["id"]), {"final": np.ones(2, np.float32)})}
+        doc = {"attempts": [], "smoke": True, "registered": r.REGISTERED, "plan": units, "inputs": {"x": "1"},
+               "units": recs}
+        r.validate_measurements(doc, None, units, {"x": "1"})
+        with pytest.raises(SystemExit, match="plan"):
+            r.validate_measurements(doc, None, units[:1], {"x": "1"})
+        with pytest.raises(SystemExit, match="inputs"):
+            r.validate_measurements(doc, None, units, {"x": "2"})
+        with pytest.raises(SystemExit, match="settings"):
+            r.validate_measurements({**doc, "registered": {}}, None, units, {"x": "1"})
+        r.array_path("perm/9000").write_bytes(b"changed")  # a unit no statistic may load
+        with pytest.raises(SystemExit, match="does not hash"):
+            r.validate_measurements(doc, None, units, {"x": "1"})
+    finally:
+        r.use_smoke(False)
 
 
 def test_one_run_at_a_time(r, tmp_path):
@@ -384,3 +434,54 @@ def test_genome_intervals_resample_the_genome_axis():
     assert ci == [1000.0, 1000.0]
     ci = mc_report.genome_ci([d], lambda x: float(x[1].mean()), seed=0, resamples=200)
     assert 470 < ci[0] < 499.5 < ci[1] < 530  # the mean of 0..999 is 499.5
+
+
+def test_the_null_deletion_interval_is_of_the_median():
+    """Astra, Fable (review of draft 2): §7 promises each ensemble's median with an interval; the first version
+    bootstrapped the mean. 31 zeros and a one: the median's interval is [0, 0]."""
+    from wormwars.exp03 import mc_report
+    v = [0.0] * 31 + [1.0]
+    assert mc_report._boot_ci(v, seed=0, resamples=2000, stat="median") == [0.0, 0.0]
+    assert mc_report._boot_ci(v, seed=0, resamples=2000)[1] > 0  # the mean's interval is not
+
+
+def test_withheld_questions_still_report_their_counts_and_estimates(r):
+    """Astra (review of draft 2): an invalid N2, an incomplete Q-B or too few permutations dropped the counts and the
+    available estimates."""
+    from wormwars.exp03 import mc_report
+    doc, names, arrays = synthetic(n2_gap_change=0.0, n2_share=0.5)
+    del doc["units"]["perm/1003"]
+    del doc["units"]["qb/1/AIY"]
+    rep = mc_report.build(doc, names, arrays.__getitem__, registered(r), {"graphs": 6, "permutations": 4}, effect_boot=20)
+    assert rep["Q-C"]["p"] is None and rep["Q-C"]["measured"] == 3 and rep["Q-C"]["n2_response"] > 0
+    assert rep["Q-C"]["n2_response_interval_95"] is not None
+    assert rep["Q-B"]["p"] is None
+    assert rep["Q-B"]["per_deletion"]["AIY"]["batches_planned"] == 2 and rep["Q-B"]["per_deletion"]["AIY"]["batches_measured"] == 1
+    doc["units"]["N2/long"] = {**doc["units"]["N2/long"], "valid": False, "P4": None}
+    rep = mc_report.build(doc, names, arrays.__getitem__, registered(r), {"graphs": 6, "permutations": 4}, effect_boot=20)
+    assert rep["replication"]["overall"] == "withheld" and rep["replication"]["counts"]["SH"]["valid"] == 6
+
+
+def test_the_controls_path_runs(r):
+    """Fable (review of draft 2): the controls' code had never run; the synthetic set now has the eight control pairs."""
+    from wormwars.exp03 import mc_report
+    doc, names, arrays = synthetic(n2_gap_change=0.0, n2_share=0.5, controls=True)
+    rep = mc_report.build(doc, names, arrays.__getitem__, registered(r), {"graphs": 6, "permutations": 4}, effect_boot=20)
+    c = rep["secondary_tests"]["degree-matched controls"]
+    assert c["RIA"]["complete"] and c["AIY"]["complete"]
+    assert c["RIA"]["passed"] and c["AIY"]["passed"]  # RIA keeps 0.4 and AIY 0.5 of the response; controls keep 0.9
+    assert rep["descriptive"]["pair screen, batch 0"]["rank_by_cut"] == {"RIA": 1, "AIY": 2}
+    nd = rep["descriptive"]["null-graph deletions"]["RIA"]["SH"]
+    want = mc_report._boot_ci(list(nd["cuts"].values()), seed=r.REGISTERED["bootstrap"]["graphs_seed"], resamples=200,
+                              stat="median")
+    assert nd["graphs"] == 5 and nd["median_cut_95"] == want
+    assert nd["median_cut_95"] != mc_report._boot_ci(list(nd["cuts"].values()), seed=r.REGISTERED["bootstrap"]["graphs_seed"],
+                                                     resamples=200)  # the case separates the median from the mean  # the median's interval, not the mean's
+
+
+def test_a_report_never_replaces_an_existing_file(r, tmp_path):
+    first = r.reserve_report_path(tmp_path)
+    first.write_text("{}")
+    second = r.reserve_report_path(tmp_path)
+    third = r.reserve_report_path(tmp_path)
+    assert len({first, second, third}) == 3 and first.name == "report.json"

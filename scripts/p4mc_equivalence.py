@@ -123,6 +123,21 @@ def record_path(out_dir: Path, name: str) -> Path:
     return path
 
 
+def check_references() -> dict:
+    """The local reference arrays' sha256, refusing any that differ from those `power.json` hashed. The runner calls
+    it before the one-shot check's start marker, so a missing or stale reference cannot use up the check (Fable,
+    review of draft 2)."""
+    paths = {k: ROOT / "runs" / "p4m" / f"{k}-per-genome.npz" for k in ("synapses", "decay", "lesions", "weights")}
+    missing = [k for k, p in paths.items() if not p.exists()]
+    if missing:
+        raise SystemExit(f"the local reference arrays are missing: {missing}")
+    ref_sha = {k: hashlib.sha256(p.read_bytes()).hexdigest() for k, p in paths.items()}
+    wrong = {k: v for k, v in REFERENCE_SHA256.items() if ref_sha[k] != v}
+    if wrong:
+        raise SystemExit(f"the local reference arrays differ from those power.json hashed: {sorted(wrong)}")
+    return ref_sha
+
+
 def judge(row: dict) -> dict:
     """Mark each measured deviation against its declared tolerance, and the genomes with any changed label against
     LABELS."""
@@ -152,11 +167,7 @@ def main(argv=None):
     sup = P.supplement("03")
     decay = json.loads((ROOT / "experiments" / "03m-p4-mechanism" / "decay.json").read_text(encoding="utf-8"))["graphs"]
     load = lambda f: np.load(ROOT / "runs" / "p4m" / f"{f}-per-genome.npz", allow_pickle=False)  # noqa: E731
-    ref_sha = {k: hashlib.sha256((ROOT / "runs" / "p4m" / f"{k}-per-genome.npz").read_bytes()).hexdigest()
-               for k in ("synapses", "decay", "lesions", "weights")}
-    wrong = {k: v for k, v in REFERENCE_SHA256.items() if ref_sha[k] != v}
-    if wrong:
-        raise SystemExit(f"the local reference arrays differ from those power.json hashed: {sorted(wrong)}")
+    ref_sha = check_references()
     dec, syn, les, wts = load("decay"), load("synapses"), load("lesions"), load("weights")
     ref_ticks = [int(x) for x in dec["ticks"]]
     sl = slice(None) if n is None else slice(0, n)

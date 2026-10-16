@@ -1,6 +1,7 @@
 # 03mc: a confirmatory test of 03m's leads on P4
 
-**Status:** pre-registration draft 1 (2026-10-16), under review with its code. Nothing fresh has been drawn or run.
+**Status:** pre-registration draft 3 (2026-10-16), reviewed with its code (D289-D291). Nothing fresh has been drawn or
+run.
 The design (`DESIGN.md`, v2.2) was agreed by Astra 6 and Fable 5.1 after three rounds (D285-D288).
 
 ## The question

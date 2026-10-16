@@ -29,8 +29,11 @@ def single_signal(n2_unit, names, units, load, which: str, suffix: str, minimum:
     ensemble has too few valid graphs."""
     fk, sk, pre = P4_KEYS[which]
     vkey = f"{pre}valid"
+    counts0 = {e: {"planned": len(rows), "measured": sum(u is not None for _, u in rows),
+                   "valid": sum(1 for _, u in rows if u is not None and u.get(vkey))}
+               for e, rows in _ens_rows(names, units, suffix).items()}
     if n2_unit is None or not n2_unit["unit"].get(vkey):
-        return {"overall": "withheld", "reason": "N2 invalid or not measured"}
+        return {"overall": "withheld", "reason": "N2 invalid or not measured", "counts": counts0}
     a = load(n2_unit["id"])
     n2 = {"num": np.abs(a[fk].astype(float)), "den": np.abs(a[sk].astype(float))}
     n2v = float(n2["num"].mean() / n2["den"].mean())
@@ -133,18 +136,20 @@ def question_b(units, load, registered, batches) -> dict:
     out, comps, complete = {}, [], True
     for cond in ("RIA", "AIY", "both"):
         present = sum(f"qb/{b}/{cond}" in units for b in range(batches))
+        valid = sum(1 for b in range(batches) if units.get(f"qb/{b}/{cond}", {}).get("valid"))
+        counts = {"batches_planned": batches, "batches_measured": present, "batches_valid": valid}
         arr = _qb_arrays(units, load, batches, cond)
         if arr is None:
-            out[cond] = {"complete": False, "batches_planned": batches, "batches_measured": present}
+            out[cond] = {"complete": False, **counts}
             complete = complete and cond == "both"
             continue
         bt = mc.paired_bootstrap(*arr, resamples=B["resamples"], seed=B["genomes_seed"])
         if not bt["valid"] or bt["dropped"] > 0.01 * B["resamples"]:
-            out[cond] = {"complete": False, "bootstrap": bt}
+            out[cond] = {"complete": False, "bootstrap": bt, **counts}
             complete = complete and cond == "both"
             continue
         t = mc.qb_tests(bt["cut"], bt["cut_se"], bt["dP4"], bt["dP4_se"])
-        out[cond] = {"complete": True, "bootstrap": bt, "tests": t, "batches": batches}
+        out[cond] = {"complete": True, "bootstrap": bt, "tests": t, **counts}
         if cond != "both":
             comps += [t["p_cut"], t["p_eq"]]
     p = max(comps) if complete and len(comps) == 4 else None
@@ -228,17 +233,19 @@ def _holm_stop(text: str, h: dict) -> str:
     return text
 
 
-def _boot_ci(values, seed, resamples=10_000, transform=None):
-    """95% percentile interval of the mean (or of `transform` of the median) over units; the transform is applied to
-    each bootstrap sample before the quantiles (Astra, prereg review)."""
+def _boot_ci(values, seed, resamples=10_000, transform=None, stat="mean"):
+    """95% percentile interval over units of the mean or the median (`stat`), or of `transform` of the median; the
+    transform is applied to each bootstrap sample before the quantiles (Astra, prereg review)."""
     v = np.asarray([x for x in values if x is not None and np.isfinite(x)], float)
     if len(v) < 2:
         return None
     rng = np.random.default_rng(seed)
-    if transform is None:
-        m = [v[rng.integers(0, len(v), len(v))].mean() for _ in range(resamples)]
-    else:
-        m = [transform(float(np.median(v[rng.integers(0, len(v), len(v))]))) for _ in range(resamples)]
+    if transform is not None:
+        stat = "median"
+    f = np.median if stat == "median" else np.mean
+    m = [float(f(v[rng.integers(0, len(v), len(v))])) for _ in range(resamples)]
+    if transform is not None:
+        m = [transform(x) for x in m]
     return [float(np.quantile(m, 0.025)), float(np.quantile(m, 0.975))]
 
 
@@ -283,7 +290,8 @@ def build(doc: dict, names: dict, load, registered: dict, minimum: dict, effect_
         q_a["n2_interval_95"] = genome_ci(
             [np.abs(al["final"]).astype(float), np.abs(al["steady"]).astype(float), np.abs(ag["final"]).astype(float),
              np.abs(ag["steady"]).astype(float)],
-            lambda fl, sl, fg, sg: fg.mean() / sg.mean() - fl.mean() / sl.mean(), B["genomes_seed"], B["resamples"])
+            lambda fl, sl, fg, sg: (fg.mean() / sg.mean() - fl.mean() / sl.mean())
+            if min(sl.mean(), sg.mean()) >= floor else None, B["genomes_seed"], B["resamples"])
     q_a["ensemble_median_change"] = {e: (float(np.median(v)) if (v := [x for x in [dp4(units.get(f"graph/{g}/long"),
                                                                                       units.get(f"graph/{g}/gaps"))
                                                                                   for g in names[e]]
@@ -298,13 +306,16 @@ def build(doc: dict, names: dict, load, registered: dict, minimum: dict, effect_
     pv = [units.get(f"perm/{s}") for s in perms]
     pv_valid = [u for u in pv if u is not None and u["valid"]]
     q_c = {"planned": len(perms), "measured": sum(u is not None for u in pv), "valid": len(pv_valid)}
+    if ref is not None and ref["valid"]:  # the estimates are reported whether or not the question is complete
+        a0 = load("qb/0/intact")
+        q_c.update({"n2_response": ref["denominator"],
+                    "n2_response_interval_95": genome_ci([np.abs(a0["steady"]).astype(float)], lambda s: s.mean(),
+                                                         B["genomes_seed"], B["resamples"])})
+    if pv_valid:
+        q_c["permutations_response_median"] = float(np.median([u["denominator"] for u in pv_valid]))
     if ref is not None and ref["valid"] and len(pv_valid) >= minimum["permutations"]:
         r_c = mc.rank_p(np.array([u["denominator"] for u in pv_valid]), ref["denominator"], at_or_below=False)
-        a0 = load("qb/0/intact")
-        q_c.update({"per": r_c, "complete": True, "p": r_c["p"], "n2_response": ref["denominator"],
-                    "n2_response_interval_95": genome_ci([np.abs(a0["steady"]).astype(float)], lambda s: s.mean(),
-                                                         B["genomes_seed"], B["resamples"]),
-                    "permutations_response_median": float(np.median([u["denominator"] for u in pv_valid]))})
+        q_c.update({"per": r_c, "complete": True, "p": r_c["p"]})
     else:
         q_c.update({"complete": False, "p": None, "reason": "N2's reference invalid or fewer than the minimum of "
                                                              "valid permutations"})
@@ -399,7 +410,7 @@ def build(doc: dict, names: dict, load, registered: dict, minimum: dict, effect_
                     cuts[g] = 1 - u["denominator"] / base["denominator"]
             v = list(cuts.values())
             per_e[e] = {"graphs": len(v), "cuts": cuts, "median_cut": float(np.median(v)) if v else None,
-                        "mean_cut_95": _boot_ci(v, B["graphs_seed"], B["resamples"]), "N2_cut": n2c,
+                        "median_cut_95": _boot_ci(v, B["graphs_seed"], B["resamples"], stat="median"), "N2_cut": n2c,
                         "graphs_at_or_above_N2": None if n2c is None else int(sum(c >= n2c for c in v))}
         nulls[cond] = per_e
     desc["null-graph deletions"] = nulls

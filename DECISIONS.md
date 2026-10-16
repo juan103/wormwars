@@ -8954,3 +8954,32 @@ were strengthened):
   "build"); the genome intervals took the tick axis for the genome axis on the retention curve. That was silent in the
   synthetic test, where genomes outnumber ticks; a test now pins the axis and fails on the old code.
 **Next:** a confirmation pass by both on draft 2 and the code; then binding.
+
+
+## D291 — The confirmation pass on 03mc's draft 2: Fable "bind", Astra five findings; draft 3 and the fixes
+
+Astra 6 and Fable 5.1 at "high" on 8b77b57 (run 20261016-032746; `runs/consult-d290-log.txt` stays local). Fable:
+"bind", every draft-1 finding checked fixed, small items. Astra: "fix first", five findings, each reproduced in memory.
+Every finding was checked and taken; each new check was sabotaged once (eight, all caught after one test was
+strengthened twice):
+- **The check was not tied to the run's inputs and environment** (Astra). The measurement inputs (03's stimulus bank,
+  the remaps) are now under the clean-tree check. The repeat record carries the inputs' digest, and the run compares
+  it, the environment (Python, NumPy, PyTorch, CUDA, GPU, connectome cache) of both check records, and the repeat
+  record's clean flag.
+- **The report did not validate the measurements** (Astra: 25 smoke units' arrays were never checked). Before any
+  statistic, `validate_measurements` checks the binding, the registered settings, the full plan, the inputs, every
+  attempt's code and clean flag, and every unit's array hash. A run stopped at the empty deletion stays reportable.
+- **The null-deletion interval was of the mean** (both); it is now the median's, as §7 says. The first test could not
+  tell the two apart (two, then three graphs give equal intervals); it now uses five skewed graphs and asserts that
+  they separate the statistics.
+- **Withheld questions dropped their counts and estimates** (Astra): counts are computed before completeness, Q-B
+  reports planned, measured and valid batches, and Q-C reports N2's response and interval whether or not it is
+  complete.
+- **"Never overwrites a report"** (Astra): a report path is now created exclusively (`report.json`, then numbered
+  time-stamped names).
+- **Fable's items:** the controls path had never run (the synthetic set now has the eight control pairs, and the smoke
+  screen is those pairs); the reference arrays are checked before the one-shot check's marker; Q-A's genome interval
+  holds each resample to the floor, as Q-D's does; the README's status. The smoke run is repeated on the committed code
+  before binding (Fable).
+**Next:** commit; the smoke run on the committed code; a short confirmation pass by both on draft 3, since binding
+freezes the text and the build after it draws the fresh graphs; then binding.
