@@ -9083,3 +9083,17 @@ no orphan arrays. All 2 336 registered units were measured and all are valid. Th
 build, check and run) stands at 7.73 of 10 hours. `measurements.json` is committed (the per-unit records and array
 hashes); the arrays stay local in `runs/p4mc/arrays`. Nothing has been read from the measurements yet.
 **Next:** `p4mc.py report`, then RESULTS.md and the review by both.
+
+
+## D298 — 03mc's report: all four primaries pass under Holm; P4 replicates a third time
+
+`scripts/p4mc.py report` at 79728d8 (clean, pushed), 2026-10-16. It validated `measurements.json` (binding,
+settings, plan, inputs, attempt code, all 2 336 units' array hashes) before any statistic. `report.json` is
+committed as the runner wrote it; its registered sentences:
+- **Third replication of P4:** "distinctive relative to every ensemble" (N2 0.926; max rank p 0.023, SH-route).
+- **Q-A** p 0.0078, **Q-B** p 0.0113, **Q-C** p 0.0039, **Q-D** p 0.0233; Holm-adjusted 0.023, 0.023, 0.016,
+  0.023: all four pass at the familywise 0.05.
+- **Q-E (pre-tanh):** "P4's distinctiveness persists on the pre-tanh read-out".
+- **N2's gaps-off P4:** "not distinctive" (rank gate fails against SH-route, SH-class, SH-mirror; margin gate against
+  SH-mirror).
+**Next:** RESULTS.md from `report.json`, re-derived claim by claim, then the review by both.
