@@ -9143,3 +9143,24 @@ The README's experiment table gains 03mc's row; 03a's row, "next on the roadmap"
 questions and the credits name 03mc. The roadmap's status section gains a 16 October entry, and its 03m and Track B
 passages are annotated, dated. Then main is fast-forwarded to roadmap, with the working-branch banner removed on
 main only, as before. Consensus: both reviewers "fix then publish" (D300); the owner is informed after.
+
+## D302 — 03a's design v4: a six-neuron proof of concept on Task N with one nose, for review
+
+The owner agreed to start 03a's design round (2026-10-16, "Sure"). `experiments/03a-self-consistency/DESIGN.md` v4
+replaces draft v3.2 as the design going forward; `DRAFT.md` stays as the record. Main choices, each an open question
+for the reviewers:
+- **Task:** Task N (E1, 04a, E2) with `food_sensing = "mono"`. E1's tuned controllers give a scripted memory gap in
+  this world (memory on the mean 2.16, level kinesis 1.03, best blind 0.66; E1 RESULTS), re-measured in the mono
+  world before anything is built. One wey and 300 ticks, at a measured 419-429 episodes per second in 8-run lockstep
+  batches (04a, E2, E4s-1).
+- **The 02b risk:** search all of X's connections, interface candidates included, with X's true counts; recovery
+  scored over the whole pool and separately for interface and non-interface candidates.
+- **Panel:** 3 high, 2 medium, 1 low by deletion drop on target-selection worlds (D094), one seeded member per pair.
+- **Arms:** MIP (3 intact N2 brains) and NIP (3 per target); the draft's searches and attributes, with 16 search
+  worlds per state and 512 final-evaluation worlds.
+- **Null arm:** SH-mirror, 3 graphs, descriptive, first to be cut. No-task control at no GPU cost. The
+  mismatched-task control and ordinary SH are dropped, stated.
+- **Readings:** per-target enrichment (12 tests, Holm) and a registered expansion reading for D094's "imprinting
+  effect".
+- **Budget:** about 92 million episodes, about 61 GPU-hours at 420 per second (about 26 at the wide-batch rate), with
+  a cut order that never touches the six neurons, the arms, the references or N2's brains.

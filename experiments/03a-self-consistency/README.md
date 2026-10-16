@@ -8,6 +8,9 @@
 >
 > *Updated 2026-09-29 (D094): now planned as a six-neuron proof of concept capped at 72 GPU-hours, after a
 > confirmatory study of 03m's leads; not started.*
+>
+> *Updated 2026-10-16 (D302): 03mc has run; design v4 of the proof of concept ([`DESIGN.md`](DESIGN.md)) is under
+> review. Nothing specific to 03a has been coded or run.*
 
 **Status:** draft v3.2 (2026-09-25), not run, not scheduled (D062). *Updated 2026-09-29:* it becomes a six-neuron proof of concept capped at 72 GPU-hours (the owner, D094), planned in the biology track after a confirmatory study of 03m's leads · **Run:** none · **Commit:**
 none · **Compute:** none spent. The draft as written is estimated at about 31 million genome
