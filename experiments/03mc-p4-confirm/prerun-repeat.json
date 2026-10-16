@@ -1,0 +1,32 @@
+{
+ "what": "bitwise repeat of the probe at the registered composition, old inputs",
+ "device": "cuda",
+ "genomes": 2048,
+ "identical": {
+  "intact": true,
+  "intact again": true,
+  "empty deletion": true
+ },
+ "passed": true,
+ "provenance": {
+  "git_commit": "afa39a1185f45b096f13a250b95bfa234d7bd98d",
+  "branch": "roadmap",
+  "dirty": false,
+  "python": "3.13.3",
+  "numpy": "2.4.4",
+  "torch": "2.12.0+cu130",
+  "cuda": "13.0",
+  "gpu": "NVIDIA GeForce RTX 5080",
+  "connectome_cache_sha256": "43b87aa172a0042b9dce734b15bdf1c87efe3a33ac1cc0d9cd03255a60c96d4a",
+  "connectome_source_sha256": "1f4fdbf84746b69b49a8da0816f52787860ce349b638dce37924ba80f90c70c9"
+ },
+ "bound_commit": "4dff311678af12a8dfe6c7b8dacd3665552e3173",
+ "inputs": {
+  "experiments\\03mc-p4-confirm\\ensembles.json": "9eed3bd29eacd00a748e24e85736307ca1b8bc91c4f544b01cfbb0f943e9c9aa",
+  "experiments\\03mc-p4-confirm\\graphs_manifest.json": "24a379d0eee75de2ea0607b03ab86db8b33e11cc1de25a35f2bcd21ae811e4e6",
+  "experiments\\03mc-p4-confirm\\graphs_content_manifest.json": "a4033a61b444ad162c2674d8de4b6e6f75e868f479d1cdaebfeb4b10cd726bee",
+  "experiments\\03-generation0\\pilot.json": "98d098af28b16a4e1f1711a47a28b33e7e893cd9a76c48002fbbb41491b85b13",
+  "experiments\\02-screening\\remaps.json": "7082f0ef76ab5b11653ab8fba2df0543ceb73126cea4540167229b9dbd2e7a24",
+  "configs\\interface.yaml": "652e03a5ab8c40e53fe4c3d28b6d74a794dd17ee4fa8b6a2f45bae92dc0ebb61"
+ }
+}

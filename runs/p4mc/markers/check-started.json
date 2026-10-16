@@ -1,0 +1,18 @@
+{
+ "stage": "check",
+ "provenance": {
+  "git_commit": "afa39a1185f45b096f13a250b95bfa234d7bd98d",
+  "branch": "roadmap",
+  "dirty": false,
+  "python": "3.13.3",
+  "numpy": "2.4.4",
+  "torch": "2.12.0+cu130",
+  "cuda": "13.0",
+  "gpu": "NVIDIA GeForce RTX 5080",
+  "connectome_cache_sha256": "43b87aa172a0042b9dce734b15bdf1c87efe3a33ac1cc0d9cd03255a60c96d4a",
+  "connectome_source_sha256": "1f4fdbf84746b69b49a8da0816f52787860ce349b638dce37924ba80f90c70c9",
+  "owner_word": "Start 03mc (owner, 2026-10-16)",
+  "bound_commit": "4dff311678af12a8dfe6c7b8dacd3665552e3173"
+ },
+ "started_utc": "2026-10-16T05:40:02Z"
+}

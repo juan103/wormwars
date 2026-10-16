@@ -9059,3 +9059,18 @@ unchanged since 4dff311, pinned environment, clean and pushed).
 hours; cap 10).
 *Correction (2026-10-16), D295's wording kept above:* "0.27 counted in all" should read "0.262 counted in all"; the
 accounting aggregate (`runs/p4mc/compute.json`, three attempts: the runner's two steps and the builder) gives 0.262.
+
+
+## D296 — 03mc's pre-run check passed on the GPU
+
+The owner's word, recorded verbatim in the start marker: "Start 03mc" (2026-10-16). `scripts/p4mc.py check --device
+cuda` ran at afa39a1 (clean; the code and inputs are unchanged since the bound commit 4dff311), 0.24 hours counted.
+- **The repeat check** (`prerun-repeat.json`): the empty deletion, probed twice at the registered composition, agrees
+  bit for bit on the ramp-end difference and the steady contrast. Passed.
+- **The equivalence check** on old inputs (`prerun-check.json`, the check set against 03m's one-row references, whose
+  pinned hashes matched): every quantity within its declared tolerance, all ticks match, and no label changes. The
+  worst differences: P4 terms 2.0e-7, pre-tanh terms 2.1e-7, share30 4.1e-7, steady contrast 3.2e-6 (SH-10001).
+  Passed.
+- **Committed:** both records and the start marker (`runs/p4mc/markers/check-started.json`). The cap clock
+  (`runs/p4mc/compute.json`, build and check) stands at 0.51 of 10 hours.
+**Next:** the formal run (about 7.9 GPU-hours), with nothing else running on the machine.
