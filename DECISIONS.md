@@ -9057,3 +9057,5 @@ unchanged since 4dff311, pinned environment, clean and pushed).
   record.
 **Next:** the owner's word for the GPU stages: the check (about 0.25 hours on old inputs), then the run (about 7.9
 hours; cap 10).
+*Correction (2026-10-16), D295's wording kept above:* "0.27 counted in all" should read "0.262 counted in all"; the
+accounting aggregate (`runs/p4mc/compute.json`, three attempts: the runner's two steps and the builder) gives 0.262.
