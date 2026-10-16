@@ -9135,3 +9135,11 @@ before it was taken:
 *Correction (2026-10-16), D299's wording kept above:* "every secondary test and the descriptives" overstated draft 1,
 which omitted the null-graph deletions and gave several registered items only as ranges.
 **Next:** publication on main (consensus "fix then publish"; the owner is informed after).
+
+
+## D301 — 03mc in the README and the roadmap; publication on main
+
+The README's experiment table gains 03mc's row; 03a's row, "next on the roadmap", the 03 narrative, the open
+questions and the credits name 03mc. The roadmap's status section gains a 16 October entry, and its 03m and Track B
+passages are annotated, dated. Then main is fast-forwarded to roadmap, with the working-branch banner removed on
+main only, as before. Consensus: both reviewers "fix then publish" (D300); the owner is informed after.

@@ -2,14 +2,20 @@
 
 *27 September 2026. Replaces v2. Written from roadmap v2, Astra 6's review of v2, and Claude Code's status report of the same day. A local v2.2 exists on the `roadmap` branch and was not seen when this version was written, so merge anything it adds. (Merged: see "Carried over from v2.2" below. Four factual corrections were made on installation; they are listed in D062.) This is a living document, not a pre-registration. When a result changes it, the change is recorded here with the reason.*
 
-## Status, 1-15 October 2026 (updates the section below; that section's later edits are recorded in DECISIONS.md)
+## Status, 1-16 October 2026 (updates the section below; that section's later edits are recorded in DECISIONS.md)
+
+**16 October 2026** (D285-D300): **Track B started with 03mc,** the confirmatory study of 03m's leads
+(`experiments/03mc-p4-confirm/`). Pre-registered and pushed before its run; 7.73 of 10 GPU-hours. **All four
+primaries pass under Holm** (gap junctions, RIA and AIY, weight placement, relaxation), and P4 replicates a third
+time. Whether any deletion removes the elevated P4 stays open. **Next in Track B: 03a's six-neuron proof of
+concept** (72 GPU-hours, D094), which needs a design round and the owner's word for the GPU.
 
 **Where things stand, 15 October 2026** (D282):
 - **Track E has run its schedule through E4.** Everything after E4 is direction, not schedule (the tripwire,
   below). In E4's diagnostic task, evolution recruited the transfer between the two modules (D280). The main maze
   task's formal run was dropped (D258).
 - **Track B is next:** a confirmatory study of 03m's leads, then 03a's six-neuron proof of concept. Neither has
-  started. Both need the GPU and wait for the owner's word.
+  started. Both need the GPU and wait for the owner's word. *(16 October: 03mc ran and passed; see above.)*
 - **Waiting for the owner:** the items carried over from v2.2 (at the end): the plasticity experiment, task
   specificity, and the owner's question about worm-like tasks under worm-like plasticity.
 - **What v3 planned that has not run** (checked against DECISIONS.md, 2026-10-15; later amendments are marked):
@@ -274,7 +280,7 @@
   (whose deletion cuts the history signal in proportion); most weight permutations lower N2's P4 below
   the shuffles' 95th percentile, and its lead narrows with gap junctions off; no tested single or
   bilateral-pair deletion removed it. A confirmatory study is possible, not planned. *(2026-10-15: it is next in
-  Track B, as ordered after D094; D282.)*
+  Track B, as ordered after D094; D282. 2026-10-16: it ran as 03mc, and all four of its primaries pass; D300.)*
 - **Documentation for outsiders:** every experiment folder now has a README with its question,
   result, caveats and exact commands to rerun it, and [`AGENTS.md`](AGENTS.md) describes the
   repository and its rules. Others are welcome to take any open question here, and to get there
@@ -547,6 +553,10 @@ The first social experiments use colonies of clones: one genome for every wey, e
   - *Added 2026-09-29:* an exploratory first look, **03m**, has run (D113, D114,
     `experiments/03m-p4-mechanism/`). Its leads, and what a confirmatory study would register, are in
     its RESULTS.md.
+  - *Added 2026-10-16:* the confirmatory study, **03mc**, has run (D294-D300,
+    `experiments/03mc-p4-confirm/`): on fresh draws, gap junctions, RIA and AIY, weight placement and slower
+    relaxation all pass as pre-registered, and P4 replicates a third time. Inputs other than food, and whether any
+    deletion removes the elevated P4, remain open.
 - **If it does not replicate**, it is reported as a borderline result that did not replicate. The memory thread leaves the plan.
 - **Either way**, the five validated null ensembles become the standard controls for later experiments.
 
