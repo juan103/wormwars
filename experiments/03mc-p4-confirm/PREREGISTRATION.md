@@ -1,9 +1,11 @@
 # 03mc: pre-registration of a confirmatory test of 03m's leads on P4
 
-**Status:** draft 4, 2026-10-16. Draft 1 (`c0f1020`, D289) was reviewed with the code by Astra 6 and Fable 5.1
+**Status:** the text to bind, 2026-10-16 (draft 4, with the code changes of D293). Draft 1 (`c0f1020`, D289) was reviewed with the code by Astra 6 and Fable 5.1
 (run 20261016-023227): both "fix first"; every finding was taken (D290). Draft 2 (`8b77b57`): Fable "bind", Astra
 "fix first" for five findings (run 20261016-032746); every finding was taken (D291). Draft 3 (`e136fe3`): Fable
-"bind", Astra "fix first" for two (run 20261016-034232); both are taken, with Fable's small items (D292). It becomes
+"bind", Astra "fix first" for two (run 20261016-034232); both were taken, with Fable's small items (D292). Draft 4
+(`e728abe`): Fable "bind"; Astra one reporting error in a descriptive note (run 20261016-035222); fixed in code, no
+change to this text (D293). It becomes
 binding at the commit recorded in `bound.json` (committed after binding, since a commit cannot name itself). After
 binding this text is never changed. Amendments are appended below it, dated, and the runner refuses any other change
 (`scripts/p4mc.py`, `prereg_append_only`).

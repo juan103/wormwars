@@ -9006,3 +9006,21 @@ seen failing):
   - the smoke run now includes a resume that continues from a partial record.
 **Next:** commit, the smoke run on the committed code with a partial resume, then binding (Fable "bind" on drafts 2 and
 3; Astra's two narrow findings fixed and tested).
+
+
+## D293 — The narrow pass on draft 4: Fable "bind", Astra one note; the text to bind
+
+Astra 6 and Fable 5.1 at "high" on the diff e136fe3..e728abe (run 20261016-035222; `runs/consult-d292-log.txt` stays
+local). Fable: "bind", every item checked. Astra: "fix first" for one error this diff introduced; both draft-3 findings
+confirmed fixed (simulated committed input changes refused; 63 of 63 array hashes; the resume measured 588 800 neural
+updates). Both taken:
+- **A partial double deletion's descriptive note said "the question is withheld"** (Astra), though a missing double
+  deletion does not withhold Q-B. The note now states which applies; a regression test was seen failing first.
+- **The measurement inputs are checked against the bound commit itself,** not the code commit (Fable), as the text
+  says; the test now uses distinct commits.
+- **The orphan-array branch** had run in neither a test nor a smoke run (Fable). The smoke run below removes five units'
+  records but keeps their arrays, so the resume must replace them and say so.
+The pre-registration's text needs no change from these; its status line names it as the text to bind.
+**Consensus:** Fable "bind" on drafts 2, 3 and 4; every Astra finding fixed and tested, the last one in code with no
+change to the text. **Next:** the smoke run with the orphan branch; then binding (this commit, recorded in
+`bound.json`), the build, and the owner's word before the GPU stages.

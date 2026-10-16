@@ -492,15 +492,17 @@ def test_the_measurement_inputs_are_pinned_to_the_binding(r, monkeypatch):
     they are now compared against the code commit like the code."""
     seen = []
     monkeypatch.setattr(r, "SMOKE", False)
-    monkeypatch.setattr(r, "bound", lambda: {"commit": "aaaaaaa", "code_commit": "aaaaaaa"})
+    monkeypatch.setattr(r, "bound", lambda: {"commit": "aaaaaaa", "code_commit": "bbbbbbb"})
+    monkeypatch.setattr(r, "check_code_commit_named", lambda now, bd: None)
     monkeypatch.setattr(r.subprocess, "run", lambda *a, **k: r.subprocess.CompletedProcess(a, 0))
     monkeypatch.setattr(r, "prereg_versions", lambda c: [b"x\n"])
     monkeypatch.setattr(r, "check_prereg_chain", lambda v, n: None)
-    monkeypatch.setattr(r.reg, "require_same_code", lambda c, paths: seen.append(list(paths)))
+    monkeypatch.setattr(r.reg, "require_same_code", lambda c, paths: seen.append((c, list(paths))))
     monkeypatch.setattr(r.reg, "require_pins", lambda p: None)
     monkeypatch.setattr(r.reg, "require_pushed", lambda p: None)
     r.guards(type("A", (), {"device": "cpu"})(), {}, "build")
-    assert any(set(r.MEASUREMENT_INPUTS) <= set(p) for p in seen)
+    # the inputs against the bound commit itself, the code against the code commit (Fable, review of draft 4)
+    assert ("aaaaaaa", r.MEASUREMENT_INPUTS) in seen and ("bbbbbbb", r.CODE) in seen
 
 
 def test_an_incomplete_qb_still_reports_its_available_paired_batches(r):
@@ -540,3 +542,17 @@ def test_the_report_refuses_units_outside_the_plan(r, tmp_path, monkeypatch):
             r.validate_measurements(doc, None, units, {})
     finally:
         r.use_smoke(False)
+
+
+def test_a_partial_double_deletion_does_not_say_qb_is_withheld(r):
+    """Astra (review of draft 4): the descriptive note always said "the question is withheld", though a missing
+    double deletion does not withhold Q-B."""
+    from wormwars.exp03 import mc_report
+    doc, names, arrays = synthetic(n2_gap_change=0.0, n2_share=0.5)
+    del doc["units"]["qb/1/both"]
+    rep = mc_report.build(doc, names, arrays.__getitem__, registered(r), {"graphs": 6, "permutations": 4}, effect_boot=20)
+    note = rep["Q-B"]["per_deletion"]["both"]["descriptive_available_batches"]["note"]
+    assert rep["Q-B"]["p"] is not None and "Q-B is withheld" not in note and "not withheld" in note
+    del doc["units"]["qb/1/AIY"]
+    rep = mc_report.build(doc, names, arrays.__getitem__, registered(r), {"graphs": 6, "permutations": 4}, effect_boot=20)
+    assert "Q-B is withheld" in rep["Q-B"]["per_deletion"]["AIY"]["descriptive_available_batches"]["note"]

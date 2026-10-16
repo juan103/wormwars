@@ -193,7 +193,8 @@ def guards(args, prov: dict, stage: str) -> str | None:
     now = (ROOT / PREREG).read_bytes()
     check_prereg_chain(prereg_versions(bd["commit"]), now)
     check_code_commit_named(now, bd)
-    reg.require_same_code(bd["code_commit"], [*CODE, *MEASUREMENT_INPUTS])  # the inputs are bound too (Astra)
+    reg.require_same_code(bd["code_commit"], CODE)
+    reg.require_same_code(bd["commit"], MEASUREMENT_INPUTS)  # the inputs are bound to the binding itself (Astra, Fable)
     if stage in ("check", "run"):
         reg.require_formal(args.device, prov)
     else:  # the build (CPU) and the report: the pinned environment, committed and pushed

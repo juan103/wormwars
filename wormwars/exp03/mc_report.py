@@ -148,7 +148,9 @@ def question_b(units, load, registered, batches) -> dict:
                 a = [np.concatenate([load(f"qb/{b}/{k}")[q] for b in paired]).astype(np.float64)
                      for k, q in (("intact", "final"), ("intact", "steady"), (cond, "final"), (cond, "steady"))]
                 d = mc.paired_bootstrap(*a, resamples=B["resamples"], seed=B["genomes_seed"])
-                desc = {"note": "descriptive, from the batches measured in both conditions; the question is withheld",
+                why = ("the double deletion is descriptive, so Q-B is not withheld for it" if cond == "both"
+                       else "Q-B is withheld")
+                desc = {"note": f"descriptive, from the batches measured in both conditions; {why}",
                         "batches": paired, **d}
             out[cond] = {"complete": False, **counts, "descriptive_available_batches": desc}
             complete = complete and cond == "both"
