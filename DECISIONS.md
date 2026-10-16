@@ -9097,3 +9097,13 @@ committed as the runner wrote it; its registered sentences:
 - **N2's gaps-off P4:** "not distinctive" (rank gate fails against SH-route, SH-class, SH-mirror; margin gate against
   SH-mirror).
 **Next:** RESULTS.md from `report.json`, re-derived claim by claim, then the review by both.
+
+
+## D299 — 03mc's RESULTS.md, draft 1, for review
+
+`experiments/03mc-p4-confirm/RESULTS.md` reports `report.json` in the registered wording: the four primaries'
+sentences, the replication and Q-E verdicts, every secondary test and the descriptives. Every claim was re-derived
+from `report.json` before committing; the check caught and fixed four wordings (the controls' p values had been read
+from a rounded print, the slope range, the eligibility threshold, and "raises P4 everywhere", now "in N2 and in the
+typical null graph"). The README's status now points to it. **Next:** a review by Astra 6 and Fable 5.1, then
+publication on main whatever the outcome.

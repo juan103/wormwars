@@ -1,7 +1,9 @@
 # 03mc: a confirmatory test of 03m's leads on P4
 
-**Status:** pre-registration draft 3 (2026-10-16), reviewed with its code (D289-D291). Nothing fresh has been drawn or
-run.
+**Status:** run and reported (2026-10-16); the results await review by both reviewers. **All four primary questions
+pass under Holm at a familywise α of 0.05, and P4 replicates a third time:** read [`RESULTS.md`](RESULTS.md). The
+pre-registration was bound at `4dff311` (D294) after four review rounds (D289-D293); the build, the pre-run check
+and the run are D295-D297, and the report D298.
 The design (`DESIGN.md`, v2.2) was agreed by Astra 6 and Fable 5.1 after three rounds (D285-D288).
 
 ## The question
@@ -22,7 +24,12 @@ It also replicates P4 a third time, and checks P4 on the read-out before its fin
 | File | What it is |
 |---|---|
 | [`DESIGN.md`](DESIGN.md) | The design, its reasons, and every review round's changes |
-| [`PREREGISTRATION.md`](PREREGISTRATION.md) | The rules: becomes binding at the commit in `bound.json` |
+| [`RESULTS.md`](RESULTS.md) | The results, in the wording fixed in advance |
+| [`PREREGISTRATION.md`](PREREGISTRATION.md) | The rules, binding at the commit in `bound.json` |
+| `report.json` | The registered statistics, written by `p4mc.py report` |
+| `measurements.json` | Every unit's record and its arrays' sha256 (the arrays stay local) |
+| `build.json`, `ensembles.json`, `graphs_manifest.json`, `graphs_content_manifest.json` | The build's records |
+| `prerun-check.json`, `prerun-repeat.json` | The pre-run check on old inputs |
 | `power.py`, `power.json` | Model-based pass probabilities from 03m's data |
 | `equivalence.json`, `equivalence-check.json` | The two-row probe against one-row references, on old inputs |
 | [`../../scripts/p4mc.py`](../../scripts/p4mc.py) | The runner: build, check, run, report |
