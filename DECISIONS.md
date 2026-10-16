@@ -9024,3 +9024,16 @@ The pre-registration's text needs no change from these; its status line names it
 **Consensus:** Fable "bind" on drafts 2, 3 and 4; every Astra finding fixed and tested, the last one in code with no
 change to the text. **Next:** the smoke run with the orphan branch; then binding (this commit, recorded in
 `bound.json`), the build, and the owner's word before the GPU stages.
+
+
+## D294 — 03mc bound at 4dff311
+
+The pre-registration (`experiments/03mc-p4-confirm/PREREGISTRATION.md`, the text of D293) and its code are bound at
+`4dff311678af12a8dfe6c7b8dacd3665552e3173`, pushed before this record. `bound.json` names that commit; the runner reads
+it and refuses any stage whose code or measurement inputs differ from it, or whose pre-registration is not the bound
+text plus appended amendments.
+- **The smoke run on the bound code** (runs/p4mc-smoke, CPU, its own salt and seeds) exercised every stage. It
+  included a resume that re-measured units whose records and arrays were removed, and one that replaced orphan arrays
+  whose records alone were removed, listing them. Every attempt records 4dff311, clean.
+- **Nothing fresh has been drawn.** The next stage is the CPU build of the 640 graphs (`p4mc.py build`, about 0.4
+  hours), counted in the cap. The GPU stages (check, run) wait for the owner's word.
