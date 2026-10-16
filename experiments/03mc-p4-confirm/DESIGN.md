@@ -483,6 +483,8 @@ sentence is not used, and RESULTS says first that the lead itself did not replic
   permutation. A unit begun under the cap runs to completion, so the overrun is at most one unit: about
   30 s for a measurement, under a minute for a graph's build (Astra). The report runs after the cap's
   last check and simulates nothing.
+  *(2026-10-16, D290: superseded by PREREGISTRATION.md §4. 03's builder queues every graph in one pool, so the
+  build is one unit, checked before it starts, and its overrun can be the whole build, about 0.4 hours on the CPU.)*
 - **A stop is administrative, not an observation:** what is incomplete is withheld and reported. The
   four primaries keep p = 1 for anything unmeasured.
 - **No continuation depends on an outcome:** the order is fixed, and nothing is added or rerun

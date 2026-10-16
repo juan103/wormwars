@@ -174,3 +174,12 @@ def test_the_cut_difference_is_paired_and_signed():
     assert d["se"] < 1e-9 and d["p"] == 0.0
     flipped = mc.cut_difference(s, 0.9 * s, 0.4 * s, resamples=300, seed=7)
     assert flipped["difference"] == pytest.approx(-0.5) and flipped["p"] == 1.0
+
+
+def test_a_zero_numerator_leaves_the_numerator_cut_undefined_not_a_crash():
+    """Astra (prereg review): a valid P4 of zero (no history difference) made the numerator's cut divide by zero."""
+    n = 50
+    s = np.ones(n)
+    f = np.zeros(n)
+    b = mc.paired_bootstrap(f, s, f, 0.5 * s, resamples=20, seed=0)
+    assert b["valid"] and b["numerator_cut"] is None and b["cut"] == pytest.approx(0.5)

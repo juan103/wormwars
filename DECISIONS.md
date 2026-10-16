@@ -8906,3 +8906,51 @@ own salt, seeds and graphs) and the formal seed audit, which hashes planned name
   files). It now skips files without a `meta` entry, which genome files always carry.
 **Next:** the pre-registration and the code to both reviewers; then binding, the build, and the owner's word before
 the GPU stages.
+
+
+## D290 — 03mc's pre-registration draft 1 and its code reviewed by both ("fix first"); draft 2 and the fixes
+
+Astra 6 and Fable 5.1 at "high" on c0f1020 (run 20261016-023227; `runs/consult-d289-log.txt` stays local). Both "fix
+first". Both found the statistics and the plan consistent with design v2.2 on inspection; Astra confirmed the formal
+seed audit (2 016 new derived seeds, none among 4 530 old) and all 58 smoke array hashes. Every finding was checked and
+taken; the code changes were tested, and each new guard was sabotaged once (twelve sabotages, all caught after two tests
+were strengthened):
+- **A fresh draw before binding was possible** (both): `exp03.py build --instance 03mc` had no guard, and the runner's
+  build skipped the push check. `exp03.py` now refuses every 03mc command except the rebuild from the committed record
+  and a build carrying the bound commit as a token, which only `p4mc.py build` passes after its guards (the rule is a
+  function, tested without ever running the real build). The build now requires the pinned environment, a clean
+  tree and a pushed HEAD (`registration.require_pushed`, factored out of `require_formal`, whose behaviour is
+  unchanged).
+- **The pre-run gate accepted any `{"passed": true}`** (Astra). The run now admits a check only if both records passed
+  at the registered set, device and genome count, with the pinned references, on committed code equal to the running
+  code, with its start marker. The build is admitted only under the same binding with its records unchanged. Every
+  stage's inputs must be committed and pushed.
+- **The empty-deletion stop did not survive a resume** (both; Astra reproduced it). A resume now refuses after that
+  outcome, or if the recorded empty and intact terms differ. It also compares the full plan (not only ids), the
+  registered settings and the smoke identity, and checks every completed unit's arrays against their hash. The run
+  takes an exclusive lock and records any array file it replaces after an interruption.
+- **The repeat check** (Fable): bitwise equality on CUDA was only assumed. The check now runs 03's N2 genomes intact
+  twice and the empty deletion once at the registered composition and requires identical bits (`prerun-repeat.json`).
+- **Later amendments were not protected** (Astra): every committed version of the pre-registration since binding must
+  grow from the last, and a moved `code_commit` must be named by an amendment.
+- **The report** (both): it is guarded like the other stages without the GPU, records its provenance, loads arrays only
+  with their recorded hash, and never overwrites a report.
+  - Q-A's "lead narrows" sentence is now computed from the ensemble medians, with its numbers, and a pass with a lead
+    that did not narrow everywhere says so (Fable).
+  - Per-question counts are now planned, measured and valid; N2's estimates carry genome intervals.
+  - The single-signal records are kept in full, and Q-E and the replication have their registered wordings, including
+    03r's "reversed".
+  - The descriptives add the pair screen's numerator cuts with paired intervals, each null graph's cut, the
+    retention fractions and both slopes.
+  - Floors apply to every descriptive reference, and the kept-share interval transforms each resample (Astra).
+- **Smaller:** `--record` takes a bare new file name only, so a smoke check can never reach a formal record (Astra
+  showed an absolute path or ".." could). A zero intact numerator leaves the numerator's cut undefined instead of
+  crashing (Astra).
+- **The pre-registration, draft 2:** the build is one cap unit, a change from design v2.2's per-graph unit, now
+  stated (Astra). It also defines the response, the valid permutation, the settling threshold, per-question
+  completeness (the double deletion does not withhold Q-B), the stage environments, the repeat check, the check's
+  single run, the Holm step-down note, 03r's four outcomes, and the intervals reported.
+- **Found by the smoke run after the fixes, and fixed:** the wrapper's accounting category ("measure", not an unknown
+  "build"); the genome intervals took the tick axis for the genome axis on the retention curve. That was silent in the
+  synthetic test, where genomes outnumber ticks; a test now pins the axis and fails on the old code.
+**Next:** a confirmation pass by both on draft 2 and the code; then binding.

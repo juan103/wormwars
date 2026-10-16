@@ -78,7 +78,7 @@ def paired_bootstrap(f_int, s_int, f_del, s_del, resamples: int = 10_000, seed: 
     if not valid:  # the full-sample estimate is held to the floor too (Fable, review v2.1)
         return {"valid": False, "genomes": n, "numerator_intact": ni, "denominator_intact": di,
                 "numerator_deleted": nd, "denominator_deleted": dd}
-    est = {"valid": True, "cut": 1 - dd / di, "numerator_cut": 1 - nd / ni, "dP4": nd / dd - ni / di,
+    est = {"valid": True, "cut": 1 - dd / di, "numerator_cut": 1 - nd / ni if ni > 0 else None, "dP4": nd / dd - ni / di,
            "P4_intact": ni / di, "P4_deleted": nd / dd, "genomes": n}
     af, as_, bf, bs = (np.abs(np.asarray(x, dtype=np.float64)) for x in (f_int, s_int, f_del, s_del))
     rng = np.random.default_rng(seed)
@@ -90,10 +90,11 @@ def paired_bootstrap(f_int, s_int, f_del, s_del, resamples: int = 10_000, seed: 
             dropped += 1
             continue
         cuts.append(1 - b_d / a_d)
-        ncuts.append(1 - b_n / a_n)
+        if a_n > 0:  # undefined for a zero intact numerator (a valid P4 of 0; Astra, prereg review)
+            ncuts.append(1 - b_n / a_n)
         dps.append(b_n / b_d - a_n / a_d)
     q = lambda x, lo, hi: [float(np.quantile(x, lo)), float(np.quantile(x, hi))] if len(x) else [None, None]  # noqa: E731
-    est.update(cut_se=float(np.std(cuts)), numerator_cut_se=float(np.std(ncuts)), dP4_se=float(np.std(dps)),
+    est.update(cut_se=float(np.std(cuts)), numerator_cut_se=float(np.std(ncuts)) if ncuts else None, dP4_se=float(np.std(dps)),
                cut_q05_q95=q(cuts, 0.05, 0.95), dP4_q05_q95=q(dps, 0.05, 0.95),
                cut_q025_q975=q(cuts, 0.025, 0.975), numerator_cut_q025_q975=q(ncuts, 0.025, 0.975),
                dP4_q025_q975=q(dps, 0.025, 0.975), resamples=resamples, dropped=dropped, seed=seed)

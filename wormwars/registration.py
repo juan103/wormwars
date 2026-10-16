@@ -82,6 +82,12 @@ def require_formal(device: str, prov: dict, gpu: str = "RTX 5080") -> None:
     if gpu not in str(prov.get("gpu")):
         raise SystemExit(f"formal stages run on the registered GPU ({gpu}), not {prov.get('gpu')}")
     require_pins(prov)
+    require_pushed(prov)
+
+
+def require_pushed(prov: dict) -> None:
+    """A clean tree in the guarded files, and HEAD on its branch at origin (factored out of `require_formal` for
+    03mc's CPU build, D290; `require_formal`'s behaviour is unchanged)."""
     if prov["dirty"]:
         raise SystemExit("uncommitted changes in the guarded files: commit first")
     subprocess.run(["git", "fetch", "-q", "origin"], cwd=ROOT, check=True)

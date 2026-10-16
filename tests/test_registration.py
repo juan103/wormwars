@@ -126,3 +126,19 @@ def test_the_environment_check_names_what_differs():
     reg.require_same_env(was, dict(was))
     with pytest.raises(SystemExit, match="connectome_cache_sha256"):
         reg.require_same_env(was, {**was, "connectome_cache_sha256": "y"})
+
+
+def test_require_pushed_refuses_a_dirty_tree_and_an_unpushed_head(monkeypatch):
+    """03mc's CPU build (D290): the push check, factored out of `require_formal`, without the GPU checks."""
+    with pytest.raises(SystemExit, match="uncommitted"):
+        reg.require_pushed(_prov(dirty=True))
+    calls = []
+
+    def fake_run(cmd, cwd=None, check=False):
+        calls.append(cmd)
+        return subprocess.CompletedProcess(cmd, 1 if "merge-base" in cmd else 0)
+
+    monkeypatch.setattr(reg.subprocess, "run", fake_run)
+    with pytest.raises(SystemExit, match="not pushed"):
+        reg.require_pushed(_prov())
+    assert any("fetch" in c for c in calls)

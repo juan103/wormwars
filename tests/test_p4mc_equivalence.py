@@ -40,3 +40,13 @@ def test_the_label_gate_counts_every_genome_with_any_changed_label(q):
 def test_a_deviation_above_its_tolerance_fails(q):
     row = q.judge({"deviation": {"terms": 2e-5, "curve": 1e-3}, "label_changes": {"any": 0}})
     assert row["failed"] == ["terms"] and not row["passed"]
+
+
+def test_the_record_name_is_a_bare_new_file_in_the_output_folder(q, tmp_path):
+    assert q.record_path(tmp_path, "prerun-check.json") == tmp_path / "prerun-check.json"
+    for bad in ("../prerun-check.json", str(tmp_path.parent / "x.json"), "sub/x.json", "x.txt", ""):
+        with pytest.raises(SystemExit):
+            q.record_path(tmp_path, bad)
+    (tmp_path / "old.json").write_text("{}")
+    with pytest.raises(SystemExit):
+        q.record_path(tmp_path, "old.json")  # never overwritten, smoke runs included

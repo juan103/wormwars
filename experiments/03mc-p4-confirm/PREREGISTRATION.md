@@ -1,6 +1,7 @@
 # 03mc: pre-registration of a confirmatory test of 03m's leads on P4
 
-**Status:** draft 1, 2026-10-16, for review by Astra 6 and Fable 5.1 together with the runner's code. It becomes
+**Status:** draft 2, 2026-10-16. Draft 1 (`c0f1020`, D289) was reviewed with the code by Astra 6 and Fable 5.1
+(run 20261016-023227): both "fix first"; every finding is taken (D290). It becomes
 binding at the commit recorded in `bound.json` (committed after binding, since a commit cannot name itself). After
 binding this text is never changed. Amendments are appended below it, dated, and the runner refuses any other change
 (`scripts/p4mc.py`, `prereg_append_only`).
@@ -47,13 +48,15 @@ With fresh genomes, graphs and permutations, do 03m's leads hold?
 - the raw turn read-out.
 
 **P4** is the mean |rising − falling| at the ramp's end over the mean |steady contrast|, in float64. It is invalid if
-the denominator is below 10⁻⁴ or either term is not finite.
+the denominator is below 10⁻⁴ or either term is not finite. **The response** is P4's denominator, the mean |steady
+contrast|.
 
 **Per graph, two runs:**
 - **a long run:** P4, then the final input held for 300 ticks;
   - the difference recorded at ticks 0, 5 and every 10;
   - the pre-tanh terms;
-  - settling: the largest range of any neuron's state over each of the last 10 ticks, both rows;
+  - settling: the largest range of any neuron's state over each of the last 10 ticks, both rows; a genome is
+    settled if it is below 10⁻⁴;
   - the turn read-out neurons' mean tanh slope at the holds' and the ramp's end;
 - **a standard run** (5 ticks after the ramp) with every gap junction's weight set to zero.
 
@@ -82,7 +85,8 @@ the same floor.
     03r's (4-6 and every `_gseed(name) + 2`), 03m's (100-163) and the smoke runs';
   - every new graph's array content must differ from every other new graph's and from 03's and 03r's content
     manifests.
-- **Any failure stops the study before anything is measured;** it is reported and resolved only by an amendment.
+- **Any failure, of the audit, the content check or 03's validation rules, stops the study before anything is
+  measured;** it is reported and resolved only by an amendment.
 
 **Permutations:** 256, seeds 1 000-1 255. N2's chemical and gap magnitudes are each permuted within their type, on
 batch 0's genome draws (signs, biases and time constants unchanged).
@@ -112,6 +116,9 @@ check's tolerances; no exact repeat is claimed.
 **The cap: 10 hours,** counted by the accounting in `runs/p4mc/compute` (synchronised wall time) across every
 formal command and attempt: the build, the pre-run check, the run and any resume.
 - It is checked before the build and before every unit; a unit begun under the cap runs to completion.
+- **The build is one unit.** 03's builder queues every graph in one pool, so the build's overrun can be the whole
+  build, about 0.4 hours on the CPU. This replaces design v2.2's per-graph build unit (Astra). The runner's own steps
+  around the builder (the audits, the content check) run in two small attempts of the same accounting.
 - A stop is administrative: what is incomplete is withheld and reported, and a primary question left unmeasured
   enters Holm with p = 1.
 - **Estimate:** about 7.9 hours (DESIGN §7).
@@ -125,6 +132,9 @@ check`) and writes `prerun-check.json`.
 - **The check set:** N2 and the first 4 graphs of each of 03's ensembles, plus SH-mirror-40015, SH-10007 and
   SH-recip-50015, with 03's genomes; and N2 with gap junctions off, with the RIA pair deleted, and under 03m's paired
   permutation 100.
+- **The repeat check:** on 03's N2 genomes (old inputs), at the registered composition, the intact probe twice and
+  the empty deletion once must agree bit for bit (`prerun-repeat.json`). The run's empty-deletion stop needs this
+  (Fable).
 - **The tolerances,** as declared in the script (`TOL`, `LABELS`):
   - **aggregates within a relative 10⁻⁵:** P4's terms against 03's supplement, the tick-30 share against 03m's,
     and the pre-tanh terms against a one-row reference;
@@ -134,6 +144,11 @@ check`) and writes `prerun-check.json`.
   - **the references:** the local reference arrays must hash as `power.json` recorded.
 - **If the check fails, nothing formal runs.** The failure is reported, and an amendment decides, reviewed by
   both. The measured deviations are reported whatever they are.
+- **The check runs once.** Its start marker is written before it runs; a check that stops before writing its records
+  is not rerun either, and an amendment decides.
+- **The run admits a check only if:** both records passed; the set is `check`, on CUDA, at 2 048 genomes; the
+  references are pinned; the check ran on committed code equal to the code that runs now; and its start marker
+  exists.
 
 ## 6. The primary questions
 
@@ -144,8 +159,14 @@ question enters with p = 1, so the family keeps four members.
 
 **Intersection-union:** a question's p is the largest p over the five ensembles. A missing ensemble gives p = 1.
 
-**Completeness:** a valid N2 and at least 120 valid graphs in every ensemble, judged per question; otherwise the
-question is withheld.
+**Completeness, per question:**
+- **Q-A and Q-D:** a valid N2, and at least 120 valid graphs in every ensemble.
+- **Q-B:** every batch's intact, RIA and AIY units, and a valid bootstrap. The double deletion is descriptive, and its
+  absence does not withhold Q-B.
+- **Q-C:** a valid N2 reference and at least 240 valid permutations.
+
+Otherwise the question is withheld. Every question reports, per ensemble where it applies, its planned, measured and
+valid counts separately.
 
 ### Q-A
 
@@ -154,8 +175,12 @@ question is withheld.
 - **Test:** r counts the graphs with ΔP4 ≤ N2's.
 - **Pass:** "N2's P4 changed unusually little when gap junctions were switched off, relative to each ensemble:
   graphs per ensemble that changed as little or less: [counts]."
-  - Only if the replication (§7) is "distinctive relative to every ensemble", also: "N2's P4 lead over each
-    ensemble narrows without gap junctions."
+  - **Only if the replication (§7) is "distinctive relative to every ensemble",** a second sentence, computed
+    from N2's lead over each ensemble's median P4, intact and gaps-off:
+    - if the gaps-off lead is smaller in every ensemble: "N2's P4 lead over each ensemble's median narrows without
+      gap junctions, by: [the change, per ensemble]";
+    - otherwise: "N2's lead over the ensemble median did not narrow in every ensemble: [the change, per ensemble]".
+    - A pass on the rank test does not by itself imply the lead narrowed (Fable).
 - **Fail:** "the registered criterion was not met: graphs per ensemble that changed as little as N2 or less:
   [counts]."
 
@@ -180,8 +205,8 @@ question is withheld.
 
 ### Q-C
 
-- **Test:** r counts the valid permutations whose response is at least N2's batch-0 intact response;
-  p = (r + 1)/(n + 1).
+- **Test:** r counts the valid permutations whose response is at least N2's response on its batch-0 intact unit
+  (`qb/0/intact`); p = (r + 1)/(n + 1). A valid permutation is one whose P4 is valid.
 - **Completeness:** at least 240 valid permutations.
 - **Pass:** "N2's response is unusually high relative to permutations of its weight magnitudes: [r of n]
   permutations reached it."
@@ -196,16 +221,24 @@ question is withheld.
   [counts]."
 
 **Holm stops:** a question whose own p met 0.05 but not its Holm threshold reads "met α = 0.05 alone, but not its
-Holm threshold: not confirmed under the registered familywise rule", followed by its sentence.
+Holm threshold: not confirmed under the registered familywise rule", followed by its sentence. Under Holm's step-down
+rule, an earlier question's failure can stop it as well as its own threshold; the sentence covers both.
 
-**Reported for every question:** the raw and Holm-adjusted p, every component, the estimates with intervals, and the
-planned, measured and valid counts.
+**Reported for every question:** the raw and Holm-adjusted p, every component, and the planned, measured and valid
+counts. The intervals are 95% percentile bootstraps over N2's 2 048 genomes (seed 20261016, 10 000 resamples):
+- Q-A: N2's ΔP4;
+- Q-C: N2's response;
+- Q-D: N2's share at tick 30;
+- Q-B: its bootstrap's intervals.
+
+Each ensemble's median ΔP4 is reported beside Q-A.
 
 ## 7. The secondaries
 
 **With verdicts, by 03r's single-signal rule** (`report.single_signal`). Each ensemble's maximum rank p is taken at
 α = 0.05, with the effect-margin gate: 0.5 × the latent SD, and the 90% effect interval from 1 000 bootstrap draws,
-seed 1. This is reported as "distinctive relative to every ensemble", "not distinctive", or withheld:
+seed 1. The outcomes are 03r's: "distinctive relative to every ensemble", "reversed against every ensemble", "not
+distinctive" (with the failing gates named), or withheld. The full per-ensemble records are kept in the report:
 - **the third replication of P4:** reported first, beside 03's and 03r's. If it is not distinctive, RESULTS says
   first that the lead did not replicate here;
 - **Q-E, the pre-tanh P4:**
@@ -226,17 +259,20 @@ seed 1. This is reported as "distinctive relative to every ensemble", "not disti
   - The claim "the target's cut exceeds each of its four controls'" takes the largest p (intersection-union).
 
 **Descriptive.** Every interval is a 95% percentile bootstrap with 10 000 resamples. The unit and seed are genomes,
-paired (20261016); permutations (20261017); or graphs (20261018). The descriptives:
-- all 95 pairs' cuts on batch 0, with RIA's and AIY's ranks;
+paired (20261016); permutations (20261017); or graphs (20261018). A transformed quantity is transformed in each
+resample before the quantiles. A quantity whose reference fails its floor is reported as unavailable. The
+descriptives:
+- all 95 pairs' response cuts, numerator cuts and changes in P4 on batch 0, with paired intervals, and RIA's and
+  AIY's ranks;
 - the double deletion;
 - the numerator's and the response's cuts side by side;
 - the factorial contrast: N2's cut minus the permutations' mean cut;
-- the null-graph deletions: each ensemble's cuts and N2's rank among them;
+- the null-graph deletions: each graph's cut, each ensemble's median with an interval, and N2's rank among them;
 - the share of N2's excess P4 over the pooled fresh null median that the permutations' median keeps;
 - the full retention curves;
 - among genomes starting above 10⁻³, the share with more than 10% of their difference left at tick 300;
 - the counts of genomes settled with separation left;
-- the turn read-out's tanh slope, N2 against each ensemble.
+- the turn read-out's tanh slope at the holds' and the ramp's end, N2 against each ensemble.
 
 **Not claimed:** stable states; whether any deletion removes the elevated P4; that weight placement acts through RIA
 and AIY.
@@ -257,16 +293,31 @@ and AIY.
 2. **Build** (CPU): `scripts/p4mc.py build`. The build's records are committed: `build.json`, `ensembles.json`,
    `graphs_manifest.json` and `graphs_content_manifest.json`. The graph files stay local.
 3. **The owner is told** the plan and the estimate, and gives the word for the GPU stages.
-4. **Check:** `scripts/p4mc.py check --device cuda --owner-word "..."`. `prerun-check.json` is committed.
+4. **Check:** `scripts/p4mc.py check --device cuda --owner-word "..."`. `prerun-check.json` and `prerun-repeat.json` are committed.
 5. **Run:** `scripts/p4mc.py run --device cuda --owner-word "..."`. `measurements.json` is written after every
    unit and committed; the per-genome arrays stay local with their sha256 in the records.
    - A resume refuses changed code, environment, inputs or plan.
 6. **Report:** `scripts/p4mc.py report` writes `report.json`, which is committed.
 7. **Then:** RESULTS.md, a review by both, and publication whatever the outcome.
 
-**Every formal stage refuses** unless the bound text survives as a prefix of this file (amendments start on lines of
-their own), and the code (`wormwars`, `scripts`, `configs`, `requirements.txt`) is unchanged since the bound commit.
-If the code must change after binding, an amendment says why and records the new code's commit, and `bound.json`
-gains it as `code_commit`. The code is then checked against that commit, and the text as of that commit must survive
-too (as E4-D's Amendment 1 did).
-It also needs CUDA on the registered GPU (RTX 5080), the pinned environment, and a clean, pushed tree.
+**Every formal stage (build, check, run, report) refuses unless all of these hold:**
+- the bound commit (and any code commit) is an ancestor of HEAD;
+- every committed version of this file since binding grows from the one before, and the working file from the last.
+  Additions start on lines of their own, so an amendment, once committed, can be neither edited nor removed;
+- the code (`wormwars`, `scripts`, `configs`, `requirements.txt`) is unchanged since the bound commit. If the code
+  must change after binding, an amendment says why and names the new code's commit, `bound.json` gains it as
+  `code_commit`, and the code is checked against that commit instead (as E4-D's Amendment 1 did); a `code_commit`
+  that no amendment names is refused;
+- the pinned environment;
+- a clean, pushed tree, including the stage's inputs: the build records for check, run and report; the check records
+  for run and report; `measurements.json` for report.
+
+**Stage by stage:**
+- **The build** runs on the CPU. `exp03.py` itself refuses a formal 03mc build without the token the runner passes
+  after these checks.
+- **The check and the run** need CUDA on the registered GPU (RTX 5080) and the owner's word.
+- **The report** simulates nothing. It checks each unit's arrays against their recorded sha256 and never overwrites
+  an earlier report (a later one gets a time stamp).
+- **The run** takes an exclusive lock, records any array file it replaces after an interruption, and resumes only
+  with the first attempt's code, environment, inputs, registered settings and full plan, and with every completed
+  unit's arrays as recorded. It never resumes after the empty-deletion stop.

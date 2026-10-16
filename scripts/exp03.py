@@ -790,6 +790,24 @@ def cmd_report(args):
         print(s, summ["overall"], "p_holm", round(summ["p_holm"], 4), summ["verdicts"])
 
 
+def instance_command_allowed(instance: str, command: str, env, bound_path: Path | None = None) -> bool:
+    """03mc's instances (D290): only the build and the rebuild from the committed record. A formal 03mc build needs
+    the token `scripts/p4mc.py build` sets after its guards (the bound commit), so the formal graphs are never drawn
+    before the pre-registration is bound and pushed; the smoke instance builds freely."""
+    if instance not in ("03mc", "03mc-smoke"):
+        return True
+    if command == "rebuild-graphs":
+        return True
+    if command != "build":
+        return False
+    if instance == "03mc-smoke":
+        return True
+    bound_path = bound_path or ROOT / "experiments" / "03mc-p4-confirm" / "bound.json"
+    if not bound_path.exists():
+        return False
+    return env.get("P4MC_BUILD_TOKEN") == json.loads(bound_path.read_text(encoding="utf-8"))["commit"]
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("command", choices=["build", "rebuild-graphs", "pilot", "variance", "power", "run", "report"])
@@ -803,6 +821,10 @@ def main():
     ap.add_argument("--instance", choices=sorted(INSTANCES), default="03")
     args = ap.parse_args()
     use_instance(args.instance)
+    import os
+    if not instance_command_allowed(args.instance, args.command, os.environ):
+        raise SystemExit(f"{args.command} --instance {args.instance} is refused: 03mc's graphs are built only through "
+                         "scripts/p4mc.py build, after binding (D290)")
     if args.instance != "03" and args.command in ("pilot", "variance", "power"):
         raise SystemExit("the pilot, variance and power stages belong to 03 only; 03r reuses 03's pilot")
     from wormwars.accounting import attempt  # compute accounting (T0, D069)

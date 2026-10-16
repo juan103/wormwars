@@ -110,6 +110,19 @@ def label_changes(a: dict, b: dict) -> dict:
     return out
 
 
+def record_path(out_dir: Path, name: str) -> Path:
+    """A bare file name inside the output folder, never an existing file, smoke or formal (Fable, review v2.1;
+    Astra, prereg review: an absolute path or ".." could otherwise reach a formal record from a smoke run)."""
+    if not name or Path(name).name != name or name in (".", "..") or not name.endswith(".json"):
+        raise SystemExit(f"--record must be a bare .json file name, not {name!r}")
+    path = out_dir / name
+    if path.resolve().parent != out_dir.resolve():
+        raise SystemExit(f"--record {name!r} leaves the output folder: refusing")
+    if path.exists():
+        raise SystemExit(f"{path.name} exists: a record is never overwritten; choose another --record")
+    return path
+
+
 def judge(row: dict) -> dict:
     """Mark each measured deviation against its declared tolerance, and the genomes with any changed label against
     LABELS."""
@@ -134,9 +147,7 @@ def main(argv=None):
     dev = "cpu" if smoke else args.device
     n = 8 if smoke else None
     out_dir = ROOT / "runs" / "p4mc-equivalence-smoke" if smoke else ROOT / "experiments" / "03mc-p4-confirm"
-    out_path = out_dir / (args.record or f"equivalence-{args.set}.json")
-    if not smoke and out_path.exists():
-        raise SystemExit(f"{out_path.name} exists: a record is never overwritten (Fable, review v2.1); choose --record")
+    out_path = record_path(out_dir, args.record or f"equivalence-{args.set}.json")
     con, bank, iface = P.setup(dev)
     sup = P.supplement("03")
     decay = json.loads((ROOT / "experiments" / "03m-p4-mechanism" / "decay.json").read_text(encoding="utf-8"))["graphs"]

@@ -25,6 +25,7 @@ import hashlib
 import importlib.util
 import json
 import math
+import os
 import subprocess
 import sys
 import time
@@ -105,6 +106,11 @@ use_smoke(False)
 
 # ----------------------------------------------------------------------------- provenance and guards
 
+BUILD_RECORDS = ["build.json", "ensembles.json", "graphs_manifest.json", "graphs_content_manifest.json"]
+CHECK_RECORDS = ["prerun-check.json", "prerun-repeat.json"]
+RECORD_DIR = "experiments/03mc-p4-confirm"
+
+
 def bound() -> dict:
     """`bound.json`: the binding commit, and the formal code's commit if an amendment moved it (as E4-D's
     Amendment 1 did); the code is checked against the latter."""
@@ -135,27 +141,63 @@ def prereg_append_only(bound: bytes, now: bytes) -> None:
         raise SystemExit("the pre-registration's bound text was changed, not only appended to: refusing")
 
 
-def guards(args, prov: dict) -> str | None:
-    """Every formal stage: the bound text kept, the code unchanged since binding, the registered GPU and
-    environment, a clean tree, pushed. Returns the bound commit (None in smoke runs)."""
+def check_prereg_chain(versions: list[bytes], now: bytes) -> None:
+    """Every committed version since binding grows from the one before, and the working file from the last: an
+    amendment, once committed, can be neither edited nor removed (Astra, prereg review)."""
+    for a, b in zip(versions, versions[1:] + [now]):
+        prereg_append_only(a, b)
+
+
+def prereg_versions(since: str) -> list[bytes]:
+    later = subprocess.check_output(["git", "log", "--reverse", "--format=%H", f"{since}..HEAD", "--", PREREG],
+                                    cwd=ROOT, text=True).split()
+    return [prereg_at(c) for c in [since, *later]]
+
+
+def check_code_commit_named(now: bytes, bd: dict) -> None:
+    """A moved code commit must be named in an appended amendment (Astra, prereg review)."""
+    if bd["code_commit"] != bd["commit"] and bd["code_commit"][:7].encode() not in _lf(now):
+        raise SystemExit("bound.json's code_commit is named by no amendment in the pre-registration: refusing")
+
+
+def guarded(stage: str) -> list[str]:
+    """What must be committed (and, for every stage, pushed) before a stage starts."""
+    g = [*CODE, PREREG, f"{RECORD_DIR}/bound.json"]
+    if stage in ("check", "run", "report"):
+        g += [f"{RECORD_DIR}/{f}" for f in BUILD_RECORDS]
+    if stage in ("run", "report"):
+        g += [f"{RECORD_DIR}/{f}" for f in CHECK_RECORDS]
+    if stage == "report":
+        g += [f"{RECORD_DIR}/measurements.json"]
+    return g
+
+
+def provenance(stage: str) -> dict:
+    return reg.provenance(guarded(stage))
+
+
+def guards(args, prov: dict, stage: str) -> str | None:
+    """Every formal stage (PREREGISTRATION §9): the bound commit and any code commit are ancestors of HEAD; every
+    committed version of the pre-registration since binding grows from the last; a moved code commit is named by an
+    amendment; the code is unchanged since the code commit; the stage's records are committed and HEAD is pushed;
+    the pinned environment. `check` and `run` also need CUDA on the registered GPU. Returns the bound commit (None
+    in smoke runs)."""
     if SMOKE:
         return None
     bd = bound()
-    b = bd["commit"]
+    for c in {bd["commit"], bd["code_commit"]}:
+        if subprocess.run(["git", "merge-base", "--is-ancestor", c, "HEAD"], cwd=ROOT).returncode != 0:
+            raise SystemExit(f"{c[:7]} (bound.json) is not an ancestor of HEAD: refusing")
     now = (ROOT / PREREG).read_bytes()
-    for c in {b, bd["code_commit"]}:
-        subprocess.run(["git", "merge-base", "--is-ancestor", c, "HEAD"], cwd=ROOT, check=True)
-        prereg_append_only(prereg_at(c), now)  # the bound text, and any amendment in force, survive
+    check_prereg_chain(prereg_versions(bd["commit"]), now)
+    check_code_commit_named(now, bd)
     reg.require_same_code(bd["code_commit"], CODE)
-    if args.command != "build":
+    if stage in ("check", "run"):
         reg.require_formal(args.device, prov)
-    elif prov["dirty"]:
-        raise SystemExit("uncommitted changes in the guarded files: commit first")
-    return b
-
-
-def provenance() -> dict:
-    return reg.provenance([*CODE, PREREG, "experiments/03mc-p4-confirm/bound.json"])
+    else:  # the build (CPU) and the report: the pinned environment, committed and pushed
+        reg.require_pins(prov)
+        reg.require_pushed(prov)
+    return bd["commit"]
 
 
 def owner_word(args) -> str | None:
@@ -244,75 +286,138 @@ def ensemble_names() -> dict:
     return by
 
 
+def records_sha(files) -> dict:
+    return {f: reg.file_sha256(exp_dir() / f) for f in files if (exp_dir() / f).exists()}
+
+
 def cmd_build(args):
-    prov = provenance()
-    b = guards(args, prov)
+    """The build is one cap unit, checked before it starts: 03's builder queues every graph in one pool, so its
+    overrun can be the whole build (PREREGISTRATION §4). The wrapper's own steps run in two small attempts of the
+    same accounting; the builder records its own attempt."""
+    prov = provenance("build")
+    b = guards(args, prov, "build")
     exp = exp_dir()
     if (exp / "build.json").exists():
         raise SystemExit("build.json exists: the build has run and is not rerun")
-    before = audit()
-    if not before["ok"]:
-        reg.write_json(exp / "build.json", {"outcome": "refused: the planned seeds are not fresh", "audit": before})
-        raise SystemExit(f"the freshness audit failed before the build: {before}")
-    cap = cap_clock()
-    cap.check()  # the build is one unit (DESIGN §7)
+    with acct.attempt(out_dir() / "compute", default="measure", script="p4mc", argv=["build", "pre"]):
+        before = audit()
+        if not before["ok"]:
+            reg.write_json(exp / "build.json", {"outcome": "refused: the planned seeds are not fresh", "audit": before})
+            raise SystemExit(f"the freshness audit failed before the build: {before}")
+        cap_clock().check()
     cmd = [sys.executable, str(ROOT / "scripts" / "exp03.py"), "build", "--instance",
            "03mc-smoke" if SMOKE else "03mc", "--workers", str(args.workers)]
+    env = {**os.environ, "P4MC_BUILD_TOKEN": b or "smoke"}  # exp03.py refuses a formal 03mc build without it
     t0 = time.perf_counter()
-    subprocess.run(cmd, cwd=ROOT, check=True)  # exp03's own build records its compute in runs/p4mc*/compute
-    names = ensemble_names()
-    rec = json.loads((exp / "ensembles.json").read_text(encoding="utf-8"))
-    flat = [n for e in mc.ENSEMBLES for n in names[e]]
-    hashes = content_hashes(flat)
-    reg.write_json(exp / "graphs_content_manifest.json", {"what": "each graph's array content (exp03._sha_content)",
-                                                          "graphs": hashes})
-    content = mc.content_check(hashes, old_content_hashes())
-    after = audit(names)
-    validation = rec["validation"]
-    valid = all(rec["plateau"][e]["passes"] for e in mc.ENSEMBLES) and all(
-        validation[e]["acceptance_min"] >= 0.05 and not validation[e]["over_ceiling"] for e in mc.ENSEMBLES)
-    ok = content["ok"] and after["ok"] and valid
-    reg.write_json(exp / "build.json", {
-        "outcome": "completed" if ok else "refused: see the failed checks", "bound_commit": b, "provenance": prov,
-        "audit_before": before, "audit_after": after, "content": content, "validation_rules_pass": valid,
-        "graphs": {e: len(v) for e, v in names.items()}, "substituted": {e: validation[e]["substituted"] for e in mc.ENSEMBLES},
-        "seconds": time.perf_counter() - t0})
+    subprocess.run(cmd, cwd=ROOT, check=True, env=env)  # exp03's own build records its compute in runs/p4mc*/compute
+    with acct.attempt(out_dir() / "compute", default="measure", script="p4mc", argv=["build", "post"]):
+        names = ensemble_names()
+        rec = json.loads((exp / "ensembles.json").read_text(encoding="utf-8"))
+        flat = [n for e in mc.ENSEMBLES for n in names[e]]
+        hashes = content_hashes(flat)
+        reg.write_json(exp / "graphs_content_manifest.json", {"what": "each graph's array content (exp03._sha_content)",
+                                                              "graphs": hashes})
+        content = mc.content_check(hashes, old_content_hashes())
+        after = audit(names)
+        validation = rec["validation"]
+        valid = all(rec["plateau"][e]["passes"] for e in mc.ENSEMBLES) and all(
+            validation[e]["acceptance_min"] >= 0.05 and not validation[e]["over_ceiling"] for e in mc.ENSEMBLES)
+        ok = content["ok"] and after["ok"] and valid
+        reg.write_json(exp / "build.json", {
+            "outcome": "completed" if ok else "refused: see the failed checks", "bound_commit": b, "provenance": prov,
+            "audit_before": before, "audit_after": after, "content": content, "validation_rules_pass": valid,
+            "graphs": {e: len(v) for e, v in names.items()},
+            "substituted": {e: validation[e]["substituted"] for e in mc.ENSEMBLES},
+            "records_sha256": records_sha(BUILD_RECORDS[1:]), "seconds": time.perf_counter() - t0})
     if not ok:
         raise SystemExit("the build's checks failed: nothing is measured (DESIGN §3); see build.json")
     print({e: len(v) for e, v in names.items()}, "audit ok, content ok, validation ok")
 
 
-def require_build() -> dict:
+def require_build(b: str | None) -> dict:
+    """The build completed, under this binding, and its records are as it wrote them (Astra, prereg review)."""
     p = exp_dir() / "build.json"
     if not p.exists():
         raise SystemExit("no build.json: run the build first")
-    b = json.loads(p.read_text(encoding="utf-8"))
-    if b.get("outcome") != "completed":
-        raise SystemExit(f"the build did not complete: {b.get('outcome')}")
-    return b
+    rec = json.loads(p.read_text(encoding="utf-8"))
+    if rec.get("outcome") != "completed":
+        raise SystemExit(f"the build did not complete: {rec.get('outcome')}")
+    if not SMOKE and rec.get("bound_commit") != b:
+        raise SystemExit("build.json was written under another binding: refusing")
+    if rec.get("records_sha256") != records_sha(BUILD_RECORDS[1:]):
+        raise SystemExit("the build's records changed since build.json was written: refusing")
+    return rec
 
 
 # ----------------------------------------------------------------------------- the pre-run check
 
+@acct.counted("probe")
+def repeat_check(device) -> dict:
+    """Fable (prereg review): the empty-deletion stop needs two runs of the same genomes to agree bitwise. On old
+    inputs (03's N2 genomes, never a fresh draw), at the registered composition: intact twice, then the empty
+    deletion, compared bit for bit."""
+    con, bank, iface = setup(device)
+    g, cfg = EQ.P.probe_genomes(con, "N2", device, n=8 if SMOKE else None)
+    runs = {"intact": twin.history(g, cfg, iface, bank, follow=5),
+            "intact again": twin.history(g, cfg, iface, bank, follow=5),
+            "empty deletion": twin.history(delete_neurons(g, [[]] * g.n_strains), cfg, iface, bank, follow=5)}
+    ref = runs["intact"]["raw_turn"]
+    same = {k: all(np.array_equal(v["raw_turn"][q], ref[q]) for q in ("final", "steady_contrast")) for k, v in runs.items()}
+    return {"what": "bitwise repeat of the probe at the registered composition, old inputs", "device": device,
+            "genomes": int(g.n_strains), "identical": same, "passed": all(same.values())}
+
+
 def cmd_check(args):
-    prov = provenance()
-    b = guards(args, prov)
+    prov = provenance("check")
+    b = guards(args, prov, "check")
     word = owner_word(args)
-    require_build()
+    require_build(b)
+    exp = exp_dir() if not SMOKE else SMOKE_DIR / "record"
+    for f in CHECK_RECORDS:
+        if not SMOKE and (EXP_FORMAL / f).exists():
+            raise SystemExit(f"{f} exists: the pre-run check has run and is not rerun")
     if not SMOKE:
         reg.start_marker(out_dir() / "markers", "check", {**prov, "owner_word": word, "bound_commit": b})
-    cap = cap_clock()
-    cap.check()
-    argv = ["--set", "check", "--device", "cpu" if SMOKE else args.device, "--record", "prerun-check.json"]
+    cap_clock().check()
+    device = "cpu" if SMOKE else args.device
+    rep = repeat_check(device)
+    reg.write_json(exp / "prerun-repeat.json", {**rep, "provenance": prov, "bound_commit": b})
+    argv = ["--set", "check", "--device", device, "--record", "prerun-check.json"]
     EQ.main(argv + (["--smoke"] if SMOKE else []))
+    if not rep["passed"] and not SMOKE:
+        raise SystemExit("the probe does not repeat bitwise at the registered composition: nothing formal runs")
 
 
-def require_check() -> None:
+def require_check(code_commit: str | None) -> None:
+    """The registered pre-run check passed on the current code, at the registered set and device, with the pinned
+    references, and the repeat check passed (Astra, Fable, prereg review)."""
     if SMOKE:
         return
-    p = EXP_FORMAL / "prerun-check.json"
-    if not p.exists() or not json.loads(p.read_text(encoding="utf-8")).get("passed"):
-        raise SystemExit("the pre-run check has not passed: nothing formal runs (DESIGN §5)")
+    pc, pr = EXP_FORMAL / "prerun-check.json", EXP_FORMAL / "prerun-repeat.json"
+    if not pc.exists() or not pr.exists():
+        raise SystemExit("the pre-run check has not run: nothing formal runs (PREREGISTRATION §5)")
+    c, r = json.loads(pc.read_text(encoding="utf-8")), json.loads(pr.read_text(encoding="utf-8"))
+    problems = []
+    if not c.get("passed"):
+        problems.append("the check did not pass")
+    if c.get("set") != "check" or not str(c.get("device", "")).startswith("cuda") or c.get("genomes") != 2048:
+        problems.append("not the registered check set, device or genome count")
+    if c.get("reference_sha256", {}).get("decay") != EQ.REFERENCE_SHA256["decay"] or any(
+            c.get("reference_sha256", {}).get(k) != v for k, v in EQ.REFERENCE_SHA256.items()):
+        problems.append("not the pinned references")
+    stamp = c.get("stamp", {})
+    if stamp.get("dirty"):
+        problems.append("the check ran on uncommitted code")
+    if not r.get("passed") or not str(r.get("device", "")).startswith("cuda") or r.get("genomes") != 2048:
+        problems.append("the repeat check did not pass at the registered composition")
+    if problems:
+        raise SystemExit("the pre-run check does not admit the run: " + "; ".join(problems))
+    for commit in {stamp.get("git_commit"), r.get("provenance", {}).get("git_commit")}:
+        reg.require_same_code(commit, CODE)  # the check ran on the code that runs now
+    if code_commit:
+        reg.require_same_code(code_commit, CODE)
+    if not (out_dir() / "markers" / "check-started.json").exists():
+        raise SystemExit("no start marker for the check: refusing")
 
 
 # ----------------------------------------------------------------------------- units
@@ -456,6 +561,10 @@ def safe(uid: str) -> str:
     return uid.replace("/", "__").replace("#", "_")
 
 
+def array_path(uid: str) -> Path:
+    return out_dir() / "arrays" / f"{safe(uid)}.npz"
+
+
 def save_arrays(path: Path, arrays: dict) -> str:
     path.parent.mkdir(parents=True, exist_ok=True)
     tmp = path.with_name(path.stem + ".tmp.npz")
@@ -464,29 +573,22 @@ def save_arrays(path: Path, arrays: dict) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def load_arrays(uid: str) -> dict:
-    with np.load(out_dir() / "arrays" / f"{safe(uid)}.npz", allow_pickle=False) as z:
-        return {k: z[k] for k in z.files}
+def array_loader(units: dict):
+    """Loads a unit's arrays only if they hash as its record says (Fable, Astra, prereg review)."""
+    def load(uid: str) -> dict:
+        p = array_path(uid)
+        if hashlib.sha256(p.read_bytes()).hexdigest() != units[uid]["arrays_sha256"]:
+            raise SystemExit(f"{p.name} does not hash as its record says: refusing")
+        with np.load(p, allow_pickle=False) as z:
+            return {k: z[k] for k in z.files}
+    return load
 
 
 def inputs_digest(names: dict) -> dict:
-    """What a resume must find unchanged: the graph manifests, the stimulus bank, the remaps and the plan."""
+    """What a resume must find unchanged: the graph manifests, the stimulus bank, the remaps and the interface."""
     files = [exp_dir() / "ensembles.json", exp_dir() / "graphs_manifest.json", exp_dir() / "graphs_content_manifest.json",
              X.PILOT, X.INPUT_FILES["remaps.json"], ROOT / "configs" / "interface.yaml"]
     return {str(p.relative_to(ROOT)): reg.file_sha256(p) for p in files if p.exists()}
-
-
-def check_resume(doc: dict, prov: dict, digest: dict, units: list) -> None:
-    """A resume continues the first attempt only: the same code and environment (formal), the same inputs, the
-    same plan."""
-    first = doc["attempts"][0]["provenance"]
-    if not SMOKE:
-        reg.require_same_code(first["git_commit"], CODE)
-        reg.require_same_env(first, prov)
-    if doc["inputs"] != digest:
-        raise SystemExit("an input changed since the first attempt: refusing to resume")
-    if [u["id"] for u in doc["plan"]] != [u["id"] for u in units]:
-        raise SystemExit("the plan differs from the first attempt's: refusing to resume")
 
 
 def empty_reproduces(rec: dict, intact: dict) -> bool:
@@ -494,12 +596,64 @@ def empty_reproduces(rec: dict, intact: dict) -> bool:
     return (rec["numerator"], rec["denominator"]) == (intact["numerator"], intact["denominator"])
 
 
+TERMINAL = "stopped: the empty deletion does not reproduce batch 0's intact terms"
+
+
+def check_resume(doc: dict, prov: dict, digest: dict, units: list, verify_arrays=True) -> None:
+    """A resume continues the first attempt only (Fable, Astra, prereg review): never after the terminal stop; the
+    same code and environment (formal), inputs, registered settings, smoke or formal identity and the whole plan;
+    and every completed unit's arrays as recorded."""
+    if any(str(a.get("outcome", "")).startswith(TERMINAL) for a in doc["attempts"]):
+        raise SystemExit("an earlier attempt stopped at the empty deletion: the run does not resume (an amendment decides)")
+    u = doc["units"]
+    if "qb/0/empty" in u and "qb/0/intact" in u and not empty_reproduces(u["qb/0/empty"], u["qb/0/intact"]):
+        raise SystemExit("the recorded empty deletion does not reproduce batch 0's intact terms: refusing to resume")
+    first = doc["attempts"][0]["provenance"]
+    if not SMOKE:
+        reg.require_same_code(first["git_commit"], CODE)
+        reg.require_same_env(first, prov)
+    if doc.get("smoke") != SMOKE or doc.get("registered") != REGISTERED:
+        raise SystemExit("the registered settings or the smoke identity differ from the first attempt's: refusing")
+    if doc["inputs"] != digest:
+        raise SystemExit("an input changed since the first attempt: refusing to resume")
+    if doc["plan"] != units:
+        raise SystemExit("the plan differs from the first attempt's: refusing to resume")
+    if verify_arrays:
+        load = array_loader(u)
+        for uid in u:
+            if not array_path(uid).exists():
+                raise SystemExit(f"{uid}'s arrays are missing: refusing to resume")
+            load(uid)
+
+
+class RunLock:
+    """One run at a time (Astra, prereg review). A lock left by a crash is removed by hand after checking that no
+    run is alive; the run never removes another's lock."""
+
+    def __init__(self, path: Path):
+        self.path = path
+
+    def __enter__(self):
+        self.path.parent.mkdir(parents=True, exist_ok=True)
+        try:
+            with open(self.path, "x", encoding="utf-8") as f:
+                f.write(f"{os.getpid()} {time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())}\n")
+        except FileExistsError:
+            raise SystemExit(f"{self.path} exists: another run is alive, or a crashed one left it (check, then remove "
+                             "it by hand)") from None
+        return self
+
+    def __exit__(self, *exc):
+        self.path.unlink(missing_ok=True)
+        return False
+
+
 def cmd_run(args):
-    prov = provenance()
-    b = guards(args, prov)
+    prov = provenance("run")
+    b = guards(args, prov, "run")
     word = owner_word(args)
-    require_build()
-    require_check()
+    require_build(b)
+    require_check(None if SMOKE else bound()["code_commit"])
     device = "cpu" if SMOKE else args.device
     n = R("genomes")
     names = ensemble_names()
@@ -508,59 +662,72 @@ def cmd_run(args):
     units = plan(con, names)
     path = exp_dir() / "measurements.json"
     digest = inputs_digest(names)
-    if path.exists():
-        doc = json.loads(path.read_text(encoding="utf-8"))
-        check_resume(doc, prov, digest, units)
-    else:
-        doc = {"what": "03mc's measurements, one record per unit, in the registered order", "registered": REGISTERED,
-               "smoke": SMOKE, "bound_commit": b, "inputs": digest, "plan": units, "attempts": [], "units": {}}
-    doc["attempts"].append({"provenance": prov, "owner_word": word,
-                            "started_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "outcome": "running"})
-    reg.write_json(path, doc, atomic=True)
-    cap = cap_clock()
-    graphs: dict = {}
-    outcome = "completed"
-    try:
-        with acct.category("probe"):
-            for unit in units:
-                if unit["id"] in doc["units"]:
-                    continue
-                cap.check()
-                t0 = time.perf_counter()
-                rec, arrays = measure(con, bank, iface, unit, device, n, graphs)
-                rec["arrays_sha256"] = save_arrays(out_dir() / "arrays" / f"{safe(unit['id'])}.npz", arrays)
-                rec["seconds"] = time.perf_counter() - t0
-                doc["units"][unit["id"]] = rec
-                if unit["id"] == "qb/0/empty":
-                    if not empty_reproduces(rec, doc["units"]["qb/0/intact"]):
-                        outcome = "stopped: the empty deletion does not reproduce batch 0's intact terms"
+    with RunLock(out_dir() / "run.lock"):
+        if path.exists():
+            doc = json.loads(path.read_text(encoding="utf-8"))
+            check_resume(doc, prov, digest, units)
+        else:
+            doc = {"what": "03mc's measurements, one record per unit, in the registered order", "registered": REGISTERED,
+                   "smoke": SMOKE, "bound_commit": b, "inputs": digest, "plan": units, "attempts": [], "units": {}}
+        doc["attempts"].append({"provenance": prov, "owner_word": word, "replaced_orphan_arrays": [],
+                                "started_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "outcome": "running"})
+        reg.write_json(path, doc, atomic=True)
+        cap = cap_clock()
+        graphs: dict = {}
+        outcome = "completed"
+        try:
+            with acct.category("probe"):
+                for unit in units:
+                    if unit["id"] in doc["units"]:
+                        continue
+                    cap.check()
+                    t0 = time.perf_counter()
+                    rec, arrays = measure(con, bank, iface, unit, device, n, graphs)
+                    ap = array_path(unit["id"])
+                    if ap.exists():  # left by an interruption between the arrays and the record: replaced, and said
+                        doc["attempts"][-1]["replaced_orphan_arrays"].append(unit["id"])
+                    rec["arrays_sha256"] = save_arrays(ap, arrays)
+                    rec["seconds"] = time.perf_counter() - t0
+                    doc["units"][unit["id"]] = rec
+                    if unit["id"] == "qb/0/empty" and not empty_reproduces(rec, doc["units"]["qb/0/intact"]):
+                        outcome = TERMINAL
                         break
-                reg.write_json(path, doc, atomic=True)
-                if len(graphs) > 4:  # graph objects are reused only within a graph's units
-                    graphs.clear()
-    except reg.CapReached as e:
-        outcome = f"stopped: {e}"
-    doc["attempts"][-1]["outcome"] = outcome
-    doc["attempts"][-1]["ended_utc"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
-    reg.write_json(path, doc, atomic=True)
+                    reg.write_json(path, doc, atomic=True)
+                    if len(graphs) > 4:  # graph objects are reused only within a graph's units
+                        graphs.clear()
+        except reg.CapReached as e:
+            outcome = f"stopped: {e}"
+        doc["attempts"][-1]["outcome"] = outcome
+        doc["attempts"][-1]["ended_utc"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+        reg.write_json(path, doc, atomic=True)
     print(outcome, f"{len(doc['units'])} of {len(units)} units")
-    if outcome.startswith("stopped: the empty"):
+    if outcome == TERMINAL:
         raise SystemExit(outcome)
 
 
 # ----------------------------------------------------------------------------- report
 
 def cmd_report(args):
+    """Guarded like every formal stage, without the GPU (Fable, Astra, prereg review); each unit's arrays are
+    checked against their recorded hash before use; a report is never overwritten (a later one gets a time stamp)."""
     from wormwars.exp03 import mc_report
+    prov = provenance("report")
+    b = guards(args, prov, "report")
     path = exp_dir() / "measurements.json"
     if not path.exists():
         raise SystemExit("no measurements.json")
     doc = json.loads(path.read_text(encoding="utf-8"))
     names = {e: v[:R("graphs_per_ensemble")] for e, v in ensemble_names().items()}
-    rep = mc_report.build(doc, names, load_arrays, REGISTERED, minimum={"graphs": R("min_graphs"),
-                                                                     "permutations": R("min_permutations")},
+    rep = mc_report.build(doc, names, array_loader(doc["units"]), REGISTERED,
+                          minimum={"graphs": R("min_graphs"), "permutations": R("min_permutations")},
                           effect_boot=100 if SMOKE else 1000)
-    reg.write_json(exp_dir() / "report.json", rep)
+    rep["provenance"], rep["bound_commit"] = prov, b
+    rep["written_utc"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+    out = exp_dir() / "report.json"
+    if out.exists():
+        out = exp_dir() / f"report-{time.strftime('%Y%m%dT%H%M%SZ', time.gmtime())}.json"
+    reg.write_json(out, rep, atomic=True)
+    print(out.name)
     print(json.dumps(rep["headline"], indent=1))
 
 
