@@ -9037,3 +9037,23 @@ text plus appended amendments.
   whose records alone were removed, listing them. Every attempt records 4dff311, clean.
 - **Nothing fresh has been drawn.** The next stage is the CPU build of the 640 graphs (`p4mc.py build`, about 0.4
   hours), counted in the cap. The GPU stages (check, run) wait for the owner's word.
+
+
+## D295 — 03mc's build: 640 fresh graphs, every check passed
+
+`scripts/p4mc.py build` at the bound code (2026-10-16, CPU, 0.26 hours inside the build; 0.27 counted in all, in
+`runs/p4mc/compute`, toward the 10-hour cap). The guards passed (binding, pre-registration chain, code and inputs
+unchanged since 4dff311, pinned environment, clean and pushed).
+- **The freshness audit,** before and after: no derived seed or permutation seed collides with 03's, 03r's, 03m's or the
+  smoke runs'.
+- **The content check:** no new graph duplicates another or any of 03's and 03r's 1 408.
+- **03's validation rules:** every plateau passes; there are no substitutions and none over the Jaccard ceiling; the
+  lowest acceptance is 9% (SH-class), against a floor of 5%.
+- **Chemical Jaccard with N2** (min / median / max): SH 0.043 / 0.050 / 0.057; SH-route 0.045 / 0.051 / 0.055; SH-class
+  0.089 / 0.095 / 0.102; SH-mirror 0.055 / 0.063 / 0.070; SH-recip 0.044 / 0.050 / 0.058. They are close to 03's and
+  03r's (03r PREREGISTRATION §3).
+- **Records committed:** `build.json`, `ensembles.json`, `graphs_manifest.json` and `graphs_content_manifest.json`. The
+  graph files stay local (`runs/p4mc/graphs`); `exp03.py rebuild-graphs --instance 03mc` regenerates them from the
+  record.
+**Next:** the owner's word for the GPU stages: the check (about 0.25 hours on old inputs), then the run (about 7.9
+hours; cap 10).

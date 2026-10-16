@@ -1,0 +1,64 @@
+{
+ "outcome": "completed",
+ "bound_commit": "4dff311678af12a8dfe6c7b8dacd3665552e3173",
+ "provenance": {
+  "git_commit": "feb265375b0c22187e6a97a1d3d090870156c1c1",
+  "branch": "roadmap",
+  "dirty": false,
+  "python": "3.13.3",
+  "numpy": "2.4.4",
+  "torch": "2.12.0+cu130",
+  "cuda": "13.0",
+  "gpu": "NVIDIA GeForce RTX 5080",
+  "connectome_cache_sha256": "43b87aa172a0042b9dce734b15bdf1c87efe3a33ac1cc0d9cd03255a60c96d4a",
+  "connectome_source_sha256": "1f4fdbf84746b69b49a8da0816f52787860ce349b638dce37924ba80f90c70c9"
+ },
+ "audit_before": {
+  "reused_salts": [],
+  "repeated_new_seeds": [],
+  "genome_seed_collisions_with_old": [],
+  "permutation_collisions": [],
+  "repeated_permutation_seeds": [],
+  "new_genome_seeds": 2016,
+  "old_genome_seeds": 4530,
+  "ok": true
+ },
+ "audit_after": {
+  "reused_salts": [],
+  "repeated_new_seeds": [],
+  "genome_seed_collisions_with_old": [],
+  "permutation_collisions": [],
+  "repeated_permutation_seeds": [],
+  "new_genome_seeds": 2016,
+  "old_genome_seeds": 4530,
+  "ok": true
+ },
+ "content": {
+  "within_new": [],
+  "against_old": [],
+  "ok": true,
+  "new": 640,
+  "old": 1408
+ },
+ "validation_rules_pass": true,
+ "graphs": {
+  "SH": 128,
+  "SH-route": 128,
+  "SH-class": 128,
+  "SH-mirror": 128,
+  "SH-recip": 128
+ },
+ "substituted": {
+  "SH": 0,
+  "SH-route": 0,
+  "SH-class": 0,
+  "SH-mirror": 0,
+  "SH-recip": 0
+ },
+ "records_sha256": {
+  "ensembles.json": "9eed3bd29eacd00a748e24e85736307ca1b8bc91c4f544b01cfbb0f943e9c9aa",
+  "graphs_manifest.json": "24a379d0eee75de2ea0607b03ab86db8b33e11cc1de25a35f2bcd21ae811e4e6",
+  "graphs_content_manifest.json": "a4033a61b444ad162c2674d8de4b6e6f75e868f479d1cdaebfeb4b10cd726bee"
+ },
+ "seconds": 943.2865820000006
+}
