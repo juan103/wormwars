@@ -9074,3 +9074,12 @@ cuda` ran at afa39a1 (clean; the code and inputs are unchanged since the bound c
 - **Committed:** both records and the start marker (`runs/p4mc/markers/check-started.json`). The cap clock
   (`runs/p4mc/compute.json`, build and check) stands at 0.51 of 10 hours.
 **Next:** the formal run (about 7.9 GPU-hours), with nothing else running on the machine.
+
+
+## D297 — 03mc's formal run completed
+
+`scripts/p4mc.py run --device cuda` at a5b44e2 (clean), 2026-10-16 05:55-13:09 UTC, one attempt, no interruption and
+no orphan arrays. All 2 336 registered units were measured and all are valid. The cap clock (`runs/p4mc/compute.json`:
+build, check and run) stands at 7.73 of 10 hours. `measurements.json` is committed (the per-unit records and array
+hashes); the arrays stay local in `runs/p4mc/arrays`. Nothing has been read from the measurements yet.
+**Next:** `p4mc.py report`, then RESULTS.md and the review by both.
