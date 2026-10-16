@@ -1,9 +1,11 @@
-# 03a: the self-consistency hypothesis, a six-neuron proof of concept (design v4)
+# 03a: the self-consistency hypothesis, a six-neuron proof of concept (design v5)
 
-**Status:** design v4, 2026-10-16, for review by Astra 6 and Fable 5.1. Not a pre-registration. Nothing specific to
-03a has been coded, drawn or run.
+**Status:** design v5, 2026-10-16, for review by Astra 6 and Fable 5.1. Not a pre-registration. Nothing specific to
+03a has been coded or run, apart from the exploratory scripted checks in §2 (D303).
+- **v4** (`eeeeb60`, D302): both reviewers said "revise" (run 20261016-174135, `docs/reviews/20261016-03a-design-v4/`).
+  v5 takes their findings (§12 lists each and what changed) and adds the exploratory checks of D303.
 - **The draft it replaces:** [`DRAFT.md`](DRAFT.md) v3.2 (2026-09-25), a 24-neuron panel on experiment 02's T1. It
-  stays as the record of the earlier design; this file is the design going forward.
+  stays as the record of the earlier design.
 - **The owner's decisions it follows:**
   - D094 (2026-09-28): "Let's keep the proof of concept with 6 neurons (3 with high foreseeable relevance, 2 with
     medium 1 with low)"; "If there is an imprinting effect we try other neurons if we find a reason for that";
@@ -14,237 +16,359 @@
   that solutions use interneurons; meet the 02b risk; use experiment 03's validated null ensembles; fit the measured
   throughput; animal-to-animal variability is not a ceiling on recovery from one fixed graph.
 - **Who:** the hypothesis is Juan H. González Estefan's. Draft v1-v3.2: Claude Fable 5.1 and Claude Opus 5.5, reviewed
-  by Astra 6 and Fable 5.1 (D045-D047). This version: Claude Opus 5.5.
+  by Astra 6 and Fable 5.1 (D045-D047). v4-v5: Claude Opus 5.5, reviewed by Astra 6 and Fable 5.1.
 
-## 1. The question
+## 1. The question, and what it can and cannot show
 
 **The hypothesis (the owner's):** if a connectome is shaped to perform tasks, the wiring of one missing neuron can
 be predicted, to some extent, from the rest of the brain plus a task. Delete a neuron X, place it back with random
 wiring, let only X's wiring optimise for the task, and see whether X's original partners come back.
 
-**What the proof of concept asks:** on six neurons of evolved N2 brains, does this procedure separate the three
-outcomes (anatomical recovery, functional substitution, search failure), and does reconstruction with the trained
-intact network's information (MIP) recover more anatomy than reconstruction from anatomy alone (NIP), the
-"imprinting effect" that D094 makes the condition for expanding the panel?
+**What the proof of concept asks:** on six neurons of evolved N2 brains,
+1. does the search recover X's original partners beyond what the partners' kind (sensor, motor, other) and degree
+   explain, in each arm;
+2. does reconstruction with the trained intact network's information (MIP) recover more than reconstruction without
+   prior exposure to X (NIP), the "imprinting effect" that D094 makes the condition for expanding the panel; and
+3. does the procedure separate the three outcomes (anatomical recovery, functional success with anatomy
+   undetermined, search failure)?
 
-**What it is not:** a map, or a test that the real worm's wiring is optimised for any task. Every result is
-conditional on the model, the task and the search. Six targets give little power for panel-level claims; the
-per-target readings carry the proof of concept.
+**Limits, stated now (Astra):**
+- **NIP is conditional.** It is reconstruction into one frozen solution that evolved without X. It is not a test
+  of what anatomy plus the task can identify in general: joint optimisation of the remaining weights and X's wiring
+  is excluded (the draft's named assumption, DRAFT.md "Arms").
+- **MIP − NIP mixes three things:** information the trained network keeps about X, how much each arm's brain
+  compensated for X's absence, and the headroom left for X. A fully compensated NIP brain may have no use for X.
+  So every contrast is reported beside the intact score, each arm's deleted-brain score, the original-partner
+  refits, the compensation deficit and the headroom.
+- **"Information from the trained network" includes what it started with.** Whole-brain initial weights scale with
+  the anatomical weights (`init_w_scale`), so MIP's remaining brain carries anatomy before any training. Attributing
+  a contrast to *learning* would need another control; 03a does not claim it.
+- **The search is told X's true numbers of partners** of each kind. Every conclusion is conditional on that.
+- **Six targets** support per-target readings, not panel-level generalisation.
+- A positive result shows self-consistency under this model, task and search, not that the real worm's wiring is
+  optimised for the task.
 
 ## 2. The task: Task N with one nose ("Task N-mono")
 
 **Proposed:** Task N exactly as E1, 04a and E2 ran it (one wey, a 24-cell arena, a sensing-only scent source of
 σ = 6 that jumps to the next position of a per-world sequence when the head comes within 1.5 cells, 300 ticks, energy
 off, 32 substeps, the count of targets reached), with **`food_sensing = "mono"`**: both food sensors read the scent
-at the head's centre point (`wormwars/world.py`, the branch experiment 02's T1 used). No left-right difference
-exists, so steering up the gradient needs a comparison over time.
+at one sample point, `P_FRONT_C`, 0.6 cells ahead of the head (`wormwars/world.py:839`, the branch experiment 02's T1
+used). Collision sensing stays bilateral. No left-right food difference exists, so steering up the gradient needs a
+comparison over time, or some other use of the brain's own dynamics.
 
-**Why this task:**
-- **Memory is needed to do well, by a scripted gap already measured in this world.** E1's tuned controllers on the
-  bilateral mean (the same information as one nose, up to the sample point): memory on the mean (M-avg) 2.16 targets
-  per episode; the best memoryless controller on the level (K, level kinesis) 1.03; the best blind one 0.66
-  (wall-follower); the oracle 8.85 (`experiments/E1-navigation/RESULTS.md`, tuning table). The gap M − K is about
-  1.1 targets, a doubling. It is re-measured in the mono world before anything is built on it (§9, step 1).
-- **It is cheap and its throughput is measured:** one wey, 300 ticks. Lockstep batches of 8 runs ran at 419-429
-  episodes per second in 04a, E2 and E4s-1, and E2d's wider composition (256 strains × 32 worlds) at about 1 046
-  (`experiments/04a-navigation-primitive/compute-record.json`, `experiments/E2-optimizer-screen/compute-record.json`,
-  `experiments/E2d-taskn-diagnosis/projection.json`).
-- **Evolution works on Task N with N2:** 04a's GA (population 32, 8 worlds per genome, 1 000 generations) gave
-  navigators in 12 of 16 runs on the stereo version. Whether it gives memory users on the mono version is not known;
-  the pilot measures it on shuffles (§8).
-- **It ties to the memory thread:** P4 is a history dependence of the turn read-out under food ramps, and RIA and AIY
-  carry the response it is normalised by (03mc). A mono gradient task is the behaviour in which such a dependence
-  could be useful. Whether evolved brains use it is measured, not assumed.
+**What the exploratory checks of D303 found** (2026-10-16; 0.40 GPU-hours, charged to 03a's cap; records and scripts
+in [`development-records/`](development-records/); world ids 1 481 000 000-511 and 1 481 100 000-255, outside every
+registered range):
+- **The task rewards memory, by a wide scripted gap.** A memoryless family richer than E1's K (one level threshold;
+  speed *and* turn rate set by the level; optional collision avoidance; 1 920 grid points, tuned on 256 tuning
+  worlds) reaches **1.20** targets per episode on 512 check worlds (SE 0.05). The same family with one tick of memory
+  (a separate turn when the level has fallen; nested, so it differs only by the memory) reaches **2.84** (SE 0.04).
+  E1's K and M-avg score 0.95 and 2.22 in the mono world.
+- **Evolution reaches it already.** 04a's 16 champions, trained on stereo Task N, score the same with one nose
+  (median 2.26 against 2.32 with stereo; range 2.03-2.68), as E2d's finding that no Task N champion uses the
+  left-right difference predicts (`experiments/E2d-taskn-diagnosis/RESULTS.md`). Every one beats the tuned
+  memoryless family by about 0.8-1.5 targets, and every one collapses with a constant scent (0.08-0.34).
+- **But their history use is not shown, and is not fast.** Under the jitter probe (the scent read at a random point
+  within r cells, fresh every tick: the level survives, tick-to-tick change becomes noise), the memory controller
+  falls from 2.84 to 1.53, 0.51 and 0.04 at r = 0.5, 1, 2; the memoryless one from 1.20 to 0.82; the champions do
+  not move (median 2.26, 2.26, 2.25, 2.25). Holding the reading for h ticks barely affects them at h ≤ 5 and lowers
+  most at h = 20 (median 1.73), but it also lowers the memoryless controllers, so hold is not specific to memory.
+  So the champions beat every memoryless controller tried without depending on tick-to-tick change. They may use a
+  slow comparison, the body's own dynamics, or a memoryless strategy outside the families tried.
 
-**Alternatives considered (for the reviewers to weigh):**
-- **Task N with stereo sensing:** proven evolvable (04a), but memoryless stereo steering scores 8.78; it is not a
-  memory task, against the roadmap's text.
-- **E3a's shuttle task on a whole N2 brain:** needs memory by construction (E's latch is worth +4.83 visits), but it
-  has never been played by an N2 brain (there is no N2 mapping of its `at_a`/`at_b` signals), its episodes are 600
-  ticks, and from-scratch search for even a 13-parameter selector found one in 1 of 8 GA runs (E3a).
-- **Experiment 02's T1** (20 weys, 200 ticks): a scripted memory share of 0.40 (D034), but 02's champions showed no
-  detected history use, and its cost per episode is about 20 times a one-wey episode's in brain work.
+**What this means for the design:**
+- "A task that requires memory" holds at the task level (the scripted gap), and the evolved level sits above the
+  best memoryless controller found. Whether evolved solutions use history, and at what timescale, is **measured as an
+  attribute of the brains, not assumed**, with a history-erase probe that keeps the current input (§8).
+- The roadmap's other requirement, that solutions use interneurons, becomes a pilot gate measured directly by
+  deletion (§8, criterion 3).
+- **Alternatives considered:** stereo Task N (memoryless stereo steering scores 8.78, so not a memory task); E3a's
+  shuttle on an N2 brain (never played by one; no N2 mapping of its signals; 600 ticks; from-scratch search hard);
+  experiment 02's T1 (20 weys, about 20 times the brain work per episode, and its champions' history use was
+  neither shown nor excluded, 02 RESULTS, though 02b later found a history-dependent read-out of unknown value).
 
 ## 3. Arms and brains
 
-As in the draft (NIP and MIP, both primary; deletion, never silencing; D044):
-- **MIP (reconstruction with information from an intact trained network):** evolve an intact brain; delete X; insert
-  X with random wiring; search only X. **3 intact N2 brains**, each carrying all six targets.
-- **NIP (reconstruction from anatomy alone):** evolve a brain from scratch with X deleted (`deletion.without_neuron`);
-  insert X with random wiring; search only X. **3 NIP N2 brains per target** (18).
-- **Imprinting:** MIP's recovery minus NIP's, per target (§7).
+Deletion, never silencing (D044). For each graph:
+- **Selector brains: 3 intact**, evolved only to choose the targets (§4). They are never used for reconstruction,
+  so target selection does not favour the MIP brains (Astra).
+- **MIP: 5 intact brains**, each carrying all six targets: delete X, insert X with random wiring, search only X.
+- **NIP: 5 brains per target**, each evolved from scratch with X deleted: insert X with random wiring, search only X.
 - **Whole-brain evolution:** 04a's GA unchanged (population 32, 3 elites, top 8 as parents, Gaussian mutation,
-  8 worlds per genome, 1 000 generations), unshaped fitness (the count), champion by validation worlds as in 04a.
-  Motor gains are calibrated once per graph on intact brains and frozen through deletion and reinsertion (D035).
+  8 worlds per genome, 1 000 generations), unshaped fitness (the count), champion chosen on validation worlds as in
+  04a. Motor gains are calibrated once per graph on random genomes of the intact graph, as D035 does, and frozen
+  through deletion and reinsertion.
+- **Batching:** the five NIP brains of one target share one mask (X's edges removed) and run in one lockstep batch;
+  MIP and selector brains share the intact mask. Throughput for these batch sizes is measured in the pilot.
+- **Unit of analysis:** the brain. A target's reading in an arm combines its five brains with equal weight; each
+  brain's own values are reported beside it.
 
 ## 4. The panel: six neurons per graph, by a rule
 
 **Eligible:** neither mapped (sensor or motor, `configs/interface.yaml`) nor pharyngeal; connected by directed paths
-both to and from the interface in that graph. About 245 neurons in N2.
+both to and from the interface in that graph. About 245 neurons in N2. "Interneuron" in this design means this set
+(unmapped computational intermediates), not the dataset's `inter` class; the class is reported per target.
 
-**Relevance:** the mean drop in Task N-mono score when the neuron is deleted from that graph's intact brains,
-measured on target-selection worlds never used for anything else. For a bilateral pair (`configs/mirror_pairs.yaml`,
-the curated annotation, D050), one member is chosen by a fixed seed before any measurement, so its mirror stays in
-the brain; the pair is represented by that member.
+**Bilateral pairs:** for each pair in `configs/mirror_pairs.yaml` (the curated annotation, D050), one member is
+chosen by a fixed seed before any measurement, so its mirror stays in the brain; the pair is represented by that
+member. A pair with only one eligible member is represented by it.
 
-**Tiers (D094: 3 high, 2 medium, 1 low), fixed by rule before any N2 measurement:**
-- **High:** the 3 eligible neurons with the largest drops, each with its drop's lower 95% bound above the margin p
-  (§6). Fewer than 3 qualify: take those that do and record the shortfall; the criterion is never relaxed.
-- **Medium:** 2 drawn with a fixed seed from the eligible neurons whose drop is above p but not among the top 10
-  (proposed band; open question 4).
-- **Low:** 1 drawn with a fixed seed from the eligible neurons whose drop's 95% interval lies inside ±p.
-- The same rule runs in every graph, so the procedure is matched, not the criticality; each tier's drops and degrees
-  are reported per graph.
-- Whether the tiers contain RIA, AIY or AIZ (03m's and 02b's leads) is reported; they are never chosen by hand.
+**Relevance:** the drop in Task N-mono score when the neuron is deleted, on each selector brain, measured on 512
+target-selection worlds used for nothing else; a neuron's relevance is the mean over the three selector brains, with
+a 95% interval from a paired bootstrap over worlds within brains. The margin p is 5% of the selector brains' mean
+intact score on those worlds. Ties are broken by a fixed seeded order.
+
+**Tiers (D094: 3 high, 2 medium, 1 low), relative, so the panel always has six; absolute relevance is reported:**
+- **High:** the 3 eligible neurons with the largest mean drops. A member whose lower bound does not exceed p is
+  flagged "relatively high only".
+- **Medium:** 2 drawn with a fixed seed from the remaining neurons whose interval contains p (Fable). If fewer than 2
+  exist, the rest are drawn from ranks 4-20, flagged.
+- **Low:** 1 drawn with a fixed seed from the neurons whose interval lies inside ±p. If none exists, the neuron with
+  the smallest absolute drop, flagged.
+- The same rule runs in every graph, so the procedure is matched, not the criticality.
+- **Reported per graph:** each tier's drops, intervals, degrees and classes; drops by paired versus unpaired (with
+  identical left and right input, one member of a pair may drop little, so the high tier may be all unpaired, Fable);
+  whether the tiers contain RIA, AIY or AIZ (03m's and 02b's leads). Nothing is chosen by hand.
+- **A selection check:** the six targets' drops are re-measured on the MIP brains on fresh worlds and reported, so
+  selection on the selector brains is not mistaken for relevance in the MIP brains.
 
 ## 5. What the search may change (the 02b risk)
 
-02b found that 94 of the 96 most critical deletion targets in 02's champions connect directly to interface neurons.
-The draft kept X's interface connections fixed and searched only interneuron partners, so for most critical
-targets the recovered part would have been the part that does not make them critical.
+02b found that 94 of the 96 most critical target-champion observations in experiment 02 had edges to interface
+neurons, and that deleting only those edges cost a median 35% of the full deletion's damage
+(`experiments/02b-champion-analysis/RESULTS.md` §4). The draft kept those edges fixed, so its reinsertions would have
+started partly recovered.
 
-**Proposed:** search **all** of X's connections. The candidate pool for every connection type is every
-non-pharyngeal neuron other than X, interface neurons included. Recovery is scored over the whole pool and, as
-pre-declared secondaries, separately over interface and non-interface candidates.
-- The draft excluded interface candidates so that a direct sensor-to-motor shortcut could not make substitution
-  trivial. Here X is told its true numbers of incoming, outgoing and gap partners (as in the draft), so a shortcut
-  must fit X's own degree. A shortcut that scores well is a finding about substitution, reported as such, not a
-  defect.
-- Chemical self-connections are kept as in the original and never searched or scored.
+**Proposed:** search **all** of X's connections. The candidate pool for every connection type is every neuron other
+than X, interface and pharyngeal neurons included, so exact restoration is always possible.
+- X is told its true numbers of incoming chemical, outgoing chemical and gap partners. A sensor-to-X-to-motor
+  shortcut can still fit within them (Astra); it is a legitimate substitution, and recovering a few obvious
+  interface partners is weaker evidence than recovering the rest. So the primary null is stratified (§6), and
+  recovery is reported separately over interface and non-interface candidates.
+- **Chemical self-connection:** if X has one, its presence is kept; its weight is re-initialised by the
+  partner-independent rule and searched with X's other weights (Fable: keeping the evolved weight would leak it in
+  MIP). It is never scored.
 
-## 6. Searches, scoring and margins (the draft's, sized down)
+## 6. Searches, scoring and the recovery statistic
 
 For every target in every brain and arm (a "target-brain"):
-- **Original-partner refits, 3** (the reference): true partners; weights, τ and bias optimised.
+- **Original-partner refits, 3** (the reference): true partners; X's weights, τ and bias optimised.
 - **Random-partner refits, 5:** partners drawn uniformly with the true counts.
-- **Structural-baseline refits, 2:** paired targets, the mirror ranking's and the class model's top-k; unpaired,
-  the class model's and the degree ranking's.
 - **Free searches, 5:** partners, weights, τ and bias.
-- **MIP check:** reinserting X's saved parameters reproduces the intact score (an implementation check).
-- **Initial weights** never use per-edge anatomical magnitudes: every inserted edge starts at `init_w_scale` with a
-  random sign; τ and bias from the pinned initial distributions.
+- **MIP exact restoration:** reinserting X's saved parameters reproduces the intact score (an implementation check).
+- **Deleted-brain score:** each brain's score with X deleted and not reinserted.
+- The draft's structural-baseline *refits* are dropped (Fable: they fed no reading); the structural *rankings* stay,
+  as anatomical comparators at no GPU cost.
 
-**The search:** the draft's replica exchange (4 replicas, 8 offspring, 100 generations, swaps every 5 generations,
-partner moves that keep the counts and keep gap junctions symmetric), with **16 search worlds per evaluated state**
-(proposed, up from 8, because a 300-tick count is noisier than 02's 20-wey score; the pilot checks it). The ladder is
-tuned on pilot graphs only. Refits disable partner moves.
+**Initialisation, independent of the hidden partners:** inserted chemical weights start at magnitude
+`init_w_scale` with a random sign; inserted gap conductances start at the pinned initial gap scale, non-negative
+(`Genome.clamp_` keeps g ≥ 0, Astra); τ and bias from the pinned initial distributions. No per-edge anatomical
+magnitude is used.
 
-**Implementation:** each lockstep batch shares one connectome mask. X's rows and columns hold every candidate edge,
-with weights pinned at zero outside the current partner set. A test checks that this equals a network built with
-exactly that partner set.
+**The search:** the draft's replica exchange (4 replicas at fixed temperatures, 8 offspring per replica per
+generation, the best offspring replacing the current state by the Metropolis-like rule, neighbour swaps every 5
+generations, 100 generations), on **16 search worlds per evaluated state**, shared by all states of a generation. It
+is a tempered optimiser, not an equilibrium sampler, and nothing here relies on sampling guarantees (Astra).
+Partner moves keep the counts and keep gap junctions symmetric; refits disable them. Settled in the pilot's
+development stage and then frozen (§8): the ladder, the mutation-type probabilities, whether one offspring may make
+several partner moves, the search worlds (16 or 32), and whether the *search* signal adds 04a's bounded progress
+bonus to the count (Fable; every reported score stays the raw count).
 
-**Scoring:** the draft's ranking (the mean absolute final weight over the 5 free searches, per connection type),
-ROC AUC against the target's label-permutation null, precision at k, PR-AUC and per-search AUC; functional recovery
-as a fraction of the intact score, on **512 final-evaluation worlds** (proposed; the draft's 64 cannot resolve 5%
-at these scores).
+**Scoring:**
+- **Final evaluation on 2 048 worlds** per scored state (Fable: at p ≈ 0.11 targets and a per-world SD near 1, 512
+  worlds leave most three-state comparisons undetermined).
+- **Ranking:** per target-brain and connection type, each candidate's score is the mean absolute final weight (or
+  conductance) of its connection to X over the 5 free searches (0 if not connected). Ties get the average rank.
+- **Recovery statistic:** the ROC AUC of that ranking against the true partners, averaged with equal weight over
+  the defined connection types, then over the five brains of the arm.
+- **Primary null, stratified (Fable, Astra):** the true-partner labels are permuted within strata defined by the
+  candidate's kind (sensor, motor, pharyngeal, other) crossed with tertiles of its total degree in the graph with X
+  deleted. One permutation is drawn per target and applied to every brain, search and connection type of that
+  target, so brains are not counted as independent anatomical evidence (Astra). B = 10 000.
+- **Structural comparators (no GPU):** the mirror ranking (paired targets), the class-model ranking and the degree
+  ranking, each with its AUC against the same truth, reported beside every task AUC. **Beyond structure** (Astra):
+  the task AUC minus the composite structural AUC (mirror for paired targets, class model for unpaired), and for
+  paired targets the task AUC on the candidates the mirror ranking leaves tied at zero (the draft's SC3-paired).
+- **Also reported:** precision at k against the same null, PR-AUC, per-search AUC, the AUC over interface and over
+  non-interface candidates, and the no-task control's AUC (§8).
 
-**Margins (the draft's):** a performance margin p of 5% of the intact brain's mean score; noise estimates δ_eval and
-δ_search from the pilot, used only for reliability; every performance comparison three-state against ±p
-(equivalent, above, below, undetermined).
+**Margins and attributes (the draft's, restated):**
+- **p** = 5% of the MIP brains' mean intact score on the final-evaluation worlds. δ_eval and δ_search from the
+  pilot are used only for reliability.
+- **Three-state comparisons:** a paired difference on the final-evaluation worlds with its 95% interval, from a
+  bootstrap over worlds within brains and over brains: *equivalent* if inside ±p, *above* if entirely above +p,
+  *below* if entirely below −p, otherwise *undetermined*. Undetermined is never counted either way.
+- **Five attributes per target and arm** (and per target-brain, descriptive): reference reliability (refit SD at
+  most 2 δ_search and, in MIP, the reference not below exact restoration); headroom (reference minus deleted-brain
+  score); original-partner advantage (reference minus mean random-partner refit); functional success (mean free
+  search minus reference: reached if equivalent, exceeded if above, failed if below); overlap (anatomical enrichment
+  if the arm's enrichment test passes under Holm, §7).
+- **Functional recovery** is the free searches' score as a fraction of the MIP brains' mean intact score in both
+  arms; the NIP brains' own deleted and intact-equivalent scores are reported beside it.
 
-**Per-target attributes and outcomes:** the draft's five attributes (reference reliability, headroom,
-original-partner advantage, functional success, overlap) and its derived outcome summary (excluded; anatomical
-recovery; functional success, anatomy undetermined; search failure; inconclusive). Functional substitution is
-claimed only for a set of targets with an equivalence band on chance overlap, which six targets are unlikely to
-give.
+**Outcome summary per target and arm** (Astra: the unit is the target-arm, combining its brains; enrichment and
+functional success come from the same brains and searches):
+- **Excluded:** reference not reliable.
+- **Anatomical recovery:** functional success reached or exceeded, and anatomical enrichment.
+- **Functional success, anatomy undetermined:** functional success reached or exceeded, no enrichment.
+- **Search failure:** functional success failed.
+- **Inconclusive:** anything else.
+A per-search table shows which searches are functionally successful and their AUCs, so a target-level "recovery"
+assembled from different searches is visible. Functional substitution (positive evidence of chance overlap) is not
+claimed at six targets.
 
-## 7. What is read, and what counts as an imprinting effect
+## 7. Registered tests and readings
 
-**Proposed confirmatory family (Holm, 12 members):** for each of the 6 N2 targets, in each arm, anatomical enrichment:
-the target's AUC (aggregated over its 3 target-brains, equal weight) above its label-permutation null, one-sided.
+**Family 1, anatomical enrichment (Holm, 12 members):** for each of the 6 N2 targets in each arm, the arm's recovery
+statistic against the stratified null, one-sided.
 
-**Proposed expansion criterion (D094's "imprinting effect"), registered as a reading, not a test:** at least one
-target, in a high or medium tier, has
-1. MIP anatomical enrichment (passing under Holm) with functional success reached or exceeded, and
-2. a MIP − NIP AUC difference whose 90% interval (bootstrap over target-brains and searches) lies above 0.
+**Family 2, imprinting (Holm, 5 members: the high and medium targets):** for each, the difference MIP − NIP in the
+recovery statistic, by an exact permutation of arm labels over the ten brains (252 splits, one-sided), counted only
+if the difference is also at least **0.05 AUC**. The low target's contrast is reported, not tested. With 5 brains per
+arm the smallest attainable p is 1/252 ≈ 0.004, below the strictest Holm level 0.01, so a contrast that separates
+the arms completely can pass.
 
-And the proof of concept "separates the outcomes" if its targets are not all excluded, and at least two different
-outcome summaries occur among the non-excluded ones. Both readings are reported whatever they say; expansion still
-needs the owner's word and its own pre-registration (D094).
+**The registered readings:**
+- **"Imprinting effect" (D094's condition for expansion):** at least one high or medium target passes family 2,
+  has anatomical enrichment in MIP (family 1) and functional success reached or exceeded in MIP.
+- **"The proof of concept separates the outcomes":** at least two of the three substantive outcomes (anatomical
+  recovery; functional success, anatomy undetermined; search failure) occur among the 12 target-arms (Fable).
+- Both readings are reported whatever they say. Neither is evidence of a mechanism. Expansion still needs the
+  owner's word, a stated reason, and its own pre-registration with independent brains (D094; Astra).
 
-**Descriptive:** every attribute per target-brain; the cross-table; the panel-mean MIP − NIP AUC with its interval;
-the no-task control (§8); per-target stratification by whether X has interface partners; whether the high tier
-includes 03m's leads.
+**Descriptive:** every attribute per target-brain and target-arm, with the cross-table; all brain-level contrasts
+and the leave-one-brain-out range of each imprinting contrast; the panel-mean MIP − NIP with its interval; the
+beyond-structure contrasts; the selection check; the history-erase probe and the other probes on every evolved brain
+(§8); stratification by whether X has interface partners.
 
-## 8. Controls, null graphs and the pilot
+## 8. Controls, the pilot and the probes
 
-**Null graphs (D094 allows the null arms to be cut first):** proposed, one of experiment 03's validated ensembles,
-**SH-mirror**, with 3 graphs (fresh seeds), each with its own panel by the same rule, 1 intact brain and 1 NIP brain
-per target. N2 against SH-mirror is descriptive at this size. SH-mirror is proposed because mirror symmetry is the
-most generic explanation for recovered partners (the mirror ranking predicts many of them); SH-route is the
-alternative (routing changes which neurons are critical). Open question 3.
+**Null graphs:** the formal null arm is cut (both reviewers): three SH-mirror graphs with one brain per arm would
+support only a descriptive comparison at about a third of the cap. The pilot's SH-mirror graphs give a descriptive
+shuffled-graph anchor. A null comparison belongs to the expansion. (SH-mirror is also routing-matched as SH-route,
+`wormwars/exp03/samplers.py`.)
 
-**No-task control:** free searches with fitness identically zero, for every N2 target in one MIP brain. With zero
-fitness the search is a random walk over partner sets, so it needs no simulation and costs nothing on the GPU. It
-tests the pipeline for bias toward true partners.
+**No-task control:** free searches with fitness identically zero, for every N2 target in one MIP brain. Every
+offspring is accepted, so the search is a random walk over partner sets and needs no simulation. It tests the
+pipeline for bias toward true partners, against the stratified null. It cannot rule out generic routing preferences
+that appear only under task selection (Astra).
 
-**Dropped from the draft (stated):** the mismatched-task control; ordinary SH as a second null; whole-brain RD.
+**Probes on every evolved brain (descriptive; Task N-mono, 2 048 worlds each):**
+- **History erase (new; Astra's matched-current-input probe):** every k ticks (k = 10, 20, 50), each neuron's state
+  is replaced by the brain's steady state under the current input held fixed, so the current input acts but history
+  older than k ticks is erased. The same probe on the memoryless and memory scripted controllers is its calibration.
+- The constant scent, jitter (r = 1) and hold (h = 20) probes, as in D303.
+- A P4-style ramp on the evolved brain (rising against falling to the same level, the turn and speed read-outs).
 
-**Implementation tests before any GPU work** (the draft's list): deletion equals a network without X; the union mask
-with zeroed edges equals the partner-set network; direction (in and out unswapped); gap symmetry after moves;
-degrees constant during a search; common random numbers; a planted optimum on a small synthetic problem; the
-no-task control's AUC distribution matches the permutation null.
+**Implementation tests before any GPU work:**
+- deletion equals a network built without X; the union mask with zeroed edges equals the network built with exactly
+  that partner set, including gap contributions to neighbours' denominators, at a tolerance declared in the test;
+- the frozen background is bitwise unchanged by reinsertion (weights copied by edge identity, never re-initialised;
+  Astra);
+- in NIP evolution, X's edges stay at zero through initialisation and every mutation;
+- direction (in and out unswapped); gap symmetry after moves; degrees constant during a search; common random
+  numbers;
+- **an information boundary:** changing the hidden truth while keeping the allowed inputs leaves initialisation and
+  free-search proposals unchanged, with sabotage checks that pinning and truth isolation fail when broken (Astra);
+- a planted optimum on a small synthetic problem; the no-task control's AUCs match the stratified null.
 
-**The pilot (GPU; graphs SH-mirror pilot seeds outside every formal draw; never N2):**
-- 2 pilot graphs; per graph 1 intact brain, the panel rule's 3 high targets plus 1 low target, 1 NIP brain per
-  target: 8 targets, 10 whole-brain evolutions.
-- **Pass criteria, all required:**
-  1. **Memory in the task, scripted (step 1, before any evolution):** in the mono world, the best tuned memory
-     controller beats the best tuned memoryless one by a paired lower bound above a registered margin.
-  2. **Evolved brains use the cue and beat memoryless control:** the pilot's intact champions beat K-mono's tuned
-     score (paired lower bound above 0), and lose score under the constant-scent probe.
-  3. **Resolution:** δ_eval and δ_search at most p/2.
-  4. **Headroom and identifiability in NIP** (interneuron use): at least 3 of the 8 targets have a reliable
-     reference, headroom present and original-partner advantage present.
-  5. **MIP recovery:** on the targets passing (4), MIP free searches reach functional success with anatomical
-     enrichment on at least half.
-  6. **Timing:** the measured throughput projects the whole formal design under the remaining cap.
-- If the pilot fails, the formal panel does not run, and the pilot is reported.
+**The pilot, in two stages (Astra: development separate from the feasibility check), on SH-mirror graphs with seeds
+outside every formal draw, never N2:**
+- **Pilot-dev** (one graph; at most 6 GPU-hours): evolves selector, MIP and NIP brains for 2 targets; tunes what §6
+  leaves open; records the search diagnostics (Q, the fraction of true partners connected, along each trajectory;
+  partner turnover; accepted topology moves; ranking agreement on independent worlds; a 2× longer search on a
+  subset). Its outputs are frozen in the pre-registration's pilot protocol before pilot-check runs.
+- **Pilot-check** (two fresh graphs, the frozen protocol): per graph 1 selector brain, 1 MIP brain and 1 NIP brain
+  per target, for the panel rule's 3 high targets and 1 low target: 8 targets in all.
+- **Pass criteria, all required, evaluated on pilot-check:**
+  1. **Scripted memory gap** in the mono world, re-measured on registered tuning and check worlds: the memory family
+     beats the memoryless family by a paired 95% lower bound of at least 0.5 targets.
+  2. **Evolved brains beat memoryless control and use the cue:** each pilot graph's MIP brain beats the tuned
+     memoryless family by a paired lower bound above 0.5 targets, and loses at least half its score under the
+     constant scent.
+  3. **Solutions use interneurons** (Fable): each pilot graph has at least 3 eligible neurons whose drop's lower
+     bound exceeds p.
+  4. **Resolution:** δ_eval and δ_search at most p/2.
+  5. **Headroom and identifiability in NIP:** at least 3 of the 8 targets have a reliable reference, headroom
+     present and original-partner advantage present.
+  6. **MIP recovery:** on the targets passing (5), MIP free searches reach functional success, with the stratified
+     enrichment p below 0.05, on at least half.
+  7. **Timing:** the measured throughput projects the formal design within the remaining cap.
+- If the pilot fails, the formal run does not happen, and the pilot is reported. One pilot-check attempt; a
+  second needs the owner's word.
 
-## 9. Order of work and budget
+## 9. Order of work
 
-**Order:**
-1. Mono-world scripted gate (E1's controller families, tuned on fresh tuning worlds): CPU or a few GPU-minutes.
-2. Code and implementation tests (CPU), reviewed by both.
-3. Pilot (GPU; the owner's word first), reported openly.
-4. Pre-registration, reviewed, bound and pushed before any N2 brain is evolved.
-5. Formal run (the owner's word first), results, review, publication.
+1. Code and implementation tests (CPU), reviewed by both.
+2. Pilot-dev (GPU; the owner's word first), reported openly.
+3. Pre-registration with the frozen pilot protocol, reviewed by both, bound and pushed.
+4. Pilot-check under the registration; if it passes, the formal N2 run (the owner's word before each GPU stage).
+5. Results, review by both, publication.
 
-**Budget (72 GPU-hours, pilot included, registered in code, never extended).** At a conservative 420 episodes per
-second (8-run lockstep batches; the wider compositions the searches allow measured about 1 000):
+## 10. Budget (72 GPU-hours, everything included, registered in code, never extended)
+
+At a conservative 420 episodes per second (the measured 8-run lockstep rate; the search batches can be wider, where
+about 1 000 was measured, E2d):
 
 | Workload | Count | Episodes | Hours at 420/s |
 |---|---|---|---|
+| Exploratory checks so far (D303) | | | 0.40 |
 | One search (100 gen × 4 replicas × 9 states × 16 worlds) | | 57 600 | 0.038 |
-| One target-brain (15 searches) | | 864 000 | 0.57 |
-| N2 target-brains: MIP 6 × 3, NIP 6 × 3 | 36 | 31.1 M | 20.6 |
-| N2 whole-brain evolutions: 3 intact + 18 NIP, 256 000 episodes each | 21 | 5.4 M | 3.6 |
-| SH-mirror target-brains: 3 graphs × 6 targets × 2 arms | 36 | 31.1 M | 20.6 |
-| SH-mirror evolutions: 3 × (1 + 6) | 21 | 5.4 M | 3.6 |
-| Pilot: 16 target-brains + 10 evolutions | | 16.4 M | 10.8 |
-| Relevance scans, final evaluations (512 worlds), scripted gate, checks | | about 3 M | 2 |
-| **Total** | | **about 92 M** | **about 61** |
+| One target-brain (13 searches) | | 748 800 | 0.50 |
+| N2 target-brains: 6 targets × (5 MIP + 5 NIP) | 60 | 44.9 M | 29.7 |
+| N2 whole-brain evolutions: 3 selector + 5 MIP + 30 NIP, 256 000 episodes each | 38 | 9.7 M | 6.4 |
+| N2 final evaluations (2 048 worlds), relevance scan, probes | | 2.5 M | 1.6 |
+| Pilot-dev (cap) | | 9.1 M | 6.0 |
+| Pilot-check: 2 graphs × (6 evolutions + 8 target-brains) + evaluations | | 15.9 M | 10.5 |
+| Scripted gate (registered re-measurement) | | 2.0 M | 1.3 |
+| **Total** | | **about 84 M** | **about 56** |
 
-At the measured wide-batch rate it would be about 26 hours. **The cut order if the pilot's projection exceeds the
-remaining cap:** SH-mirror to 2 graphs, then no null arm, then random-partner refits and free searches 5 → 3 (with
-pilot criteria 4-5 re-checked at the reduced counts), then stop and report. The six neurons, both arms, the reference
-refits and N2's three brains per arm are never cut (D094).
+The reserve is about 16 hours at 420/s; at the wide-batch rate the whole would be about 24 hours. Failed attempts
+count. **Cuts, decided from pilot-dev's timing before pilot-check runs:** random-partner refits 5 → 3; then free
+searches 5 → 4; then brains per arm 5 → 4; then stop and report. Final-evaluation precision and the selector brains
+are kept before search count (Astra). The six neurons and both arms are never cut (D094).
 
-## 10. Open questions for the reviewers
+## 11. Open questions for the reviewers
 
-1. **The task.** Is Task N-mono a defensible "task that requires memory" for this proof of concept, given a scripted
-   gap of about one target (M-avg 2.16 against K 1.03)? Is pilot criterion 2 (beat K-mono, lose score under the
-   constant probe) the right operational check that evolved solutions use history, or is a direct history probe
-   needed (for example, a P4-style ramp on the evolved brain, or a scent whose recent history is scrambled)?
-2. **The 02b risk.** Searching all connections with interface candidates included (§5), or the roadmap's other
-   option (choose targets whose relevance does not come from interface adjacency)?
-3. **The null arm.** SH-mirror or SH-route, and is 3 graphs worth its 24 hours, or should the proof of concept be N2
-   only with the null arm left to the expansion?
-4. **The tiers.** Are the high, medium and low bands (§4) well defined, and is "medium = drop above p, outside the
-   top 10" sensible with six targets?
-5. **The confirmatory family and the expansion criterion (§7).** Per-target enrichment under Holm, and a registered
-   expansion reading: right for a proof of concept, or should the proof of concept register no hypothesis tests at
-   all and only the readings?
-6. **Anything in the draft's machinery** (attributes, three-state margins, reliability, structural baselines) that
-   should be simplified at six targets, or that no longer fits the new task.
-7. **The budget arithmetic** and the cut order.
+1. **The task, given D303:** evolved brains beat every memoryless controller tried by about one target, yet ignore
+   fast history. Is Task N-mono still the right task, with history use measured (history erase) rather than gated?
+   Or should history use be a gate, at the risk that the pilot fails on a task otherwise suited to the question?
+2. **The history-erase probe** (§8): is resetting to the steady state under the current input a sound
+   matched-current-input history ablation, and what should calibrate it?
+3. **Family 2:** 5 brains per arm and an exact arm-label permutation with a 0.05 AUC floor. Is this an honest
+   imprinting test, or should the proof of concept keep the contrast descriptive (Astra's preference in round 1)?
+4. **The stratified null** (§6): are kind × degree tertiles the right strata, and is one shared permutation per
+   target right?
+5. **Pilot-check's size** (1 selector, 1 MIP, 1 NIP per target per graph) and criteria 1-7: enough to decide, and
+   are the thresholds right?
+6. **The budget** and the cut order.
+
+## 12. Changes from v4 (round 1: run 20261016-174135; both "revise")
+
+- **Task:** kept, with D303's checks (Fable: test the 04a champions under mono first). The memory gate is now
+  against a richer memoryless family (Astra: K is a narrow baseline) and the champions' history use is reported as
+  not shown; a history-erase probe with the current input matched is added (Astra); constant-probe and
+  beat-K criteria alone no longer stand as evidence of history (both).
+- **Interneuron use is a pilot gate,** by deletion (Fable 4); "interneuron" is defined (Astra 8).
+- **Target selection on separate selector brains** (Astra 2); relative tiers that always give six, with absolute
+  relevance flagged (Astra) and the medium and low bands by interval against p (Fable 7); pair rules,
+  paired-versus-unpaired report (Fable 8); a selection check on the MIP brains.
+- **The 02b wording corrected:** about a third of the damage, not "the part that does not make them critical"
+  (Astra 11).
+- **Recovery null stratified by kind and degree,** one shared permutation per target (Fable 1-2, Astra 4-5);
+  structural rankings as AUC comparators and a beyond-structure reading (Astra 4); structural refits dropped (Fable).
+- **The imprinting test** is now a Holm family with a 0.05 AUC floor, 5 brains per arm and exact permutations
+  (Astra 5, Fable 9: the old expansion reading's chance rate was about 20%); the separation reading needs two
+  substantive outcomes (both).
+- **Unit of analysis and outcome unit** defined (Astra 9); a per-search coincidence table (Astra 5).
+- **2 048 final-evaluation worlds; 512 selection worlds** (Fable 6).
+- **The search:** tunable choices listed and frozen after pilot-dev; diagnostics added (Astra 8, Fable 10); not
+  described as an equilibrium sampler (Astra).
+- **Implementation contracts:** gap initialisation non-negative; pharyngeal candidates included; self-connection
+  weight re-initialised; background bitwise; NIP pinning; information-boundary and sabotage tests (Astra 7, Fable 12).
+- **Calibration wording** corrected to D035's random genomes (Fable); functional recovery's denominator defined
+  (Fable); `P_FRONT_C` named (both).
+- **The formal null arm cut** (both); SH-mirror for the pilot (both).
+- **Pilot split** into development and a frozen check (Astra 12); budget recomputed with the reserve both asked for.
+- **Limits stated** in §1 (Astra 3).

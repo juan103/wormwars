@@ -9164,3 +9164,36 @@ for the reviewers:
   effect".
 - **Budget:** about 92 million episodes, about 61 GPU-hours at 420 per second (about 26 at the wide-batch rate), with
   a cut order that never touches the six neurons, the arms, the references or N2's brains.
+
+## D303 — 03a's design v5 after round 1 (both "revise"); exploratory checks of Task N-mono
+
+**Round 1** (run 20261016-174135, archived in `docs/reviews/20261016-03a-design-v4/`): Astra 6 and Fable 5.1 both said
+"revise". Both confirmed the budget arithmetic and the throughputs; both found the memory check too weak (beating
+level kinesis and losing under a constant scent do not show history use), the "separates the outcomes" reading
+passable by noise, and the formal null arm not worth its cost. Astra found that selecting targets on the MIP brains
+favours MIP, that MIP − NIP mixes retained information, compensation and headroom, that recovery needs a structural
+comparator, that the expansion reading had no multiplicity control (about 23% chance at five targets), and several
+implementation contracts (gap initialisation is non-negative, background weights must be copied by identity, NIP
+edges must stay pinned). Fable found that the recovery null must be stratified by interface kind and degree, that
+interneuron use needs its own pilot gate, that 512 final worlds cannot resolve p, and that the medium tier could be
+empty. v4 also overstated 02b (interface-only deletion costs a median 35% of the damage, not all of it; Astra).
+
+**Exploratory checks (Fable: test the 04a champions under mono first), 2026-10-16, 0.40 GPU-hours charged to 03a's
+cap** (0.33 recorded in `development-records/compute.json`; about 0.07 more in two smoke attempts whose records were
+deleted with their folder before the real run). World ids 1 481 000 000-511 and 1 481 100 000-255, outside every
+registered range. Records and scripts: `experiments/03a-self-consistency/development-records/`.
+- 04a's 16 champions score the same with one nose (median 2.26, stereo 2.32) and collapse under a constant scent
+  (0.08-0.34).
+- A memoryless mono family richer than E1's K (speed and turn by level, collision avoidance; 1 920 points) reaches
+  1.20 on the check worlds; its nested one-tick-memory version 2.84. So the task rewards memory, and every champion
+  sits 0.8-1.5 targets above the best memoryless controller found.
+- Under the jitter probe (r = 0.5, 1, 2) the memory controller falls to 1.53, 0.51, 0.04 and the champions do not
+  move (median 2.26-2.25). Holding the reading lowers champions only at h = 20, and lowers memoryless controllers too.
+  So the champions' history use is not shown, and is not tick-to-tick.
+
+**v5** (`experiments/03a-self-consistency/DESIGN.md`, §12 lists every change): separate selector brains; relative
+tiers with absolute relevance flagged; a stratified permutation null shared per target, with structural rankings as
+comparators; 5 brains per arm and an exact-permutation imprinting family (Holm, 0.05 AUC floor); 2 048 final worlds;
+the null arm cut; interneuron use as a pilot gate; a history-erase probe that keeps the current input; the pilot
+split into development and a frozen check; about 56 of 72 GPU-hours at 420 episodes per second. The task stays,
+with history use measured rather than assumed; whether it should be a gate is put back to both reviewers.
