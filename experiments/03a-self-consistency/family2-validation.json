@@ -1,0 +1,217 @@
+{
+ "stage": "family2",
+ "smoke": false,
+ "provenance": {
+  "git_commit": "bb42654cb5b0245d43652853b09b05e0a7e3adc0",
+  "branch": "roadmap",
+  "dirty": false,
+  "python": "3.13.3",
+  "numpy": "2.4.4",
+  "torch": "2.12.0+cu130",
+  "cuda": "13.0",
+  "gpu": "NVIDIA GeForce RTX 5080",
+  "connectome_cache_sha256": "43b87aa172a0042b9dce734b15bdf1c87efe3a33ac1cc0d9cd03255a60c96d4a",
+  "connectome_source_sha256": "1f4fdbf84746b69b49a8da0816f52787860ce349b638dce37924ba80f90c70c9"
+ },
+ "dev": {
+  "graph": {
+   "kind": "SH-mirror",
+   "seed": 3403000,
+   "passes": 20
+  },
+  "cap_gpu_hours": 6.0,
+  "experiment_cap_gpu_hours": 72.0,
+  "charged_before_hours": 0.53,
+  "world_seed": 1100001,
+  "ids": {
+   "train": [
+    1482000000,
+    500000
+   ],
+   "validation": [
+    1482600000,
+    256
+   ],
+   "selection": [
+    1482610000,
+    512
+   ],
+   "final": [
+    1482620000,
+    2048
+   ],
+   "probe": [
+    1482630000,
+    2048
+   ],
+   "search": [
+    1482700000,
+    100000
+   ]
+  },
+  "runs": {
+   "selector": 3403010,
+   "mip": 3403011,
+   "nip_base": 3403020
+  },
+  "checkpoint_every": 25,
+  "panel": {
+   "pair_seed": 3403001,
+   "tier_seed": 3403002,
+   "bootstrap": 10000,
+   "boot_seed": 3403003,
+   "targets": "the two highest-relevance representatives (high tier, ranks 1 and 2)"
+  },
+  "search_seed_base": 3403100,
+  "tune": {
+   "default": {
+    "temperatures": [
+     0.1,
+     0.2,
+     0.4,
+     0.8
+    ],
+    "p_move": 0.3333333333333333,
+    "max_moves": 1,
+    "shaping": 0.0
+   },
+   "ladders": [
+    [
+     0.03,
+     0.06,
+     0.12,
+     0.24
+    ],
+    [
+     0.1,
+     0.2,
+     0.4,
+     0.8
+    ],
+    [
+     0.3,
+     0.6,
+     1.2,
+     2.4
+    ]
+   ],
+   "moves": [
+    [
+     0.3333333333333333,
+     1
+    ],
+    [
+     0.3333333333333333,
+     3
+    ],
+    [
+     0.6,
+     1
+    ],
+    [
+     0.6,
+     3
+    ]
+   ],
+   "shaping": [
+    0.0,
+    0.5
+   ],
+   "searches": 2,
+   "swap_band": [
+    0.2,
+    0.4
+   ],
+   "swap_aim": 0.3,
+   "tie": 0.02
+  },
+  "longer": {
+   "factor": 2,
+   "searches": 2,
+   "on": "the MIP target-brains"
+  },
+  "probe": {
+   "L": [
+    5,
+    10,
+    20,
+    50
+   ],
+   "control_L": 10
+  },
+  "null_B": 10000,
+  "null_seed": 3403004,
+  "boot": {
+   "B": 10000,
+   "seed": 3403005
+  },
+  "margin_fraction": 0.05,
+  "family2": {
+   "datasets": 20000,
+   "seed": 3403006
+  }
+ },
+ "rerun_reason": null,
+ "started_utc": "2026-10-17T17:02:00Z",
+ "scenarios": [
+  {
+   "name": "independent",
+   "icc": 0.0,
+   "nip_sd": 1.0,
+   "null": true,
+   "datasets": 20000,
+   "rate": 0.0408,
+   "se": 0.001398845238044581,
+   "floor": null,
+   "passes": true
+  },
+  {
+   "name": "shared MIP effect, icc 0.3",
+   "icc": 0.3,
+   "nip_sd": 1.0,
+   "null": true,
+   "datasets": 20000,
+   "rate": 0.03765,
+   "se": 0.0013459657777967462,
+   "floor": null,
+   "passes": true
+  },
+  {
+   "name": "shared MIP effect, icc 0.5",
+   "icc": 0.5,
+   "nip_sd": 1.0,
+   "null": true,
+   "datasets": 20000,
+   "rate": 0.03805,
+   "se": 0.001352815536205879,
+   "floor": null,
+   "passes": true
+  },
+  {
+   "name": "unequal variances (NIP sd 2)",
+   "icc": 0.0,
+   "nip_sd": 2.0,
+   "null": false,
+   "datasets": 20000,
+   "rate": 0.049,
+   "se": 0.0015264173741149569,
+   "floor": null,
+   "passes": null
+  },
+  {
+   "name": "unequal variances (NIP sd 0.5)",
+   "icc": 0.0,
+   "nip_sd": 0.5,
+   "null": false,
+   "datasets": 20000,
+   "rate": 0.05085,
+   "se": 0.0015534522441967762,
+   "floor": null,
+   "passes": null
+  }
+ ],
+ "accept": 0.0531,
+ "passes": true,
+ "status": "completed",
+ "seconds": 0.9453206062316895
+}
