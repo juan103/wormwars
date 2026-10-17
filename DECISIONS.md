@@ -9223,3 +9223,14 @@ history use stays unshown. 03a's exploratory GPU time is now 0.53 hours (0.46 re
 pilot. Fable: measure it, gate on interneuron use, which the hypothesis needs. Astra: the roadmap's "a task that
 requires memory" makes useful history a feasibility requirement; otherwise narrow the requirement explicitly. v6 is
 written for the first, with the gate written out as pilot criterion 8 for the second.
+
+## D305 — The owner: 03a measures history use and does not gate on it
+
+Asked to settle the one point the reviewers did not agree on (D304), the owner chose (2026-10-17) **"Measure, don't
+gate"**: the pilot requires interneuron use; whether evolved brains use history is measured on every brain with the
+bounded-history probe and reported. ROADMAP.md's 03a requirement ("use a task that requires memory") is annotated,
+dated, as read for the proof of concept: a task that rewards memory. DESIGN.md v6 records the choice; pilot criterion
+8, written for the other option, does not apply.
+
+Next: the code and its implementation tests (CPU), reviewed by both; then pilot-dev, which needs the owner's word for
+the GPU.

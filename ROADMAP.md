@@ -565,6 +565,7 @@ The first social experiments use colonies of clones: one genome for every wey, e
 - **Keep:** the question; the feasibility pilot on shuffled graphs only, never N2; the three-outcome classification (anatomical recovery, functional substitution, search failure).
 - **Change:**
   - **Task.** If P4 replicates, use a task that requires memory. In any case, the feasibility pilot must show that solutions to the task use interneurons.
+    *Annotated 2026-10-17 (the owner, D305): for the six-neuron proof of concept, "requires memory" is read as a task that rewards memory (Task N with one nose: scripted controllers gain 1.64 targets from one tick of memory, D303). Whether evolved brains use history is measured on every brain and reported, not required; the pilot requires interneuron use (design v6, `experiments/03a-self-consistency/DESIGN.md`).*
   - **The 02b risk.** The connections that make neurons critical (to sensor and motor neurons) are ones v3.2 keeps fixed. Either search the targets' interface connections, or pick targets whose criticality does not come only from interface adjacency.
   - **Nulls.** Use experiment 03's validated ensembles, with several graphs each, instead of unconstrained SH.
   - **Budget.** Fit the design to the measured throughput. ~~Shrink the panel (24, then 16, then 12) or the searches before extending the cap, and say which was cut.~~ *Superseded 28 September by the owner's proof-of-concept decision below.*

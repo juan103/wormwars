@@ -1,6 +1,6 @@
 # 03a: the self-consistency hypothesis, a six-neuron proof of concept (design v6)
 
-**Status:** design v6, 2026-10-16. Not a pre-registration. Nothing specific to 03a has been coded or run, apart from
+**Status:** design v6, 2026-10-16; the owner's choice in §2 made 2026-10-17 (D305). Not a pre-registration. Nothing specific to 03a has been coded or run, apart from
 the exploratory scripted checks in §2 (D303, D304).
 - **v4** (`eeeeb60`, D302): both reviewers said "revise" (run 20261016-174135, `docs/reviews/20261016-03a-design-v4/`).
 - **v5** (`9a11651`, D303): Fable "ready for the pre-registration, with small fixes"; Astra "revise" (run
@@ -98,16 +98,18 @@ tick, so the level survives and fast change becomes noise.)
   integrate over a longer window, use the body's own dynamics, or use a memoryless strategy outside the families
   tried. Which, is open.
 
-**The owner's choice (pending; D304).** The reviewers disagree on what this means for the roadmap's requirement:
+**The owner's choice (D304; decided 2026-10-17, D305: "Measure, don't gate").** The reviewers disagreed on what this
+means for the roadmap's requirement:
 - **Fable:** keep Task N-mono and measure history use, not gate on it. The hypothesis needs reconstructable
   interneuron use, which the pilot gates directly (criterion 3), and a history gate would fail a task on which
   evolution plainly finds something above the memoryless family.
 - **Astra:** the roadmap asks for a task that requires memory; useful neural history should then be a feasibility
   requirement, applied to the formal N2 brains too, and pilot failure is an acceptable result. Otherwise, narrow the
   requirement explicitly and describe 03a as task-conditioned reconstruction without demonstrated memory use.
-- **This design assumes the first** (measure, with the requirement explicitly narrowed and the roadmap annotated),
-  until the owner decides. Under the second, history use becomes pilot criterion 8 (§8), on the validated
-  bounded-history probe, and the pilot is likely to fail on present evidence.
+- **The owner chose the first.** History use is measured on every evolved brain and reported, not required; the
+  roadmap's requirement is annotated, dated (ROADMAP.md, "03a: redesign after 03r"), and 03a is described as
+  task-conditioned reconstruction on a task that rewards memory, without assuming the brains use it. Pilot
+  criterion 8 (§8), written for the second option, does not apply.
 
 **Alternatives considered:** stereo Task N (memoryless stereo steering scores 8.78, so not a memory task); E3a's
 shuttle on an N2 brain (never played by one; no N2 mapping of its signals; 600 ticks; from-scratch search hard);
@@ -361,7 +363,7 @@ rule out generic routing preferences that appear only under task selection.
   6. **Search diagnostics:** within the thresholds frozen by pilot-dev.
   7. **Timing:** pilot-dev's measured throughputs project the formal design within the remaining cap, with the cuts
      of §10 applied first if needed.
-  8. **Only if the owner chooses Astra's reading (§2):** each graph's MIP brain loses at least 0.3 targets under the
+  8. *Not applied (the owner chose to measure history use, D305).* **Only if the owner chooses Astra's reading (§2):** each graph's MIP brain loses at least 0.3 targets under the
      bounded-history probe at the L chosen by pilot-dev, more than the KT calibrator loses at that L.
 - The scripted gap is re-measured on registered check worlds (the D303 and D304 winners, not re-tuned) and reported;
   it is not a gate, since at 2.84 against 1.20 it cannot fail (Fable).
@@ -370,7 +372,7 @@ rule out generic routing preferences that appear only under task selection.
 
 ## 9. Order of work
 
-1. The owner's choice in §2.
+1. The owner's choice in §2 (made, D305).
 2. Code and implementation tests (CPU), reviewed by both.
 3. Pilot-dev (GPU; the owner's word first), reported openly.
 4. Pre-registration with the frozen pilot protocol and family 2's simulated-null validation, reviewed by both, bound
@@ -408,7 +410,7 @@ silently remove a registered test). The six neurons and both arms are never cut 
 
 ## 11. Open questions
 
-1. **For the owner:** history use measured (Fable) or gated (Astra), §2.
+1. **For the owner:** history use measured (Fable) or gated (Astra), §2. *Decided 2026-10-17: measured (D305).*
 2. **For the reviewers, if a round 3 is needed:** the bounded-history probe's definition; family 2 as one pooled test;
    pilot criteria 1-8.
 
