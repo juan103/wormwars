@@ -9253,3 +9253,21 @@ the replay probe's timing, bitwise scope, validation and expected calibrator res
 empty set; one shared world resample across brains; the stratified null's remaining rules; MCL and MCR are both
 pharyngeal and mapped pump motors, so "no neuron is both" was wrong; a §1 limit from D305; the budget's probes and
 pilot-check itemised (about 56.3 of 72 GPU-hours at 420 episodes per second).
+
+## D307 — 03a's design agreed (v7.1, round 4: both "ready for the pre-registration")
+
+**Round 4** (run 20261017-152826, archived in `docs/reviews/20261017-03a-design-v7/`): Astra 6 and Fable 5.1 both said
+"ready for the pre-registration, with small fixes". Astra reduced every cell of §2's table and every row of §10 from
+the committed records; Fable checked the budget and the KTS rows. Both confirmed family 2 (five exact per-target tests
+under Holm) as valid under the shared MIP brains.
+
+**v7.1 takes every fix** (`experiments/03a-self-consistency/DESIGN.md` §12): pilot criterion 4 no longer gates NIP
+original-partner advantage, which a shuffled graph has no task reason to show (Fable), and that advantage is gated in
+MIP instead; random-partner refits are drawn within the null's strata; δ_search is frozen as a fraction of p, since
+shuffled-graph brains score lower; family 2's calibration includes shared MIP effects inside the null, with 20 000
+datasets per scenario and an acceptance bound of 0.0531, and a withheld target keeps p = 1; the replay probe's first
+affected action is 2L + 1, and no nonspecific-disruption control is run, stated; wording fixes (the champions show
+little measured loss at jitter r = 2, per champion −0.06 to +0.03).
+
+**Consensus:** v7.1 is the basis of 03a's pre-registration; the owner is informed. Next: the code and its
+implementation tests (CPU), reviewed by both; then pilot-dev, which needs the owner's word for the GPU.

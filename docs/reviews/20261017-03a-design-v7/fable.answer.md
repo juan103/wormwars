@@ -1,0 +1,41 @@
+**Verdict: ready for the pre-registration, with fixes.** Two of them must land in the pre-registration text before the pilot protocol is frozen: pilot criterion 4 gates on a quantity that a shuffled graph has no reason to show, and the frozen reliability threshold is in absolute score units taken from lower-scoring graphs. Everything else is wording. The owner's decision (D305) is described accurately in §1, §2, §8 (criterion 8 struck), §11 and the roadmap annotation, and its consequence now appears as a §1 limit.
+
+## 1. My round-3 findings
+
+| Round 3 (fable.answer.md) | Status | Where |
+|---|---|---|
+| 1. Family 2 ignored the shared MIP brains (medium) | **Resolved.** Per-target exact test, Holm over a fixed five, the pooled mean descriptive with no p; the sharp-null simulation separated from the ICC 0.3/0.5 and unequal-variance robustness checks. Holm's arithmetic is right: 2/252 = 0.0079 < 0.01 < 3/252. | `DESIGN.md:291-313` |
+| 2. Replay probe scope, KTM expectation, bitwise claim (low) | **Resolved.** Reset timing, CPU-bitwise versus same-composition CUDA, KTM "must be unaffected", τ distribution reported, "a loss is not uniquely useful sensory memory". I checked the brain's state is the voltage tensor alone, started at zeros, with no noise (`wormwars/brain.py:431-434`), motors are applied without a filter (`wormwars/world.py:901, 955`) and the inputs are food and collision senses only (`wormwars/interface.py:26-40`), so "rebuild from zeros and replay inputs" is fully defined. Worth stating that in §8. | `DESIGN.md:340-359` |
+| 3. "No neuron is both" false (low) | **Resolved.** MCL and MCR named, pump motors stay "motor". | `DESIGN.md:232-235` |
+| 4. Criterion 3 scales with the pilot graph's p (low) | **Resolved.** Judged at the pilot graph's p, also reported at 5% of 2.26. Using 04a's champions as the reference is better than my "N2 selector brains", since it is known now. | `DESIGN.md:400-402` |
+| 5. §1 lacked D305's consequence (low) | **Resolved.** | `DESIGN.md:61-63` |
+| 6. Small budget and table points (low) | **Resolved.** T = 50 row, SEs 0.01-0.05, 245/246 consistent, exploratory worlds footnoted, probes at 14 equivalents. | `DESIGN.md:81-92, 436-447` |
+| 7. Cut order note | **Taken.** The frozen protocol restates the ranking and no-task control over four searches. | `DESIGN.md:450-452` |
+
+Astra's round-3 items as far as they bear on mine: 2 and 3 (family 2, reliability selection) resolved by the fixed set and per-target Holm; 4 (probe) resolved except that no nonspecific-disruption control was added, which v7 handles by wording only (my finding 6 below); 5 (criterion 5, resampling, replacement brain, δ_search frozen) resolved in text, but the δ_search freeze creates my finding 2; 6 (null details) resolved; 8 (budget) resolved.
+
+## 2. Numbers checked
+
+**§2 table.** Every KTS row against `slow-memory-check.json`, including the new T = 50 row: 1.1738 / 1.1738 / 1.1816 → 1.17 / 1.17 / 1.18. KTM 2.8418 / 0.5137 / 0.0410. SEs across all scripted cells run from 0.0088 (KTM, r = 2) to 0.0506 (KT, real), so "0.01-0.05" is right after rounding. The 1.64 gap is 2.842 − 1.199. "T = 10 loses a quarter or more at r = 2": 25.3%, holds. The KT jitter cells and the champion medians I did not re-reduce this round (the arrays are long); they match both reviewers' earlier reductions.
+
+**Compute.** `compute.json`: 2 330 112 worlds, 1 668.52 s = 0.4635 h; four attempts, none failed; plus the stated 0.07 estimate = 0.53.
+
+**§10, every row recomputed at 420/s.** One search 57 600 → 0.0381 h. Target-brain 748 800 → 0.495 h. 60 target-brains 44.93 M → 29.71 h. 38 × 266 496 = 10.13 M → 6.70 h. Evaluations 60 × 14 × 2 048 + 30 restorations + 8 intact = 1.798 M → 1.19 h. Scan 3 × 246 × 512 + 5 × 7 × 512 = 0.396 M → 0.26 h. Probes 38 × 14 × 2 048 = 1.090 M → 0.72 h. Pilot-dev 9.072 M = 6.00 h. Pilot-check: 2 × (6 × 266 496 + 8 × 748 800) + 2 × 266 496 = 15.712 M; plus 0.459 M, 0.252 M, 0.016 M, 0.344 M = 16.783 M → 11.10 h. Scripted 0.2 M → 0.13 h. Total 84.39 M, 55.8 h + 0.53 = 56.3 h; reserve 15.7 h; at 1 000/s about 24 h. All agree with the table. Two negligible omissions: the re-evolved MIP brain's probes and re-measurement (about 0.07 M), and the scan prices 245 deletions although pairs are represented by one member, so it is an upper bound (say so).
+
+## 3. New findings
+
+1. **Pilot criterion 4 requires NIP original-partner advantage on a shuffled graph. Medium.** `DESIGN.md:403-404`. In NIP the brain evolved without X. On an SH-mirror graph, X's "true partners" are a routing-matched random draw (`wormwars/exp03/samplers.py:16-18, 151-152`), or for a paired X the mirrors of X′'s partners. Nothing task-shaped links them to X, so the only routes to an advantage over uniform random partners are mirror symmetry (paired targets) and kind/degree bias. Gating the whole experiment on 3 of 8 pilot targets showing this means either failing the pilot for a reason N2 does not share, or passing it through structure. It also spends the quantity the design wants as its "descriptive shuffled-graph anchor" (`DESIGN.md:331`) as a gate. Fix: criterion 4 keeps reliable reference and headroom in NIP; original-partner advantage is gated in MIP (where an evolved-with-X brain should show it on any graph, and criterion 5 already lives) and reported for NIP as the anchor.
+
+2. **δ_search frozen in absolute units from SH-mirror graphs, applied to N2. Medium-low.** `DESIGN.md:261-265, 266-267`. The reliability rule "refit SD at most 2 δ_search" uses pilot-check's pooled SD in targets. Shuffled-graph brains score lower than N2's (criterion 3 already anticipates this); count variance scales with the mean, so a threshold calibrated there can misclassify N2 references in either direction, and too many "excluded" target-arms would leave the proof of concept uninformative. Fix: freeze δ_search as a fraction of the graph's p (or simply require refit SD ≤ p at N2's p, which criterion 3's δ_search ≤ p/2 already implies).
+
+3. **"Present" is undefined. Low.** `DESIGN.md:266-270, 403-404`. Headroom and original-partner advantage are differences; the three-state rule gives equivalent/above/below/undetermined. Say "present" means "above".
+
+4. **The relevance interval bootstraps over three brains. Low.** `DESIGN.md:158-162`. Three units give ten distinct resamples; the "medium" and "low" tiers depend on whether that coarse interval contains p_sel. Acceptable as a fixed rule, but say the interval's brain component is coarse, or define tiers on the world-bootstrap interval of the three-brain mean with the brain spread reported.
+
+5. **"T ≈ 5-10 scores at or above the champions' level". Low, wording.** `DESIGN.md:104-105`. T = 10 scores 2.18 against 2.26. "T = 5 at or above, T = 10 close" is what the record supports.
+
+6. **The replay probe has no nonspecific-disruption control, and does not say so. Low.** `DESIGN.md:340-359`. Astra asked for one twice; v7 answers by wording. For a measured, not gated, probe that is defensible, but the design should state explicitly that no such control is run and that L = 50 (above the 20-tick τ ceiling) is the reading least confounded by filtering. The implementation facts in my table row 2 belong here too.
+
+7. **Random-partner refits are uniform, the primary null is stratified. Low, optional.** `DESIGN.md:201, 231`. Drawing the five random partner sets within the same kind and degree strata would make "original-partner advantage" a cleaner identifiability measure at no GPU cost, and would remove the structural route in finding 1. If kept uniform, say that the advantage includes kind and degree effects.
+
+**Checked and found sound:** family 2 as five per-target exact tests under Holm (valid under any dependence; power limit stated honestly); the stratified null's tertile, tie, merge and support rules; the tier order without replacement; criterion 5's n ≥ 2 then ⌈n/2⌉; the cut order and that the pilot-check runs the already-cut protocol; the budget's 15.7 h reserve against cuts worth about 7 h.
