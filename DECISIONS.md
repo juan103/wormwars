@@ -9234,3 +9234,22 @@ dated, as read for the proof of concept: a task that rewards memory. DESIGN.md v
 
 Next: the code and its implementation tests (CPU), reviewed by both; then pilot-dev, which needs the owner's word for
 the GPU.
+
+## D306 — 03a's design v7 after round 3: family 2 per target under Holm
+
+**Round 3** (run 20261017-151803, archived in `docs/reviews/20261017-03a-design-v6/`; a first attempt was cut off when
+the session ended and was rerun unchanged): Fable 5.1 "ready for the pre-registration, with small fixes"; Astra 6
+"revise". Both recomputed every number in §2 and §10 from the committed records and found them right, apart from
+small items. Both found the same flaw: v6's pooled imprinting test permuted arm labels independently across targets,
+though the same five MIP brains serve every target. Astra gave an exact counterexample in which that test rejects
+14.8% of null datasets at a nominal 5%.
+
+**v7** (`experiments/03a-self-consistency/DESIGN.md` §12): family 2 returns to one exact 252-split test per target,
+Holm over the five high and medium targets, which holds under any dependence between targets; the panel mean is
+descriptive, with no pooled p; the targets are a fixed set, with reliability reported beside each test rather than
+used to select them; the imprinting reading requires the passing target itself to show MIP recovery with reliable
+references. The cost is power: a pass needs near-complete separation of the arms, as v5 already stated. Also taken:
+the replay probe's timing, bitwise scope, validation and expected calibrator results; criterion 5 cannot pass on an
+empty set; one shared world resample across brains; the stratified null's remaining rules; MCL and MCR are both
+pharyngeal and mapped pump motors, so "no neuron is both" was wrong; a §1 limit from D305; the budget's probes and
+pilot-check itemised (about 56.3 of 72 GPU-hours at 420 episodes per second).

@@ -1,11 +1,16 @@
-# 03a: the self-consistency hypothesis, a six-neuron proof of concept (design v6)
+# 03a: the self-consistency hypothesis, a six-neuron proof of concept (design v7)
 
-**Status:** design v6, 2026-10-16; the owner's choice in §2 made 2026-10-17 (D305). Not a pre-registration. Nothing specific to 03a has been coded or run, apart from
+**Status:** design v7, 2026-10-17. Not a pre-registration. Nothing specific to 03a has been coded or run, apart from
 the exploratory scripted checks in §2 (D303, D304).
 - **v4** (`eeeeb60`, D302): both reviewers said "revise" (run 20261016-174135, `docs/reviews/20261016-03a-design-v4/`).
 - **v5** (`9a11651`, D303): Fable "ready for the pre-registration, with small fixes"; Astra "revise" (run
   20261016-182131, `docs/reviews/20261016-03a-design-v5/`). v6 takes every finding of both (§12), adds a
-  slow-memory check (D304), and leaves one choice to the owner (§2, "The owner's choice").
+  slow-memory check (D304), and leaves one choice to the owner (§2, "The owner's choice"), made on 2026-10-17
+  (D305: history use measured, not gated).
+- **v6** (`0cdd3a2`, D304-D305): Fable "ready for the pre-registration, with small fixes"; Astra "revise" (run
+  20261017-151803, `docs/reviews/20261017-03a-design-v6/`). Both found that family 2's pooled test ignored the MIP
+  brains shared across targets. v7 makes family 2 per-target again, under Holm, and takes every other finding (§12;
+  D306).
 - **The draft it replaces:** [`DRAFT.md`](DRAFT.md) v3.2 (2026-09-25), a 24-neuron panel on experiment 02's T1. It
   stays as the record of the earlier design.
 - **The owner's decisions it follows:**
@@ -53,6 +58,9 @@ wiring, let only X's wiring optimise for the task, and see whether X's original 
   beside it, and a pass with a task ranking worse than a structural one is reported as such, never as improvement
   over structural prediction.
 - **Six targets** support per-target readings, not panel-level generalisation.
+- **History use is measured, not required** (the owner, D305). A null anatomy or imprinting result therefore cannot
+  be separated from "these brains use little history on this task"; every reading is conditional on the history use
+  the bounded-history probe reports (§8).
 - A positive result shows self-consistency under this model, task and search, not that the real worm's wiring is
   optimised for the task.
 
@@ -78,14 +86,16 @@ tuned on the 256 tuning worlds and scored on the 512 check worlds:
 | KTS, T = 5 | ~5 ticks | 2.69 | 2.46 | 1.56 |
 | KTS, T = 10 | ~10 ticks | 2.18 | 2.13 | 1.63 |
 | KTS, T = 20 | ~20 ticks | 1.58 | 1.69 | 1.59 |
+| KTS, T = 50 | ~50 ticks | 1.17 | 1.17 | 1.18 |
 | 04a's 16 champions, median (trained on stereo Task N) | ? | 2.26 | 2.25 | 2.25 |
 
-(SEs 0.02-0.05 for the scripted rows. The jitter probe reads the scent at a random point within r cells, fresh every
+(SEs 0.01-0.05 for the scripted rows. The jitter probe reads the scent at a random point within r cells, fresh every
 tick, so the level survives and fast change becomes noise.)
 
 **What they show, and what they do not:**
 - **The task rewards memory within the families tried:** one tick of memory adds 1.64 targets to the memoryless family
-  it is nested in. This is not a bound on memoryless policies: KT has one threshold, coarse grids and one-sided
+  it is nested in (nested by construction; the grid actually searched for KTM did not include the no-memory setting,
+  which does not change the winner, Astra). This is not a bound on memoryless policies: KT has one threshold, coarse grids and one-sided
   collision avoidance (Astra).
 - **Evolution reaches the memory controllers' level:** 04a's champions have similar typical performance with one nose
   (median 2.26 against 2.32 with stereo; per champion, mono minus stereo is −0.16 to +0.02), consistent with E2d's
@@ -147,7 +157,8 @@ member. A pair with only one eligible member is represented by it.
 
 **Relevance:** the drop in Task N-mono score when the neuron is deleted, on each selector brain, measured on 512
 target-selection worlds used for nothing else; a neuron's relevance is the mean over the three selector brains, with
-a 95% interval from a paired bootstrap over worlds within brains. The margin p_sel is 5% of the selector brains' mean
+a 95% interval from a paired bootstrap over worlds (one shared resample of world ids for all three brains) and over
+the three brains. The margin p_sel is 5% of the selector brains' mean
 intact score on those worlds. Ties are broken by a fixed seeded order.
 
 **Tiers (D094: 3 high, 2 medium, 1 low), chosen in this order, without replacement, so the panel is always six
@@ -210,7 +221,8 @@ worlds, 16, or 32 only if pilot-dev's projection with 32 still leaves at least 8
 420 per second assumed in §10 it does not; Astra).
 
 **Scoring:**
-- **Final evaluation on 2 048 worlds** per scored state, one bank shared by all brains and arms.
+- **Final evaluation on 2 048 worlds** per scored state, one bank shared by all brains and arms (the bank is crossed
+  with brains).
 - **Ranking:** per target-brain and connection type, each candidate's score is the mean absolute final weight (or
   conductance) of its connection to X over the 5 free searches (0 if not connected). Ties get the average rank.
 - **Recovery statistic:** the ROC AUC of that ranking against the true partners, averaged with equal weight over
@@ -218,15 +230,20 @@ worlds, 16, or 32 only if pilot-dev's projection with 32 still leaves at least 8
   left out, counted), then over the five brains of the arm.
 - **Primary null, stratified:**
   - *Kind* is the candidate's interface role in `configs/interface.yaml` (mapped sensor, mapped motor) or otherwise
-    pharyngeal or other; sensors that receive no signal in Task N stay "sensor". No neuron is both.
+    pharyngeal or other, in that order: MCL and MCR are both pharyngeal and mapped pump motors, and are "motor"
+    (Fable). Sensors that receive no signal in Task N stay "sensor", and the pump motors stay "motor" though the pump
+    does nothing with energy off.
   - *Degree* is its total degree (chemical in plus chemical out plus gap) in the graph with X deleted. Tertiles are
-    computed within each kind; ties go to the lower bin in a fixed seeded order; a bin with fewer than 3 candidates is
-    merged into its neighbour of the same kind.
+    computed within each kind, with boundaries after ranks ⌊n/3⌋ and ⌊2n/3⌋ by ascending degree; a group of tied
+    degrees is never split, and goes wholly to the lower bin; a bin with fewer than 3 candidates is merged into the
+    bin below it of the same kind (the lowest bin into the one above).
   - One draw of the null is one permutation of candidate identities within strata; it relabels every connection
     type's truth at once and is applied to every brain, search and arm of that target, so brains and types are not
     counted as independent anatomical evidence. B = 10 000; p = (1 + #{null ≥ observed})/(B + 1), ties counted.
   - Reported per target: stratum sizes, partner counts per stratum, the null's mean AUC (which need not be 0.5), and
-    the number of distinct permutations available.
+    the support as the number of distinct truth-label arrangements (many identity permutations give the same labels;
+    Astra). Restricted subsets with no scoreable truth (for example a mirror-zero subset with no true partner) are
+    reported and left out.
 - **Structural comparators (no GPU):** the mirror ranking (paired targets), the class-model ranking and the degree
   ranking, each with its AUC against the same truth, beside every task AUC. **Beyond structure:** the task AUC minus
   the composite structural AUC (mirror for paired targets, class model for unpaired), and for paired targets the task
@@ -237,18 +254,21 @@ worlds, 16, or 32 only if pilot-dev's projection with 32 still leaves at least 8
 **Margins, resolution and attributes:**
 - **p** = 5% of the MIP brains' mean intact score on the final-evaluation worlds.
 - **Three-state comparisons:** a paired difference on the final-evaluation worlds with its 95% interval, from a
-  bootstrap over worlds (paired across the two states) within brains and over brains: *equivalent* if inside ±p,
+  bootstrap over worlds (one shared resample of world ids, applied to every brain and state compared) and over brains
+  (the MIP brains keep their identities across targets): *equivalent* if inside ±p,
   *above* if entirely above +p, *below* if entirely below −p, otherwise *undetermined*. Undetermined is never counted
   either way.
 - **Resolution, defined for these comparisons (Astra: the draft's δ_eval was for 64 worlds):** δ_eval is the
   half-width of that 95% interval for a target-brain's comparison of two scored states, pooled as a root mean square
   over the pilot's comparisons; δ_search is the SD of the three original-partner refits' 2 048-world scores within a
-  target-brain, pooled the same way. Both are required to be at most p/2.
+  target-brain, pooled the same way. Both are required to be at most p/2. The δ_search measured in pilot-check is
+  frozen and used in the formal reliability rule.
 - **Five attributes per target and arm** (and per target-brain, descriptive): reference reliability (refit SD at
   most 2 δ_search and, in MIP, the reference *equivalent to or above* exact restoration; undetermined does not
   qualify); headroom (reference minus deleted-brain score); original-partner advantage (reference minus mean
   random-partner refit); functional success (mean free search minus reference: reached if equivalent, exceeded if
-  above, failed if below); overlap (anatomical enrichment if the arm's family-1 test passes under Holm, §7).
+  above, failed if below); overlap (anatomical enrichment if the arm's family-1 test passes under Holm, §7). A
+  target-arm's reference is reliable if at least 3 of its 5 target-brains' references are.
 - **Functional recovery** is the free searches' score as a fraction of the MIP brains' mean intact score in both
   arms; the NIP brains' own deleted and reinserted scores are reported beside it.
 
@@ -268,26 +288,34 @@ claimed at six targets.
 **Family 1, anatomical enrichment (Holm, 12 members):** for each of the 6 N2 targets in each arm, the arm's recovery
 statistic against the stratified null, one-sided.
 
-**Family 2, imprinting (one test; Fable's pooled option, specified as Astra asked):**
-- **Statistic:** over the high and medium targets reliable in both arms (the common set), the mean of each target's
-  MIP − NIP difference in the per-brain recovery statistic (the mean of five MIP brains' AUCs minus the mean of five
-  NIP brains').
-- **Null:** the sharp null that, within each target, the ten brains' AUCs do not depend on the arm. Arm labels are
-  permuted within each target (252 splits per target), independently across targets; B = 10 000 Monte Carlo draws,
-  one-sided, p as in §6, α = 0.05.
-- **Effect floor:** it counts only if the observed statistic is also at least **0.05 AUC**. The floor is a filter on
+**Family 2, imprinting (Holm, 5 members: the high and medium targets, a fixed set):**
+- **Statistic, per target:** the mean of its five MIP brains' recovery statistics minus the mean of its five NIP
+  brains'.
+- **Null and test:** within one target the ten brains are distinct, independently evolved brains (the MIP brains are
+  shared across targets, never within one). Under the sharp null that a target's ten per-brain AUCs do not depend on
+  the arm, the exact permutation of arm labels over the 252 splits is valid for that target. One-sided; p is the share
+  of splits at least as extreme, the observed one included.
+- **Across targets, Holm** at α = 0.05, which holds under any dependence between the targets, including the shared
+  MIP brains. v6's pooled test permuted targets independently and so ignored that dependence: Astra's exact
+  counterexample rejects 14.8% of null datasets at a nominal 5%.
+- **Effect floor:** a target counts only if its observed difference is also at least **0.05 AUC**. The floor filters
   the observed effect; it does not show that the true difference exceeds 0.05.
-- **Withheld** if fewer than 3 targets are in the common set; the exclusions are reported.
-- **Validation before the formal run:** the whole procedure is run on simulated per-brain AUCs under the null, with
-  unequal variances between arms, and its rejection rate is reported in the pre-registration.
-- **Per-target contrasts are descriptive:** each with its exact 252-split p, the brain-level values, and the
-  leave-one-brain-out range. A single target separates at p ≤ 0.05 only if at most 12 of the 252 splits (the observed one
-  included) are at least as extreme; with five brains per arm, a moderate true difference will often not separate, and a null result is not
-  evidence against imprinting (Fable).
+- **Fixed set, no selection on reliability** (Astra): all five targets are tested; reliability qualifies the
+  interpretation and is reported beside each test. A target is withheld only if a registered brain is missing.
+- **Power, stated:** Holm's strictest level is 0.01, so the first rejection needs at most 2 of the 252 splits to be at
+  least as extreme; in practice, near-complete separation of the arms. A moderate true difference will often not
+  pass, and a family-2 null is not evidence against imprinting (Fable).
+- **Validation before the formal run:** the procedure is simulated under the sharp null (its family-wise rejection
+  rate must not exceed 0.05 beyond Monte Carlo error), and, as robustness checks outside that null, with a shared
+  MIP-brain effect across targets (intraclass correlation 0.3 and 0.5) and with unequal arm variances; all rates are
+  reported in the pre-registration.
+- **Descriptive:** the panel-mean MIP − NIP over the five targets, each target's brain-level values, and the
+  leave-one-brain-out range of each contrast. No pooled p value is given.
 
 **The registered readings:**
-- **"Imprinting effect" (D094's condition for expansion):** family 2 passes, and at least one high or medium target
-  has anatomical enrichment in MIP (family 1) with functional success reached or exceeded in MIP.
+- **"Imprinting effect" (D094's condition for expansion):** at least one high or medium target passes family 2 and,
+  in MIP, has anatomical enrichment (family 1) and functional success reached or exceeded, with a reliable reference
+  in both arms (the same target, so the contrast and the recovery belong together; Astra).
 - **"The proof of concept separates the outcomes":** at least two of the three substantive outcomes (anatomical
   recovery; functional success, anatomy undetermined; search failure) occur among the 12 target-arms.
 - Both readings are reported whatever they say. Neither is evidence of a mechanism. Expansion still needs the
@@ -310,14 +338,25 @@ episode needs simulating. It tests the pipeline for bias toward true partners, a
 rule out generic routing preferences that appear only under task selection.
 
 **The bounded-history probe (replacing v5's "history erase"; Astra's replay design, with Fable's calibration):**
-- Every L ticks, the brain's neural state is rebuilt by starting from the canonical initial state and replaying the
-  last L ticks of the inputs it actually received; the episode then continues. So between resets the brain carries
-  between L and 2L ticks of input history, the current input always acts, and nothing about attractor choice survives
-  from before the window. The body's position and heading are untouched, so history kept in the body is not removed.
+- **Timing:** after the action of every tick t that is a multiple of L, and before sensing at t + 1, the brain's
+  neural state is rebuilt by starting from the canonical initial state (zeros, `wormwars/brain.py`) and replaying the
+  inputs it received at ticks t − L + 1 to t; the episode then continues. Between resets the brain carries between L
+  and 2L ticks of input history; the current input always acts; nothing about attractor choice survives from before
+  the window. Before the first reset nothing changes. The body's position and heading are untouched, so history kept
+  in the body is not removed.
 - L = 5, 10, 20, 50. **Implementation control:** replaying the whole episode so far must reproduce the unperturbed
-  episode exactly.
-- **Calibration:** the same rebuild applied to the scripted families' own state: KT (no memory; must be unaffected),
-  KTM (one tick), and KTS at T = 5, 10, 20 (must lose when L is short against T).
+  episode bitwise on the CPU, and on CUDA within the same batch composition (rule 6), so the control runs in the
+  probe's own composition.
+- **Validation of the rebuild** on prescribed input sequences, including sequences where the discarded history
+  provably changes a scripted controller's action.
+- **Calibration, with the expected results stated:** the same rebuild applied to the scripted families' own state.
+  KT (no memory) and KTM (one tick of memory, shorter than every L) must be unaffected. KTS at T = 5, 10, 20 has its
+  stored average changed when L is short against T; its closed-loop score is measured with no sign required, since a
+  changed average need not cost score (Astra).
+- **What it measures:** dependence on neural state older than the window, under this intervention. That includes slow
+  neurons acting as filters (τ runs to 20 ticks) and any autonomous rhythm the reset disturbs, so a loss is not
+  uniquely useful sensory memory, and no loss does not show a memoryless brain (Astra, Fable). Each brain's τ
+  distribution is reported beside it.
 - **Cost:** L replayed ticks every L ticks, about twice an ordinary episode's neural work; itemised in §10.
 - **Other probes:** constant scent, jitter (r = 1, 2), hold (h = 20), and a P4-style ramp (rising against falling to
   the same level; the turn and speed read-outs). All on every evolved brain, 2 048 worlds each, descriptive.
@@ -332,7 +371,8 @@ rule out generic routing preferences that appear only under task selection.
 - **an information boundary:** changing the hidden truth while keeping the allowed inputs leaves initialisation and
   free-search proposals unchanged, with sabotage checks that pinning and truth isolation fail when broken;
 - a planted optimum on a small synthetic problem; the no-task control's AUCs match the stratified null; the
-  bounded-history probe's full replay equals the unperturbed episode;
+  bounded-history probe's full replay equals the unperturbed episode, and its rebuild passes the prescribed-sequence
+  validation;
 - family 2's procedure on simulated nulls (§7).
 
 **The pilot, in two stages, on SH-mirror graphs with seeds outside every formal draw, never N2:**
@@ -347,6 +387,8 @@ rule out generic routing preferences that appear only under task selection.
   per target, for the panel rule's 3 high targets and 1 low target: 8 targets in all. **Its limits:** one brain per
   arm cannot test the five-brain aggregation or family 2, which the simulated-null validation covers instead; it
   omits medium targets; it decides feasibility, it estimates nothing.
+- A re-evolved MIP brain (criterion 1) replaces the first one for every later criterion; the two are never combined,
+  and the first is reported.
 - **Pass criteria, all required, evaluated on pilot-check:**
   1. **Evolved brains beat memoryless control and use the cue:** each graph's MIP brain beats the D303 KT winner by a
      paired 95% lower bound above 0.5 targets on the registered check worlds, and loses at least half its score under
@@ -355,11 +397,14 @@ rule out generic routing preferences that appear only under task selection.
   2. **Solutions use interneurons** (Astra's version of Fable's gate): in each graph, at least 2 of the 3 high targets,
      re-measured on the MIP brain on 2 048 fresh worlds, have drops whose lower bound (one-sided, Bonferroni over the
      three) exceeds p.
-  3. **Resolution:** δ_eval and δ_search at most p/2 (§6).
+  3. **Resolution:** δ_eval and δ_search at most p/2 (§6), judged at the pilot graph's own p; the same quantities are
+     also reported against the p of 04a's champions in the mono world (5% of 2.26), so a narrow failure caused by a
+     low-scoring shuffled graph is read as such (Fable).
   4. **Headroom and identifiability in NIP:** at least 3 of the 8 targets have a reliable reference, headroom
      present and original-partner advantage present.
-  5. **MIP recovery:** of the targets passing (4) whose MIP reference is reliable, at least half (rounded up) reach
-     functional success in MIP with a stratified enrichment p below 0.05. If none passes (4), criterion 5 fails.
+  5. **MIP recovery:** let n be the number of targets that pass (4) and whose MIP reference is also reliable.
+     Criterion 5 fails if n < 2; otherwise at least ⌈n/2⌉ of those n must reach functional success in MIP with a
+     stratified enrichment p below 0.05 (Astra: v6 let an empty set pass).
   6. **Search diagnostics:** within the thresholds frozen by pilot-dev.
   7. **Timing:** pilot-dev's measured throughputs project the formal design within the remaining cap, with the cuts
      of §10 applied first if needed.
@@ -394,27 +439,45 @@ about 1 000 was measured, E2d). An evolution is 256 000 selection episodes plus 
 | N2 target-brains: 6 targets × (5 MIP + 5 NIP) | 60 | 44.93 M | 29.71 |
 | N2 whole-brain evolutions: 3 selector + 5 MIP + 30 NIP | 38 | 10.13 M | 6.70 |
 | N2 final evaluations: 60 target-brains × 14 states × 2 048, plus restoration and intact | | 1.80 M | 1.19 |
-| N2 relevance scan (3 × 246 × 512) and selection check (5 × 7 × 512) | | 0.40 M | 0.26 |
-| N2 probes: 38 brains × about 12 episode-equivalents × 2 048 (the bounded-history probe counted double) | | 0.93 M | 0.62 |
+| N2 relevance scan (3 brains × (245 deletions + intact) × 512) and selection check (5 × 7 × 512) | | 0.40 M | 0.26 |
+| N2 probes: 38 brains × 14 episode-equivalents × 2 048 (4 replay probes counted double, constant, 2 jitters, hold, a two-phase ramp) | | 1.09 M | 0.72 |
 | Pilot-dev (cap) | | 9.07 M | 6.00 |
-| Pilot-check: 2 × (6 evolutions + 8 target-brains), 2 re-evolutions, evaluations, scans, probes | | 16.73 M | 11.06 |
+| Pilot-check: 2 × (6 evolutions + 8 target-brains) and 2 re-evolutions (15.71 M); evaluations 16 × 14 × 2 048 (0.46 M); scans 2 × 246 × 512 (0.25 M); interneuron re-measurement 2 × 4 × 2 048 (0.02 M); probes 2 × 6 × 14 × 2 048 (0.34 M) | | 16.78 M | 11.10 |
 | Scripted re-measurement and probe calibration | | 0.20 M | 0.13 |
-| **Total** | | **about 84.2 M** | **about 56.2** |
+| **Total** (episodes exclude the 2.33 M exploratory worlds already run) | | **about 84.4 M** | **about 56.3** |
 
-The reserve is about 16 hours at 420/s; at the wide-batch rate the whole would be about 24 hours. Failed attempts
+The reserve is about 15.7 hours at 420/s; at the wide-batch rate the whole would be about 24 hours. Failed attempts
 count. **Cuts, decided from pilot-dev's measured timing before pilot-check runs, in this order:** random-partner
-refits 5 → 3; then free searches 5 → 4; then stop and report, or, only with the owner's word, a descriptive proof of
-concept without family 2. Brains per arm stay at five, and the final-evaluation precision and selector brains are
+refits 5 → 3; then free searches 5 → 4 (the frozen protocol then restates the ranking and the no-task control over
+four searches); then stop and report (Astra: dropping family 2 alone would save no simulator work). Brains per arm
+stay at five, and the final-evaluation precision and selector brains are
 kept (Astra: with four brains per arm the per-target exact test could never pass Holm, and the cut order must not
 silently remove a registered test). The six neurons and both arms are never cut (D094).
 
 ## 11. Open questions
 
 1. **For the owner:** history use measured (Fable) or gated (Astra), §2. *Decided 2026-10-17: measured (D305).*
-2. **For the reviewers, if a round 3 is needed:** the bounded-history probe's definition; family 2 as one pooled test;
-   pilot criteria 1-8.
+2. **For the reviewers (round 4):** family 2 per target under Holm; the probe's timing and calibration; criterion 5.
 
 ## 12. Changes
+
+**v6 → v7 (round 3: run 20261017-151803; Fable "ready, with small fixes", Astra "revise"; D306):**
+- **Family 2 per target under Holm** (both: the pooled test ignored the MIP brains shared across targets; Astra's
+  counterexample gives 14.8% false rejections at 5%). The panel mean is descriptive, with no pooled p. The simulated
+  validation adds shared-brain effects (Fable) and separates the sharp null from robustness checks (Astra).
+- **No selection on reliability in family 2:** a fixed set of five, reliability reported beside it; the imprinting
+  reading requires the passing target itself to show MIP recovery and reliable references (Astra 3).
+- **The replay probe:** reset timing; bitwise scope of the full-replay control; validation on prescribed inputs;
+  KTM expected unaffected; no sign required of KTS; what a loss does and does not mean; τ reported (Astra 4, Fable 2).
+- **Criterion 5** cannot pass on an empty set (n ≥ 2, then ⌈n/2⌉; Astra 5); criterion 3 also reported at a reference p
+  (Fable 4); a re-evolved MIP brain replaces the first for every later criterion (Astra 5).
+- **Resampling:** one shared world resample across brains and states; MIP identities kept across targets; δ_search
+  frozen from pilot-check; target-arm reliability defined (Astra 5).
+- **The stratified null:** tertile boundaries, unsplit ties, the merge direction, unscoreable subsets, support as
+  distinct label arrangements (Astra 6); MCL and MCR corrected (Fable 3).
+- **§1 limit** from D305 (Fable 5); the T = 50 row; SEs 0.01-0.05; the KTM grid's nesting noted (Astra 7, Fable 6).
+- **Budget:** probes at 14 equivalents with the ramp priced; pilot-check itemised; the exploratory worlds noted as
+  outside the episode total; the descriptive fallback removed, since it saved nothing (Astra 8, Fable 6).
 
 **v5 → v6 (round 2: run 20261016-182131; Fable "ready, with small fixes", Astra "revise"):**
 - **Memory wording narrowed** (both): "rewards memory within the families tried", not "requires"; jitter tolerance
