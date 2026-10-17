@@ -46,7 +46,7 @@ from pathlib import Path
 import torch
 
 CATEGORIES = ("selection", "holdout", "snapshot", "final", "calibration", "probe", "measure",
-              "tuning", "other")
+              "tuning", "search", "other")  # "search": 03a's searches over a reinserted neuron's wiring
 # neural_updates counts computed work, padding included (T0.md); neural_padding is the padded
 # share (T1, D086), so neural_updates - neural_padding is comparable with records before T1
 COUNT_FIELDS = ("worlds_built", "world_ticks", "neural_updates", "neural_padding")

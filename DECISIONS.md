@@ -9271,3 +9271,44 @@ little measured loss at jitter r = 2, per champion −0.06 to +0.03).
 
 **Consensus:** v7.1 is the basis of 03a's pre-registration; the owner is informed. Next: the code and its
 implementation tests (CPU), reviewed by both; then pilot-dev, which needs the owner's word for the GPU.
+
+## D308 — 03a's code and implementation tests; pilot-dev's plan; sent to both reviewers
+
+**What is written** (2026-10-17, CPU only):
+- **Library:** `wormwars/e03a/`:
+  - `reinsert.py`: the union mask, the copied background, MIP's exact restoration;
+  - `search.py`: initialisation without the truth, mutations, replica exchange in lockstep, the target-brain's
+    searches;
+  - `null.py`: kinds, degree tertiles, the within-strata permutations, the AUC, the support;
+  - `stats.py`: Holm, family 2's exact per-target test and its simulation, three-state comparisons, outcomes;
+  - `panel.py`: eligibility, bilateral representatives, relevance, tiers;
+  - `structural.py`: mirror, class model and degree rankings;
+  - `probe.py`: the bounded-history replay probe and the KT, KTM and KTS calibrators;
+  - `arms.py`: NIP pinning, the deletion scan, scoring states.
+- **Driver:** `scripts/e03a.py` runs pilot-dev's stages and family 2's simulated-null validation.
+- **Plan:** `experiments/03a-self-consistency/PILOT-DEV.md` says what pilot-dev runs, its tuning rules fixed before
+  running, what it measures, and the implementation choices DESIGN.md v7.1 left open.
+- **Accounting** gains a `search` category.
+
+**Tests** (`tests/test_e03a_*.py`) cover every implementation test in DESIGN.md §8; PILOT-DEV.md §5 maps each to its
+test, with sabotage checks where a check could not otherwise fail. The driver is tested end to end at smoke size on
+the CPU.
+
+**Rule 9, openly:** the tests were written after the code in this round. Each core check was then seen failing by a
+mutation check: 17 planted bugs, run one at a time (`development-records/mutation_check.py`; the output is committed
+with the next commit). 16 were caught. The survivor makes acceptance strict, and it is equivalent on ties: the uniform
+draw is always below exp(0) = 1.
+
+**Choices put to the reviewers** (PILOT-DEV.md §4):
+- NIP brains are evolved pinned on the intact mask: X's edges start at zero and have mutation scale zero, which is
+  deletion (tested). This replaces a separate mask with X's edges removed, so NIP brains of several targets share a
+  batch, and every arm keeps one initial normalisation.
+- Pilot-dev's arms are 1 selector, 1 MIP and 1 NIP brain per target, with 2 targets (the two highest-relevance
+  representatives).
+- The tuning rounds and their rules, fixed before running.
+
+**A concern stated in advance:** on a planted synthetic problem the search finds a planted partner set quickly with
+16 candidates but slowly with 30; N2 has 301 per type. Pilot-dev's Q trajectories and its 2× longer search measure
+whether 100 generations are enough.
+
+**Next:** both reviewers review the code and the plan; then pilot-dev, at most 6 GPU-hours, with the owner's word.

@@ -15,6 +15,10 @@
 > *Updated 2026-10-17 (D307): design v7.1 is agreed by both reviewers as the basis of the pre-registration, after
 > four rounds (D302-D307). The owner chose to measure history use rather than gate on it (D305). Exploratory scripted
 > checks used 0.53 GPU-hours ([`development-records/`](development-records/)); nothing else has run.*
+>
+> *Updated 2026-10-17 (D308): the code and its implementation tests are written (`wormwars/e03a/`,
+> `scripts/e03a.py`, `tests/test_e03a_*.py`), with pilot-dev's plan ([`PILOT-DEV.md`](PILOT-DEV.md)); both are
+> with both reviewers. No GPU work has run since the exploratory checks.*
 
 **Status:** draft v3.2 (2026-09-25), not run, not scheduled (D062). *Updated 2026-09-29:* it becomes a six-neuron proof of concept capped at 72 GPU-hours (the owner, D094), planned in the biology track after a confirmatory study of 03m's leads · **Run:** none · **Commit:**
 none · **Compute:** none spent. The draft as written is estimated at about 31 million genome
