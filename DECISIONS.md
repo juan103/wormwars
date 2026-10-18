@@ -9718,3 +9718,68 @@ there took two attempts:
 - that directory's `probe` record dated from `a5760c4`, before the probe timed its full-replay control, so the first
   preflight's `report` failed with a `KeyError`;
 - `probe`, `report` and `search-check` were then rerun there, each with a reason.
+
+## D317 — The bounded search check: outcome (iii), no variant restores reliably; 03a stops, to be reported as exploratory
+
+**The run:** `search-check` on `4d6e887`, 2026-10-18, 0.73 GPU-hours (the projection with its factor was 1.29). The
+record is `experiments/03a-self-consistency/pilot-dev/search-check.json`, and `compute.json` is updated.
+- Pilot-dev has now spent 5.31 of its 6 hours, the CUDA preflight included.
+- 03a has spent 5.84 of its 72, the exploratory checks included.
+
+**The rule** (PILOT-DEV v3.3 §7, fixed before the run) **gives outcome (iii): no variant is reliable.**
+- Every variant passes the SD gate (≤ p = 0.098). Every variant fails the restoration bound:
+
+| | V4 (one chain, confirmed) | V3 (one chain, 64 worlds) | V1 (3 offspring, 32 worlds) |
+|---|---|---|---|
+| Refits − restoration, over worlds and refits | −0.098 [−0.161, −0.042] | −0.141 [−0.222, −0.062] | −0.131 [−0.193, −0.068] |
+| Refit SD [95%] | 0.062 [0.037, 0.179] | 0.094 [0.056, 0.269] | 0.067 [0.040, 0.193] |
+| Original-partner advantage | 0.027, equivalent | −0.004, equivalent | 0.126, above |
+| Enrichment p (needs < 0.0167) | 0.50 | 0.32 | 0.42 |
+| Free searches − refits | equivalent | equivalent | equivalent |
+| Share of best offspring accepted, per free search | 0.56-0.67 | 0.86-0.95 | 0.93-0.95 |
+
+- **No variant recovers, reliable or not.** No type's own p is below 0.20, and the free searches' Q stays near its
+  chance level of 0.07.
+- **Pilot-dev's setting, for comparison:** its refits were −0.132 [−0.164, −0.100] from restoration (world bootstrap
+  only), with an advantage of 0.122 (`full`).
+
+**The lesion** (descriptive):
+- Of URXL's 45 true edges removed one at a time from the restoration (1.966), 19 drop the score by more than p and 25
+  have a lower bound above 0.
+- The 10 largest drops are all outgoing edges and carry 74% of the positive drops. The three largest are 1.92, 1.90
+  and 1.83: one outgoing edge removed nearly zeroes the brain.
+- By type, 18 of 25 outgoing edges drop by more than p, 1 of 18 incoming edges does, and the two gap edges drop by
+  0.024 and 0.008.
+- The drops sum to 20.6, against the whole deletion's 1.78, so they are far from additive.
+- Even so, the free searches regained the score with other partners (functional comparison equivalent in every
+  variant), and under the single-chain variants the true partners no longer beat strata-matched random ones after
+  refitting.
+
+**The re-evaluation** (descriptive; the reference is 1 024 worlds, an estimate):
+- **From `refit-0`:**
+  - the best of 8 offspring gains 0.048 on average on the reference, and the average offspring loses 0.12;
+  - the greedy rule accepted the winner in every set at 16, 32 and 64 worlds, and 50%, 50% and 62% of those were worse
+    on the reference;
+  - the winners' mean reference gain was −0.013, −0.005 and −0.012 (SE about 0.017).
+- **From `free-0`:**
+  - the best offspring gains 0.007, and the average offspring loses 0.17;
+  - of the accepted winners, 81%, 86% and 69% were worse;
+  - the winners' mean reference gain was −0.030, −0.019 and −0.006.
+- The selection-reference rank correlation rises with the selection size, from 0.47 to 0.72 (refit-0) and from 0.45
+  to 0.67 (free-0).
+
+**A reading** (exploratory, chosen after seeing the data; to be reviewed):
+- At these states, offspring that truly improve are rare and small, so acceptance mostly follows evaluation noise.
+  More worlds sharpen the ranking, but there is little left to rank.
+- The refits' shortfall from restoration, about 0.1-0.14, persisted under all three changes.
+- The evolved MIP brain depends heavily and non-additively on particular outgoing edges of URXL at its evolved state,
+  yet other wiring reached the same score. On this graph, at this budget, the task did not lead the searches back to
+  URXL's partners.
+- One target-brain on one shuffled graph does not say what N2's targets allow.
+- Outcome (iii) is a stop for budget reasons: it does not show that every feasible search would fail.
+
+**What follows, by the rule agreed before the run** (D313, D314, D316):
+- 03a ends here.
+- Pilot-dev and this check are reported as exploratory, in a write-up reviewed by both and then published.
+- No pilot-check, formal run or pre-registration follows.
+- 03a's remaining 66.2 GPU-hours are not spent.
