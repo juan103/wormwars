@@ -453,3 +453,65 @@ def test_the_trace_records_the_paired_noise_and_after_runs_each_generation(cfg):
     sc = np.arange(R_ + R_ * lam, dtype=float)
     want = sc[R_:].reshape(R_, lam) - sc[:R_][:, None]
     assert abs(s.trace.paired[0][0] - want.mean()) < 1e-12
+
+
+def test_a_confirmed_search_accepts_only_what_fresh_worlds_confirm(cfg):
+    """D314 (Fable, Astra): the best offspring is re-scored beside the current state on fresh worlds, and acceptance is
+    decided there. A winner on the selection worlds that loses on the confirmation worlds is rejected at a cold
+    temperature; one that wins there is accepted; the generation advances only after the confirmation."""
+    pr = S.Problem(10, {"in": 2, "out": 2, "gap": 1}, False)
+    scfg = S.SearchConfig(replicas=1, temperatures=(0.01,), offspring=4, generations=3, worlds=4)
+    s = S.ConfirmedExchange(pr, scfg, cfg.brain, cfg.mutation, 0, confirm_worlds=6, world_base=0, world_span=10_000)
+    cur = s.current.clone()
+    st, w_sel = s.ask()
+    assert st.n == 1 + 4 and len(w_sel) == 4
+    sc = np.zeros(st.n)
+    sc[1 + 2] = 5.0  # offspring 2 wins on the selection worlds
+    s.tell(sc)
+    assert s.generation == 0 and not s.done
+    st2, w_conf = s.ask()
+    assert st2.n == 2 and len(w_conf) == 6 and not set(w_conf) <= set(w_sel)
+    assert st2.select([1]).equal(st.select([1 + 2])) and st2.select([0]).equal(cur)
+    s.tell(np.array([1.0, 0.0]))  # it loses on the confirmation worlds by 1.0: exp(-100) rejects it
+    assert s.generation == 1 and s.current.equal(cur) and s.trace.accepted[0] == [False]
+    assert s.trace.confirmed[0] == [[5.0, -1.0]]
+    st, _ = s.ask()
+    sc = np.zeros(st.n)
+    sc[1 + 0] = 1.0
+    s.tell(sc)
+    st2, _ = s.ask()
+    s.tell(np.array([0.0, 0.5]))  # confirmed
+    assert s.generation == 2 and s.current.equal(st.select([1])) and s.trace.accepted[1] == [True]
+
+
+def test_confirmation_worlds_are_a_function_of_the_seed_and_generation_on_their_own_stream(cfg):
+    pr = S.Problem(10, {"in": 2, "out": 2, "gap": 1}, False)
+    scfg = S.SearchConfig(replicas=1, temperatures=(0.01,), offspring=2, generations=2, worlds=8)
+    a = S.ConfirmedExchange(pr, scfg, cfg.brain, cfg.mutation, 7, confirm_worlds=8, world_base=0, world_span=10**9)
+    b = S.ConfirmedExchange(pr, scfg, cfg.brain, cfg.mutation, 7, confirm_worlds=8, world_base=0, world_span=10**9)
+    seen = {"a": [], "b": []}
+    for name, s in (("a", a), ("b", b)):
+        while not s.done:
+            st, w = s.ask()
+            seen[name].append(w.tolist())
+            s.tell(np.zeros(st.n))
+    assert seen["a"] == seen["b"] and len(seen["a"]) == 4  # two phases per generation
+    assert seen["a"][0] != seen["a"][1] and seen["a"][1] != seen["a"][3]
+
+
+def test_a_confirmed_search_with_replicas_swaps_on_the_confirmation_scores(cfg):
+    """Swaps use the scores the acceptance used: the confirmation scores (selection scores are not comparable across
+    replicas once the candidates are re-scored)."""
+    pr = S.Problem(10, {"in": 2, "out": 2, "gap": 1}, False)
+    scfg = S.SearchConfig(replicas=2, temperatures=(1.0, 2.0), offspring=2, generations=2, worlds=2, swap_every=1)
+    s = S.ConfirmedExchange(pr, scfg, cfg.brain, cfg.mutation, 1, confirm_worlds=2, world_base=0, world_span=100)
+    for g in range(2):  # generation 1 attempts the odd pairs (none with two replicas), generation 2 the pair (0, 1)
+        cur = s.current.clone()
+        st, _ = s.ask()
+        sc = np.zeros(st.n)
+        sc[2:] = -1e9  # every offspring far worse on the selection worlds
+        s.tell(sc)
+        s.ask()
+        s.tell(np.array([0.0, 10.0, -1e9, -1e9]))  # both rejected on confirmation; the hotter replica far better
+    assert s.trace.swaps[0] == [] and s.trace.swaps[1] == [(0, True)]
+    assert s.current.equal(cur.select([1, 0]))

@@ -9,6 +9,7 @@
     python scripts/e03a.py tune            # rounds A (ladder), B (moves), C (shaping), each chosen by its rule
     python scripts/e03a.py full            # the chosen settings: every search of the four target-brains, diagnostics
     python scripts/e03a.py report          # throughputs, resolution, the projection and the cuts; no simulation
+    python scripts/e03a.py search-check    # D314: the bounded search check on the MIP target-brain with headroom
     python scripts/e03a.py family2         # family 2's simulated-null validation (DESIGN.md §7); CPU only
     python scripts/e03a.py <stage> --smoke                 # tiny sizes on the CPU, runs/e03a-smoke/
     python scripts/e03a.py <stage> --smoke --device cuda   # the same on CUDA, runs/e03a-smoke-cuda/: the preflight
@@ -75,7 +76,8 @@ GUARDED = ["wormwars", "scripts", "configs", "requirements.txt", "experiments/03
 SMOKE = False
 SMOKE_DEVICE = "cpu"
 # probe runs before tune and full, so a cap reached in the searches still leaves its timings for the report (Fable)
-STAGES = ["setup", "evolve-intact", "panel", "evolve-nip", "baseline", "probe", "tune", "full", "report", "family2"]
+STAGES = ["setup", "evolve-intact", "panel", "evolve-nip", "baseline", "probe", "tune", "full", "report", "search-check",
+          "family2"]
 CPU_STAGES = {"report", "family2"}
 
 DEV = {
@@ -104,6 +106,24 @@ DEV = {
     "null_B": 10_000, "null_seed": 3_403_004, "boot": {"B": 10_000, "seed": 3_403_005},
     "margin_fraction": 0.05,
     "family2": {"datasets": 20_000, "seed": 3_403_006},
+    # D314: the bounded search check after pilot-dev (PILOT-DEV.md §7), the owner's choice (b), fixed before it runs
+    "check": {
+        "variants": [  # each with the tuned mutation setting; episodes per search and generation in the comment
+            {"name": "V1", "replicas": 4, "temperatures": [0.1, 0.2, 0.4, 0.8], "offspring": 3, "worlds": 32,
+             "confirm": 0, "from": "Astra: three offspring at 32 worlds"},  # 512
+            {"name": "V2", "replicas": 4, "temperatures": [0.01, 0.02, 0.04, 0.08], "offspring": 8, "worlds": 16,
+             "confirm": 0, "from": "Astra: a colder ladder"},  # 576
+            {"name": "V3", "replicas": 1, "temperatures": [0.01], "offspring": 8, "worlds": 64, "confirm": 0,
+             "from": "Fable: the ladder's budget moved into worlds, one chain"},  # 576
+            {"name": "V4", "replicas": 1, "temperatures": [0.01], "offspring": 8, "worlds": 32, "confirm": 64,
+             "from": "Fable, Astra: one chain, the best offspring confirmed on fresh worlds"}],  # 416
+        "plan": {"refit": 3, "free": 5},
+        "reeval": {"starts": ["refit-0", "free-0"], "sets": 16, "worlds": [16, 32, 64], "seed": 3_403_007},
+        "ids": {"truth": [1_482_800_000, 1024], "select": [1_482_810_000, 100_000]},
+        "alpha": 0.05,  # family-wise over the variants, Bonferroni
+        "refit_sd_max_fraction_of_p": 0.5,
+        "seed_base": 3_403_100 + 20_000,
+    },
 }
 SMOKE_DEV = {
     "graph": {"kind": "SH-mirror", "seed": 3_403_000, "passes": 1},
@@ -115,6 +135,9 @@ SMOKE_DEV = {
              "searches": 1},
     "plan": {"refit": 2, "random": 1, "free": 2}, "null_B": 99, "boot": {"B": 200, "seed": 1},
     "panel": {"bootstrap": 200}, "probe": {"L": [5, 10]}, "family2": {"datasets": 500, "seed": 1},
+    "check": {"plan": {"refit": 2, "free": 2},
+              "reeval": {"starts": ["refit-0", "free-0"], "sets": 2, "worlds": [2, 4], "seed": 1},
+              "ids": {"truth": [4000, 6], "select": [5000, 1000]}},
 }
 
 
@@ -1068,6 +1091,254 @@ def stage_report(args, dv, ck, progress):
     return out
 
 
+# ----------------------------------------------------------------------------- D314: the bounded search check
+
+def _check_target(con, iface, cfg, dv):
+    """The check's target-brain: the MIP target-brain whose headroom `full` found present (PILOT-DEV.md §7)."""
+    rows = read("full")["target_brains"]
+    keep = [r["label"] for r in rows if r["arm"] == "MIP" and r["attributes"]["headroom_present"]]
+    if SMOKE and not keep:  # smoke sizes cannot show headroom; the first MIP target-brain stands in
+        keep = [next(r["label"] for r in rows if r["arm"] == "MIP")]
+    if len(keep) != 1:
+        raise SystemExit(f"the check needs exactly one MIP target-brain with headroom; full has {keep}")
+    tb = next(t for t in _target_brain_inputs(con, iface, cfg, dv) if t["label"] == keep[0])
+    return tb, next(r for r in rows if r["label"] == keep[0])
+
+
+def _variant_cfg(setting: dict, v: dict) -> S.SearchConfig:
+    pm = float(setting["p_move"])
+    kw = {"replicas": v["replicas"], "temperatures": tuple(v["temperatures"]), "offspring": v["offspring"],
+          "worlds": v["worlds"]}
+    if SMOKE:
+        kw.update({k: dev()["search"][k] for k in ("generations", "worlds", "offspring")})
+    return S.SearchConfig(p_move=pm, p_weights=(1 - pm) / 2, p_tau_bias=(1 - pm) / 2,
+                          max_moves=int(setting["max_moves"]), shaping=float(setting["shaping"]), **kw)
+
+
+def _confirm_n(v: dict) -> int:
+    return 0 if not v["confirm"] else (dev()["search"]["worlds"] if SMOKE else int(v["confirm"]))
+
+
+def _variant_episodes(scfg: S.SearchConfig, confirm: int, n_searches: int) -> int:
+    per_gen = scfg.replicas * (1 + scfg.offspring) * scfg.worlds + 2 * scfg.replicas * confirm
+    return n_searches * scfg.generations * per_gen
+
+
+def _lesions(st: R.XState) -> tuple[R.XState, list]:
+    """One state per connected edge of `st` (one state), with that edge removed (mask off, weight 0); and each one's
+    (type, candidate index)."""
+    out, where = [], []
+    for t in R.TYPES:
+        for k in torch.nonzero(st.masks()[t][0]).flatten().tolist():
+            s = st.clone()
+            s.masks()[t][0, k] = False
+            s.weights()[t][0, k] = 0.0
+            out.append(s)
+            where.append((t, int(k)))
+    return R.XState.cat(out), where
+
+
+def _lesion(tb, cfg, iface, dv, ck, margin) -> dict:
+    """Fable: is the original partners' contribution on a few edges or spread over all of them? Each true edge removed
+    from MIP's exact restoration, scored on the final worlds beside the restoration itself."""
+    st0 = tb["reins"].saved_state(tb["intact"])
+    states, where = _lesions(st0)
+    with acct.category("measure"):
+        ck.check()
+        sc = A.score_states(cfg, iface, tb["reins"], R.XState.cat([st0, states]), ids("final"), dev()["world_seed"],
+                            dv, chunk_worlds=FINAL_CHUNK)
+    diff = sc[0][None, :] - sc[1:]
+    drop = diff.mean(axis=1)
+    se = diff.std(axis=1, ddof=1) / np.sqrt(diff.shape[1])
+    pos = np.sort(np.clip(drop, 0, None))[::-1]
+    tot = float(pos.sum())
+    cand = tb["reins"].cand
+    edges = [{"type": t, "candidate": int(cand[k]), "drop": float(d), "se": float(e)}
+             for (t, k), d, e in zip(where, drop, se)]
+    return {"restored_mean": float(sc[0].mean()), "edges": sorted(edges, key=lambda e: -e["drop"]),
+            "n_edges": len(edges), "n_drop_above_p": int((drop > margin).sum()),
+            "n_drop_lower_bound_above_0": int((drop - 1.96 * se > 0).sum()),
+            "sum_positive_drops": tot,
+            "share_of_positive_in_top": {str(k): (float(pos[:k].sum() / tot) if tot > 0 else None) for k in (1, 3, 10)}}
+
+
+def _select_ids(seed: int, w: int, k: int) -> np.ndarray:
+    first, span = dev()["check"]["ids"]["select"]
+    return first + np.random.default_rng([int(seed), int(w), int(k)]).integers(0, span, size=w)
+
+
+def _reeval(tb, setting, cfg, iface, dv, ck) -> dict:
+    """Astra: do the winners chosen on a few worlds survive fresh evaluation? From fixed states (`full`'s saved final
+    states), `sets` independent sets of offspring are drawn; each set (the state and its offspring) is scored on
+    independent selection worlds at each size, and every state on one common block of truth worlds."""
+    ch = dev()["check"]["reeval"]
+    path = _states_path(tb["label"])
+    if not path.exists():
+        raise SystemExit(f"full's saved states are missing ({path})")
+    with np.load(path, allow_pickle=False) as z:
+        arrays = {k: z[k] for k in z.files}
+    reins, scfg = tb["reins"], _scfg(setting)
+    pr = S.problem_of(reins, {t: int(np.asarray(tb["truth"][t]).sum()) for t in R.TYPES})
+    t_first, t_n = dev()["check"]["ids"]["truth"]
+    truth_ids = np.arange(t_first, t_first + t_n)
+    ev = S.simulator(cfg, iface, lambda _: reins, dev()["world_seed"], dv)
+    out = {}
+    for si, start in enumerate(ch["starts"]):
+        st = R.XState.from_arrays({k.split("::")[1]: v for k, v in arrays.items() if k.startswith(start + "::")})
+        gen = torch.Generator().manual_seed(int(ch["seed"]) + si)
+        sets = []
+        for _ in range(ch["sets"]):
+            off, _ = S.propose(st, pr, scfg, cfg.brain, cfg.mutation, gen, moves=not start.startswith("refit"))
+            sets.append(R.XState.cat([st.to("cpu"), off]))
+        n = sets[0].n
+        with acct.category("measure"):
+            ck.check()
+            tru = A.score_states(cfg, iface, reins, R.XState.cat(sets), truth_ids, dev()["world_seed"], dv,
+                                 chunk_worlds=FINAL_CHUNK).reshape(len(sets), n, -1)
+            sel = {}
+            for w in ch["worlds"]:
+                ck.check()
+                res = ev([(k, sets[k], _select_ids(int(ch["seed"]) + si, w, k)) for k in range(len(sets))])
+                sel[w] = np.stack(res)
+        t_mean = tru.mean(axis=2)
+        t_gain = t_mean[:, 1:] - t_mean[:, :1]
+        se_gain = (tru[:, 1:] - tru[:, :1]).std(axis=2, ddof=1) / np.sqrt(tru.shape[2])
+        row = {"truth_worlds": int(tru.shape[2]), "oracle_best_true_gain": float(t_gain.max(axis=1).mean()),
+               "mean_true_gain_of_offspring": float(t_gain.mean()),
+               "median_se_of_a_true_gain": float(np.median(se_gain)), "by_worlds": {}}
+        for w, sw in sel.items():
+            win = sw[:, 1:].argmax(axis=1)
+            s_gain = sw[np.arange(len(sets)), 1 + win] - sw[:, 0]
+            tg = t_gain[np.arange(len(sets)), win]
+            acc = s_gain >= 0
+            rho = np.array([spearmanr(sw[k], t_mean[k]).statistic for k in range(len(sets))], dtype=float)
+            row["by_worlds"][str(w)] = {
+                "mean_true_gain_of_winner": float(tg.mean()), "share_accepted_greedy": float(acc.mean()),
+                "mean_true_gain_when_accepted": float(tg[acc].mean()) if acc.any() else None,
+                "share_accepted_truly_worse": float((acc & (tg < 0)).mean()),
+                "winner_is_true_best": float((win == t_gain.argmax(axis=1)).mean()),
+                "spearman_selection_truth_mean": float(np.nanmean(rho)) if np.isfinite(rho).any() else None}
+        out[start] = row
+    return out
+
+
+def _check_outcome(variants: list, margin: float, alpha: float, sd_frac: float) -> dict:
+    """PILOT-DEV.md §7's rule, fixed before the check runs. A variant is reliable if its refits are equivalent to or
+    above exact restoration and their SD is at most `sd_frac` p; it recovers if its free searches' stratified
+    enrichment p is below alpha over the number of variants. (i) some variant reliable and recovering: the one with the
+    lowest p (the first listed, on ties) is proposed for the pre-registration; (ii) some reliable, none recovering;
+    (iii) none reliable."""
+    k = len(variants)
+    for v in variants:
+        v["reliable"] = bool(v["restoration"]["verdict"] in ("equivalent", "above")
+                             and v["refit_sd"] <= sd_frac * margin)
+        v["recovers"] = bool(v["enrichment"]["p"] < alpha / k)
+    passing = [i for i, v in enumerate(variants) if v["reliable"] and v["recovers"]]
+    if passing:
+        best = min(passing, key=lambda i: (variants[i]["enrichment"]["p"], i))
+        return {"outcome": "i", "variant": variants[best]["name"],
+                "reading": "a variant restores reliably and recovers partners: it is proposed for the pre-registration"}
+    if any(v["reliable"] for v in variants):
+        return {"outcome": "ii", "variant": None,
+                "reading": "a variant restores reliably and none recovers partners: the owner chooses between stopping "
+                           "and a design that gates the pilot on machinery only"}
+    return {"outcome": "iii", "variant": None,
+            "reading": "no variant restores reliably: 03a stops, and pilot-dev is reported as exploratory"}
+
+
+def _check_projection(tb, setting, ck) -> dict | None:
+    """The whole check's episodes at the slower of `tune`'s and `full`'s search rates, against the cap left."""
+    if SMOKE:
+        return None
+    cat = json.loads((out_dir() / "compute.json").read_text(encoding="utf-8"))["categories"]
+    rate = min(cat["tuning"]["worlds_built"] / cat["tuning"]["seconds"],
+               cat["search"]["worlds_built"] / cat["search"]["seconds"])
+    final_rate = cat["final"]["worlds_built"] / cat["final"]["seconds"]
+    ch = dev()["check"]
+    n_s = sum(ch["plan"].values())
+    search_eps = sum(_variant_episodes(_variant_cfg(setting, v), _confirm_n(v), n_s) for v in ch["variants"])
+    n_lesion = 1 + sum(int(np.asarray(tb["truth"][t]).sum()) for t in R.TYPES)
+    n9 = 1 + _scfg(setting).offspring
+    reeval_eps = len(ch["reeval"]["starts"]) * ch["reeval"]["sets"] * n9 * (ch["ids"]["truth"][1]
+                                                                              + sum(ch["reeval"]["worlds"]))
+    final_eps = (len(ch["variants"]) * n_s + n_lesion) * len(ids("final"))
+    hours = (search_eps + reeval_eps) / rate / 3600 + final_eps / final_rate / 3600
+    remaining = ck.cap_hours - ck.spent_hours() - (time.perf_counter() - ck.t_start) / 3600
+    return {"search_episodes": search_eps, "reeval_episodes": reeval_eps, "final_episodes": final_eps,
+            "rate": rate, "hours": hours, "remaining_hours": remaining, "fits": bool(hours <= remaining)}
+
+
+def stage_search_check(args, dv, ck, progress):
+    """D314 (PILOT-DEV.md §7): on the MIP target-brain with headroom, the per-edge lesion of its exact restoration,
+    the re-evaluation of fixed states, and four search variants (3 refits and 5 free searches each), read by a rule
+    fixed before it runs. Projected first, and refused if it would not fit the cap left."""
+    read("report")
+    con, iface, cfg = configured()
+    tb, frow = _check_target(con, iface, cfg, dv)
+    base_rec = read("baseline")
+    brow = next(r for r in base_rec["target_brains"] if r["label"] == tb["label"])
+    setting = read("tune")["chosen"]
+    ch = dev()["check"]
+    margin, boot = base_rec["p"], dev()["boot"]
+    guard = _check_projection(tb, setting, ck)
+    progress.update({"target_brain": tb["label"], "projection": guard, "variants": []})
+    if guard is not None and not guard["fits"]:
+        raise SystemExit(f"the check projects {guard['hours']:.2f} GPU-hours and {guard['remaining_hours']:.2f} "
+                         "remain under pilot-dev's cap: the owner decides")
+    progress["lesion"] = _lesion(tb, cfg, iface, dv, ck, margin)
+    progress["reeval"] = _reeval(tb, setting, cfg, iface, dv, ck)
+    first, span = dev()["ids"]["search"]
+    deleted = np.asarray(brow["deleted"], dtype=float)
+    restored = np.asarray(brow["restored"], dtype=float)
+    pr = S.problem_of(tb["reins"], R.true_counts(con, tb["x"]))
+    for vi, v in enumerate(ch["variants"]):
+        scfg, cn = _variant_cfg(setting, v), _confirm_n(v)
+        base = ch["seed_base"] + 100 * vi
+        reins = R.Reinsertion(con, tb["x"], tb["intact"], device=dv)  # its own, so each variant is its own batch
+        kw = dict(world_base=first, world_span=span)
+        make = (lambda *a, **k: S.ConfirmedExchange(*a, confirm_worlds=cn, **k)) if cn else S.ReplicaExchange
+        searches = [make(pr, scfg, cfg.brain, cfg.mutation, S.search_seed(base, "refit", i),
+                         partners={t: np.asarray(tb["truth"][t], dtype=bool) for t in R.TYPES}, label=f"refit-{i}",
+                         **kw) for i in range(ch["plan"]["refit"])]
+        searches += [make(pr, scfg, cfg.brain, cfg.mutation, S.search_seed(base, "free", i), label=f"free-{i}", **kw)
+                     for i in range(ch["plan"]["free"])]
+        timing = []
+        _run(searches, {id(s): reins for s in searches}, cfg, iface, dv, ck, timing=timing)
+        states = [s.result() for s in searches]
+        _save_states(f"check-{v['name']}-{tb['label']}", {s.label: st for s, st in zip(searches, states)})
+        fin = _final_scores(reins, states, cfg, iface, dv, ck)
+        ri = [i for i, s in enumerate(searches) if s.label.startswith("refit")]
+        fi = [i for i, s in enumerate(searches) if s.label.startswith("free")]
+        ref = fin[ri].mean(axis=0)
+        frees = [states[i] for i in fi]
+        rank = S.ranking(frees)
+        row = {**v, "confirm_worlds": cn, "search_config": scfg.as_dict(),
+               "episodes": _variant_episodes(scfg, cn, len(searches)),
+               "refit_means": [float(fin[i].mean()) for i in ri],
+               "refit_sd": float(np.std([fin[i].mean() for i in ri], ddof=1)),
+               "free_means": [float(fin[i].mean()) for i in fi],
+               "restoration": T.compare(ref, restored, margin, over_brains=False, **boot),
+               "headroom": T.compare(ref, deleted, margin, over_brains=False, **boot),
+               "functional": T.compare(fin[fi].mean(axis=0), ref, margin, over_brains=False, **boot),
+               "enrichment": N.test({t: rank[t][None] for t in R.TYPES}, tb["truth"], tb["strat"], dev()["null_B"],
+                                    dev()["null_seed"] + tb["x"]),
+               "chance_q": _chance_q(tb["truth"], tb["reins"].K), "agreement": _agreement(frees, tb["truth"]),
+               "per_search": [{**_diagnostics(searches[i], tb["truth"], searches[i].label),
+                               "final_mean": float(fin[i].mean()), "auc": _auc(states[i], tb["truth"]),
+                               **({"confirmed": searches[i].trace.confirmed} if cn else {})} for i in fi + ri],
+               "timing": timing}
+        progress["variants"].append(row)
+    rule = _check_outcome(progress["variants"], margin, ch["alpha"], ch["refit_sd_max_fraction_of_p"])
+    out = {"target_brain": tb["label"], "p": margin, "setting": setting, "projection": guard,
+           "reference_from_full": {"refit_means": frow["refit_means"], "refit_sd": frow["refit_sd"],
+                                   "restoration": frow["comparisons"]["restoration"],
+                                   "enrichment_p": frow["enrichment"]["p"]},
+           "lesion": progress["lesion"], "reeval": progress["reeval"], "variants": progress["variants"],
+           "rule": rule}
+    progress.clear()
+    return out
+
+
 def stage_family2(args, dv, ck, progress):
     """DESIGN.md §7: 20 000 simulated datasets per scenario; every sharp-null scenario at most 0.0531."""
     f2 = dev()["family2"]
@@ -1076,10 +1347,11 @@ def stage_family2(args, dv, ck, progress):
 
 DEFAULT_CATEGORY = {"setup": "calibration", "evolve-intact": "selection", "panel": "measure", "evolve-nip": "selection",
                     "baseline": "final", "tune": "tuning", "full": "search", "probe": "probe", "report": "measure",
-                    "family2": "measure"}
+                    "search-check": "search", "family2": "measure"}
 FUNCS = {"setup": stage_setup, "evolve-intact": stage_evolve_intact, "panel": stage_panel,
          "evolve-nip": stage_evolve_nip, "baseline": stage_baseline, "tune": stage_tune, "full": stage_full,
-         "probe": stage_probe, "report": stage_report, "family2": stage_family2}
+         "probe": stage_probe, "report": stage_report, "search-check": stage_search_check,
+         "family2": stage_family2}
 
 
 def run_stage(args) -> dict:

@@ -190,3 +190,69 @@ def test_turnover_windows_run_from_generation_0_on_a_known_history():
                 + [masks([4, 5, 6, 7])]
 
     assert M._turnover(Fake) == [0.5, 1.0]
+
+
+def _module(name):
+    spec = importlib.util.spec_from_file_location(name, ROOT / "scripts" / "e03a.py")
+    M = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(M)
+    return M
+
+
+def test_the_search_check_runs_in_the_pipeline_and_reads_by_its_rule(run):
+    """D314: the lesion covers every true edge, the re-evaluation every start and size, four variants, one outcome."""
+    M, _, docs = run
+    d = docs["search-check"]
+    assert [v["name"] for v in d["variants"]] == ["V1", "V2", "V3", "V4"]
+    assert d["rule"]["outcome"] in ("i", "ii", "iii")
+    tb = next(r for r in docs["baseline"]["target_brains"] if r["label"] == d["target_brain"])
+    assert d["lesion"]["n_edges"] == sum(tb["counts"].values())
+    assert set(d["reeval"]) == {"refit-0", "free-0"}
+    assert all(set(r["by_worlds"]) == {"2", "4"} for r in d["reeval"].values())
+    v4 = d["variants"][3]
+    assert v4["confirm_worlds"] > 0
+    for ps in v4["per_search"]:  # one confirmation per generation
+        assert len(ps["confirmed"]) == len(ps["cold_score_series"])
+    assert all(0 < v["enrichment"]["p"] <= 1 for v in d["variants"])
+
+
+def test_lesions_remove_exactly_one_true_edge_each():
+    M = _module("e03a_script_test_f")
+    import torch
+    K = 6
+    m_in = torch.tensor([[1, 0, 1, 0, 0, 0]], dtype=torch.bool)
+    m_out = torch.tensor([[0, 1, 0, 0, 0, 0]], dtype=torch.bool)
+    m_gap = torch.tensor([[0, 0, 0, 1, 1, 0]], dtype=torch.bool)
+    w = torch.arange(1, K + 1, dtype=torch.float32).reshape(1, K)
+    one = torch.ones(1)
+    st = M.R.XState(m_in, m_out, m_gap, w.clone(), w.clone() * 2, w.clone() * 3, one, one * 0, one * 0)
+    les, where = M._lesions(st)
+    assert les.n == 5 and where == [("in", 0), ("in", 2), ("out", 1), ("gap", 3), ("gap", 4)]
+    for i, (t, k) in enumerate(where):
+        one_state = les.select([i])
+        for tt in M.R.TYPES:
+            dm = (one_state.masks()[tt][0] != st.masks()[tt][0]).nonzero().flatten().tolist()
+            dw = (one_state.weights()[tt][0] != st.weights()[tt][0]).nonzero().flatten().tolist()
+            assert dm == ([k] if tt == t else []) and dw == ([k] if tt == t else [])
+        assert not one_state.masks()[t][0, k] and one_state.weights()[t][0, k] == 0
+
+
+def test_the_check_outcome_rule_at_its_boundaries():
+    """PILOT-DEV §7's rule: reliability (restoration equivalent or above, refit SD at most p/2) and recovery
+    (enrichment p below 0.05 / 4), outcome i (lowest p, first on ties), ii or iii."""
+    M = _module("e03a_script_test_g")
+    p = 0.1
+
+    def v(name, verdict="equivalent", sd=0.05, ep=0.5):
+        return {"name": name, "restoration": {"verdict": verdict}, "refit_sd": sd, "enrichment": {"p": ep}}
+
+    out = M._check_outcome([v("V1"), v("V2", ep=0.0124), v("V3", ep=0.0124), v("V4", ep=0.0126)], p, 0.05, 0.5)
+    assert out["outcome"] == "i" and out["variant"] == "V2"  # 0.0126 >= 0.0125 does not recover; a tie keeps V2
+    out = M._check_outcome([v("V1"), v("V2"), v("V3"), v("V4", ep=0.0126)], p, 0.05, 0.5)
+    assert out["outcome"] == "ii"  # below 0.05 but not below 0.05 / 4: the division over the variants decides
+    out = M._check_outcome([v("V1", sd=0.0501, ep=0.001), v("V2", verdict="below", ep=0.001), v("V3"), v("V4")],
+                           p, 0.05, 0.5)
+    assert out["outcome"] == "ii"  # V1's SD is above p/2 and V2 is below restoration: neither counts
+    out = M._check_outcome([v("V1", verdict="undetermined", ep=0.0), v("V2", sd=0.2), v("V3", verdict="below"),
+                            v("V4", sd=0.06)], p, 0.05, 0.5)
+    assert out["outcome"] == "iii"

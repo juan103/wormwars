@@ -9590,3 +9590,49 @@ pilot-dev's remaining 1.42 hours.
   move.
 
 **The choice between (a), (b) and (c) goes to the owner** (scientific direction).
+
+## D314 — The owner chose (b): a bounded search check on MIP/URXL before any pilot-check; its plan and code
+
+**The owner's choice** (2026-10-18, asked after D313): "(b) Bounded check". The check:
+- runs inside pilot-dev's own cap, with 1.42 GPU-hours left;
+- is not repeated or enlarged.
+
+What follows its outcome is fixed in advance (PILOT-DEV v3.2 §7).
+
+**The plan** (PILOT-DEV §7), merging both reviewers' proposals:
+- **Fable's per-edge lesion:** URXL's 45 true edges, each removed from MIP's exact restoration.
+- **Astra's re-evaluation of fixed states:** 16 offspring sets from `full`'s `refit-0` and `free-0`. Each set is
+  scored on selection worlds of 16, 32 and 64, and on 1 024 truth worlds.
+- **Four search variants,** each with 3 refits and 5 free searches:
+  - V1: three offspring at 32 worlds (Astra);
+  - V2: a colder ladder (Astra);
+  - V3: one chain at 64 worlds (Fable);
+  - V4: one chain at 32 worlds, its best offspring confirmed on 64 fresh worlds (Fable, Astra).
+- **The cost:** about 2.15 M episodes, about 1.0 GPU-hour, projected before it runs and refused if it would not fit.
+
+**The rule, fixed before it runs:**
+- **A variant is reliable** if its refits are equivalent to or above exact restoration and their SD is at most p/2.
+- **A variant recovers** if its enrichment p is below 0.0125 (0.05 over four).
+- **The outcomes:**
+  - (i) a variant is both reliable and recovers: it is proposed for the pre-registration, after a design round on
+    D313's criteria questions;
+  - (ii) some variant is reliable and none recovers: the owner chooses between stopping and a design v7.2 that gates
+    the pilot on machinery only;
+  - (iii) no variant is reliable: 03a stops, reported as exploratory.
+- **These choices are mine, not the reviewers':** the variants' exact numbers, the single chain's temperature of
+  0.01, the Bonferroni division and the SD bound. They go to both reviewers before the check runs.
+
+**Code:**
+- `ConfirmedExchange` in `wormwars/e03a/search.py`. Each generation takes two evaluations; acceptance and swaps use the
+  confirmation scores on fresh worlds from their own stream.
+- `ReplicaExchange.tell` is split into `_scored` and `_advance`. This is code motion only: the random draws come in the
+  same order, and every existing search test passes.
+- `stage_search_check` in `scripts/e03a.py`: `_lesion`, `_reeval`, `_check_outcome` and `_check_projection`.
+
+**Tests:**
+- three confirmation tests, seen failing first;
+- the stage in the smoke pipeline, on the CPU and in the CUDA preflight;
+- a lesion test and a rule test at its boundaries, written after the code.
+- **Sabotage:** dropping the division over the variants, counting "undetermined" as reliable, and keeping a lesioned
+  edge's weight were each caught. The division was not caught at first, because the rule test's case did not depend
+  on it; a case was added where it decides the outcome.

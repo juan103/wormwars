@@ -40,6 +40,7 @@ from .reinsert import TYPES, Reinsertion, XState
 
 SEARCH_STREAM = 0x03A5EA  # the search worlds' stream key, with the search seed and generation
 ACCEPT_STREAM = 0x03AACC
+CONFIRM_STREAM = 0x03AC0F  # a confirmed search's confirmation worlds (D314)
 
 
 @dataclass(frozen=True)
@@ -211,6 +212,9 @@ class Trace:
     # the paired noise the acceptance rule sees: per generation, the mean and SD over every offspring of (offspring
     # score - its replica's current score), both on that generation's worlds (Fable, round 2)
     paired: list = field(default_factory=list)
+    # a confirmed search only (D314): per generation and replica, [selection worlds, confirmation worlds] score of the
+    # best offspring minus the current state's
+    confirmed: list = field(default_factory=list)
 
 
 class ReplicaExchange:
@@ -249,18 +253,8 @@ class ReplicaExchange:
         return XState.cat([self.current, off]), self.worlds()
 
     def tell(self, scores) -> None:
-        if self._pending is None:
-            raise RuntimeError("tell() without ask()")
-        off, kinds = self._pending
-        self._pending = None
+        off, kinds, s_cur, s_off = self._scored(scores)
         R, lam, T = self.scfg.replicas, self.scfg.offspring, self.scfg.temperatures
-        scores = np.asarray(scores, dtype=np.float64).reshape(-1)
-        if scores.shape != (R + R * lam,) or not np.isfinite(scores).all():
-            raise ValueError(f"expected {R + R * lam} finite scores")
-        s_cur = scores[:R].copy()
-        s_off = scores[R:].reshape(R, lam)
-        diff = s_off - s_cur[:, None]
-        self.trace.paired.append([float(diff.mean()), float(diff.std())])
         take, acc, acc_kind = [], [], []
         for r in range(R):
             o = int(np.argmax(s_off[r]))  # the first best, on ties
@@ -272,7 +266,28 @@ class ReplicaExchange:
             take.append(R + r * lam + o if ok else r)
             if ok:
                 s_cur[r] = s_off[r, o]
-        everything = XState.cat([self.current, off])
+        self._advance(XState.cat([self.current, off]), take, s_cur, acc, acc_kind)
+
+    def _scored(self, scores):
+        """The pending offspring, their kinds, and the generation's scores split into current [R] and offspring
+        [R, λ]; the paired spread goes into the trace."""
+        if self._pending is None:
+            raise RuntimeError("tell() without ask()")
+        off, kinds = self._pending
+        self._pending = None
+        R, lam = self.scfg.replicas, self.scfg.offspring
+        scores = np.asarray(scores, dtype=np.float64).reshape(-1)
+        if scores.shape != (R + R * lam,) or not np.isfinite(scores).all():
+            raise ValueError(f"expected {R + R * lam} finite scores")
+        s_cur = scores[:R].copy()
+        s_off = scores[R:].reshape(R, lam)
+        diff = s_off - s_cur[:, None]
+        self.trace.paired.append([float(diff.mean()), float(diff.std())])
+        return off, kinds, s_cur, s_off
+
+    def _advance(self, everything: XState, take: list, s_cur, acc: list, acc_kind: list) -> None:
+        """The replacements (`take` indexes `everything`), the swaps on `s_cur`, the trace, the next generation."""
+        R, T = self.scfg.replicas, self.scfg.temperatures
         self.current = everything.select(take)
         swaps = []
         if (self.generation + 1) % self.scfg.swap_every == 0:
@@ -299,6 +314,65 @@ class ReplicaExchange:
     def result(self) -> XState:
         """The coldest replica's current state."""
         return self.current.select([0])
+
+
+class ConfirmedExchange(ReplicaExchange):
+    """D314's variant (Fable, Astra, after pilot-dev): each generation takes two evaluations. First the current states
+    and their offspring on the generation's worlds, as in `ReplicaExchange`; each replica's best offspring (the first,
+    on ties) is its candidate. Then each current state and its candidate on `confirm_worlds` fresh worlds (a function
+    of the search seed and the generation, on their own stream), where the acceptance rule and the swaps are applied to
+    the confirmation scores. A candidate that won only on the selection worlds' noise is then usually rejected."""
+
+    def __init__(self, *args, confirm_worlds: int, **kw):
+        super().__init__(*args, **kw)
+        if int(confirm_worlds) < 1:
+            raise ValueError("confirm_worlds must be at least 1")
+        self.confirm_n = int(confirm_worlds)
+        self._confirm = None  # between the two evaluations: the candidates and their selection differences
+
+    def confirmation_worlds(self) -> np.ndarray:
+        rng = np.random.default_rng([self.seed, self.generation, CONFIRM_STREAM])
+        return self.world_base + rng.integers(0, self.world_span, size=self.confirm_n)
+
+    def ask(self) -> tuple[XState, np.ndarray]:
+        if self._confirm is None:
+            return super().ask()
+        if self._confirm["asked"]:
+            raise RuntimeError("ask() twice without tell()")
+        self._confirm["asked"] = True
+        return XState.cat([self.current, self._confirm["candidates"]]), self.confirmation_worlds()
+
+    def tell(self, scores) -> None:
+        R, lam, T = self.scfg.replicas, self.scfg.offspring, self.scfg.temperatures
+        if self._confirm is None:
+            off, kinds, s_cur, s_off = self._scored(scores)
+            best = [int(np.argmax(s_off[r])) for r in range(R)]
+            self._confirm = {"candidates": off.select([r * lam + o for r, o in enumerate(best)]),
+                             "kinds": [kinds[r * lam + o] for r, o in enumerate(best)],
+                             "selection": [float(s_off[r, o] - s_cur[r]) for r, o in enumerate(best)],
+                             "asked": False}
+            return
+        if not self._confirm["asked"]:
+            raise RuntimeError("tell() without ask()")
+        c = self._confirm
+        self._confirm = None
+        scores = np.asarray(scores, dtype=np.float64).reshape(-1)
+        if scores.shape != (2 * R,) or not np.isfinite(scores).all():
+            raise ValueError(f"expected {2 * R} finite confirmation scores")
+        s_cur, s_cand = scores[:R].copy(), scores[R:]
+        take, acc, acc_kind, conf = [], [], [], []
+        for r in range(R):
+            u = self.rng.random()
+            d = s_cand[r] - s_cur[r]
+            ok = bool(d >= 0 or u < np.exp(d / T[r]))
+            acc.append(ok)
+            acc_kind.append(c["kinds"][r] if ok else None)
+            take.append(R + r if ok else r)
+            conf.append([c["selection"][r], float(d)])
+            if ok:
+                s_cur[r] = s_cand[r]
+        self.trace.confirmed.append(conf)
+        self._advance(XState.cat([self.current, c["candidates"]]), take, s_cur, acc, acc_kind)
 
 
 def run_lockstep(searches: list, evaluate, check=None, after=None) -> None:
