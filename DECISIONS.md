@@ -10028,3 +10028,32 @@ any GPU work needs the owner's word.
 
 **Next:** a short confirmation with both, then the code (step 1), then step 0 and the pilot's registration. The owner's
 word is needed for the GPU.
+
+## D325 — 03h design v3.1 confirmed except the power rule; v3.2 makes the fixes; the design is agreed
+
+**The confirmation:** run 20261018-160748, archived with round 3.
+- Fable: "ready for code and the pilot's registration", with two text fixes required before that registration is
+  bound.
+- Astra: "revise", for the same power-rule error and two small items. B's blocking point is resolved.
+- Both accept B's conditional inference, and both checked `t1_generation0.py`'s estimator and output.
+
+**The error, now corrected:**
+- *v3.1's detectability rule divided the whole SD of D, shared-world part included, by √64.* Worlds are shared by all
+  64 graphs, so that part does not shrink.
+- v3.2 uses SE = sqrt(s_graph² / 64 + s_shared²), with δ_A fixed at 0.05 in the pilot's registration before the pilot
+  is seen.
+- s_graph takes the larger of the pilot's three-graph estimate and step 0's spread.
+
+**Also fixed:**
+- an "undetermined" A2 fails A;
+- B's decile is selected per condition;
+- the "head start" label says "for this genome draw";
+- the cut order keeps the pilot-selected W;
+- rule 7's CUDA check runs inside `replay_mode()`.
+
+**The design is agreed.** Every remaining point from both reviewers is taken as they wrote it. Fable's verdict on
+v3.1 was already "ready", and Astra's "revise" named only these items. v3.2 is the basis for the code and the pilot's
+registration; both will be reviewed again.
+
+**Next:** the code (step 1), test-first, reviewed by both. Then step 0, which needs the owner's word for about a
+minute of GPU.

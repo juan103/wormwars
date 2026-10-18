@@ -1,6 +1,6 @@
-# 03h: does the history random brains hold predict how well they forage? Design v3.1 (draft, for review)
+# 03h: does the history random brains hold predict how well they forage? Design v3.2 (draft, for review)
 
-**Status:** design v3.1, 2026-10-18. Not coded, not run.
+**Status:** design v3.2, 2026-10-18. Not coded, not run.
 - **Review rounds:**
   - round 1 reviewed v1 (`de22cc4`, D321-D322; run 20261018-152829);
   - round 2 reviewed v2 (`e0efdd8`; run 20261018-154121). Both said "revise" and accepted the task change and the
@@ -9,6 +9,8 @@
 - **Round 3 reviewed v3** (`0ddf41f`; run 20261018-155410). Fable said "ready for code and the pilot's registration,
   with small fixes"; Astra said "revise", with one blocking point (B's inference). v3.1 takes every finding (§11;
   D324).
+- **v3.1 was confirmed** (run 20261018-160748). Fable said "ready for code and the pilot's registration"; Astra said
+  "revise" only for the power rule. v3.2 makes their fixes (§12; D325).
 - **GPU:** any GPU work, step 0 and the pilot included, needs the owner's word.
 
 ## 1. The question
@@ -115,8 +117,9 @@ observation the brain and `ScriptedBrain` receive.
 - **A covariate:** each graph's ASK direct read-out (`direct_readout`) is reported.
 
 **Rule 7** (Fable): with the bit at 0, the interface variant injects nothing at ASK. Under level, T1 scores for the
-same genomes and composition must equal the pinned interface's bitwise, on the CPU, and on CUDA in the same
-composition.
+same genomes and composition must equal the pinned interface's bitwise:
+- on the CPU;
+- on CUDA, in the same composition and inside `replay_mode()` (AGENTS.md rule 6; Fable, Astra).
 
 ## 4. The scripted gate
 
@@ -220,7 +223,8 @@ world. The selection and test banks run as separate rollouts. The actual chunks 
   - genomes resampled within each graph;
   - graphs resampled within the ensemble.
   - Each part's one-sided p is the bootstrap share at or below 0, plus one, over B + 1.
-- **The claim's p** is max(p_A1, p_A2), and it enters Holm (Astra).
+- **The claim's p** is max(p_A1, p_A2), and it enters Holm (Astra). If A2 is withheld as "undetermined", A fails
+  Holm and the gate (Fable).
 - **Reported:**
   - N2's ρ and D with intervals (N2 is one fixed connectome);
   - ρ_level − ρ_relief;
@@ -229,8 +233,9 @@ world. The selection and test banks run as separate rollouts. The actual chunks 
   - H_dir's readings, worded in advance.
 
 **B:**
-- **The statistic:** T_{g,c} is the test-bank mean of graph g's selected decile under condition c. The decile is the
-  top 26 of 256 on the selection bank, with ties broken by genome index (Astra).
+- **The statistic:** T_{g,c} is the test-bank mean of graph g's selected decile under condition c.
+  - The decile is selected separately per condition, on that condition's selection-bank scores (Fable).
+  - It is the top 26 of 256, with ties broken by genome index (Astra).
 - **The primary** (Fable): U_g = T_{g,sham} − T_{g,relief}.
   - **The direction** (Fable): under the hypothesis, the nulls gain more from the relief than N2, so their U is more
     negative and N2's U ranks high.
@@ -239,7 +244,8 @@ world. The selection and test banks run as separate rollouts. The actual chunks 
   - Only the formula is imported, not 03's effect-margin gate. The rank test is approximate (Astra).
 - **The labels:**
   - **"Head start larger when memory is needed"** requires the rank p, and also N2's level advantage
-    T_{N2,level} − mean T_{e,level} > 0 by its 95% interval;
+    T_{N2,level} − mean T_{e,level} > 0 by its 95% interval. The interval conditions on N2's one draw of 256 genomes,
+    and the label says so: "for this genome draw" (Fable);
   - **an interaction without an established initial advantage** is labelled as such.
 - **The intervals are conditional** (Astra's first option):
   - each graph's selected decile is frozen, and the test-bank worlds are resampled, one shared resample across graphs
@@ -298,11 +304,16 @@ test score, relief against sham.
      the 3 graphs) falls below 0.85. In that case W becomes 32, and the budget is re-checked against the cap;
    - **G:** stays at 256;
    - **detectability:**
-     - with the pilot's SD of graph-level D written s_D, the power of A2's one-sided test at α = 0.025 (Holm's first
-       threshold) for a mean D of 2δ_A, over 64 graphs, is computed as 1 − Φ(1.96 − 2δ_A √64 / s_D);
+     - **δ_A is fixed in the pilot's registration,** at 0.05 in ρ, before the pilot is seen (Fable);
+     - the projected SE of the 64-graph ensemble-mean D is SE = sqrt(s_graph² / 64 + s_shared²). Here s_graph is the
+       between-graph SD of D over the pilot graphs, and s_shared is the SD of the pilot's ensemble-mean D over
+       shared-world bootstrap replicates. The shared-world part does not shrink with the graph count (Fable, Astra);
+     - the power of A2's one-sided test at α = 0.025 (Holm's first threshold), for a mean D of 2δ_A, is
+       1 − Φ(1.96 − 2δ_A / SE);
      - if it is below 0.8, 03h stops for redesign;
-     - shared-world uncertainty is included by computing s_D across the pilot's world-bootstrap replicates as well as
-       across graphs;
+     - s_graph rests on three graphs (two degrees of freedom), so its value enters as the larger of the pilot's
+       estimate and step 0's between-graph SD of ρ_level; the shared-world term is estimated from 16 worlds
+       (Fable);
    - **the manipulation** (Fable): the selected decile's shift, relief against sham, on the pilot graphs, and the
      bit's effect on the turn read-out under the history bank. If neither moves beyond its interval, the amplitude
      doubles to 0.5 once, by this rule, and the pilot's three-condition part reruns. If neither moves at 0.5, 03h
@@ -332,7 +343,8 @@ test score, relief against sham.
 - **CPU costs** are not counted as GPU-hours: the SH-mirror-ASK sampler, and the crossed bootstrap (10 000 resamples
   over 65 graphs × 256 genomes × 3 conditions). The bootstrap is vectorised over resamples, and its time is reported.
 - **The cap:** 6 GPU-hours, the ceiling (accepted by both as a ceiling), set from the pilot's timing.
-- **Cut order:** SH first, then W_t from 64 to 32. The primary ensemble stays at 64 graphs, and W stays at 16 (Fable).
+- **Cut order:** SH first, then W_t from 64 to 32. The primary ensemble stays at 64 graphs, and W stays at the
+  pilot-selected value (16, or 32 by §7.7's rule) (Fable, Astra).
 - **Incomplete runs:** a run stopped by the cap is reported as incomplete. It never becomes a smaller successful
   experiment.
 
@@ -422,3 +434,15 @@ test score, relief against sham.
 
 **Noted** (Astra): the frozen-champion check stays a separate exploratory item outside 03h (§9 of v2's merge). It is
 not in this design, and it does not block 03h.
+
+## 12. Changes from v3.1 (the confirmation: run 20261018-160748)
+
+- **The power rule's SE** keeps the shared-world variance unshrunk, SE = sqrt(s_graph² / 64 + s_shared²) (Fable 1,
+  Astra 1).
+- **δ_A is fixed at 0.05** in the pilot's registration (Fable 2).
+- **s_graph** takes the larger of the pilot's three-graph estimate and step 0's spread (Fable 3).
+- **An "undetermined" A2** fails A (Fable 4).
+- **B's decile** is selected per condition (Fable 5).
+- **The label "head start"** says "for this genome draw" (Fable).
+- **The budget's cut order** keeps the pilot-selected W (Astra 2).
+- **Rule 7's CUDA check** runs inside `replay_mode()` (Fable 6, Astra 3).
