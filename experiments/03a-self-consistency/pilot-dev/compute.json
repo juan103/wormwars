@@ -1,0 +1,163 @@
+{
+ "time_unit": "synchronised wall-clock seconds per category (not GPU kernel time)",
+ "neural_update_unit": "strains x batch x substeps network updates (network size not included)",
+ "attempts": [
+  {
+   "file": "20261017T170200Z-cc618b20.json",
+   "status": "completed",
+   "experiment": "03a",
+   "script": "scripts/e03a.py",
+   "stage": "family2",
+   "default_category": "measure",
+   "git_commit": "bb42654cb5b0245d43652853b09b05e0a7e3adc0"
+  },
+  {
+   "file": "20261018T001843Z-4593b772.json",
+   "status": "completed",
+   "experiment": "03a",
+   "script": "scripts/e03a.py",
+   "stage": "setup",
+   "default_category": "calibration",
+   "git_commit": "a5760c43c373d7b6d88751d27db3262424de941a"
+  },
+  {
+   "file": "20261018T001911Z-d342187e.json",
+   "status": "completed",
+   "experiment": "03a",
+   "script": "scripts/e03a.py",
+   "stage": "evolve-intact",
+   "default_category": "selection",
+   "git_commit": "a5760c43c373d7b6d88751d27db3262424de941a"
+  },
+  {
+   "file": "20261018T011949Z-1d4ac1eb.json",
+   "status": "completed",
+   "experiment": "03a",
+   "script": "scripts/e03a.py",
+   "stage": "panel",
+   "default_category": "measure",
+   "git_commit": "1b0531a42b13c1004679dc49ad3559f274af14b0"
+  },
+  {
+   "file": "20261018T012128Z-51481ff6.json",
+   "status": "completed",
+   "experiment": "03a",
+   "script": "scripts/e03a.py",
+   "stage": "evolve-nip",
+   "default_category": "selection",
+   "git_commit": "1b0531a42b13c1004679dc49ad3559f274af14b0"
+  },
+  {
+   "file": "20261018T020130Z-f2cf0654.json",
+   "status": "completed",
+   "experiment": "03a",
+   "script": "scripts/e03a.py",
+   "stage": "baseline",
+   "default_category": "final",
+   "git_commit": "1b0531a42b13c1004679dc49ad3559f274af14b0"
+  },
+  {
+   "file": "20261018T020232Z-435f24be.json",
+   "status": "completed",
+   "experiment": "03a",
+   "script": "scripts/e03a.py",
+   "stage": "probe",
+   "default_category": "probe",
+   "git_commit": "1b0531a42b13c1004679dc49ad3559f274af14b0"
+  },
+  {
+   "file": "20261018T024604Z-25e43401.json",
+   "status": "completed",
+   "experiment": "03a",
+   "script": "scripts/e03a.py",
+   "stage": "tune",
+   "default_category": "tuning",
+   "git_commit": "f27d4c42348d5b4500ba83c8c1e1542d97c8b491"
+  },
+  {
+   "file": "20261018T041937Z-51c559ef.json",
+   "status": "completed",
+   "experiment": "03a",
+   "script": "scripts/e03a.py",
+   "stage": "full",
+   "default_category": "search",
+   "git_commit": "f27d4c42348d5b4500ba83c8c1e1542d97c8b491"
+  },
+  {
+   "file": "20261018T054742Z-e0c85a11.json",
+   "status": "completed",
+   "experiment": "03a",
+   "script": "scripts/e03a.py",
+   "stage": "report",
+   "default_category": "measure",
+   "git_commit": "f27d4c42348d5b4500ba83c8c1e1542d97c8b491"
+  }
+ ],
+ "failed_attempts": 0,
+ "uncategorised": false,
+ "categories": {
+  "measure": {
+   "worlds_built": 87552,
+   "world_ticks": 26265600,
+   "neural_updates": 840499200,
+   "neural_padding": 0,
+   "seconds": 98.16409340004247
+  },
+  "calibration": {
+   "worlds_built": 120,
+   "world_ticks": 9600,
+   "neural_updates": 307200,
+   "neural_padding": 0,
+   "seconds": 25.30608149999898
+  },
+  "selection": {
+   "worlds_built": 1024000,
+   "world_ticks": 307200000,
+   "neural_updates": 9830400000,
+   "neural_padding": 0,
+   "seconds": 4864.513553099994
+  },
+  "holdout": {
+   "worlds_built": 41984,
+   "world_ticks": 12595200,
+   "neural_updates": 403046400,
+   "neural_padding": 0,
+   "seconds": 199.39559860000372
+  },
+  "final": {
+   "worlds_built": 256000,
+   "world_ticks": 76800000,
+   "neural_updates": 2673868800,
+   "neural_padding": 216268800,
+   "seconds": 263.4050848000079
+  },
+  "probe": {
+   "worlds_built": 100352,
+   "world_ticks": 30105600,
+   "neural_updates": 3808952320,
+   "neural_padding": 1904476160,
+   "seconds": 305.7900249000013
+  },
+  "tuning": {
+   "worlds_built": 3225600,
+   "world_ticks": 967680000,
+   "neural_updates": 30965760000,
+   "neural_padding": 0,
+   "seconds": 5488.984979599994
+  },
+  "search": {
+   "worlds_built": 3456000,
+   "world_ticks": 1036800000,
+   "neural_updates": 33177600000,
+   "neural_padding": 0,
+   "seconds": 5162.659711799999
+  }
+ },
+ "totals": {
+  "worlds_built": 8191608,
+  "world_ticks": 2457456000,
+  "neural_updates": 81700433920,
+  "neural_padding": 2120744960,
+  "seconds_timed": 16408.219127700042
+ }
+}

@@ -9425,3 +9425,71 @@ the round was inaccurate for `panel`; it had already run.
 - evolution ran at 200 worlds per second in two-run batches, half the design's 420;
 - the scan ran at 892;
 - the searches' rate decides whether `full` fits the 6-hour cap, and the guard checks it before `full` runs.
+
+## D312 — 03a's pilot-dev is complete: no anatomical signal on its two high targets; 4.58 of 6 GPU-hours
+
+All ten stages completed on `f27d4c4`. The records are in `experiments/03a-self-consistency/pilot-dev/`:
+`tune.json`, `full.json`, `report.json`, and the compute aggregate `compute.json`. Pilot-dev ran on its SH-mirror null
+graph (seed 3 403 000), not on N2. Its results inform the pre-registration and are not tests of the hypothesis.
+
+**`tune`** (1.55 h; 3 225 600 episodes at 588 per second):
+- Round A flagged that no ladder had every neighbour pair inside the 20-40% swap band. The mean swap rates were 0.79,
+  0.88 and 0.95, and the rule kept the nearest, (0.1, 0.2, 0.4, 0.8).
+- Rounds B and C kept their first listed settings, (1/3, 1) and no shaping. Every alternative was within 0.011 of
+  them.
+- The chosen setting is a noisy choice, not an optimisation (D311).
+
+**`full`** (1.46 h; the searches ran at 669 episodes per second). The budget guard passed.
+
+**Resolution:**
+- p = 0.098;
+- δ_eval = 0.021;
+- δ_search = 0.042, or 0.43 p.
+
+**The four target-brains** (MIP and NIP × URXL and PLNL):
+
+| | MIP/URXL | MIP/PLNL | NIP/URXL | NIP/PLNL |
+|---|---|---|---|---|
+| Enrichment p (B = 10 000) | 0.69 | 0.12 | 0.62 | 1.0 |
+| No-task control p | 0.61 | 1.0 | 0.62 | 1.0 |
+| Functional success | reached | reached | reached | reached |
+| Outcome | excluded | functional success, anatomy undetermined | functional success, anatomy undetermined | functional success, anatomy undetermined |
+
+- **MIP/URXL is excluded** because its refits are below exact restoration by 0.132 [−0.164, −0.100]. Refitting the
+  true partners' weights from zero for 100 generations did not regain the intact brain's score.
+- **URXL's original partners help:** the advantage is 0.122, above p. On the other three target-brains it is
+  equivalent.
+
+**What the free searches did:**
+- Q stays inside the chance range from generation 0 to the end:
+  - URXL: chance 0.070, Q 0.02-0.16;
+  - PLNL: chance 0.011, Q 0-0.1.
+- Each search's AUC is between 0.47 and 0.55.
+- Partner turnover is mostly 0.9-1.0 per 10-generation window. The partner sets drift.
+- The searches' Jaccard agreement is near the expectation for independent random sets.
+- Offspring minus current, on the same worlds:
+  - on MIP/URXL the mean was −0.14 to −0.20, with an SD of 0.32-0.42;
+  - on PLNL the mean was −0.01 to −0.04.
+
+**The longer searches (MIP only):**
+- AUC at generation 100 and at generation 200:
+  - URXL: 0.514 → 0.505 and 0.490 → 0.497;
+  - PLNL: 0.494 → 0.494 for both.
+- The final means show no consistent gain.
+
+**The reading fixed in PILOT-DEV §3 applies:** "Q at 100 within noise of chance, and no gain from 100 to 200: no
+improvement is detected over this extension, and the budget stays."
+
+**Not pilot-dev's question:** the mirror ranking's AUC is 0.80-0.83 on this graph, which is mirror-symmetric by
+construction.
+
+**Report:**
+- The formal design projects 43.8 GPU-hours (5 random refits, 5 free searches, 16 worlds, no cut). That fits the 66.9
+  hours 03a has left.
+- 32 search worlds would need 67.4 hours, and are not allowed.
+- The extrapolations are named in `report.json`.
+
+**Next:**
+- The pilot-dev results, and proposed diagnostic thresholds, go to both reviewers.
+- Pilot-dev found no anatomical signal on either high target. Whether the formal run is still worth its 44 hours is a
+  question about scientific direction, so it goes to the owner after the review.
