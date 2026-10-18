@@ -1,18 +1,21 @@
-KILLED    test_direction_in_partners_drive_x_and_out_partners_are_driven_by_it
-KILLED    test_union_mask_equals_the_network_built_with_exactly_those_partners
-KILLED    test_the_background_is_bitwise_unchanged_by_reinsertion
-KILLED    test_mip_exact_restoration_reproduces_the_intact_brain
-KILLED    test_full_replay_reproduces_the_unperturbed_episode_bitwise
-KILLED    test_the_first_action_that_can_differ_is_at_2L_plus_1
-KILLED    test_permutations_stay_within_strata_and_are_permutations
-KILLED    test_observed_ties_with_identity_draws_are_counted
-KILLED    test_a_tied_group_goes_wholly_to_the_lower_bin
-KILLED    test_exact_p_matches_brute_force_and_counts_the_observed_split
-KILLED    test_holm_step_down
-SURVIVED  test_no_task_accepts_every_best_offspring_and_every_swap
-KILLED    test_partner_counts_never_change_and_refits_never_move
-KILLED    test_common_random_numbers_every_state_of_a_generation_plays_the_same_worlds
-KILLED    test_information_boundary_free_searches_do_not_see_the_truth
-KILLED    test_a_neuron_with_no_path_to_the_interface_is_not_eligible
-KILLED    test_mirror_ranking_reads_the_partners_mirror
-survivors: 1
+CAUGHT    test_direction_in_partners_drive_x_and_out_partners_are_driven_by_it  [pytest exit 1]  E       assert (0.0 == 1.5)
+CAUGHT    test_union_mask_equals_the_network_built_with_exactly_those_partners  [pytest exit 1]  E       assert (tensor(True) and tensor(False))
+CAUGHT    test_the_background_is_bitwise_unchanged_by_reinsertion  [pytest exit 1]  E                   assert False
+CAUGHT    test_mip_exact_restoration_reproduces_the_intact_brain  [pytest exit 1]  E       assert (False)
+CAUGHT    test_full_replay_reproduces_the_unperturbed_episode_bitwise  [pytest exit 1]  E           assert False
+CAUGHT    test_the_first_action_that_can_differ_is_at_2L_plus_1  [pytest exit 1]  E       assert (False)
+CAUGHT    test_permutations_stay_within_strata_and_are_permutations  [pytest exit 1]  E           assert np.False_
+CAUGHT    test_observed_ties_with_identity_draws_are_counted  [pytest exit 1]  E       assert (0.5 == 0.5 and 0.004975124378109453 == 1.0)
+CAUGHT    test_a_tied_group_goes_wholly_to_the_lower_bin  [pytest exit 1]  E       assert (2 == 1)
+CAUGHT    test_exact_p_matches_brute_force_and_counts_the_observed_split  [pytest exit 1]  E           assert 0.2698412698412698 == np.float64(0.27380952380952384)
+CAUGHT    test_holm_step_down  [pytest exit 1]  E       AssertionError:
+SURVIVED  test_no_task_accepts_every_best_offspring_and_every_swap  [pytest exit 0]  
+CAUGHT    test_partner_counts_never_change_and_refits_never_move  [pytest exit 1]  E                   assert tensor(False)
+CAUGHT    test_common_random_numbers_every_state_of_a_generation_plays_the_same_worlds  [pytest exit 1]  E               assert np.False_
+CAUGHT    test_information_boundary_free_searches_do_not_see_the_truth  [pytest exit 1]  E       AssertionError: assert False
+CAUGHT    test_a_neuron_with_no_path_to_the_interface_is_not_eligible  [pytest exit 1]  E       AssertionError: assert 111 not in [20, 21, 22, 23, 26, 27, ...]
+CAUGHT    test_mirror_ranking_reads_the_partners_mirror  [pytest exit 1]  E       assert np.float64(70.0) == np.float32(0.0)
+CAUGHT    test_family2_withholds_a_target_with_a_non_finite_brain  [pytest exit 1]  E       assert (False)
+CAUGHT    test_the_simulator_moves_genomes_to_the_requested_device  [pytest exit 1]  E       AssertionError: assert [('cpu', 'cpu', 'meta')] == [('meta', 'meta', 'meta')]
+CAUGHT    test_metropolis_acceptance_has_the_registered_probability  [pytest exit 1]  E       AssertionError: assert np.False_
+not caught: 1
