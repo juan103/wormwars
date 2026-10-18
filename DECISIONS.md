@@ -9989,3 +9989,42 @@ any GPU work needs the owner's word.
 - 03 drew its probe genomes separately, so the committed data cannot link history to fitness by itself.
 
 **Next:** v3 goes to both. Step 0, the pilot and the formal run need the owner's word.
+
+## D324 — 03h design v3 reviewed (Fable "ready, with small fixes", Astra "revise"); v3.1 takes every finding
+
+**The review:** run 20261018-155410, both at xhigh effort, archived in `docs/reviews/20261018-03h-design-r3/`.
+- Both found the round-2 structural findings resolved, and both said the code can proceed.
+- Astra's one blocking point: B's intervals repeated selection, but the design scored only the selected decile on
+  the test bank. v3.1 makes B's inference conditional: each graph's selected decile is frozen, and the test worlds and
+  graphs are resampled, with the conditioning stated. Reselection inference was priced at about 3.9 GPU-hours, with
+  every genome tested on 32 worlds.
+
+**Also taken:**
+- **B's direction and counting rule:** r counts the nulls with U at or above N2's (Fable).
+- **Step 0:**
+  - a regeneration recipe (Astra): `pilotSH101`-`116`, `genome_seed(name, "")` without `+1`, one CUDA draw of 256;
+  - a verification replay against `pilot.json` first, which drops step 0 if it fails (Fable).
+- **The pilot's registration** is a step of its own, with numeric rules:
+  - **W:** the crossed-decomposition reliability below 0.85 → W = 32;
+  - **detectability:** the power at 2δ_A over 64 graphs below 0.8 → stop for redesign, with shared-world variance in
+    s_D;
+  - **the manipulation:** if neither the decile shift nor the turn response moves, the amplitude doubles once;
+  - **its size:** 3 graphs.
+- **The committed derived numbers:** `development-records/t1_generation0.py` and its output, from 03's `pilot.json`.
+  - The crossed decomposition gives variance components of 0.067 (genome), 0.049 (world) and 0.019 (residual).
+  - The ranking reliability is 0.98 at W = 16 and 0.96 at 8. *Corrected 2026-10-18: design v3 and D323 said 0.94 and
+    0.90, from a ratio that counted the shared world effect as noise.*
+  - The rate is 172.9 episodes per second, over 03's five-cell mix (Astra: the timing quoted for 03 was one graph's).
+- **The sham:** its estimator conventions, and "approximately matches", "generated without observing food", keyed per
+  world and wey.
+- **The gate:**
+  - the slow-memory family's rules, ported from KTS's memory mechanism only, with T = 1 exact;
+  - how the bit and the internal comparison combine;
+  - the sham criterion as an interval;
+  - the recovered share;
+  - a relief failure stops for redesign.
+- **Degenerate graphs:** setting them to zero is not conservative for A2, so a reading without them is added.
+- **Also:** the best of 32 explained, Holm's attainable ranks, the CPU costs, and the seed and world disjointness rule.
+
+**Next:** a short confirmation with both, then the code (step 1), then step 0 and the pilot's registration. The owner's
+word is needed for the GPU.

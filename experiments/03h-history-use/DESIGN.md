@@ -1,11 +1,14 @@
-# 03h: does the history random brains hold predict how well they forage? Design v3 (draft, for review)
+# 03h: does the history random brains hold predict how well they forage? Design v3.1 (draft, for review)
 
-**Status:** design v3, 2026-10-18. Not coded, not run.
+**Status:** design v3.1, 2026-10-18. Not coded, not run.
 - **Review rounds:**
   - round 1 reviewed v1 (`de22cc4`, D321-D322; run 20261018-152829);
   - round 2 reviewed v2 (`e0efdd8`; run 20261018-154121). Both said "revise" and accepted the task change and the
     merged points, except the cap (Fable).
 - **v3 takes every round-2 finding** (§10; D323).
+- **Round 3 reviewed v3** (`0ddf41f`; run 20261018-155410). Fable said "ready for code and the pilot's registration,
+  with small fixes"; Astra said "revise", with one blocking point (B's inference). v3.1 takes every finding (§11;
+  D324).
 - **GPU:** any GPU work, step 0 and the pilot included, needs the owner's word.
 
 ## 1. The question
@@ -23,8 +26,9 @@ history, and that evolution then builds such memory into every graph.
 **Two questions, at generation 0:**
 - **A, the link:** does the history a random genome holds predict its foraging score, within a graph? Is that
   association weaker when the need for memory is relieved than under a sham input?
-- **B, N2's head start:** does N2's generation-0 upper tail lose more to the relief than the null graphs' do, compared
-  with the sham? Does N2 have a generation-0 advantage at all?
+- **B, N2's head start:** does N2's upper-tail advantage over the null graphs shrink when the relief is given,
+  compared with the sham? Under the hypothesis, the null graphs gain more from the relief than N2 does. And does N2
+  have a generation-0 advantage at all?
 
 **Wordings, fixed now:**
 - **A, positive** (Astra): "history predicts fitness positively under level, and its association is stronger under
@@ -45,11 +49,17 @@ replicates. Worlds are the resampling unit.
 
 **The score** is T1's foraging score (`wormwars/evo/rollout.py` `foraging_score`): the swarm's surviving energy as a
 fraction of its starting energy. It is not a count of targets.
-- **It is graded at generation 0, measured** (03's pilot, `experiments/03-generation0/pilot.json`; 16 SH graphs ×
-  256 random genomes × 16 worlds):
-  - the mean is 0.87-0.91, with no zeros;
-  - the SD of genome means is 0.26, and the per-world SD within a genome is 0.25;
-  - so 16 worlds give a genome-mean reliability of 0.94, and 8 give 0.90.
+- **It is graded at generation 0, measured** from 03's pilot (`experiments/03-generation0/pilot.json`; 16 SH graphs ×
+  256 random genomes × 16 worlds). The numbers are from `development-records/t1_generation0.py`, whose output is
+  `t1-generation0.json`:
+  - the graph means are 0.865-0.911, with no zero scores;
+  - the SD of genome means is 0.26;
+  - **the crossed decomposition** (genome, world, residual) gives variance components of 0.067, 0.049 and 0.019. The
+    world effect is shared by every genome, so it does not affect ranking;
+  - **the ranking reliability of a genome's mean** is var_genome / (var_genome + var_residual / W): 0.98 at W = 16
+    and 0.96 at W = 8.
+  - Reliable fitness means do not by themselves make ρ or D precise: shared-world uncertainty stays in the inference
+    (Astra).
 - **Memory pays:**
   - 02's registered tripwire measured scripted M − K = +0.942 [+0.928, +0.956];
   - 02's exploration measured memory against graded kinesis at +0.98 (`experiments/02-screening/exploration/README.md`).
@@ -78,14 +88,20 @@ observation the brain and `ScriptedBrain` receive.
 **Three conditions, with the same channel, neurons and amplitude:**
 - **level:** the bit is 0 on every tick;
 - **relief:** the bit is live;
-- **sham:** a two-state Markov sequence, independent of the food trend.
-  - **Its rates:** its off-to-on and on-to-off transition probabilities are the pooled maximum-likelihood estimates
-    from relief bits computed, but not injected, along level trajectories in the pilot's restricted part (§7), over
-    every live wey and tick.
-  - **Its start:** the initial state is drawn from the chain's stationary distribution.
-  - **Its randomness:** keyed random streams per world and wey.
+- **sham:** a two-state Markov sequence, generated without observing food. Sham-driven actions can still come to
+  correlate with food through the world (Astra).
+  - **Its rates:** p̂01 = N01 / (N00 + N01) and p̂10 = N10 / (N10 + N11). They are counted from relief bits computed,
+    but not injected, along level trajectories in the pilot's restricted part (§7), with these conventions:
+    - over adjacent ticks of the same trajectory on which the wey is alive at both ends;
+    - nothing across episode boundaries;
+    - the forced-zero first tick is excluded as a transition's start.
+    - **If a denominator is zero,** 03h stops for redesign.
+  - **Its start:** the initial state is drawn from the chain's stationary distribution. Its occupancy is
+    p̂01 / (p̂01 + p̂10), so it matches the relief bit's pooled occupancy and persistence only approximately (Astra).
+  - **Its randomness:** keyed random streams per world and wey, not per strain or graph. Every genome and graph sees
+    the same sham sequence for a given world and wey, which reduces variance in the paired contrasts (Fable).
 - **What the sham matches, and what it does not** (Astra, Fable):
-  - it matches the relief bit's pooled rate and persistence on level trajectories;
+  - it approximately matches the relief bit's pooled occupancy and persistence on level trajectories;
   - it does not match each genome's drive (a stationary genome has no falls), the bit's statistics under relief
     trajectories, or the correlation between weys;
   - realised occupancy and transitions are reported per condition.
@@ -111,10 +127,16 @@ composition.
   threshold 0 (Astra);
 - **memory:**
   - `MemoryKinesis` (one tick, with its threshold grid);
-  - a slow-memory family ported from 03a's KTS (`wormwars/e03a/probe.py`), which compares the level with an
-    exponential average over T ticks, T tuned in {1, 2, 5, 10, 20}. T = 1 recovers `MemoryKinesis` (Fable);
+  - **a slow-memory family** ported from 03a's KTS memory mechanism only, into `MemoryKinesis`'s policy (Astra). It
+    does not take KTS's level-dependent turning or its collision avoidance:
+    - each tick, it turns by `fall_turn` when the level is below m_{t-1} − `fall_threshold`;
+    - it then updates m_t = m_{t-1} + (x_t − m_{t-1}) / T;
+    - T is tuned in {1, 2, 5, 10, 20}, the threshold on `MemoryKinesis`'s grid;
+    - at T = 1 it stores the current level directly (m_t = x_t), so it is exactly `MemoryKinesis`, including the
+      threshold (Fable, Astra);
   - the union with `GradedKinesis` (Astra);
-- **memory reading the bit:** the same, with the bit available.
+- **memory reading the bit:** the same, with the bit available. The policy turns when either the internal
+  comparison or the bit says the level fell. Each source can be switched off by a tuned flag.
 
 **The protocol** (Astra):
 - each family is tuned on registered tuning worlds, with its choice among timescales frozen there;
@@ -123,13 +145,20 @@ composition.
 **The criteria,** in T1's score:
 - **level:** the lower bound of the paired 95% interval of (best memory − best memoryless) is ≥ 0.5, about half of
   02's measured +0.94 and +0.98;
-- **relief:** the paired 90% interval of (best memory with the bit − best memoryless with the bit) lies inside ±0.3,
-  a third of the level gain. That is two-sided equivalence at 5%.
+- **relief:** the paired 90% interval of (best memory with the bit − best memoryless with the bit) lies inside ±0.3.
+  That is two-sided equivalence at 5%.
+  - The margin is about a third of the historical 0.94 gain, and 60% of the minimum accepted 0.5. It is a chosen
+    screening margin, not an established equivalence tolerance (Astra).
   - Because the slow-memory family is included, this asks whether memory beyond one tick adds more than the margin
     once the bit is given. It is not an identity (Fable);
-- **sham** (a sanity check, since a weight of zero on the bit is inside every family): the best memoryless controller
-  reading the sham is within ±0.3 of the best memoryless controller.
-- **If either of the first two fails,** 03h stops and is reported.
+- **sham** (a sanity check, since a weight of zero on the bit is inside every family): the paired 90% interval of
+  (best memoryless reading the sham − best memoryless) lies inside ±0.3 (Fable). A failure stops 03h for redesign,
+  because tuning can select a worse policy even inside a nested family (Astra).
+- **The recovered share** (Fable) is reported: (best memoryless with the bit − best memoryless) / (best memory − best
+  memoryless), the share of memory's gain that the bit gives a memoryless controller.
+- **If the level part fails,** 03h stops and is reported.
+- **If the relief part fails** because slower memory beats the bit by more than 0.3, 03h stops for redesign: for
+  example, a bit defined against a tuned average, under a new design round (Fable).
 
 ## 5. Graphs, genomes, worlds, measures
 
@@ -140,6 +169,9 @@ composition.
 - **Seeds** are outside every earlier range.
 - **Failures:** a failed sampler is retried with the next seed; a failed calibration excludes the graph and draws the
   next seed. Every exclusion is reported.
+- **Seeds:** graph, genome, sham and world seeds, and world-id ranges (tuning, check, selection, test, calibration,
+  pilot), are all disjoint from one another and from every earlier range. They are listed in the pilot's registration
+  and the pre-registration (Astra, Fable).
 
 **Motor calibration:** once per graph under level, then frozen for every condition (Astra).
 
@@ -149,9 +181,10 @@ composition.
 - genome seeds are disjoint from the calibration genomes.
 
 **Fitness:**
-- **the selection bank:** W = 16 worlds, shared across every genome, graph and condition, which gives a reliability
-  of 0.94 (§2);
-- **the test bank:** W_t = 64 worlds, disjoint, used only for each graph's selected decile in B.
+- **the selection bank:** W = 16 worlds, shared across every genome, graph and condition, which gives a ranking
+  reliability of 0.98 (§2);
+- **the test bank:** W_t = 64 worlds, disjoint, used only for each graph's selected decile in B. B's inference is
+  conditional (§6), so the genomes outside the decile need no test scores (Astra).
 
 **History:** 03's `history()`, extended to return each history's read-outs, with a test (Fable).
 - Its bank and parameters are frozen at 03's: a 100-tick warm-up, a 10-tick ramp, starts at 0.25 and 1.75 times the
@@ -174,7 +207,11 @@ world. The selection and test banks run as separate rollouts. The actual chunks 
   - It is the correlation of the residuals after regressing the ranks of H and of fitness on the ranks of S (with an
     intercept, ties at average ranks).
   - **Degenerate graphs:** a graph with constant fitness, constant H, or zero residual variance gets ρ_c = 0, is
-    flagged, and stays in every average (conservative; Astra).
+    flagged, and stays in every average.
+    - This is not conservative for A2 in every case: a constant relief score with a positive sham correlation creates
+      a positive D (Astra).
+    - So a flagged graph is reported with its components, and A2 is also reported without the flagged graphs. If the
+      two disagree in sign, A2 is withheld as "undetermined".
 - **A1:** the equal-weight mean of ρ_level over SH-mirror-ASK > 0.
 - **A2:** the mean of D = ρ_sham − ρ_relief over SH-mirror-ASK > 0. "Meaningful" requires the lower bound of D's
   interval to exceed δ_A (Astra).
@@ -194,19 +231,27 @@ world. The selection and test banks run as separate rollouts. The actual chunks 
 **B:**
 - **The statistic:** T_{g,c} is the test-bank mean of graph g's selected decile under condition c. The decile is the
   top 26 of 256 on the selection bank, with ties broken by genome index (Astra).
-- **The primary** (Fable): U_g = T_{g,sham} − T_{g,relief}. N2's U is ranked against SH-mirror-ASK's by 03's rank
-  formula (one-sided, p ≥ 1/65). Only the formula is imported, not 03's effect-margin gate. The rank test is
-  approximate (Astra).
+- **The primary** (Fable): U_g = T_{g,sham} − T_{g,relief}.
+  - **The direction** (Fable): under the hypothesis, the nulls gain more from the relief than N2, so their U is more
+    negative and N2's U ranks high.
+  - **The rank:** r counts the null graphs whose U is at or above N2's, with p = (1 + r) / 65. That is 03's formula
+    (`wormwars/exp03/mc.py`), one-sided, p ≥ 1/65.
+  - Only the formula is imported, not 03's effect-margin gate. The rank test is approximate (Astra).
 - **The labels:**
   - **"Head start larger when memory is needed"** requires the rank p, and also N2's level advantage
     T_{N2,level} − mean T_{e,level} > 0 by its 95% interval;
   - **an interaction without an established initial advantage** is labelled as such.
-- **The intervals:** the selection and test banks are resampled separately, and selection is repeated within each
-  resample (Astra).
+- **The intervals are conditional** (Astra's first option):
+  - each graph's selected decile is frozen, and the test-bank worlds are resampled, one shared resample across graphs
+    and conditions;
+  - graphs are resampled within the ensemble for ensemble means;
+  - the intervals condition on the genome draws and on the selection bank, and say so;
+  - reselection inference would need test scores for all 256 genomes, about 3.9 GPU-hours at W_t = 32.
 - **Reported:**
   - both component advantages;
   - U computed against level (level − relief);
-  - the expected best of 32 by order statistics.
+  - the expected best of 32 by order statistics: 01b's and 02's head-start statistic, Fable's round-1 secondary. It
+    is computed on the selection bank, and is optimistic by selection, so it is descriptive (Astra).
 
 **Multiplicity:** Holm at α = 0.05 over the two claims, A (with p = max of its parts) and B.
 
@@ -227,22 +272,42 @@ test score, relief against sham.
    - the `ScriptedBrain` extension and the slow-memory family;
    - the `history()` extension;
    - rule 7's check.
-2. **Step 0, exploratory** (seconds of GPU, the owner's word):
-   - 03's pilot genomes are regenerated from their committed seeds on CUDA, on the 16 pilot graphs SH101-SH116;
-   - H and S are measured on them, and related to the T1 fitness already committed in `pilot.json`, under level only;
-   - this gives ρ_level's spread across graphs before any new fitness run. It sets nothing by itself, and it is
-     labelled exploratory.
-3. **The scripted gate, level and relief parts.**
-4. **The pilot's restricted part,** on 2 SH-mirror-ASK pilot graphs (pilot seeds, never N2): level trajectories only,
-   giving the sham's rates and the T1 timing at the formal composition.
-5. **The sham frozen, then the gate's sham part.**
-6. **The rest of the pilot:** all three conditions on 2-4 pilot graphs, giving the variance of ρ and D, and the
-   timing. Its rules, fixed in its registration:
-   - W stays at 16 unless the reliability falls below 0.85;
-   - G stays at 256;
-   - δ_A is 0.05 in ρ, unless the step-0 or pilot SD of graph-level ρ makes that undetectable at 64 graphs, in which
-     case 03h stops for redesign.
-7. **The pre-registration,** with everything fixed, reviewed by both, bound and pushed. Then the formal run, with the
+2. **Step 0, exploratory and disclosed** (about a minute of GPU, the owner's word). It may precede the pilot's
+   registration.
+   - **The recipe** (Astra; `scripts/exp03.py`):
+     - graphs `pilotSH101` to `pilotSH116`, rebuilt with their integer seeds and 20 passes;
+     - genomes from `genome_seed(name, "")`, without `+1`. The `+1` seed is the separate probe population;
+     - one CUDA `Genome.random(…, 256, …)` call per graph, with 03's configuration, keeping the genome order;
+     - a narrow helper, not `measure_graph()`, which recalibrates.
+   - **The verification first** (Fable): replay T1-M0 for at least one pilot graph on the current engine, and compare
+     with `pilot.json` at T1's declared equivalence tolerance. If it fails, step 0 is dropped and reported.
+   - **Then:** H and S are measured on the same genomes, and related to the committed T1-M0 fitness, under level only.
+   - **What it gives:** the spread of ρ_level across SH graphs. It estimates neither D's variance nor
+     SH-mirror-ASK's (Astra). It sets nothing by itself.
+3. **The pilot's registration,** reviewed by both, bound and pushed before any registered gate or pilot
+   measurement (Fable, Astra). It covers steps 4-7, and fixes:
+   - the controller grids, the world counts and ranges, and the interval methods;
+   - the pilot's size: 3 graphs, fixed in advance;
+   - every adaptation rule below, in numbers.
+4. **The scripted gate, level and relief parts.**
+5. **The pilot's restricted part,** on the 3 SH-mirror-ASK pilot graphs (pilot seeds, never N2): level trajectories
+   only. It gives the sham's rates, and the T1 timing at the formal composition.
+6. **The sham frozen, then the gate's sham part.**
+7. **The rest of the pilot:** all three conditions on the same 3 graphs. Its rules, fixed in its registration:
+   - **W:** stays at 16 unless the crossed-decomposition ranking reliability (§2's estimator, under level, averaged over
+     the 3 graphs) falls below 0.85. In that case W becomes 32, and the budget is re-checked against the cap;
+   - **G:** stays at 256;
+   - **detectability:**
+     - with the pilot's SD of graph-level D written s_D, the power of A2's one-sided test at α = 0.025 (Holm's first
+       threshold) for a mean D of 2δ_A, over 64 graphs, is computed as 1 − Φ(1.96 − 2δ_A √64 / s_D);
+     - if it is below 0.8, 03h stops for redesign;
+     - shared-world uncertainty is included by computing s_D across the pilot's world-bootstrap replicates as well as
+       across graphs;
+   - **the manipulation** (Fable): the selected decile's shift, relief against sham, on the pilot graphs, and the
+     bit's effect on the turn read-out under the history bank. If neither moves beyond its interval, the amplitude
+     doubles to 0.5 once, by this rule, and the pilot's three-condition part reruns. If neither moves at 0.5, 03h
+     stops for redesign.
+8. **The pre-registration,** with everything fixed, reviewed by both, bound and pushed. Then the formal run, with the
    owner's word.
 
 ## 8. Budget
@@ -262,6 +327,10 @@ test score, relief against sham.
 | Pilot | under 0.5 |
 | Scripted gate | about 0.1 |
 
+- **The rate:** 171 per second predates the T1 throughput work, so the budget is probably conservative; the pilot
+  measures it (Fable). `t1-generation0.json` gives 172.9 per second, averaged over 03's 16 pilot graphs.
+- **CPU costs** are not counted as GPU-hours: the SH-mirror-ASK sampler, and the crossed bootstrap (10 000 resamples
+  over 65 graphs × 256 genomes × 3 conditions). The bootstrap is vectorised over resamples, and its time is reported.
 - **The cap:** 6 GPU-hours, the ceiling (accepted by both as a ceiling), set from the pilot's timing.
 - **Cut order:** SH first, then W_t from 64 to 32. The primary ensemble stays at 64 graphs, and W stays at 16 (Fable).
 - **Incomplete runs:** a run stopped by the cap is reported as incomplete. It never becomes a smaller successful
@@ -271,8 +340,9 @@ test score, relief against sham.
 
 - **Not memory capacity:** the relief changes memory demand for one strategy, not memory capacity.
 - **Not usefulness as memory:** A is an association in random brains, not use of history as memory.
-- **Not a missing head start:** a null B does not show that N2 has none. Under Holm at 64 graphs, N2 must exceed
-  nearly every null graph.
+- **Not a missing head start:** a null B does not show that N2 has none.
+  - For B to pass Holm's first threshold of 0.025 on its own, N2 must rank first of 65 (2/65 = 0.031 fails).
+  - Once A has passed, at most two null graphs may rank above N2 (3/65 = 0.046) (Fable).
 - **Not about evolved brains:** stage C is gated.
 - **One configuration:** one task (T1, swarm performance), one interface variant (the ASK channel; its hash differs
   from the pinned one), one probe bank.
@@ -311,3 +381,44 @@ test score, relief against sham.
   - equal genome allocation;
   - the failure rules.
 - **Added:** step 0, exploratory, on 03's committed T1 fitness.
+
+## 11. Changes from v3 (round 3: run 20261018-155410)
+
+**Taken:**
+- **B's inference is conditional:** the selected deciles are frozen, and the test worlds and graphs are resampled.
+  The test bank therefore needs only the deciles (Astra 1, the blocking point). The alternative is priced in §6.
+- **B's one-sided direction and counting rule** are stated (Fable 1).
+- **Step 0** (Fable 2, Astra 5):
+  - its regeneration recipe;
+  - a verification replay against `pilot.json` first;
+  - what it can and cannot estimate.
+- **The pilot's registration** is a step of its own, with numeric rules (Fable 3, 5, 6; Astra 6):
+  - for W, the estimator and the action;
+  - for detectability, the power formula with shared-world uncertainty;
+  - for the manipulation, a decile shift and a turn response, with one registered amplitude change;
+  - a fixed pilot size of 3 graphs.
+- **The derived numbers are committed:** `development-records/t1_generation0.py` and its output (Fable 4, Astra 2).
+  - It uses the crossed decomposition: ranking reliability 0.98 at W = 16 and 0.96 at 8, not v3's 0.94 and 0.90 from
+    a simple ratio.
+  - The graph means' minimum is 0.865, and the rate is 172.9 per second, over a five-cell mix.
+- **The sham's estimator conventions** (Fable 7, Astra 4):
+  - alive at both ends;
+  - nothing across episode boundaries;
+  - zero denominators;
+  - "approximately matches";
+  - "generated without observing food";
+  - keyed per world and wey.
+- **The gate:**
+  - the slow-memory family's update and decision rules, and how the bit and the internal comparison combine;
+  - the sham criterion as an interval, and a failure stops for redesign;
+  - the recovered share;
+  - a relief failure stops for redesign;
+  - the margin's reference to the historical 0.94 (Astra 3, Fable 8, 9).
+- **Degenerate graphs:** zero is not conservative for A2. A sensitivity reading without flagged graphs is added
+  (Astra 6).
+- **The best of 32** is explained, and kept descriptive (Fable 10, Astra 1).
+- **Holm's attainable ranks** (Fable 11), and the CPU costs (Fable 12).
+- **The seed and world-id disjointness rule** (Astra 7, Fable 14).
+
+**Noted** (Astra): the frozen-champion check stays a separate exploratory item outside 03h (§9 of v2's merge). It is
+not in this design, and it does not block 03h.
