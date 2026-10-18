@@ -4,7 +4,7 @@
 
 ## Status, 1-18 October 2026 (updates the section below; that section's later edits are recorded in DECISIONS.md)
 
-**18 October 2026** (D302-D318): **03a stopped after pilot-dev; exploratory** (`experiments/03a-self-consistency/`,
+**18 October 2026** (D302-D319): **03a stopped after pilot-dev; exploratory** (`experiments/03a-self-consistency/`,
 RESULTS.md).
 - **Before any GPU run:** design v7.1 was agreed by both reviewers. *Corrected 2026-10-18 (D319): this said the code
   was also "reviewed in three rounds" before any GPU run.* Round 1 came before; pilot-dev's first stages ran while

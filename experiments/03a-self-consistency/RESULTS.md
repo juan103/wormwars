@@ -180,7 +180,8 @@ The final states were scored on 2 048 worlds, and every comparison is against th
   −0.20 on MIP/URXL's free searches. The SDs were 0.36-0.42 (`full.json`, `paired_diff_sd_mean`). These spreads mix
   mutation effects with evaluation noise.
 - **Swaps and turnover:**
-  - the swap rates were 0.6-1.0 per neighbour pair (`full.json`, `pair_rates`);
+  - the swap rates were 0.6-1.0 per neighbour pair in the 100-generation searches, and as low as 0.55 in the longer
+    ones (`full.json`, `pair_rates`);
   - the partner turnover, about 0.9 per 10 generations, follows the coldest replica slot through those swaps, so it
     does not measure drift (D313's correction).
 
@@ -314,8 +315,10 @@ Pilot-dev needs the connectome (`scripts/fetch_connectome.py`), CUDA, and the pi
   records.
 - **The run, from scratch:**
   - a clone already holds every stage's committed record, so each stage refuses to run again;
-  - move `experiments/03a-self-consistency/pilot-dev/*.json` aside (keep them, to compare), then run
-    `python scripts/e03a.py <stage>` for each stage in the order above;
+  - move the ten stage records (`setup.json` to `search-check.json` in `experiments/03a-self-consistency/pilot-dev/`)
+    aside, keeping them to compare, then run `python scripts/e03a.py <stage>` for each stage in the order above;
+  - the stages write their compute aggregate to `runs/e03a/pilot-dev/compute.json`. Copy it into `pilot-dev/` before
+    rebuilding the summary (Fable);
   - with `--rerun --reason` instead, a stage renames its committed record to `<stage>.attemptN.json`, and `full`
     reuses the finished target-brains of the latest attempt rather than searching again. So a rerun is not a
     regeneration, and `search-check` then needs `full`'s saved states, which are local.

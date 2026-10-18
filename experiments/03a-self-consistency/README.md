@@ -161,7 +161,7 @@ draft v2 and folded into v3):
 | [`summary.json`](summary.json) | The numbers RESULTS quotes, rebuilt from the records by `scripts/e03a_summary.py` |
 | [`DESIGN.md`](DESIGN.md) | Design v7.1, agreed by both reviewers (D307) |
 | [`PILOT-DEV.md`](PILOT-DEV.md) | Pilot-dev's plan v3.3, its rules, and §7, the bounded check |
-| [`pilot-dev/`](pilot-dev/) | Every stage's record (`setup.json` to `search-check.json`) and the compute aggregate |
+| [`pilot-dev/`](pilot-dev/) | Every stage's record (`setup.json` to `search-check.json`), the compute aggregate (`compute.json`) and the CUDA preflight's (`preflight-compute.json`) |
 | [`development-records/`](development-records/) | The exploratory scripted checks (D303, D304), the planted-bug and planted-scale checks, and the `tell`-split check |
 | [`family2-validation.json`](family2-validation.json) | Family 2's simulated-null validation (D308) |
 | [`DRAFT.md`](DRAFT.md) | Draft v3.2 of the design, with the changes from each review round and the "not scheduled" header |
