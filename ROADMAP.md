@@ -6,8 +6,8 @@
 
 **18 October 2026** (D302-D319): **03a stopped after pilot-dev; exploratory** (`experiments/03a-self-consistency/`,
 RESULTS.md).
-- **Before any GPU run:** design v7.1 was agreed by both reviewers. *Corrected 2026-10-18 (D319): this said the code
-  was also "reviewed in three rounds" before any GPU run.* Round 1 came before; pilot-dev's first stages ran while
+- **Before pilot-dev's GPU runs:** design v7.1 was agreed by both reviewers. *Corrected 2026-10-18 (D319): this said
+  "Before any GPU run", and that the code was also "reviewed in three rounds" by then.* Round 1 came before; pilot-dev's first stages ran while
   rounds 2 and 3 were under review (PILOT-DEV status). The exploratory checks (D303, D304) also preceded design v7.1.
   The owner gave the word for pilot-dev's GPU.
 - **Pilot-dev**, on one shuffled graph, detected no anatomical enrichment on its two targets. Neither NIP target-brain

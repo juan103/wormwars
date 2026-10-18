@@ -9865,3 +9865,17 @@ other wiring reached the same score".
   the Record (Fable 14, Astra 10). ROADMAP's "full map" line is annotated (Fable 15).
 
 **Next:** the fixed page goes back to both for confirmation, then to main.
+
+## D320 — 03a's exploratory results confirmed by both and published on main
+
+**The confirmation:** run 20261018-150805 (Fable) and run 20261018-151407 (Astra), archived with D319's review in
+`docs/reviews/20261018-03a-results/` as `fable.confirm.md` and `astra.confirm.md`.
+- **Fable:** "publish". Every finding was resolved, and the rewrite introduced no numeric error; Fable re-checked every
+  number. Four small notes were taken in `894ad3e`.
+- **Astra:** the first call failed with the model at capacity, and the one retry answered. "Fix first, one small
+  wording correction remains", then publish: ROADMAP's "Before any GPU run" should be "Before pilot-dev's GPU runs",
+  since D303's and D304's GPU checks came first. Taken, with the dated correction extended.
+
+**Published:** consensus covers a main push, with the owner informed after (the delegation, 2026-09-29). `main` is
+fast-forwarded to the roadmap branch and its working-branch banner removed. The roadmap branch then continues from
+`main` with the banner, which now lists 03a.

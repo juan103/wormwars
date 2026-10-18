@@ -4,7 +4,8 @@
 > in progress beyond it until it is merged. E4s-0, E4s-1, E3a and E3b-0 are on `main` (2026-10-03), E3b-1
 > and E3b-2 (2026-10-04), E3c (2026-10-06), E3d (2026-10-10), E3e and E3f (2026-10-11), and E4's main task and
 > E4-D's feasibility check (2026-10-13), the evolutionary E4-D (2026-10-15, D280-D281; L reads
-> "practically relevant transfer found"), and 03mc (2026-10-16, D294-D300; all four primaries pass).
+> "practically relevant transfer found"), 03mc (2026-10-16, D294-D300; all four primaries pass), and 03a
+> (2026-10-18, D302-D320; stopped after pilot-dev, exploratory).
 
 Many parallel 2D worlds on one GPU. In each world, swarms of small creatures called **weys** forage
 and fight. Every wey's brain is a small continuous-time recurrent network whose wiring is the real
