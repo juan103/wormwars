@@ -1256,18 +1256,19 @@ def _per_type_null(rank, truth, strat, seed: int) -> dict:
                 "p": N.p_value(null["per_type"][t][:, 0], float(obs["per_type"][t][0, 0]))} for t in obs["types"]}
 
 
-def _check_outcome(variants: list, margin: float, alpha: float, sd_max: float) -> dict:
+def _check_outcome(variants: list, margin: float, alpha: float, sd_max: float, n_family: int) -> dict:
     """PILOT-DEV.md §7's rule, fixed before the check runs (v3.3, after the plan review).
 
     A variant is reliable if its refits restore: the lower bound of (refits − exact restoration), resampled over
     worlds and refits, is at least −p (Astra: monotonic, so a variant above restoration passes), and their SD is at
     most `sd_max` p (DESIGN §6's 2 δ_search at δ_search's bound of p/2; Fable). It recovers if its free searches'
-    stratified enrichment p is below alpha over the number of variants.
+    stratified enrichment p is below alpha over `n_family`, the number of variants planned (fixed, so a stop at the
+    cap cannot change the divisor; Fable).
     (i) some variant is both: the one with the lowest p (the first listed, on ties) is proposed;
     (ii) some variant is reliable, but no single variant is both (Astra); recovery by an unreliable variant is
     recorded, not credited;
     (iii) no variant is reliable."""
-    k = len(variants)
+    k = int(n_family)
     for v in variants:
         v["reliable"] = bool(v["restoration_over_refits"]["lo"] >= -margin and v["refit_sd"] <= sd_max * margin)
         v["recovers"] = bool(v["enrichment"]["p"] < alpha / k)
@@ -1396,7 +1397,8 @@ def stage_search_check(args, dv, ck, progress):
                                "selection-world scores (Fable)") if cn else None,
                "timing": timing}
         progress["variants"].append(row)
-    rule = _check_outcome(progress["variants"], margin, ch["alpha"], ch["refit_sd_max_fraction_of_p"])
+    rule = _check_outcome(progress["variants"], margin, ch["alpha"], ch["refit_sd_max_fraction_of_p"],
+                          len(ch["variants"]))
     out = {"target_brain": tb["label"], "p": margin, "setting": setting, "projection": guard,
            "reference_from_full": {"refit_means": frow["refit_means"], "refit_sd": frow["refit_sd"],
                                    "restoration": frow["comparisons"]["restoration"],

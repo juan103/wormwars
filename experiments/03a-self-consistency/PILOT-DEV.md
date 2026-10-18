@@ -455,6 +455,8 @@ v3.2's plan was reviewed by both (run 20261018-112021, D315): Fable said "run it
   - a budget-based stop: 03a ends, and pilot-dev with this check is reported as exploratory. It does not show that
     every feasible search would fail (Astra).
 - **The lesion and the re-evaluation are descriptive.** They inform the reading but are not gates.
+- **If the cap stops the check,** the rule reads the variants that finished. The divisor stays 3, the variants
+  planned, and a variant that did not finish counts as neither reliable nor recovering (Fable, confirmation round).
 - **The check is not repeated or enlarged,** whatever it shows (both reviewers).
 
 **What it cannot show:**

@@ -9689,3 +9689,32 @@ What follows its outcome is fixed in advance (PILOT-DEV v3.2 §7).
 - the rule test was rewritten for v3.3, with its boundaries: the division over three, the bound exactly at −p, the SD
   at p, and a variant above restoration;
 - four sabotages are caught: the division, `>=` turned into `>`, the SD bound halved, and the lesion's weight kept.
+
+## D316 — The search check's merged plan confirmed by both ("run it"); two notes closed before it runs
+
+**The confirmation:** run 20261018-121539, archived in `docs/reviews/20261018-03a-search-check-confirm/`.
+- Fable and Astra both said "run it", and each accepted all three merged points of D315: the reliability gate, five
+  refits, and V2 dropped.
+- Fable checked the numbers. With five refits, the SD ≤ p gate passes pilot-dev's own 0.59 p about 98% of the time,
+  and a true SD of 1.5 p about 22%. The projection is 2 442 624 episodes, 1.29 GPU-hours with the safety factor,
+  against 1.42 left.
+- Astra: the gate does not establish population reliability or pilot-check's resolution requirement. It is a
+  provisional feasibility screen.
+
+**Closed before the run:**
+- **The divisor:** the rule's Bonferroni divisor is fixed at 3, the variants planned, so a stop at the cap cannot
+  change it (Fable). PILOT-DEV §7 now says how the rule reads after a stop: the variants that finished are read, and
+  an unfinished one counts as neither reliable nor recovering. Sabotage check: reverting to the number of variants
+  passed in is caught by the new test case.
+- **The SD = p equality case:** D315 said this boundary was tested, but the committed test omitted it (Astra). It is
+  tested now, with a p just below 0.05/3. *Corrected 2026-10-18: D315 listed "the SD at p" among the tested
+  boundaries before that case was in the test.*
+- **The planted swap-timing shift** in the `tell`-split check was a transient run (Fable). Its output, "9 of 15 runs
+  differ (before: f27d4c4; after: the working tree)", is recorded here; it is not in a committed file. The script's
+  committed output covers the unplanted runs only.
+
+**The CUDA preflight of the new stage** completed in `runs/e03a-smoke-cuda/` and adds about 0.007 GPU-hours. Getting
+there took two attempts:
+- that directory's `probe` record dated from `a5760c4`, before the probe timed its full-replay control, so the first
+  preflight's `report` failed with a `KeyError`;
+- `probe`, `report` and `search-check` were then rerun there, each with a reason.

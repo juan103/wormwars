@@ -253,14 +253,20 @@ def test_the_check_outcome_rule_at_its_boundaries():
     def v(name, lo=-0.05, sd=0.05, ep=0.5):
         return {"name": name, "restoration_over_refits": {"lo": lo}, "refit_sd": sd, "enrichment": {"p": ep}}
 
-    out = M._check_outcome([v("V4"), v("V3", ep=0.0166), v("V1", ep=0.0166)], p, 0.05, 1.0)
+    out = M._check_outcome([v("V4"), v("V3", ep=0.0166), v("V1", ep=0.0166)], p, 0.05, 1.0, 3)
     assert out["outcome"] == "i" and out["variant"] == "V3"  # a tie keeps the first listed
-    out = M._check_outcome([v("V4"), v("V3"), v("V1", ep=0.0167)], p, 0.05, 1.0)
+    out = M._check_outcome([v("V4"), v("V3"), v("V1", ep=0.0167)], p, 0.05, 1.0, 3)
     assert out["outcome"] == "ii"  # below 0.05 but not below 0.05 / 3: the division over the variants decides
-    out = M._check_outcome([v("V4", lo=0.08), v("V3"), v("V1", lo=0.08, ep=0.001)], p, 0.05, 1.0)
+    out = M._check_outcome([v("V4", lo=0.08), v("V3"), v("V1", lo=0.08, ep=0.001)], p, 0.05, 1.0, 3)
     assert out["outcome"] == "i" and out["variant"] == "V1"  # above restoration passes (monotonic; Astra)
     out = M._check_outcome([v("V4", lo=-0.1), v("V3", lo=-0.1001, ep=0.001), v("V1", sd=0.1001, ep=0.001)],
-                           p, 0.05, 1.0)
+                           p, 0.05, 1.0, 3)
     assert out["outcome"] == "ii" and out["unreliable_but_recovering"] == ["V3", "V1"]  # -p exactly passes
-    out = M._check_outcome([v("V4", lo=-0.2), v("V3", sd=0.2), v("V1", lo=-0.11, ep=0.0)], p, 0.05, 1.0)
+    out = M._check_outcome([v("V4", lo=-0.2), v("V3", sd=0.2), v("V1", lo=-0.11, ep=0.0)], p, 0.05, 1.0, 3)
     assert out["outcome"] == "iii"
+    out = M._check_outcome([v("V4", sd=0.1, ep=0.05 / 3 - 1e-12)], p, 0.05, 1.0, 3)
+    assert out["outcome"] == "i"  # SD exactly p passes; just below 0.05 / 3 recovers (Astra)
+    out = M._check_outcome([v("V4", ep=0.0166)], p, 0.05, 1.0, 3)
+    assert out["outcome"] == "i"  # a stop after one variant still divides by the three planned (Fable)
+    out = M._check_outcome([v("V4", ep=0.0167)], p, 0.05, 1.0, 3)
+    assert out["outcome"] == "ii"
