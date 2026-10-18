@@ -1,0 +1,62 @@
+**Verdict: revise D312.** Every number I checked matches the records. The reading leaves out four facts that change the decision, and misreads one series.
+
+**Point 4 in one line:** (b), small and inside pilot-dev's remaining hours: lesion MIP/URXL's restoration edge by edge, re-run its eight searches with the ladder's budget moved into worlds, pre-register only if the refit becomes reliable, send criteria 2, 4 and 5 back to the design round with these numbers, and otherwise stop and report pilot-dev as exploratory.
+
+## Findings against the records
+
+1. **High. NIP headroom is absent on both targets, so criterion 4 is 0 of 2 and criterion 5's n is 0.** NIP/URXL headroom 0.052, equivalent (`full.json:112037`); NIP/PLNL 0.0065 (`full.json:144264`); `headroom_present: false` at `:117575` and `:149802`. D312 never mentions criterion 4. A brain evolved to a GA optimum without X has no reason to gain from a 100-generation X-only search. This is a property of the arm, not of the search, and N2 shares it.
+
+2. **High. Three of the four "functional success: reached" are vacuous.** MIP/PLNL's deletion deficit is 0.013 (`baseline.json:10438`), its headroom −0.010, equivalent (`full.json:77653`). With no headroom, deleted, reference and free states coincide, and "reached" says nothing. DESIGN §6's outcome rule does not condition on headroom, so "functional success, anatomy undetermined" can be met trivially, and the registered reading "separates the outcomes" could be met by one vacuous success plus one search failure. The pre-registration should require headroom present for that outcome, else "not applicable".
+
+3. **High. The high tier was a seeded draw from a ten-way tie at the ceiling.** Ten entries of `panel.json` `relevance.mean` equal `selector_intact_mean` 2.058594 (ASIR, URXL, PLNL, AQR, IL2DL, IL2VL, PVPR, PVNR, RMGL, AIBL): the selector brain scores exactly zero without any one of them. `flags` is empty (`:1221`). Transfer to the MIP brain was 1 of 2. Pilot-check's criterion 2 needs 2 of 3 per graph, with one selector brain. D312 omits both the tie and the failed transfer.
+
+4. **Medium, a correction. "Turnover 0.9-1.0: the partner sets drift" misreads a swap record.** The series is slot 0's mask after swaps (`wormwars/e03a/search.py:233`, `:294`); swaps alternate parity every five generations (`:278-289`), and pair-0 swap acceptance is 0.6-1.0 (`full.json:35176-35180`), so slot 0 holds a different chain in about nine windows of ten. Two independent 45-of-301 sets have Jaccard about 0.08, hence turnover about 0.92. Windows where the chain stayed show 0.02-0.13 (`:35165`, `:35707-35709`). `accepted_moves` 123-146 per 100 generations equals 4 replicas × 100 × 1/3 (`scripts/e03a.py:630`): nearly every replica replaces its state every generation. The right reading: acceptance is near total, each chain replaces about 30 of 45 partners over the run, and the swap rates say the ladder is not tempering. Tune round A agrees: 0.69 to 0.99 across a tenfold range of T₁ (`tune.json:314-319`, `:564-569`).
+
+5. **Medium. δ_search is flattered by target-brains with nothing to refit.** MIP/URXL's refit SD is 0.0576, which is 0.59 p (`full.json:35062`), and it is the only target-brain with headroom. The other three (0.052, 0.027, 0.020) pull the RMS to 0.042 (`report.json:3226`), so `resolution_ok` (`:3228`) is not a statement about the reference where the reference matters.
+
+6. **Medium. The reliability failure is a search-power failure, and generations are not the lever.** Refit means 1.777, 1.893, 1.833 against intact 1.966 (`full.json:35058-35060`). The cold-score series climbs from 0.375 to about 1.9 by generation 10, then wanders with SD 0.38 (`:35184-35285`). The 200-generation searches end at 1.829 and 1.871 (`:42597`, `:42608`). The plateau is the 16-world noise floor, paired SD 0.32-0.42 per comparison. On N2 a systematic shortfall of this size would make most references with real headroom unreliable, and the formal run would end "excluded" across targets. That is the 44-hour waste to fear, more than a null.
+
+7. **Medium. The identity signal is far below what this search can see.** The advantage 0.122 [0.104, 0.139] (`:35073-35075`) is the whole gain of true over strata-matched random partners after refitting. Spread over 45 partners it is about 0.003 each if diffuse. The planted check's noisy oracle paid 0.1 per partner against noise SD 0.3 and recovered only 8-20% (`development-records/planted_scale_check.py:4-7`). Pilot-dev's per-partner signal-to-noise is 30 to 100 times worse. Q at chance follows, whatever the ladder, offspring count or generations; 32 worlds would not change it. Whether the 0.12 sits on a few edges is unmeasured.
+
+8. **Low. Jaccard is not uniformly "near expectation".** MIP/PLNL in-partners: three of ten pairs share one of four partners, mean 0.043 against 0.0076 expected (`full.json:85134-85146`), binomial p about 0.01, with Spearman 0.09 on the same pairs. Not toward truth. Chance or a proposal bias; the no-task control's per-type agreement is not recorded (`:35122-35146`), and it is the right null for criterion 6.
+
+9. **Low.** NIP/URXL free-1 reaches Q 0.178 (`:112663`); D312 says 0.02-0.16.
+
+10. **Low.** D312 reports nothing from the probe on the evolved brains, and `probe.json` holds raw per-world arrays with no summary means. The controls held (`:10409`, `:20662`, `:53473` and three more). No constant-scent probe ran, so criterion 1's second half is unmeasured and untimed.
+
+11. **Checked and right:** tune and full timings and rates, p, δ_eval, all eight p values in the table, the restoration interval, the advantage, the AUC range, the paired differences, the longer-search values, the projections, the 32-world refusal, 4.577 hours including the preflight, 66.893 remaining.
+
+## What the records say, and criterion 6
+
+**Is the search informative about identity?** No, and only one target-brain could have told us. MIP/PLNL and both NIP target-brains have no headroom, so their searches optimise nothing. On MIP/URXL the search is a noise-driven walk: paired SD 0.36 against a total identity signal of 0.12 and a weight-precision gap of 0.13. Common random numbers do not help, because once X's wiring changes the per-world outcomes decorrelate; the PLNL target-brains, where X is irrelevant, show the floor at 0.1. The ladder is irrelevant because the replicas sit on one plateau. Fewer offspring would reduce the winner's curse but not the per-proposal noise. More worlds is the only lever on noise, and 32 is forbidden and insufficient. On a shuffled graph DESIGN §8 says the only task-shaped link is MIP training; the 0.12 advantage is that link, measured cleanly, and the search cannot find it. The records cannot say whether N2 targets carry a larger or more concentrated signal.
+
+**Claude's draft thresholds are wrong in both directions.** Turnover at most 0.5 per slot measures swap rate, not convergence. Jaccard above expectation for at least one type passes 3 of 4 pilot-dev target-brains by chance, so "pilot-dev would fail" is right only because of the turnover half. Worse, Jaccard cannot be a hard gate at any useful level: five searches that each recover 20% of 18 in-partners have pairwise Jaccard about 0.035 against 0.032 expected, yet would give a strong enrichment p. A hard Jaccard gate would fail a search that passes criterion 5. Pilot-dev shows only the failing regime, so it cannot calibrate numbers on its own.
+
+**What I propose instead:**
+
+- **Scope:** MIP target-brains of high targets with headroom present. The low target and any headroom-less target-brain are reported beside them as the no-signal anchor, never gated. That answers the low-target question: it has no deficit by construction.
+- **6a, agreement as a qualifier of criterion 5:** a target counts as recovered only if its five free searches' mean pairwise Jaccard, for the type with the most true partners, exceeds the 97.5th percentile of the no-task control's agreement on that target-brain, from 200 replicate sets of five no-task searches. No episodes, no truth read, and the pipeline's own proposal bias is inside the null. Record the no-task control's per-type Jaccard, which the code does not yet do.
+- **6b, health, reported against two fixed references, not gated:** per-chain turnover following the chain through swaps, acceptance rate per generation, swap rate per pair, paired mean and SD, plateau generation. Reference one is pilot-dev. Reference two comes free: re-run the oracle in `planted_scale_check.py` with 0.12 total signal spread over 1, 3, 10 and 45 partners, noise SD 0.36 and 0.18, and record the same diagnostics. That shows, before any GPU, what a working search looks like and whether the amended search could find a concentrated signal at all.
+- **6c, the longer search:** pilot-check as designed has none. Add two 200-generation free searches per MIP high target-brain, about 17 minutes in total, and report the gain. Agree with the draft that it is not gated.
+- **δ_search extraction:** per pilot-check target-brain with headroom present, refit SD divided by that graph's p; freeze the RMS over both graphs; criterion 3 requires at most 0.5; the formal rule applies the fraction to N2's p. If fewer than three such target-brains exist, judge on all sixteen and say so. Always report both. On pilot-dev the honest version is 0.59 and fails.
+
+## Direction
+
+Pilot-dev has shown two machinery failures and one design-level infeasibility. The refit cannot restore known partners within p. The ladder does nothing and the acceptance is noise. NIP brains have no headroom, and the shuffled-graph identity signal is below any affordable search's reach. Run as designed, pilot-check fails criteria 4 and 5, probably 2 and 6, and spends about 10 hours to register on two more graphs what one graph already shows. That is the worst use of the budget. Stopping now leaves a cheap test untried.
+
+The cheap test fits in the remaining 1.4 hours with room:
+
+| Step | Cost at measured rates |
+|---|---|
+| Per-edge lesion of MIP/URXL's exact restoration, 45 states × 2 048 worlds | about 2 min |
+| MIP/URXL: 3 refits + 5 free searches, one chain × 64 worlds, same episodes per search | about 12 min |
+| The same with a confirmation re-evaluation before acceptance, or 2 chains × 32 | about 12 min |
+| Final evaluations | under 1 min |
+
+Then the fork. Refit reliable and Q above chance in most searches: pre-register the amended protocol and run pilot-check. Refit reliable but Q at chance, with the lesion showing a diffuse signal: the identity bar is unreachable on shuffled graphs for a reason N2 may not share, which is the v7.1 argument that moved the NIP advantage out of criterion 4. Then the owner chooses between a registered likely failure and a v7.2 design that reports enrichment in the pilot and gates only on machinery, carrying the N2 risk openly. Refit still unreliable at 64 worlds: option (c); the search cannot do the job inside 72 hours and 03a should close with pilot-dev reported as exploratory, pointing at the roadmap's cheaper sister experiment.
+
+What would change my mind toward (a) now: nothing in these records. A lucky criterion 5 pass with this search would be the worst outcome, 44 hours on a reference that cannot be trusted.
+
+**Labelling.** The search amendment is development on a shuffled graph before the pre-registration, which is what pilot-dev is for; it needs a dated record and a sentence in the pre-registration saying why the search changed. Changes to criteria 2, 4, 5 or 6 are design amendments made after seeing pilot-dev; they go in DESIGN v7.2 with both versions and the reason. The formal N2 readings in §7 must not move, or 03a stops being confirmatory.
+
+**Other things that would mislead the pre-registration or waste budget:** the outcome rule without headroom (finding 2); the tie-break and the saturation count, which the N2 panel with three selector brains should report; the descriptive p values' multiplicity, since MIP/PLNL's gap precision-at-k p of 0.037 is one of twelve tests; the report's rates, which assume the current search composition and must be re-measured if the worlds change (`report.json` "extrapolations"); and the probe record, which should carry summary means so that history use can be reported at all.

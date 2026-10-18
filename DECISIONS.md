@@ -9493,3 +9493,100 @@ construction.
 - The pilot-dev results, and proposed diagnostic thresholds, go to both reviewers.
 - Pilot-dev found no anatomical signal on either high target. Whether the formal run is still worth its 44 hours is a
   question about scientific direction, so it goes to the owner after the review.
+
+## D313 — 03a's pilot-dev results reviewed: D312 corrected; both reviewers recommend a bounded search check before pilot-check
+
+**The review:** run 20261018-100702, both at xhigh effort, archived in
+`docs/reviews/20261018-03a-pilot-dev-results/`.
+- Both said "revise D312". Fable checked every number against the records and found them right. Astra found the
+  arithmetic and the outcome classifications right. Both found errors of wording and omissions.
+- The prompt double-counted pilot-check: it said "about 10" hours and then "about 44". The 43.8-hour projection
+  includes pilot-check (10.3 h; Astra).
+
+**Corrections to D312** (2026-10-18):
+- *D312 said "All ten stages completed on `f27d4c4`".* The commits were:
+  - `setup` and `evolve-intact` on `a5760c4`;
+  - `panel`, `evolve-nip`, `baseline` and `probe` on `1b0531a`;
+  - `tune`, `full` and `report` on `f27d4c4` (Astra).
+- *D312 said "Refitting the true partners' weights from zero".* The refits start from fresh initial parameters
+  (DESIGN §6; Astra).
+- *D312 said "Q stays inside the chance range from generation 0 to the end", with URXL at "Q 0.02-0.16".*
+  - Across both URXL arms, Q is 0-0.18 (NIP/URXL free-1 reaches 0.178).
+  - `chance_q` is an expectation, not a trajectory envelope. Nothing beyond it is claimed: no sustained enrichment
+    trajectory was apparent, and the final tests did not reject (Astra, Fable).
+- *D312 said "Partner turnover is mostly 0.9-1.0 per 10-generation window. The partner sets drift." That misreads
+  the series.*
+  - Turnover follows the coldest replica slot through swaps (`search.py`, `cold_masks`), and swaps between
+    neighbouring replicas were accepted 60-100% of the time.
+  - So the series mostly records which chain holds the slot. One chain can replace at most 10 of 45 URXL partners in
+    10 generations (Astra, Fable). Windows in which the chain stayed show 0.02-0.13.
+  - The reading the records support: acceptance is nearly total, and the ladder does not temper.
+- *D312 said offspring minus current was "−0.14 to −0.20, with an SD of 0.32-0.42" on MIP/URXL.* The −0.14 and 0.32
+  come from a refit. The free searches alone give −0.15 to −0.20, with SDs of 0.36-0.42 (Astra).
+- *D312 said the Jaccard agreement "is near the expectation for independent random sets".* There are two exceptions,
+  neither an established departure:
+  - MIP/PLNL in-partners: 0.043 against 0.008 expected;
+  - NIP/URXL in-partners: 0.047 against 0.032 expected (Astra, Fable).
+- *D312 said "The formal design projects 43.8 GPU-hours".* That figure includes pilot-check (10.3 h). The N2 workloads
+  are 33.4 h (Astra).
+
+**What D312 left out:**
+- **NIP headroom is absent on both targets.** NIP/URXL: 0.052. NIP/PLNL: 0.007. Both "equivalent". So pilot-check's
+  criterion 4 would be 0 of 2 here, and criterion 5 would have no eligible target (Fable, Astra).
+- **Three of the four "reached" outcomes are vacuous.** Only MIP/URXL has headroom, and it is excluded. Fable proposes
+  that "functional success" should require headroom present; otherwise it is "not applicable".
+- **The high tier was drawn from a ten-way tie at the ceiling.**
+  - Ten neurons' deletions zero the selector brain (`panel.json` `relevance.mean` equals `selector_intact_mean` for
+    10 entries). `flags` is empty.
+  - Relevance transferred to the MIP brain for 1 of the 2 targets: PLNL's MIP deficit is 0.013, which is 0.13 p
+    (Fable, Astra).
+- **δ_search is flattered** by target-brains with nothing to refit. The MIP refit SDs are 0.058 and 0.052, both
+  above p/2. Pooled over MIP alone, δ_search is 0.56 p (Astra; Fable gives 0.59 p for MIP/URXL).
+- **The probe:** on its worlds, the MIP brain falls from 1.948 to 1.566 when rebuilt every 50 ticks. It uses history
+  (Astra). No constant-scent probe ran, so criterion 1's second half is unmeasured (Fable).
+- **Descriptive:** MIP/PLNL's gap precision at k is 1/3, nominal p 0.037, one of twelve such tests. It is not
+  promoted (Astra, Fable).
+
+**Criterion 6:** both rejected Claude's draft.
+- Turnover per slot measures swaps, not convergence.
+- "Jaccard above expectation for one type" passes by chance.
+- Proposals:
+  - **Fable:**
+    - scope criterion 6 to MIP high targets with headroom;
+    - count a target as recovered only if the free searches' Jaccard exceeds the 97.5th percentile of the no-task
+      control's agreement (not yet recorded per type);
+    - report the health diagnostics against pilot-dev and against a planted oracle with a 0.12 signal;
+    - add two longer searches per MIP high target, reported, not gated.
+  - **Astra:**
+    - turnover and the longer-search gain become descriptive;
+    - agreement is tested against a five-search random-set ensemble, corrected across comparisons, on the same
+      target credited with recovery;
+    - the low target is reported separately.
+  - Both say dropping these gates is an amendment made after seeing pilot-dev, and must be labelled as such.
+- **δ_search extraction:** the two proposals differ on scope.
+  - Astra: all eight target-brains per graph, r_g ≤ 0.5 per graph, frozen as the RMS over both graphs.
+  - Fable: only target-brains with headroom, with all sixteen as the fallback, and both versions reported.
+
+**Direction:** both recommend option (b), a bounded check of the search before any pilot-check, on MIP/URXL, within
+pilot-dev's remaining 1.42 hours.
+- **Fable:**
+  - a per-edge lesion of URXL's restoration (is the 0.12 concentrated or diffuse?);
+  - the refits and free searches with the ladder's budget moved into worlds (one chain at 64 worlds, or two at 32);
+  - a confirmation re-evaluation before acceptance.
+- **Astra:**
+  - re-evaluate fixed states on fresh 16-, 32- and 64-world batches to see whether winners survive;
+  - test three offspring at 32 worlds against eight at 16;
+  - test a colder ladder, (0.01, 0.02, 0.04, 0.08).
+- **The fork they share:**
+  - reliable refits and above-chance recovery: amend the protocol, pre-register and run pilot-check;
+  - otherwise: (c), stop and report pilot-dev as exploratory;
+  - no repeated enlargement of development.
+- **Also from Fable:** a reliable refit with Q still at chance, and a diffuse lesion, would bring the owner a choice
+  between a likely registered failure and a design v7.2 that gates the pilot on machinery only.
+- Neither recommends (a), the unchanged pilot-check. Astra calls it legitimate but not the preferred spending; Fable
+  calls it the worst use of the budget.
+- **Labelling:** a search change is development before the pre-registration, recorded and dated. Changes to the
+  pilot-check criteria are design amendments (v7.2) made after seeing pilot-dev. The formal N2 readings (§7) do not
+  move.
+
+**The choice between (a), (b) and (c) goes to the owner** (scientific direction).
