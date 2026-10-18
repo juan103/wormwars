@@ -15,6 +15,8 @@ def partial_spearman(h, f, s) -> tuple[float, bool]:
     h, f, s = (np.asarray(x, dtype=np.float64).ravel() for x in (h, f, s))
     if not (len(h) == len(f) == len(s)) or len(h) < 3:
         raise ValueError("h, f and s need the same length, at least 3")
+    if not (np.isfinite(h).all() and np.isfinite(f).all() and np.isfinite(s).all()):
+        raise ValueError("h, f and s must be finite (Astra)")
     rh, rf, rs = rankdata(h), rankdata(f), rankdata(s)
     X = np.column_stack([np.ones_like(rs), rs])
 

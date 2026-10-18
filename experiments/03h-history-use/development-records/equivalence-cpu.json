@@ -1,0 +1,121 @@
+{
+ "device": "cpu",
+ "reference": "runs\\e03h\\equivalence\\ref-cpu.npz",
+ "endpoints": [
+  "score",
+  "energy",
+  "alive",
+  "eaten",
+  "pellet_eaten",
+  "food_start"
+ ],
+ "comparisons": {
+  "pinned interface, food_fell unset": {
+   "endpoints": {
+    "score": {
+     "unequal_values": 0,
+     "max_difference": 0.0,
+     "shape": [
+      64,
+      16
+     ]
+    },
+    "energy": {
+     "unequal_values": 0,
+     "max_difference": 0.0,
+     "shape": [
+      64,
+      16
+     ]
+    },
+    "alive": {
+     "unequal_values": 0,
+     "max_difference": 0.0,
+     "shape": [
+      64,
+      16
+     ]
+    },
+    "eaten": {
+     "unequal_values": 0,
+     "max_difference": 0.0,
+     "shape": [
+      64,
+      16
+     ]
+    },
+    "pellet_eaten": {
+     "unequal_values": 0,
+     "max_difference": 0.0,
+     "shape": [
+      64,
+      16
+     ]
+    },
+    "food_start": {
+     "unequal_values": 0,
+     "max_difference": 0.0,
+     "shape": [
+      64,
+      16
+     ]
+    }
+   },
+   "bit_equal": true
+  },
+  "03h variant, level": {
+   "endpoints": {
+    "score": {
+     "unequal_values": 0,
+     "max_difference": 0.0,
+     "shape": [
+      64,
+      16
+     ]
+    },
+    "energy": {
+     "unequal_values": 0,
+     "max_difference": 0.0,
+     "shape": [
+      64,
+      16
+     ]
+    },
+    "alive": {
+     "unequal_values": 0,
+     "max_difference": 0.0,
+     "shape": [
+      64,
+      16
+     ]
+    },
+    "eaten": {
+     "unequal_values": 0,
+     "max_difference": 0.0,
+     "shape": [
+      64,
+      16
+     ]
+    },
+    "pellet_eaten": {
+     "unequal_values": 0,
+     "max_difference": 0.0,
+     "shape": [
+      64,
+      16
+     ]
+    },
+    "food_start": {
+     "unequal_values": 0,
+     "max_difference": 0.0,
+     "shape": [
+      64,
+      16
+     ]
+    }
+   },
+   "bit_equal": true
+  }
+ },
+ "bit_equal": true
+}

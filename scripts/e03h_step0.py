@@ -15,6 +15,8 @@ If the replay is not bit-equal, step 0 is dropped and the record says so. It set
 from __future__ import annotations
 
 import argparse
+import contextlib
+import hashlib
 import importlib.util
 import json
 import sys
@@ -32,6 +34,7 @@ from wormwars.brain import BrainSpec, Genome  # noqa: E402
 from wormwars.config import Config  # noqa: E402
 from wormwars.connectome import load_connectome  # noqa: E402
 from wormwars.e03h.stats import partial_spearman  # noqa: E402
+from wormwars.evo.bundle import replay_mode  # noqa: E402
 from wormwars.evo.rollout import rollout  # noqa: E402
 from wormwars.exp02 import grid  # noqa: E402
 from wormwars.exp03.measures import history  # noqa: E402
@@ -41,7 +44,10 @@ X3 = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(X3)  # 03's driver, instance "03" (its import-time default): seeds, worlds, graphs
 
 EXP = ROOT / "experiments" / "03h-history-use"
-GUARDED = ["wormwars", "scripts", "configs", "requirements.txt", "experiments/03h-history-use/DESIGN.md"]
+# the code, and every input step 0 reads: 03's pilot record (bank, gains, fitness) and the remaps (Astra)
+GUARDED = ["wormwars", "scripts", "configs", "requirements.txt", "experiments/03h-history-use/DESIGN.md",
+           "experiments/03-generation0/pilot.json", "experiments/02-screening/remaps.json"]
+INPUTS = ["experiments/03-generation0/pilot.json", "experiments/02-screening/remaps.json"]
 VERIFY = "pilotSH101"
 
 
@@ -58,7 +64,9 @@ def genomes_of(con, name, cfg, n, device):
     return Genome.random(spec, cfg.brain, n, generator=gen, device=device)
 
 
-def run(smoke: bool) -> dict:
+def run(smoke: bool, enforce: bool | None = None) -> dict:
+    """`enforce` (default: not smoke) applies the registered drop rule: a replay that is not bit-equal stops step 0."""
+    enforce = (not smoke) if enforce is None else enforce
     X3.use_instance("03")
     device = "cpu" if smoke else "cuda"
     pilot = json.loads(X3.PILOT.read_text(encoding="utf-8"))
@@ -69,12 +77,16 @@ def run(smoke: bool) -> dict:
     records = {g["name"]: g for g in pilot["graphs"]}
     names = sorted(records)[:2] if smoke else sorted(records)
     n_genomes = 16 if smoke else 256
-    out = {"exploratory": True, "device": device, "smoke": smoke, "graphs": {}, "verification": None}
+    out = {"exploratory": True, "device": device, "smoke": smoke, "graphs": {}, "verification": None,
+           "inputs": {f: hashlib.sha256((ROOT / f).read_bytes()).hexdigest() for f in INPUTS}}
+    # CUDA work inside replay_mode(), the repository's deterministic context (AGENTS.md rule 6; Astra). 03's own run
+    # was in the default mode, so equality with pilot.json still has to be observed, not assumed.
+    mode = replay_mode if device == "cuda" else contextlib.nullcontext
 
     # 1. the verification replay: one graph's T1-M0 fitness, bit-equal per world
     rec = records[VERIFY]
     cfg = cfg_t1(VERIFY, tuple(rec["gains"]))
-    with acct.category("measure"):
+    with acct.category("measure"), mode():
         big = genomes_of(con, VERIFY, cfg, 256, device)
         if smoke:
             big = big.select(list(range(n_genomes)))
@@ -82,8 +94,9 @@ def run(smoke: bool) -> dict:
     committed = np.asarray(rec["fitness"]["T1-M0"], dtype=np.float32)[: big.n_strains]
     diff = np.abs(score.astype(np.float64) - committed.astype(np.float64))
     out["verification"] = {"graph": VERIFY, "genomes": int(big.n_strains), "unequal_values": int((diff > 0).sum()),
-                           "max_difference": float(diff.max()), "bit_equal": bool((diff == 0).all())}
-    if not out["verification"]["bit_equal"] and not smoke:
+                           "max_difference": float(diff.max()), "bit_equal": bool((diff == 0).all()),
+                           "mode": "replay_mode" if device == "cuda" else "cpu"}
+    if not out["verification"]["bit_equal"] and enforce:
         out["dropped"] = "the replay is not bit-equal to pilot.json, so step 0 is dropped (DESIGN.md §7.2)"
         return out
 
@@ -91,7 +104,7 @@ def run(smoke: bool) -> dict:
     for name in names:
         rec = records[name]
         cfg = cfg_t1(name, tuple(rec["gains"]))
-        with acct.category("measure"):
+        with acct.category("measure"), mode():
             g = genomes_of(con, name, cfg, 256, device)
             if smoke:
                 g = g.select(list(range(n_genomes)))

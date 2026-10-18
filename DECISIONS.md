@@ -10114,3 +10114,47 @@ and degenerate cases flagged as 0.
 **Gate:** the full suite passed (rc 0).
 
 **Next:** the code review by both, then the owner's word for step 0, about a minute of GPU.
+
+## D327 — 03h's step-1 code review: Astra "revise" (Fable's call hit its session limit); every finding taken
+
+**The review:** run 20261018-173340, archived in `docs/reviews/20261018-03h-code/`.
+- Fable's call failed on a session limit, which resets at 17:40 Zurich time. Fable reviews the fixed code in the next
+  round.
+- Astra said "revise". Astra found the core mechanisms matching v3.2: the bit after the clamp, the sham's keying and
+  transitions, the count conventions, T = 1's exactness, and the identity between `BitKinesis` and `MemoryKinesis`
+  for live weys. Astra also found step 0's recipe right.
+- The blockers were the evidence and step 0's verification.
+
+**Taken:**
+- **Rule 7 against the engine before the change** (T1.md's class-E contract): `scripts/e03h_equivalence.py`, run from
+  a worktree at 6facc3d (`../wormWars-03h-ref`).
+  - The reference is saved from the old engine, which has no `food_fell` field. The current engine is compared with it
+    twice: the pinned interface with `food_fell` unset, and the variant under level.
+  - Every class-E endpoint is compared: score, energy, alive, eaten, pellets eaten, starting food.
+  - **CUDA** (about two minutes of GPU): the planned composition of 256 strains × 16 worlds × 20 weys, inside
+    `replay_mode()`.
+  - **CPU:** 64 × 16.
+  - **The result:** bit-equal on both, recorded in `development-records/equivalence-cpu.json` and
+    `equivalence-cuda.json`.
+  - The in-suite tests are described as the narrower interface comparison on the current engine.
+- **Step 0:**
+  - the verification and the history run inside `replay_mode()` on CUDA, and the mode is recorded. 03's own run used
+    the default mode, so equality with `pilot.json` still has to be observed;
+  - `pilot.json` and `remaps.json` are guarded, and their hashes are recorded;
+  - new tests: a replay that is not bit-equal drops step 0 before any history is measured, and a bit-equal one
+    proceeds.
+- **The world:**
+  - a crafted-sequence test covers two unequal readings that clamp equal (bit 0), a fall below the clamp, separate
+    weys, and a death between transition endpoints (zero bit, step not counted);
+  - the sham refuses p01 + p10 = 0;
+  - its stationary start is tested on the first tick, and that test catches an all-zero start.
+- **The scripted families:** commands and memory states are tested on prescribed sequences, including conflicting
+  bit and memory, each source switched off, and T = 5's recurrence.
+- **The statistic:** tests for ties and a constant covariate, and non-finite inputs are refused.
+
+**Noted, for the gate stage:**
+- the gate must build the families' unions with `GradedKinesis`, and keep the settings that ignore the bit;
+- crossed inference, the sensitivity reading without flagged graphs, and the sham-rate fit are not yet implemented;
+  they come with the pilot's code.
+
+**Next:** the fixed code goes to both. Then step 0 (the owner said yes, after review).

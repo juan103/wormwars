@@ -84,3 +84,47 @@ def test_a_bit_reading_policy_needs_the_channel(parts):
     _, pinned, _ = parts
     with pytest.raises(ValueError):
         ScriptedBrain(pinned, 302, BitKinesis(**P), 1.0, 1.0)
+
+
+def _seq(policy, levels, fells):
+    state, out = None, []
+    for lv, fl in zip(levels, fells):
+        x = torch.tensor([lv])
+        fwd, turn, state = policy(x, x, state, fell=torch.tensor([fl]))
+        out.append((float(fwd[0]), float(turn[0]), None if state is None else float(state[0])))
+    return out
+
+
+def test_commands_and_memory_on_prescribed_sequences():
+    """Astra: commands and states, not only scores. The bit controller issues MemoryKinesis's commands when the bit is
+    the fall; memory and bit combine by OR and each can be switched off; T = 5's average follows its recurrence."""
+    lv = [0.5, 0.4, 0.4, 0.6, 0.3, 0.3]
+    fell = [False] + [b < a for a, b in zip(lv, lv[1:])]
+    mk = MemoryKinesis(**P, fall_threshold=0.0)
+    st, mem = None, []
+    for x in lv:
+        f, t, st = mk(torch.tensor([x]), torch.tensor([x]), st)
+        mem.append((float(f[0]), float(t[0])))
+    bit = [(f, t) for f, t, _ in _seq(BitKinesis(**P), lv, fell)]
+    assert bit == mem
+    # memory says falling (0.6 -> 0.3) while the bit says not, and the reverse at another tick
+    contra = [False, True, False, False, False, True]
+    both = _seq(SlowMemoryKinesis(**P, fall_threshold=0.0, T=1.0, use_memory=1.0, use_bit=1.0), lv, contra)
+    only_mem = _seq(SlowMemoryKinesis(**P, fall_threshold=0.0, T=1.0, use_memory=1.0, use_bit=0.0), lv, contra)
+    only_bit = _seq(SlowMemoryKinesis(**P, fall_threshold=0.0, T=1.0, use_memory=0.0, use_bit=1.0), lv, contra)
+    by_mem = fell
+    turns = lambda r: [t for _, t, _ in r]  # noqa: E731
+    want = lambda flags: [float(np.float32(P["fall_turn"] if f else P["turn"])) for f in flags]  # noqa: E731
+    assert turns(only_mem) == want(by_mem)
+    assert turns(only_bit) == want(contra)
+    assert turns(both) == want([a or b for a, b in zip(by_mem, contra)])
+    # T = 5: compared with the previous average, then m <- m + (x - m) / 5 (float32, as the policy computes it)
+    r = _seq(SlowMemoryKinesis(**P, fall_threshold=0.0, T=5.0, use_memory=1.0, use_bit=0.0), lv, [False] * 6)
+    m = torch.tensor([lv[0]])
+    expect_fall = [False]
+    for x in lv[1:]:
+        xt = torch.tensor([x])
+        expect_fall.append(bool(xt < m))
+        m = m + (xt - m) / 5.0
+    assert turns(r) == want(expect_fall)
+    assert abs(r[-1][2] - float(m[0])) < 1e-7

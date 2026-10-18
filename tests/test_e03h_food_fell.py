@@ -155,7 +155,9 @@ def test_inconsistent_settings_are_refused(parts):
 
 
 def test_under_level_the_variant_plays_exactly_as_the_pinned_interface(parts):
-    """Rule 7 on the CPU: the bit at 0 injects nothing at ASK."""
+    """The interface comparison on the current engine, on the CPU: with the bit at 0 the variant injects nothing at
+    ASK. Rule 7's comparison against the engine before 03h (all class-E endpoints) is scripts/e03h_equivalence.py, with
+    its records in experiments/03h-history-use/development-records/ (Astra)."""
     con, pinned, v, spec = parts
     g = Genome.random(spec, t1().brain, 4, generator=torch.Generator().manual_seed(11))
     ids = np.arange(100, 106)
@@ -166,7 +168,8 @@ def test_under_level_the_variant_plays_exactly_as_the_pinned_interface(parts):
 
 @pytest.mark.gpu
 def test_under_level_the_variant_plays_exactly_as_the_pinned_interface_on_cuda(parts):
-    """Rule 7 on CUDA, in one composition, inside replay_mode() (AGENTS.md rule 6; DESIGN.md §3)."""
+    """The interface comparison on the current engine, on CUDA, in one composition (64 x 16), inside replay_mode().
+    The pre-change comparison at the planned composition is scripts/e03h_equivalence.py (Astra)."""
     if not torch.cuda.is_available():
         pytest.skip("no CUDA")
     from wormwars.evo.bundle import replay_mode
@@ -178,3 +181,60 @@ def test_under_level_the_variant_plays_exactly_as_the_pinned_interface_on_cuda(p
         base = rollout(t1(None), pinned, g, ids, 7, "cuda", chunk_worlds=1024)
         lvl = rollout(t1("level"), v, g, ids, 7, "cuda", chunk_worlds=1024)
     assert np.array_equal(np.asarray(base.score), np.asarray(lvl.score))
+
+
+def _crafted(parts, mode, rates=None, n=2):
+    _, _, v, _ = parts
+    cfg = t1(mode, rates)
+    return build(parts, cfg, v, n=n), cfg
+
+
+def test_the_bit_reads_the_clamped_current_per_wey_and_skips_the_dead(parts):
+    """Astra: two unequal readings that clamp equal give 0; a fall below the clamp gives 1; weys are separate; a death
+    between two ticks zeroes the bit and removes the step from the counts."""
+    w, cfg = _crafted(parts, "relief", n=1)
+    B = w.n_weys
+    big = cfg.brain.input_max + 2.0  # above the clamp (sensor gain 1, input gain 1 for food_left)
+    seq = np.zeros((5, B))
+    seq[:, 0] = [big + 1, big, 1.0, 1.0, 0.5]  # clamp-equal (no fall), a fall below the clamp, equal, a fall
+    seq[:, 1] = [0.2, 0.3, 0.1, 0.4, 0.3]      # rise, fall, rise, fall
+    seq[:, 2] = [0.5, 0.4, 0.3, 0.2, 0.1]      # falls every tick; dies before tick 3
+    alive0 = w.alive.clone()
+    bits = []
+    for t in range(5):
+        if t == 3:
+            w.alive[0, 0, 2] = False
+        bits.append(_feed_one(w, t, seq[t]))
+    b = torch.stack(bits)[:, 0, 0, :3].numpy()
+    assert b[:, 0].tolist() == [0, 0, 1, 0, 1]
+    assert b[:, 1].tolist() == [0, 0, 1, 0, 1]
+    assert b[:, 2].tolist() == [0, 1, 1, 0, 0]
+    assert bool(alive0[0, 0, :3].all())
+    c = w.food_fell_counts["relief"].tolist()  # steps 1->2, 2->3, 3->4 (t - 1 >= 1), weys alive at both ends
+    wey0 = [(0, 1), (1, 0), (0, 1)]
+    wey1 = [(0, 1), (1, 0), (0, 1)]
+    wey2 = [(1, 1)]  # only 1->2: wey 2 is dead at ticks 3 and 4
+    others = B - 3  # constant readings 0: no falls, three steps each
+    want = [3 * others, 0, 0, 0]
+    for x, y in wey0 + wey1 + wey2:
+        want[2 * x + y] += 1
+    assert c == want
+
+
+def _feed_one(w, t, row):
+    w.tick_count = t
+    food = torch.as_tensor(row, dtype=w.dtype).reshape(1, 1, -1)
+    return w._food_fell({"food_left": food}).clone()
+
+
+def test_a_sham_without_a_stationary_start_is_refused(parts):
+    _, _, v, _ = parts
+    with pytest.raises(ValueError):
+        build(parts, t1("sham", (0.0, 0.0)), v)
+
+
+def test_the_sham_starts_at_its_stationary_occupancy_on_the_first_tick(parts):
+    w, _ = _crafted(parts, "sham", (0.2, 0.3), n=64)
+    w.tick()
+    first = float(w._ff_state.float().mean())  # 64 worlds x 20 weys on tick 0
+    assert abs(first - 0.4) < 0.05

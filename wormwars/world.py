@@ -261,6 +261,9 @@ class World:
             r = wcfg.food_fell_rates
             if r is None or len(r) != 2 or not all(0.0 <= float(x) <= 1.0 for x in r):
                 raise ValueError("world.food_fell 'sham' needs food_fell_rates = (p01, p10), each in [0, 1]")
+            if float(r[0]) + float(r[1]) <= 0.0:
+                raise ValueError("world.food_fell 'sham' with p01 + p10 = 0 has no unique stationary start (03h stops "
+                                 "for redesign on a zero denominator, DESIGN.md §3)")
         if wcfg.task == "maze_shuttle" and not self._maze_task:
             raise ValueError("the maze_shuttle task is played by wormwars.e3.maze_world.MazeWorld")
 
@@ -911,7 +914,7 @@ class World:
             p01, p10 = (float(x) for x in wcfg.food_fell_rates)
             u = self._keyed_uniform(FOOD_FELL_STREAM)[..., 0]
             if self._ff_state is None:  # the stationary start
-                self._ff_state = u < (p01 / (p01 + p10) if p01 + p10 > 0 else 0.0)
+                self._ff_state = u < p01 / (p01 + p10)
             else:
                 self._ff_state = torch.where(self._ff_state, u >= p10, u < p01)
             injected = self._ff_state & alive
