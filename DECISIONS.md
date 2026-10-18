@@ -9955,3 +9955,37 @@ any GPU work needs the owner's word.
 | Cap | about 6 hours | 4 hours as a feasibility ceiling | at most 6, set from the pilot |
 
 **Next:** v2 goes to both. The pilot and the formal run need the owner's word.
+
+## D323 — 03h design v2 reviewed (both "revise"; the task change accepted); v3 re-sized at T1's rate
+
+**The review:** run 20261018-154121, both at xhigh effort, archived in `docs/reviews/20261018-03h-design-r2/`.
+- Both accept the move to T1 and say no further task search is needed.
+- Astra accepted all four merged points. Fable accepted three, but not the cap as written.
+
+**The main findings, all taken in v3:**
+- **The cost was wrong by a factor of five** (Fable): v2 used Task N's 892 episodes per second. T1, a 20-wey odour
+  world, runs at about 171: 03's fitness stage took 11 264 episodes in 65.9 s per graph (`pilot.json`).
+  - 03's committed T1 data also shows that W = 16 worlds give a genome-mean reliability of 0.94 (SD of genome means
+    0.26, per-world SD 0.25, no zeros).
+  - v3 uses W = 16, G = 256, and a 64-world test bank only for each graph's selected decile. The primary run is about
+    2.2 GPU-hours; SH is optional, about 2.1 more.
+- **The relief gate compared a controller with itself** (Fable, Astra): 02's tuned M has threshold 0, so
+  `LevelKinesis` reading the bit is `MemoryKinesis`. v3 adds a slow-memory family ported from 03a's KTS, with T = 1
+  recovering `MemoryKinesis`, and `GradedKinesis` in the union.
+- **The units** (both): T1's score is the swarm's surviving energy fraction, not targets. The thresholds are restated
+  in it (level gain ≥ 0.5, relief equivalence ±0.3).
+- **B's baseline** is the sham (Fable).
+- **The order:** the gate, the pilot and the sham are ordered, and the sham's estimator is fixed (both).
+- **The bit** is defined after the clamp (both). Its amplitude is 0.25, about the food current (Fable).
+- **The primary ensemble** stays at 64 graphs; the cut order is SH first, then the test bank (both).
+- **Rule 7's equivalence check** for the interface variant (Fable).
+- **The bank was already T1's,** collected from T1 replays (both; v1 and v2 said "T0's").
+- **The statistical contract** is completed (Astra): equal graph weights, the bootstrap p, max(p_A1, p_A2) into Holm,
+  degenerate graphs set to 0, B's selection resampled, the rank formula only, equal genome allocation.
+
+**Added:** step 0, exploratory and needing seconds of GPU.
+- 03's pilot fitness genomes are regenerated from their committed seeds on CUDA.
+- Their history is then related to the T1 fitness already in `pilot.json`, under level only.
+- 03 drew its probe genomes separately, so the committed data cannot link history to fitness by itself.
+
+**Next:** v3 goes to both. Step 0, the pilot and the formal run need the owner's word.
