@@ -1,0 +1,46 @@
+{
+ "mode": "replay",
+ "graph": "pilotSH101",
+ "fitness": {
+  "genomes": 256,
+  "bit_equal": true,
+  "unequal_values": 0,
+  "max_difference": 0.0
+ },
+ "history": {
+  "genomes": 2048,
+  "parts": {
+   "raw_turn.final": {
+    "bit_equal": true,
+    "unequal_values": 0,
+    "max_difference": 0.0
+   },
+   "raw_turn.after": {
+    "bit_equal": true,
+    "unequal_values": 0,
+    "max_difference": 0.0
+   },
+   "raw_turn.steady_contrast": {
+    "bit_equal": true,
+    "unequal_values": 0,
+    "max_difference": 0.0
+   },
+   "raw_forward.final": {
+    "bit_equal": true,
+    "unequal_values": 0,
+    "max_difference": 0.0
+   },
+   "raw_forward.after": {
+    "bit_equal": true,
+    "unequal_values": 0,
+    "max_difference": 0.0
+   },
+   "raw_forward.steady_contrast": {
+    "bit_equal": true,
+    "unequal_values": 0,
+    "max_difference": 0.0
+   }
+  },
+  "bit_equal": true
+ }
+}

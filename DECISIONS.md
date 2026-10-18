@@ -10207,3 +10207,37 @@ registration draft. Both go to review with the pilot's driver, before the gate r
   stated gap.
 
 **Gate:** the full suite passed (rc 0).
+
+## D329 — 03h step 0 (exploratory): the recipe is verified exactly; history does not predict T1 fitness in 03's random SH brains
+
+**The run:** `scripts/e03h_step0.py` on `4af497f`, 2026-10-19, under the owner's GPU word.
+- It took 0.033 GPU-hours, the two verification processes included (`development-records/step0-compute.json`).
+- The record is `development-records/step0.json`, with `step0-verify-default.json` and `step0-verify-replay.json`.
+- Before it, both rule-7 legs were rerun from `4af497f` with the provenance the checker now records. Both are
+  bit-equal against 6facc3d, which was clean (`equivalence-cpu.json`, `equivalence-cuda.json`).
+
+**The verification:** both checks were bit-equal in both modes.
+- **(a) the fitness replay:** 0 unequal of 4 096 values;
+- **(b) the world-free history check:** 0 unequal in each of six read-outs over 2 048 genomes.
+
+So 03's genomes and graphs are reproduced exactly, in 03's default mode as well as in `replay_mode()`.
+
+**The result** (exploratory; it sets nothing; DESIGN §7.2): on 03's 16 pilot SH graphs, the 256 fitness genomes each,
+with H = |raw-turn final difference| and S = |raw-turn steady contrast| measured on the same genomes:
+- **the partial Spearman ρ_level of H with the committed T1-M0 fitness, given S:**
+  - mean −0.024;
+  - between-graph SD 0.060, so an SE of the mean of 0.015;
+  - 6 of 16 graphs positive;
+  - none degenerate;
+- **the top-against-bottom H quartile difference in fitness:** mean −0.001 (−0.079 to +0.069);
+- **the between-graph SD is about the genome-sampling SD of one graph's ρ** (≈ 1/√256 = 0.063), which is consistent
+  with no link in any graph rather than a link that varies.
+
+**What it means for 03h:**
+- A as registered needs A1 (ρ_level > 0 in the primary ensemble). On SH graphs at generation 0, step 0 points to A1
+  failing, and so to a null A.
+- B is untouched.
+- Step 0 used SH, not SH-mirror-ASK, H only (not H_dir), and the pinned interface. It is exploratory and decides
+  nothing by the registered rules.
+- **Whether to continue to the pilot and the formal run as designed, or to change course, was decided after seeing
+  this.** It is a direction question, so it goes to both reviewers and then to the owner.

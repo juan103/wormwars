@@ -1,6 +1,35 @@
 {
  "device": "cpu",
- "reference": "runs\\e03h\\equivalence\\ref-cpu.npz",
+ "reference": {
+  "file": "ref-cpu.npz",
+  "commit": "6facc3d3683c1585d481e2680f18831a977d40bf",
+  "dirty": false,
+  "root": "D:\\Claude\\random\\wormWars-03h-ref",
+  "device": "cpu",
+  "sha256": "49806dd99d0a65c23afc6078724becfc01a3f2744465e5617df85963cc325eea",
+  "torch": "2.12.0+cu130",
+  "cuda": "13.0",
+  "gpu": "NVIDIA GeForce RTX 5080",
+  "python": "3.13.3"
+ },
+ "current": {
+  "provenance": {
+   "git_commit": "4af497f2421d29ef42101953c3c4e610847a3ef7",
+   "branch": "roadmap",
+   "dirty": false,
+   "python": "3.13.3",
+   "numpy": "2.4.4",
+   "torch": "2.12.0+cu130",
+   "cuda": "13.0",
+   "gpu": "NVIDIA GeForce RTX 5080",
+   "connectome_cache_sha256": "43b87aa172a0042b9dce734b15bdf1c87efe3a33ac1cc0d9cd03255a60c96d4a",
+   "connectome_source_sha256": "1f4fdbf84746b69b49a8da0816f52787860ce349b638dce37924ba80f90c70c9"
+  },
+  "torch": "2.12.0+cu130",
+  "cuda": "13.0",
+  "gpu": "NVIDIA GeForce RTX 5080",
+  "python": "3.13.3"
+ },
  "endpoints": [
   "score",
   "energy",
@@ -13,52 +42,64 @@
   "pinned interface, food_fell unset": {
    "endpoints": {
     "score": {
-     "unequal_values": 0,
-     "max_difference": 0.0,
+     "shape_match": true,
      "shape": [
       64,
       16
-     ]
+     ],
+     "unequal_values": 0,
+     "non_finite": 0,
+     "max_difference": 0.0
     },
     "energy": {
-     "unequal_values": 0,
-     "max_difference": 0.0,
+     "shape_match": true,
      "shape": [
       64,
       16
-     ]
+     ],
+     "unequal_values": 0,
+     "non_finite": 0,
+     "max_difference": 0.0
     },
     "alive": {
-     "unequal_values": 0,
-     "max_difference": 0.0,
+     "shape_match": true,
      "shape": [
       64,
       16
-     ]
+     ],
+     "unequal_values": 0,
+     "non_finite": 0,
+     "max_difference": 0.0
     },
     "eaten": {
-     "unequal_values": 0,
-     "max_difference": 0.0,
+     "shape_match": true,
      "shape": [
       64,
       16
-     ]
+     ],
+     "unequal_values": 0,
+     "non_finite": 0,
+     "max_difference": 0.0
     },
     "pellet_eaten": {
-     "unequal_values": 0,
-     "max_difference": 0.0,
+     "shape_match": true,
      "shape": [
       64,
       16
-     ]
+     ],
+     "unequal_values": 0,
+     "non_finite": 0,
+     "max_difference": 0.0
     },
     "food_start": {
-     "unequal_values": 0,
-     "max_difference": 0.0,
+     "shape_match": true,
      "shape": [
       64,
       16
-     ]
+     ],
+     "unequal_values": 0,
+     "non_finite": 0,
+     "max_difference": 0.0
     }
    },
    "bit_equal": true
@@ -66,52 +107,64 @@
   "03h variant, level": {
    "endpoints": {
     "score": {
-     "unequal_values": 0,
-     "max_difference": 0.0,
+     "shape_match": true,
      "shape": [
       64,
       16
-     ]
+     ],
+     "unequal_values": 0,
+     "non_finite": 0,
+     "max_difference": 0.0
     },
     "energy": {
-     "unequal_values": 0,
-     "max_difference": 0.0,
+     "shape_match": true,
      "shape": [
       64,
       16
-     ]
+     ],
+     "unequal_values": 0,
+     "non_finite": 0,
+     "max_difference": 0.0
     },
     "alive": {
-     "unequal_values": 0,
-     "max_difference": 0.0,
+     "shape_match": true,
      "shape": [
       64,
       16
-     ]
+     ],
+     "unequal_values": 0,
+     "non_finite": 0,
+     "max_difference": 0.0
     },
     "eaten": {
-     "unequal_values": 0,
-     "max_difference": 0.0,
+     "shape_match": true,
      "shape": [
       64,
       16
-     ]
+     ],
+     "unequal_values": 0,
+     "non_finite": 0,
+     "max_difference": 0.0
     },
     "pellet_eaten": {
-     "unequal_values": 0,
-     "max_difference": 0.0,
+     "shape_match": true,
      "shape": [
       64,
       16
-     ]
+     ],
+     "unequal_values": 0,
+     "non_finite": 0,
+     "max_difference": 0.0
     },
     "food_start": {
-     "unequal_values": 0,
-     "max_difference": 0.0,
+     "shape_match": true,
      "shape": [
       64,
       16
-     ]
+     ],
+     "unequal_values": 0,
+     "non_finite": 0,
+     "max_difference": 0.0
     }
    },
    "bit_equal": true
