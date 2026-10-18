@@ -9918,3 +9918,40 @@ in Task N (its pheromone deposit and sense scale are 0; `wormwars/e1/task.py`). 
 any GPU work needs the owner's word.
 
 **Next:** design v1 goes to both reviewers.
+
+## D322 — 03h design v1 reviewed (both "revise"); v2 takes every finding and moves the task to 02's T1
+
+**The review:** run 20261018-152829, both at xhigh effort, archived in `docs/reviews/20261018-03h-design/`.
+
+**The structural findings, all taken in v2:**
+- **v1's Task N-mono is nearly binary at generation 0** (Fable): 74% of random N2 genomes score zero on all 64 worlds
+  (E1). v2 moves to 02's T1, single-nose foraging with odour. There, scripted M − K is +0.942 (02's tripwire), and the
+  controllers are nested (`wormwars/exp02/scripted.py`). The pilot measures T1's generation-0 distribution.
+- **No sham** (both): under relief, the bit's random routing to the motors would attenuate any correlation by itself.
+  v2 adds a sham condition, a two-state Markov bit matched in rate and persistence, and A tests relief against sham.
+- **ASK's routing was unconstrained** (both): `constrained_neurons` covers only the food pairs. v2 adds ASK to the cap
+  as a parameter (new ensemble names, with a test), and reports ASK's direct read-out as a covariate.
+- **A's reading** (both): A now requires a positive link under level (A1) as well as the relief contrast (A2).
+- **Inference** (Astra): 8 shared worlds cannot support inference over worlds. v2 uses crossed resampling, and the
+  pilot sets the world count.
+- **B** (Astra): B is now the test-bank performance of the decile selected on a separate bank. The "head start" label
+  requires a level advantage, and both components are reported.
+- **Also:**
+  - Holm over A and B;
+  - the scripted gate's tuning, check and equivalence protocol;
+  - the same genome objects for history and fitness;
+  - a neural manipulation check;
+  - a registered pilot;
+  - corrected facts: the ensemble means run to 0.85, 03 used 128 graphs per ensemble, and its rank tests are
+    approximate.
+
+**Merged where they differed, sent back for confirmation:**
+
+| Point | Fable | Astra | v2 |
+|---|---|---|---|
+| Primary history measure | directional turn (H_dir) | the raw-turn magnitude H | H primary, H_dir the key secondary |
+| Ensembles | SH plus one route-constrained ensemble | SH plus SH-mirror | SH-mirror-ASK primary, SH secondary |
+| Frozen-champion check | after A, outside 03h | alongside A, not gated on it | separate and exploratory, after the pre-registration is bound, not gated on A |
+| Cap | about 6 hours | 4 hours as a feasibility ceiling | at most 6, set from the pilot |
+
+**Next:** v2 goes to both. The pilot and the formal run need the owner's word.
