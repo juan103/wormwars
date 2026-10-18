@@ -10158,3 +10158,52 @@ and degenerate cases flagged as 0.
   they come with the pilot's code.
 
 **Next:** the fixed code goes to both. Then step 0 (the owner said yes, after review).
+
+## D328 — 03h's code review, round 2: both "ready for step 0, with small fixes"; every fix taken; the owner's GPU word
+
+**The review:** run 20261019-002756, both at xhigh effort, archived in `docs/reviews/20261019-03h-code-r2/`.
+- **Fable,** reading the code for the first time: "ready for step 0, with small fixes". Fable found every piece
+  matching design v3.2, and no bug that would mislead step 0, the gate, the pilot or the formal run.
+- **Astra:** "ready for step 0, with small fixes to the equivalence checker". All ten of Astra's round-1 findings were
+  resolved.
+
+**A correction:** *the round-2 prompt said "Nothing has run on the GPU apart from the test suite".* That was false: the
+CUDA rule-7 run had already happened, as D327 records (Astra).
+
+**The owner, 2026-10-19:** "you have my go ahead for the gpu I'm not using it now". It covers step 0, the scripted
+gate and the pilot, once the pilot's registration is bound. The formal run will be asked separately.
+
+**Taken:**
+- **Step 0's drop rule** (Fable): it could not tell a wrong recipe from 03's default-mode nondeterminism.
+  - The verification now has (a) the fitness replay and (b) a world-free check: `history()` on 03's 2 048-genome
+    probe population, against `pilot.json`'s per-genome values.
+  - Each check runs in the default mode and in `replay_mode()`, each mode in its own process.
+  - Step 0 proceeds if any check is bit-equal, and is dropped otherwise. If it is dropped, s_graph uses the pilot alone.
+  - DESIGN §7.2 is annotated, dated, before step 0 runs.
+  - New tests: both checks' outcomes, and the dirty-tree refusal through `main()`.
+  - Step 0's tests are marked slow.
+- **The rule-7 checker** (Astra, Fable):
+  - shapes must match, and values must be finite and equal; tests cover a finite mismatch, a NaN and a broadcastable
+    shape;
+  - `--root` is required, and the worktree must be at 6facc3d and clean;
+  - the reference's provenance (commit, dirty state, sha256, torch, CUDA, GPU) is saved beside it and carried into the
+    comparison record;
+  - both legs are rerun from the committed code, so their records carry clean provenance.
+- **The world:** the transition counts accumulate on the device, with no sync per tick (Fable). An integration test
+  checks that the current built at ASK is the injected bit times the amplitude, under relief and sham, and that the
+  injected counts are the injected bit's own (Astra).
+- **The scripted brain:** a bit-reading policy is refused if the pheromone sense is on or the channel is off (Fable).
+  `BitKinesis`'s docstring states the identity's scope: mono sensing, live weys.
+- **Tests:** N2's ASK has no direct read-out edges, now pinned (Fable). The variant's pinned prefix is identical in
+  neurons and gains (Fable).
+- **The sham's seed** (Fable, Astra): it is the world's keyed stream 0x03F under each bank's run seed, which is shared
+  by every condition, genome and graph. DESIGN §5 is annotated, and PILOT.md says so.
+- **Also:** `MODES` is now the world's tuple.
+
+**New since round 2, not yet reviewed:** `wormwars/e03h/gate.py` and its tests, and `PILOT.md`, the pilot's
+registration draft. Both go to review with the pilot's driver, before the gate runs.
+- The gate test's sabotage of the memory fallback is caught.
+- Its fake scorer cannot exercise the memory + bit fallback, because it always rewards the bit under relief. That is a
+  stated gap.
+
+**Gate:** the full suite passed (rc 0).

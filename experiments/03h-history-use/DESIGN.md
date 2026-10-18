@@ -175,6 +175,10 @@ same genomes and composition must equal the pinned interface's bitwise:
 - **Seeds:** graph, genome, sham and world seeds, and world-id ranges (tuning, check, selection, test, calibration,
   pilot), are all disjoint from one another and from every earlier range. They are listed in the pilot's registration
   and the pre-registration (Astra, Fable).
+  - *Annotated 2026-10-19 (D328):* the sham has no root seed of its own. It is the world's keyed stream 0x03F under a
+    bank's run seed, separated from the map's streams by its tag.
+  - So each bank uses one run seed for every condition, genome and graph, and the sham sequence for a world and wey is
+    then the same across them (Fable, Astra).
 
 **Motor calibration:** once per graph under level, then frozen for every condition (Astra).
 
@@ -290,6 +294,16 @@ test score, relief against sham.
    - **Then:** H and S are measured on the same genomes, and related to the committed T1-M0 fitness, under level only.
    - **What it gives:** the spread of ρ_level across SH graphs. It estimates neither D's variance nor
      SH-mirror-ASK's (Astra). It sets nothing by itself.
+   - *Annotated 2026-10-19, before step 0 ran (D328; the code review, round 2, Fable):* a last-bit difference in a
+     400-tick fitness replay cannot tell a wrong recipe from 03's own nondeterminism (03 ran in the default mode).
+     So the verification has two checks on `pilotSH101`:
+     - (a) the fitness replay;
+     - (b) a world-free check: `history()` on 03's 2 048-genome probe population (seed + 1), against the per-genome
+       history committed in `pilot.json`.
+
+     Each check runs in 03's default mode and inside `replay_mode()`, each mode in its own process, and each
+     comparison is bit-equality. **If any check is bit-equal in either mode,** step 0 proceeds. **Otherwise** it is
+     dropped, and §7.7's s_graph uses the pilot's estimate alone.
 3. **The pilot's registration,** reviewed by both, bound and pushed before any registered gate or pilot
    measurement (Fable, Astra). It covers steps 4-7, and fixes:
    - the controller grids, the world counts and ranges, and the interval methods;

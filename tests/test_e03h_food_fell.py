@@ -238,3 +238,37 @@ def test_the_sham_starts_at_its_stationary_occupancy_on_the_first_tick(parts):
     w.tick()
     first = float(w._ff_state.float().mean())  # 64 worlds x 20 weys on tick 0
     assert abs(first - 0.4) < 0.05
+
+
+def test_the_pinned_prefix_is_identical_in_neurons_and_gains(parts):
+    _, pinned, v, _ = parts
+    n = len(pinned.signal_names)
+    assert np.array_equal(v.sensor_neuron[:n], pinned.sensor_neuron)
+    assert np.array_equal(v.sensor_gain[:n], pinned.sensor_gain)
+    for f in ("forward_plus", "forward_minus", "turn_plus", "turn_minus", "pump_neurons"):
+        assert np.array_equal(getattr(v, f), getattr(pinned, f))
+
+
+@pytest.mark.parametrize("mode,rates", [("relief", None), ("sham", (0.2, 0.3))])
+def test_the_injected_bit_reaches_ask_and_its_counts_are_its_own(parts, mode, rates):
+    """The current actually built at ASKL and ASKR is the injected bit times the amplitude (Astra: an integration
+    check through _build_current), and the injected counts are the injected bit's transitions."""
+    con, _, v, _ = parts
+    cfg = t1(mode, rates)
+    w = build(parts, cfg, v)
+    ask = [con.index("ASKL"), con.index("ASKR")]
+    inj, alive = [], []
+    for _ in range(40):
+        alive.append(w.alive.clone())
+        w.tick()
+        bit = w.last_signals["food_fell"]
+        cur = w._build_current(w.last_signals)
+        for k in ask:
+            assert torch.allclose(cur[..., k], bit * AMPLITUDE * alive[-1], atol=0, rtol=0)
+        inj.append(bit.bool())
+    want = np.zeros(4, dtype=np.int64)
+    for t in range(2, len(inj)):
+        both = alive[t - 1] & alive[t]
+        code = (inj[t - 1].long() * 2 + inj[t].long())[both]
+        want += np.bincount(code.numpy(), minlength=4)
+    assert w.food_fell_counts["injected"].tolist() == want.tolist()

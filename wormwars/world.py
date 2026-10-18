@@ -377,8 +377,8 @@ class World:
         self._ff_bits_prev: tuple | None = None
         self._ff_alive_prev: Tensor | None = None
         self._ff_state: Tensor | None = None
-        self.food_fell_counts = {"relief": torch.zeros(4, dtype=torch.int64),
-                                 "injected": torch.zeros(4, dtype=torch.int64)}
+        self._ff_counts = {"relief": torch.zeros(4, dtype=torch.int64, device=self.device),
+                           "injected": torch.zeros(4, dtype=torch.int64, device=self.device)}
         if ff is not None:
             self._ff_food_gain = float(iface.sensor_gain[list(iface.signal_names).index("food_left")])
         # the jitter probe's noise is a hash of (run seed, world id, tick, sample point), so it
@@ -903,6 +903,11 @@ class World:
             "collision_rear_right": obstacle[..., P_REAR_R] * sc,
         }
 
+    @property
+    def food_fell_counts(self) -> dict:
+        """The transition counts (N00, N01, N10, N11) of the relief bit and of the injected bit, on the CPU."""
+        return {k: v.cpu() for k, v in self._ff_counts.items()}
+
     def _food_fell(self, signals: dict[str, Tensor]) -> Tensor:
         """03h's bit (DESIGN.md §3), per wey: computed on the injected food current (after gain and clamp) at the first
         food_left sensor neuron, the observation a brain and `ScriptedBrain` receive."""
@@ -927,7 +932,7 @@ class World:
             for key, now, before in (("relief", relief, self._ff_bits_prev[0]),
                                      ("injected", injected, self._ff_bits_prev[1])):
                 code = (before.to(torch.int64) * 2 + now.to(torch.int64))[both]
-                self.food_fell_counts[key] += torch.bincount(code, minlength=4).cpu()
+                self._ff_counts[key] += torch.bincount(code, minlength=4)  # on the device: no sync per tick
         self._ff_prev, self._ff_bits_prev, self._ff_alive_prev = cur, (relief, injected), alive.clone()
         return injected.to(self.dtype)
 

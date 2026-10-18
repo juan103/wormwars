@@ -9,8 +9,9 @@ import torch
 
 
 class BitKinesis:
-    """Memoryless, reading food_fell: falling is the bit. Under relief it is exactly MemoryKinesis with
-    fall_threshold 0 (the bit is the fall of the same injected current, 0 on the first tick)."""
+    """Memoryless, reading food_fell: falling is the bit. Under relief and mono sensing (T1), for live weys, it is
+    exactly MemoryKinesis with fall_threshold 0: the bit is the fall of the same injected current that MemoryKinesis
+    reads, 0 on the first tick. Dead weys' commands may differ, and the world masks them (Fable, Astra)."""
 
     needs_fell = True
 

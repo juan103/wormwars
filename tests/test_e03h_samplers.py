@@ -59,3 +59,11 @@ def test_without_the_ask_cap_ask_reaches_the_readout(con):
         g, _ = S.build(con, "SH-mirror", seed, passes=4)
         seen.append(caps_hold(con, g, ["ASKL", "ASKR"]))
     assert not all(seen)
+
+
+def test_n2s_ask_has_no_direct_readout_edges(con):
+    """Fable: the cap's meaning (zero) is pinned, on both matrices."""
+    for n in ("ASKL", "ASKR"):
+        k = con.index(n)
+        for mat in ("chem", "gap"):
+            assert S.direct_readout(con, k, mat) == {"count": 0, "weight": 0.0}

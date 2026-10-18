@@ -193,8 +193,19 @@ class StereoKinesis:
         return fwd, turn, state
 
 
+def _check_fell(cfg, policy) -> None:
+    """A policy reading 03h's bit reads ASK's current as the bit, so ASK must carry nothing else: the pheromone sense
+    is off (T1's), and the world carries the channel (Fable)."""
+    if getattr(policy, "needs_fell", False):
+        if cfg.world.sense_scale_pheromone != 0:
+            raise ValueError("a bit-reading policy needs the pheromone sense off (ASK would carry pheromone)")
+        if cfg.world.food_fell is None:
+            raise ValueError("a bit-reading policy needs world.food_fell set")
+
+
 def score_policy(cfg, iface, policy, world_ids, run_seed, device) -> np.ndarray:
     """Per-world foraging score of one scripted policy, shape [worlds]."""
+    _check_fell(cfg, policy)
     brain = ScriptedBrain(iface, 302, policy, cfg.world.forward_gain, cfg.world.turn_gain,
                           device=device)
     return rollout_brain(cfg, iface, brain, world_ids, run_seed, device).score[0]
@@ -205,6 +216,7 @@ def tune(make_policy, grid: dict, cfg, iface, world_ids, run_seed, device) -> tu
     """Exhaustive grid search on tuning worlds; returns (best parameters, their mean score)."""
     keys = sorted(grid)
     best, best_score = None, -np.inf
+    _check_fell(cfg, make_policy(**{k: grid[k][0] for k in keys}))
     for values in itertools.product(*(grid[k] for k in keys)):
         params = dict(zip(keys, values))
         s = float(score_policy(cfg, iface, make_policy(**params), world_ids, run_seed, device).mean())
@@ -223,7 +235,9 @@ def tune_batched(make_policy, grid: dict, cfg, iface, world_ids, run_seed, devic
     n = len(combos)
     params = {k: torch.tensor([c[i] for c in combos], dtype=torch.float32, device=device).view(n, 1)
               for i, k in enumerate(keys)}
-    brain = ScriptedBrain(iface, 302, make_policy(**params), cfg.world.forward_gain,
+    policy = make_policy(**params)
+    _check_fell(cfg, policy)
+    brain = ScriptedBrain(iface, 302, policy, cfg.world.forward_gain,
                           cfg.world.turn_gain, n_strains=n, device=device)
     scores = rollout_brain(cfg, iface, brain, world_ids, run_seed, device).score.mean(axis=1)
     i = int(np.argmax(scores))  # first maximum: the same tie-break as the sequential search
