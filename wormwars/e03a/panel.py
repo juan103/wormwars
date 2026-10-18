@@ -77,8 +77,11 @@ def relevance(intact: np.ndarray, deleted: np.ndarray, B: int, seed: int) -> dic
     intact = np.asarray(intact, dtype=np.float64)
     deleted = np.asarray(deleted, dtype=np.float64)
     drop = intact[None] - deleted  # [neurons, brains, worlds]
-    wi = world_resamples(drop.shape[2], B, seed)
-    boot = drop.mean(axis=1)[:, wi].mean(axis=2)  # [neurons, B]: the three-brain mean, resampled worlds
+    nw = drop.shape[2]
+    wi = world_resamples(nw, B, seed)
+    times = np.zeros((B, nw))  # how often each world is drawn in each resample
+    np.add.at(times, (np.arange(B)[:, None], wi), 1.0)
+    boot = drop.mean(axis=1) @ times.T / nw  # [neurons, B], without a [neurons, B, worlds] array (Fable)
     lo, hi = np.percentile(boot, [2.5, 97.5], axis=1)
     return {"mean": drop.mean(axis=(1, 2)), "lo": lo, "hi": hi, "per_brain": drop.mean(axis=2)}
 

@@ -145,6 +145,12 @@ Deletion, never silencing (D044). For each graph:
   of the intact graph, as D035 does, and frozen through deletion and reinsertion.
 - **Batching:** the five NIP brains of one target share one mask (X's edges removed) and run in one lockstep batch;
   MIP and selector brains share the intact mask. Throughput for these batch sizes is measured in pilot-dev.
+  - *Annotation, 2026-10-17 (D309; code review round 1, both reviewers accept it):* the implementation evolves NIP
+    brains **on the intact mask with X's edges pinned at zero** (zero at generation 0, mutation scale zero), not on a
+    separate mask. It is deletion, tested, and it lets NIP brains of several targets share a batch with the selector and
+    MIP brains. What changes, stated precisely (Astra): a NIP brain has no functional exposure to X during evolution,
+    but its initial weight scale is normalised by the intact mask's mean anatomical weight, X's edges included, as
+    every other arm's is. See `PILOT-DEV.md` §4.
 - **Unit of analysis:** the brain. A target's reading in an arm combines its five brains with equal weight; each
   brain's own values are reported beside it.
 

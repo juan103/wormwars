@@ -76,3 +76,42 @@ def test_a_changed_graph_is_refused(run):
     finally:
         doc["graph"]["sha256"] = good
         p.write_text(json.dumps(doc), encoding="utf-8")
+
+
+def test_a_failed_restoration_control_fails_the_baseline_stage(tmp_path, monkeypatch):
+    """Astra: a failed implementation control must stop the dependent stages, not only be recorded."""
+    spec = importlib.util.spec_from_file_location("e03a_script_test_b", ROOT / "scripts" / "e03a.py")
+    M = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(M)
+    M.out_dir = lambda: tmp_path / "pilot-dev"
+    M.rec_dir = lambda: tmp_path / "pilot-dev" / "records"
+    for s in ("setup", "evolve-intact", "panel", "evolve-nip"):
+        M.main([s, "--smoke"])
+    real = M.R.Reinsertion.saved_state
+
+    def off_by_a_little(self, intact):
+        st = real(self, intact)
+        st.bias += 0.5
+        return st
+
+    monkeypatch.setattr(M.R.Reinsertion, "saved_state", off_by_a_little)
+    with pytest.raises(RuntimeError, match="restoration"):
+        M.main(["baseline", "--smoke"])
+    doc = json.loads((tmp_path / "pilot-dev" / "records" / "baseline.json").read_text(encoding="utf-8"))
+    assert doc["status"] == "failed" and doc["failures"]
+    with pytest.raises(SystemExit):
+        M.main(["tune", "--smoke"])  # nothing downstream runs on a failed baseline
+
+
+@pytest.mark.gpu
+def test_the_cuda_preflight_runs_every_stage(tmp_path):
+    import torch
+    if not torch.cuda.is_available():
+        pytest.skip("no CUDA")
+    spec = importlib.util.spec_from_file_location("e03a_script_test_c", ROOT / "scripts" / "e03a.py")
+    M = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(M)
+    M.out_dir = lambda: tmp_path / "pilot-dev"
+    M.rec_dir = lambda: tmp_path / "pilot-dev" / "records"
+    for s in M.STAGES:
+        assert M.main([s, "--smoke", "--device", "cuda"])["status"] == "completed"

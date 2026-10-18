@@ -122,3 +122,44 @@ def test_class_model_is_a_probability_and_ignores_x(con):
     chem[x, :] = chem[:, x] = False
     np.fill_diagonal(chem, False)
     assert d["in"][i] == chem[c[i]].sum() and d["out"][i] == chem[:, c[i]].sum()
+
+
+def test_a_neuron_no_interface_neuron_reaches_is_not_eligible(con, iface):
+    """Sabotage for the other direction: cut every input of an eligible neuron."""
+    k = con.index("AIYL")
+    chem, gap = con.chem.copy(), con.gap.copy()
+    chem[:, k] = 0
+    gap[k, :] = gap[:, k] = 0
+    assert k not in P.eligible(con.with_masks(chem, gap, "cut-in"), iface)
+
+
+def test_relevance_interval_matches_an_explicit_bootstrap():
+    """Heterogeneous brain and world effects, against an independent loop over the same world resamples."""
+    from wormwars.e03a.stats import world_resamples
+    rng = np.random.default_rng(1)
+    intact = rng.integers(0, 6, size=(3, 50)).astype(float)
+    deleted = intact[None] - rng.integers(0, 3, size=(4, 3, 50))
+    B, seed = 400, 2
+    r = P.relevance(intact, deleted, B=B, seed=seed)
+    wi = world_resamples(50, B, seed)
+    drop = intact[None] - deleted
+    boot = np.array([[drop[n].mean(axis=0)[wi[b]].mean() for b in range(B)] for n in range(4)])
+    lo, hi = np.percentile(boot, [2.5, 97.5], axis=1)
+    np.testing.assert_allclose(r["lo"], lo, atol=1e-12)
+    np.testing.assert_allclose(r["hi"], hi, atol=1e-12)
+
+
+def test_class_model_matches_a_hand_count():
+    from wormwars.connectome.loader import Connectome
+    names = ("a", "b", "c", "d", "e", "x")
+    classes = ("sensory", "sensory", "inter", "inter", "motor", "inter")
+    chem = np.zeros((6, 6), np.float32)
+    chem[0, 2] = chem[1, 3] = chem[0, 3] = chem[2, 4] = 1  # sensory -> inter (3 of 4 pairs), inter -> motor (1 of 2)
+    chem[5, 0] = chem[2, 5] = 1  # X's own edges: ignored
+    gap = np.zeros((6, 6), np.float32)
+    gap[2, 3] = gap[3, 2] = 1  # inter-inter: 1 junction, ordered pairs 2 (2,3) and (3,2): share 2/2
+    con = Connectome(names, classes, chem, gap, "em_sections", {}, "toy")
+    cm = ST.class_model(con, 5)  # X is "inter"; candidates a, b, c, d, e
+    np.testing.assert_allclose(cm["in"], [3 / 4, 3 / 4, 0.0, 0.0, 0.0])  # from sensory into inter: 3 of 4
+    np.testing.assert_allclose(cm["out"], [0.0, 0.0, 0.0, 0.0, 1 / 2])  # inter -> motor: 1 of 2
+    np.testing.assert_allclose(cm["gap"], [0.0, 0.0, 1.0, 1.0, 0.0])

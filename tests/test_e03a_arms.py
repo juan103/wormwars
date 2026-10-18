@@ -88,3 +88,26 @@ def test_score_states_restoration_equals_the_intact_brain(parts):
     a = A.score_states(cfg, iface, reins, reins.saved_state(g), np.arange(4), 4, "cpu")
     b = A.counts(cfg, iface, g, np.arange(4), 4, "cpu")
     np.testing.assert_array_equal(a, b)
+
+
+def test_intact_runs_evolve_exactly_as_without_the_nip_hooks(parts):
+    """Astra: 'intact runs unchanged' must mean equal to an ordinary evolution, not only an ordinary generation 0."""
+    con, _, _ = parts
+    x = con.index("AIYL")
+    with_hooks = _evolve(parts, {1: x, 2: x}, generations=3)
+    without = _evolve(parts, {}, generations=3)
+    a, b = with_hooks[0], without[0]
+    assert [c["sha256"] for c in a.checkpoints] == [c["sha256"] for c in b.checkpoints]
+    assert torch.equal(a.final.w, b.final.w) and [g["best_fitness"] for g in a.log] == [g["best_fitness"] for g in b.log]
+
+
+def test_same_episodes_compares_trajectories_not_only_counts(parts):
+    """Sabotage for the driver's controls: two brains with equal counts but different movement are told apart."""
+    con, iface, cfg = parts
+    spec = BrainSpec.from_connectome(con)
+    g1 = Genome.random(spec, cfg.brain, 1, generator=torch.Generator().manual_seed(3))
+    g2 = Genome.random(spec, cfg.brain, 1, generator=torch.Generator().manual_seed(4))
+    a = A.play(cfg, iface, g1, np.arange(3), 4, "cpu")
+    b = A.play(cfg, iface, g2, np.arange(3), 4, "cpu")
+    assert A.same_episodes(a, A.play(cfg, iface, g1, np.arange(3), 4, "cpu"))
+    assert not A.same_episodes(a, b)

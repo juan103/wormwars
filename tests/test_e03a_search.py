@@ -350,3 +350,93 @@ def test_ranking_is_the_mean_absolute_final_weight_over_free_searches():
     r = S.ranking([a, b])
     np.testing.assert_allclose(r["in"], [0.375, 1.0, 0.5, 0.0])
     np.testing.assert_allclose(r["out"], 0.0)
+
+
+def test_the_simulator_moves_genomes_to_the_requested_device(con, cfg):
+    """Astra's blocking finding: `rollout` does not move a genome, so the evaluator must (checked with the meta
+    device, so the test runs without CUDA)."""
+    x = _target(con)
+    reins = R.Reinsertion(con, x, Genome.random(BrainSpec.from_connectome(con), cfg.brain, 1,
+                                                generator=torch.Generator().manual_seed(0)))
+    pr = S.problem_of(reins, R.true_counts(con, x))
+    seen = []
+
+    class Res:
+        def __init__(self, n, w):
+            self.score, self.progress = np.zeros((n, w)), np.zeros((n, w))
+
+    def fake(c, i, genome, ids, seed, device, chunk_worlds=None):
+        seen.append((genome.w.device.type, genome.spec.chem_i.device.type, device))
+        return Res(genome.n_strains, ids.shape[1])
+
+    s = S.free_search(pr, S.SearchConfig(generations=1, worlds=2), cfg.brain, cfg.mutation, 0)
+    S.run_lockstep([s], S.simulator(cfg, None, lambda _: reins, world_seed=1, device="meta", rollout_fn=fake))
+    assert seen == [("meta", "meta", "meta")]
+
+
+@pytest.mark.gpu
+def test_a_search_generation_runs_on_cuda(con):
+    if not torch.cuda.is_available():
+        pytest.skip("no CUDA")
+    tcfg = task_n_config(sigma=6.0, amplitude=1.0, radius=1.5, separation=8.0, horizon=10)
+    tcfg.world.food_sensing = "mono"
+    x = _target(con)
+    reins = R.Reinsertion(con, x, Genome.random(BrainSpec.from_connectome(con), tcfg.brain, 1,
+                                                generator=torch.Generator().manual_seed(0)))
+    s = S.free_search(S.problem_of(reins, R.true_counts(con, x)), S.SearchConfig(generations=1, worlds=2),
+                      tcfg.brain, tcfg.mutation, 0, world_span=10)
+    S.run_lockstep([s], S.simulator(tcfg, load_interface(con), lambda _: reins, world_seed=1, device="cuda"))
+    assert s.done
+
+
+def test_metropolis_acceptance_has_the_registered_probability(cfg):
+    """A worse best offspring, d = -T ln 2 below the current state, is accepted half the time (Astra: intermediate
+    probabilities and the temperature scaling were untested)."""
+    pr = S.Problem(10, {"in": 2, "out": 2, "gap": 1}, False)
+    scfg = S.SearchConfig(generations=400, swap_every=10_000)
+    s = S.free_search(pr, scfg, cfg.brain, cfg.mutation, 1)
+    R_, lam, T_ = scfg.replicas, scfg.offspring, np.array(scfg.temperatures)
+    for _ in range(scfg.generations):
+        st, _ = s.ask()
+        sc = np.full(st.n, -1e9)
+        sc[:R_] = 0.0
+        sc[R_ + np.arange(R_) * lam] = -T_ * np.log(2.0)  # each replica's best offspring
+        s.tell(sc)
+    rate = np.mean(s.trace.accepted, axis=0)
+    assert np.all(np.abs(rate - 0.5) < 0.08)
+
+
+def test_adverse_swaps_have_the_registered_probability_and_both_parities_occur(cfg):
+    pr = S.Problem(10, {"in": 2, "out": 2, "gap": 1}, False)
+    scfg = S.SearchConfig(generations=2000, swap_every=1, temperatures=(1.0, 2.0, 4.0, 8.0))
+    s = S.free_search(pr, scfg, cfg.brain, cfg.mutation, 2)
+    R_ = scfg.replicas
+    a = np.log(2.0) / (1.0 / 1.0 - 1.0 / 2.0)  # s_0 - s_1 that makes the (0, 1) swap probability exactly 1/2
+    for _ in range(scfg.generations):
+        st, _ = s.ask()
+        sc = np.full(st.n, -1e9)
+        sc[:R_] = [a, 0.0, -100.0, -200.0]  # pair (0, 1) adverse at 1/2; the others favourable or not
+        s.tell(sc)
+    pairs = [m for sw in s.trace.swaps for m, _ in sw]
+    assert set(pairs) == {0, 1, 2}  # even pairs (0, 1), (2, 3) and the odd pair (1, 2), alternating
+    first = [ok for sw in s.trace.swaps for m, ok in sw if m == 0]
+    assert abs(np.mean(first) - 0.5) < 0.05
+
+
+def test_the_result_is_the_coldest_replica(cfg):
+    pr = S.Problem(10, {"in": 2, "out": 2, "gap": 1}, False)
+    s = S.free_search(pr, S.SearchConfig(generations=3), cfg.brain, cfg.mutation, 3)
+    S.run_lockstep([s], lambda asks: [np.random.default_rng(0).random(st.n) for _, st, _ in asks])
+    assert s.result().equal(s.current.select([0]))
+
+
+def test_snapshots_hold_the_state_after_that_generation_and_q_starts_at_generation_0(cfg):
+    pr = S.Problem(20, {"in": 3, "out": 2, "gap": 1}, False)
+    f = lambda asks: [st.m_in[:, :5].sum(1).numpy().astype(float) for _, st, _ in asks]  # noqa: E731
+    a = S.free_search(pr, S.SearchConfig(generations=6), cfg.brain, cfg.mutation, 4, snapshot_at=(3,))
+    b = S.free_search(pr, S.SearchConfig(generations=3), cfg.brain, cfg.mutation, 4)
+    init = {t: a.current.masks()[t][0].clone() for t in R.TYPES}
+    S.run_lockstep([a], f)
+    S.run_lockstep([b], f)
+    assert a.snapshots[3].equal(b.result())
+    assert all(torch.equal(a.trace.initial_cold[t], init[t]) for t in R.TYPES)

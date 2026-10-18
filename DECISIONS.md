@@ -9312,3 +9312,38 @@ draw is always below exp(0) = 1.
 whether 100 generations are enough.
 
 **Next:** both reviewers review the code and the plan; then pilot-dev, at most 6 GPU-hours, with the owner's word.
+
+## D309 — 03a's code after review round 1: the CUDA path fixed, controls that stop the run; the search budget asked
+
+**Round 1 of the code review** (run 20261017-190316, archived in `docs/reviews/20261017-03a-code/`): Fable 5.1 said
+"ready for pilot-dev, with small fixes"; Astra 6 said "revise". Both found the core implementation faithful to
+DESIGN.md v7.1. Astra found one blocking bug: the search evaluator passed CPU genomes into CUDA rollouts
+(`rollout` does not move a genome), which the CPU smoke test could not see.
+
+**Every finding is taken** (`PILOT-DEV.md` v2 §6):
+- the simulator moves genomes to the device, with a test using the meta device and a CUDA preflight of every stage;
+- the implementation controls (restoration, NIP deletion equivalence, the full-replay control, KT and KTM invariance)
+  compare whole episodes inside `replay_mode()` and fail their stage, and later stages require them;
+- the report prices each workload at its own measured rate and never assumes one;
+- partial results survive a stop;
+- the long searches are scored at generation 100 and 200 with their diagnostics;
+- Jaccard agreement replaces Spearman as the measure to freeze;
+- one null permutation bank per target across arms;
+- family 2 withholds non-finite values;
+- the relevance bootstrap no longer builds a 5 GB array;
+- per-pair swap rates choose the ladder;
+- §6's descriptive outputs are written;
+- tests are strengthened; the mutation check (now 20 bugs) tells failures from errors.
+
+**Found while fixing:** v1's counts-only comparison hid that whole-episode comparison fails on the event table's NaN
+entries (unfinished legs). The comparison now treats NaN as equal. A new test found that `tune` did not require a
+completed `baseline`; it does now.
+
+**NIP pinning accepted by both, annotated** beside DESIGN.md §3, with Astra's statement of what it changes: no
+functional exposure to X during evolution, but initial magnitudes normalised on the intact mask.
+
+**A question for round 2, not decided here:** Fable's free check at N2's scale
+(`development-records/planted-scale-check.json`) gives the search a perfect signal. It connects 33-52% of the planted
+partners in 100 generations and 46-66% in 200. With an illustrative noisy signal it connects 8-20%, against about 3%
+by chance. The design's budget (100 generations) is unchanged; whether to keep it, add higher move rates or lengthen
+the search goes to both reviewers.

@@ -35,6 +35,7 @@ import numpy as np
 import torch
 
 from ..brain import Genome
+from ..e04a.evolve import moved
 from .reinsert import TYPES, Reinsertion, XState
 
 SEARCH_STREAM = 0x03A5EA  # the search worlds' stream key, with the search seed and generation
@@ -205,7 +206,8 @@ class Trace:
     accepted: list = field(default_factory=list)
     accepted_kind: list = field(default_factory=list)
     swaps: list = field(default_factory=list)  # (pair index m, accepted)
-    cold_masks: list = field(default_factory=list)
+    cold_masks: list = field(default_factory=list)  # after generation g + 1, at index g
+    initial_cold: dict | None = None  # before the first generation
 
 
 class ReplicaExchange:
@@ -213,7 +215,7 @@ class ReplicaExchange:
     `tell(scores)` advances one generation."""
 
     def __init__(self, problem: Problem, scfg: SearchConfig, bcfg, mcfg, seed: int, *, partners: dict | None = None,
-                 world_base: int = 0, world_span: int = 1, label: str = ""):
+                 world_base: int = 0, world_span: int = 1, label: str = "", snapshot_at: tuple = ()):
         self.problem, self.scfg, self.bcfg, self.mcfg = problem, scfg, bcfg, mcfg
         self.seed, self.label = int(seed), label
         self.refit = partners is not None
@@ -223,6 +225,9 @@ class ReplicaExchange:
         self.world_base, self.world_span = int(world_base), int(world_span)
         self.generation = 0
         self.trace = Trace()
+        self.trace.initial_cold = {t: self.current.masks()[t][0].clone() for t in TYPES}
+        self.snapshot_at = tuple(int(g) for g in snapshot_at)
+        self.snapshots: dict = {}  # generation -> the coldest replica's state after it
         self._pending = None
 
     @property
@@ -283,6 +288,8 @@ class ReplicaExchange:
         self.trace.swaps.append(swaps)
         self.trace.cold_masks.append({t: self.current.masks()[t][0].clone() for t in TYPES})
         self.generation += 1
+        if self.generation in self.snapshot_at:
+            self.snapshots[self.generation] = self.result()
 
     def result(self) -> XState:
         """The coldest replica's current state."""
@@ -322,7 +329,7 @@ def simulator(cfg, iface, reinsertion_of, world_seed: int, device="cpu", shaping
             groups.setdefault(id(reinsertion_of(s)), []).append(i)
         for idx in groups.values():
             reins = reinsertion_of(asks[idx[0]][0])
-            genome = Genome.cat([reins.genome(asks[i][1]) for i in idx])
+            genome = moved(Genome.cat([reins.genome(asks[i][1]) for i in idx]), device)  # rollout does not move it
             ids = np.concatenate([np.tile(asks[i][2], (asks[i][1].n, 1)) for i in idx])
             r = rollout_fn(cfg, iface, genome, ids, world_seed, device,
                            chunk_worlds=chunk_worlds or genome.n_strains * ids.shape[1])

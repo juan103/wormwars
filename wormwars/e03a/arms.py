@@ -59,12 +59,33 @@ def hooks(spec: BrainSpec, bcfg, population: int, target_of: dict):
     return initial, scales
 
 
+def play(cfg, iface, genome: Genome, world_ids, world_seed: int, device, chunk_worlds: int | None = None,
+         rollout_fn=rollout):
+    """The full rollout result (counts, final head positions, the target event table), the genome moved to `device`."""
+    ids = np.asarray(world_ids, dtype=np.int64)
+    return rollout_fn(cfg, iface, EV.moved(genome, device), ids, world_seed, device,
+                      chunk_worlds=chunk_worlds or genome.n_strains * ids.shape[-1])
+
+
+def same_episodes(a, b) -> bool:
+    """Two rollout results agree on counts, final head positions and every target event, exactly (Astra: equal counts
+    alone can hide different trajectories)."""
+    def eq(x, y):  # NaN marks an unfinished leg in the event table, and NaN equals NaN here
+        x, y = np.asarray(x), np.asarray(y)
+        return x.shape == y.shape and np.array_equal(x, y, equal_nan=x.dtype.kind == "f" and y.dtype.kind == "f")
+
+    if not eq(a.score, b.score):
+        return False
+    if (a.final_head is None) != (b.final_head is None) or (a.final_head is not None and not eq(a.final_head, b.final_head)):
+        return False
+    ea, eb = a.events or {}, b.events or {}
+    return set(ea) == set(eb) and all(eq(ea[k], eb[k]) for k in ea)
+
+
 def counts(cfg, iface, genome: Genome, world_ids, world_seed: int, device, chunk_worlds: int | None = None,
            rollout_fn=rollout) -> np.ndarray:
     """[strains, worlds] raw counts."""
-    ids = np.asarray(world_ids, dtype=np.int64)
-    r = rollout_fn(cfg, iface, EV.moved(genome, device), ids, world_seed, device,
-                   chunk_worlds=chunk_worlds or genome.n_strains * ids.shape[-1])
+    r = play(cfg, iface, genome, world_ids, world_seed, device, chunk_worlds, rollout_fn)
     out = np.asarray(r.score, dtype=np.float64)
     if not np.isfinite(out).all():
         raise FloatingPointError("a non-finite count")

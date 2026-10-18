@@ -1,4 +1,4 @@
-"""Mutation check for 03a's tests (rule 9; D308): each planted bug must make its named test fail. Every file is
+"""Mutation check for 03a's tests (rule 9; D308, D309): each planted bug must make its named test fail. Every file is
 restored after each run. Run from anywhere: py -3.13 <this file> > mutation-check.txt"""
 import subprocess, sys
 from pathlib import Path
@@ -42,7 +42,18 @@ M = [
      "tests/test_e03a_panel.py::test_a_neuron_with_no_path_to_the_interface_is_not_eligible"),
     ("wormwars/e03a/structural.py", "        out[\"in\"][k] = chem[mc, xp]", "        out[\"in\"][k] = chem[xp, mc]",
      "tests/test_e03a_panel.py::test_mirror_ranking_reads_the_partners_mirror"),
+    ("wormwars/e03a/stats.py", "                or not np.isfinite(np.asarray(m, dtype=np.float64)).all()\n",
+     "", "tests/test_e03a_stats.py::test_family2_withholds_a_target_with_a_non_finite_brain"),
+    ("wormwars/e03a/search.py", "            genome = moved(Genome.cat([reins.genome(asks[i][1]) for i in idx]), device)",
+     "            genome = Genome.cat([reins.genome(asks[i][1]) for i in idx])",
+     "tests/test_e03a_search.py::test_the_simulator_moves_genomes_to_the_requested_device"),
+    ("wormwars/e03a/search.py", "            ok = bool(d >= 0 or u < np.exp(d / T[r]))", "            ok = bool(d >= 0 or u < np.exp(d))",
+     "tests/test_e03a_search.py::test_metropolis_acceptance_has_the_registered_probability"),
 ]
+# A bug counts as caught only if pytest reports the named test as FAILED (exit code 1); collection errors and other
+# exit codes are reported as errors, not as caught (Astra). The first failing line is kept, so the record shows what
+# caught it. This is selected mutation evidence for the core checks, not comprehensive validation, and not a substitute
+# for writing tests first.
 bad = 0
 for path, a, b, test in M:
     p = ROOT / path
@@ -50,10 +61,15 @@ for path, a, b, test in M:
     assert src.count(a) == 1, (path, a[:60])
     p.write_text(src.replace(a, b), encoding="utf-8", newline="\n")
     try:
-        r = subprocess.run([sys.executable, "-m", "pytest", "-q", "-x", test], cwd=ROOT, capture_output=True, text=True)
+        r = subprocess.run([sys.executable, "-m", "pytest", "-q", "-x", "-p", "no:cacheprovider", test], cwd=ROOT,
+                           capture_output=True, text=True)
     finally:
         p.write_text(src, encoding="utf-8", newline="\n")
-    killed = r.returncode != 0
-    bad += not killed
-    print(("KILLED  " if killed else "SURVIVED") + "  " + test.split("::")[1])
-print("survivors:", bad)
+    out = r.stdout + r.stderr
+    name = test.split("::")[1]
+    caught = r.returncode == 1 and f"FAILED {test}" in out.replace("\\", "/")
+    why = next((ln.strip() for ln in out.splitlines() if ln.startswith("E ")), "")
+    status = "CAUGHT  " if caught else ("ERROR   " if r.returncode not in (0, 1) else "SURVIVED")
+    bad += not caught
+    print(f"{status}  {name}  [pytest exit {r.returncode}]  {why[:160]}")
+print("not caught:", bad)

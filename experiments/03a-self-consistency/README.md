@@ -18,7 +18,8 @@
 >
 > *Updated 2026-10-17 (D308): the code and its implementation tests are written (`wormwars/e03a/`,
 > `scripts/e03a.py`, `tests/test_e03a_*.py`), with pilot-dev's plan ([`PILOT-DEV.md`](PILOT-DEV.md)); both are
-> with both reviewers. No GPU work has run since the exploratory checks.*
+> with both reviewers. No GPU work has run since the exploratory checks.* *Updated again 2026-10-17 (D309): round 1 of
+> the code review is taken (one blocking bug, CPU genomes in CUDA rollouts, fixed); round 2 is with both reviewers.*
 
 **Status:** draft v3.2 (2026-09-25), not run, not scheduled (D062). *Updated 2026-09-29:* it becomes a six-neuron proof of concept capped at 72 GPU-hours (the owner, D094), planned in the biology track after a confirmatory study of 03m's leads · **Run:** none · **Commit:**
 none · **Compute:** none spent. The draft as written is estimated at about 31 million genome

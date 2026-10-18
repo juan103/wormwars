@@ -66,10 +66,14 @@ def exact_p_batch(mip: np.ndarray, nip: np.ndarray) -> tuple[np.ndarray, np.ndar
 
 def family2(mip: dict, nip: dict, targets: list, floor: float = FLOOR, alpha: float = ALPHA) -> dict:
     """Family 2 over a fixed list of targets. `mip[t]` and `nip[t]` are five per-brain recovery statistics, or None
-    when a registered brain is missing (the target is withheld with p = 1)."""
+    when a registered brain is missing; a missing or non-finite value withholds the target with p = 1."""
     rows, ps = [], []
     for t in targets:
-        if mip.get(t) is None or nip.get(t) is None or len(mip[t]) != 5 or len(nip[t]) != 5:
+        m, n = mip.get(t), nip.get(t)
+        if (m is None or n is None or len(m) != 5 or len(n) != 5
+                or not np.isfinite(np.asarray(m, dtype=np.float64)).all()
+                or not np.isfinite(np.asarray(n, dtype=np.float64)).all()):
+            # a missing or non-finite brain value withholds the target (Astra: a NaN would otherwise give p = 0)
             rows.append({"target": t, "withheld": True, "difference": None, "p": 1.0})
             ps.append(1.0)
             continue

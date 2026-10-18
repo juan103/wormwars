@@ -154,3 +154,17 @@ def test_the_calibrators_closed_loop_kt_and_ktm_unchanged_kts_changed(parts):
     k = KTS(20.0, fall_turn=-1.0, **KT_PARAMS)
     a, b = score(k), score(k, L=5)
     assert not np.array_equal(a[1], b[1])
+
+
+@pytest.mark.parametrize("L", [5, 10, 20])
+def test_the_first_difference_is_exactly_at_action_2L_plus_1(parts, L):
+    """Astra and Fable: a probe resetting one period late would pass the world test above. Here the history before
+    tick L + 1 decides KTS's action at 2L + 1: the unperturbed average still remembers the high level, the rebuilt one
+    holds only the low level since tick L + 1."""
+    _, iface, _ = parts
+    seq = [1.0] * L + [0.6] * (2 * L + 5)
+    inputs = _levels(iface, seq)
+    make = lambda: _scripted(iface, KTS(20.0, fall_turn=-1.0, **KT_PARAMS))  # noqa: E731
+    plain, probed = _actions(make(), inputs), _actions(ReplayBrain(make(), L=L), inputs)
+    assert torch.equal(plain[:2 * L], probed[:2 * L])
+    assert not torch.equal(plain[2 * L], probed[2 * L])  # index 2L is action 2L + 1

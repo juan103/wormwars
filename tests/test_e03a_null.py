@@ -184,3 +184,15 @@ def test_no_task_check_can_fail_when_the_search_is_biased(con, iface):
     rk = {t: np.stack([truth[t].astype(float) + 0.01 * np.random.default_rng(b).random(len(truth[t]))
                        for b in range(5)]) for t in R.TYPES}
     assert N.test(rk, truth, strat, B=999, seed=0)["p"] < 0.01
+
+
+def test_subset_recovery_and_expected_jaccard():
+    truth = {"in": np.array([1, 0, 1, 0, 0, 1], bool), "out": np.zeros(6, bool), "gap": np.zeros(6, bool)}
+    rank = {"in": np.array([[5, 0, 4, 1, 2, 0]], float), "out": np.zeros((1, 6)), "gap": np.zeros((1, 6))}
+    keep = np.array([1, 1, 1, 1, 0, 0], bool)  # candidates 0-3: partners 0 and 2, both ranked above 1 and 3
+    assert N.subset_recovery(rank, truth, keep) == 1.0
+    assert N.subset_recovery(rank, truth, np.array([0, 1, 0, 1, 0, 0], bool)) is None  # no partner inside
+    rng = np.random.default_rng(0)
+    sim = [N.jaccard(np.isin(np.arange(40), rng.choice(40, 6, replace=False)),
+                     np.isin(np.arange(40), rng.choice(40, 6, replace=False))) for _ in range(20000)]
+    assert abs(np.mean(sim) - N.expected_jaccard(40, 6)) < 0.003

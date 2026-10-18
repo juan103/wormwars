@@ -117,3 +117,25 @@ def test_reliability_requires_restoration_in_mip():
     assert not T.reliable_brain([1.0, 1.01, 0.99], delta_search=0.05, restoration={"verdict": "undetermined"})
     assert not T.reliable_brain([1.0, 1.5, 0.5], delta_search=0.05)
     assert T.functional({"verdict": "below"}) == "failed"
+
+
+def test_family2_withholds_a_target_with_a_non_finite_brain():
+    """Astra: a NaN would otherwise give p = 0 and enter Holm."""
+    sep = (np.linspace(0.8, 0.9, 5), np.linspace(0.5, 0.6, 5))
+    bad = np.array([0.8, np.nan, 0.85, 0.9, 0.88])
+    out = T.family2({"a": bad, "b": sep[0]}, {"a": sep[1], "b": sep[1]}, ["a", "b"])
+    rows = {r["target"]: r for r in out["targets"]}
+    assert rows["a"]["withheld"] and rows["a"]["p"] == 1.0 and not rows["a"]["counts"]
+    assert rows["b"]["p"] == 1 / 252
+
+
+def test_compare_resamples_brains_and_worlds_as_an_explicit_loop_does():
+    rng = np.random.default_rng(3)
+    a = rng.normal(size=(4, 30)) + rng.normal(size=(4, 1))  # brain effects and world effects
+    b = rng.normal(size=(4, 30))
+    B, seed = 300, 7
+    c = T.compare(a, b, margin=0.1, B=B, seed=seed)
+    wi, bi = T.world_resamples(30, B, seed), T.brain_resamples(4, B, seed)
+    boot = np.array([np.mean([(a - b)[bi[k, j], wi[k]].mean() for j in range(4)]) for k in range(B)])
+    lo, hi = np.percentile(boot, [2.5, 97.5])
+    assert abs(c["lo"] - lo) < 1e-12 and abs(c["hi"] - hi) < 1e-12

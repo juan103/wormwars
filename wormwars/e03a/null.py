@@ -230,3 +230,30 @@ def average_precision(score: np.ndarray, labels_b: np.ndarray) -> np.ndarray:
         out += (tp - tp_prev) / np.maximum(n1, 1) * (tp / seen)
         tp_prev = tp
     return out
+
+
+def subset_recovery(rankings: dict, truth: dict, keep: np.ndarray) -> float | None:
+    """The recovery statistic over a subset of candidates (for example interface or non-interface ones, or the
+    candidates a mirror ranking leaves at zero); None if no type is scoreable inside it."""
+    keep = np.asarray(keep, dtype=bool)
+    sub_t = {t: np.asarray(truth[t], dtype=bool)[keep] for t in TYPES}
+    if not any(scoreable(sub_t[t]) for t in TYPES):
+        return None
+    sub_r = {t: np.atleast_2d(rankings[t])[:, keep] for t in TYPES}
+    return float(recovery(sub_r, sub_t)["stat"][0])
+
+
+def expected_jaccard(K: int, m: int) -> float:
+    """The expected Jaccard index of two independent uniformly random m-subsets of K candidates (hypergeometric)."""
+    from scipy.stats import hypergeom
+    if m == 0 or m == K:
+        return float("nan")
+    i = np.arange(0, m + 1)
+    pmf = hypergeom(K, m, m).pmf(i)
+    return float((pmf * i / (2 * m - i)).sum())
+
+
+def jaccard(a: np.ndarray, b: np.ndarray) -> float:
+    a, b = np.asarray(a, dtype=bool), np.asarray(b, dtype=bool)
+    u = (a | b).sum()
+    return float((a & b).sum() / u) if u else float("nan")
