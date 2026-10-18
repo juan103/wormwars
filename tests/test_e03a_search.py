@@ -440,3 +440,16 @@ def test_snapshots_hold_the_state_after_that_generation_and_q_starts_at_generati
     S.run_lockstep([b], f)
     assert a.snapshots[3].equal(b.result())
     assert all(torch.equal(a.trace.initial_cold[t], init[t]) for t in R.TYPES)
+
+
+def test_the_trace_records_the_paired_noise_and_after_runs_each_generation(cfg):
+    pr = S.Problem(10, {"in": 2, "out": 2, "gap": 1}, False)
+    s = S.free_search(pr, S.SearchConfig(generations=4), cfg.brain, cfg.mutation, 5)
+    seen = []
+    S.run_lockstep([s], lambda asks: [np.arange(st.n, dtype=float) for _, st, _ in asks],
+                   after=lambda ss: seen.append(ss[0].generation))
+    assert seen == [1, 2, 3, 4] and len(s.trace.paired) == 4
+    R_, lam = s.scfg.replicas, s.scfg.offspring
+    sc = np.arange(R_ + R_ * lam, dtype=float)
+    want = sc[R_:].reshape(R_, lam) - sc[:R_][:, None]
+    assert abs(s.trace.paired[0][0] - want.mean()) < 1e-12

@@ -74,7 +74,8 @@ GUARDED = ["wormwars", "scripts", "configs", "requirements.txt", "experiments/03
            "experiments/03a-self-consistency/DESIGN.md"]
 SMOKE = False
 SMOKE_DEVICE = "cpu"
-STAGES = ["setup", "evolve-intact", "panel", "evolve-nip", "baseline", "tune", "full", "probe", "report", "family2"]
+# probe runs before tune and full, so a cap reached in the searches still leaves its timings for the report (Fable)
+STAGES = ["setup", "evolve-intact", "panel", "evolve-nip", "baseline", "probe", "tune", "full", "report", "family2"]
 CPU_STAGES = {"report", "family2"}
 
 DEV = {
@@ -346,7 +347,8 @@ def stage_panel(args, dv, ck, progress):
     neurons = list(reps)[:dev()["panel_neurons"]] if SMOKE else list(reps)
     ck.check()
     with acct.category("measure"):
-        intact, deleted = A.deletion_scan(cfg, iface, sel, neurons, ids("selection"), dev()["world_seed"], dv)
+        intact, deleted = A.deletion_scan(cfg, iface, sel, neurons, ids("selection"), dev()["world_seed"], dv,
+                                          chunk_worlds=FINAL_CHUNK)
     rel = P.relevance(intact[None], deleted[:, None, :], pn["bootstrap"], pn["boot_seed"])
     p_sel = dev()["margin_fraction"] * float(intact.mean())
     tiers = P.tiers(neurons, rel, p_sel, pn["tier_seed"])
@@ -405,6 +407,8 @@ def stage_baseline(args, dv, ck, progress):
                 row["deletion_deficit"] = float(mip_intact.mean() - deleted.mean())
                 if not row["restoration_exact"]:
                     failures.append(f"{label}: restoration does not reproduce the intact brain")
+                    rows.append(row)
+                    break  # fail at once, keeping the offending result (Astra)
             else:
                 ck.check()
                 own_r = A.play(cfg, iface, src, fin, ws, dv)
@@ -412,6 +416,8 @@ def stage_baseline(args, dv, ck, progress):
                 row["own_equals_deleted"] = A.same_episodes(own_r, del_r)
                 if not row["own_equals_deleted"]:
                     failures.append(f"{label}: the NIP brain does not play as its deleted state")
+                    rows.append(row)
+                    break
             rows.append(row)
     progress.update({"mip_intact": _ints(mip_intact), "target_brains": rows, "failures": failures})
     if failures:
@@ -438,7 +444,9 @@ def _target_brain_inputs(con, iface, cfg, dv):
     return tbs
 
 
-def _run(searches, reins_of, cfg, iface, dv, ck, category="search"):
+def _run(searches, reins_of, cfg, iface, dv, ck, category="search", after=None, timing=None):
+    """Every search to its end in lockstep. `timing`, if a list, receives (strains, worlds per strain, seconds) for each
+    rollout group, so throughput is known per batch composition (Astra)."""
     evaluators = {}
 
     def evaluate(asks):
@@ -449,18 +457,28 @@ def _run(searches, reins_of, cfg, iface, dv, ck, category="search"):
         for sh, idx in by.items():
             ev = evaluators.setdefault(sh, S.simulator(cfg, iface, lambda s: reins_of[id(s)], dev()["world_seed"],
                                                        dv, shaping=sh))
+            sync(dv)
+            t0 = time.perf_counter()
             for i, sc in zip(idx, ev([asks[i] for i in idx])):
                 out[i] = sc
+            sync(dv)
+            if timing is not None:
+                timing.append((int(sum(asks[i][1].n for i in idx)), int(len(asks[idx[0]][2])),
+                               round(time.perf_counter() - t0, 4)))
         return out
 
     with acct.category(category):
-        S.run_lockstep(searches, evaluate, check=ck.check)
+        S.run_lockstep(searches, evaluate, check=ck.check, after=after)
+
+
+FINAL_CHUNK = 8 * 2048  # worlds per rollout chunk in final scoring and the scan (Fable: below E2d's tested 16 384)
 
 
 def _final_scores(reins, states, cfg, iface, dv, ck) -> np.ndarray:
     with acct.category("final"):
         ck.check()
-        return A.score_states(cfg, iface, reins, R.XState.cat(states), ids("final"), dev()["world_seed"], dv)
+        return A.score_states(cfg, iface, reins, R.XState.cat(states), ids("final"), dev()["world_seed"], dv,
+                              chunk_worlds=FINAL_CHUNK)
 
 
 def _pair_rates(searches) -> list:
@@ -583,13 +601,17 @@ def _comparisons(fin, refits, randoms, frees, deleted, restored, margin, boot):
     return out
 
 
-def _turnover(masks, every=10) -> float:
-    vals = []
-    for a, b in zip(masks[:-every:every], masks[every::every]):
+def _turnover(search, every=10) -> list:
+    """The share of the coldest replica's partners replaced over each window of `every` generations: 0 -> 10, 10 -> 20,
+    ..., up to the last generation (masks[g] is the state after generation g, masks[0] the initial one)."""
+    masks = [search.trace.initial_cold] + search.trace.cold_masks
+    masks = [{t: m[t].cpu().numpy() for t in R.TYPES} for m in masks]
+    out = []
+    for g in range(0, len(masks) - every, every):
+        a, b = masks[g], masks[g + every]
         tot = sum(int(a[t].sum()) for t in R.TYPES)
-        if tot:
-            vals.append(sum(int((a[t] & ~b[t]).sum()) for t in R.TYPES) / tot)
-    return float(np.mean(vals)) if vals else float("nan")
+        out.append(round(sum(int((a[t] & ~b[t]).sum()) for t in R.TYPES) / tot, 4) if tot else float("nan"))
+    return out
 
 
 def _weights(state) -> dict:
@@ -603,9 +625,14 @@ def _auc(state, truth) -> float:
 
 def _diagnostics(search, truth, label) -> dict:
     return {"label": label, "q_every_10_from_0": _q_trace(search, truth),
-            "turnover_per_10": _turnover([{t: m[t].cpu().numpy() for t in R.TYPES} for m in search.trace.cold_masks]),
+            "turnover_per_10_from_0": _turnover(search),
             "accepted_moves": int(sum(k == "move" for g in search.trace.accepted_kind for k in g)),
-            "pair_rates": _pair_rates([search])}
+            "pair_rates": _pair_rates([search]),
+            # Fable's signal-to-noise record: the coldest replica's score across generations, and the paired
+            # offspring-minus-current spread per generation (mean and SD of each, over generations)
+            "cold_score_sd_over_generations": float(np.std([sc[0] for sc in search.trace.scores])),
+            "paired_diff_mean": float(np.mean([p[0] for p in search.trace.paired])),
+            "paired_diff_sd_mean": float(np.mean([p[1] for p in search.trace.paired]))}
 
 
 def _agreement(results, truth) -> dict:
@@ -654,13 +681,62 @@ def _descriptive(con, iface, tb, rank, m_map) -> dict:
     task = float(N.recovery({t: rank[t][None] for t in R.TYPES}, truth)["stat"][0])
     out["composite"] = {"name": comp_name, "task_minus_composite": task - struct[comp_name]}
     if comp_name == "mirror":
-        zero = np.all([comp[t] == 0 for t in R.TYPES], axis=0)
-        out["auc_mirror_zero_subset"] = N.subset_recovery({t: rank[t][None] for t in R.TYPES}, truth, zero)
+        # per type: the candidates whose mirror score of that type is zero (Astra, Fable: the design's "tied at zero" is
+        # per ranking, so per type); each type's AUC on its own subset, averaged over the scoreable ones
+        per_type = {}
+        for t in R.TYPES:
+            zero = np.asarray(comp[t]) == 0
+            lab = np.asarray(truth[t], dtype=bool)[zero]
+            row = {"size": int(zero.sum()), "partners": int(lab.sum()), "scoreable": bool(N.scoreable(lab))}
+            if row["scoreable"]:
+                row["auc"] = float(N.auc_from_ranks(N.ranks(rank[t][zero])[None], lab[None])[0, 0])
+            per_type[t] = row
+        aucs = [r["auc"] for r in per_type.values() if r["scoreable"]]
+        out["mirror_zero_subset"] = {"per_type": per_type, "auc": float(np.mean(aucs)) if aucs else None,
+                                     "definition": "per type: candidates with that type's mirror score zero"}
     return out
 
 
+def _states_path(label: str) -> Path:
+    return out_dir() / "states" / (label.replace("/", "_") + ".npz")
+
+
+def _save_states(label: str, named: dict) -> None:
+    """Search states kept locally as they finish (Astra): {name: one-state XState}."""
+    path = _states_path(label)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = path.with_name(path.stem + ".tmp.npz")
+    flat = {f"{name}::{k}": v for name, st in named.items() for k, v in st.arrays().items()}
+    np.savez(tmp, **flat)
+    os.replace(tmp, path)
+
+
+def _no_task(problem, scfg, bcfg, mcfg, seed, n) -> dict:
+    """§8's no-task control for one target-brain: n free searches with fitness identically zero (nothing simulated),
+    ranked as the real ones are."""
+    results = []
+    for k in range(n):
+        s = S.free_search(problem, scfg, bcfg, mcfg, S.search_seed(seed, "free", k))
+        S.run_lockstep([s], S.no_task)
+        results.append(s.result())
+    return S.ranking(results)
+
+
+def _attributes(row, delta_search) -> dict:
+    """The five attributes of DESIGN.md §6 for one target-brain, with pilot-dev's own δ_search (one brain per arm, so
+    these are per target-brain, descriptive)."""
+    c = row["comparisons"]
+    rel = T.reliable_brain(row["refit_means"], delta_search, c.get("restoration")) if len(row["refit_means"]) > 1 \
+        else None
+    return {"reliable": rel, "headroom_present": c["headroom"]["verdict"] == "above",
+            "advantage_present": c["advantage"]["verdict"] == "above", "functional": T.functional(c["functional"]),
+            "enrichment_p_below_0.05": row["enrichment"]["p"] < 0.05,
+            "outcome": T.outcome(bool(rel), T.functional(c["functional"]), row["enrichment"]["p"] < 0.05)}
+
+
 def stage_full(args, dv, ck, progress):
-    """The chosen settings on each target-brain in turn (each finished target-brain is kept if a later one stops)."""
+    """The chosen settings on each target-brain in turn. What finishes is kept: the record's metadata from the start,
+    each target-brain's search states (locally) as soon as its ordinary searches end, and its row once scored."""
     con, iface, cfg = configured()
     tbs = _target_brain_inputs(con, iface, cfg, dv)
     base_rec = read("baseline")
@@ -672,9 +748,13 @@ def stage_full(args, dv, ck, progress):
     lg = dev()["longer"]
     margin, boot = base_rec["p"], dev()["boot"]
     m_map = SM.mirror_map(con)
-    rows = []
-    progress["target_brains"] = rows
+    rows, timing = [], []
+    progress.update({"setting": setting, "plan": plan, "p": margin, "target_brains": rows, "search_timing": timing,
+                     "searches_finished": [], "states_saved": []})
     for bi, tb in enumerate(tbs):
+        brow = base_rec["target_brains"][bi]
+        if brow["label"] != tb["label"]:
+            raise RuntimeError(f"baseline's target-brain {bi} is {brow['label']}, not {tb['label']}")
         searches = S.target_brain_searches(tb["reins"], tb["truth"], tb["strat"], scfg, cfg.brain, cfg.mutation,
                                            seed=base + bi, plan=plan, world_base=first, world_span=span)
         if tb["arm"] == "MIP":
@@ -684,15 +764,29 @@ def stage_full(args, dv, ck, progress):
                 searches.append(S.free_search(pr, long_cfg, cfg.brain, cfg.mutation,
                                               S.search_seed(base + 500 + bi, "free", k), world_base=first,
                                               world_span=span, label=f"longer-{k}", snapshot_at=(scfg.generations,)))
-        _run(searches, {id(s): tb["reins"] for s in searches}, cfg, iface, dv, ck)
+        ordinary = [s for s in searches if not s.label.startswith("longer")]
+        kept = {"done": False}
+
+        def keep_finished(_, ordinary=ordinary, label=tb["label"], kept=kept, searches=searches):
+            if not kept["done"] and all(s.done for s in ordinary):
+                named = {s.label: s.result() for s in ordinary}
+                named.update({f"{s.label}@{scfg.generations}": s.snapshots[scfg.generations]
+                              for s in searches if s.label.startswith("longer") and s.snapshots})
+                _save_states(label + "-at-ordinary-length", named)
+                progress["states_saved"].append(label + "-at-ordinary-length")
+                kept["done"] = True
+
+        _run(searches, {id(s): tb["reins"] for s in searches}, cfg, iface, dv, ck, after=keep_finished, timing=timing)
         labels = [s.label for s in searches]
         states = [s.result() for s in searches]
         longer = [s for s in searches if s.label.startswith("longer")]
         states += [s.snapshots[scfg.generations] for s in longer]  # the same long searches at the ordinary length
         labels += [f"{s.label}@{scfg.generations}" for s in longer]
+        _save_states(tb["label"], dict(zip(labels, states)))
+        progress["states_saved"].append(tb["label"])
+        progress["searches_finished"].append(tb["label"])
         fin = _final_scores(tb["reins"], states, cfg, iface, dv, ck)
         idx = lambda pre: [i for i, l in enumerate(labels) if l.startswith(pre) and "@" not in l]  # noqa: E731
-        brow = base_rec["target_brains"][bi]
         deleted = np.asarray(brow["deleted"], dtype=float)
         restored = np.asarray(brow["restored"], dtype=float) if "restored" in brow else None
         comp = _comparisons(fin, idx("refit"), idx("random"), idx("free"), deleted, restored, margin, boot)
@@ -701,10 +795,14 @@ def stage_full(args, dv, ck, progress):
         # one permutation bank per target, shared by both arms (DESIGN.md §6; Astra, Fable)
         test = N.test({t: rank[t][None] for t in R.TYPES}, tb["truth"], tb["strat"], dev()["null_B"],
                       dev()["null_seed"] + tb["x"])
+        pr = S.problem_of(tb["reins"], R.true_counts(con, tb["x"]))
+        nt = _no_task(pr, scfg, cfg.brain, cfg.mutation, base + 900 + bi, len(idx("free")))
+        no_task = N.test({t: nt[t][None] for t in R.TYPES}, tb["truth"], tb["strat"], dev()["null_B"],
+                         dev()["null_seed"] + tb["x"])
         per_search = [{**_diagnostics(searches[i], tb["truth"], labels[i]), "final_mean": float(fin[i].mean()),
-                       "auc": _auc(states[i], tb["truth"])} for i in idx("free") + idx("longer")]
+                       "auc": _auc(states[i], tb["truth"])} for i in idx("free") + idx("longer") + idx("refit")]
         long_rows = []
-        for k, s in enumerate(longer):
+        for s in longer:
             i200, i100 = labels.index(s.label), labels.index(f"{s.label}@{scfg.generations}")
             long_rows.append({"label": s.label,
                               "final_mean": {str(scfg.generations): float(fin[i100].mean()),
@@ -712,19 +810,23 @@ def stage_full(args, dv, ck, progress):
                               "auc": {str(scfg.generations): _auc(states[i100], tb["truth"]),
                                       str(s.scfg.generations): _auc(states[i200], tb["truth"])}})
         row = {"label": tb["label"], "arm": tb["arm"], "x": tb["x"], "name": con.names[tb["x"]],
-               "deletion_deficit": brow.get("deletion_deficit"),
+               "deletion_deficit": brow.get("deletion_deficit"), "final_evaluation": "complete",
                "states": labels, "final_counts": {labels[i]: _ints(fin[i]) for i in range(len(labels))},
                "refit_means": [float(fin[i].mean()) for i in idx("refit")],
                "refit_sd": float(np.std([fin[i].mean() for i in idx("refit")], ddof=1)) if len(idx("refit")) > 1
                else float("nan"),
-               "comparisons": comp, "enrichment": test, "per_search": per_search,
+               "comparisons": comp, "enrichment": test, "no_task": no_task, "per_search": per_search,
+               "ranking": {t: np.asarray(rank[t]).round(6).tolist() for t in R.TYPES},
                "chance_q": _chance_q(tb["truth"], tb["reins"].K), "agreement": _agreement(frees, tb["truth"]),
                "longer": long_rows, "descriptive": _descriptive(con, iface, tb, rank, m_map),
                "support_log10": N.support(tb["truth"], tb["strat"])["log10"],
                "strata": N.strata_report(tb["truth"], tb["strat"])}
         rows.append(row)
+    res = resolution(rows, margin)
+    for row in rows:
+        row["attributes"] = _attributes(row, res["delta_search"])
     progress.clear()
-    return {"setting": setting, "plan": plan, "p": margin, **resolution(rows, margin), "target_brains": rows}
+    return {"setting": setting, "plan": plan, "p": margin, **res, "target_brains": rows, "search_timing": timing}
 
 
 def resolution(rows, margin) -> dict:
@@ -747,16 +849,17 @@ def _calibrators():
 
 
 def stage_probe(args, dv, ck, progress):
-    """The replay probe. Controls that must hold, inside `replay_mode()` and in the probe's own batch composition: the
-    full-replay control reproduces each evolved brain's episodes exactly (counts, final positions, every target
-    event), and KT and KTM play exactly the same episodes at every L. Each condition is timed, for the projection."""
+    """The replay probe. Controls that must hold, inside `replay_mode()` and in the probe's own batch composition: KT and
+    KTM play exactly the same episodes at every L, and the full-replay control reproduces each evolved brain's episodes
+    (counts, final head positions, every target event). The first failure stops the stage (Astra). Each condition,
+    the control included, is timed for the projection."""
     read("baseline")  # the implementation controls must have held
     con, iface, cfg = configured()
     ws, pids = dev()["world_seed"], ids("probe")
     Ls = dev()["probe"]["L"]
-    out = {"scripted": {}, "evolved": {}, "timing": {"plain": [], "replay": {str(L): [] for L in Ls}},
-           "worlds": len(pids)}
-    failures = []
+    out = {"scripted": {}, "evolved": {}, "worlds": len(pids),
+           "timing": {"plain": [], "replay": {str(L): [] for L in Ls}, "full_replay_control": []}}
+    progress.update(out)
 
     def timed(brain, kind):
         ck.check()
@@ -764,10 +867,18 @@ def stage_probe(args, dv, ck, progress):
         t0 = time.perf_counter()
         r = rollout_brain(cfg, iface, brain, pids, ws, dv)
         sync(dv)
-        if kind is not None:
-            (out["timing"]["plain"] if kind == "plain" else out["timing"]["replay"][kind]).append(
-                time.perf_counter() - t0)
+        dt = time.perf_counter() - t0
+        if kind == "plain":
+            out["timing"]["plain"].append(dt)
+        elif kind == "control":
+            out["timing"]["full_replay_control"].append(dt)
+        elif kind is not None:
+            out["timing"]["replay"][kind].append(dt)
         return r
+
+    def fail(msg):
+        progress["failures"] = [msg]
+        raise RuntimeError("probe control failed: " + msg)
 
     with acct.category("probe"), replay_mode():
         for name, pol in _calibrators().items():
@@ -776,101 +887,115 @@ def stage_probe(args, dv, ck, progress):
                 b = scripted(iface, pol, cfg, device=dv, n=con.n)
                 results[L] = timed(b if L is None else ReplayBrain(b, L=L), None)
                 row["plain" if L is None else f"L={L}"] = _ints(results[L].score[0])
+            out["scripted"][name] = row
             if name in ("KT", "KTM"):
                 row["unaffected"] = all(A.same_episodes(results[L], results[None]) for L in Ls)
                 if not row["unaffected"]:
-                    failures.append(f"{name} is affected by the probe")
-            out["scripted"][name] = row
+                    fail(f"{name} is affected by the probe")
         brains = [("selector", champion(0, "evolve-intact", con, cfg)), ("MIP", champion(1, "evolve-intact", con, cfg))]
         brains += [(f"NIP/{con.names[x]}", champion(10 + k, "evolve-nip", con, cfg))
                    for k, x in enumerate(read("panel")["targets"])]
         for name, g in brains:
             g = EV.moved(g, dv)
             row = {}
+            out["evolved"][name] = row
             plain = timed(Brain(g), "plain")
             row["plain"] = _ints(plain.score[0])
-            for L in Ls:
-                row[f"L={L}"] = _ints(timed(ReplayBrain(Brain(g), L=L), str(L)).score[0])
-            ctl = timed(ReplayBrain(Brain(g), L=dev()["probe"]["control_L"], window=None), None)
+            ctl = timed(ReplayBrain(Brain(g), L=dev()["probe"]["control_L"], window=None), "control")
             row["full_replay_equals_plain"] = A.same_episodes(ctl, plain)
             if not row["full_replay_equals_plain"]:
-                failures.append(f"{name}: the full-replay control differs from the plain episodes")
+                fail(f"{name}: the full-replay control differs from the plain episodes")
+            for L in Ls:
+                row[f"L={L}"] = _ints(timed(ReplayBrain(Brain(g), L=L), str(L)).score[0])
             row["tau_quantiles"] = np.quantile(g.tau[0].cpu().numpy(), [0.1, 0.5, 0.9]).round(3).tolist()
-            out["evolved"][name] = row
-    if failures:
-        progress.update(out)
-        progress["failures"] = failures
-        raise RuntimeError("probe controls failed: " + "; ".join(failures))
+    progress.clear()
     return out
 
 
 def stage_report(args, dv, ck, progress):
-    """No simulation: measured throughputs by workload, resolution, and the formal design projected at them (DESIGN.md
-    §10). A missing measurement stops the report rather than falling back to an assumed rate."""
+    """No simulation. Reports what was measured, and projects the formal design only when every input is measured:
+    a missing measurement withholds the projection and the 32-world permission instead of assuming a rate (Astra,
+    Fable). A stopped `full` is reported as far as it got."""
     acct.write_aggregate(out_dir() / "compute", out_dir() / "compute.json")
     comp = json.loads((out_dir() / "compute.json").read_text(encoding="utf-8"))
     pre = preflight_dir() / "compute.json"
     pre_hours = (json.loads(pre.read_text(encoding="utf-8"))["totals"]["seconds_timed"] / 3600
                  if pre.exists() and not SMOKE else 0.0)
+    spent = comp["totals"]["seconds_timed"] / 3600 + pre_hours
+    remaining = dev()["experiment_cap_gpu_hours"] - dev()["charged_before_hours"] - spent
     rates = {}
     for k, v in comp["categories"].items():
         if v.get("seconds") and v.get("worlds_built"):
             rates[k] = {"worlds": v["worlds_built"], "seconds": v["seconds"],
                         "per_second": v["worlds_built"] / v["seconds"]}
+    margin = read("baseline")["p"]  # the same p as `full`'s, available even when `full` stopped (Fable)
+    out = {"rates": rates, "pilot_dev_hours": spent, "cuda_preflight_hours": pre_hours, "remaining_hours": remaining,
+           "p": margin, "missing": []}
+    full = read("full", partial=True) if rec_path("full").exists() else {}
+    rows = full.get("target_brains", [])
+    out.update({"full_complete": full.get("status") == "completed", "target_brains_measured": len(rows),
+                "target_brains_measured_labels": [r["label"] for r in rows], "setting": full.get("setting"),
+                "search_timing": full.get("search_timing", [])})
+    if rows:
+        out.update(resolution(rows, margin))
+    if not out["full_complete"]:
+        out["missing"].append("full did not complete: resolution and diagnostics cover the target-brains listed")
     need = ["selection", "holdout", "measure", "final", "search"]
-    missing = [k for k in need if k not in rates]
-    if missing:
-        raise SystemExit(f"no measured rate for {missing}: the report does not assume one")
-    full = read("full", partial=True)
-    probe = read("probe")
-    pt = probe["timing"]
+    lacking = [k for k in need if k not in rates]
+    probe = read("probe", partial=True) if rec_path("probe").exists() else {}
+    pt = probe.get("timing") if probe.get("status") == "completed" else None
+    if lacking:
+        out["missing"].append(f"no measured rate for {lacking}")
+    if pt is None:
+        out["missing"].append("no completed probe: its timings are unknown")
+    if lacking or pt is None:
+        out["projection"] = None
+        out["note"] = "projection and the 32-world permission withheld: not every input is measured"
+        return out
     scale = 2048 / probe["worlds"]
     plain_s = float(np.mean(pt["plain"])) * scale
     replay_s = {L: float(np.mean(v)) * scale for L, v in pt["replay"].items()}
-    # per brain: four replay probes, plus constant, two jitters, hold and a two-phase ramp (6 plain-like episodes)
-    probe_brain_s = 6 * plain_s + sum(replay_s.values())
+    control_s = float(np.mean(pt["full_replay_control"])) * scale
+    # per brain: four replay probes, plus constant, two jitters, hold and a two-phase ramp (6 plain-like episodes), and
+    # one full-replay control, priced at its own measured time (Astra: it replays far more than a bounded probe)
+    probe_brain_s = 6 * plain_s + sum(replay_s.values()) + control_s
     r = {k: v["per_second"] for k, v in rates.items()}
     evolution_s = 256_000 / r["selection"] + 10_496 / r["holdout"]
-    spent = comp["totals"]["seconds_timed"] / 3600 + pre_hours
 
     def projection(random_refits=5, free=5, worlds=16):
         tb_episodes = (3 + random_refits + free) * 100 * 4 * 9 * worlds
+        states = 3 + random_refits + free + 1
         hours = {
             "N2 target-brains (60)": 60 * tb_episodes / r["search"] / 3600,
             "N2 evolutions (38)": 38 * evolution_s / 3600,
-            "N2 final evaluations": 60 * (3 + random_refits + free + 1) * 2048 / r["final"] / 3600
-            + 5 * 2 * 2048 / r["final"] / 3600,
+            "N2 final evaluations": (60 * states + 30 + 5) * 2048 / r["final"] / 3600,
             "N2 relevance scan and selection check": (3 * 246 * 512 + 5 * 7 * 512) / r["measure"] / 3600,
-            "N2 probes (38 brains)": 38 * probe_brain_s / 3600,
-            "pilot-check": (16 * tb_episodes / r["search"] + 14 * evolution_s
-                            + 16 * (3 + random_refits + free + 1) * 2048 / r["final"]
+            "N2 probes (38 brains, one full-replay control each)": 38 * probe_brain_s / 3600,
+            "pilot-check": (16 * tb_episodes / r["search"] + 14 * evolution_s + 16 * states * 2048 / r["final"]
                             + (2 * 246 * 512 + 2 * 4 * 2048) / r["measure"] + 12 * probe_brain_s) / 3600,
             "scripted re-measurement and calibration": 0.20e6 / r["final"] / 3600}
         return {"random_refits": random_refits, "free": free, "worlds": worlds, "hours": hours,
                 "total": sum(hours.values())}
 
-    remaining = dev()["experiment_cap_gpu_hours"] - dev()["charged_before_hours"] - spent
     options = [projection(), projection(random_refits=3), projection(random_refits=3, free=4)]
     fits = [o for o in options if o["total"] <= remaining]
     plan = fits[0] if fits else None
-    cut = None if plan is None else {(5, 5): "none", (3, 5): "random refits 5 -> 3",
-                                     (3, 4): "random refits 5 -> 3 and free searches 5 -> 4"}[
-        (plan["random_refits"], plan["free"])]
     w32 = projection(worlds=32)
-    rows = full.get("target_brains", [])
-    return {"rates": rates, "probe_seconds_per_brain": probe_brain_s, "pilot_dev_hours": spent,
-            "cuda_preflight_hours": pre_hours, "remaining_hours": remaining, "projections": options, "plan": plan,
-            "cut": cut,
-            "search_worlds_32": {"projection": w32, "allowed": bool(remaining - w32["total"] >= 8.0)},
-            "full_complete": full.get("status") == "completed", "target_brains_measured": len(rows),
-            **(resolution(rows, full["p"]) if rows else {}), "p": full.get("p"), "setting": full.get("setting"),
-            "extrapolations": [
-                "evolution rates come from pilot-dev's two-run lockstep batches (512 worlds a rollout); the formal "
-                "batches are wider, so these hours are conservative",
-                "search rates come from one target-brain's searches at a time (about 540 strains a rollout); the "
-                "formal target-brains have the same shape",
-                "probe hours: six plain-like episodes and four replay probes per brain, each priced at the measured "
-                "time of the evolved brains' probe conditions"]}
+    out.update({
+        "probe_seconds_per_brain": probe_brain_s, "projections": options, "plan": plan,
+        "cut": None if plan is None else {(5, 5): "none", (3, 5): "random refits 5 -> 3",
+                                          (3, 4): "random refits 5 -> 3 and free searches 5 -> 4"}[
+            (plan["random_refits"], plan["free"])],
+        "search_worlds_32": {"projection": w32, "allowed": bool(remaining - w32["total"] >= 8.0)},
+        "extrapolations": [
+            "evolution is priced at pilot-dev's two-run lockstep rate (512 worlds a rollout); the formal batches have "
+            "other compositions, and their rate is assumed, not measured",
+            "searches are priced at the overall `search` rate, which mixes the measured compositions listed in "
+            "`search_timing` (strains, worlds per strain, seconds); the formal compositions, the cuts and 32 worlds "
+            "change them again, so the rate is an assumption for those",
+            "probes are priced per brain from the evolved brains' measured condition times, one full-replay control "
+            "per brain included"]})
+    return out
 
 
 def stage_family2(args, dv, ck, progress):

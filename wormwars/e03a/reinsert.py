@@ -138,6 +138,14 @@ class XState:
     def cat(parts: list) -> "XState":
         return XState(**{fd.name: torch.cat([getattr(p, fd.name) for p in parts]) for fd in fields(XState)})
 
+    def arrays(self) -> dict:
+        """Every field as a CPU numpy array, for saving."""
+        return {fd.name: getattr(self, fd.name).detach().cpu().numpy() for fd in fields(self)}
+
+    @staticmethod
+    def from_arrays(arrays) -> "XState":
+        return XState(**{fd.name: torch.as_tensor(np.asarray(arrays[fd.name])) for fd in fields(XState)})
+
     def equal(self, other: "XState") -> bool:
         return all(torch.equal(getattr(self, fd.name), getattr(other, fd.name)) for fd in fields(self))
 

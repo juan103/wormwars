@@ -1,0 +1,242 @@
+{
+ "stage": "setup",
+ "smoke": false,
+ "device": "cuda",
+ "provenance": {
+  "git_commit": "a5760c43c373d7b6d88751d27db3262424de941a",
+  "branch": "roadmap",
+  "dirty": false,
+  "python": "3.13.3",
+  "numpy": "2.4.4",
+  "torch": "2.12.0+cu130",
+  "cuda": "13.0",
+  "gpu": "NVIDIA GeForce RTX 5080",
+  "connectome_cache_sha256": "43b87aa172a0042b9dce734b15bdf1c87efe3a33ac1cc0d9cd03255a60c96d4a",
+  "connectome_source_sha256": "1f4fdbf84746b69b49a8da0816f52787860ce349b638dce37924ba80f90c70c9"
+ },
+ "dev": {
+  "graph": {
+   "kind": "SH-mirror",
+   "seed": 3403000,
+   "passes": 20
+  },
+  "cap_gpu_hours": 6.0,
+  "experiment_cap_gpu_hours": 72.0,
+  "charged_before_hours": 0.53,
+  "world_seed": 1100001,
+  "ids": {
+   "train": [
+    1482000000,
+    500000
+   ],
+   "validation": [
+    1482600000,
+    256
+   ],
+   "selection": [
+    1482610000,
+    512
+   ],
+   "final": [
+    1482620000,
+    2048
+   ],
+   "probe": [
+    1482630000,
+    2048
+   ],
+   "search": [
+    1482700000,
+    100000
+   ]
+  },
+  "runs": {
+   "selector": 3403010,
+   "mip": 3403011,
+   "nip_base": 3403020
+  },
+  "checkpoint_every": 25,
+  "panel": {
+   "pair_seed": 3403001,
+   "tier_seed": 3403002,
+   "bootstrap": 10000,
+   "boot_seed": 3403003,
+   "targets": "the two highest-relevance representatives (high tier, ranks 1 and 2)"
+  },
+  "search_seed_base": 3403100,
+  "tune": {
+   "default": {
+    "temperatures": [
+     0.1,
+     0.2,
+     0.4,
+     0.8
+    ],
+    "p_move": 0.3333333333333333,
+    "max_moves": 1,
+    "shaping": 0.0
+   },
+   "ladders": [
+    [
+     0.03,
+     0.06,
+     0.12,
+     0.24
+    ],
+    [
+     0.1,
+     0.2,
+     0.4,
+     0.8
+    ],
+    [
+     0.3,
+     0.6,
+     1.2,
+     2.4
+    ]
+   ],
+   "moves": [
+    [
+     0.3333333333333333,
+     1
+    ],
+    [
+     0.3333333333333333,
+     3
+    ],
+    [
+     0.6,
+     1
+    ],
+    [
+     0.6,
+     3
+    ]
+   ],
+   "shaping": [
+    0.0,
+    0.5
+   ],
+   "searches": 2,
+   "swap_band": [
+    0.2,
+    0.4
+   ],
+   "swap_aim": 0.3,
+   "tie": 0.02
+  },
+  "longer": {
+   "factor": 2,
+   "searches": 2,
+   "on": "the MIP target-brains"
+  },
+  "probe": {
+   "L": [
+    5,
+    10,
+    20,
+    50
+   ],
+   "control_L": 10
+  },
+  "null_B": 10000,
+  "null_seed": 3403004,
+  "boot": {
+   "B": 10000,
+   "seed": 3403005
+  },
+  "margin_fraction": 0.05,
+  "family2": {
+   "datasets": 20000,
+   "seed": 3403006
+  }
+ },
+ "rerun_reason": null,
+ "started_utc": "2026-10-18T00:18:43Z",
+ "graph": {
+  "label": "SH-mirror-3403000",
+  "sha256": "dcf0cb24aba7682105f58ee3c7de646eeeaec7b84413d680adf0eccd1042937d",
+  "sampler": {
+   "chem": {
+    "accepted": 74180,
+    "attempted": 269656,
+    "target": 74180
+   },
+   "gap": {
+    "accepted": 21820,
+    "attempted": 86992,
+    "target": 21820
+   }
+  },
+  "chemical_edges": 3709,
+  "gap_junctions": 1091
+ },
+ "gains": {
+  "forward_gain": 6.265445458837278,
+  "turn_gain": 3.2201090476410603
+ },
+ "calibration": {
+  "n2_reference": {
+   "forward": 0.5532434444874526,
+   "turn": 0.3894456597045064,
+   "clip_forward": 0.1838541747070849,
+   "clip_turn": 0.04895833479240537,
+   "displacement": 0.12524854084476827,
+   "forward_signed": -0.07832616390660405,
+   "reversing": 0.609895845130086
+  },
+  "iterations": 4,
+  "history": [
+   {
+    "forward_gain": 4.0,
+    "turn_gain": 2.0,
+    "forward": 0.4026124320924282,
+    "turn": 0.2451862871646881,
+    "clip_forward": 0.08437500135041773,
+    "clip_turn": 0.0,
+    "displacement": 0.09022303610108792,
+    "forward_signed": -0.06200894294306636,
+    "reversing": 0.47916667386889455
+   },
+   {
+    "forward_gain": 5.49653612643977,
+    "turn_gain": 3.176732795361605,
+    "forward": 0.5029960596933961,
+    "turn": 0.3841254383325577,
+    "clip_forward": 0.17812500721774996,
+    "clip_turn": 0.041145834559574726,
+    "displacement": 0.1176081607118249,
+    "forward_signed": -0.04027261338196695,
+    "reversing": 0.4781250074505806
+   },
+   {
+    "forward_gain": 6.045619087344081,
+    "turn_gain": 3.220731239682861,
+    "forward": 0.5338326141238212,
+    "turn": 0.3895209087058902,
+    "clip_forward": 0.21718750237487255,
+    "clip_turn": 0.041145834559574726,
+    "displacement": 0.1256727369502187,
+    "forward_signed": -0.03405113215558231,
+    "reversing": 0.4781250074505806
+   },
+   {
+    "forward_gain": 6.265445458837278,
+    "turn_gain": 3.2201090476410603,
+    "forward": 0.5446429710835219,
+    "turn": 0.3895820876583457,
+    "clip_forward": 0.24427084238268434,
+    "clip_turn": 0.041145834559574726,
+    "displacement": 0.12836838173680007,
+    "forward_signed": -0.03284270060248673,
+    "reversing": 0.4776041742414236
+   }
+  ]
+ },
+ "eligible": 245,
+ "representatives": 170,
+ "task_config_sha256": "ca340fee280f08de8f81379ab1d75582d8ceef5cb9e300eb41bc67e660d30a44",
+ "status": "completed",
+ "seconds": 25.46583318710327
+}

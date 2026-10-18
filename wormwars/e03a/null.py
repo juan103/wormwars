@@ -246,8 +246,10 @@ def subset_recovery(rankings: dict, truth: dict, keep: np.ndarray) -> float | No
 def expected_jaccard(K: int, m: int) -> float:
     """The expected Jaccard index of two independent uniformly random m-subsets of K candidates (hypergeometric)."""
     from scipy.stats import hypergeom
-    if m == 0 or m == K:
+    if m == 0:
         return float("nan")
+    if m == K:  # both sets are every candidate (Astra)
+        return 1.0
     i = np.arange(0, m + 1)
     pmf = hypergeom(K, m, m).pmf(i)
     return float((pmf * i / (2 * m - i)).sum())

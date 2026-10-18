@@ -115,3 +115,51 @@ def test_the_cuda_preflight_runs_every_stage(tmp_path):
     M.rec_dir = lambda: tmp_path / "pilot-dev" / "records"
     for s in M.STAGES:
         assert M.main([s, "--smoke", "--device", "cuda"])["status"] == "completed"
+
+
+def test_a_stopped_full_keeps_its_finished_target_brains_and_the_report_still_runs(tmp_path, monkeypatch):
+    """Astra and Fable, round 2: a cap reached in `full` must leave the finished target-brains, their saved states, and
+    a report that names what is missing."""
+    spec = importlib.util.spec_from_file_location("e03a_script_test_d", ROOT / "scripts" / "e03a.py")
+    M = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(M)
+    M.out_dir = lambda: tmp_path / "pilot-dev"
+    M.rec_dir = lambda: tmp_path / "pilot-dev" / "records"
+    for s in ("setup", "evolve-intact", "panel", "evolve-nip", "baseline", "probe", "tune"):
+        M.main([s, "--smoke"])
+    real, calls = M._final_scores, {"n": 0}
+
+    def stop_on_second(*a, **k):
+        calls["n"] += 1
+        if calls["n"] == 2:
+            raise M.reg.CapReached("the registered cap is reached (test)")
+        return real(*a, **k)
+
+    monkeypatch.setattr(M, "_final_scores", stop_on_second)
+    with pytest.raises(M.reg.CapReached):
+        M.main(["full", "--smoke"])
+    doc = json.loads((tmp_path / "pilot-dev" / "records" / "full.json").read_text(encoding="utf-8"))
+    assert doc["status"] == "failed" and len(doc["target_brains"]) == 1 and "p" in doc and doc["setting"]
+    assert len(doc["searches_finished"]) == 2  # the second target-brain's searches finished before the stop
+    saved = sorted(p.name for p in (tmp_path / "pilot-dev" / "states").glob("*.npz"))
+    assert len(saved) == 4  # two target-brains, each at the ordinary length and complete
+    rep = M.main(["report", "--smoke"])
+    assert rep["target_brains_measured"] == 1 and not rep["full_complete"]
+    assert any("full did not complete" in m for m in rep["missing"])
+
+
+def test_the_probe_times_the_full_replay_control(run):
+    _, _, docs = run
+    t = docs["probe"]["timing"]
+    assert len(t["full_replay_control"]) == len(docs["probe"]["evolved"]) and t["plain"]
+
+
+def test_full_writes_the_no_task_control_turnover_from_generation_0_and_attributes(run):
+    _, _, docs = run
+    tb = docs["full"]["target_brains"][0]
+    assert 0 < tb["no_task"]["p"] <= 1 and "attributes" in tb and tb["final_evaluation"] == "complete"
+    ps = tb["per_search"][0]
+    assert len(ps["turnover_per_10_from_0"]) == max(0, len(ps["q_every_10_from_0"]) - 1)
+    assert "paired_diff_sd_mean" in ps
+    paired = tb["descriptive"]["composite"]["name"] == "mirror"
+    assert ("mirror_zero_subset" in tb["descriptive"]) == paired

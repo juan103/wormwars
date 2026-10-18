@@ -1,8 +1,13 @@
 # 03a pilot-dev: what it runs and how it chooses
 
-**Status:** plan v2, 2026-10-17, written with the code (`scripts/e03a.py`, `wormwars/e03a/`).
+**Status:** plan v3, 2026-10-18, written with the code (`scripts/e03a.py`, `wormwars/e03a/`).
 - **v1** (`a4956e5`, D308): Fable "ready for pilot-dev, with small fixes"; Astra "revise" (code review round 1, run
   20261017-190316, `docs/reviews/20261017-03a-code/`). v2 takes every finding (§6; D309).
+- **v2** (`a5760c4`, D309): Fable "ready for pilot-dev, with small fixes"; Astra "revise" (round 2, run
+  20261018-021702, `docs/reviews/20261018-03a-code-r2/`). v3 takes every finding but one, where they disagree
+  (round B's order, §2), and puts that one to them (§6; D310).
+- **The owner's word for the GPU:** given 2026-10-18 ("you have my go ahead for the gpu"). `setup` and `evolve-intact`
+  ran on v2's code while round 2 was under review; neither depends on what round 2 changed.
 
 Pilot-dev is development (DESIGN.md v7.1 §8, §9): its output is the **frozen pilot protocol**, written into the
 pre-registration before pilot-check runs. Nothing here is a registered test. It runs only with the owner's word.
@@ -24,10 +29,10 @@ in the script.
 | `panel` | Deletion scan of every bilateral representative of the eligible neurons on the selector brain, 512 selection worlds; the panel rule (DESIGN.md §4); **the two targets are the two highest-relevance representatives** | 0.09 M |
 | `evolve-nip` | 1 NIP brain per target, pinned (§4), one lockstep batch | 0.53 M |
 | `baseline` | On the 2 048 final-evaluation worlds: the MIP brain intact; each target-brain with X deleted; the deletion deficit. **Two controls that must hold exactly** (counts, final head positions and every target event, inside `replay_mode()`, each pair in the same batch composition): MIP's exact restoration reproduces the intact brain, and each NIP brain plays exactly as its deleted state. A failure fails the stage, and nothing downstream runs | 0.02 M |
+| `probe` | Before the searches, so a cap reached in them still leaves its timings (Fable). The bounded-history probe (L = 5, 10, 20, 50) on the scripted calibrators and the four evolved brains, each condition timed, the full-replay control included. **Controls that must hold exactly:** KT and KTM play exactly the same episodes at every L, and the full-replay control (L = 10) reproduces each evolved brain's episodes. The first failure stops the stage | 0.10 M |
 | `tune` | Rounds A, B and C (§2) on the four target-brains (MIP × 2 targets, NIP × 2): 56 searches and their final evaluations; each finished round kept | 3.3 M |
-| `full` | The chosen settings, target-brain by target-brain (each finished one kept): every search (3 refits, 5 random-partner refits, 5 free searches), every result on the 2 048 worlds; and on each MIP target-brain 2 free searches run to 200 generations, each scored at generation 100 and at 200 | 3.6 M |
-| `probe` | The bounded-history probe (L = 5, 10, 20, 50) on the scripted calibrators and the four evolved brains, each condition timed. **Controls that must hold exactly:** the full-replay control (L = 10) reproduces each evolved brain's episodes, and KT and KTM play exactly the same episodes at every L | 0.10 M |
-| `report` | No simulation: measured throughput per workload, δ_eval and δ_search, the formal design projected at the measured rates, the cuts of §10 if needed, and whether 32 search worlds are allowed. A missing measurement stops it; it never assumes a rate | 0 |
+| `full` | The chosen settings, target-brain by target-brain: every search (3 refits, 5 random-partner refits, 5 free searches), every result on the 2 048 worlds; on each MIP target-brain 2 free searches run to 200 generations, each scored at generation 100 and at 200; the no-task control. What finishes is kept: the record's metadata from the start; each target-brain's search states, saved locally once its ordinary searches end and again at the end; each scored row | 3.6 M |
+| `report` | No simulation: what was measured (rates, δ_eval and δ_search, per-composition search timings), and the formal design projected at the measured rates with the cuts of §10 if needed, and whether 32 search worlds are allowed. A stopped `full` is reported as far as it got; a missing measurement withholds the projection instead of assuming a rate | 0 |
 
 About 8.2 M episodes: 5.4 hours at the 420 per second assumed in DESIGN.md §10. The search batches are wider, so they
 may run faster, as E2d measured. The two-run evolution batches may run slower than 04a's eight (Fable). If the cap is
@@ -51,6 +56,9 @@ into the next and not run again.
   score stays the raw count.
 - **Rule for B and C:** the mean over the four target-brains of the free searches' mean final count; the first setting
   listed is kept unless a later one beats the best so far by more than 0.02 targets.
+  - **Open, round 3:** with noise far above 0.02, the listed order all but decides round B. Fable would list (0.6, up
+    to 3) first, the planted check's best; Astra would keep the order above. The order stays as listed until both
+    reviewers agree, or the owner decides.
   - The between-search noise is far larger than 0.02, so the pre-registration will call these settings chosen by this
     rule, not optimised (Fable, Astra).
 - **Search worlds:** 16, or 32 only if `report`'s projection with 32 leaves at least 8 hours of reserve with no cut
@@ -71,7 +79,9 @@ Tuning reads only scores, never the truth. The diagnostics below read the truth;
 - **Search diagnostics, per free search and per longer search:**
   - Q, the fraction of X's true partners connected in the coldest replica, at generation 0 and after every 10
     generations, beside its chance level (Astra: v1 sampled generations 1, 11, … 91);
-  - partner turnover per 10 generations;
+  - partner turnover over each window 0 → 10, 10 → 20, …, to the last generation;
+  - the signal against the noise (Fable): the SD of the coldest replica's score across generations, and per generation
+    the mean and SD of offspring minus current on the same worlds, beside the refit-minus-deleted difference;
   - accepted partner moves;
   - swap acceptance per neighbour pair;
   - the final count and the AUC.
@@ -80,13 +90,23 @@ Tuning reads only scores, never the truth. The diagnostics below read the truth;
   - the Spearman correlation of their |weight| vectors, which shared zeros dominate.
 - **Are 100 generations enough?** The same long searches are scored at generation 100 and at generation 200: final
   count and AUC. Their Q trajectories run through generation 200 (Fable, Astra).
+  - **How it will be read, fixed now** (Fable, Astra; both would keep 100 generations for pilot-dev):
+    - Q at 100 within noise of chance, and no gain from 100 to 200: the search is signal-limited. The budget stays;
+      more generations would not help.
+    - Q still rising at 100, and the long searches gaining in AUC: a budget amendment is proposed to both reviewers
+      before the pre-registration, paid for by §10's cuts and the move settings.
+    - Function plateauing while anatomy still improves is reported as such; it points to the same amendment.
+    - The long searches run on the MIP target-brains only, and conclusions are scoped to them.
 - **Per target-brain, descriptive** (DESIGN.md §6, "Also reported"):
   - the attributes, the deletion deficit, and the stratified enrichment p (B = 10 000), with one permutation bank per
     target shared by both arms;
   - the AUC over interface and over non-interface candidates;
   - precision at k against the same null, and average precision beside chance;
   - the structural AUCs (mirror, class model, degree) and the task minus the composite;
-  - for paired targets, the AUC on the candidates the mirror ranking leaves at zero;
+  - for paired targets, the AUC on the candidates the mirror ranking leaves at zero, per type (each type's zero set,
+    its size and partner count; v2 took the intersection over types; Astra, Fable);
+  - the no-task control (§8): five free searches with fitness zero, ranked and tested against the same null;
+  - the five attributes and the outcome, per target-brain, with pilot-dev's own δ_search;
   - the strata and the support.
 - **Throughput** per workload: `selection` and `holdout` for evolution (its selection and validation episodes priced
   separately), `measure` for the scan, `search`, `final`, and the probe's per-condition times.
@@ -141,16 +161,25 @@ Each is stated so the reviewers can object.
    - **With a perfect, noiseless signal:** the search connects 33-52% of the planted partners after 100 generations and
      46-66% after 200. p_move = 0.6 does best.
    - **With an illustrative noisy signal** (each partner worth 0.1, noise SD 0.3; numbers chosen arbitrarily): it
-     connects 8-20%, against a chance level of about 3%.
-   - **What it means:** even the upper bound leaves recovery partial at 100 generations. Partial recovery can still give
-     a ranking above chance, since the ranking averages five searches, and the pilot criteria are there to stop the
-     experiment if it does not.
+     connects 8-20%, against chance levels of 3.6% (AIYL), 10.1% (RIAL) and 6.5% (AIZL).
+     - *Corrected 2026-10-18 (D310; Astra): v2 said "against a chance level of about 3%", which is right for AIYL
+       only and overstated the enrichment for the other two.*
+   - **What it means:** even this favourable oracle leaves recovery partial at 100 generations.
+     - *Corrected 2026-10-18 (D310; Astra): v2 called the noiseless oracle "the upper bound". It is not one. Its
+       landscape and reward scale are its own, weights and τ do not matter to it, and the noisy version's noise is
+       independent across states, unlike the simulator's shared worlds. It is a favourable-oracle diagnostic.*
+     - Partial recovery can still rank partners above chance, since the ranking averages five searches. The pilot
+       criteria stop the experiment if it does not.
    - **Options:**
      - keep 100 generations, and let pilot-dev's measurements and the pilot criteria decide;
      - add higher move rates to round B;
      - lengthen the search within the cap.
 
    I have not changed the design's budget, and a change goes back to the design with both reviewers.
+   - **Round 2's answer:** both keep 100 generations and measure on the real task first (§3 gives the reading). Fable
+     adds that discovery is proposal-limited even with the oracle, so the move rate is the free lever, and that the
+     design's budget cannot absorb longer searches (§10). Astra adds that a higher move rate takes exploration from
+     weights and τ, which the oracle ignores and the task may need.
 8. **Not yet in the code** (Astra): the formal driver (pilot-check and N2) is not written. That includes the five-brain
    target-arm aggregation, families 1 and 2 on real data, and the registered readings. It comes with the
    pre-registration and is reviewed with it. Pilot-dev has one brain per arm and cannot exercise these.
@@ -190,6 +219,35 @@ counts as caught only if pytest reports its named test as failed, and the failin
 comprehensive validation (Astra).
 
 ## 6. Changes
+
+**v2 → v3 (code review round 2: run 20261018-021702; Fable "ready for pilot-dev, with small fixes", Astra "revise";
+D310):**
+- **Partial results:**
+  - `full` writes p, the setting and the plan into its record before any search, so a stopped `full` can be
+    reported; the report takes p from `baseline`, and reports what was measured even when `full` stopped (Fable 1,
+    Astra 1);
+  - a missing input withholds the projection instead of failing the report;
+  - each target-brain's search states are saved locally once its ordinary searches end, and again at the end; the
+    rankings go into the record (Astra 2).
+- **`probe` runs before the searches** (Fable 2). The full-replay control is timed and priced in the projection, one
+  per brain (Astra 3). The report names each extrapolation, and no longer claims the formal target-brains have the
+  measured shape.
+- **Diagnostics:**
+  - turnover runs over the windows 0 → 10 → … → G (Astra 4);
+  - the mirror-zero subset is per type, with its sizes (Astra 4, Fable 6);
+  - Fable's signal-to-noise record (finding 4);
+  - the no-task control and the five attributes are written (Astra 10).
+- **Small fixes:**
+  - final scoring and the scan run in chunks of 16 384 worlds (Fable 5);
+  - `full` checks its target-brains against `baseline`'s;
+  - `expected_jaccard` gives 1 when every candidate is a partner;
+  - `baseline` and `probe` stop at the first failed control (Astra 6).
+- **Corrected:**
+  - the planted check's chance levels (3.6%, 10.1%, 6.5%, not "about 3%");
+  - "upper bound" is now "favourable-oracle diagnostic";
+  - D309's "whole episodes" is now "counts, final head positions and every target event" (Astra 5, 6).
+- **Kept, by both:** 100 generations and the paired 100 → 200 extensions; the reading rule in §3.
+- **Open:** round B's order (§2).
 
 **v1 → v2 (code review round 1: run 20261017-190316; Fable "ready for pilot-dev, with small fixes", Astra "revise";
 D309):**

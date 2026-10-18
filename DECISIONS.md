@@ -9347,3 +9347,48 @@ functional exposure to X during evolution, but initial magnitudes normalised on 
 partners in 100 generations and 46-66% in 200. With an illustrative noisy signal it connects 8-20%, against about 3%
 by chance. The design's budget (100 generations) is unchanged; whether to keep it, add higher move rates or lengthen
 the search goes to both reviewers.
+
+## D310 — 03a's code after review round 2; pilot-dev started with the owner's word; round B's order put to both
+
+**The owner's word** (2026-10-18): "you have my go ahead for the gpu I'm not using it now". Pilot-dev started at
+`a5760c4`:
+- the CUDA preflight (every stage at smoke size on the GPU; every control held);
+- `setup` (graph SH-mirror-3403000, 245 eligible, 170 representatives, gains 6.27 and 3.22);
+- `evolve-intact`.
+
+Neither stage depends on what round 2 changed. The stages after them wait for these fixes to be committed.
+
+**Round 2 of the code review** (run 20261018-021702, archived in `docs/reviews/20261018-03a-code-r2/`):
+- **Verdicts:** Fable 5.1 "ready for pilot-dev, with small fixes"; Astra 6 "revise" (bounded driver fixes).
+- **Both found** every round-1 finding resolved or partly resolved in the code.
+- **Both would keep** 100 generations and measure the search on the real task first.
+- **Fable noticed** genome files with no accounting attempt. They are `evolve-intact`'s checkpoint saves while it
+  runs; its attempt record is written when the stage ends.
+
+**Taken** (`PILOT-DEV.md` v3 §6):
+- **A stopped `full`:** it keeps its metadata, saved states and finished rows, and the report covers it (both found
+  the v2 report crashed on it);
+- **Stage order:** `probe` runs before the searches;
+- **The full-replay control** is timed and priced;
+- **Turnover** runs over windows from generation 0;
+- **The mirror-zero subset** is computed per type;
+- **New records:** Fable's signal-to-noise record, the no-task control and the five attributes;
+- **Small fixes:** chunked final scoring, a label check, the `expected_jaccard` edge case, and controls that stop at
+  the first failure;
+- **The reading rule** for the 100-to-200-generation measurement is fixed in advance (§3).
+
+**Corrections** (rule 4):
+- D309 said the noisy planted oracle connects 8-20% "against about 3% by chance". The chance levels are 3.6% (AIYL),
+  10.1% (RIAL) and 6.5% (AIZL), so "about 3%" was right for one target and overstated the other two (Astra).
+- PILOT-DEV v2 called the noiseless oracle "the upper bound". It is a favourable-oracle diagnostic, not a bound
+  (Astra).
+- D309 said the controls "compare whole episodes". They compare counts, final head positions and every target event,
+  not every action along the way (Astra).
+
+**No consensus on round B's order:** the rule keeps the first listed setting unless another beats it by 0.02, far
+below the noise.
+- **Fable:** list (p_move 0.6, up to 3 moves) first, the planted check's best.
+- **Astra:** keep (1/3, 1) first, since a higher move rate takes exploration from weights and τ, which the oracle
+  ignores.
+
+It goes to both reviewers in round 3. If they still disagree, it goes to the owner. `tune` waits for it.

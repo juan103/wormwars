@@ -196,3 +196,8 @@ def test_subset_recovery_and_expected_jaccard():
     sim = [N.jaccard(np.isin(np.arange(40), rng.choice(40, 6, replace=False)),
                      np.isin(np.arange(40), rng.choice(40, 6, replace=False))) for _ in range(20000)]
     assert abs(np.mean(sim) - N.expected_jaccard(40, 6)) < 0.003
+
+
+def test_expected_jaccard_edges():
+    assert N.expected_jaccard(10, 10) == 1.0
+    assert np.isnan(N.expected_jaccard(10, 0))

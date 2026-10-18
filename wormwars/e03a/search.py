@@ -208,6 +208,9 @@ class Trace:
     swaps: list = field(default_factory=list)  # (pair index m, accepted)
     cold_masks: list = field(default_factory=list)  # after generation g + 1, at index g
     initial_cold: dict | None = None  # before the first generation
+    # the paired noise the acceptance rule sees: per generation, the mean and SD over every offspring of (offspring
+    # score - its replica's current score), both on that generation's worlds (Fable, round 2)
+    paired: list = field(default_factory=list)
 
 
 class ReplicaExchange:
@@ -256,6 +259,8 @@ class ReplicaExchange:
             raise ValueError(f"expected {R + R * lam} finite scores")
         s_cur = scores[:R].copy()
         s_off = scores[R:].reshape(R, lam)
+        diff = s_off - s_cur[:, None]
+        self.trace.paired.append([float(diff.mean()), float(diff.std())])
         take, acc, acc_kind = [], [], []
         for r in range(R):
             o = int(np.argmax(s_off[r]))  # the first best, on ties
@@ -296,9 +301,10 @@ class ReplicaExchange:
         return self.current.select([0])
 
 
-def run_lockstep(searches: list, evaluate, check=None) -> None:
+def run_lockstep(searches: list, evaluate, check=None, after=None) -> None:
     """Advance every search to its end together: each generation, every search's states are scored in one call,
-    `evaluate([(search, states, worlds), ...]) -> [scores per search]`. `check()` runs before each call (the cap)."""
+    `evaluate([(search, states, worlds), ...]) -> [scores per search]`. `check()` runs before each call (the cap);
+    `after(searches)` runs after each generation, so a caller can keep what has finished."""
     while not all(s.done for s in searches):
         live = [s for s in searches if not s.done]
         asks = [(s, *s.ask()) for s in live]
@@ -307,6 +313,8 @@ def run_lockstep(searches: list, evaluate, check=None) -> None:
         scores = evaluate(asks)
         for s, sc in zip(live, scores):
             s.tell(sc)
+        if after is not None:
+            after(searches)
 
 
 def no_task(asks) -> list:
