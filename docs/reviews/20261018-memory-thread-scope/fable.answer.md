@@ -1,0 +1,40 @@
+**Recommendation:** do not run the 2×2 evolution interaction next. Test the thread's untested first link first, at generation 0 on 03's machinery: does per-genome history (P4) predict Task N-mono fitness within graphs, and does N2's generation-0 edge over the ensembles depend on the sense? Gate the evolution stage on that, and if it runs, deliver the memory relief as a separate binary channel rather than by replacing the food sense.
+
+**Claims checked.** Every cited number is in the files as quoted, with one correction. "N2's head start never separated statistically" is not quite right. 02's interaction I(T0) at generation 0 was +0.068 [+0.019, +0.117] and its fade to generation 39 was −0.061 [−0.108, −0.014], both excluding zero (`experiments/02-screening/RESULTS.md:181`). That is the only "early advantage that fades" in the repository with an interval off zero, and 02 attributed it post hoc to the shuffles' deficit under M0, not to anything N2 loses. The plain N2 − SH main effect never separated. I could not verify "about 1.5 s per graph" for the samplers. Throughput is verified at 420 episodes per second for 8-run lockstep and 306-863 in E4s-1's batches. `evolve_batch` does take one `BrainSpec`, so one graph per batch. No 03-family results file reports a P4-to-fitness correlation. That link is genuinely untested.
+
+1. **The manipulation is only partly sound.**
+   - It varies memory demand for one strategy, not memory capacity. Every graph keeps τ up to 20 ticks and recurrence under both senses. That is fine as long as the claim is phrased as demand.
+   - It does not hold the task fixed. A pure "change" signal drops level information, so speed modulation by level is lost. A brain that wants level back has to integrate, which reintroduces memory demand elsewhere. A mixed level-plus-change signal is worse: separating the two components from one scalar per tick itself requires memory. Do not mix.
+   - Input statistics confound it badly. The per-tick change at speed 0.35 on a σ 6 scent is roughly 1 to 3% of the level, and signed. It needs a 10 to 30× rescale, and then a signed input drives tanh units with random biases quite differently from a non-negative one. Any rescale is a free parameter that sets effective input drive, and 02 found input response is where the shuffles differ most from N2 at generation 0. Motor calibration does not touch this.
+   - A change signal is brittle. KTM falls from 2.84 to 0.51 under jitter r = 1 (`experiments/03a-self-consistency/DESIGN.md:87`). Graph-specific low-pass filtering helps under level and hurts under change. That is the hypothesis restated in signal terms, so a positive interaction would be consistent with it, but it would not distinguish "holds history" from "filters inputs more".
+   - Better contrast in this codebase: keep the mono level sense untouched and add a rectified binary "fell since last tick" bit on a separate channel, to a fixed non-food neuron set, at the collision scale. It is scale-free, non-negative, loses no information, and a memoryless controller on level plus bit is KTM. The SH ensembles preserve neuron identity, so the receiving set is the same in every graph. Its one cost is choosing the neuron set, which should be registered.
+
+2. **The question is worth a cheap run, not an expensive one.**
+   - Plausible effect size: at most the main effect, about 0.06 normalised, and the memory share of it is more plausibly 0.02 to 0.04.
+   - Variance from 02: between-graph variance is 0 in `analysis.json`. Back-solving the T1-M0 interval from 8 N2 and 16 SH runs gives a per-run SD of about 0.08 at generation 0 and about 0.03 at generation 39. Generation 0 is both the noisiest place and the place where the effect is predicted largest.
+   - Power for an interaction with SD 0.08: about 80 runs per group per sense for δ = 0.05, about 220 for δ = 0.03. At generations 25 to 100 with SD 0.03 to 0.05: 11 to 31 per group for δ = 0.05.
+   - So best-of-32 champions at generation 0 are the wrong instrument. Sample 1 024 to 2 048 random genomes per graph as 03 did and take the expected best-of-32 by order statistics plus the top-decile mean. That removes most of the noise at no evolutionary cost.
+   - The cheapest decisive test is within graph: does per-genome history (`history()` in `wormwars/exp03/measures.py`) predict fitness under level more than under change, inside N2 and inside each null graph? Graph-level confounds (drive, input response magnitude) cancel. If it does not, the thread's first arrow is broken and no evolution run is needed. If it does, you have the effect size to power stage C. Partial out 03's response magnitude, since both P4 and fitness depend on input gain.
+
+3. **Design choices, if the evolution stage runs.**
+   - Ensembles: SH and SH-route. SH-route caps direct sensory-to-readout edges, which is 02's post hoc explanation of the one separated effect. SH-mirror adds little here. 64 graphs each at generation 0 for 03-style rank p; 8 each under evolution.
+   - Runs per graph: with one spec per batch, 2 runs per graph wastes throughput. Either 4 graphs × 8 runs, or extend `evolve_batch` to several specs, which is an engine change and needs an equivalence check under rule 7.
+   - Generations: 0 by sampling, then 25, 50, 100, 250. Most of any fade will be inside 50.
+   - "Early advantage": the generation-g training champion scored on a shared 256-world validation bank, paired by world across arms, as 04a does. Not best-of-population on training worlds.
+   - Controls: per sense, the best memoryless, 1-tick and KTS T = 2, 5, 10 controllers tuned on separate worlds. Register the go condition as a memory gain, for example at most 0.3 targets under the relief and at least 1.0 under level. Use richer memoryless families than KT, as Astra noted in 03a.
+   - History use: 03a's replay probe produced losses with no scale (calibrators moved at most 0.19, brains lost up to 1.95) and ran no nonspecific-disruption control. Keep it descriptive. Make `history()` the registered measure on every champion, with 02b's mutation-only drift control. It has a scale and a four-experiment track record.
+
+4. **Alternatives.**
+   - Prediction 2 alone: confounded by convergence. Any early difference shrinks when all groups reach one plateau. 02 already shows a fade with this confound. No.
+   - Prediction 3 on evolved brains: cheap, since 04a's 16 and 02's champions exist and `deletion.py` works. Worth adding as a descriptive lesion of RIA, AIY and AIZ on stage C champions. Not worth a run on its own.
+   - The shuttle: the only task here that truly requires memory, but the wrong kind. A 1-bit latch over 100 ticks is not a slow level memory with τ ≤ 20. E3a needed a hand-built latch and random nets may never evolve one. Not for this thread.
+   - Preferred: stage A, the within-graph history-to-fitness link at generation 0 under both senses; stage B, N2 against the ensembles at generation 0 from the same samples; stage C, the evolution interaction, gated on A or B.
+
+5. **Budget and pre-registration.**
+
+   | Stage | Episodes | GPU-hours at 300-400 per second |
+   |---|---|---|
+   | A and B: 2 senses × 129 graphs × 1 024 genomes × 8 worlds | 2.1 M | about 2, plus the history measure |
+   | C: 96 runs × 250 generations × 256, plus validation | 6.4 M | about 5 (04a's 16 × 1 000 cost 2.91) |
+
+   Register before stage A: the relief signal's definition, channel, neurons and scale; the scripted go-condition thresholds; stage A's primary as the within-graph Spearman of history against fitness, level minus relief, for N2 and each ensemble; stage B's primary as N2's advantage under level minus under relief with 03's rank rule; the champion definition and generations; the history measure and drift control; the outcome wordings; world id ranges; the cap; and the rule that stage C runs only if A or B meets its criterion.

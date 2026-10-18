@@ -9879,3 +9879,42 @@ other wiring reached the same score".
 **Published:** consensus covers a main push, with the owner informed after (the delegation, 2026-09-29). `main` is
 fast-forwarded to the roadmap branch and its working-branch banner removed. The roadmap branch then continues from
 `main` with the banner, which now lists 03a.
+
+## D321 — The memory thread's scoping round: test the history-to-fitness link at generation 0 first (03h design v1)
+
+**The round:** run 20261018-151843, both at xhigh effort, archived in `docs/reviews/20261018-memory-thread-scope/`.
+Claude's candidate was a 2 × 2 evolution experiment: N2 against null ensembles, under a level sense against a "change"
+sense. Neither reviewer recommended running it first.
+
+**The two recommendations:**
+- **Fable:** the thread's untested link is whether history helps performance at all. Test it at generation 0 on 03's
+  machinery. Does per-genome history predict Task N-mono fitness within graphs, less so when memory is relieved? Does
+  N2's generation-0 edge depend on that? Gate evolution on the answer. Deliver the relief as a separate binary "fell
+  since last tick" channel, not by replacing the sense.
+- **Astra:** close the usefulness gap first, with a frozen-controller check (controlled sensory-history replay on
+  existing champions). Then run a gated temporal-assistance pilot, at most about 4 GPU-hours. A full evolution design
+  would cost about 20-45 hours.
+
+**Claude's prompt was wrong in three places** (corrected 2026-10-18):
+- *It said N2's head start "never separated statistically".* 02's generation-0 mapping interaction did: I(T0)
+  +0.068 [+0.019, +0.117], with its fade to generation 39 at −0.061 [−0.108, −0.014] (Fable). Only the plain
+  N2 − SH effect never separated.
+- *It said 03 found "no fitness head start for random brains".* That holds for the population mean (0.90 against SH's
+  median of 0.89). The top-decile mean is 1.69 against SH's median of 1.51 (range 1.26-1.77), which is not dismissed
+  (Astra).
+- *It said a "change" sense would let a memoryless controller act as KTM does.* It would not: KTM also uses the level
+  (Astra, Fable).
+
+**Decided (Claude's choice under the owner's "Do as you consider best"; both reviewers' recommendations agree on
+this ordering):**
+- 03h, a generation-0 study, designed first (`experiments/03h-history-use/DESIGN.md` v1):
+  - **A:** the within-graph link between history and fitness under level against relief;
+  - **B:** N2's generation-0 upper tail under level against relief, compared with SH and SH-route.
+- Stage C (evolution) is gated on A or B.
+- Astra's frozen-champion check is an open question for the design review.
+
+The relief is Fable's binary `food_fell` channel. Its proposed receiving neurons are ASKL and ASKR, which are silent
+in Task N (its pheromone deposit and sense scale are 0; `wormwars/e1/task.py`). The estimate is about 2.5 GPU-hours;
+any GPU work needs the owner's word.
+
+**Next:** design v1 goes to both reviewers.
