@@ -1,4 +1,11 @@
-# 03a: The self-consistency hypothesis (draft, not run)
+# 03a: The self-consistency hypothesis (stopped after pilot-dev; exploratory)
+
+> **Update, 2026-10-18 (D312-D318): 03a stopped before its pre-registration.** It ran its development stage on one
+> shuffled graph (pilot-dev, 5.29 GPU-hours), and then a bounded check of the search that both reviewers recommended
+> and the owner chose. The check's rule, fixed before it ran, gave outcome (iii): no search variant restored the
+> deleted neuron's score reliably even when handed its true partners, so 03a ends here. Nothing ran on N2. The results
+> are exploratory: **[`RESULTS.md`](RESULTS.md)**, with the numbers in [`summary.json`](summary.json). 03a spent 5.84
+> of its 72 GPU-hours. The notes below are the earlier status, kept as they were.
 
 > **This is a draft design. It has not been run, and it is deliberately not scheduled.** Nothing in
 > this folder is a result. The owner decided on 2026-09-27 (D062) that 03a's task and budget are
@@ -21,7 +28,9 @@
 > with both reviewers. No GPU work has run since the exploratory checks.* *Updated again 2026-10-17 (D309): round 1 of
 > the code review is taken (one blocking bug, CPU genomes in CUDA rollouts, fixed); round 2 is with both reviewers.*
 
-**Status:** draft v3.2 (2026-09-25), not run, not scheduled (D062). *Updated 2026-09-29:* it becomes a six-neuron proof of concept capped at 72 GPU-hours (the owner, D094), planned in the biology track after a confirmatory study of 03m's leads · **Run:** none · **Commit:**
+**Status:** *Updated 2026-10-18: stopped after pilot-dev and the bounded search check, exploratory (D317, D318;
+[`RESULTS.md`](RESULTS.md)). Design v7.1 ([`DESIGN.md`](DESIGN.md)), pilot-dev plan v3.3 ([`PILOT-DEV.md`](PILOT-DEV.md)),
+runs on `a5760c4` to `4d6e887`, 5.84 GPU-hours.* Earlier: draft v3.2 (2026-09-25), not run, not scheduled (D062). *Updated 2026-09-29:* it becomes a six-neuron proof of concept capped at 72 GPU-hours (the owner, D094), planned in the biology track after a confirmatory study of 03m's leads · **Run:** none · **Commit:**
 none · **Compute:** none spent. The draft as written is estimated at about 31 million genome
 evaluations for its searches, about 785 GPU-hours at 02's batch-32 throughput, plus about 37
 GPU-hours of whole-brain evolution
@@ -39,6 +48,9 @@ different wiring does the job equally well (functional substitution), or the sea
 ([`DRAFT.md`](DRAFT.md), "The hypothesis".)
 
 ## Where it stands
+
+*Updated 2026-10-18: this section describes draft v3.2 as of 2026-09-25. What happened since is in the update at the
+top and in [`RESULTS.md`](RESULTS.md).*
 
 - **Not run.** Draft v3.2 is the latest design. Its own "Next steps" (review, code, a disclosed
   feasibility pilot on shuffles only, then the tag `exp03a-prereg`) are on hold under D062.
@@ -139,14 +151,27 @@ draft v2 and folded into v3):
 
 | File | What it is |
 |---|---|
+| [`RESULTS.md`](RESULTS.md) | The exploratory results: pilot-dev and the bounded search check |
+| [`summary.json`](summary.json) | The numbers RESULTS quotes, rebuilt from the records by `scripts/e03a_summary.py` |
+| [`DESIGN.md`](DESIGN.md) | Design v7.1, agreed by both reviewers (D307) |
+| [`PILOT-DEV.md`](PILOT-DEV.md) | Pilot-dev's plan v3.3, its rules, and §7, the bounded check |
+| [`pilot-dev/`](pilot-dev/) | Every stage's record (`setup.json` to `search-check.json`) and the compute aggregate |
+| [`development-records/`](development-records/) | The exploratory scripted checks (D303, D304), the planted-bug and planted-scale checks, and the `tell`-split check |
+| [`family2-validation.json`](family2-validation.json) | Family 2's simulated-null validation (D308) |
 | [`DRAFT.md`](DRAFT.md) | Draft v3.2 of the design, with the changes from each review round and the "not scheduled" header |
 | [`NOTES_FROM_02.md`](NOTES_FROM_02.md) | What experiment 02 found that bears on 03a, written for the review of draft v2 |
 
-There is no pre-registration, code specific to 03a, configuration or run data.
+The code is `wormwars/e03a/`, `scripts/e03a.py` and `tests/test_e03a_*.py`. There is no pre-registration: 03a stopped
+before one was written. *Updated 2026-10-18: this said "There is no pre-registration, code specific to 03a,
+configuration or run data", true before D308.*
 
 ## Reproduce it
 
-**Not run.** There is nothing to reproduce.
+*Updated 2026-10-18:* see [`RESULTS.md`](RESULTS.md), "Reproduce it". In short:
+- run `python scripts/e03a.py <stage>` for each pilot-dev stage, in order, on CUDA with the pinned environment;
+- `python scripts/e03a_summary.py` rebuilds `summary.json` from the committed records, on the CPU.
+
+Earlier: "Not run. There is nothing to reproduce."
 
 ## Extend it
 

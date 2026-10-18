@@ -2,7 +2,19 @@
 
 *27 September 2026. Replaces v2. Written from roadmap v2, Astra 6's review of v2, and Claude Code's status report of the same day. A local v2.2 exists on the `roadmap` branch and was not seen when this version was written, so merge anything it adds. (Merged: see "Carried over from v2.2" below. Four factual corrections were made on installation; they are listed in D062.) This is a living document, not a pre-registration. When a result changes it, the change is recorded here with the reason.*
 
-## Status, 1-16 October 2026 (updates the section below; that section's later edits are recorded in DECISIONS.md)
+## Status, 1-18 October 2026 (updates the section below; that section's later edits are recorded in DECISIONS.md)
+
+**18 October 2026** (D302-D318): **03a stopped after pilot-dev; exploratory** (`experiments/03a-self-consistency/`,
+RESULTS.md).
+- **Before any GPU run:** design v7.1 was agreed by both reviewers, and the code was reviewed in three rounds. The
+  owner gave the word for pilot-dev's GPU.
+- **Pilot-dev**, on one shuffled graph, found no anatomical signal on its two targets. The NIP brains had no use for
+  the neuron, and refits handed the true partners fell short of exact restoration.
+- **A bounded check of the search** followed (the owner's choice, on both reviewers' advice). Its rule was fixed
+  before it ran, and it gave outcome (iii): no variant restored reliably. So 03a ends, with 5.84 of its 72 GPU-hours
+  spent and no pre-registration.
+- **Next:** the owner left the choice to Claude ("Do as you consider best"). Claude picked a design round for the
+  memory thread's predictions (below); its GPU runs will need the owner's word.
 
 **16 October 2026** (D285-D300): **Track B started with 03mc,** the confirmatory study of 03m's leads
 (`experiments/03mc-p4-confirm/`). Pre-registered and pushed before its run; 7.73 of 10 GPU-hours. **All four

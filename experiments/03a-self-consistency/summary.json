@@ -1,0 +1,921 @@
+{
+ "source": "experiments/03a-self-consistency/pilot-dev/*.json, read by scripts/e03a_summary.py",
+ "stages": {
+  "setup": {
+   "commit": "a5760c4",
+   "hours_wall": 0.007
+  },
+  "evolve-intact": {
+   "commit": "a5760c4",
+   "hours_wall": 0.74
+  },
+  "panel": {
+   "commit": "1b0531a",
+   "hours_wall": 0.027
+  },
+  "evolve-nip": {
+   "commit": "1b0531a",
+   "hours_wall": 0.666
+  },
+  "baseline": {
+   "commit": "1b0531a",
+   "hours_wall": 0.017
+  },
+  "probe": {
+   "commit": "1b0531a",
+   "hours_wall": 0.085
+  },
+  "tune": {
+   "commit": "f27d4c4",
+   "hours_wall": 1.552
+  },
+  "full": {
+   "commit": "f27d4c4",
+   "hours_wall": 1.464
+  },
+  "report": {
+   "commit": "f27d4c4",
+   "hours_wall": 0.0
+  },
+  "search-check": {
+   "commit": "4d6e887",
+   "hours_wall": 0.728
+  }
+ },
+ "compute": {
+  "pilot_dev_hours_measured": 5.285,
+  "exploratory_checks_hours": 0.53,
+  "pilot_dev_cap": 6.0,
+  "experiment_cap": 72.0,
+  "rates_per_second": {
+   "measure": 892.0,
+   "calibration": 4.7,
+   "selection": 210.5,
+   "holdout": 210.6,
+   "final": 971.9,
+   "probe": 328.2,
+   "tuning": 587.6,
+   "search": 669.4
+  },
+  "note": "the CUDA preflight's hours (runs/e03a-smoke-cuda, local) are counted by the cap clock but are not in this file; D317 gives 0.026"
+ },
+ "evolution": {
+  "selector": {
+   "generation0_validation": 0.5781,
+   "champion_validation": 2.1289,
+   "champion_generation": 925
+  },
+  "MIP": {
+   "generation0_validation": 0.082,
+   "champion_validation": 2.0234,
+   "champion_generation": 750
+  },
+  "NIP/URXL": {
+   "generation0_validation": 0.3008,
+   "champion_validation": 2.2148,
+   "champion_generation": 400,
+   "pinned": true
+  },
+  "NIP/PLNL": {
+   "generation0_validation": 0.1172,
+   "champion_validation": 2.2109,
+   "champion_generation": 875,
+   "pinned": true
+  }
+ },
+ "panel": {
+  "selector_intact_mean": 2.0586,
+  "eligible_representatives": 170,
+  "deletions_that_zero_the_selector": 10,
+  "tiers": {
+   "high": [
+    "URXL",
+    "PLNL",
+    "AIBL"
+   ],
+   "medium": [
+    "SDQL",
+    "VB08"
+   ],
+   "low": [
+    "AS08"
+   ]
+  },
+  "targets": [
+   "URXL",
+   "PLNL"
+  ],
+  "flags": {}
+ },
+ "baseline": {
+  "mip_intact_mean": 1.9663,
+  "p": 0.0983,
+  "target_brains": [
+   {
+    "label": "MIP/URXL",
+    "deletion_deficit": 1.783203125,
+    "restoration_exact": true,
+    "own_equals_deleted": null,
+    "degree": 45,
+    "counts": {
+     "in": 18,
+     "out": 25,
+     "gap": 2
+    }
+   },
+   {
+    "label": "MIP/PLNL",
+    "deletion_deficit": 0.0126953125,
+    "restoration_exact": true,
+    "own_equals_deleted": null,
+    "degree": 10,
+    "counts": {
+     "in": 4,
+     "out": 3,
+     "gap": 3
+    }
+   },
+   {
+    "label": "NIP/URXL",
+    "deletion_deficit": null,
+    "restoration_exact": null,
+    "own_equals_deleted": true,
+    "degree": 45,
+    "counts": {
+     "in": 18,
+     "out": 25,
+     "gap": 2
+    }
+   },
+   {
+    "label": "NIP/PLNL",
+    "deletion_deficit": null,
+    "restoration_exact": null,
+    "own_equals_deleted": true,
+    "degree": 10,
+    "counts": {
+     "in": 4,
+     "out": 3,
+     "gap": 3
+    }
+   }
+  ]
+ },
+ "probe": {
+  "worlds": 2048,
+  "evolved": {
+   "selector": {
+    "plain": 2.096,
+    "L=5": 0.273,
+    "L=10": 0.551,
+    "L=20": 1.354,
+    "L=50": 1.828,
+    "full_replay_equals_plain": true
+   },
+   "MIP": {
+    "plain": 1.948,
+    "L=5": 0.002,
+    "L=10": 0.059,
+    "L=20": 0.705,
+    "L=50": 1.566,
+    "full_replay_equals_plain": true
+   },
+   "NIP/URXL": {
+    "plain": 2.209,
+    "L=5": 0.607,
+    "L=10": 0.319,
+    "L=20": 0.738,
+    "L=50": 2.009,
+    "full_replay_equals_plain": true
+   },
+   "NIP/PLNL": {
+    "plain": 2.168,
+    "L=5": 0.24,
+    "L=10": 1.165,
+    "L=20": 0.737,
+    "L=50": 2.1,
+    "full_replay_equals_plain": true
+   }
+  },
+  "scripted": {
+   "KT": {
+    "plain": 1.159,
+    "L=5": 1.159,
+    "L=10": 1.159,
+    "L=20": 1.159,
+    "L=50": 1.159,
+    "unaffected": true
+   },
+   "KTM": {
+    "plain": 2.879,
+    "L=5": 2.879,
+    "L=10": 2.879,
+    "L=20": 2.879,
+    "L=50": 2.879,
+    "unaffected": true
+   },
+   "KTS T=5": {
+    "plain": 2.721,
+    "L=5": 2.767,
+    "L=10": 2.738,
+    "L=20": 2.718,
+    "L=50": 2.721
+   },
+   "KTS T=10": {
+    "plain": 2.186,
+    "L=5": 2.378,
+    "L=10": 2.345,
+    "L=20": 2.186,
+    "L=50": 2.188
+   },
+   "KTS T=20": {
+    "plain": 1.601,
+    "L=5": 1.582,
+    "L=10": 1.407,
+    "L=20": 1.618,
+    "L=50": 1.634
+   }
+  }
+ },
+ "tune": {
+  "chosen": {
+   "temperatures": [
+    0.1,
+    0.2,
+    0.4,
+    0.8
+   ],
+   "p_move": 0.3333333333333333,
+   "max_moves": 1,
+   "shaping": 0.0
+  },
+  "rounds": [
+   {
+    "round": "A",
+    "flag": "no ladder has every neighbour pair inside the swap band: the nearest",
+    "chosen": 1,
+    "mean_final": [
+     2.0389,
+     2.0424,
+     2.0211
+    ],
+    "swap_rate": [
+     0.792,
+     0.875,
+     0.946
+    ]
+   },
+   {
+    "round": "B",
+    "flag": null,
+    "chosen": 0,
+    "mean_final": [
+     2.0424,
+     2.032,
+     2.0394,
+     2.0341
+    ],
+    "swap_rate": [
+     0.875,
+     0.867,
+     0.858,
+     0.871
+    ]
+   },
+   {
+    "round": "C",
+    "flag": null,
+    "chosen": 0,
+    "mean_final": [
+     2.0424,
+     2.0488
+    ],
+    "swap_rate": [
+     0.875,
+     0.875
+    ]
+   }
+  ]
+ },
+ "full": {
+  "setting": {
+   "temperatures": [
+    0.1,
+    0.2,
+    0.4,
+    0.8
+   ],
+   "p_move": 0.3333333333333333,
+   "max_moves": 1,
+   "shaping": 0.0
+  },
+  "p": 0.0983,
+  "delta_eval": 0.0211,
+  "delta_search": 0.0422,
+  "delta_search_fraction_of_p": 0.43,
+  "target_brains": [
+   {
+    "label": "MIP/URXL",
+    "deletion_deficit": 1.7832,
+    "headroom": {
+     "difference": 1.6512,
+     "interval": [
+      1.6105,
+      1.6924
+     ],
+     "verdict": "above"
+    },
+    "advantage": {
+     "difference": 0.1217,
+     "interval": [
+      0.1041,
+      0.1393
+     ],
+     "verdict": "above"
+    },
+    "functional": {
+     "difference": -0.0585,
+     "interval": [
+      -0.0722,
+      -0.0446
+     ],
+     "verdict": "equivalent"
+    },
+    "restoration": {
+     "difference": -0.132,
+     "interval": [
+      -0.1644,
+      -0.0998
+     ],
+     "verdict": "below"
+    },
+    "refit_means": [
+     1.7773,
+     1.8926,
+     1.833
+    ],
+    "refit_sd": 0.0576,
+    "enrichment_p": 0.6899,
+    "no_task_p": 0.6107,
+    "chance_q": 0.0704,
+    "attributes": {
+     "reliable": false,
+     "headroom_present": true,
+     "advantage_present": true,
+     "functional": "reached",
+     "enrichment_p_below_0.05": false,
+     "outcome": "excluded"
+    },
+    "free_auc": [
+     0.503,
+     0.488,
+     0.497,
+     0.493,
+     0.503
+    ],
+    "free_q_range": [
+     0.044,
+     0.156
+    ],
+    "free_paired_diff_mean": [
+     -0.162,
+     -0.172,
+     -0.151,
+     -0.171,
+     -0.202
+    ],
+    "longer": [
+     {
+      "label": "longer-0",
+      "final_mean": {
+       "100": 1.8701171875,
+       "200": 1.8291015625
+      },
+      "auc": {
+       "100": 0.5137467604574687,
+       "200": 0.5046528562905886
+      }
+     },
+     {
+      "label": "longer-1",
+      "final_mean": {
+       "100": 1.7412109375,
+       "200": 1.87109375
+      },
+      "auc": {
+       "100": 0.4900151751311684,
+       "200": 0.4967231236696592
+      }
+     }
+    ]
+   },
+   {
+    "label": "MIP/PLNL",
+    "deletion_deficit": 0.0127,
+    "headroom": {
+     "difference": -0.0104,
+     "interval": [
+      -0.0304,
+      0.0094
+     ],
+     "verdict": "equivalent"
+    },
+    "advantage": {
+     "difference": 0.0342,
+     "interval": [
+      0.0234,
+      0.0453
+     ],
+     "verdict": "equivalent"
+    },
+    "functional": {
+     "difference": -0.0092,
+     "interval": [
+      -0.02,
+      0.0019
+     ],
+     "verdict": "equivalent"
+    },
+    "restoration": {
+     "difference": -0.0231,
+     "interval": [
+      -0.0449,
+      -0.0013
+     ],
+     "verdict": "equivalent"
+    },
+    "refit_means": [
+     1.9502,
+     1.8882,
+     1.9912
+    ],
+    "refit_sd": 0.0519,
+    "enrichment_p": 0.122,
+    "no_task_p": 1.0,
+    "chance_q": 0.0113,
+    "attributes": {
+     "reliable": true,
+     "headroom_present": false,
+     "advantage_present": false,
+     "functional": "reached",
+     "enrichment_p_below_0.05": false,
+     "outcome": "functional success, anatomy undetermined"
+    },
+    "free_auc": [
+     0.494,
+     0.494,
+     0.494,
+     0.551,
+     0.494
+    ],
+    "free_q_range": [
+     0.0,
+     0.1
+    ],
+    "free_paired_diff_mean": [
+     -0.012,
+     -0.019,
+     -0.016,
+     -0.026,
+     -0.018
+    ],
+    "longer": [
+     {
+      "label": "longer-0",
+      "final_mean": {
+       "100": 1.939453125,
+       "200": 1.93994140625
+      },
+      "auc": {
+       "100": 0.4943996263906778,
+       "200": 0.4943996263906778
+      }
+     },
+     {
+      "label": "longer-1",
+      "final_mean": {
+       "100": 1.93603515625,
+       "200": 1.85107421875
+      },
+      "auc": {
+       "100": 0.4943996263906778,
+       "200": 0.4943996263906778
+      }
+     }
+    ]
+   },
+   {
+    "label": "NIP/URXL",
+    "deletion_deficit": null,
+    "headroom": {
+     "difference": 0.0521,
+     "interval": [
+      0.0317,
+      0.0721
+     ],
+     "verdict": "equivalent"
+    },
+    "advantage": {
+     "difference": 0.0143,
+     "interval": [
+      -0.0005,
+      0.0292
+     ],
+     "verdict": "equivalent"
+    },
+    "functional": {
+     "difference": 0.0079,
+     "interval": [
+      -0.004,
+      0.0199
+     ],
+     "verdict": "equivalent"
+    },
+    "refit_means": [
+     2.25,
+     2.2344,
+     2.1978
+    ],
+    "refit_sd": 0.0268,
+    "enrichment_p": 0.6208,
+    "no_task_p": 0.6158,
+    "chance_q": 0.0704,
+    "attributes": {
+     "reliable": true,
+     "headroom_present": false,
+     "advantage_present": false,
+     "functional": "reached",
+     "enrichment_p_below_0.05": false,
+     "outcome": "functional success, anatomy undetermined"
+    },
+    "free_auc": [
+     0.504,
+     0.499,
+     0.512,
+     0.48,
+     0.473
+    ],
+    "free_q_range": [
+     0.0,
+     0.178
+    ],
+    "free_paired_diff_mean": [
+     -0.135,
+     -0.082,
+     -0.137,
+     -0.09,
+     -0.076
+    ],
+    "longer": []
+   },
+   {
+    "label": "NIP/PLNL",
+    "deletion_deficit": null,
+    "headroom": {
+     "difference": 0.0065,
+     "interval": [
+      -0.0164,
+      0.0293
+     ],
+     "verdict": "equivalent"
+    },
+    "advantage": {
+     "difference": 0.0319,
+     "interval": [
+      0.0143,
+      0.0499
+     ],
+     "verdict": "equivalent"
+    },
+    "functional": {
+     "difference": -0.0038,
+     "interval": [
+      -0.0211,
+      0.0134
+     ],
+     "verdict": "equivalent"
+    },
+    "refit_means": [
+     2.1299,
+     2.1602,
+     2.1221
+    ],
+    "refit_sd": 0.0201,
+    "enrichment_p": 1.0,
+    "no_task_p": 1.0,
+    "chance_q": 0.0113,
+    "attributes": {
+     "reliable": true,
+     "headroom_present": false,
+     "advantage_present": false,
+     "functional": "reached",
+     "enrichment_p_below_0.05": false,
+     "outcome": "functional success, anatomy undetermined"
+    },
+    "free_auc": [
+     0.494,
+     0.494,
+     0.494,
+     0.494,
+     0.494
+    ],
+    "free_q_range": [
+     0.0,
+     0.1
+    ],
+    "free_paired_diff_mean": [
+     -0.022,
+     -0.031,
+     -0.013,
+     -0.007,
+     -0.011
+    ],
+    "longer": []
+   }
+  ]
+ },
+ "report": {
+  "plan_total_hours": 43.76,
+  "plan_pilot_check_hours": 10.34,
+  "remaining_hours_then": 66.89
+ },
+ "search_check": {
+  "rule": {
+   "outcome": "iii",
+   "variant": null,
+   "unreliable_but_recovering": [],
+   "reading": "no variant restores reliably: a budget-based stop, 03a ends here and pilot-dev is reported as exploratory (it does not show that every feasible search would fail)"
+  },
+  "p": 0.0983,
+  "lesion": {
+   "restored_mean": 1.96630859375,
+   "n_edges": 45,
+   "n_drop_above_p": 19,
+   "n_drop_lower_bound_above_0": 25,
+   "sum_drops": 20.63916015625,
+   "share_of_positive_in_top": {
+    "1": 0.09258691085884213,
+    "3": 0.27256850204149063,
+    "10": 0.7350546364258573
+   },
+   "largest_drops": [
+    {
+     "type": "out",
+     "drop": 1.916
+    },
+    {
+     "type": "out",
+     "drop": 1.896
+    },
+    {
+     "type": "out",
+     "drop": 1.828
+    },
+    {
+     "type": "out",
+     "drop": 1.693
+    },
+    {
+     "type": "out",
+     "drop": 1.622
+    }
+   ],
+   "edges_above_p_by_type": {
+    "in": 1,
+    "out": 18,
+    "gap": 0
+   },
+   "edges_by_type": {
+    "in": 18,
+    "out": 25,
+    "gap": 2
+   }
+  },
+  "reeval": {
+   "refit-0": {
+    "oracle_best_reference_gain": 0.0479,
+    "mean_reference_gain_of_offspring": -0.1214,
+    "by_worlds": {
+     "16": {
+      "mean_reference_gain_of_winner": -0.013,
+      "se_of_that_mean_over_sets": 0.018,
+      "share_accepted_greedy": 1.0,
+      "share_of_accepted_that_are_worse": 0.5,
+      "spearman_selection_reference_mean": 0.469
+     },
+     "32": {
+      "mean_reference_gain_of_winner": -0.005,
+      "se_of_that_mean_over_sets": 0.017,
+      "share_accepted_greedy": 1.0,
+      "share_of_accepted_that_are_worse": 0.5,
+      "spearman_selection_reference_mean": 0.634
+     },
+     "64": {
+      "mean_reference_gain_of_winner": -0.012,
+      "se_of_that_mean_over_sets": 0.017,
+      "share_accepted_greedy": 1.0,
+      "share_of_accepted_that_are_worse": 0.625,
+      "spearman_selection_reference_mean": 0.717
+     }
+    }
+   },
+   "free-0": {
+    "oracle_best_reference_gain": 0.007,
+    "mean_reference_gain_of_offspring": -0.1723,
+    "by_worlds": {
+     "16": {
+      "mean_reference_gain_of_winner": -0.03,
+      "se_of_that_mean_over_sets": 0.011,
+      "share_accepted_greedy": 1.0,
+      "share_of_accepted_that_are_worse": 0.812,
+      "spearman_selection_reference_mean": 0.446
+     },
+     "32": {
+      "mean_reference_gain_of_winner": -0.019,
+      "se_of_that_mean_over_sets": 0.007,
+      "share_accepted_greedy": 0.875,
+      "share_of_accepted_that_are_worse": 0.857,
+      "spearman_selection_reference_mean": 0.553
+     },
+     "64": {
+      "mean_reference_gain_of_winner": -0.006,
+      "se_of_that_mean_over_sets": 0.003,
+      "share_accepted_greedy": 0.812,
+      "share_of_accepted_that_are_worse": 0.692,
+      "spearman_selection_reference_mean": 0.674
+     }
+    }
+   }
+  },
+  "variants": [
+   {
+    "name": "V4",
+    "from": "Fable, Astra: one chain, the best offspring confirmed on fresh worlds",
+    "reliable": false,
+    "recovers": false,
+    "restoration_over_refits": {
+     "difference": -0.098,
+     "interval": [
+      -0.1611,
+      -0.0424
+     ],
+     "verdict": "undetermined"
+    },
+    "refit_sd": 0.0623,
+    "refit_sd_95": [
+     0.0373,
+     0.179
+    ],
+    "advantage": {
+     "difference": 0.0274,
+     "interval": [
+      0.0134,
+      0.0415
+     ],
+     "verdict": "equivalent"
+    },
+    "functional": {
+     "difference": -0.0126,
+     "interval": [
+      -0.0239,
+      -0.0013
+     ],
+     "verdict": "equivalent"
+    },
+    "enrichment_p": 0.504,
+    "per_type_p": {
+     "in": 0.2336,
+     "out": 0.764,
+     "gap": 1.0
+    },
+    "no_task_p": 0.162,
+    "free_accepted_share": [
+     0.65,
+     0.6,
+     0.65,
+     0.67,
+     0.56
+    ],
+    "free_auc": [
+     0.516,
+     0.49,
+     0.49,
+     0.512,
+     0.473
+    ]
+   },
+   {
+    "name": "V3",
+    "from": "Fable: the ladder's budget moved into worlds, one chain",
+    "reliable": false,
+    "recovers": false,
+    "restoration_over_refits": {
+     "difference": -0.1407,
+     "interval": [
+      -0.222,
+      -0.0624
+     ],
+     "verdict": "undetermined"
+    },
+    "refit_sd": 0.0937,
+    "refit_sd_95": [
+     0.0561,
+     0.2692
+    ],
+    "advantage": {
+     "difference": -0.0038,
+     "interval": [
+      -0.0186,
+      0.0108
+     ],
+     "verdict": "equivalent"
+    },
+    "functional": {
+     "difference": 0.0552,
+     "interval": [
+      0.0417,
+      0.0685
+     ],
+     "verdict": "equivalent"
+    },
+    "enrichment_p": 0.3208,
+    "per_type_p": {
+     "in": 0.2148,
+     "out": 0.5321,
+     "gap": 1.0
+    },
+    "no_task_p": 0.746,
+    "free_accepted_share": [
+     0.94,
+     0.93,
+     0.86,
+     0.95,
+     0.87
+    ],
+    "free_auc": [
+     0.505,
+     0.494,
+     0.515,
+     0.5,
+     0.49
+    ]
+   },
+   {
+    "name": "V1",
+    "from": "Astra: three offspring at 32 worlds",
+    "reliable": false,
+    "recovers": false,
+    "restoration_over_refits": {
+     "difference": -0.131,
+     "interval": [
+      -0.1926,
+      -0.0685
+     ],
+     "verdict": "undetermined"
+    },
+    "refit_sd": 0.0673,
+    "refit_sd_95": [
+     0.0403,
+     0.1933
+    ],
+    "advantage": {
+     "difference": 0.126,
+     "interval": [
+      0.1104,
+      0.1414
+     ],
+     "verdict": "above"
+    },
+    "functional": {
+     "difference": 0.0006,
+     "interval": [
+      -0.0145,
+      0.0161
+     ],
+     "verdict": "equivalent"
+    },
+    "enrichment_p": 0.4214,
+    "per_type_p": {
+     "in": 0.2028,
+     "out": 0.6786,
+     "gap": 1.0
+    },
+    "no_task_p": 0.8844,
+    "free_accepted_share": [
+     0.95,
+     0.95,
+     0.95,
+     0.93,
+     0.93
+    ],
+    "free_auc": [
+     0.498,
+     0.515,
+     0.501,
+     0.491,
+     0.498
+    ]
+   }
+  ]
+ }
+}

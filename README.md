@@ -33,7 +33,7 @@ selection acts on team results.
 | [02b](experiments/02b-champion-analysis/README.md) | What did 02's champions actually learn? | Published; exploratory re-analysis | They circle and slow down on food. Selection built a slow memory of recent food. It does not revise 02 |
 | [03](experiments/03-generation0/README.md) | Before any evolution, do N2's random brains differ from five null ensembles? | Published; pre-registered | History dependence (P4) is distinctive, but borderline: one more routing-matched graph at or above N2 would have failed the test (Holm p 0.047, then 0.070) |
 | [03r](experiments/03r-replication/README.md) | A full, separately pre-registered replication of 03 | Published; pre-registered | "Replicated under the registered single-signal test and under 03's original three-signal rule." |
-| [03a](experiments/03a-self-consistency/README.md) | Can a missing neuron's wiring be predicted from the rest of the brain plus a task? | Draft; a six-neuron proof of concept capped at 72 GPU-hours is planned (D094), next in Track B after 03mc; not started | None yet. As drafted, its searches alone need about 785 GPU-hours at 02's throughput, plus about 37 for whole-brain evolution |
+| [03a](experiments/03a-self-consistency/README.md) | Can a missing neuron's wiring be predicted from the rest of the brain plus a task? | Exploratory: stopped after pilot-dev, its development stage on one shuffled graph, and a bounded check of the search (2026-10-18, D312-D318); never pre-registered; 5.84 of its 72 GPU-hours | No anatomical signal: free searches matched the refits' score with partners at chance. The search could not test the hypothesis, because refits handed the true partners stayed about 0.1 below exact restoration under four search settings. Nothing ran on N2 |
 | [E1](experiments/E1-navigation/README.md) | Can a scripted navigator reach moved targets on unseen layouts, beat blind search, and use the cue? The positive control before evolving a navigator | Published; pre-registered, public before its run | "E1 positive control: passed": 8.68 targets per episode (98.7% of an oracle); 0.03 with a mirrored decoy |
 | [04a](experiments/04a-navigation-primitive/README.md) | Can evolution, from random weights on the N2 wiring, produce a brain that reaches moved targets, beats blind search and uses the cue? | Published; pre-registered, public before its run | "04a: passed": 8 of 12 shaped runs (4 of 4 unshaped); the champions use the cue but are weak navigators (2.0-2.8 targets, 23-32% of an oracle) |
 | [03m](experiments/03m-p4-mechanism/README.md) | What drives 03's history dependence (P4)? | Exploratory; run, reviewed, corrected | N2's history fades more slowly than nearly all the shuffles'; its large food response depends on weight placement and on RIA and AIY; most weight permutations lower its P4, gap junctions narrow its lead, and no tested single or paired deletion removed it |
@@ -47,7 +47,8 @@ selection acts on team results.
 **Next on the roadmap:**
 - **Track E has run its schedule through E4;** what follows E4 is direction, not schedule.
 - **In the biology track:** 03mc, the confirmatory study of 03m's leads, passed all four primaries (2026-10-16).
-  03a's six-neuron proof of concept is next; it has not started.
+  03a's six-neuron proof of concept then stopped after pilot-dev (exploratory, 2026-10-18). Next: a design round
+  for the memory thread's predictions.
 - [`ROADMAP.md`](ROADMAP.md)'s status section lists what v3 planned that has not run, and what waits for the
   owner's decision.
 

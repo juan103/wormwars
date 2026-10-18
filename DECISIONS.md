@@ -9783,3 +9783,36 @@ record is `experiments/03a-self-consistency/pilot-dev/search-check.json`, and `c
 - Pilot-dev and this check are reported as exploratory, in a write-up reviewed by both and then published.
 - No pilot-check, formal run or pre-registration follows.
 - 03a's remaining 66.2 GPU-hours are not spent.
+
+## D318 — 03a written up as exploratory; the owner's "Do as you consider best"; the next step chosen
+
+**The owner** (2026-10-18), asked "What now?" after D317 with a list of options, replied "Do as you consider best".
+Claude's choice:
+1. 03a's exploratory write-up, reviewed by both reviewers, then published on main. Consensus covers main pushes; the
+   owner is informed after.
+2. Then a design round for the memory thread's predictions (ROADMAP, "The thread worth following"): the N2 advantage
+   should be larger on tasks that need memory, and should shrink over generations.
+   - Why this one: it tests the project's main hypothesis thread, and 03a's history-use probe carries over to it.
+   - Design and review need no GPU. Any GPU run needs the owner's word.
+
+**The write-up:**
+- `experiments/03a-self-consistency/RESULTS.md` (exploratory);
+- `summary.json`, rebuilt from the committed records by `scripts/e03a_summary.py`. `tests/test_e03a_summary.py` checks
+  that the committed file is exactly what the records give, with a sabotage case;
+- dated updates to 03a's README, the project README and ROADMAP's status.
+
+**Every number on the page was re-derived from the records before committing.** That check found three errors in the
+draft, which were fixed before the commit:
+- the draft said the free searches "regained the brain's score". They matched the refits' score, which is itself below
+  exact restoration;
+- it said the code was reviewed "before pilot-dev ran". Pilot-dev's first stages ran while rounds 2 and 3 were under
+  review;
+- it rounded a 62.5% share to 62%.
+
+**Correction to D317** (2026-10-18): *D317 said "Even so, the free searches regained the score with other partners
+(functional comparison equivalent in every variant)".* The functional comparison is free searches against the
+refits, not against the intact or restored brain, and the refits are about 0.1 below restoration. What holds: the free
+searches matched the score of refits handed the true partners. The same correction applies to D317's reading, "yet
+other wiring reached the same score".
+
+**Next:** the results review by both, then main.
