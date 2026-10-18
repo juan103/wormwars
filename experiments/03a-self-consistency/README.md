@@ -1,11 +1,17 @@
 # 03a: The self-consistency hypothesis (stopped after pilot-dev; exploratory)
 
-> **Update, 2026-10-18 (D312-D318): 03a stopped before its pre-registration.** It ran its development stage on one
-> shuffled graph (pilot-dev, 5.29 GPU-hours), and then a bounded check of the search that both reviewers recommended
-> and the owner chose. The check's rule, fixed before it ran, gave outcome (iii): no search variant restored the
-> deleted neuron's score reliably even when handed its true partners, so 03a ends here. Nothing ran on N2. The results
-> are exploratory: **[`RESULTS.md`](RESULTS.md)**, with the numbers in [`summary.json`](summary.json). 03a spent 5.84
-> of its 72 GPU-hours. The notes below are the earlier status, kept as they were.
+> **Update, 2026-10-18 (D312-D319): 03a stopped before its pre-registration.**
+> - **What ran:** its development stage on one shuffled graph (pilot-dev), and then a bounded check of the search
+>   that both reviewers recommended and the owner chose. Together they measured 5.29 GPU-hours, plus 0.03 for the
+>   CUDA preflight.
+> - **How it ended:** the check's rule, fixed before it ran, gave outcome (iii). No search variant reliably regained
+>   the restored brain's score, even when handed the deleted neuron's true partners, so 03a ends here.
+> - **N2:** no reconstruction search or pilot brain evolution ran on N2. The pilot's motor gains were calibrated
+>   against an N2 reference, and the earlier exploratory checks scored 04a's N2 champions.
+> - **Results:** exploratory, in **[`RESULTS.md`](RESULTS.md)**, with the numbers in [`summary.json`](summary.json).
+> - **Compute:** 03a spent 5.84 of its 72 GPU-hours, the 0.53 of exploratory checks included.
+>
+> The notes below are the earlier status, kept as they were.
 
 > **This is a draft design. It has not been run, and it is deliberately not scheduled.** Nothing in
 > this folder is a result. The owner decided on 2026-09-27 (D062) that 03a's task and budget are
@@ -30,7 +36,7 @@
 
 **Status:** *Updated 2026-10-18: stopped after pilot-dev and the bounded search check, exploratory (D317, D318;
 [`RESULTS.md`](RESULTS.md)). Design v7.1 ([`DESIGN.md`](DESIGN.md)), pilot-dev plan v3.3 ([`PILOT-DEV.md`](PILOT-DEV.md)),
-runs on `a5760c4` to `4d6e887`, 5.84 GPU-hours.* Earlier: draft v3.2 (2026-09-25), not run, not scheduled (D062). *Updated 2026-09-29:* it becomes a six-neuron proof of concept capped at 72 GPU-hours (the owner, D094), planned in the biology track after a confirmatory study of 03m's leads · **Run:** none · **Commit:**
+pilot-dev's stages on commits `a5760c4` to `4d6e887`; 03a's total 5.84 GPU-hours, its exploratory checks included.* Earlier: draft v3.2 (2026-09-25), not run, not scheduled (D062). *Updated 2026-09-29:* it becomes a six-neuron proof of concept capped at 72 GPU-hours (the owner, D094), planned in the biology track after a confirmatory study of 03m's leads · **Run:** none · **Commit:**
 none · **Compute:** none spent. The draft as written is estimated at about 31 million genome
 evaluations for its searches, about 785 GPU-hours at 02's batch-32 throughput, plus about 37
 GPU-hours of whole-brain evolution
@@ -188,10 +194,14 @@ Roadmap v3's redesign list ([`ROADMAP.md`](../../ROADMAP.md#03a-redesign-after-0
     decision (D094): six neurons (3 high, 2 medium, 1 low relevance), capped at 72 GPU-hours with the
     pilot; if it does not fit, the searches or null arms are cut, not the six neurons.*
   - **Wording:** animal-to-animal variability is not a ceiling on recovery from one fixed graph.
-- **After 03a:** a full map runs only if 03a separates the three outcomes. Later ideas from the
+- **After 03a:** a full map runs only if 03a separates the three outcomes. *Updated 2026-10-18: 03a stopped before
+  it could separate them (D317), so no full map follows from it.* Later ideas from the
   draft: more tasks, leave-k-out, missing synapses, and a full self-consistent-field loop.
 
 ## Record
+
+*Updated 2026-10-18:* the design rounds, code, pilot-dev, the bounded check and the write-up are D302-D319; their
+reviews are listed in [`RESULTS.md`](RESULTS.md), "Record". The list below is the September record.
 
 - Design: [`DRAFT.md`](DRAFT.md); notes: [`NOTES_FROM_02.md`](NOTES_FROM_02.md).
 - Decisions ([`DECISIONS.md`](../../DECISIONS.md)): D044 (silencing is not deletion), D045 (draft

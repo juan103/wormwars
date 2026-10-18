@@ -1,0 +1,208 @@
+{
+ "time_unit": "synchronised wall-clock seconds per category (not GPU kernel time)",
+ "neural_update_unit": "strains x batch x substeps network updates (network size not included)",
+ "attempts": [
+  {
+   "file": "20261018T001704Z-916b630e.json",
+   "status": "completed",
+   "experiment": "03a",
+   "script": "scripts/e03a.py",
+   "stage": "setup",
+   "default_category": "calibration",
+   "git_commit": "a5760c43c373d7b6d88751d27db3262424de941a"
+  },
+  {
+   "file": "20261018T001725Z-7fc363a7.json",
+   "status": "completed",
+   "experiment": "03a",
+   "script": "scripts/e03a.py",
+   "stage": "evolve-intact",
+   "default_category": "selection",
+   "git_commit": "a5760c43c373d7b6d88751d27db3262424de941a"
+  },
+  {
+   "file": "20261018T001736Z-992dd929.json",
+   "status": "completed",
+   "experiment": "03a",
+   "script": "scripts/e03a.py",
+   "stage": "panel",
+   "default_category": "measure",
+   "git_commit": "a5760c43c373d7b6d88751d27db3262424de941a"
+  },
+  {
+   "file": "20261018T001745Z-dcf303cc.json",
+   "status": "completed",
+   "experiment": "03a",
+   "script": "scripts/e03a.py",
+   "stage": "evolve-nip",
+   "default_category": "selection",
+   "git_commit": "a5760c43c373d7b6d88751d27db3262424de941a"
+  },
+  {
+   "file": "20261018T001750Z-80c5385b.json",
+   "status": "completed",
+   "experiment": "03a",
+   "script": "scripts/e03a.py",
+   "stage": "baseline",
+   "default_category": "final",
+   "git_commit": "a5760c43c373d7b6d88751d27db3262424de941a"
+  },
+  {
+   "file": "20261018T001757Z-da57b2d8.json",
+   "status": "completed",
+   "experiment": "03a",
+   "script": "scripts/e03a.py",
+   "stage": "tune",
+   "default_category": "tuning",
+   "git_commit": "a5760c43c373d7b6d88751d27db3262424de941a"
+  },
+  {
+   "file": "20261018T001810Z-14b19e01.json",
+   "status": "completed",
+   "experiment": "03a",
+   "script": "scripts/e03a.py",
+   "stage": "full",
+   "default_category": "search",
+   "git_commit": "a5760c43c373d7b6d88751d27db3262424de941a"
+  },
+  {
+   "file": "20261018T001818Z-bfd9240b.json",
+   "status": "completed",
+   "experiment": "03a",
+   "script": "scripts/e03a.py",
+   "stage": "probe",
+   "default_category": "probe",
+   "git_commit": "a5760c43c373d7b6d88751d27db3262424de941a"
+  },
+  {
+   "file": "20261018T001831Z-ae98fd06.json",
+   "status": "completed",
+   "experiment": "03a",
+   "script": "scripts/e03a.py",
+   "stage": "report",
+   "default_category": "measure",
+   "git_commit": "a5760c43c373d7b6d88751d27db3262424de941a"
+  },
+  {
+   "file": "20261018T001833Z-a7ebd4e9.json",
+   "status": "completed",
+   "experiment": "03a",
+   "script": "scripts/e03a.py",
+   "stage": "family2",
+   "default_category": "measure",
+   "git_commit": "a5760c43c373d7b6d88751d27db3262424de941a"
+  },
+  {
+   "file": "20261018T101541Z-b5f35310.json",
+   "status": "completed",
+   "experiment": "03a",
+   "script": "scripts/e03a.py",
+   "stage": "full",
+   "default_category": "search",
+   "git_commit": "f8506d189e078fd99c5e377c6b6ffbe862d09dc9"
+  },
+  {
+   "file": "20261018T101549Z-a8f475ff.json",
+   "status": "failed",
+   "experiment": "03a",
+   "script": "scripts/e03a.py",
+   "stage": "report",
+   "default_category": "measure",
+   "git_commit": "f8506d189e078fd99c5e377c6b6ffbe862d09dc9"
+  },
+  {
+   "file": "20261018T101605Z-0544d218.json",
+   "status": "completed",
+   "experiment": "03a",
+   "script": "scripts/e03a.py",
+   "stage": "probe",
+   "default_category": "probe",
+   "git_commit": "f8506d189e078fd99c5e377c6b6ffbe862d09dc9"
+  },
+  {
+   "file": "20261018T101619Z-c81c62b5.json",
+   "status": "completed",
+   "experiment": "03a",
+   "script": "scripts/e03a.py",
+   "stage": "report",
+   "default_category": "measure",
+   "git_commit": "f8506d189e078fd99c5e377c6b6ffbe862d09dc9"
+  },
+  {
+   "file": "20261018T101621Z-f6399cd5.json",
+   "status": "completed",
+   "experiment": "03a",
+   "script": "scripts/e03a.py",
+   "stage": "search-check",
+   "default_category": "search",
+   "git_commit": "f8506d189e078fd99c5e377c6b6ffbe862d09dc9"
+  }
+ ],
+ "failed_attempts": 1,
+ "uncategorised": false,
+ "categories": {
+  "calibration": {
+   "worlds_built": 96,
+   "world_ticks": 7680,
+   "neural_updates": 245760,
+   "neural_padding": 0,
+   "seconds": 18.805247299998882
+  },
+  "selection": {
+   "worlds_built": 144,
+   "world_ticks": 3600,
+   "neural_updates": 115200,
+   "neural_padding": 0,
+   "seconds": 10.462975000002189
+  },
+  "holdout": {
+   "worlds_built": 32,
+   "world_ticks": 800,
+   "neural_updates": 25600,
+   "neural_padding": 0,
+   "seconds": 0.7401366000012786
+  },
+  "measure": {
+   "worlds_built": 382,
+   "world_ticks": 9550,
+   "neural_updates": 305600,
+   "neural_padding": 0,
+   "seconds": 8.605544099995313
+  },
+  "final": {
+   "worlds_built": 576,
+   "world_ticks": 14400,
+   "neural_updates": 542400,
+   "neural_padding": 81600,
+   "seconds": 10.05191039998681
+  },
+  "tuning": {
+   "worlds_built": 768,
+   "world_ticks": 19200,
+   "neural_updates": 614400,
+   "neural_padding": 0,
+   "seconds": 8.273458700001356
+  },
+  "search": {
+   "worlds_built": 3088,
+   "world_ticks": 77200,
+   "neural_updates": 2470400,
+   "neural_padding": 0,
+   "seconds": 13.112592400026188
+  },
+  "probe": {
+   "worlds_built": 248,
+   "world_ticks": 6200,
+   "neural_updates": 348160,
+   "neural_padding": 174080,
+   "seconds": 22.561898099993414
+  }
+ },
+ "totals": {
+  "worlds_built": 5334,
+  "world_ticks": 138630,
+  "neural_updates": 4667520,
+  "neural_padding": 255680,
+  "seconds_timed": 92.61376260000543
+ }
+}

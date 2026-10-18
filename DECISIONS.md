@@ -9816,3 +9816,52 @@ searches matched the score of refits handed the true partners. The same correcti
 other wiring reached the same score".
 
 **Next:** the results review by both, then main.
+
+## D319 — 03a's write-up reviewed: Fable "publish, after small fixes", Astra "fix first"; every finding taken
+
+**The review:** run 20261018-145551, both at xhigh effort, archived in `docs/reviews/20261018-03a-results/`.
+- Fable checked every number against `summary.json` and the records, and found no numeric error.
+- Astra found three double-roundings, and several readings that went too far.
+
+**Taken in RESULTS.md, before publication:**
+- **The NIP reading** (Astra high, Fable): "the NIP brains had no use for the neuron… a property of the arm, and N2
+  would share it" was a claim about N2, and stronger than the records. It now reads: neither NIP target-brain had
+  headroom above p under these refits. NIP/URXL's headroom is 0.05 [0.03, 0.07].
+- **The gap partners** (Astra): "its two gap partners carry most of the null's variance" was a design-stage
+  calculation, and the recorded per-type null SDs do not bear it out: 0.04-0.05 for every type in every variant. The
+  page says so. "Registered recovery statistic" is now "the design's recovery statistic".
+- **"Every time" and "partners at chance"** (Astra): the functional comparison is a mean against a mean. Single
+  searches fell further: on MIP/URXL, `free-3` scored 1.71 against the refits' 1.83. "Partners at chance" is now "no
+  enrichment detected". Under V4, the advantage is small and positive (0.03 [0.01, 0.04]), not absent.
+- **The noise reading** (Astra, Fable): the noise reading is now labelled "a reading", supported at two states, and
+  the remedies are candidates. "True improvements" is now "improvements estimated on the reference worlds".
+- **The probe** (Fable, Astra):
+  - the table now has all three KTS rows, and the text gives their ±0.19;
+  - it says the calibrators give no scale on which the evolved brains' losses read as sensory memory;
+  - it gives the design's other limits (history from L to 2L, the first affected action at 2L + 1, no
+    nonspecific-disruption control).
+- **"Nothing ran on N2"** (Astra): the pilot's motor gains were calibrated against an N2 reference drive, and the
+  exploratory checks scored 04a's N2 champions. The page now says no reconstruction search or pilot brain evolution
+  ran on N2.
+- **Rounding** (Astra): the probe's wall hours (0.08, not 0.09), NIP/PLNL at L = 10 (1.16, not 1.17) and KTS T = 10 at
+  L = 10 (2.34, not 2.35) were rounded twice. `summary.json` now keeps 4-5 decimals. "Gained no AUC" is now "no
+  consistent improvement".
+- **Reproducing the run** (Fable, Astra): a clone holds the committed records, so every stage refuses to run again,
+  and `full --rerun` reuses the archived finished rows rather than searching. The page now gives a from-scratch
+  procedure.
+- **The preflight's hours** (Fable, Astra): "D317 gives 0.026" was wrong; D317 gives no such figure. The preflight's
+  aggregate is now committed (`pilot-dev/preflight-compute.json`), and `summary.json` reads it.
+- **Also:** the Q ranges are quoted (Fable 9); "one target-brain with headroom" (Fable 11); the advantage under V1
+  and the single-chain variants (Fable 5); the corrections list (D313's paired figures, D318); the record through
+  D319.
+
+**Taken in the dated status updates:**
+- **ROADMAP's status** (Fable, Astra): "before any GPU run … the code was reviewed in three rounds" was the overclaim
+  D318 removed from the draft, and it survived here. It is corrected in place with a dated note, as is "the NIP brains
+  had no use for the neuron".
+- **The project README:** the row leads with "The search could not test the hypothesis on one shuffled graph", and
+  keeps the earlier text quoted and dated (Fable 12, Astra 11). The stale "does not fit our compute" is annotated.
+- **03a's README:** the compute wording (5.29 includes the check), the N2 sentence, and dated notes on "After 03a" and
+  the Record (Fable 14, Astra 10). ROADMAP's "full map" line is annotated (Fable 15).
+
+**Next:** the fixed page goes back to both for confirmation, then to main.

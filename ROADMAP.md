@@ -6,10 +6,13 @@
 
 **18 October 2026** (D302-D318): **03a stopped after pilot-dev; exploratory** (`experiments/03a-self-consistency/`,
 RESULTS.md).
-- **Before any GPU run:** design v7.1 was agreed by both reviewers, and the code was reviewed in three rounds. The
-  owner gave the word for pilot-dev's GPU.
-- **Pilot-dev**, on one shuffled graph, found no anatomical signal on its two targets. The NIP brains had no use for
-  the neuron, and refits handed the true partners fell short of exact restoration.
+- **Before any GPU run:** design v7.1 was agreed by both reviewers. *Corrected 2026-10-18 (D319): this said the code
+  was also "reviewed in three rounds" before any GPU run.* Round 1 came before; pilot-dev's first stages ran while
+  rounds 2 and 3 were under review (PILOT-DEV status). The exploratory checks (D303, D304) also preceded design v7.1.
+  The owner gave the word for pilot-dev's GPU.
+- **Pilot-dev**, on one shuffled graph, detected no anatomical enrichment on its two targets. Neither NIP target-brain
+  had headroom above the margin, and refits handed the true partners fell short of exact restoration. *Corrected
+  2026-10-18 (D319): this said "found no anatomical signal" and "the NIP brains had no use for the neuron".*
 - **A bounded check of the search** followed (the owner's choice, on both reviewers' advice). Its rule was fixed
   before it ran, and it gave outcome (iii): no variant restored reliably. So 03a ends, with 5.84 of its 72 GPU-hours
   spent and no pre-registration.
@@ -582,7 +585,8 @@ The first social experiments use colonies of clones: one genome for every wey, e
   - **Nulls.** Use experiment 03's validated ensembles, with several graphs each, instead of unconstrained SH.
   - **Budget.** Fit the design to the measured throughput. ~~Shrink the panel (24, then 16, then 12) or the searches before extending the cap, and say which was cut.~~ *Superseded 28 September by the owner's proof-of-concept decision below.*
   - **Wording.** Animal-to-animal variability is not a ceiling on recovery from one fixed graph.
-- **The full map** (label assigned at pre-registration) runs only if 03a separates the three outcomes.
+- **The full map** (label assigned at pre-registration) runs only if 03a separates the three outcomes. *Updated
+  2026-10-18: 03a stopped before separating them (D317), so the full map does not follow from it.*
 
 **The owner's decision (28 September 2026, D094): a six-neuron proof of concept, capped at 72 GPU-hours.**
 - **The panel: 6 neurons,** by foreseeable relevance to the task: **3 high, 2 medium, 1 low.**

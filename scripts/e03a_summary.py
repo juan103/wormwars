@@ -40,18 +40,22 @@ def build() -> dict:
         if d["status"] != "completed" or d["smoke"]:
             raise SystemExit(f"{s} is not a completed full-size record")
     comp = json.loads((PD / "compute.json").read_text(encoding="utf-8"))
+    pre = json.loads((PD / "preflight-compute.json").read_text(encoding="utf-8"))  # the CUDA preflight's aggregate
     out = {"source": "experiments/03a-self-consistency/pilot-dev/*.json, read by scripts/e03a_summary.py"}
 
-    out["stages"] = {s: {"commit": d["provenance"]["git_commit"][:7], "hours_wall": r(d["seconds"] / 3600, 3)}
+    out["stages"] = {s: {"commit": d["provenance"]["git_commit"][:7], "hours_wall": r(d["seconds"] / 3600, 5)}
                      for s, d in docs.items()}
     rep = docs["report"]
-    out["compute"] = {"pilot_dev_hours_measured": r(comp["totals"]["seconds_timed"] / 3600, 3),
+    pre_h = pre["totals"]["seconds_timed"] / 3600
+    out["compute"] = {"pilot_dev_hours_measured": r(comp["totals"]["seconds_timed"] / 3600, 4),
+                      "cuda_preflight_hours": r(pre_h, 4),
+                      "pilot_dev_hours_with_preflight": r(comp["totals"]["seconds_timed"] / 3600 + pre_h, 4),
                       "exploratory_checks_hours": docs["setup"]["dev"]["charged_before_hours"],
                       "pilot_dev_cap": docs["setup"]["dev"]["cap_gpu_hours"],
                       "experiment_cap": docs["setup"]["dev"]["experiment_cap_gpu_hours"],
                       "rates_per_second": {k: r(v["per_second"], 1) for k, v in rep["rates"].items()},
-                      "note": "the CUDA preflight's hours (runs/e03a-smoke-cuda, local) are counted by the cap clock "
-                              "but are not in this file; D317 gives 0.026"}
+                      "note": "pilot_dev_hours_measured includes the bounded check; the CUDA preflight's hours are "
+                              "from pilot-dev/preflight-compute.json, a copy of runs/e03a-smoke-cuda's aggregate"}
 
     ev = {}
     for stage in ("evolve-intact", "evolve-nip"):
@@ -78,7 +82,7 @@ def build() -> dict:
                                          for tb in base["target_brains"]]}
 
     pr = docs["probe"]
-    mean = lambda v: r(np.mean(v), 3)  # noqa: E731
+    mean = lambda v: r(np.mean(v), 4)  # noqa: E731
     out["probe"] = {
         "worlds": pr["worlds"],
         "evolved": {k: {kk: mean(vv) for kk, vv in v.items() if kk.startswith("L=") or kk == "plain"}
@@ -138,6 +142,7 @@ def build() -> dict:
                       "advantage": cmp_(v["advantage"]), "functional": cmp_(v["functional"]),
                       "enrichment_p": r(v["enrichment"]["p"]),
                       "per_type_p": {t: r(x["p"]) for t, x in v["enrichment_per_type"].items()},
+                      "per_type_null_sd": {t: r(x["null_sd"]) for t, x in v["enrichment_per_type"].items()},
                       "no_task_p": r(v["no_task"]["p"]),
                       "free_accepted_share": [r(ps["accepted_share_mean"], 2) for ps in v["per_search"]
                                               if ps["label"].startswith("free")],

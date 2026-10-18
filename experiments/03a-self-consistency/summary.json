@@ -3,47 +3,49 @@
  "stages": {
   "setup": {
    "commit": "a5760c4",
-   "hours_wall": 0.007
+   "hours_wall": 0.00707
   },
   "evolve-intact": {
    "commit": "a5760c4",
-   "hours_wall": 0.74
+   "hours_wall": 0.74025
   },
   "panel": {
    "commit": "1b0531a",
-   "hours_wall": 0.027
+   "hours_wall": 0.0271
   },
   "evolve-nip": {
    "commit": "1b0531a",
-   "hours_wall": 0.666
+   "hours_wall": 0.66648
   },
   "baseline": {
    "commit": "1b0531a",
-   "hours_wall": 0.017
+   "hours_wall": 0.01661
   },
   "probe": {
    "commit": "1b0531a",
-   "hours_wall": 0.085
+   "hours_wall": 0.08498
   },
   "tune": {
    "commit": "f27d4c4",
-   "hours_wall": 1.552
+   "hours_wall": 1.55184
   },
   "full": {
    "commit": "f27d4c4",
-   "hours_wall": 1.464
+   "hours_wall": 1.46361
   },
   "report": {
    "commit": "f27d4c4",
-   "hours_wall": 0.0
+   "hours_wall": 5e-05
   },
   "search-check": {
    "commit": "4d6e887",
-   "hours_wall": 0.728
+   "hours_wall": 0.72757
   }
  },
  "compute": {
-  "pilot_dev_hours_measured": 5.285,
+  "pilot_dev_hours_measured": 5.2854,
+  "cuda_preflight_hours": 0.0257,
+  "pilot_dev_hours_with_preflight": 5.3111,
   "exploratory_checks_hours": 0.53,
   "pilot_dev_cap": 6.0,
   "experiment_cap": 72.0,
@@ -57,7 +59,7 @@
    "tuning": 587.6,
    "search": 669.4
   },
-  "note": "the CUDA preflight's hours (runs/e03a-smoke-cuda, local) are counted by the cap clock but are not in this file; D317 gives 0.026"
+  "note": "pilot_dev_hours_measured includes the bounded check; the CUDA preflight's hours are from pilot-dev/preflight-compute.json, a copy of runs/e03a-smoke-cuda's aggregate"
  },
  "evolution": {
   "selector": {
@@ -165,75 +167,75 @@
   "worlds": 2048,
   "evolved": {
    "selector": {
-    "plain": 2.096,
-    "L=5": 0.273,
-    "L=10": 0.551,
+    "plain": 2.0962,
+    "L=5": 0.2729,
+    "L=10": 0.5513,
     "L=20": 1.354,
-    "L=50": 1.828,
+    "L=50": 1.8281,
     "full_replay_equals_plain": true
    },
    "MIP": {
-    "plain": 1.948,
+    "plain": 1.9482,
     "L=5": 0.002,
-    "L=10": 0.059,
-    "L=20": 0.705,
-    "L=50": 1.566,
+    "L=10": 0.0591,
+    "L=20": 0.7051,
+    "L=50": 1.5664,
     "full_replay_equals_plain": true
    },
    "NIP/URXL": {
     "plain": 2.209,
-    "L=5": 0.607,
-    "L=10": 0.319,
-    "L=20": 0.738,
-    "L=50": 2.009,
+    "L=5": 0.6069,
+    "L=10": 0.3193,
+    "L=20": 0.7378,
+    "L=50": 2.0093,
     "full_replay_equals_plain": true
    },
    "NIP/PLNL": {
     "plain": 2.168,
-    "L=5": 0.24,
-    "L=10": 1.165,
-    "L=20": 0.737,
-    "L=50": 2.1,
+    "L=5": 0.2397,
+    "L=10": 1.1646,
+    "L=20": 0.7368,
+    "L=50": 2.1001,
     "full_replay_equals_plain": true
    }
   },
   "scripted": {
    "KT": {
-    "plain": 1.159,
-    "L=5": 1.159,
-    "L=10": 1.159,
-    "L=20": 1.159,
-    "L=50": 1.159,
+    "plain": 1.1587,
+    "L=5": 1.1587,
+    "L=10": 1.1587,
+    "L=20": 1.1587,
+    "L=50": 1.1587,
     "unaffected": true
    },
    "KTM": {
-    "plain": 2.879,
-    "L=5": 2.879,
-    "L=10": 2.879,
-    "L=20": 2.879,
-    "L=50": 2.879,
+    "plain": 2.8789,
+    "L=5": 2.8789,
+    "L=10": 2.8789,
+    "L=20": 2.8789,
+    "L=50": 2.8789,
     "unaffected": true
    },
    "KTS T=5": {
-    "plain": 2.721,
-    "L=5": 2.767,
-    "L=10": 2.738,
-    "L=20": 2.718,
-    "L=50": 2.721
+    "plain": 2.7207,
+    "L=5": 2.7666,
+    "L=10": 2.7378,
+    "L=20": 2.7183,
+    "L=50": 2.7207
    },
    "KTS T=10": {
-    "plain": 2.186,
-    "L=5": 2.378,
-    "L=10": 2.345,
+    "plain": 2.1855,
+    "L=5": 2.3784,
+    "L=10": 2.3447,
     "L=20": 2.186,
     "L=50": 2.188
    },
    "KTS T=20": {
-    "plain": 1.601,
-    "L=5": 1.582,
-    "L=10": 1.407,
-    "L=20": 1.618,
-    "L=50": 1.634
+    "plain": 1.6011,
+    "L=5": 1.5815,
+    "L=10": 1.4067,
+    "L=20": 1.6182,
+    "L=50": 1.6338
    }
   }
  },
@@ -788,6 +790,11 @@
      "out": 0.764,
      "gap": 1.0
     },
+    "per_type_null_sd": {
+     "in": 0.0504,
+     "out": 0.0477,
+     "gap": 0.0385
+    },
     "no_task_p": 0.162,
     "free_accepted_share": [
      0.65,
@@ -844,6 +851,11 @@
      "out": 0.5321,
      "gap": 1.0
     },
+    "per_type_null_sd": {
+     "in": 0.0549,
+     "out": 0.0465,
+     "gap": 0.0514
+    },
     "no_task_p": 0.746,
     "free_accepted_share": [
      0.94,
@@ -899,6 +911,11 @@
      "in": 0.2028,
      "out": 0.6786,
      "gap": 1.0
+    },
+    "per_type_null_sd": {
+     "in": 0.0498,
+     "out": 0.0482,
+     "gap": 0.0518
     },
     "no_task_p": 0.8844,
     "free_accepted_share": [
