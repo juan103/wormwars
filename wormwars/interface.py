@@ -48,6 +48,8 @@ KNOWN_SIGNALS = (
     "at_b",
     "goal_left",
     "goal_right",
+    # 03h (experiments/03h-history-use/DESIGN.md §3): the food current fell since the last tick, or its sham
+    "food_fell",
 )
 
 

@@ -29,6 +29,9 @@ from ..interface import load_interface
 
 ROOT = Path(__file__).resolve().parents[2]
 KINDS = ("SH", "SH-route", "SH-class", "SH-mirror", "SH-recip")
+# 03h (experiments/03h-history-use/DESIGN.md §3): SH-route and SH-mirror with ASKL and ASKR, which carry 03h's food_fell
+# channel, added to the routing cap. Kept out of KINDS, so 03's ensembles and their reports are unchanged.
+ASK_KINDS = {"SH-route-ASK": ("SH-route", ("ASKL", "ASKR")), "SH-mirror-ASK": ("SH-mirror", ("ASKL", "ASKR"))}
 
 
 class SamplerFailure(RuntimeError):
@@ -50,10 +53,10 @@ def mirror_map(con) -> np.ndarray:
     return m
 
 
-def constrained_neurons(con) -> list[str]:
-    """The food neurons of every mapping used for fitness: M0, R1 and R2."""
+def constrained_neurons(con, extra: tuple = ()) -> list[str]:
+    """The food neurons of every mapping used for fitness (M0, R1 and R2), then any `extra` neurons (03h's ASK)."""
     sets = json.loads((ROOT / "experiments" / "02-screening" / "remaps.json").read_text(encoding="utf-8"))["sets"]
-    return [n for mapping in ("M0", "R1", "R2") for pair in sets[mapping] for n in pair]
+    return [n for mapping in ("M0", "R1", "R2") for pair in sets[mapping] for n in pair] + list(extra)
 
 
 def readout_indices(con) -> np.ndarray:
@@ -214,11 +217,11 @@ def _mirror_chain(edges, rng, target, cap, m, directed, route_ok):
 
 # ----------------------------------------------------------------------------- building
 
-def _route_checker(con, directed):
+def _route_checker(con, directed, extra: tuple = ()):
     """A count-level check: each constrained neuron keeps at most N2's number of direct edges to
     the read-out. Removal and recreation are both allowed."""
     read = set(int(r) for r in readout_indices(con))
-    cons = [con.index(n) for n in constrained_neurons(con)]
+    cons = [con.index(n) for n in constrained_neurons(con, extra)]
     mat = con.chem if directed else con.gap
     caps = {k: int((mat[k, sorted(read)] > 0).sum()) for k in cons}
     cons = set(cons)
@@ -242,12 +245,12 @@ def _route_checker(con, directed):
     return ok_swap, ok_mirror
 
 
-def _cap_weights(con, mat_new: np.ndarray, rng, directed: bool) -> np.ndarray:
+def _cap_weights(con, mat_new: np.ndarray, rng, directed: bool, extra: tuple = ()) -> np.ndarray:
     """Swap weights between each constrained neuron's direct read-out edges and unconstrained
     edges until that neuron's direct read-out weight sum is at most N2's. The multiset of weights
     is unchanged."""
     read = readout_indices(con)
-    cons = [con.index(n) for n in constrained_neurons(con)]
+    cons = [con.index(n) for n in constrained_neurons(con, extra)]
     old = con.chem if directed else con.gap
     w = mat_new.copy()
     constrained_slots = set()
@@ -283,9 +286,12 @@ def _cap_weights(con, mat_new: np.ndarray, rng, directed: bool) -> np.ndarray:
 
 
 def build(con, kind: str, seed: int, passes: int = 20, attempt_factor: float = 40.0):
-    """One graph of ensemble `kind`. Returns (connectome, info with the counts per chain)."""
+    """One graph of ensemble `kind` (one of KINDS, or of ASK_KINDS for 03h). Returns (connectome, info with the counts per
+    chain)."""
+    label = kind
+    kind, extra = ASK_KINDS.get(kind, (kind, ()))
     if kind not in KINDS:
-        raise ValueError(f"unknown ensemble {kind!r}")
+        raise ValueError(f"unknown ensemble {label!r}")
     rng = np.random.default_rng(seed)
     n = con.n
     m = mirror_map(con)
@@ -294,7 +300,7 @@ def build(con, kind: str, seed: int, passes: int = 20, attempt_factor: float = 4
     ok_chem = ok_gap = None
     route_chem = route_gap = (None, None)
     if route:
-        route_chem, route_gap = _route_checker(con, True), _route_checker(con, False)
+        route_chem, route_gap = _route_checker(con, True, extra), _route_checker(con, False, extra)
     if kind == "SH-route":
         ok_chem, ok_gap = route_chem[0], route_gap[0]
     elif kind == "SH-recip":
@@ -330,7 +336,7 @@ def build(con, kind: str, seed: int, passes: int = 20, attempt_factor: float = 4
         new_c, acc, att = _chem_chain(np.stack([ci, cj], 1), rng, target_c, int(attempt_factor * target_c), ok_chem)
     info["chem"] = {"accepted": acc, "attempted": att, "target": target_c}
     if acc < target_c:
-        raise SamplerFailure(f"{kind} seed {seed}: chemical chain reached {acc} of {target_c} swaps")
+        raise SamplerFailure(f"{label} seed {seed}: chemical chain reached {acc} of {target_c} swaps")
     chem = np.zeros((n, n), dtype=np.float32)
     chem[new_c[:, 0], new_c[:, 1]] = rng.permutation(cw)
 
@@ -344,12 +350,12 @@ def build(con, kind: str, seed: int, passes: int = 20, attempt_factor: float = 4
         new_g, acc, att = _gap_chain(np.stack([gi, gj], 1), rng, target_g, int(attempt_factor * target_g), ok_gap)
     info["gap"] = {"accepted": acc, "attempted": att, "target": target_g}
     if acc < target_g:
-        raise SamplerFailure(f"{kind} seed {seed}: gap chain reached {acc} of {target_g} swaps")
+        raise SamplerFailure(f"{label} seed {seed}: gap chain reached {acc} of {target_g} swaps")
     gap = np.zeros((n, n), dtype=np.float32)
     perm = rng.permutation(gw)
     gap[new_g[:, 0], new_g[:, 1]] = perm
     gap[new_g[:, 1], new_g[:, 0]] = perm
     if route:
-        chem = _cap_weights(con, chem, rng, True)
-        gap = _cap_weights(con, gap, rng, False)
-    return con.with_masks(chem, gap, f"{kind}-{seed}"), info
+        chem = _cap_weights(con, chem, rng, True, extra)
+        gap = _cap_weights(con, gap, rng, False, extra)
+    return con.with_masks(chem, gap, f"{label}-{seed}"), info

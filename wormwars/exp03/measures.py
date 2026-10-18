@@ -90,14 +90,16 @@ def _readout(iface, cfg, v):
 
 @counted("probe")
 def history(genome: Genome, cfg, iface, bank: dict, rising_start=0.25, falling_start=1.75,
-            warm=100, span=10, after=5) -> dict:
+            warm=100, span=10, after=5, per_history: bool = False) -> dict:
     """02b's matched-input history test on every genome of `genome`, with one stimulus bank
     shared by all genomes and graphs. The final food level is the bank's; the two histories
     start at `rising_start` and `falling_start` times it and ramp to it over `span` ticks, after
     `warm` ticks at the start level. Returns, per read-out (raw_forward, raw_turn, motor_forward,
     motor_turn), arrays over genomes: the rising-minus-falling difference on the final tick
     ("final"), after `after` more ticks of the final input ("after"), and the steady-state
-    contrast between holding the two start levels ("steady_contrast")."""
+    contrast between holding the two start levels ("steady_contrast"). With `per_history` (03h, DESIGN.md §5), each
+    read-out also carries each history's own values: "rising" and "falling", each {"steady", "final", "after"}; the
+    default output is unchanged."""
     brain = Brain(genome)
     s, n, dev = genome.n_strains, genome.spec.n, genome.device
     food = (bank["food_left"] + bank["food_right"]) / 2
@@ -115,7 +117,13 @@ def history(genome: Genome, cfg, iface, bank: dict, rising_start=0.25, falling_s
             v = brain.step(v, at(food))
         res[name] = (steady, final, _readout(iface, cfg, v))
     keys = ("raw_forward", "raw_turn", "motor_forward", "motor_turn")
-    return {k: {"final": (res["rising"][1][:, i] - res["falling"][1][:, i]).cpu().numpy(),
-                "after": (res["rising"][2][:, i] - res["falling"][2][:, i]).cpu().numpy(),
-                "steady_contrast": (res["falling"][0][:, i] - res["rising"][0][:, i]).cpu().numpy()}
-            for i, k in enumerate(keys)}
+    out = {k: {"final": (res["rising"][1][:, i] - res["falling"][1][:, i]).cpu().numpy(),
+               "after": (res["rising"][2][:, i] - res["falling"][2][:, i]).cpu().numpy(),
+               "steady_contrast": (res["falling"][0][:, i] - res["rising"][0][:, i]).cpu().numpy()}
+           for i, k in enumerate(keys)}
+    if per_history:
+        for i, k in enumerate(keys):
+            for name in ("rising", "falling"):
+                out[k][name] = {part: res[name][j][:, i].cpu().numpy()
+                                for j, part in enumerate(("steady", "final", "after"))}
+    return out

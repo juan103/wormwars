@@ -146,6 +146,13 @@ class WorldConfig:
     # residual is always reported.
     check_ledger_every_tick: bool = False
     food_probe_hold: int = 1
+    # 03h (experiments/03h-history-use/DESIGN.md §3): the food_fell channel. None: no channel (every earlier
+    # experiment). "level": the channel injects 0, while the would-be bit's transitions are counted. "relief": 1 on a
+    # tick where the injected food current is strictly below its value on the previous tick (0 on the first tick and
+    # for dead weys). "sham": a two-state Markov sequence at food_fell_rates = (p01, p10), keyed by world and wey,
+    # started from its stationary distribution. Unset and left out of `Config.to_dict` while unset.
+    food_fell: str | None = None
+    food_fell_rates: tuple | None = None
 
     # --- E1's Task N (docs/E1/DESIGN.md); the defaults leave every earlier task unchanged ---
     # "forage": the energy score. "navigate": one wey, one swarm; a sensing-only scent source that
@@ -364,7 +371,7 @@ _OMITTED_WHILE_UNSET = ("shuttle_separation_min", "shuttle_separation_max", "shu
                         "shuttle_spawn_max", "shuttle_cue_ticks",
                         "maze_cells", "maze_spawns", "maze_sliding", "maze_trail_mu", "maze_trail_lambda",
                         "maze_trail_delta", "maze_trail_d0", "maze_scent_sigma", "maze_scent_reach",
-                        "maze_trail_access", "maze_family", "maze_extra_openings")
+                        "maze_trail_access", "maze_family", "maze_extra_openings", "food_fell", "food_fell_rates")
 
 
 def _resolve(f: dataclasses.Field) -> type:

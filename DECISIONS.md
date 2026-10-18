@@ -10057,3 +10057,60 @@ registration; both will be reviewed again.
 
 **Next:** the code (step 1), test-first, reviewed by both. Then step 0, which needs the owner's word for about a
 minute of GPU.
+
+## D326 — 03h's step-1 code: the food_fell channel, the ASK cap, the gate families, per-history read-outs, step 0
+
+The code for design v3.2's step 1 (§7.1), with its tests, for review by both. Nothing has run on the GPU, apart from
+the test suite's CUDA tests.
+
+**The world** (`WorldConfig.food_fell`, `food_fell_rates`; `wormwars/world.py` `_food_fell`):
+- **The modes:**
+  - **None:** no channel, as in every earlier experiment;
+  - **"level":** the channel injects 0, while the would-be relief bit's transitions are counted;
+  - **"relief":** the bit is computed on the injected food current after gain and clamp, at the first food_left
+    neuron. It is 1 when that current is strictly below the previous tick's, 0 on the first tick and for dead weys;
+  - **"sham":** a two-state Markov sequence at (p01, p10), keyed by run seed, world id, tick, swarm and wey (stream
+    0x03F), started from its stationary distribution.
+- **Transition counts:** N00, N01, N10, N11 of the relief bit and of the injected bit, between ticks t − 1 ≥ 1 and t,
+  for weys alive at both.
+- **Hashing:** both fields are left out of `Config.to_dict` while unset, so earlier configurations hash as before.
+- **The interface variant:** `configs/interface-03h.yaml` is the pinned interface plus `food_fell` on ASKL and ASKR, at
+  gain 0.25 (`wormwars/e03h/__init__.py`). The world refuses a mode without the channel, the channel without a mode,
+  and "sham" without rates.
+
+**The ASK cap:** `wormwars/exp03/samplers.py` has `ASK_KINDS`, SH-mirror-ASK and SH-route-ASK, with ASKL and ASKR added
+to `constrained_neurons` through a parameter. N2's ASK has no direct read-out edges, so the cap is zero. `KINDS` is
+unchanged, and 03a's pilot graph still builds to its committed hash.
+
+**The gate families:**
+- `ScriptedBrain` reads the bit for policies that set `needs_fell`;
+- `wormwars/e03h/scripted.py` has `BitKinesis` and `SlowMemoryKinesis`. The latter is KTS's memory mechanism, with
+  T = 1 storing the level itself, plus `use_memory` and `use_bit`.
+
+**History:** `history(per_history=True)` adds each history's own read-outs; the default output is unchanged.
+
+**Statistics:** `wormwars/e03h/stats.py` `partial_spearman`, as registered: residuals of ranks with average ties,
+and degenerate cases flagged as 0.
+
+**Step 0:** `scripts/e03h_step0.py`, exploratory.
+- It rebuilds 03's 16 pilot graphs and their 256 genomes by 03's recipe.
+- It verifies one graph's T1-M0 replay bit-equal against `pilot.json` (T1's class-E contract), and drops step 0 if it
+  is not.
+- Then it relates H and S to the committed fitness. Its CPU smoke only checks the code.
+
+**Tests:**
+- `tests/test_e03h_food_fell.py`, `test_e03h_samplers.py`, `test_e03h_scripted.py`, `test_e03h_history.py`,
+  `test_e03h_stats.py`, `test_e03h_step0.py`;
+- rule 7 on the CPU and, inside `replay_mode()`, on CUDA: under level, the variant plays bitwise as the pinned
+  interface.
+- **Seen failing first:** every new test file, except where noted below.
+- **Sabotage, each caught:**
+  - the world: `<` turned into `<=`; transitions counted from the first tick; level injecting the relief bit; the
+    sham's two rates swapped;
+  - the ASK cap dropped;
+  - the scripted families: the memory comparison turned into `<=`; the bit read as always on.
+- **The history test** was written after its code. It fails against the committed `measures.py` (unknown keyword).
+
+**Gate:** the full suite passed (rc 0).
+
+**Next:** the code review by both, then the owner's word for step 0, about a minute of GPU.

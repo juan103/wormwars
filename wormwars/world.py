@@ -50,6 +50,8 @@ P_REAR_L, P_REAR_R = 6, 7
 P_BODY_L, P_BODY_R = 8, 9
 N_POINTS = 10
 FOOD_SENSING = ("stereo", "mono")
+FOOD_FELL = ("level", "relief", "sham")  # 03h's food_fell channel (WorldConfig.food_fell); None means no channel
+FOOD_FELL_STREAM = 0x03F  # the sham's keyed stream (the jitter probe uses streams 0 and 1)
 FOOD_PROBES = ("real", "constant", "mirrored", "jitter", "hold", "mean", "swapped")
 TASKS = ("forage", "navigate", "shuttle", "maze_shuttle")  # the maze: MazeWorld only (E3b)
 _TARGET_STREAM = 0x5CE27  # the target sequence's own random stream, apart from the map's
@@ -249,6 +251,16 @@ class World:
             raise ValueError(f"world.food_probe must be one of {FOOD_PROBES}, got {wcfg.food_probe!r}")
         if wcfg.task not in TASKS:
             raise ValueError(f"world.task must be one of {TASKS}, got {wcfg.task!r}")
+        ff, has_ff = wcfg.food_fell, "food_fell" in iface.signal_names
+        if ff is not None and ff not in FOOD_FELL:
+            raise ValueError(f"world.food_fell must be None or one of {FOOD_FELL}, got {ff!r}")
+        if (ff is None) == has_ff:
+            raise ValueError("world.food_fell and the interface's food_fell channel go together (03h's interface "
+                             "variant with a mode, or neither)")
+        if ff == "sham":
+            r = wcfg.food_fell_rates
+            if r is None or len(r) != 2 or not all(0.0 <= float(x) <= 1.0 for x in r):
+                raise ValueError("world.food_fell 'sham' needs food_fell_rates = (p01, p10), each in [0, 1]")
         if wcfg.task == "maze_shuttle" and not self._maze_task:
             raise ValueError("the maze_shuttle task is played by wormwars.e3.maze_world.MazeWorld")
 
@@ -355,6 +367,17 @@ class World:
         self.last_signals: dict[str, Tensor] | None = None
         self._food_sample: Tensor | None = None
         self._held_food: Tensor | None = None
+        # 03h's food_fell channel: the previous tick's injected food current, bits and alive mask, the sham's state,
+        # and the transition counts (N00, N01, N10, N11) of the relief bit (injected or not) and of the injected bit,
+        # between consecutive ticks t - 1 >= 1 and t at which the wey was alive at both (pure measurement)
+        self._ff_prev: Tensor | None = None
+        self._ff_bits_prev: tuple | None = None
+        self._ff_alive_prev: Tensor | None = None
+        self._ff_state: Tensor | None = None
+        self.food_fell_counts = {"relief": torch.zeros(4, dtype=torch.int64),
+                                 "injected": torch.zeros(4, dtype=torch.int64)}
+        if ff is not None:
+            self._ff_food_gain = float(iface.sensor_gain[list(iface.signal_names).index("food_left")])
         # the jitter probe's noise is a hash of (run seed, world id, tick, sample point), so it
         # follows world identity, never batch position, and touches no other randomness (D066)
         self._world_id_t = torch.as_tensor(np.asarray(self.world_ids, dtype=np.int64), device=self.device)
@@ -877,6 +900,34 @@ class World:
             "collision_rear_right": obstacle[..., P_REAR_R] * sc,
         }
 
+    def _food_fell(self, signals: dict[str, Tensor]) -> Tensor:
+        """03h's bit (DESIGN.md §3), per wey: computed on the injected food current (after gain and clamp) at the first
+        food_left sensor neuron, the observation a brain and `ScriptedBrain` receive."""
+        wcfg, bcfg = self.cfg.world, self.cfg.brain
+        cur = (signals["food_left"] * self._ff_food_gain * bcfg.input_gain).clamp(-bcfg.input_max, bcfg.input_max)
+        alive = self.alive
+        relief = torch.zeros_like(alive) if self._ff_prev is None else (cur < self._ff_prev) & alive
+        if wcfg.food_fell == "sham":
+            p01, p10 = (float(x) for x in wcfg.food_fell_rates)
+            u = self._keyed_uniform(FOOD_FELL_STREAM)[..., 0]
+            if self._ff_state is None:  # the stationary start
+                self._ff_state = u < (p01 / (p01 + p10) if p01 + p10 > 0 else 0.0)
+            else:
+                self._ff_state = torch.where(self._ff_state, u >= p10, u < p01)
+            injected = self._ff_state & alive
+        elif wcfg.food_fell == "relief":
+            injected = relief
+        else:
+            injected = torch.zeros_like(alive)
+        if self._ff_bits_prev is not None and self.tick_count >= 2:
+            both = self._ff_alive_prev & alive
+            for key, now, before in (("relief", relief, self._ff_bits_prev[0]),
+                                     ("injected", injected, self._ff_bits_prev[1])):
+                code = (before.to(torch.int64) * 2 + now.to(torch.int64))[both]
+                self.food_fell_counts[key] += torch.bincount(code, minlength=4).cpu()
+        self._ff_prev, self._ff_bits_prev, self._ff_alive_prev = cur, (relief, injected), alive.clone()
+        return injected.to(self.dtype)
+
     def _build_current(self, signals: dict[str, Tensor]) -> Tensor:
         iface, bcfg = self.iface, self.cfg.brain
         shape = (self.n_worlds, self.n_swarms, self.n_weys, self.brains[0].n)
@@ -927,6 +978,8 @@ class World:
         if self.shuttle:
             signals.update(self._shuttle_signals(pts))
         signals.update(self._extra_signals(pts))  # a subclass's own task (E3b's MazeWorld); none here
+        if wcfg.food_fell is not None:
+            signals["food_fell"] = self._food_fell(signals)
         self.last_signals = signals
         current = self._build_current(signals)
 

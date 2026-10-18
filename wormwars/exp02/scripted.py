@@ -33,6 +33,11 @@ class ScriptedBrain:
         # receives at each signal's first sensor neuron
         self.collision = {short: int(iface.sensor_neuron[names.index(f"collision_{short}")])
                           for short in ("front", "front_left", "front_right", "rear_left", "rear_right")}
+        # 03h's food_fell channel (its interface variant only): the current at its first neuron, for policies that read
+        # the bit (`needs_fell`)
+        self.fell = int(iface.sensor_neuron[names.index("food_fell")]) if "food_fell" in names else None
+        if getattr(policy, "needs_fell", False) and self.fell is None:
+            raise ValueError("this policy reads food_fell, which the interface does not carry")
         self.state = None
 
     def initial_state(self, n_weys: int) -> torch.Tensor:
@@ -41,11 +46,12 @@ class ScriptedBrain:
 
     def step(self, v: torch.Tensor, current: torch.Tensor) -> torch.Tensor:
         left, right = current[..., self.left], current[..., self.right]
+        kw = {}
         if getattr(self.policy, "needs_collision", False):
-            collision = {k: current[..., i] for k, i in self.collision.items()}
-            fwd, turn, self.state = self.policy(left, right, self.state, collision=collision)
-        else:
-            fwd, turn, self.state = self.policy(left, right, self.state)
+            kw["collision"] = {k: current[..., i] for k, i in self.collision.items()}
+        if getattr(self.policy, "needs_fell", False):
+            kw["fell"] = current[..., self.fell] > 0  # the bit injects 0 or its amplitude; ASK carries nothing else
+        fwd, turn, self.state = self.policy(left, right, self.state, **kw)
         return self.command(current, fwd, turn)
 
     def command(self, current: torch.Tensor, fwd: torch.Tensor, turn: torch.Tensor) -> torch.Tensor:
