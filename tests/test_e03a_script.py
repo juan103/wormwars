@@ -146,6 +146,10 @@ def test_a_stopped_full_keeps_its_finished_target_brains_and_the_report_still_ru
     rep = M.main(["report", "--smoke"])
     assert rep["target_brains_measured"] == 1 and not rep["full_complete"]
     assert any("full did not complete" in m for m in rep["missing"])
+    monkeypatch.setattr(M, "_final_scores", real)
+    again = M.main(["full", "--smoke", "--rerun", "--reason", "test: after a stop"])
+    assert again["status"] == "completed" and again["target_brains"][0].get("carried_from_attempt")
+    assert not any(r.get("carried_from_attempt") for r in again["target_brains"][1:])
 
 
 def test_the_probe_times_the_full_replay_control(run):
@@ -163,3 +167,26 @@ def test_full_writes_the_no_task_control_turnover_from_generation_0_and_attribut
     assert "paired_diff_sd_mean" in ps
     paired = tb["descriptive"]["composite"]["name"] == "mirror"
     assert ("mirror_zero_subset" in tb["descriptive"]) == paired
+
+
+def test_turnover_windows_run_from_generation_0_on_a_known_history():
+    """Astra, round 3: the smoke searches are too short to test the 10-generation windows."""
+    spec = importlib.util.spec_from_file_location("e03a_script_test_e", ROOT / "scripts" / "e03a.py")
+    M = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(M)
+    import numpy as np
+    import torch
+
+    def masks(on):
+        m = torch.zeros(10, dtype=torch.bool)
+        m[list(on)] = True
+        return {"in": m, "out": torch.zeros(10, dtype=torch.bool), "gap": torch.zeros(10, dtype=torch.bool)}
+
+    class Fake:
+        class trace:
+            initial_cold = masks([0, 1, 2, 3])
+            # generation g's state at index g - 1: two partners replaced by generation 10, all four by generation 20
+            cold_masks = [masks([0, 1, 2, 3])] * 9 + [masks([0, 1, 8, 9])] + [masks([0, 1, 8, 9])] * 9 \
+                + [masks([4, 5, 6, 7])]
+
+    assert M._turnover(Fake) == [0.5, 1.0]

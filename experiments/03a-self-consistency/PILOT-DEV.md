@@ -1,13 +1,16 @@
 # 03a pilot-dev: what it runs and how it chooses
 
-**Status:** plan v3, 2026-10-18, written with the code (`scripts/e03a.py`, `wormwars/e03a/`).
+**Status:** plan v3.1, 2026-10-18, written with the code (`scripts/e03a.py`, `wormwars/e03a/`).
 - **v1** (`a4956e5`, D308): Fable "ready for pilot-dev, with small fixes"; Astra "revise" (code review round 1, run
   20261017-190316, `docs/reviews/20261017-03a-code/`). v2 takes every finding (§6; D309).
 - **v2** (`a5760c4`, D309): Fable "ready for pilot-dev, with small fixes"; Astra "revise" (round 2, run
   20261018-021702, `docs/reviews/20261018-03a-code-r2/`). v3 takes every finding but one, where they disagree
   (round B's order, §2), and puts that one to them (§6; D310).
+- **v3** (`1b0531a`, D310): both "ready for the rest of pilot-dev, with small fixes" (round 3, run 20261018-031947,
+  `docs/reviews/20261018-03a-code-r3/`). v3.1 makes those fixes (§6; D311).
 - **The owner's word for the GPU:** given 2026-10-18 ("you have my go ahead for the gpu"). `setup` and `evolve-intact`
-  ran on v2's code while round 2 was under review; neither depends on what round 2 changed.
+  ran on v2's code while round 2 was under review. `panel`, `evolve-nip`, `baseline` and `probe` ran on v3's code
+  (`1b0531a`) while round 3 was under review. None of them depends on what rounds 2 and 3 changed.
 
 Pilot-dev is development (DESIGN.md v7.1 §8, §9): its output is the **frozen pilot protocol**, written into the
 pre-registration before pilot-check runs. Nothing here is a registered test. It runs only with the owner's word.
@@ -18,7 +21,8 @@ On **one SH-mirror graph** (seed 3 403 000, outside 03's and 03r's SH-mirror see
 stage and checked by hash, never saved, since it carries N2's weights, permuted), never on N2, inside its own
 **6 GPU-hour cap**. T0's accounting counts the cap across attempts, the CUDA preflight included, and it counts toward
 03a's 72. World ids are 1 482 000 000 to 1 482 799 999, outside every registered range. Seeds run from 3 403 000 to
-3 413 604; each search's own seed is a hash of its target-brain's seed, its kind and its index. Every number is in `DEV`
+3 414 003 (the no-task control's, which simulate nothing); each search's own seed is a hash of its target-brain's
+seed, its kind and its index. Every number is in `DEV`
 in the script.
 
 | Stage | What | Episodes (about) |
@@ -59,6 +63,11 @@ into the next and not run again.
   - **Open, round 3:** with noise far above 0.02, the listed order all but decides round B. Fable would list (0.6, up
     to 3) first, the planted check's best; Astra would keep the order above. The order stays as listed until both
     reviewers agree, or the owner decides.
+    - *Corrected 2026-10-18 (D311; Fable, Astra, round 3): the premise above is wrong. When the noise is far above
+      0.02, a later setting displaces the first whenever noise favours it, so noise decides, not the order. The order
+      only matters within 0.02, and the pick is always within 0.02 of the highest mean. Both reviewers accept keeping
+      the order as listed (Fable's preference; Astra prefers the highest mean but accepts this). It stays, and the
+      round is described as a noisy choice, not an optimisation.*
   - The between-search noise is far larger than 0.02, so the pre-registration will call these settings chosen by this
     rule, not optimised (Fable, Astra).
 - **Search worlds:** 16, or 32 only if `report`'s projection with 32 leaves at least 8 hours of reserve with no cut
@@ -81,7 +90,9 @@ Tuning reads only scores, never the truth. The diagnostics below read the truth;
     generations, beside its chance level (Astra: v1 sampled generations 1, 11, … 91);
   - partner turnover over each window 0 → 10, 10 → 20, …, to the last generation;
   - the signal against the noise (Fable): the SD of the coldest replica's score across generations, and per generation
-    the mean and SD of offspring minus current on the same worlds, beside the refit-minus-deleted difference;
+    the mean and SD of offspring minus current on the same worlds, kept as series, beside the refit-minus-deleted
+    difference. These spreads mix mutation effects, replica differences and evaluation noise, and are read as such,
+    not as pure noise (Astra, round 3);
   - accepted partner moves;
   - swap acceptance per neighbour pair;
   - the final count and the AUC.
@@ -91,8 +102,10 @@ Tuning reads only scores, never the truth. The diagnostics below read the truth;
 - **Are 100 generations enough?** The same long searches are scored at generation 100 and at generation 200: final
   count and AUC. Their Q trajectories run through generation 200 (Fable, Astra).
   - **How it will be read, fixed now** (Fable, Astra; both would keep 100 generations for pilot-dev):
-    - Q at 100 within noise of chance, and no gain from 100 to 200: the search is signal-limited. The budget stays;
-      more generations would not help.
+    - Q at 100 within noise of chance, and no gain from 100 to 200: no improvement is detected over this extension,
+      and the budget stays, because these measurements do not justify increasing it. (v3 said "the search is
+      signal-limited ... more generations would not help", which two extensions per MIP target cannot establish;
+      Astra, round 3.)
     - Q still rising at 100, and the long searches gaining in AUC: a budget amendment is proposed to both reviewers
       before the pre-registration, paid for by §10's cuts and the move settings.
     - Function plateauing while anatomy still improves is reported as such; it points to the same amendment.
@@ -219,6 +232,21 @@ counts as caught only if pytest reports its named test as failed, and the failin
 comprehensive validation (Astra).
 
 ## 6. Changes
+
+**v3 → v3.1 (code review round 3: run 20261018-031947; both "ready for the rest of pilot-dev, with small fixes";
+D311):**
+- **Controls gate the searches:** `tune` and `full` require a completed `probe` (Astra 4).
+- **Saving:**
+  - `full` saves every search's current state and trace every 10 generations, as well as when the ordinary searches
+    end and at the end (Astra 3);
+  - a rerun of `full` reuses the target-brains a stopped attempt finished (Fable 1).
+- **A budget guard:** before any search, `full` is projected at `tune`'s measured rate. If it would not fit the cap,
+  it is refused and the owner decides (Fable 1).
+- **The paired-noise series** are kept whole, and read as mixtures, not noise; the reading rule no longer claims a
+  mechanism (Astra 5).
+- **Tests:** a deterministic turnover test over generations 0-20 (Astra 6).
+- **Corrected:** round B's premise (§2), which was Fable's round-2 finding and was repeated in D310 and v3.
+- **Documented:** the stage order in the script's docstring; the seed range; which stages ran during rounds 2 and 3.
 
 **v2 → v3 (code review round 2: run 20261018-021702; Fable "ready for pilot-dev, with small fixes", Astra "revise";
 D310):**

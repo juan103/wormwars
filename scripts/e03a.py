@@ -5,9 +5,9 @@
     python scripts/e03a.py panel           # the deletion scan on the selector brain, the panel rule, the two targets
     python scripts/e03a.py evolve-nip      # one NIP brain per target, pinned (X's edges zero), in one batch
     python scripts/e03a.py baseline        # intact, deleted and restored scores; the restoration controls must hold
+    python scripts/e03a.py probe           # the replay probe on the scripted calibrators and the evolved brains
     python scripts/e03a.py tune            # rounds A (ladder), B (moves), C (shaping), each chosen by its rule
     python scripts/e03a.py full            # the chosen settings: every search of the four target-brains, diagnostics
-    python scripts/e03a.py probe           # the replay probe on the scripted calibrators and the evolved brains
     python scripts/e03a.py report          # throughputs, resolution, the projection and the cuts; no simulation
     python scripts/e03a.py family2         # family 2's simulated-null validation (DESIGN.md §7); CPU only
     python scripts/e03a.py <stage> --smoke                 # tiny sizes on the CPU, runs/e03a-smoke/
@@ -523,6 +523,7 @@ def _ladder_pick(per, band, aim):
 
 def stage_tune(args, dv, ck, progress):
     read("baseline")  # the implementation controls must have held
+    read("probe")  # and the probe's (Astra, round 3)
     con, iface, cfg = configured()
     tbs = _target_brain_inputs(con, iface, cfg, dv)
     tn = dev()["tune"]
@@ -632,7 +633,11 @@ def _diagnostics(search, truth, label) -> dict:
             # offspring-minus-current spread per generation (mean and SD of each, over generations)
             "cold_score_sd_over_generations": float(np.std([sc[0] for sc in search.trace.scores])),
             "paired_diff_mean": float(np.mean([p[0] for p in search.trace.paired])),
-            "paired_diff_sd_mean": float(np.mean([p[1] for p in search.trace.paired]))}
+            "paired_diff_sd_mean": float(np.mean([p[1] for p in search.trace.paired])),
+            # the series themselves (Astra, round 3): these spreads mix mutation effects, replica differences and
+            # evaluation noise, so they are read as such, not as pure noise
+            "cold_score_series": [round(sc[0], 4) for sc in search.trace.scores],
+            "paired_series": [[round(a, 4), round(b, 4)] for a, b in search.trace.paired]}
 
 
 def _agreement(results, truth) -> dict:
@@ -734,14 +739,73 @@ def _attributes(row, delta_search) -> dict:
             "outcome": T.outcome(bool(rel), T.functional(c["functional"]), row["enrichment"]["p"] < 0.05)}
 
 
+def _full_projection(scfg, tbs, ck):
+    """`full`'s episodes at `tune`'s measured search rate and `final`'s measured scoring rate, against the cap left;
+    None at smoke size or without both rates."""
+    if SMOKE:
+        return None
+    comp = json.loads((out_dir() / "compute.json").read_text(encoding="utf-8")) if (out_dir() / "compute.json").exists() \
+        else {"categories": {}}
+    cat = comp["categories"]
+    if not (cat.get("tuning", {}).get("seconds") and cat.get("final", {}).get("seconds")):
+        return None
+    tune_rate = cat["tuning"]["worlds_built"] / cat["tuning"]["seconds"]
+    final_rate = cat["final"]["worlds_built"] / cat["final"]["seconds"]
+    plan, lg = S.PLAN, dev()["longer"]
+    per_search = scfg.generations * scfg.replicas * (1 + scfg.offspring) * scfg.worlds
+    n_mip = sum(tb["arm"] == "MIP" for tb in tbs)
+    search_eps = len(tbs) * sum(plan.values()) * per_search + n_mip * lg["searches"] * lg["factor"] * per_search
+    final_eps = (len(tbs) * sum(plan.values()) + 2 * n_mip * lg["searches"]) * len(ids("final"))
+    hours = search_eps / tune_rate / 3600 + final_eps / final_rate / 3600
+    remaining = ck.cap_hours - ck.spent_hours() - (time.perf_counter() - ck.t_start) / 3600
+    return {"search_episodes": search_eps, "final_episodes": final_eps, "tuning_rate": tune_rate,
+            "final_rate": final_rate, "hours": hours, "remaining_hours": remaining, "fits": bool(hours <= remaining)}
+
+
+def _finished_rows(args) -> dict:
+    """On a rerun of `full`: the rows a stopped attempt finished (scored completely), by label, so they are not run
+    again (Fable, round 3)."""
+    if not args.rerun:
+        return {}
+    attempts = sorted(rec_path("full").parent.glob("full.attempt*.json"),
+                      key=lambda p: int(p.stem.split("attempt")[1]))
+    if not attempts:
+        return {}
+    doc = json.loads(attempts[-1].read_text(encoding="utf-8"))
+    return {r["label"]: r for r in doc.get("target_brains", []) if r.get("final_evaluation") == "complete"}
+
+
+def _save_progress(label, searches, truth) -> None:
+    """The current coldest state of every search, and each search's trace so far, kept locally."""
+    _save_states(label + "-progress", {s.label: s.result() for s in searches})
+    traces = {s.label: {"generation": s.generation, "q_every_10_from_0": _q_trace(s, truth),
+                        "cold_scores": [round(sc[0], 4) for sc in s.trace.scores],
+                        "paired": [[round(a, 4), round(b, 4)] for a, b in s.trace.paired],
+                        "accepted_kind": s.trace.accepted_kind, "swaps": s.trace.swaps} for s in searches}
+    path = _states_path(label + "-progress").with_suffix(".json")
+    tmp = path.with_name(path.stem + ".tmp.json")
+    tmp.write_text(json.dumps(traces), encoding="utf-8")
+    os.replace(tmp, path)
+
+
 def stage_full(args, dv, ck, progress):
     """The chosen settings on each target-brain in turn. What finishes is kept: the record's metadata from the start,
-    each target-brain's search states (locally) as soon as its ordinary searches end, and its row once scored."""
+    each target-brain's search states (locally) every 10 generations, when its ordinary searches end and at its end,
+    with the search traces so far, and its row once scored. A rerun reuses the target-brains a stopped attempt
+    finished. Before any search, `full` is projected at `tune`'s measured rate and refused if it would not fit the cap
+    (Fable, round 3): the owner decides then, not inside the stage."""
+    read("probe")  # its controls must have held (Astra, round 3)
     con, iface, cfg = configured()
     tbs = _target_brain_inputs(con, iface, cfg, dv)
     base_rec = read("baseline")
     setting = read("tune")["chosen"]
     scfg = _scfg(setting)
+    guard = _full_projection(scfg, tbs, ck)
+    progress["projection"] = guard
+    if guard is not None and not guard["fits"]:
+        raise SystemExit(f"full projects {guard['hours']:.2f} GPU-hours at tune's measured rate, and "
+                         f"{guard['remaining_hours']:.2f} remain under the cap: the owner decides before it runs")
+    carried = _finished_rows(args)
     first, span = dev()["ids"]["search"]
     plan = dev().get("plan", S.PLAN) if SMOKE else S.PLAN
     base = dev()["search_seed_base"] + 10_000
@@ -750,11 +814,14 @@ def stage_full(args, dv, ck, progress):
     m_map = SM.mirror_map(con)
     rows, timing = [], []
     progress.update({"setting": setting, "plan": plan, "p": margin, "target_brains": rows, "search_timing": timing,
-                     "searches_finished": [], "states_saved": []})
+                     "searches_finished": [], "states_saved": [], "projection": guard})
     for bi, tb in enumerate(tbs):
         brow = base_rec["target_brains"][bi]
         if brow["label"] != tb["label"]:
             raise RuntimeError(f"baseline's target-brain {bi} is {brow['label']}, not {tb['label']}")
+        if tb["label"] in carried:
+            rows.append({**carried[tb["label"]], "carried_from_attempt": True})
+            continue
         searches = S.target_brain_searches(tb["reins"], tb["truth"], tb["strat"], scfg, cfg.brain, cfg.mutation,
                                            seed=base + bi, plan=plan, world_base=first, world_span=span)
         if tb["arm"] == "MIP":
@@ -768,6 +835,9 @@ def stage_full(args, dv, ck, progress):
         kept = {"done": False}
 
         def keep_finished(_, ordinary=ordinary, label=tb["label"], kept=kept, searches=searches):
+            g = max(s.generation for s in searches)
+            if g % 10 == 0:  # every 10 generations: the current states and the traces so far (Astra, round 3)
+                _save_progress(label, searches, tb["truth"])
             if not kept["done"] and all(s.done for s in ordinary):
                 named = {s.label: s.result() for s in ordinary}
                 named.update({f"{s.label}@{scfg.generations}": s.snapshots[scfg.generations]

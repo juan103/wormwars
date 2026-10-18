@@ -9392,3 +9392,36 @@ below the noise.
   ignores.
 
 It goes to both reviewers in round 3. If they still disagree, it goes to the owner. `tune` waits for it.
+
+## D311 — 03a's code after review round 3: consensus to run the rest of pilot-dev; round B's order settled
+
+**Round 3** (run 20261018-031947, archived in `docs/reviews/20261018-03a-code-r3/`): Fable 5.1 and Astra 6 both said
+"ready for the rest of pilot-dev, with small fixes". Both found the round-2 blockers resolved.
+
+**Round B's order, settled by consensus:**
+- Both withdrew the premise that the listed order "all but decides" the round. With noise far above the 0.02 margin,
+  noise decides, and the pick is always within 0.02 of the highest mean.
+- The premise came from Fable's round-2 finding, and D310 and PILOT-DEV v3 repeated it. *Corrected 2026-10-18: D310
+  said the rule "keeps the first listed setting unless another beats it by 0.02, far below the noise", implying the
+  order decides. It does not.*
+- Both accept keeping the order as listed: Fable prefers it, and Astra accepts it, though Astra would choose the
+  highest mean. It stays, described as a noisy choice, not an optimisation.
+
+**Taken** (PILOT-DEV v3.1 §6):
+- `tune` and `full` require a completed `probe`;
+- `full` saves states and traces every 10 generations;
+- a rerun of `full` reuses finished target-brains;
+- a budget guard projects `full` at `tune`'s measured rate before any search, and refuses if it would not fit, so the
+  owner decides then;
+- the paired-noise series are kept whole, read as mixtures;
+- the reading rule's wording no longer claims a mechanism;
+- a deterministic turnover test.
+
+**Disclosed:** `panel`, `evolve-nip`, `baseline` and `probe` ran on `1b0531a` while round 3 was under review. They do
+not depend on anything round 3 changed. Fable noted the round-3 prompt's statement that the later stages waited for
+the round was inaccurate for `panel`; it had already run.
+
+**Budget so far:**
+- evolution ran at 200 worlds per second in two-run batches, half the design's 420;
+- the scan ran at 892;
+- the searches' rate decides whether `full` fits the 6-hour cap, and the guard checks it before `full` runs.
