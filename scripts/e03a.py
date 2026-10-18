@@ -40,7 +40,7 @@ from pathlib import Path
 
 import numpy as np
 import torch
-from scipy.stats import spearmanr
+from scipy.stats import chi2, spearmanr
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
@@ -61,7 +61,7 @@ from wormwars.e04a import evolve as EV  # noqa: E402
 from wormwars.e1.controllers import scripted  # noqa: E402
 from wormwars.evo.bundle import replay_mode  # noqa: E402
 from wormwars.evo.genomes import genome_hash, load_population, save_population  # noqa: E402
-from wormwars.evo.rollout import rollout_brain  # noqa: E402
+from wormwars.evo.rollout import rollout, rollout_brain  # noqa: E402
 from wormwars.exp03 import samplers as SM  # noqa: E402
 from wormwars.interface import load_interface  # noqa: E402
 
@@ -106,22 +106,22 @@ DEV = {
     "null_B": 10_000, "null_seed": 3_403_004, "boot": {"B": 10_000, "seed": 3_403_005},
     "margin_fraction": 0.05,
     "family2": {"datasets": 20_000, "seed": 3_403_006},
-    # D314: the bounded search check after pilot-dev (PILOT-DEV.md §7), the owner's choice (b), fixed before it runs
+    # D314: the bounded search check after pilot-dev (PILOT-DEV.md §7, v3.3 after the plan review), the owner's
+    # choice (b), fixed before it runs. Run in this order, so a stop loses the last first (Fable)
     "check": {
         "variants": [  # each with the tuned mutation setting; episodes per search and generation in the comment
-            {"name": "V1", "replicas": 4, "temperatures": [0.1, 0.2, 0.4, 0.8], "offspring": 3, "worlds": 32,
-             "confirm": 0, "from": "Astra: three offspring at 32 worlds"},  # 512
-            {"name": "V2", "replicas": 4, "temperatures": [0.01, 0.02, 0.04, 0.08], "offspring": 8, "worlds": 16,
-             "confirm": 0, "from": "Astra: a colder ladder"},  # 576
+            {"name": "V4", "replicas": 1, "temperatures": [0.01], "offspring": 8, "worlds": 32, "confirm": 64,
+             "from": "Fable, Astra: one chain, the best offspring confirmed on fresh worlds"},  # 416
             {"name": "V3", "replicas": 1, "temperatures": [0.01], "offspring": 8, "worlds": 64, "confirm": 0,
              "from": "Fable: the ladder's budget moved into worlds, one chain"},  # 576
-            {"name": "V4", "replicas": 1, "temperatures": [0.01], "offspring": 8, "worlds": 32, "confirm": 64,
-             "from": "Fable, Astra: one chain, the best offspring confirmed on fresh worlds"}],  # 416
-        "plan": {"refit": 3, "free": 5},
+            {"name": "V1", "replicas": 4, "temperatures": [0.1, 0.2, 0.4, 0.8], "offspring": 3, "worlds": 32,
+             "confirm": 0, "from": "Astra: three offspring at 32 worlds"}],  # 512
+        "plan": {"refit": 5, "random": 3, "free": 5},  # five refits (Astra); random-partner refits (Fable)
         "reeval": {"starts": ["refit-0", "free-0"], "sets": 16, "worlds": [16, 32, 64], "seed": 3_403_007},
         "ids": {"truth": [1_482_800_000, 1024], "select": [1_482_810_000, 100_000]},
         "alpha": 0.05,  # family-wise over the variants, Bonferroni
-        "refit_sd_max_fraction_of_p": 0.5,
+        "refit_sd_max_fraction_of_p": 1.0,  # DESIGN §6's 2 delta_search at delta_search's bound p/2 (Fable)
+        "projection_safety": 1.15,
         "seed_base": 3_403_100 + 20_000,
     },
 }
@@ -135,7 +135,7 @@ SMOKE_DEV = {
              "searches": 1},
     "plan": {"refit": 2, "random": 1, "free": 2}, "null_B": 99, "boot": {"B": 200, "seed": 1},
     "panel": {"bootstrap": 200}, "probe": {"L": [5, 10]}, "family2": {"datasets": 500, "seed": 1},
-    "check": {"plan": {"refit": 2, "free": 2},
+    "check": {"plan": {"refit": 2, "random": 1, "free": 2},
               "reeval": {"starts": ["refit-0", "free-0"], "sets": 2, "worlds": [2, 4], "seed": 1},
               "ids": {"truth": [4000, 6], "select": [5000, 1000]}},
 }
@@ -651,6 +651,9 @@ def _diagnostics(search, truth, label) -> dict:
     return {"label": label, "q_every_10_from_0": _q_trace(search, truth),
             "turnover_per_10_from_0": _turnover(search),
             "accepted_moves": int(sum(k == "move" for g in search.trace.accepted_kind for k in g)),
+            # the share of replicas whose best offspring was accepted, per generation (Fable, D314)
+            "accepted_share_mean": float(np.mean(search.trace.accepted)) if search.trace.accepted else float("nan"),
+            "accepted_share_series": [round(float(np.mean(a)), 4) for a in search.trace.accepted],
             "pair_rates": _pair_rates([search]),
             # Fable's signal-to-noise record: the coldest replica's score across generations, and the paired
             # offspring-minus-current spread per generation (mean and SD of each, over generations)
@@ -1139,8 +1142,9 @@ def _lesions(st: R.XState) -> tuple[R.XState, list]:
 
 
 def _lesion(tb, cfg, iface, dv, ck, margin) -> dict:
-    """Fable: is the original partners' contribution on a few edges or spread over all of them? Each true edge removed
-    from MIP's exact restoration, scored on the final worlds beside the restoration itself."""
+    """Fable: each true edge removed from MIP's exact restoration, scored on the final worlds beside the restoration
+    itself. It measures the evolved brain's marginal dependence on each of X's edges at that state, which is related
+    to, but not the same as, the benefit of finding a partner during a search (Astra); single drops need not add."""
     st0 = tb["reins"].saved_state(tb["intact"])
     states, where = _lesions(st0)
     with acct.category("measure"):
@@ -1158,19 +1162,25 @@ def _lesion(tb, cfg, iface, dv, ck, margin) -> dict:
     return {"restored_mean": float(sc[0].mean()), "edges": sorted(edges, key=lambda e: -e["drop"]),
             "n_edges": len(edges), "n_drop_above_p": int((drop > margin).sum()),
             "n_drop_lower_bound_above_0": int((drop - 1.96 * se > 0).sum()),
-            "sum_positive_drops": tot,
-            "share_of_positive_in_top": {str(k): (float(pos[:k].sum() / tot) if tot > 0 else None) for k in (1, 3, 10)}}
+            "sum_positive_drops": tot, "sum_drops": float(drop.sum()),
+            "share_of_positive_in_top": {str(k): (float(pos[:k].sum() / tot) if tot > 0 else None) for k in (1, 3, 10)},
+            "note": "the restoration is re-scored in this batch, outside replay_mode, so its mean may differ slightly "
+                    "from baseline's; the drops are paired within this batch. Sorting and clipping noisy drops "
+                    "biases the apparent concentration upward (Astra)"}
 
 
-def _select_ids(seed: int, w: int, k: int) -> np.ndarray:
+def _select_ids(seed: int, k: int) -> np.ndarray:
+    """Set k's selection worlds, the largest size; smaller sizes take its first worlds, so they are nested (Fable)."""
     first, span = dev()["check"]["ids"]["select"]
-    return first + np.random.default_rng([int(seed), int(w), int(k)]).integers(0, span, size=w)
+    w = max(dev()["check"]["reeval"]["worlds"])
+    return first + np.random.default_rng([int(seed), int(k)]).integers(0, span, size=w)
 
 
 def _reeval(tb, setting, cfg, iface, dv, ck) -> dict:
     """Astra: do the winners chosen on a few worlds survive fresh evaluation? From fixed states (`full`'s saved final
-    states), `sets` independent sets of offspring are drawn; each set (the state and its offspring) is scored on
-    independent selection worlds at each size, and every state on one common block of truth worlds."""
+    states), `sets` independent sets of offspring are drawn; each set (the state and its offspring) is scored on its
+    own selection worlds, nested over the sizes, and every state on one common block of reference worlds. The
+    reference is an estimate (1 024 worlds), not the truth: gains near zero can change sign through its noise."""
     ch = dev()["check"]["reeval"]
     path = _states_path(tb["label"])
     if not path.exists():
@@ -1180,74 +1190,106 @@ def _reeval(tb, setting, cfg, iface, dv, ck) -> dict:
     reins, scfg = tb["reins"], _scfg(setting)
     pr = S.problem_of(reins, {t: int(np.asarray(tb["truth"][t]).sum()) for t in R.TYPES})
     t_first, t_n = dev()["check"]["ids"]["truth"]
-    truth_ids = np.arange(t_first, t_first + t_n)
-    ev = S.simulator(cfg, iface, lambda _: reins, dev()["world_seed"], dv)
+    ref_ids = np.arange(t_first, t_first + t_n)
     out = {}
     for si, start in enumerate(ch["starts"]):
         st = R.XState.from_arrays({k.split("::")[1]: v for k, v in arrays.items() if k.startswith(start + "::")})
         gen = torch.Generator().manual_seed(int(ch["seed"]) + si)
-        sets = []
+        sets, kinds = [], []
         for _ in range(ch["sets"]):
-            off, _ = S.propose(st, pr, scfg, cfg.brain, cfg.mutation, gen, moves=not start.startswith("refit"))
+            off, kd = S.propose(st, pr, scfg, cfg.brain, cfg.mutation, gen, moves=not start.startswith("refit"))
             sets.append(R.XState.cat([st.to("cpu"), off]))
+            kinds.append(kd)
         n = sets[0].n
+        sel_ids = [_select_ids(int(ch["seed"]) + si, k) for k in range(len(sets))]
         with acct.category("measure"):
             ck.check()
-            tru = A.score_states(cfg, iface, reins, R.XState.cat(sets), truth_ids, dev()["world_seed"], dv,
+            ref = A.score_states(cfg, iface, reins, R.XState.cat(sets), ref_ids, dev()["world_seed"], dv,
                                  chunk_worlds=FINAL_CHUNK).reshape(len(sets), n, -1)
-            sel = {}
-            for w in ch["worlds"]:
-                ck.check()
-                res = ev([(k, sets[k], _select_ids(int(ch["seed"]) + si, w, k)) for k in range(len(sets))])
-                sel[w] = np.stack(res)
-        t_mean = tru.mean(axis=2)
-        t_gain = t_mean[:, 1:] - t_mean[:, :1]
-        se_gain = (tru[:, 1:] - tru[:, :1]).std(axis=2, ddof=1) / np.sqrt(tru.shape[2])
-        row = {"truth_worlds": int(tru.shape[2]), "oracle_best_true_gain": float(t_gain.max(axis=1).mean()),
-               "mean_true_gain_of_offspring": float(t_gain.mean()),
-               "median_se_of_a_true_gain": float(np.median(se_gain)), "by_worlds": {}}
-        for w, sw in sel.items():
+            ck.check()
+            genome = EV.moved(Genome.cat([reins.genome(s) for s in sets]), dv)  # rollout does not move it
+            sel_mat = np.repeat(np.stack(sel_ids), n, axis=0)  # each set's states share its worlds
+            per_world = np.asarray(rollout(cfg, iface, genome, sel_mat, dev()["world_seed"], dv,
+                                           chunk_worlds=min(FINAL_CHUNK, sel_mat.size)).score, dtype=np.float64)
+        per_world = per_world.reshape(len(sets), n, -1)  # [sets, states, the largest size's worlds]
+        r_mean = ref.mean(axis=2)
+        r_gain = r_mean[:, 1:] - r_mean[:, :1]
+        se_gain = (ref[:, 1:] - ref[:, :1]).std(axis=2, ddof=1) / np.sqrt(ref.shape[2])
+        row = {"reference_worlds": int(ref.shape[2]),
+               "oracle_best_reference_gain": float(r_gain.max(axis=1).mean()),
+               "mean_reference_gain_of_offspring": float(r_gain.mean()),
+               "median_se_of_a_reference_gain": float(np.median(se_gain)), "by_worlds": {},
+               "raw": {"reference_counts": ref.astype(int).tolist(), "selection_counts": per_world.astype(int).tolist(),
+                       "selection_world_ids": [x.tolist() for x in sel_ids], "reference_world_ids": [int(t_first), t_n],
+                       "offspring_kinds": kinds}}
+        for w in ch["worlds"]:
+            sw = per_world[:, :, :w].mean(axis=2)
             win = sw[:, 1:].argmax(axis=1)
-            s_gain = sw[np.arange(len(sets)), 1 + win] - sw[:, 0]
-            tg = t_gain[np.arange(len(sets)), win]
+            k_ = np.arange(len(sets))
+            s_gain = sw[k_, 1 + win] - sw[:, 0]
+            rg = r_gain[k_, win]
             acc = s_gain >= 0
-            rho = np.array([spearmanr(sw[k], t_mean[k]).statistic for k in range(len(sets))], dtype=float)
+            best = r_gain.max(axis=1)
+            rho = np.array([spearmanr(sw[k], r_mean[k]).statistic for k in range(len(sets))], dtype=float)
             row["by_worlds"][str(w)] = {
-                "mean_true_gain_of_winner": float(tg.mean()), "share_accepted_greedy": float(acc.mean()),
-                "mean_true_gain_when_accepted": float(tg[acc].mean()) if acc.any() else None,
-                "share_accepted_truly_worse": float((acc & (tg < 0)).mean()),
-                "winner_is_true_best": float((win == t_gain.argmax(axis=1)).mean()),
-                "spearman_selection_truth_mean": float(np.nanmean(rho)) if np.isfinite(rho).any() else None}
+                "mean_reference_gain_of_winner": float(rg.mean()),
+                "se_of_that_mean_over_sets": float(rg.std(ddof=1) / np.sqrt(len(rg))) if len(rg) > 1 else None,
+                "paired_se_of_each_winner_gain": se_gain[k_, win].tolist(),
+                "share_accepted_greedy": float(acc.mean()),
+                "mean_reference_gain_when_accepted": float(rg[acc].mean()) if acc.any() else None,
+                "share_of_all_sets_accepted_and_worse": float((acc & (rg < 0)).mean()),
+                "share_of_accepted_that_are_worse": float((rg[acc] < 0).mean()) if acc.any() else None,
+                "winner_is_a_reference_best": float(np.mean(r_gain[k_, win] == best)),  # ties count (Astra)
+                "spearman_selection_reference_mean": float(np.nanmean(rho)) if np.isfinite(rho).any() else None}
         out[start] = row
     return out
 
 
-def _check_outcome(variants: list, margin: float, alpha: float, sd_frac: float) -> dict:
-    """PILOT-DEV.md §7's rule, fixed before the check runs. A variant is reliable if its refits are equivalent to or
-    above exact restoration and their SD is at most `sd_frac` p; it recovers if its free searches' stratified
-    enrichment p is below alpha over the number of variants. (i) some variant reliable and recovering: the one with the
-    lowest p (the first listed, on ties) is proposed for the pre-registration; (ii) some reliable, none recovering;
-    (iii) none reliable."""
+def _per_type_null(rank, truth, strat, seed: int) -> dict:
+    """Fable: the per-type observed AUC, null mean and p from the target's permutation bank (the registered statistic
+    averages the types with equal weight, so on a target with few gap partners the gap ranks dominate its null)."""
+    obs = N.recovery({t: rank[t][None] for t in R.TYPES}, truth)
+    null = N.recovery({t: rank[t][None] for t in R.TYPES}, truth,
+                      N.permutations(strat, dev()["null_B"], seed))
+    return {t: {"observed": float(obs["per_type"][t][0, 0]), "null_mean": float(null["per_type"][t][:, 0].mean()),
+                "null_sd": float(null["per_type"][t][:, 0].std()),
+                "p": N.p_value(null["per_type"][t][:, 0], float(obs["per_type"][t][0, 0]))} for t in obs["types"]}
+
+
+def _check_outcome(variants: list, margin: float, alpha: float, sd_max: float) -> dict:
+    """PILOT-DEV.md §7's rule, fixed before the check runs (v3.3, after the plan review).
+
+    A variant is reliable if its refits restore: the lower bound of (refits − exact restoration), resampled over
+    worlds and refits, is at least −p (Astra: monotonic, so a variant above restoration passes), and their SD is at
+    most `sd_max` p (DESIGN §6's 2 δ_search at δ_search's bound of p/2; Fable). It recovers if its free searches'
+    stratified enrichment p is below alpha over the number of variants.
+    (i) some variant is both: the one with the lowest p (the first listed, on ties) is proposed;
+    (ii) some variant is reliable, but no single variant is both (Astra); recovery by an unreliable variant is
+    recorded, not credited;
+    (iii) no variant is reliable."""
     k = len(variants)
     for v in variants:
-        v["reliable"] = bool(v["restoration"]["verdict"] in ("equivalent", "above")
-                             and v["refit_sd"] <= sd_frac * margin)
+        v["reliable"] = bool(v["restoration_over_refits"]["lo"] >= -margin and v["refit_sd"] <= sd_max * margin)
         v["recovers"] = bool(v["enrichment"]["p"] < alpha / k)
+    unreliable_recovering = [v["name"] for v in variants if v["recovers"] and not v["reliable"]]
     passing = [i for i, v in enumerate(variants) if v["reliable"] and v["recovers"]]
     if passing:
         best = min(passing, key=lambda i: (variants[i]["enrichment"]["p"], i))
-        return {"outcome": "i", "variant": variants[best]["name"],
+        return {"outcome": "i", "variant": variants[best]["name"], "unreliable_but_recovering": unreliable_recovering,
                 "reading": "a variant restores reliably and recovers partners: it is proposed for the pre-registration"}
     if any(v["reliable"] for v in variants):
-        return {"outcome": "ii", "variant": None,
-                "reading": "a variant restores reliably and none recovers partners: the owner chooses between stopping "
-                           "and a design that gates the pilot on machinery only"}
-    return {"outcome": "iii", "variant": None,
-            "reading": "no variant restores reliably: 03a stops, and pilot-dev is reported as exploratory"}
+        return {"outcome": "ii", "variant": None, "unreliable_but_recovering": unreliable_recovering,
+                "reading": "a variant restores reliably, and no single variant also recovers partners: recovery was "
+                           "not demonstrated under this bounded check; the owner chooses between stopping and a design "
+                           "that gates the pilot on machinery only"}
+    return {"outcome": "iii", "variant": None, "unreliable_but_recovering": unreliable_recovering,
+            "reading": "no variant restores reliably: a budget-based stop, 03a ends here and pilot-dev is reported as "
+                       "exploratory (it does not show that every feasible search would fail)"}
 
 
 def _check_projection(tb, setting, ck) -> dict | None:
-    """The whole check's episodes at the slower of `tune`'s and `full`'s search rates, against the cap left."""
+    """The whole check's episodes at the slower of `tune`'s and `full`'s search rates, times a safety factor (Astra:
+    the new batch compositions' rates are extrapolated, not measured), against the cap left."""
     if SMOKE:
         return None
     cat = json.loads((out_dir() / "compute.json").read_text(encoding="utf-8"))["categories"]
@@ -1260,18 +1302,21 @@ def _check_projection(tb, setting, ck) -> dict | None:
     n_lesion = 1 + sum(int(np.asarray(tb["truth"][t]).sum()) for t in R.TYPES)
     n9 = 1 + _scfg(setting).offspring
     reeval_eps = len(ch["reeval"]["starts"]) * ch["reeval"]["sets"] * n9 * (ch["ids"]["truth"][1]
-                                                                              + sum(ch["reeval"]["worlds"]))
+                                                                              + max(ch["reeval"]["worlds"]))
     final_eps = (len(ch["variants"]) * n_s + n_lesion) * len(ids("final"))
-    hours = (search_eps + reeval_eps) / rate / 3600 + final_eps / final_rate / 3600
+    hours = ((search_eps + reeval_eps) / rate / 3600 + final_eps / final_rate / 3600) * ch["projection_safety"]
     remaining = ck.cap_hours - ck.spent_hours() - (time.perf_counter() - ck.t_start) / 3600
     return {"search_episodes": search_eps, "reeval_episodes": reeval_eps, "final_episodes": final_eps,
-            "rate": rate, "hours": hours, "remaining_hours": remaining, "fits": bool(hours <= remaining)}
+            "rate": rate, "safety_factor": ch["projection_safety"], "hours": hours, "remaining_hours": remaining,
+            "fits": bool(hours <= remaining),
+            "note": "an extrapolation: the check's batch compositions were not measured before it runs"}
 
 
 def stage_search_check(args, dv, ck, progress):
     """D314 (PILOT-DEV.md §7): on the MIP target-brain with headroom, the per-edge lesion of its exact restoration,
-    the re-evaluation of fixed states, and four search variants (3 refits and 5 free searches each), read by a rule
-    fixed before it runs. Projected first, and refused if it would not fit the cap left."""
+    the re-evaluation of fixed states, and three search variants (5 original-partner refits, 3 random-partner refits
+    and 5 free searches each), read by a rule fixed before it runs. Projected first, and refused if it would not fit
+    the cap left. Each variant's row is kept as it finishes."""
     read("report")
     con, iface, cfg = configured()
     tb, frow = _check_target(con, iface, cfg, dv)
@@ -1291,47 +1336,71 @@ def stage_search_check(args, dv, ck, progress):
     deleted = np.asarray(brow["deleted"], dtype=float)
     restored = np.asarray(brow["restored"], dtype=float)
     pr = S.problem_of(tb["reins"], R.true_counts(con, tb["x"]))
+    truth = {t: np.asarray(tb["truth"][t], dtype=bool) for t in R.TYPES}
     for vi, v in enumerate(ch["variants"]):
         scfg, cn = _variant_cfg(setting, v), _confirm_n(v)
         base = ch["seed_base"] + 100 * vi
         reins = R.Reinsertion(con, tb["x"], tb["intact"], device=dv)  # its own, so each variant is its own batch
         kw = dict(world_base=first, world_span=span)
         make = (lambda *a, **k: S.ConfirmedExchange(*a, confirm_worlds=cn, **k)) if cn else S.ReplicaExchange
-        searches = [make(pr, scfg, cfg.brain, cfg.mutation, S.search_seed(base, "refit", i),
-                         partners={t: np.asarray(tb["truth"][t], dtype=bool) for t in R.TYPES}, label=f"refit-{i}",
-                         **kw) for i in range(ch["plan"]["refit"])]
+        searches = [make(pr, scfg, cfg.brain, cfg.mutation, S.search_seed(base, "refit", i), partners=truth,
+                         label=f"refit-{i}", **kw) for i in range(ch["plan"]["refit"])]
+        for i in range(ch["plan"]["random"]):
+            sd = S.search_seed(base, "random", i)
+            searches.append(make(pr, scfg, cfg.brain, cfg.mutation, sd, label=f"random-{i}",
+                                 partners=S.random_partners(truth, tb["strat"], np.random.default_rng([sd, 0x03A7])),
+                                 **kw))
         searches += [make(pr, scfg, cfg.brain, cfg.mutation, S.search_seed(base, "free", i), label=f"free-{i}", **kw)
                      for i in range(ch["plan"]["free"])]
         timing = []
         _run(searches, {id(s): reins for s in searches}, cfg, iface, dv, ck, timing=timing)
         states = [s.result() for s in searches]
-        _save_states(f"check-{v['name']}-{tb['label']}", {s.label: st for s, st in zip(searches, states)})
+        labels = [s.label for s in searches]
+        _save_states(f"check-{v['name']}-{tb['label']}", dict(zip(labels, states)))
         fin = _final_scores(reins, states, cfg, iface, dv, ck)
-        ri = [i for i, s in enumerate(searches) if s.label.startswith("refit")]
-        fi = [i for i, s in enumerate(searches) if s.label.startswith("free")]
+        idx = lambda pre: [i for i, l in enumerate(labels) if l.startswith(pre)]  # noqa: E731
+        ri, ai, fi = idx("refit"), idx("random"), idx("free")
         ref = fin[ri].mean(axis=0)
         frees = [states[i] for i in fi]
         rank = S.ranking(frees)
+        nt = _no_task(pr, scfg, cfg.brain, cfg.mutation, base + 90, len(fi))
+        sd_refits = float(np.std([fin[i].mean() for i in ri], ddof=1))
+        dfree = len(ri) - 1
         row = {**v, "confirm_worlds": cn, "search_config": scfg.as_dict(),
-               "episodes": _variant_episodes(scfg, cn, len(searches)),
-               "refit_means": [float(fin[i].mean()) for i in ri],
-               "refit_sd": float(np.std([fin[i].mean() for i in ri], ddof=1)),
+               "episodes": _variant_episodes(scfg, cn, len(searches)), "states": labels,
+               "final_counts": {labels[i]: _ints(fin[i]) for i in range(len(labels))},
+               "refit_means": [float(fin[i].mean()) for i in ri], "refit_sd": sd_refits,
+               "refit_sd_95": [sd_refits * np.sqrt(dfree / chi2.ppf(0.975, dfree)),
+                               sd_refits * np.sqrt(dfree / chi2.ppf(0.025, dfree))],
+               "random_means": [float(fin[i].mean()) for i in ai],
                "free_means": [float(fin[i].mean()) for i in fi],
+               # the gate: worlds and refits resampled, so the refits' own spread is inside the interval (Astra)
+               "restoration_over_refits": T.compare(fin[ri], np.tile(restored, (len(ri), 1)), margin,
+                                                    over_brains=True, **boot),
                "restoration": T.compare(ref, restored, margin, over_brains=False, **boot),
+               "restoration_per_refit": [T.compare(fin[i], restored, margin, over_brains=False, **boot) for i in ri],
                "headroom": T.compare(ref, deleted, margin, over_brains=False, **boot),
+               "advantage": T.compare(ref, fin[ai].mean(axis=0), margin, over_brains=False, **boot) if ai else None,
                "functional": T.compare(fin[fi].mean(axis=0), ref, margin, over_brains=False, **boot),
                "enrichment": N.test({t: rank[t][None] for t in R.TYPES}, tb["truth"], tb["strat"], dev()["null_B"],
                                     dev()["null_seed"] + tb["x"]),
+               "enrichment_per_type": _per_type_null(rank, tb["truth"], tb["strat"], dev()["null_seed"] + tb["x"]),
+               "no_task": N.test({t: nt[t][None] for t in R.TYPES}, tb["truth"], tb["strat"], dev()["null_B"],
+                                 dev()["null_seed"] + tb["x"]),
+               "ranking": {t: np.asarray(rank[t]).round(6).tolist() for t in R.TYPES},
                "chance_q": _chance_q(tb["truth"], tb["reins"].K), "agreement": _agreement(frees, tb["truth"]),
-               "per_search": [{**_diagnostics(searches[i], tb["truth"], searches[i].label),
+               "per_search": [{**_diagnostics(searches[i], tb["truth"], labels[i]),
                                "final_mean": float(fin[i].mean()), "auc": _auc(states[i], tb["truth"]),
-                               **({"confirmed": searches[i].trace.confirmed} if cn else {})} for i in fi + ri],
+                               **({"confirmed": searches[i].trace.confirmed} if cn else {})} for i in fi + ri + ai],
+               "scores_note": ("trace scores are confirmation-world scores, not comparable with the other variants' "
+                               "selection-world scores (Fable)") if cn else None,
                "timing": timing}
         progress["variants"].append(row)
     rule = _check_outcome(progress["variants"], margin, ch["alpha"], ch["refit_sd_max_fraction_of_p"])
     out = {"target_brain": tb["label"], "p": margin, "setting": setting, "projection": guard,
            "reference_from_full": {"refit_means": frow["refit_means"], "refit_sd": frow["refit_sd"],
                                    "restoration": frow["comparisons"]["restoration"],
+                                   "advantage": frow["comparisons"]["advantage"],
                                    "enrichment_p": frow["enrichment"]["p"]},
            "lesion": progress["lesion"], "reeval": progress["reeval"], "variants": progress["variants"],
            "rule": rule}

@@ -1,0 +1,16 @@
+free  {'generations': 30} seed 0: accepted share 0.90, swap attempts 9: identical
+free  {'generations': 30} seed 1: accepted share 0.93, swap attempts 9: identical
+free  {'generations': 30} seed 2: accepted share 0.91, swap attempts 9: identical
+free  {'generations': 30, 'swap_every': 1, 'temperatures': (0.5, 1.0, 2.0, 4.0)} seed 0: accepted share 0.98, swap attempts 45: identical
+free  {'generations': 30, 'swap_every': 1, 'temperatures': (0.5, 1.0, 2.0, 4.0)} seed 1: accepted share 1.00, swap attempts 45: identical
+free  {'generations': 30, 'swap_every': 1, 'temperatures': (0.5, 1.0, 2.0, 4.0)} seed 2: accepted share 0.94, swap attempts 45: identical
+refit {'generations': 30} seed 0: accepted share 0.91, swap attempts 9: identical
+refit {'generations': 30} seed 1: accepted share 0.94, swap attempts 9: identical
+refit {'generations': 30} seed 2: accepted share 0.90, swap attempts 9: identical
+free  {'generations': 30, 'replicas': 1, 'temperatures': (0.01,)} seed 0: accepted share 0.90, swap attempts 0: identical
+free  {'generations': 30, 'replicas': 1, 'temperatures': (0.01,)} seed 1: accepted share 0.93, swap attempts 0: identical
+free  {'generations': 30, 'replicas': 1, 'temperatures': (0.01,)} seed 2: accepted share 0.87, swap attempts 0: identical
+free  {'generations': 30, 'offspring': 3, 'p_move': 0.6, 'p_weights': 0.2, 'p_tau_bias': 0.2, 'max_moves': 3} seed 0: accepted share 0.79, swap attempts 9: identical
+free  {'generations': 30, 'offspring': 3, 'p_move': 0.6, 'p_weights': 0.2, 'p_tau_bias': 0.2, 'max_moves': 3} seed 1: accepted share 0.78, swap attempts 9: identical
+free  {'generations': 30, 'offspring': 3, 'p_move': 0.6, 'p_weights': 0.2, 'p_tau_bias': 0.2, 'max_moves': 3} seed 2: accepted share 0.80, swap attempts 9: identical
+0 of 15 runs differ (before: f27d4c4; after: the working tree)

@@ -9636,3 +9636,56 @@ What follows its outcome is fixed in advance (PILOT-DEV v3.2 §7).
 - **Sabotage:** dropping the division over the variants, counting "undetermined" as reliable, and keeping a lesioned
   edge's weight were each caught. The division was not caught at first, because the rule test's case did not depend
   on it; a case was added where it decides the outcome.
+
+## D315 — The search check's plan review: every finding taken (PILOT-DEV v3.3); a merged rule goes back to both
+
+**The review:** run 20261018-112021, both at xhigh effort, archived in `docs/reviews/20261018-03a-search-check/`.
+- Fable: "run it, with small fixes".
+- Astra: "revise".
+- Both traced the code and found no bug that would waste the hour. Fable checked `ConfirmedExchange` in
+  `run_lockstep`, the re-evaluation's draws, the lesion (gap edges included) and the projection's arithmetic. Astra
+  checked the `tell` split's draw order.
+
+**Taken:**
+- **Outcome (ii)** (Astra): v3.2's code returned (ii), "none recovers", when one variant was reliable and another
+  recovered without being reliable. That was false, and the written rule left the case unassigned. Outcome (ii) is now
+  "some variant reliable, no single variant both". A variant that recovers without being reliable is recorded, not
+  credited.
+- **The restoration gate was not monotonic** (Astra): an interval such as [0.08, 0.12] is "undetermined" and failed
+  v3.2's gate, though every value in it is an improvement. The gate is now the lower bound ≥ −p.
+- **Three refits made the SD gate close to a coin flip** (Fable): pilot-dev's own 0.59 p passes p/2 about half the
+  time. The interval also left out the spread between refits (Astra).
+- **Records:**
+  - the per-type enrichment, since URXL's two gap partners dominate the statistic's null (Fable);
+  - the no-task control per variant, and the share accepted per generation (Fable);
+  - the ranking and final counts (both);
+  - the re-evaluation: both "accepted and worse" shares, with the denominators named (Astra); tie-aware bests (Astra);
+    "reference" for "truth" (Astra); raw counts, ids and kinds (Astra); nested selection worlds (Fable).
+- **Order:** V4 and V3 run first, so a stop at the cap loses the variant asked for last (Fable).
+- **The projection:** a safety factor of 1.15 (Astra). The CUDA preflight runs the new stage in its own directory
+  before the GPU run (Fable).
+- **Wording:** the lesion measures marginal dependence at the evolved state (both); (ii) means "not demonstrated
+  under this check"; (iii) is a budget-based stop (both); and the docstrings for `ConfirmedExchange` and
+  `run_lockstep(after=)`.
+- **The `tell` split** (Fable's suggested check): the search module at f27d4c4 and the current one gave identical
+  traces and final states in 15 runs. The configurations were swaps, refits, one replica, and three offspring with up
+  to three moves (`development-records/tell_split_check.py`, `tell-split-check.txt`). A planted one-generation shift
+  in the swap timing made 9 of 15 differ.
+
+**Where they differed, and the merge:**
+
+| Question | Fable | Astra | v3.3 |
+|---|---|---|---|
+| Reliability | restoration alone, no SD gate, or no single refit below | lower bound ≥ −p, SD ≤ p/2 | lower bound ≥ −p over worlds and refits; SD ≤ p (DESIGN §6's 2 δ_search at its bound); each refit's comparison recorded |
+| Refits per variant | 3 | 5 | 5 |
+| V2 (the colder ladder) | drop it, since acceptance at d ≥ 0 is unconditional; spend its budget on random-partner refits | keep it; none is wasted | dropped; 3 random-partner refits per variant |
+
+- **Alpha:** with three variants, Bonferroni gives 0.0167.
+- **The estimate:** about 2.44 M episodes, about 1.1 GPU-hours before the safety factor. With the factor, about 1.29
+  of the roughly 1.4 left.
+- **The merge goes back to both for confirmation before the check runs.** If they still disagree, the owner decides.
+
+**Tests:**
+- the rule test was rewritten for v3.3, with its boundaries: the division over three, the bound exactly at −p, the SD
+  at p, and a variant above restoration;
+- four sabotages are caught: the division, `>=` turned into `>`, the SD bound halved, and the lesion's weight kept.

@@ -200,20 +200,26 @@ def _module(name):
 
 
 def test_the_search_check_runs_in_the_pipeline_and_reads_by_its_rule(run):
-    """D314: the lesion covers every true edge, the re-evaluation every start and size, four variants, one outcome."""
+    """D314: the lesion covers every true edge, the re-evaluation every start and size, three variants in their order,
+    one outcome; the records needed to read it afterwards are written."""
     M, _, docs = run
     d = docs["search-check"]
-    assert [v["name"] for v in d["variants"]] == ["V1", "V2", "V3", "V4"]
+    assert [v["name"] for v in d["variants"]] == ["V4", "V3", "V1"]
     assert d["rule"]["outcome"] in ("i", "ii", "iii")
     tb = next(r for r in docs["baseline"]["target_brains"] if r["label"] == d["target_brain"])
     assert d["lesion"]["n_edges"] == sum(tb["counts"].values())
     assert set(d["reeval"]) == {"refit-0", "free-0"}
-    assert all(set(r["by_worlds"]) == {"2", "4"} for r in d["reeval"].values())
-    v4 = d["variants"][3]
+    for r in d["reeval"].values():
+        assert set(r["by_worlds"]) == {"2", "4"} and len(r["raw"]["selection_world_ids"][0]) == 4
+    v4 = d["variants"][0]
     assert v4["confirm_worlds"] > 0
-    for ps in v4["per_search"]:  # one confirmation per generation
-        assert len(ps["confirmed"]) == len(ps["cold_score_series"])
-    assert all(0 < v["enrichment"]["p"] <= 1 for v in d["variants"])
+    for ps in v4["per_search"]:  # one confirmation and one acceptance share per generation
+        assert len(ps["confirmed"]) == len(ps["cold_score_series"]) == len(ps["accepted_share_series"])
+    for v in d["variants"]:
+        assert 0 < v["enrichment"]["p"] <= 1 and 0 < v["no_task"]["p"] <= 1 and v["advantage"] is not None
+        assert set(v["enrichment_per_type"]) == set(v["enrichment"]["types"])
+        assert len(v["final_counts"]) == len(v["states"]) and len(v["restoration_per_refit"]) == len(v["refit_means"])
+        assert v["refit_sd_95"][0] <= v["refit_sd"] <= v["refit_sd_95"][1]
 
 
 def test_lesions_remove_exactly_one_true_edge_each():
@@ -238,21 +244,23 @@ def test_lesions_remove_exactly_one_true_edge_each():
 
 
 def test_the_check_outcome_rule_at_its_boundaries():
-    """PILOT-DEV §7's rule: reliability (restoration equivalent or above, refit SD at most p/2) and recovery
-    (enrichment p below 0.05 / 4), outcome i (lowest p, first on ties), ii or iii."""
+    """PILOT-DEV §7's rule (v3.3): reliability (the lower bound over worlds and refits at least -p, so a variant above
+    restoration passes; refit SD at most p) and recovery (enrichment p below 0.05 over the variants), outcome i (lowest
+    p, first on ties), ii (some reliable, no single variant both) or iii."""
     M = _module("e03a_script_test_g")
     p = 0.1
 
-    def v(name, verdict="equivalent", sd=0.05, ep=0.5):
-        return {"name": name, "restoration": {"verdict": verdict}, "refit_sd": sd, "enrichment": {"p": ep}}
+    def v(name, lo=-0.05, sd=0.05, ep=0.5):
+        return {"name": name, "restoration_over_refits": {"lo": lo}, "refit_sd": sd, "enrichment": {"p": ep}}
 
-    out = M._check_outcome([v("V1"), v("V2", ep=0.0124), v("V3", ep=0.0124), v("V4", ep=0.0126)], p, 0.05, 0.5)
-    assert out["outcome"] == "i" and out["variant"] == "V2"  # 0.0126 >= 0.0125 does not recover; a tie keeps V2
-    out = M._check_outcome([v("V1"), v("V2"), v("V3"), v("V4", ep=0.0126)], p, 0.05, 0.5)
-    assert out["outcome"] == "ii"  # below 0.05 but not below 0.05 / 4: the division over the variants decides
-    out = M._check_outcome([v("V1", sd=0.0501, ep=0.001), v("V2", verdict="below", ep=0.001), v("V3"), v("V4")],
-                           p, 0.05, 0.5)
-    assert out["outcome"] == "ii"  # V1's SD is above p/2 and V2 is below restoration: neither counts
-    out = M._check_outcome([v("V1", verdict="undetermined", ep=0.0), v("V2", sd=0.2), v("V3", verdict="below"),
-                            v("V4", sd=0.06)], p, 0.05, 0.5)
+    out = M._check_outcome([v("V4"), v("V3", ep=0.0166), v("V1", ep=0.0166)], p, 0.05, 1.0)
+    assert out["outcome"] == "i" and out["variant"] == "V3"  # a tie keeps the first listed
+    out = M._check_outcome([v("V4"), v("V3"), v("V1", ep=0.0167)], p, 0.05, 1.0)
+    assert out["outcome"] == "ii"  # below 0.05 but not below 0.05 / 3: the division over the variants decides
+    out = M._check_outcome([v("V4", lo=0.08), v("V3"), v("V1", lo=0.08, ep=0.001)], p, 0.05, 1.0)
+    assert out["outcome"] == "i" and out["variant"] == "V1"  # above restoration passes (monotonic; Astra)
+    out = M._check_outcome([v("V4", lo=-0.1), v("V3", lo=-0.1001, ep=0.001), v("V1", sd=0.1001, ep=0.001)],
+                           p, 0.05, 1.0)
+    assert out["outcome"] == "ii" and out["unreliable_but_recovering"] == ["V3", "V1"]  # -p exactly passes
+    out = M._check_outcome([v("V4", lo=-0.2), v("V3", sd=0.2), v("V1", lo=-0.11, ep=0.0)], p, 0.05, 1.0)
     assert out["outcome"] == "iii"

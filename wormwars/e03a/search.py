@@ -321,7 +321,9 @@ class ConfirmedExchange(ReplicaExchange):
     and their offspring on the generation's worlds, as in `ReplicaExchange`; each replica's best offspring (the first,
     on ties) is its candidate. Then each current state and its candidate on `confirm_worlds` fresh worlds (a function
     of the search seed and the generation, on their own stream), where the acceptance rule and the swaps are applied to
-    the confirmation scores. A candidate that won only on the selection worlds' noise is then usually rejected."""
+    the confirmation scores. A candidate with no true gain is then rejected about half the time at a cold temperature,
+not always: the confirmation is a fresh Metropolis comparison, not a statistical guarantee of improvement (Fable,
+Astra)."""
 
     def __init__(self, *args, confirm_worlds: int, **kw):
         super().__init__(*args, **kw)
@@ -378,7 +380,8 @@ class ConfirmedExchange(ReplicaExchange):
 def run_lockstep(searches: list, evaluate, check=None, after=None) -> None:
     """Advance every search to its end together: each generation, every search's states are scored in one call,
     `evaluate([(search, states, worlds), ...]) -> [scores per search]`. `check()` runs before each call (the cap);
-    `after(searches)` runs after each generation, so a caller can keep what has finished."""
+    `after(searches)` runs after each call, so a caller can keep what has finished. A `ConfirmedExchange` takes two
+    calls per generation (Astra)."""
     while not all(s.done for s in searches):
         live = [s for s in searches if not s.done]
         asks = [(s, *s.ask()) for s in live]

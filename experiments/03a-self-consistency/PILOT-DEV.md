@@ -1,7 +1,7 @@
 # 03a pilot-dev: what it runs and how it chooses
 
-**Status:** plan v3.2, 2026-10-18, written with the code (`scripts/e03a.py`, `wormwars/e03a/`). v3.2 adds §7, the
-bounded search check after pilot-dev (D314).
+**Status:** plan v3.3, 2026-10-18, written with the code (`scripts/e03a.py`, `wormwars/e03a/`). v3.2 adds §7, the
+bounded search check after pilot-dev (D314); v3.3 takes its plan review (D315).
 - **v1** (`a4956e5`, D308): Fable "ready for pilot-dev, with small fixes"; Astra "revise" (code review round 1, run
   20261017-190316, `docs/reviews/20261017-03a-code/`). v2 takes every finding (§6; D309).
 - **v2** (`a5760c4`, D309): Fable "ready for pilot-dev, with small fixes"; Astra "revise" (round 2, run
@@ -23,7 +23,8 @@ pre-registration before pilot-check runs. Nothing here is a registered test. It 
 On **one SH-mirror graph** (seed 3 403 000, outside 03's and 03r's SH-mirror seeds; rebuilt from its seed in every
 stage and checked by hash, never saved, since it carries N2's weights, permuted), never on N2, inside its own
 **6 GPU-hour cap**. T0's accounting counts the cap across attempts, the CUDA preflight included, and it counts toward
-03a's 72. World ids are 1 482 000 000 to 1 482 799 999, outside every registered range. Seeds run from 3 403 000 to
+03a's 72. World ids are 1 482 000 000 to 1 482 799 999, outside every registered range; §7's check adds 1 482 800 000 to
+1 482 909 999 (Fable). Seeds run from 3 403 000 to
 3 414 003 (the no-task control's, which simulate nothing); each search's own seed is a hash of its target-brain's
 seed, its kind and its index. Every number is in `DEV`
 in the script.
@@ -236,6 +237,34 @@ comprehensive validation (Astra).
 
 ## 6. Changes
 
+**v3.2 → v3.3 (the check's plan review: run 20261018-112021; Fable "run it, with small fixes", Astra "revise"; D315):**
+- **The rule:**
+  - reliability is the lower bound of refits − restoration over worlds and refits ≥ −p (monotonic; Astra), with the
+    refit SD ≤ p (DESIGN §6's 2 δ_search at its bound; Fable), not v3.2's verdict plus SD ≤ p/2 from three refits;
+  - outcome (ii) means "some variant reliable, no single variant both"; a variant that recovers without being reliable
+    is recorded, not credited (Astra).
+- **The variants:**
+  - five original-partner refits (Astra) and three random-partner refits (Fable) per variant;
+  - V2 dropped (Fable);
+  - run in the order V4, V3, V1 (Fable).
+- **Records:**
+  - per-type enrichment;
+  - the no-task control per variant;
+  - the share accepted per generation;
+  - the ranking and final counts;
+  - each refit's restoration;
+  - the re-evaluation's raw counts, ids and mutation kinds, with nested selection worlds, both "accepted and worse"
+    shares and tie-aware bests.
+- **The projection** has a safety factor of 1.15.
+- **Wording:**
+  - what the lesion measures;
+  - "reference", not "truth";
+  - (ii) and (iii) no longer claim more than the check shows.
+- **Checks:**
+  - the `tell` split is identical to f27d4c4's search in 15 runs (`development-records/tell_split_check.py`), and a
+    planted swap-timing shift is caught;
+  - four sabotages of the rule and the lesion are caught.
+
 **v3.1 → v3.2 (after pilot-dev's results review, D313, and the owner's choice, D314):** §7, the bounded
 search check, and its code (`stage_search_check`, `ConfirmedExchange`, tests in `test_e03a_search.py` and
 `test_e03a_script.py`; sabotage of the rule's division over the variants, its reliability condition and the lesion's
@@ -318,7 +347,7 @@ D309):**
   as chosen, not optimised (Fable 6); the low target's diagnostics (Fable 7); the planted check at N2's scale and the
   open search-budget question (Fable 1).
 
-## 7. The bounded search check (v3.2, D314)
+## 7. The bounded search check (v3.3, D314, D315)
 
 **Why:** pilot-dev's searches did not restore MIP/URXL's score with its true partners, and their partner recovery
 was at chance (D312, D313).
@@ -330,6 +359,9 @@ Both reviewers recommended (b), a bounded check of the search on the one target-
 inside pilot-dev's remaining cap (1.42 GPU-hours). The owner chose (b) on 2026-10-18. Everything here is development
 on the shuffled pilot graph, chosen after seeing pilot-dev, and labelled so.
 
+v3.2's plan was reviewed by both (run 20261018-112021, D315): Fable said "run it, with small fixes", Astra
+"revise". v3.3 takes their findings.
+
 **What it runs** (`python scripts/e03a.py search-check`; the numbers are in `DEV["check"]`):
 
 1. **The per-edge lesion** (Fable):
@@ -337,62 +369,97 @@ on the shuffled pilot graph, chosen after seeing pilot-dev, and labelled so.
    - each lesioned state and the restoration are scored on the final worlds (2 048);
    - the record gives the drop per edge with its paired SE, how many drops exceed p, and the share of the positive
      drops in the top 1, 3 and 10 edges.
-   - This asks whether the original partners' contribution sits on a few edges or is spread thin.
+   - **What it measures:** the evolved brain's marginal dependence on each of X's edges at that one state. That is
+     related to, but not the same as, the benefit of finding a partner during a search. Single drops need not add,
+     and sorting and clipping noisy drops biases the apparent concentration upward (Astra).
 2. **Re-evaluation of fixed states** (Astra):
    - from `full`'s saved final states `refit-0` and `free-0`, 16 independent sets of 8 offspring each are drawn with
      the tuned mutation setting;
-   - each set, the state and its offspring, is scored on independent selection worlds of 16, 32 and 64;
-   - every state is also scored on one common block of 1 024 truth worlds;
-   - the record gives, per size, the mean true gain of the selected winner, the share accepted by the greedy rule,
-     the share accepted that are truly worse, how often the winner is the true best, and the selection-truth rank
-     correlation.
+   - each set, the state and its offspring, is scored on its own 64 selection worlds. The sizes 16 and 32 take the
+     first worlds, so the sizes are nested (Fable);
+   - every state is also scored on one common block of 1 024 reference worlds. That block is an estimate, not the
+     truth: gains near zero can change sign through its noise (Astra).
+   - **Per size, the record gives:**
+     - the mean reference gain of the selected winner, with its SE over sets and each winner's paired SE;
+     - the share accepted by the greedy rule;
+     - both the share of all sets that are accepted and worse, and the share of accepted winners that are worse
+       (Astra);
+     - how often the winner is a reference best (ties count);
+     - the selection-reference rank correlation;
+     - the raw counts, world ids and mutation kinds.
    - This asks whether winners chosen on few worlds survive fresh evaluation.
-3. **Four search variants,** each with 3 original-partner refits and 5 free searches of 100 generations, using the
-   tuned mutation setting:
+3. **Three search variants,** run in this order. Each has 5 original-partner refits (Astra), 3 random-partner refits
+   (Fable) and 5 free searches, all of 100 generations, using the tuned mutation setting:
 
 | Variant | Replicas | Temperatures | Offspring | Worlds | Confirmation | From | Episodes per search and generation |
 |---|---|---|---|---|---|---|---|
-| V1 | 4 | 0.1, 0.2, 0.4, 0.8 | 3 | 32 | none | Astra: fewer offspring, more worlds | 512 |
-| V2 | 4 | 0.01, 0.02, 0.04, 0.08 | 8 | 16 | none | Astra: a colder ladder | 576 |
-| V3 | 1 | 0.01 | 8 | 64 | none | Fable: the ladder's budget moved into worlds | 576 |
 | V4 | 1 | 0.01 | 8 | 32 | 64 fresh worlds | Fable, Astra: confirm the best offspring before acceptance | 416 |
+| V3 | 1 | 0.01 | 8 | 64 | none | Fable: the ladder's budget moved into worlds | 576 |
+| V1 | 4 | 0.1, 0.2, 0.4, 0.8 | 3 | 32 | none | Astra: fewer offspring, more worlds | 512 |
 
    - **The baseline:** pilot-dev's setting is 576 episodes per search and generation, and its results are `full`'s.
+   - **The order:** a stop at the cap loses the last variant first, so the two both reviewers asked for run first
+     (Fable).
+   - **V2,** the colder ladder, was dropped, for two reasons (Fable; see D315 for Astra's view):
+     - acceptance at d ≥ 0 is unconditional at any temperature, and the best of eight scored at or above the current
+       state almost every generation (`accepted_moves` ≈ 400 × 1/3);
+     - `tune`'s round A saw no difference over a tenfold range of T₁.
+     Its budget pays for the random-partner refits, so the original-partner advantage under each new search is
+     measured.
    - **V4** uses `ConfirmedExchange` (`wormwars/e03a/search.py`):
      - each generation's best offspring and its current state are re-scored on fresh worlds (their own stream);
      - acceptance and swaps use those scores.
+     - It is a fresh Metropolis comparison, not a statistical guarantee of improvement. Its trace scores are on the
+       confirmation worlds, so they are not comparable with the other variants'.
+     - At T = 0.01 and 64 worlds, a one-count loss is accepted with probability about 0.21. The chain is near-greedy,
+       not greedy.
    - **Scoring:** each variant's final states are scored on the final worlds. The record gives:
-     - restoration, headroom and functional comparisons (world bootstrap, margin p);
-     - the refit SD;
-     - the stratified enrichment test of the free searches' ranking, using the same permutation bank as `full`;
-     - Q, AUC, agreement and every search diagnostic.
-4. **A projection first:** the whole check is priced at the slower of `tune`'s and `full`'s search rates. It is
-   refused if it would not fit the cap left, and the owner decides. The estimate is about 2.15 M episodes, about 1.0
-   GPU-hour.
+     - restoration against the mean of the refits, against each refit, and over worlds and refits together;
+     - headroom, the original-partner advantage and the functional comparison (margin p);
+     - the refit SD with its 95% interval;
+     - the stratified enrichment test of the free searches' ranking, using the same permutation bank as `full`, with
+       each type's observed AUC, null mean, null SD and p;
+     - the no-task control with the variant's own proposal structure;
+     - the ranking, every final count, Q, AUC, agreement, and every search diagnostic, including the share accepted
+       per generation (Fable).
+4. **A projection first:**
+   - the whole check is priced at the slower of `tune`'s and `full`'s search rates, times 1.15, because the new batch
+     compositions' rates are extrapolated, not measured (Astra);
+   - it is refused if it would not fit the cap left, and the owner decides;
+   - the estimate is about 2.44 M episodes, about 1.1 GPU-hours before the factor.
 
 **The rule, fixed before the check runs** (`_check_outcome`):
 - **A variant is *reliable*** if both hold:
-  - its refits' mean is equivalent to or above exact restoration (margin p; "undetermined" does not count);
-  - its refits' SD is at most p/2.
-- **A variant *recovers*** if its free searches' enrichment p is below 0.05/4 = 0.0125 (Bonferroni over the four
+  - the lower bound of (refits − exact restoration), resampled over worlds and refits, is at least −p. The bound is
+    monotonic, so a variant above restoration passes (Astra), and the refits' own spread is inside the interval;
+  - the refits' SD is at most p. That is DESIGN §6's per-brain bound, 2 δ_search, at δ_search's largest allowed
+    value, p/2. With five refits, an SD is a provisional screen (Fable, Astra).
+- **A variant *recovers*** if its free searches' enrichment p is below 0.05/3 ≈ 0.0167 (Bonferroni over the three
   variants).
+  - The registered statistic weights the three types equally. URXL has 2 gap partners against 18 in and 25 out, so
+    its gap ranks carry most of the null variance, and in and out at an AUC of 0.70 with gap at chance would not
+    reach this level. The per-type results are recorded beside it (Fable).
 - **Outcome (i):**
-  - when: some variant is reliable and recovers;
+  - when: some variant is both reliable and recovers;
   - the one with the lowest p (the first listed, on ties) is proposed for the pre-registration's search;
   - the criteria questions D313 raised (NIP headroom, the outcome rule without headroom, criterion 6, the panel's
     ties) still go to a design round, and pilot-check needs the owner's word.
 - **Outcome (ii):**
-  - when: some variant is reliable and none recovers;
-  - the search can restore function with the true partners, but cannot find them here;
+  - when: some variant is reliable, but no single variant is both (Astra);
+  - recovery was not demonstrated under this bounded check. A variant that recovers without being reliable is
+    recorded, not credited;
   - the owner chooses between stopping 03a and a design (v7.2) that gates the pilot on machinery only (Fable).
     Astra's view is to stop.
 - **Outcome (iii):**
   - when: no variant is reliable;
-  - 03a stops, and pilot-dev with this check is reported as exploratory (both).
+  - a budget-based stop: 03a ends, and pilot-dev with this check is reported as exploratory. It does not show that
+    every feasible search would fail (Astra).
 - **The lesion and the re-evaluation are descriptive.** They inform the reading but are not gates.
 - **The check is not repeated or enlarged,** whatever it shows (both reviewers).
 
 **What it cannot show:**
 - one target-brain on one shuffled graph cannot establish what N2's targets allow;
-- four variants with five free searches each give a noisy choice, not an optimum;
+- three variants with five free searches each give a noisy choice, not an optimum;
+- V3 and V4 change several factors together, so a success would not isolate its cause (Astra);
+- five refits give a provisional reliability screen, not a demonstrated bound;
 - a pass is a feasibility signal for the protocol, nothing more.
