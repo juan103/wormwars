@@ -63,10 +63,10 @@ def build() -> dict:
     v = s0["verification"]
     out["step0"] = {"verification_bit_equal": {m: bool(v[m]["fitness"]["bit_equal"] and v[m]["history"]["bit_equal"])
                                                for m in ("default", "replay")},
-                    "graphs": s0["summary"]["graphs"], "mean_rho_level": r(s0["summary"]["mean_rho_level"]),
+                    "graphs": s0["summary"]["graphs"], "mean_rho_level": r(s0["summary"]["mean_rho_level"], 5),
                     "between_graph_sd": r(s0["summary"]["between_graph_sd_rho_level"]),
                     "positive": s0["summary"]["positive"]}
-    out["step0b"] = {k: {"mean": r(x["mean"]), "between_graph_sd": r(x["between_graph_sd"]),
+    out["step0b"] = {k: {"mean": r(x["mean"], 5), "between_graph_sd": r(x["between_graph_sd"]),
                          "positive": x["positive"], "graphs": x["graphs"]} for k, x in s0b["summary"].items()}
 
     g = st["gate"]
@@ -107,7 +107,7 @@ def build() -> dict:
         "U_mean_shared_world_se": r(pr["B"]["U_mean_shared_world_se"]),
         "turn_response_mean_abs": [float(f"{x:.2g}") for x in pr["manipulation"]["turn_response_mean_abs"]],
         "A_secondary": {"rho": {c: rl([x["rho"][c] for x in p["per_graph"]]) for c in ("level", "relief", "sham")},
-                        "D": rl(pr["A_secondary"]["D"]), "D_mean": r(pr["A_secondary"]["D_mean"]),
+                        "D": rl(pr["A_secondary"]["D"], 5), "D_mean": r(pr["A_secondary"]["D_mean"]),
                         "rho_H_dir_level": rl([x["rho_H_dir_level"] for x in p["per_graph"]]),
                         "quartile_difference_level": rl([x["quartile_difference_level"] for x in p["per_graph"]]),
                         "power_A2": r(pr["power_A2_reported"]["power"], 3)},

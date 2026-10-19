@@ -10832,3 +10832,23 @@ so the correct figure is +0.006. It was rounded twice, through the summary's 0.0
 **Next:** a confirmation round, then publication.
 
 **Gate:** the hygiene tests and the summary tests passed (pytest rc 0).
+
+## D342 — 03h's results confirmed by both ("publish"); the low notes taken; ready for main
+
+**The review:** run 20261019-211314, both at xhigh effort, of `0cf9aec` (D341). It is archived in
+`docs/reviews/20261019-03h-results-r2/`.
+- **Fable: "publish".** All twelve round-1 findings were fixed, and every changed number re-checked. Fable traced
+  "Reproduce it" against the guards step by step. One low note: three figures round correctly from the records but
+  not from the summary's 4-decimal values.
+- **Astra: "publish".** All twelve round-1 findings were confirmed, and every changed field re-checked. Two low notes:
+  "Everything needs the connectome" is false for the CPU scripts, and `b_power.py` must run before the summary.
+
+**Taken:**
+- `summary.json` keeps 5 decimals for A's D, step 0's mean and step 0b's means;
+- "Reproduce it" says which scripts need the connectome, and runs `b_power.py` first.
+
+**Publication** (consensus, under the delegation; the owner is informed after):
+- 03h goes to `main`, with the working-branch banner removed there, as for 03a (D320);
+- the roadmap branch keeps the banner, which now lists 03h.
+
+**Gate:** the hygiene, summary and amplitude tests passed (pytest rc 0).

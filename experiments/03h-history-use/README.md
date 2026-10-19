@@ -1,6 +1,6 @@
 # 03h: does the history random brains hold predict how well they forage?
 
-**Status:** exploratory. 03h stopped before its pre-registration (2026-10-19, D321-D341), by the owner's choice. The
+**Status:** exploratory. 03h stopped before its pre-registration (2026-10-19, D321-D342), by the owner's choice. The
 pilot ran under a bound registration, followed by an exploratory power analysis and an amplitude check. 0.349 of the
 1.0 GPU-hour pre-registration cap was spent, and the formal run did not take place. N2 was used only in the engine's
 equivalence check: no history-fitness or relief comparison ran on N2.

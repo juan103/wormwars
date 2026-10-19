@@ -54,37 +54,37 @@
       "replay": true
     },
     "graphs": 16,
-    "mean_rho_level": -0.0236,
+    "mean_rho_level": -0.02363,
     "between_graph_sd": 0.06,
     "positive": 6
   },
   "step0b": {
     "H_dir_partial": {
-      "mean": 0.0625,
+      "mean": 0.06249,
       "between_graph_sd": 0.0744,
       "positive": 14,
       "graphs": 16
     },
     "H_plain": {
-      "mean": -0.0122,
+      "mean": -0.01218,
       "between_graph_sd": 0.068,
       "positive": 9,
       "graphs": 16
     },
     "S_plain": {
-      "mean": -0.0003,
+      "mean": -0.00031,
       "between_graph_sd": 0.0671,
       "positive": 8,
       "graphs": 16
     },
     "motor_turn_partial": {
-      "mean": 0.0101,
+      "mean": 0.01005,
       "between_graph_sd": 0.0503,
       "positive": 9,
       "graphs": 16
     },
     "raw_forward_partial": {
-      "mean": 0.0075,
+      "mean": 0.00747,
       "between_graph_sd": 0.0627,
       "positive": 7,
       "graphs": 16
@@ -331,9 +331,9 @@
         ]
       },
       "D": [
-        -0.0,
-        0.0072,
-        0.0015
+        -3e-05,
+        0.00723,
+        0.00149
       ],
       "D_mean": 0.0029,
       "rho_H_dir_level": [

@@ -4,7 +4,7 @@
 
 ## Status, 1-19 October 2026 (updates the section below; that section's later edits are recorded in DECISIONS.md)
 
-**19 October 2026** (D321-D341): **03h stopped before its pre-registration; exploratory**
+**19 October 2026** (D321-D342): **03h stopped before its pre-registration; exploratory**
 (`experiments/03h-history-use/`, RESULTS.md). It was the memory thread's first design: does the history random brains
 hold predict how well they forage, and is N2's head start larger when memory is needed?
 - **The task and the relief worked.** On 02's T1, a scripted controller gains +0.985 from memory, and a "the food

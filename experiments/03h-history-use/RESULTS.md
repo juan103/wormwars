@@ -83,7 +83,7 @@ The stages from G1 to P ran at `69606fd`, the commit that recorded the binding. 
 - after step 0, a direction round (D330);
 - the code took two rounds (D327, D328), and the pilot's registration three (D333-D335);
 - after the pilot, the power question (D337) and the amplitude check's code, in two rounds (D338);
-- this page (D341).
+- this page, in two rounds (D341, D342).
 
 ## The machinery held
 
@@ -294,8 +294,8 @@ Each item is a candidate, not a demonstrated need.
 
 ## Reproduce it
 
-Everything needs the connectome (`scripts/fetch_connectome.py`) and the pinned environment (`requirements.txt`). The
-GPU stages need CUDA. Exactness is claimed only on the same GPU and pinned environment, with the same batch
+The GPU stages need the connectome (`scripts/fetch_connectome.py`), CUDA and the pinned environment
+(`requirements.txt`). The two CPU scripts need neither the connectome nor a GPU. Exactness is claimed only on the same GPU and pinned environment, with the same batch
 compositions, inside `replay_mode()` (AGENTS.md rule 6).
 
 **Without a GPU:**
@@ -322,7 +322,8 @@ own, pushed to your remote:
    - copy `runs/e03h/pilot/compute.json` to `pilot/compute.json`, `runs/e03h/step0/compute.json` to
      `development-records/step0-compute.json`, and `runs/e03h/amplitude/compute.json` to
      `development-records/amplitude-check-compute.json`;
-   - run both scripts, and compare with the committed `summary.json`.
+   - run `b_power.py` first, since the summary reads its output, then `scripts/e03h_summary.py`, and compare with
+     the committed `summary.json`.
 
 **The CUDA preflights:** `--smoke --device cuda` on `scripts/e03h.py` or `scripts/e03h_amplitude.py`, with their own
 ids and seeds.
@@ -332,7 +333,7 @@ ids and seeds.
 ## Record
 
 - **Design and registration:** [`DESIGN.md`](DESIGN.md) v3.3; [`PILOT.md`](PILOT.md) draft 4, bound at `ff1fd31`.
-- **Decisions:** D321-D341 in [`DECISIONS.md`](../../DECISIONS.md).
+- **Decisions:** D321-D342 in [`DECISIONS.md`](../../DECISIONS.md).
 - **Reviews** (`docs/reviews/`):
   - the scope: `20261018-memory-thread-scope`;
   - the design: `20261018-03h-design`, `-r2`, `-r3`;
@@ -341,4 +342,4 @@ ids and seeds.
   - the pilot: `20261019-03h-pilot`, `-r2`, `-r3`;
   - B's power: `20261019-03h-bpower`;
   - the amplitude check: `20261019-03h-amplitude`, `-r2`;
-  - this page: `20261019-03h-results`.
+  - this page: `20261019-03h-results`, `-r2`.
