@@ -10324,3 +10324,46 @@ on the 16 shared worlds.
 - **For the memory thread:** the history N2's random brains hold unusually strongly is P4's magnitude. Step 0 and
   step 0b find no fitness value in that magnitude at generation 0 on SH graphs, but a small value in the direction of
   the response to a fall.
+
+## D332 — 03h's pilot driver, gate and probe, with PILOT.md draft 2, for review before binding
+
+**The code** for PILOT.md's stages, for review by both with the registration draft:
+- **`scripts/e03h.py`:** the stages `bind`, `gate` (G1), `sham-rates` (S1), `gate-sham` (G2) and `pilot` (P, and P′ at
+  amplitude 0.5 only by §5.4's rule).
+  - Each stage refuses if: its predecessor has not passed; PILOT.md's hash differs from the bound one; the guarded tree
+    is dirty.
+  - The cap clock counts the pilot and step 0 together, at 1.0 GPU-hour.
+  - Smoke runs on the CPU, or on CUDA as the preflight.
+- **`wormwars/e03h/gate.py`:** the nested scripted families, the check-world scores, the paired intervals and the G1/G2
+  verdicts. Slow memory is tuned at `MemoryKinesis`'s optimum over T, and memory + bit at the memory optimum with both
+  source flags. That keeps every family nested, at about 150 000 tuning episodes rather than about a million.
+- **`wormwars/e03h/pilot.py`:**
+  - the crossed reliability, which equals the committed record's estimator;
+  - the decile selection, with ties broken by index;
+  - A's ρ and D;
+  - s_shared, from shared selection-world resamples;
+  - the power report;
+  - B's U with its spreads, and the decile shift with its interval.
+- **`wormwars/e03h/probes.py`:** `bit_turn_response`, the manipulation's diagnostic.
+- **The amplitude override:** `interface_03h(con, amplitude)`.
+- **The counts from `rollout`:** it now returns the food_fell transition counts, summed over chunks. They are `None`
+  without the channel, and no other output changes.
+
+**Tests:** `test_e03h_gate.py`, `test_e03h_pilot.py`, `test_e03h_probes.py`, `test_e03h_pilot_driver.py` (every
+stage end to end at smoke size, and the refusals), and the rollout count test.
+- **Written after their code,** so their ability to fail was checked:
+  - the gate's memory fallback was sabotaged, and the test caught it;
+  - the amplitude override's zero-amplitude case gives a turn response of exactly 0;
+  - the decile tie-break and the power formula are tested against hand values.
+- **The CUDA preflight** (`--smoke --device cuda`) ran every stage end to end.
+
+**PILOT.md draft 2** follows design v3.3:
+- B is the only registered claim;
+- the amplitude rule keys on the decile shift;
+- the power is reported, not a stop;
+- the sham's randomness is the bank's run seed.
+
+**Next:** the review of this code with PILOT.md draft 2. Then binding (`bind`, committed and pushed), then G1, S1, G2
+and P under the owner's GPU word.
+
+**Gate:** the full suite passed (rc 0).

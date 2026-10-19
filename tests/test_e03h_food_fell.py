@@ -272,3 +272,18 @@ def test_the_injected_bit_reaches_ask_and_its_counts_are_its_own(parts, mode, ra
         code = (inj[t - 1].long() * 2 + inj[t].long())[both]
         want += np.bincount(code.numpy(), minlength=4)
     assert w.food_fell_counts["injected"].tolist() == want.tolist()
+
+
+def test_rollout_sums_the_counts_over_chunks(parts):
+    """The sham's rates are estimated from rollout's counts (PILOT.md §3): one chunk or several give the same sums,
+    and they equal the worlds' own counts."""
+    con, _, v, spec = parts
+    cfg = t1("level")
+    g = Genome.random(spec, cfg.brain, 4, generator=torch.Generator().manual_seed(5))
+    ids = np.arange(400, 404)
+    one = rollout(cfg, v, g, ids, 9, "cpu", chunk_worlds=16)
+    many = rollout(cfg, v, g, ids, 9, "cpu", chunk_worlds=4)
+    assert one.food_fell_counts["relief"].tolist() == many.food_fell_counts["relief"].tolist()
+    assert one.food_fell_counts["relief"].sum() > 0 and one.food_fell_counts["injected"][1:].sum() == 0
+    assert np.array_equal(one.score, many.score)
+    assert rollout(t1(None), parts[1], g, ids, 9, "cpu").food_fell_counts is None

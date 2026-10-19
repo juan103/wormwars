@@ -46,6 +46,9 @@ class RolloutResult:
     # final position, [strains, worlds, 2]; 04a's shaping reads the first (D103)
     progress: np.ndarray | None = None
     final_head: np.ndarray | None = None
+    # 03h's food_fell channel (WorldConfig.food_fell): the transition counts (N00, N01, N10, N11) of the relief bit and
+    # of the injected bit, summed over every chunk; None without the channel
+    food_fell_counts: dict | None = None
 
     def per_strain(self) -> np.ndarray:
         return self.score.mean(axis=1)
@@ -117,6 +120,8 @@ def _play(cfg, iface, brain, world_ids, run_seed, device, combat_stage=0, ticks=
         "err_rel": (world.ledger_rel_max if world.ledger_rel_max is not None
                     else world.energy_ledger_rel_error()).max().item(),
         "ticks": world.tick_count,
+        "food_fell_counts": ({k: v.numpy() for k, v in world.food_fell_counts.items()}
+                             if cfg.world.food_fell is not None else None),
     }
 
 
@@ -160,6 +165,7 @@ def rollout(
     strains_per_chunk = max(1, chunk_worlds // max(n_ids, 1))
 
     scores, energies, alives, eatens, pellets, foods, events, progs, heads = [], [], [], [], [], [], [], [], []
+    ff_counts = None
     worst_err = worst_rel = 0.0
     used_ticks = 0
 
@@ -182,6 +188,9 @@ def rollout(
         events.append(r["events"])
         progs.append(r["progress"])
         heads.append(r["final_head"])
+        if r["food_fell_counts"] is not None:
+            ff_counts = ({k: v.copy() for k, v in r["food_fell_counts"].items()} if ff_counts is None
+                         else {k: ff_counts[k] + v for k, v in r["food_fell_counts"].items()})
         # NaN must not be swallowed: max(0.0, nan) is 0.0 in Python (T0, D073)
         worst_err = _nanmax(worst_err, r["err"])
         worst_rel = _nanmax(worst_rel, r["err_rel"])
@@ -200,6 +209,7 @@ def rollout(
         events=None if events[0] is None else {k: np.concatenate([e[k] for e in events]) for k in events[0]},
         progress=None if progs[0] is None else np.concatenate(progs),
         final_head=None if heads[0] is None else np.concatenate(heads),
+        food_fell_counts=ff_counts,
     )
 
 
