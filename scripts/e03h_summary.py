@@ -100,8 +100,9 @@ def build() -> dict:
     out["pilot"] = {
         "amplitude": p["amplitude"], "action": p["action"],
         "reliability_level": r(pr["reliability_level_mean"]), "W": pr["W"],
-        "decile_shift": {"per_graph": rl(pr["manipulation"]["decile_shift"]["per_graph"]),
+        "decile_shift": {"per_graph": rl(pr["manipulation"]["decile_shift"]["per_graph"], 5),
                          **ci(pr["manipulation"]["decile_shift"])},
+        "decile_test_means": {c: rl(v) for c, v in pr["B"]["T"].items()},
         "U": rl(pr["B"]["U"]), "U_between_graph_sd": r(pr["B"]["U_between_graph_sd"]),
         "U_mean_shared_world_se": r(pr["B"]["U_mean_shared_world_se"]),
         "turn_response_mean_abs": [float(f"{x:.2g}") for x in pr["manipulation"]["turn_response_mean_abs"]],
@@ -124,10 +125,10 @@ def build() -> dict:
 
     def amp_part(x: dict) -> dict:
         sb = x["selection_bank"]
-        return {"decile_shift": {"per_graph": rl(x["decile_shift"]["per_graph"]), **ci(x["decile_shift"])},
+        return {"decile_shift": {"per_graph": rl(x["decile_shift"]["per_graph"], 5), **ci(x["decile_shift"])},
                 "between_graph_sd": r(x["between_graph_sd"]),
                 "ratio": {k: r(v, 2) for k, v in x["ratio_mean_to_sd"].items()},
-                "all_genomes": {k: ci(sb[f"{k}_all_genomes"]) for k in ("relief_minus_sham", "relief_minus_level",
+                "all_genomes": {k: ci(sb[f"{k}_all_genomes"], 5) for k in ("relief_minus_sham", "relief_minus_level",
                                                                           "sham_minus_level")},
                 "turn_response_mean_abs": [float(f"{t:.2g}") for t in x["turn_response_mean_abs"]]}
 

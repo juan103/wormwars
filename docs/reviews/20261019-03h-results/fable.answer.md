@@ -1,0 +1,33 @@
+Reading done. I have checked every number on the page against the pilot records, the development records, summary.json and D321-D340, and traced the driver's guards and the ASK cap. Writing the review now.
+
+**Verdict: revise.** Every number on the page traces to a committed record and is correctly transcribed, including the summary.json rounding. What needs revision is wording in four places that goes beyond what the records support, one disclosure gap, and three placeholder statements about a review that has not yet happened.
+
+**Numbers checked and found correct:** the stage table and wall seconds; compute 0.044, 0.165, 0.140, 0.349; the gate scores, verdicts, recovered share and 0.962; sham rates and occupancy; the pilot's reliability, decile shift, U, SE, turn response and projection; A's table; B's power model and all pass rates; the three amplitude rows, all-genome contrasts, sham-minus-level, turn responses and the guide's branch; step 0 and 0b's six read-outs; the six D330 corrections; the D337 and D339 corrections; Fable's "about a fifth" in D337's review. Rule 7 and step 0's verification match their records.
+
+## Findings
+
+1. **Placeholder claims about this page's own review.** `experiments/03h-history-use/RESULTS.md:72` says "This page has had one review (D340)". D340 says "Next: a review of the page". `RESULTS.md:285` lists `20261019-03h-results` under `docs/reviews/`, which does not exist. `RESULTS.md:250` says "D340 will list the corrections". All three must be made true before publication, and the review will be recorded in a later D-number, not D340. Severity: medium.
+
+2. **"Could not separate" overstates a modelled pass rate.** `RESULTS.md:36` ("B could not be tested"), `RESULTS.md:210-211` ("could not separate N2 ... even under the hypothesis's strongest plausible effect"), `README.md:20` of the experiment ("could not have separated"), and the repo `README.md:38` all state an impossibility. The record is a normal model fitted to three graphs giving a pass rate of 0.005 to 0.34 at U = 0, which the page itself calls "scenario rates for B's rank part ... not B's power" at `RESULTS.md:149-150`. "Would rarely have passed" or "had little chance of separating" is what the record supports. The header's "had almost no power" at `RESULTS.md:16` and `ROADMAP.md:15` conflicts with the same caveat. Severity: medium.
+
+3. **The history wording under "Shown" reintroduces what D330 corrected.** `RESULTS.md:212-213` says the size of the history "does not predict fitness" and its direction "does, weakly". D330 corrected D329's "history does not predict T1 fitness" to a near-zero mean partial association in these SH samples, conditional on 16 shared worlds. The directional read-out is one of five, unadjusted, exploratory, and the page says so at `RESULTS.md:199-200`, but the "Shown" list drops the qualifiers. The same phrasing is in the experiment `README.md:22`, `ROADMAP.md:20-21` and the repo `README.md:38`. Severity: medium.
+
+4. **A post-data decision is not disclosed on the page.** B became the only registered claim after step 0's data, by the owner's choice, with A demoted to secondary (D330, DESIGN §13). Astra called that defensible only "if disclosed as decided after step 0". RESULTS.md never says it. The experiment README mentions it only in the Files table. Add it to the header's "What ran" or "How it ended". Severity: medium.
+
+5. **The amplitude check's departure from the registered rule is not stated.** `RESULTS.md:118` says the shift moved so the amplitude stayed at 0.25, and `RESULTS.md:158-161` calls the check exploratory, but nowhere says that PILOT.md §5.4 allowed one escalation to 0.5 only if the shift did not move, so running 0.5 and 1.0 was outside the registered rule. D338 and the record's own note say this explicitly. Severity: medium.
+
+6. **The ASK cap is relevant to "barely use the bit through ASKL and ASKR" and is not mentioned.** SH-mirror-ASK caps ASK's direct read-out edges at N2's count, which is zero (`tests/test_e03h_samplers.py:64-69`). On these graphs the bit can reach the motors only through the network. That is by design, but it bears on `RESULTS.md:207` and on `RESULTS.md:220` ("a channel random brains barely read"), and on how general the finding is. One sentence would do. Severity: low.
+
+7. **"Reproduce it" would hit refusals if followed literally.** `RESULTS.md:260-265`: with records in place the driver refuses without `--rerun --reason` (`scripts/e03h.py:530-535`); moving `bind.json` aside dirties the guarded tree and `bind` refuses (`scripts/e03h.py:64-66, 510-511`); after `bind` the new record must be committed and pushed before `gate` (`require_pushed`, PILOT.md §0), and the bound commit recorded will be the outsider's own HEAD, not `ff1fd31`. Also `RESULTS.md:258-259`: running `b_power.py` without the local arrays overwrites `b-power.json` with a null selection-bank part, after which `e03h_summary.py` crashes on `bp["selection_bank_relief_minus_sham"]["per_graph"]` and `test_e03h_summary.py` fails. Severity: low.
+
+8. **Wrong D-number for the stop decision.** `ROADMAP.md:17` cites D339 for "then to stop and report". D339 leaves the choice open; D340 records it. Severity: low.
+
+9. **An untraceable denominator.** `RESULTS.md:32` and `RESULTS.md:208` say "about 0.5% of their score". The decile's test mean of about 1.55 is in `pilot.json` under `readings.B.T` but not on the page or in summary.json. The page also mixes denominators: 0.5% of own score at 0.25 against 0.2% of the scripted gain at 1.0. Severity: low.
+
+10. **Review-round count differs between files.** `RESULTS.md:70` says the design took four rounds; the experiment `README.md:30` says five. Severity: low.
+
+11. **DESIGN.md's status line is stale.** `DESIGN.md:3` still says "Not coded, not run". The README's table sends outsiders there. A dated annotation beside it, which rule 2 allows, would prevent confusion. Severity: low.
+
+12. **"As fast as the gain" is slightly generous.** `RESULTS.md:35`: from 0.25 to 0.5 the mean fell from 0.0077 to 0.0071 while the SD rose from 0.0102 to 0.0180. "At least as fast" matches the three rows. Severity: low.
+
+On the specific wording questions: "random brains barely use the bit" is supported, with finding 6's caveat. "Not shown" is the best section on the page and is accurate about N2, A and the memory thread; the problem is that the "Shown" list two paragraphs above it is stated more strongly than "Not shown" allows. README and ROADMAP entries match the page's numbers and inherit findings 2, 3 and 8.

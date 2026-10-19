@@ -37,3 +37,20 @@ def test_a_changed_record_changes_the_summary(monkeypatch):
     monkeypatch.setattr(M, "rec", changed)
     committed = json.loads((M.EXP / "summary.json").read_text(encoding="utf-8"))
     assert json.loads(json.dumps(M.build())) != committed
+
+
+def test_the_power_rerun_without_arrays_leaves_the_committed_record(tmp_path, monkeypatch):
+    """Without the pilot's local arrays, b_power.py writes elsewhere, so the summary's input stays as committed (the
+    review of RESULTS.md: Fable 7, Astra 8)."""
+    spec = importlib.util.spec_from_file_location(
+        "b_power_test", ROOT / "experiments" / "03h-history-use" / "development-records" / "b_power.py")
+    B = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(B)
+    committed = B.OUT.read_bytes()
+    monkeypatch.setattr(B, "ARRAYS", tmp_path / "missing")
+    monkeypatch.setattr(B, "OUT_WITHOUT_ARRAYS", tmp_path / "b-power-without-arrays.json")
+    monkeypatch.setattr(B, "SIMS", 200)
+    out = B.main()
+    assert out["selection_bank_relief_minus_sham"] is None
+    assert B.OUT.read_bytes() == committed
+    assert json.loads((tmp_path / "b-power-without-arrays.json").read_text(encoding="utf-8"))["pass_rate"]

@@ -4,21 +4,25 @@
 
 ## Status, 1-19 October 2026 (updates the section below; that section's later edits are recorded in DECISIONS.md)
 
-**19 October 2026** (D321-D340): **03h stopped before its pre-registration; exploratory**
+**19 October 2026** (D321-D341): **03h stopped before its pre-registration; exploratory**
 (`experiments/03h-history-use/`, RESULTS.md). It was the memory thread's first design: does the history random brains
 hold predict how well they forage, and is N2's head start larger when memory is needed?
 - **The task and the relief worked.** On 02's T1, a scripted controller gains +0.985 from memory, and a "the food
   fell" bit replaces 98% of that.
-- **Random brains barely used the bit,** which entered through ASKL and ASKR. The best tenth of genomes gained about
-  0.5% at amplitude 0.25, unevenly across the three pilot graphs. A stronger bit made the spread across graphs grow
-  as fast as the gain.
-- **So B, the only registered claim, had almost no power.** Its rank test would rarely pass even if N2 gained nothing
-  from the relief. The pilot had registered no rule on B's power, so this surfaced after the pilot (D336, D337).
-- **The owner's choices:** an exploratory amplitude check first, then to stop and report (D339). 0.349 of the 1.0
-  GPU-hour cap before the pre-registration was spent. No 03h brain ran on N2.
+- **In random brains, the bit's average effect was small.** It entered through ASKL and ASKR, which on these graphs
+  have no direct read-out. The decile selected under relief scored about 0.5% above the one selected under sham at
+  amplitude 0.25, unevenly across the three pilot graphs. A stronger bit widened the spread across graphs at least as
+  fast as it raised the mean.
+- **So B, the only registered claim** (the owner's choice after step 0, D330), **looked very unlikely to pass.**
+  Exploratory scenarios suggested its rank test would rarely pass if N2's relief-sham difference were zero. N2's own
+  response was not measured. The pilot had registered no rule on B's power, so this surfaced after the pilot (D336,
+  D337).
+- **The owner's choices:** an exploratory amplitude check first (D338, D339), outside the pilot's amplitude rule, then
+  to stop and report (D340). 0.349 of the 1.0 GPU-hour cap before the pre-registration was spent. N2 was used only in
+  the engine's equivalence check.
 - **What it leaves:** a relief through the food channel, or a test against the ensemble mean, each with a power rule
-  for its primary claim fixed before any data. In SH samples, the direction of the history held, unlike its size,
-  predicted fitness weakly (+0.062, 14 of 16 graphs).
+  for its primary claim fixed before any data. In SH samples, the direction of the history held showed a weak
+  positive association with fitness (+0.062, 14 of 16 graphs; exploratory). Its size had a near-zero mean association.
 - **Next:** not yet chosen.
 
 

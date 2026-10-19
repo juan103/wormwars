@@ -20,6 +20,7 @@ The model, from the pilot's committed record (`pilot/pilot.json`):
 
 If the pilot's local per-genome arrays are present and match the recorded sha256, the script also reports, per
 graph, the relief - sham difference on the selection bank, over all 256 genomes and over the level-selected decile.
+Without them, it writes `b-power-without-arrays.json` and leaves the committed `b-power.json` as it is.
 
     python experiments/03h-history-use/development-records/b_power.py
 """
@@ -38,6 +39,8 @@ EXP = ROOT / "experiments" / "03h-history-use"
 SRC = EXP / "pilot" / "pilot.json"
 ARRAYS = ROOT / "runs" / "e03h" / "pilot" / "states"
 OUT = Path(__file__).with_name("b-power.json")
+# without the local arrays the committed record is left alone (the review of RESULTS.md, Fable 7, Astra 8)
+OUT_WITHOUT_ARRAYS = Path(__file__).with_name("b-power-without-arrays.json")
 N_NULL, MAX_ABOVE, SIMS, SEED = 64, 2, 200_000, 3_670_000
 
 
@@ -99,7 +102,8 @@ def main() -> dict:
            "u": us, "pass_rate": table, "u_for_80pct_power": needed,
            "decile_shift_mean": rec["readings"]["manipulation"]["decile_shift"]["mean"],
            "selection_bank_relief_minus_sham": selection_bank(rec)}
-    OUT.write_text(json.dumps(out, indent=2) + "\n", encoding="utf-8")
+    target = OUT if out["selection_bank_relief_minus_sham"] is not None else OUT_WITHOUT_ARRAYS
+    target.write_text(json.dumps(out, indent=2) + "\n", encoding="utf-8")
     return out
 
 

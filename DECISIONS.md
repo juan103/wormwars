@@ -10778,3 +10778,57 @@ the reviewers' D337 positions were Fable "stop B as confirmatory" and Astra "red
 **Next:** a review of the page by both reviewers, then the corrections, then publication.
 
 **Gate:** the hygiene tests and the summary tests passed (pytest rc 0).
+
+## D341 — 03h's results page, round 1: both "revise"; every finding taken
+
+**The review:** run 20261019-210237, both at xhigh effort, of `a322cf9`. It is archived in
+`docs/reviews/20261019-03h-results/`. Both checked every number against the records and found them correctly
+transcribed, with one rounding error. The findings concern wording, disclosure and reproduction.
+
+**Taken:**
+- **N2** (Astra, high). "No 03h brain ran on N2" was false: rule 7's equivalence check ran random genomes on N2.
+  Every instance now reads "N2 was used only in the engine's equivalence check; no history-fitness or relief
+  comparison ran on N2."
+- **B's power** (both). "Could not be tested", "could not separate" and "had almost no power" overstated scenario
+  rates fitted to three graphs.
+  - They now read that exploratory scenarios suggested the rank test would rarely have passed.
+  - u = 0 is a scenario favourable to the hypothesis, not an established bound (Astra).
+  - The full range is given, including the upper-SD scenarios (0, and 0.065).
+- **History and fitness** (both). The page had repeated what D330 corrected. It now reads: a near-zero mean partial
+  association for H in SH samples, with no "negligible" margin, and a weak positive association for H_dir, which was
+  one of five read-outs and is unadjusted. "Not shown" adds: not use as memory, and not mediation of an N2 advantage.
+- **Disclosure** (both):
+  - B was made the sole claim after step 0, by the owner (D330), which replaced the Holm family;
+  - the amplitude check was outside PILOT.md §5.4's rule, which allowed an escalation only if the shift had not
+    moved.
+- **The descriptive wording** (Astra, Fable):
+  - "barely use the bit" became "a small average effect";
+  - the decile contrast is between separately selected deciles;
+  - the turn response is a one-tick diagnostic;
+  - "no sham damage" became "no ensemble-mean sham damage was detected";
+  - the intervals' conditioning and the ratio range's construction are stated;
+  - "as fast as" became "at least as fast as".
+- **The ASK cap** (Fable): on SH-mirror-ASK graphs, ASK has no direct read-out, as N2's has none, so the bit reaches
+  the motors only through the network.
+- **Reproduction** (both):
+  - "Reproduce it" is now a concrete sequence on a branch of one's own: step 0 and 0b for the ledger, bind and push,
+    the stages, committing the records before the amplitude check, then the summary;
+  - `b_power.py` without the local arrays now writes `b-power-without-arrays.json` and leaves the committed record
+    alone, with a test (Fable 7, Astra 8).
+- **The small fixes:**
+  - the 0.25 all-genome lower endpoint is +0.00004, not 0.0000. The summary now keeps 5 decimals there and in the
+    per-graph shifts (Astra);
+  - the deciles' test means are in the summary, as the 0.5% figure's denominator (Fable);
+  - the review counts agree: one scope round, four design rounds, a direction round;
+  - "Before 03h, no file related…" (Astra);
+  - ROADMAP's stop decision is D340, not D339 (Fable);
+  - the review-status lines now point to this entry.
+- **DESIGN.md's stale status line** (Fable): it is not edited, because DESIGN.md is bound by `pilot/bind.json`. The
+  README says that its status line predates the run.
+
+**Correction to D339** (Astra): its table gave the 0.5 row's third graph as "+0.007". The record's value is +0.00645,
+so the correct figure is +0.006. It was rounded twice, through the summary's 0.0065.
+
+**Next:** a confirmation round, then publication.
+
+**Gate:** the hygiene tests and the summary tests passed (pytest rc 0).
