@@ -1,0 +1,81 @@
+{
+ "stage": "bind",
+ "smoke": false,
+ "device": "cuda",
+ "provenance": {
+  "git_commit": "ff1fd31a85d78190c798ff20679c943ad6d864c7",
+  "branch": "roadmap",
+  "dirty": false,
+  "python": "3.13.3",
+  "numpy": "2.4.4",
+  "torch": "2.12.0+cu130",
+  "cuda": "13.0",
+  "gpu": "NVIDIA GeForce RTX 5080",
+  "connectome_cache_sha256": "43b87aa172a0042b9dce734b15bdf1c87efe3a33ac1cc0d9cd03255a60c96d4a",
+  "connectome_source_sha256": "1f4fdbf84746b69b49a8da0816f52787860ce349b638dce37924ba80f90c70c9"
+ },
+ "config": {
+  "gate": {
+   "tuning": [
+    3640000,
+    64
+   ],
+   "check": [
+    3641000,
+    256
+   ],
+   "seeds": [
+    3642001,
+    3642002
+   ]
+  },
+  "graphs": {
+   "kind": "SH-mirror-ASK",
+   "first_seed": 3660001,
+   "n": 3,
+   "passes": 20,
+   "max_failures": 10
+  },
+  "calibration": {
+   "seed": 3661000,
+   "strains": 1024
+  },
+  "genome_salt": "03h-pilot:",
+  "genomes": 256,
+  "selection": [
+   3650000,
+   16
+  ],
+  "test": [
+   3651000,
+   64
+  ],
+  "run_seeds": [
+   3652001,
+   3652002
+  ],
+  "boot_seeds": [
+   3653000,
+   3653001
+  ],
+  "shared_boots": 2000,
+  "cap_hours": 1.0,
+  "delta_A": 0.05,
+  "reliability_floor": 0.85,
+  "formal": {
+   "primary_graphs": 65,
+   "sh_graphs": 64,
+   "cap_hours": 6.0
+  }
+ },
+ "upstream": {},
+ "rerun_reason": null,
+ "started_utc": "2026-10-19T12:30:35Z",
+ "pilot_md_sha256": "24db2f9c5df5d093b4667bf60aab517679e21e4d3cd2598b13fd5f8fd9d9c59b",
+ "design_md_sha256": "00fc1ee841c815aaf67be44914297cbdf4edf4cd700b5c902f953b6dbe55f83d",
+ "bound_commit": "ff1fd31a85d78190c798ff20679c943ad6d864c7",
+ "note": "binding: this record is committed and pushed before G1 runs; the implementation stays as at bound_commit for every stage",
+ "status": "completed",
+ "over_cap_at_end": false,
+ "seconds": 0.1860368251800537
+}

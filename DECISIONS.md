@@ -10499,3 +10499,23 @@ moved aside (`runs/e3c-smoke-accumulated-20261019`, local). The test should get 
 recorded here as an open fix.
 
 **Gate:** the full suite passed (rc 0), after E3c's accumulated smoke folder was moved aside.
+
+## D335 — 03h's pilot, round 3: both "bind and run"; PILOT.md draft 4 bound at ff1fd31
+
+**The review:** run 20261019-142341, both at xhigh effort, of D334's fixes at `ff1fd31`. It is archived in
+`docs/reviews/20261019-03h-pilot-r3/`.
+- Both found every round-2 finding fixed and nothing introduced. Both say draft 4 is ready to bind as it stands.
+- **Fable's informational notes, recorded here:**
+  - the 1.0-hour cap's clock counts S1's sampler CPU seconds. This is as registered (T0's accounting) and is
+    conservative by minutes;
+  - **a new binding would invalidate the whole chain** (G1's upstream is `bind.json`), and the cap leaves little room
+    for a full redo. So no rebinding is planned;
+  - "once" for P′ holds across chains (conservative);
+  - `test_binding_fixes_the_implementation` diffs against the literal `4fae0d1`, which a shallow clone or rewritten
+    history would break. That is an open low-severity fix for a later commit, outside `CODE`.
+
+**Binding:** `scripts/e03h.py bind` at `ff1fd31`, with a clean guarded tree and the pinned environment.
+- **The hashes:** PILOT.md `24db2f9c…`, DESIGN.md `00fc1ee8…`, line endings normalised.
+- **The record:** `experiments/03h-history-use/pilot/bind.json`, committed and pushed here before any stage runs
+  (PILOT.md §0).
+- **What runs next, under the owner's GPU word of 2026-10-19:** G1, S1, G2 and P, inside the 1.0-hour cap.
