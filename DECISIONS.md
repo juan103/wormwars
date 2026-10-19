@@ -10637,3 +10637,71 @@ rates, not B's power").
 hold until the owner chooses.
 
 **Gate:** the hygiene tests passed (a development record, a review archive and DECISIONS only; no library code changed).
+
+## D338 — 03h: the exploratory amplitude check (the owner's choice), reviewed twice; pushed before it runs
+
+**The owner's choice** (2026-10-19, after D337): the amplitude check first. It is exploratory and disclosed, at about
+0.2 GPU-hours, run after the script is reviewed. The owner then chooses between stopping 03h and a redesign round.
+
+**What it is:** `scripts/e03h_amplitude.py`, with its tests in `tests/test_e03h_amplitude.py`.
+- **What runs:** the pilot's 3 graphs, genomes, gains, banks and sham rates, at amplitudes 0.5 and 1.0. Each
+  amplitude runs relief and sham on the selection bank, its own decile on the test bank, and the turn response.
+- **Level is not rerun:** with the bit at 0 the amplitude changes nothing, which a test shows.
+- **It is outside PILOT.md's amplitude rule.** No number from it becomes a registered value without a new design
+  round.
+
+**Its readings:**
+- the decile shift, its interval and its between-graph SD;
+- the ratio of the mean to that SD, with its 90% chi-square range;
+- on the selection bank, over all genomes, relief − sham, relief − level and sham − level, each with a shared-world
+  interval;
+- the realised counts;
+- the turn response;
+- 0.25, recomputed from the pilot's arrays.
+
+**Its guide, fixed before the run** (the script's docstring). It is a heuristic for B's rank route, and the owner
+decides.
+- **Both ratios under 1:** "the rank route is not supported at these amplitudes". That does not show that random
+  brains cannot use the bit.
+- **Either at 2 or above:** a redesign round is supported.
+- **Otherwise, or with a ratio undefined:** the readings go to the owner.
+- **Three flags mark discordant evidence,** and a flag replaces the branch:
+  - sham damage;
+  - an all-genome benefit while the ratio is under 1;
+  - a ratio of 2 or above that is not corroborated against 0.25.
+- **The error rates at three graphs** are stated: with a true ratio of 0.8, one amplitude reads 2 or above 19% of the
+  time; with a true ratio of 2, one reads under 1 7% of the time.
+
+**Its guards, all before any GPU work:**
+- a clean, pushed tree, the pilot's records included;
+- the pilot's bound implementation unchanged since ff1fd31 (`scripts/e03h.py` `CODE`, without this new script);
+- a completed pilot at 0.25 with a current chain;
+- the environment as the pilot's;
+- the compute ledgers present.
+
+**The cap:** the shared 1.0-hour pre-registration cap, with 0.209 spent, and this check's own 0.3 h. Both are checked
+before every unit of work, and overruns are flagged at the end.
+
+**The reviews:**
+- **Round 1** (run 20261019-180156, `docs/reviews/20261019-03h-amplitude/`): both "revise". Every finding was taken.
+  - Fable: the error rates and range, the guard's coverage, the pilot check before the compute, float64 deciles, the
+    counts and names, a CUDA smoke.
+  - Astra: the stop wording (high), the level contrasts, the guards, an undefined ratio, the ledgers and the flags.
+- **Round 2** (run 20261019-183853, `-r2/`): both "revise", with small fixes. Fable needed no further round. Every
+  finding was taken:
+  - the code guard refused its own new script (both; high for operability);
+  - the corroboration flag could never fire (Fable);
+  - discordance now replaces the branch;
+  - the environment is compared with the pilot's;
+  - the ratio's range is ordered;
+  - the dependence assumption is stated (Astra).
+
+**Tests:** 11, at smoke size on the CPU, with sabotage checks seen failing for:
+- the cap counting the pilot;
+- the refusal before the record moves (the budget, and the pilot check);
+- the code guard's exclusion, in a scratch repository.
+
+The flag test's consistent fakes fail on the round-1 flag. **A CUDA smoke preflight** completed in 43 s, before
+round 2's fixes. It is rerun before the check.
+
+**Gate:** the hygiene tests and every 03h test passed (pytest rc 0). No library code changed.
