@@ -2,6 +2,8 @@
 # The connectome is downloaded from its source and hash-checked at run time by
 # scripts/fetch_connectome.py; it is never committed or cached here (AGENTS.md rule 1).
 # GPU tests (marker `gpu`) need CUDA and are not run.
+# The `slow` tests run in a job of their own, in parallel with the rest: in one job the suite had grown past the
+# 90-minute timeout (D343).
 name: tests
 
 on:
@@ -12,7 +14,14 @@ on:
 jobs:
   cpu:
     runs-on: ubuntu-latest
-    timeout-minutes: 90
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        part:
+          - {name: fast, markers: "not gpu and not slow"}
+          - {name: slow, markers: "slow and not gpu"}
+    name: cpu (${{ matrix.part.name }})
     steps:
       - uses: actions/checkout@v4
         with:
@@ -29,4 +38,4 @@ jobs:
       - name: Fetch and hash-check the connectome
         run: python scripts/fetch_connectome.py
       - name: CPU tests
-        run: python -m pytest -m "not gpu" -p no:cacheprovider
+        run: python -m pytest -m "${{ matrix.part.markers }}" -p no:cacheprovider

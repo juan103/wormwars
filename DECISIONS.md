@@ -10852,3 +10852,24 @@ so the correct figure is +0.006. It was rounded twice, through the summary's 0.0
 - the roadmap branch keeps the banner, which now lists 03h.
 
 **Gate:** the hygiene, summary and amplitude tests passed (pytest rc 0).
+
+## D343 — CI split into two parallel jobs: the suite had outgrown the 90-minute timeout
+
+**What happened:** the GitHub runs for D338 to D342 were all cancelled at exactly 90 minutes, the workflow's
+`timeout-minutes`. They were not superseded by later pushes, as Claude had assumed while they ran. The last green run,
+D337's, took 75 minutes for the tests alone (`2021 passed ... in 4526.19s`), and one block of 72 tests, all 03h's, took
+45 minutes of that. The 03h smoke tests rerun the pilot's stages many times; the amplitude check's tests rerun the
+whole smoke pipeline.
+
+**The change** (`.github/workflows/tests.yml`): one job becomes two, in parallel, through a matrix:
+- `cpu (fast)`: `-m "not gpu and not slow"` (2 002 tests);
+- `cpu (slow)`: `-m "slow and not gpu"` (46 tests).
+
+Together they run the same tests as before. Each job's timeout is 120 minutes.
+
+**Not changed:** the tests themselves, and `scripts/e03h.py`, which `pilot/bind.json` binds. Sharing the smoke
+pipeline between the two 03h test files would save only a few minutes.
+
+**Publication:** 03h goes to `main` (D342) once both jobs are green on `roadmap`.
+
+**Gate:** the hygiene tests passed (pytest rc 0).
