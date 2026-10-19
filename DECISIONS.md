@@ -10753,3 +10753,28 @@ under 1. The branch is therefore "discordant evidence: the readings go to the ow
 **The decision is the owner's:** stop 03h and report, or a redesign round.
 
 **Gate:** the hygiene tests and the amplitude tests passed (pytest rc 0).
+
+## D340 — 03h stops before its pre-registration (the owner's choice); the results page, for review
+
+**The owner's choice** (2026-10-19, after D339): stop 03h and write it up. It is asked with Claude's recommendation;
+the reviewers' D337 positions were Fable "stop B as confirmatory" and Astra "redesign B".
+
+**Written:**
+- `experiments/03h-history-use/RESULTS.md`, exploratory;
+- `summary.json`, from `scripts/e03h_summary.py`, with `tests/test_e03h_summary.py` (the committed summary equals what
+  the records give, plus a sabotage check);
+- 03h's README rewritten;
+- a status entry for 19 October in `ROADMAP.md`;
+- a row for 03h in the README's table, and its "Next" line updated, with the earlier wording kept.
+
+**What the page says, in brief:**
+- the task and the relief worked: memory is worth +0.985 to a scripted controller, and the bit replaces 98% of it;
+- random brains on SH-mirror-ASK graphs barely used the bit, so B's rank test could not separate N2;
+- no 03h brain ran on N2;
+- in SH samples, history's size did not predict fitness, and its direction did, weakly.
+
+**Compute:** 0.349 GPU-hours of the 1.0-hour cap before the pre-registration. The formal run did not take place.
+
+**Next:** a review of the page by both reviewers, then the corrections, then publication.
+
+**Gate:** the hygiene tests and the summary tests passed (pytest rc 0).

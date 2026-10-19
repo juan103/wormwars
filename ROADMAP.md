@@ -2,7 +2,25 @@
 
 *27 September 2026. Replaces v2. Written from roadmap v2, Astra 6's review of v2, and Claude Code's status report of the same day. A local v2.2 exists on the `roadmap` branch and was not seen when this version was written, so merge anything it adds. (Merged: see "Carried over from v2.2" below. Four factual corrections were made on installation; they are listed in D062.) This is a living document, not a pre-registration. When a result changes it, the change is recorded here with the reason.*
 
-## Status, 1-18 October 2026 (updates the section below; that section's later edits are recorded in DECISIONS.md)
+## Status, 1-19 October 2026 (updates the section below; that section's later edits are recorded in DECISIONS.md)
+
+**19 October 2026** (D321-D340): **03h stopped before its pre-registration; exploratory**
+(`experiments/03h-history-use/`, RESULTS.md). It was the memory thread's first design: does the history random brains
+hold predict how well they forage, and is N2's head start larger when memory is needed?
+- **The task and the relief worked.** On 02's T1, a scripted controller gains +0.985 from memory, and a "the food
+  fell" bit replaces 98% of that.
+- **Random brains barely used the bit,** which entered through ASKL and ASKR. The best tenth of genomes gained about
+  0.5% at amplitude 0.25, unevenly across the three pilot graphs. A stronger bit made the spread across graphs grow
+  as fast as the gain.
+- **So B, the only registered claim, had almost no power.** Its rank test would rarely pass even if N2 gained nothing
+  from the relief. The pilot had registered no rule on B's power, so this surfaced after the pilot (D336, D337).
+- **The owner's choices:** an exploratory amplitude check first, then to stop and report (D339). 0.349 of the 1.0
+  GPU-hour cap before the pre-registration was spent. No 03h brain ran on N2.
+- **What it leaves:** a relief through the food channel, or a test against the ensemble mean, each with a power rule
+  for its primary claim fixed before any data. In SH samples, the direction of the history held, unlike its size,
+  predicted fitness weakly (+0.062, 14 of 16 graphs).
+- **Next:** not yet chosen.
+
 
 **18 October 2026** (D302-D319): **03a stopped after pilot-dev; exploratory** (`experiments/03a-self-consistency/`,
 RESULTS.md).

@@ -1,0 +1,533 @@
+{
+  "source": "experiments/03h-history-use/pilot/*.json and development-records/*.json, read by scripts/e03h_summary.py",
+  "stages": {
+    "bind": {
+      "commit": "ff1fd31",
+      "seconds_wall": 0.2,
+      "bound_commit": "ff1fd31"
+    },
+    "gate": {
+      "commit": "69606fd",
+      "seconds_wall": 80.8
+    },
+    "sham-rates": {
+      "commit": "69606fd",
+      "seconds_wall": 179.3
+    },
+    "gate-sham": {
+      "commit": "69606fd",
+      "seconds_wall": 15.9
+    },
+    "pilot": {
+      "commit": "69606fd",
+      "seconds_wall": 318.4
+    },
+    "step0": {
+      "commit": "4af497f",
+      "seconds_wall": 123.4
+    },
+    "step0b": {
+      "commit": "676fee6",
+      "seconds_wall": 39.3
+    },
+    "amplitude-check": {
+      "commit": "f0b4bb0",
+      "seconds_wall": 504.1
+    }
+  },
+  "compute": {
+    "step0_and_0b": 0.0439,
+    "pilot": 0.1649,
+    "amplitude_check": 0.14,
+    "total": 0.3489,
+    "cap_before_preregistration": 1.0,
+    "formal_cap": 6.0,
+    "note": "GPU-hours by T0's accounting; the formal run did not take place"
+  },
+  "rule7": {
+    "cpu": true,
+    "cuda": true
+  },
+  "step0": {
+    "verification_bit_equal": {
+      "default": true,
+      "replay": true
+    },
+    "graphs": 16,
+    "mean_rho_level": -0.0236,
+    "between_graph_sd": 0.06,
+    "positive": 6
+  },
+  "step0b": {
+    "H_dir_partial": {
+      "mean": 0.0625,
+      "between_graph_sd": 0.0744,
+      "positive": 14,
+      "graphs": 16
+    },
+    "H_plain": {
+      "mean": -0.0122,
+      "between_graph_sd": 0.068,
+      "positive": 9,
+      "graphs": 16
+    },
+    "S_plain": {
+      "mean": -0.0003,
+      "between_graph_sd": 0.0671,
+      "positive": 8,
+      "graphs": 16
+    },
+    "motor_turn_partial": {
+      "mean": 0.0101,
+      "between_graph_sd": 0.0503,
+      "positive": 9,
+      "graphs": 16
+    },
+    "raw_forward_partial": {
+      "mean": 0.0075,
+      "between_graph_sd": 0.0627,
+      "positive": 7,
+      "graphs": 16
+    }
+  },
+  "gate": {
+    "families": {
+      "K": {
+        "kind": "K",
+        "params": {
+          "fast": 1.0,
+          "slow": 0.5,
+          "threshold": 1.5,
+          "turn": 0.2
+        },
+        "tuning": 2.2047,
+        "check": 2.1562,
+        "edges": []
+      },
+      "Graded": {
+        "kind": "Graded",
+        "params": {
+          "fast": 1.0,
+          "scale": 3.0,
+          "slow": 0.5,
+          "turn": 0.2
+        },
+        "tuning": 2.1848,
+        "check": 2.1494,
+        "edges": [
+          "scale=3.0"
+        ]
+      },
+      "memoryless": {
+        "kind": "K",
+        "params": {
+          "fast": 1.0,
+          "slow": 0.5,
+          "threshold": 1.5,
+          "turn": 0.2
+        },
+        "tuning": 2.2047,
+        "check": 2.1562,
+        "edges": []
+      },
+      "memoryless+bit": {
+        "kind": "Bit",
+        "params": {
+          "fall_turn": 1.0,
+          "fast": 1.0,
+          "slow": 0.75,
+          "threshold": 1.0,
+          "turn": 0.2
+        },
+        "tuning": 3.1384,
+        "check": 3.1182,
+        "edges": []
+      },
+      "M": {
+        "kind": "M",
+        "params": {
+          "fall_threshold": 0.0,
+          "fall_turn": 1.0,
+          "fast": 1.0,
+          "slow": 0.75,
+          "threshold": 1.0,
+          "turn": 0.2
+        },
+        "tuning": 3.1384,
+        "check": 3.1182,
+        "edges": []
+      },
+      "Slow": {
+        "kind": "Slow",
+        "params": {
+          "T": 5.0,
+          "fall_threshold": 0.0,
+          "fall_turn": 1.0,
+          "fast": 1.0,
+          "slow": 0.75,
+          "threshold": 1.0,
+          "turn": 0.2,
+          "use_bit": 0.0,
+          "use_memory": 1.0
+        },
+        "tuning": 3.1738,
+        "check": 3.1416,
+        "edges": []
+      },
+      "memory": {
+        "kind": "Slow",
+        "params": {
+          "T": 5.0,
+          "fall_threshold": 0.0,
+          "fall_turn": 1.0,
+          "fast": 1.0,
+          "slow": 0.75,
+          "threshold": 1.0,
+          "turn": 0.2,
+          "use_bit": 0.0,
+          "use_memory": 1.0
+        },
+        "tuning": 3.1738,
+        "check": 3.1416,
+        "edges": []
+      },
+      "memory+bit": {
+        "kind": "Slow",
+        "params": {
+          "T": 5.0,
+          "fall_threshold": 0.0,
+          "fall_turn": 1.0,
+          "fast": 1.0,
+          "slow": 0.75,
+          "threshold": 1.0,
+          "turn": 0.2,
+          "use_bit": 0.0,
+          "use_memory": 1.0
+        },
+        "tuning": 3.1738,
+        "check": 3.1416,
+        "edges": []
+      }
+    },
+    "level": {
+      "estimate": 0.9854,
+      "lower_95": 0.9441,
+      "criterion": ">= 0.5",
+      "pass": true
+    },
+    "relief": {
+      "estimate": 0.0234,
+      "interval_90": [
+        0.0072,
+        0.0392
+      ],
+      "criterion": "inside +-0.3",
+      "pass": true
+    },
+    "recovered_share": {
+      "estimate": 0.9763,
+      "interval": [
+        0.9575,
+        0.9958
+      ]
+    },
+    "scripted_bit_gain_check": 0.9621,
+    "passed": true
+  },
+  "gate_sham": {
+    "estimate": 0.0,
+    "interval_90": [
+      0.0,
+      0.0
+    ],
+    "memoryless_plus_bit_kind": "K",
+    "pass": true
+  },
+  "sham_rates": {
+    "graphs": [
+      "pilotSH-mirror-ASK-3660001",
+      "pilotSH-mirror-ASK-3660002",
+      "pilotSH-mirror-ASK-3660003"
+    ],
+    "failures": 0,
+    "counts": [
+      31734313,
+      1216628,
+      1287119,
+      14282115
+    ],
+    "rates": [
+      0.0369,
+      0.0827
+    ],
+    "stationary_occupancy": 0.3087,
+    "seconds_cpu": {
+      "sampler_cpu": 69.6,
+      "calibration": 34.4
+    }
+  },
+  "pilot": {
+    "amplitude": 0.25,
+    "action": "proceed to the pre-registration",
+    "reliability_level": 0.9858,
+    "W": 16,
+    "decile_shift": {
+      "per_graph": [
+        0.0192,
+        -0.0003,
+        0.0044
+      ],
+      "mean": 0.0077,
+      "interval": [
+        0.0044,
+        0.0107
+      ]
+    },
+    "U": [
+      -0.0192,
+      0.0003,
+      -0.0044
+    ],
+    "U_between_graph_sd": 0.0102,
+    "U_mean_shared_world_se": 0.0016,
+    "turn_response_mean_abs": [
+      8.9e-05,
+      0.00019,
+      0.00011
+    ],
+    "A_secondary": {
+      "rho": {
+        "level": [
+          -0.073,
+          0.0461,
+          0.0666
+        ],
+        "relief": [
+          -0.0726,
+          0.0369,
+          0.0609
+        ],
+        "sham": [
+          -0.0727,
+          0.0441,
+          0.0624
+        ]
+      },
+      "D": [
+        -0.0,
+        0.0072,
+        0.0015
+      ],
+      "D_mean": 0.0029,
+      "rho_H_dir_level": [
+        0.0378,
+        0.003,
+        0.067
+      ],
+      "quartile_difference_level": [
+        -0.0054,
+        0.0742,
+        0.0429
+      ],
+      "power_A2": 1.0
+    },
+    "projection": {
+      "plan": {
+        "W_t": 64,
+        "SH": true
+      },
+      "hours": {
+        "64": {
+          "primary": 2.14,
+          "with_SH": 4.24
+        },
+        "32": {
+          "primary": 1.87,
+          "with_SH": 3.71
+        }
+      }
+    }
+  },
+  "b_power": {
+    "null_mean_U": -0.0077,
+    "null_sd_U": {
+      "point": 0.0102,
+      "lower_90": 0.0059,
+      "upper_90": 0.0449
+    },
+    "pass_rate_if_N2_gains_nothing": {
+      "world_noise_only": {
+        "point": 0.005,
+        "lower_90": 0.22,
+        "upper_90": 0.0
+      },
+      "graph_spread": {
+        "point": 0.17,
+        "lower_90": 0.34,
+        "upper_90": 0.065
+      }
+    },
+    "u_for_80pct_power_point": {
+      "world_noise_only": 0.0138,
+      "graph_spread": 0.0193
+    },
+    "selection_bank_relief_minus_sham_all_genomes": [
+      0.0028,
+      -0.0003,
+      -0.0007
+    ]
+  },
+  "amplitude_check": {
+    "0.25": {
+      "decile_shift": {
+        "per_graph": [
+          0.0192,
+          -0.0003,
+          0.0044
+        ],
+        "mean": 0.0077,
+        "interval": [
+          0.0044,
+          0.011
+        ]
+      },
+      "between_graph_sd": 0.0102,
+      "ratio": {
+        "ratio": 0.76,
+        "lo": 0.17,
+        "hi": 1.32
+      },
+      "all_genomes": {
+        "relief_minus_sham": {
+          "mean": 0.0006,
+          "interval": [
+            0.0,
+            0.0012
+          ]
+        },
+        "relief_minus_level": {
+          "mean": 0.0002,
+          "interval": [
+            -0.0005,
+            0.0007
+          ]
+        },
+        "sham_minus_level": {
+          "mean": -0.0004,
+          "interval": [
+            -0.0011,
+            0.0002
+          ]
+        }
+      },
+      "turn_response_mean_abs": [
+        8.9e-05,
+        0.00019,
+        0.00011
+      ]
+    },
+    "0.5": {
+      "decile_shift": {
+        "per_graph": [
+          0.0254,
+          -0.0106,
+          0.0065
+        ],
+        "mean": 0.0071,
+        "interval": [
+          0.0039,
+          0.0101
+        ]
+      },
+      "between_graph_sd": 0.018,
+      "ratio": {
+        "ratio": 0.39,
+        "lo": 0.09,
+        "hi": 0.68
+      },
+      "all_genomes": {
+        "relief_minus_sham": {
+          "mean": 0.0006,
+          "interval": [
+            -0.0001,
+            0.0014
+          ]
+        },
+        "relief_minus_level": {
+          "mean": 0.0001,
+          "interval": [
+            -0.0007,
+            0.0009
+          ]
+        },
+        "sham_minus_level": {
+          "mean": -0.0005,
+          "interval": [
+            -0.0012,
+            0.0002
+          ]
+        }
+      },
+      "turn_response_mean_abs": [
+        0.00018,
+        0.00037,
+        0.00021
+      ]
+    },
+    "1.0": {
+      "decile_shift": {
+        "per_graph": [
+          0.0465,
+          -0.0073,
+          0.0164
+        ],
+        "mean": 0.0186,
+        "interval": [
+          0.0156,
+          0.0217
+        ]
+      },
+      "between_graph_sd": 0.0269,
+      "ratio": {
+        "ratio": 0.69,
+        "lo": 0.16,
+        "hi": 1.19
+      },
+      "all_genomes": {
+        "relief_minus_sham": {
+          "mean": 0.0017,
+          "interval": [
+            0.0008,
+            0.0025
+          ]
+        },
+        "relief_minus_level": {
+          "mean": 0.0014,
+          "interval": [
+            0.0004,
+            0.0024
+          ]
+        },
+        "sham_minus_level": {
+          "mean": -0.0003,
+          "interval": [
+            -0.0011,
+            0.0005
+          ]
+        }
+      },
+      "turn_response_mean_abs": [
+        0.00034,
+        0.00074,
+        0.00042
+      ]
+    },
+    "guide": {
+      "branch": "discordant evidence: the readings go to the owner as they are, with the flags",
+      "flags": [
+        "1.0: the all-genome relief − sham is above 0 by its interval while the ratio is under 1"
+      ],
+      "discordant": true
+    }
+  }
+}
