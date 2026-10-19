@@ -287,3 +287,23 @@ def test_rollout_sums_the_counts_over_chunks(parts):
     assert one.food_fell_counts["relief"].sum() > 0 and one.food_fell_counts["injected"][1:].sum() == 0
     assert np.array_equal(one.score, many.score)
     assert rollout(t1(None), parts[1], g, ids, 9, "cpu").food_fell_counts is None
+
+
+def test_rollout_brain_forwards_the_worlds_own_counts(parts):
+    """An independent oracle (Astra, round 2): a World stepped directly gives the counts that `rollout` and
+    `rollout_brain` report, under level and under sham (Fable, round 2)."""
+    from wormwars.evo.rollout import rollout_brain
+    con, _, v, spec = parts
+    for mode, rates in (("level", None), ("sham", (0.2, 0.3))):
+        cfg = t1(mode, rates)
+        g = Genome.random(spec, cfg.brain, 3, generator=torch.Generator().manual_seed(8))
+        ids = np.arange(500, 502)
+        strain_of = torch.arange(3).repeat_interleave(len(ids)).reshape(-1, 1)
+        w = World(cfg, v, Brain(g), strain_of, run_seed=11, world_ids=np.tile(ids, 3))
+        w.run(None)
+        want = {k: x.tolist() for k, x in w.food_fell_counts.items()}
+        via_genome = rollout(cfg, v, g, ids, 11, "cpu")
+        via_brain = rollout_brain(cfg, v, Brain(g), ids, 11, "cpu")
+        for r in (via_genome, via_brain):
+            assert {k: x.tolist() for k, x in r.food_fell_counts.items()} == want
+        assert sum(want["injected"]) > 0

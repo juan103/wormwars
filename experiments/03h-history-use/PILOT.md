@@ -1,10 +1,14 @@
 # 03h: the pilot's registration (DESIGN.md v3.3 §7.3)
 
-**Status:** draft 3, 2026-10-19, for review.
-- **What it follows:** design v3.3 (D330), in which B is the only registered claim. It takes the review of draft 2 and
-  its code (run 20261019-100138, D333).
-- **Binding:** `scripts/e03h.py bind` records this file's and DESIGN.md's hashes. That record is committed and pushed
-  before any stage runs, and D-numbered with its commit. Every stage refuses if either file then differs.
+**Status:** final (draft 4), 2026-10-19, bound by `pilot/bind.json`.
+- **What it follows:** design v3.3 (D330), in which B is the only registered claim. It takes two reviews of the pilot
+  and its code: of draft 2 (run 20261019-100138, D333) and of draft 3 (run 20261019-114231, D334).
+- **Binding:** `scripts/e03h.py bind` records this file's and DESIGN.md's hashes and the commit they are bound at. That
+  record is committed and pushed before any stage runs, and D-numbered with its commit.
+  - Every stage refuses if either file then differs.
+  - Every stage also refuses if the implementation has changed since the bound commit: the library, the scripts, the
+    configurations, the requirements and the committed inputs (`scripts/e03h.py` `CODE`; Astra). A needed change
+    means a new binding, D-numbered.
 - **The owner's GPU word,** 2026-10-19 ("you have my go ahead for the gpu I'm not using it now"), covers step 0, the
   gate and the pilot. The formal run will be asked separately.
 - **Nothing here is a test of 03h's questions.** The pilot:
@@ -27,14 +31,18 @@
 - the stage before it has not completed with its criteria met;
 - an upstream record has changed since a downstream record read it. Each record carries its predecessors' hashes,
   so a rerun S1 cannot leave an older G2 authorising P (Astra);
-- PILOT.md or DESIGN.md differs from the bound hashes;
+- PILOT.md or DESIGN.md differs from the bound hashes, or the implementation differs from the bound commit's;
 - the guarded tree is dirty, or HEAD is not pushed.
+
+These checks, and the cap's, come before a rerun moves the old record aside, so a refused rerun leaves it in place
+(Fable).
 
 **The cap:** 1.0 GPU-hour for everything before the pre-registration (step 0 and 0b, G1, S1, G2, P and P′), counted by
 T0's accounting across attempts.
 - It is checked before each stage and before every bounded unit of work: each tuning unit, each check score, each
   graph's calibration, and each rollout.
-- A unit that has started runs to completion, and the record notes any overrun (`over_cap_at_end`).
+- A unit that has started runs to completion, and the record notes any overrun (`over_cap_at_end`, which counts the
+  stage's own time once; Fable, Astra).
 
 **Records:** `experiments/03h-history-use/pilot/<stage>.json`.
 - The per-genome arrays stay local, in `runs/e03h/pilot/states/`, with their sha256 in the record (Fable).
@@ -90,7 +98,10 @@ paired bootstrap over the check worlds: 20 000 resamples, seed 0, as 02's `_pair
 - **G1, relief:** the 90% interval of (memory + bit − memoryless + bit) inside ±0.3.
 - **G1, reported:**
   - the recovered share, with its interval;
-  - every family's parameters and its grid-edge flags (02's `_edges`; Fable, Astra).
+  - every family's parameters and its grid-edge flags (02's `_edges`; Fable, Astra). Each tuning unit carries its own
+    flags. A parameter is flagged only if it was searched over more than one value, and it is judged against the
+    registered grid, not against the local neighbourhood. The switches `use_memory` and `use_bit`, and T = 1, are
+    bounds and never flagged (Fable, Astra).
 - **G2, sham:** under sham, the 90% interval of (memoryless reading the sham − memoryless) inside ±0.3.
 
 **The consequences:**
@@ -100,7 +111,8 @@ paired bootstrap over the check worlds: 20 000 resamples, seed 0, as 02's `_pair
 ## 3. S1: the sham's rates (and the timing)
 
 **The graphs:** 3 SH-mirror-ASK graphs at consecutive seeds from 3 660 001, 20 passes.
-- A sampler failure or a calibration failure takes the next seed, recorded (Fable, Astra).
+- A sampler failure or a calibration failure takes the next seed, recorded as it happens (Fable, Astra).
+- More than 10 failures stop S1, which is then reported (Fable).
 - P rebuilds the accepted seeds that S1 recorded.
 - They are never formal graphs and never N2.
 
@@ -176,6 +188,7 @@ The crossed decomposition of DESIGN §2, per graph, under level, averaged over t
   graphs. It is a manipulation check, not an effect size (Fable).
 
 **If it does not move at 0.25:** the amplitude becomes 0.5, once. P′ reruns with the same graphs, genomes and worlds.
+- P′ needs a completed P at 0.25 on the current G1, S1 and G2 records (Astra).
 - If it does not move at 0.5 either, 03h stops for redesign.
 - A P′ that fails to complete may be retried. A completed P′ cannot be repeated (Astra).
 
@@ -185,7 +198,8 @@ of U from the same resamples (Fable). The turn response is a diagnostic only.
 ### 5.5 The budget (DESIGN §8's cut order as a decision table; Astra)
 
 **The projection:** from P's timing, the formal run's GPU-hours per graph are 3 conditions × (256 × W + 26 × W_t)
-episodes at the measured per-episode seconds, plus graph building, calibration and the history probe.
+episodes at the measured per-episode seconds, plus calibration and the history probe.
+- The sampler's CPU time is reported, but it is not counted: DESIGN §8 excludes it (Astra).
 
 **Then, in order:**
 1. **The primary run** (SH-mirror-ASK, 64 graphs, and N2) at W_t = 64, if it fits the 6-hour cap, with SH (64 graphs)

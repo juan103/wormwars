@@ -10438,3 +10438,64 @@ are members of draft 1's check bank.
   - the cut order's decision table.
 
 **Gate:** the full suite passed (rc 0).
+
+## D334 — 03h's pilot, confirmation round (Fable "bind and run", Astra "revise"); PILOT.md draft 4, final
+
+**The review:** run 20261019-114231, both at xhigh effort, of D333's fixes at ab2d7bb. It is archived in
+`docs/reviews/20261019-03h-pilot-r2/`.
+- **Fable: "bind and run".** Every round-1 finding was fixed. Fable found three small code fixes and one test gap,
+  and asked for two things before binding: the status line's final wording and the failure limit.
+- **Astra: "revise",** with three medium findings:
+  - the projection counted the sampler's CPU seconds, which DESIGN §8 excludes;
+  - P′ could be authorised by an archived P on an older chain;
+  - the implementation could change between stages.
+
+**Taken, all of them:**
+- **The projection** (Astra): S1 times the sampler and calibration apart. The projection counts calibration and the
+  history probe only, and reports the sampler's CPU seconds as not counted. PILOT.md §5.5 now says so.
+- **P′'s eligibility** (Astra): the qualifying P must have the current G1, S1 and G2 records as its upstream.
+- **The implementation is bound** (Astra):
+  - `bind` records its commit;
+  - every later stage runs `reg.require_same_code` over `CODE` against that commit. `CODE` is the guarded paths
+    without `bind.json`;
+  - PILOT.md §0 says that a needed change means a new binding.
+- **The end-of-stage cap flag** (Fable, Astra): it counted the stage's own time twice. `Clock.over_at_end` now
+  reads the aggregate alone.
+- **A refused rerun** (Fable): eligibility, the bound code and the cap are checked before the old record is moved
+  aside. The G1 and G2 pass checks and the escalation rule moved from the stages into `_eligible`.
+- **S1's failure trail** (Astra): failures are recorded as they happen, so a stop part-way keeps them.
+- **The gate's edge flags:**
+  - (Astra) each tuning unit carries its own flags. Before, the second Slow search's grid overwrote the first's, so
+    the Slow and memory families were flagged against the wrong grid;
+  - (Fable) a parameter is flagged only if it was searched over more than one value, and it is judged against the
+    registered grid;
+  - the switches and T = 1 are bounds and are never flagged.
+- **PILOT.md:**
+  - the status line is final;
+  - "more than 10 failures stop S1" is stated (Fable);
+  - P′'s chain condition, the bound implementation and the order of the checks are stated.
+- **Not changed:** Fable's informational sizing note. With the sampler now excluded, that note no longer applies.
+
+**Tests**, each seen failing first (rule 9) except where noted:
+- **The driver:** six new tests failed on D333's driver, run in a worktree at ab2d7bb. The seventh, "a failed P′
+  may be retried", passed there too: D333 already did this, so the test is coverage (Astra).
+  - a failed P′ may be retried;
+  - P′ is refused on a replaced G2;
+  - a refused rerun leaves the record in place;
+  - the end-of-stage cap counts the attempt once;
+  - the sampler is left out of the projection;
+  - binding records its commit, and `require_same_code` refuses D332's commit;
+  - a stop during S1 keeps the failure trail.
+- **The gate:** per-unit edge flags; edges judged against the registered grid. Both failed on D333's `gate.py`.
+- **B's readings:** shared-world intervals under heterogeneous world effects. A sabotage that resamples the worlds
+  independently per graph fails it.
+- **The rollout counts:** an independent oracle (a World stepped directly) against `rollout` and `rollout_brain`
+  under level and sham. It failed on D332's `rollout.py`.
+
+**Also found (not 03h's):** `tests/test_e3c_runner.py::test_a_smoke_of_the_pilot` failed locally because E3c's smoke
+writes its accounting to the local `runs/e3c-smoke/`. 818 attempts from earlier suite runs had accumulated 4.64 hours
+there, past the 4.5-hour cap the smoke inherits. CI is unaffected, since every checkout starts fresh. The folder was
+moved aside (`runs/e3c-smoke-accumulated-20261019`, local). The test should get a temporary directory; that is
+recorded here as an open fix.
+
+**Gate:** the full suite passed (rc 0), after E3c's accumulated smoke folder was moved aside.

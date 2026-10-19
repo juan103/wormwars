@@ -17,6 +17,10 @@ K_GRID = {"slow": [0.0, 0.25, 0.5, 0.75, 1.0], "fast": [0.5, 0.75, 1.0],
 FALL_GRID = {"fall_turn": [0.4, 0.7, 1.0], "fall_threshold": [0.0, 0.001, 0.003]}
 PHYSICAL = {"fast": {1.0}, "slow": {0.0, 1.0}, "turn": {0.0}, "fall_turn": {1.0}, "fall_threshold": {0.0},
             "threshold": {5.0}, "k": {8192.0}}
+# 03h's own switches: both values are the switch's bounds, never a grid edge (Fable, round 2); and T = 1, the slow
+# trace's own bound (it is then M itself)
+SWITCHES = ("use_memory", "use_bit")
+BOUNDS = {**PHYSICAL, "T": {1.0}}
 G_GRID = {"slow": [0.0, 0.25, 0.5, 0.75, 1.0], "fast": [0.5, 0.75, 1.0], "scale": [0.03, 0.1, 0.3, 1.0, 3.0],
           "turn": [0.0, 0.1, 0.2, 0.4, 0.7]}
 T_GRID = [1.0, 2.0, 5.0, 10.0, 20.0]
@@ -42,14 +46,16 @@ def near(params: dict, grid: dict) -> dict:
     return out
 
 
-def edges(params: dict, grid: dict) -> list:
-    """02's `_edges`: the parameters chosen at a grid edge that is not a physical bound."""
+def edges(params: dict, grid: dict, full: dict | None = None) -> list:
+    """02's `_edges`: the parameters chosen at a grid edge that is not a physical bound. Only keys searched over more
+    than one value are flagged, the switches never are, and a key that `full` holds is judged against `full`'s values:
+    a local neighbourhood's edge inside the registered grid is not a grid edge (Fable, round 2)."""
     out = []
     for k, v in params.items():
-        if k not in grid:
+        if k not in grid or k in SWITCHES or len(grid[k]) < 2:
             continue
-        vals = sorted(grid[k])
-        if len(vals) > 1 and v in (vals[0], vals[-1]) and v not in PHYSICAL.get(k, set()):
+        vals = sorted((full or {}).get(k, grid[k]))
+        if len(vals) > 1 and v in (vals[0], vals[-1]) and v not in BOUNDS.get(k, set()):
             out.append(f"{k}={v}")
     return out
 
@@ -68,61 +74,52 @@ def tune_families(cfgs: dict, iface, ids, seed, device, tune=scripted.tune_batch
     memory optimum's speed, turn and fall parameters (M's when memory fell back to memoryless) over T, with use_memory
     and use_bit each in {0, 1}, or the memoryless + bit optimum, whichever is better."""
     gr = dict(GRIDS, **(grids or {}))
+    full = dict(gr["K"], **gr["FALL"], T=gr["T"])  # the registered grids, against which edges are judged
     lv = cfgs["level"]
     bit_name = next(k for k in cfgs if k != "level")
     bitc = cfgs[bit_name]
-    edge_grid, preset = {}, {}
 
-    def t(kind, grid, cfg):
+    def t(kind, grid, cfg, cond):
+        """One tuning unit: (kind, params, score, condition, edges). Each unit carries its own search grid's flags, so
+        the second Slow search no longer overwrites the first's (Astra, round 2)."""
         if check is not None:
             check()
-        edge_grid[kind] = grid
-        return tune(MAKERS[kind], grid, cfg, iface, ids, seed, device)
+        p, s = tune(MAKERS[kind], grid, cfg, iface, ids, seed, device)
+        return (kind, p, s, cond, edges(_plain(p), grid, full))
 
     if base is None:
-        kp, ks = t("K", gr["K"], lv)
-        gp, gs = t("Graded", gr["G"], lv)
-        fam = {"K": ("K", kp, ks, "level"), "Graded": ("Graded", gp, gs, "level")}
-        fam["memoryless"] = fam["K"] if ks >= gs else fam["Graded"]
+        fam = {"K": t("K", gr["K"], lv, "level"), "Graded": t("Graded", gr["G"], lv, "level")}
+        fam["memoryless"] = fam["K"] if fam["K"][2] >= fam["Graded"][2] else fam["Graded"]
     else:
-        fam = {k: (base[k]["kind"], base[k]["params"], base[k]["tuning_score"], base[k]["condition"])
-               for k in ("K", "Graded", "memoryless")}
-        preset = {k: base[k]["edges"] for k in ("K", "Graded", "memoryless")}
-        kp = fam["K"][1]
+        fam = {k: (base[k]["kind"], base[k]["params"], base[k]["tuning_score"], base[k]["condition"],
+                   base[k]["edges"]) for k in ("K", "Graded", "memoryless")}
+    kp = fam["K"][1]
     loc = near(kp, gr["K"])
-    bp, bs = t("Bit", dict(loc, fall_turn=gr["FALL"]["fall_turn"]), bitc)
+    bit = t("Bit", dict(loc, fall_turn=gr["FALL"]["fall_turn"]), bitc, bit_name)
     if check is not None:
         check()
     ml_on_bit = _score_on(fam["memoryless"], bitc, iface, ids, seed, device)
-    fam["memoryless+bit"] = ("Bit", bp, bs, bit_name) if bs > ml_on_bit else (
-        fam["memoryless"][0], fam["memoryless"][1], ml_on_bit, bit_name)
+    ml = fam["memoryless"]
+    # the fallback keeps the memoryless family's own flags
+    fam["memoryless+bit"] = bit if bit[2] > ml_on_bit else (ml[0], ml[1], ml_on_bit, bit_name, ml[4])
     if parts == "memoryless":
-        return _out(fam, edge_grid, preset)
-    mp, ms = t("M", dict(loc, **gr["FALL"]), lv)
+        return _out(fam)
+    fam["M"] = t("M", dict(loc, **gr["FALL"]), lv, "level")
+    mp = fam["M"][1]
     one = lambda d: {k: [v] for k, v in d.items()}  # noqa: E731
     st = {k: mp[k] for k in _SPEED_TURN}
-    sp, ss = t("Slow", dict(one(st), **gr["FALL"], T=gr["T"], use_memory=[1.0], use_bit=[0.0]), lv)
-    fam["M"], fam["Slow"] = ("M", mp, ms, "level"), ("Slow", sp, ss, "level")
+    fam["Slow"] = t("Slow", dict(one(st), **gr["FALL"], T=gr["T"], use_memory=[1.0], use_bit=[0.0]), lv, "level")
     fam["memory"] = max([fam["memoryless"], fam["M"], fam["Slow"]], key=lambda c: c[2])  # first maximum on ties
-    src = sp if fam["memory"][0] == "Slow" else mp  # M's optimum also when memory fell back to memoryless
+    src = fam["Slow"][1] if fam["memory"][0] == "Slow" else mp  # M's optimum also when memory fell back to memoryless
     bx = {k: v for k, v in src.items() if k not in ("T", "use_memory", "use_bit")}
-    xp, xs = t("Slow", dict(one(bx), T=gr["T"], use_memory=[0.0, 1.0], use_bit=[0.0, 1.0]), bitc)
-    fam["memory+bit"] = max([fam["memoryless+bit"], ("Slow", xp, xs, bit_name)], key=lambda c: c[2])
-    return _out(fam, edge_grid, preset)
+    x = t("Slow", dict(one(bx), T=gr["T"], use_memory=[0.0, 1.0], use_bit=[0.0, 1.0]), bitc, bit_name)
+    fam["memory+bit"] = max([fam["memoryless+bit"], x], key=lambda c: c[2])
+    return _out(fam)
 
 
-def _out(fam: dict, edge_grid: dict, preset: dict) -> dict:
-    out = {}
-    for k, v in fam.items():
-        kind, params = v[0], _plain(v[1])
-        if k in preset:
-            e = preset[k]
-        elif k == "memoryless+bit" and kind != "Bit":  # the fallback: the memoryless family's own flags
-            e = out["memoryless"]["edges"] if "memoryless" in out else edges(params, edge_grid.get(kind, {}))
-        else:
-            e = edges(params, edge_grid.get(kind, {}))
-        out[k] = {"kind": kind, "params": params, "tuning_score": float(v[2]), "condition": v[3], "edges": e}
-    return out
+def _out(fam: dict) -> dict:
+    return {k: {"kind": v[0], "params": _plain(v[1]), "tuning_score": float(v[2]), "condition": v[3],
+                "edges": list(v[4])} for k, v in fam.items()}
 
 
 def _plain(p: dict) -> dict:

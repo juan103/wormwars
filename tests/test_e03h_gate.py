@@ -115,3 +115,24 @@ def test_g2_reuses_g1s_families_and_checks_the_cap(monkeypatch):
     assert [c[1] for c in tune2.calls] == ["sham"]  # only the bit family is tuned again
     assert g2["memoryless"] == g1["memoryless"] and g2["K"]["params"] == g1["K"]["params"]
     assert len(checks) >= 2  # before the tuning unit and before the fallback's scoring
+
+
+def test_each_tuning_unit_keeps_its_own_edge_flags(monkeypatch):
+    """The two Slow searches have different grids; each family's flags come from its own search (Astra, round 2), and
+    the switches are never flagged (Fable, round 2)."""
+    monkeypatch.setattr(gate, "_score_on", lambda member, cfg, *a: member[2] - 0.01)
+    fam = gate.tune_families({"level": "level", "relief": "relief"}, None, None, None, "cpu", tune=FakeTune())
+    # under level the fall turn is pushed to the grid's lower edge (0.4), which is not a physical bound
+    assert fam["Slow"]["params"]["fall_turn"] == 0.4 and "fall_turn=0.4" in fam["Slow"]["edges"]
+    assert fam["memory+bit"]["kind"] == "Slow" and fam["memory+bit"]["params"]["T"] == 20.0
+    assert "T=20.0" in fam["memory+bit"]["edges"]
+    assert not any(e.startswith(("use_memory", "use_bit")) for f in fam.values() for e in f["edges"])
+
+
+def test_edges_are_judged_against_the_registered_grid():
+    """A local neighbourhood's edge inside the registered grid is not a grid edge (Fable, round 2); T = 1 is a bound."""
+    assert gate.edges({"turn": 0.4}, {"turn": [0.2, 0.4]}) == ["turn=0.4"]
+    assert gate.edges({"turn": 0.4}, {"turn": [0.2, 0.4]}, full=gate.K_GRID) == []
+    assert gate.edges({"turn": 0.7}, {"turn": [0.4, 0.7]}, full=gate.K_GRID) == ["turn=0.7"]
+    assert gate.edges({"T": 1.0, "use_bit": 1.0}, {"T": gate.T_GRID, "use_bit": [0.0, 1.0]}) == []
+    assert gate.edges({"turn": 0.7}, {"turn": [0.7]}, full=gate.K_GRID) == []  # not searched here

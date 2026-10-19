@@ -16,7 +16,8 @@ Smoke runs use their own world ids, seeds and graph seeds, disjoint from the reg
 - an upstream record has changed since a downstream record read it (each record carries its predecessors' hashes;
   Astra);
 - PILOT.md or DESIGN.md differs from the bound hashes;
-- outside smoke, the guarded tree is dirty or HEAD is not pushed;
+- outside smoke, the guarded tree is dirty, HEAD is not pushed, or the implementation (`CODE`) has changed since the
+  bound commit (Astra, round 2);
 - the cap is reached before it starts.
 
 **The cap:** 1.0 GPU-hour for everything before the pre-registration, step 0 included, counted across attempts. It is
@@ -63,6 +64,7 @@ PILOT_MD, DESIGN_MD = EXP / "PILOT.md", EXP / "DESIGN.md"
 GUARDED = ["wormwars", "scripts", "configs", "requirements.txt", "experiments/03h-history-use/DESIGN.md",
            "experiments/03h-history-use/PILOT.md", "experiments/03h-history-use/pilot/bind.json",
            "experiments/03-generation0/pilot.json", "experiments/02-screening/calibration.json"]
+CODE = [p for p in GUARDED if not p.endswith("bind.json")]  # fixed from the bound commit on; bind.json comes after
 STAGES = ["bind", "gate", "sham-rates", "gate-sham", "pilot"]
 UPSTREAM = {"gate": ["bind"], "sham-rates": ["gate"], "gate-sham": ["sham-rates", "gate"],
             "pilot": ["gate-sham", "sham-rates", "gate"]}
@@ -146,8 +148,9 @@ class Clock(reg.CapClock):
             total += json.loads(s0.read_text(encoding="utf-8"))["totals"]["seconds_timed"] / 3600
         return total
 
-    def over(self) -> bool:
-        return self.spent_hours() + (time.perf_counter() - self.t_start) / 3600 > self.cap_hours
+    def over_at_end(self) -> bool:
+        """After a stage's attempt is in the aggregate: its time counted once (Fable, Astra, round 2)."""
+        return self.spent_hours() > self.cap_hours
 
 
 def clock() -> Clock:
@@ -218,9 +221,12 @@ def graph_name(seed: int) -> str:
 # ----------------------------------------------------------------------------- stages
 
 def stage_bind(args, dv, ck, progress):
-    """Records PILOT.md's and DESIGN.md's hashes. Commit and push the record before any stage (PILOT.md §1)."""
+    """Records PILOT.md's and DESIGN.md's hashes and the bound commit. Commit and push the record before any stage
+    (PILOT.md §1)."""
     return {"pilot_md_sha256": sha(PILOT_MD), "design_md_sha256": sha(DESIGN_MD),
-            "note": "binding: this record is committed and pushed before G1 runs"}
+            "bound_commit": reg.git("rev-parse", "HEAD"),
+            "note": "binding: this record is committed and pushed before G1 runs; the implementation stays as at "
+                    "bound_commit for every stage"}
 
 
 def _gate(other: str, rates=None, base=None, parts="all", ck=None) -> tuple[dict, dict]:
@@ -256,17 +262,23 @@ def _accepted_graphs(con, dv, ck, progress):
     c = cfg()["graphs"]
     iface = interface_03h(con)
     out, failures = [], []
+    progress["failures"] = failures  # live: a cap or an excess of failures keeps the trail (Astra, round 2)
+    seconds = progress.setdefault("seconds_s1", {"sampler_cpu": 0.0, "calibration": 0.0})
     for seed in itertools.count(c["first_seed"]):
         if len(out) == c["n"]:
             break
         if len(failures) > c["max_failures"]:
             raise RuntimeError("too many sampler or calibration failures")
         ck.check()
+        t0 = time.perf_counter()
         try:
             g, _ = SM.build(con, c["kind"], seed, passes=c["passes"])
         except SM.SamplerFailure as e:
             failures.append({"seed": seed, "failed": "sampler", "error": str(e)})
             continue
+        finally:
+            seconds["sampler_cpu"] += time.perf_counter() - t0
+        t0 = time.perf_counter()
         try:
             with acct.category("calibration"):
                 cal = calib.calibrate_in_world(g, t1("level", None), iface, grid.TARGET_DRIVE,
@@ -275,22 +287,18 @@ def _accepted_graphs(con, dv, ck, progress):
         except RuntimeError as e:  # calibrate_in_world raises on non-convergence (Fable, Astra)
             failures.append({"seed": seed, "failed": "calibration", "error": str(e)})
             continue
+        finally:
+            seconds["calibration"] += time.perf_counter() - t0
         out.append((seed, g, cal))
-    progress["failures"] = failures
     return out, failures
 
 
 def stage_sham_rates(args, dv, ck, progress):
-    g1 = read("gate")
-    if not g1["passed"]:
-        raise SystemExit(f"G1 did not pass: {g1['stop']}")
     con = load_connectome()
     iface = interface_03h(con)
     sel, s_seed = ids("selection"), cfg()["run_seeds"][0]
     rows, counts, states = [], np.zeros(4, dtype=np.int64), {}
-    t0 = time.perf_counter()
     graphs, failures = _accepted_graphs(con, dv, ck, progress)
-    t_graphs = time.perf_counter() - t0
     for seed, graph, cal in graphs:
         name = graph_name(seed)
         gains = (cal.forward_gain, cal.turn_gain)
@@ -314,7 +322,7 @@ def stage_sham_rates(args, dv, ck, progress):
     path = out_dir() / "states" / "level-selection.npz"
     path.parent.mkdir(parents=True, exist_ok=True)
     np.savez(path, **states)
-    return {"graphs": rows, "failures": failures, "seconds_graphs_and_calibration": t_graphs,
+    return {"graphs": rows, "failures": failures, "seconds_s1": progress["seconds_s1"],
             "counts": [n00, n01, n10, n11], "rates": [p01, p10], "stationary_occupancy": p01 / (p01 + p10),
             "level_selection_npz_sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
             "note": "level trajectories only, bits computed but not injected (DESIGN §3)"}
@@ -335,28 +343,43 @@ def _scores(c, iface, g, world_ids, seed, dv) -> tuple[np.ndarray, dict | None]:
     return np.asarray(r.score, dtype=np.float64), counts
 
 
-def _escalation_allowed() -> None:
-    """P' at 0.5 (PILOT.md §5.4): only after a completed P at 0.25 whose decile shift did not move, and only once; a P'
-    that failed to complete may be retried (Astra)."""
-    attempts = [json.loads(p.read_text(encoding="utf-8")) for p in rec_path("pilot").parent.glob("pilot.attempt*.json")]
+def _escalation_allowed(upstream: dict) -> None:
+    """P' at 0.5 (PILOT.md §5.4): only after a completed P at 0.25 on the current chain (the same G1, S1 and G2
+    records; Astra, round 2) whose decile shift did not move, and only once; a P' that failed to complete may be retried
+    (Astra)."""
+    d = rec_path("pilot").parent
+    files = [d / "pilot.json", *sorted(d.glob("pilot.attempt*.json"))]
+    attempts = [json.loads(p.read_text(encoding="utf-8")) for p in files if p.exists()]
     qualifying = [a for a in attempts if a.get("status") == "completed" and a.get("amplitude") == AMPLITUDE
+                  and a.get("upstream") == upstream
                   and not a["readings"]["manipulation"]["decile_shift"]["moves"]
                   and a.get("action", "").startswith("rerun as P'")]
     if not qualifying:
-        raise SystemExit("--amplitude 0.5 only after a completed P at 0.25 whose decile shift did not move")
+        raise SystemExit("--amplitude 0.5 only after a completed P at 0.25, on the current G1, S1 and G2 records, "
+                         "whose decile shift did not move")
     if any(a.get("status") == "completed" and a.get("amplitude") == 0.5 for a in attempts):
         raise SystemExit("the amplitude was already raised once (PILOT.md §5.4)")
 
 
+def _eligible(stage: str, args, upstream: dict) -> None:
+    """A stage's entry conditions, all checked before a rerun moves the old record aside (Fable, round 2)."""
+    if stage in ("sham-rates", "gate-sham"):
+        g1 = read("gate")
+        if not g1["passed"]:
+            raise SystemExit(f"G1 did not pass: {g1['stop']}")
+    if stage == "pilot":
+        g2, s1 = read("gate-sham"), read("sham-rates")
+        if not g2["passed"]:
+            raise SystemExit(f"G2 did not pass: {g2['stop']}")
+        if list(g2["rates"]) != list(s1["rates"]):
+            raise SystemExit("G2 tested other sham rates than S1's")
+        if float(args.amplitude) != AMPLITUDE:
+            _escalation_allowed(upstream)
+
+
 def stage_pilot(args, dv, ck, progress):
-    g2, s1 = read("gate-sham"), read("sham-rates")
-    if not g2["passed"]:
-        raise SystemExit(f"G2 did not pass: {g2['stop']}")
-    if list(g2["rates"]) != list(s1["rates"]):
-        raise SystemExit("G2 tested other sham rates than S1's")
+    s1 = read("sham-rates")
     amp = float(args.amplitude)
-    if amp != AMPLITUDE:
-        _escalation_allowed()
     con = load_connectome()
     iface = interface_03h(con, amp)
     bank = json.loads((ROOT / "experiments" / "03-generation0" / "pilot.json").read_text(encoding="utf-8"))["bank"]
@@ -458,16 +481,18 @@ def stage_pilot(args, dv, ck, progress):
 
 def _projection(timing, s1, W) -> dict:
     """PILOT.md §5.5: per graph, 3 conditions x (256 x W + 26 x W_t) episodes at the pilot's measured per-episode
-    seconds, plus graph building, calibration and the history probe; then DESIGN §8's cut order (`projection_table`).
-    An extrapolation from the pilot's compositions."""
+    seconds, plus calibration and the history probe; then DESIGN §8's cut order (`projection_table`). The sampler's CPU
+    seconds are reported but not counted, as DESIGN §8 excludes them (Astra, round 2). An extrapolation from the
+    pilot's compositions."""
     g, n_sel, n_test = cfg()["genomes"], len(ids("selection")), len(ids("test"))
     sel_s = np.mean([t[f"selection_{c}"] for t in timing for c in ("relief", "sham")]) / (g * n_sel)
     test_s = np.mean([t[f"test_{c}"] for t in timing for c in ("level", "relief", "sham")]) / (PL.DECILE * n_test)
-    fixed = np.mean([t["history_and_probe"] for t in timing]) + s1["seconds_graphs_and_calibration"] / len(timing)
+    fixed = np.mean([t["history_and_probe"] for t in timing]) + s1["seconds_s1"]["calibration"] / len(timing)
     per = {wt: float(3 * (256 * W * sel_s + PL.DECILE * wt * test_s) + fixed) for wt in (64, 32)}
     f = cfg()["formal"]
     return {**PL.projection_table(per, f["cap_hours"], f["primary_graphs"], f["sh_graphs"]),
             "per_graph_seconds": {str(k): v for k, v in per.items()}, "W": W,
+            "sampler_cpu_seconds_per_graph_not_counted": s1["seconds_s1"]["sampler_cpu"] / len(timing),
             "note": "an extrapolation from the pilot's compositions (at smoke size it is meaningless)"}
 
 
@@ -492,9 +517,15 @@ def run_stage(args) -> dict:
         bound = read("bind")
         if sha(PILOT_MD) != bound["pilot_md_sha256"] or sha(DESIGN_MD) != bound["design_md_sha256"]:
             raise SystemExit("PILOT.md or DESIGN.md differs from the bound registration")
+        if not SMOKE:
+            reg.require_same_code(bound["bound_commit"], CODE)  # the implementation as bound (Astra, round 2)
         for up in UPSTREAM[stage]:
             read(up)
             upstream[up] = sha(rec_path(up))
+        _eligible(stage, args, upstream)
+    dv = device()
+    ck = clock()
+    ck.check()  # the cap, before the stage starts and before a rerun moves anything (Astra; Fable, round 2)
     path = rec_path(stage)
     if path.exists():
         old = json.loads(path.read_text(encoding="utf-8"))
@@ -506,9 +537,6 @@ def run_stage(args) -> dict:
         while path.with_name(f"{stage}.attempt{k}.json").exists():
             k += 1
         os.replace(path, path.with_name(f"{stage}.attempt{k}.json"))
-    dv = device()
-    ck = clock()
-    ck.check()  # the cap, before the stage starts (Astra)
     t0 = time.time()
     doc = {"stage": stage, "smoke": SMOKE, "device": dv, "provenance": prov, "config": cfg(), "upstream": upstream,
            "rerun_reason": args.reason, "started_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())}
@@ -518,7 +546,9 @@ def run_stage(args) -> dict:
                            experiment="03h", stage=stage, script="scripts/e03h.py"):
             doc.update(FUNCS[stage](args, dv, ck, progress))
         doc["status"] = "completed"
-        doc["over_cap_at_end"] = bool(ck.over())  # a started unit runs to completion; the overrun is recorded
+        # a started unit runs to completion; the overrun is recorded. The aggregate already holds this attempt, so it
+        # is counted once (Fable, Astra, round 2)
+        doc["over_cap_at_end"] = bool(ck.over_at_end())
     except BaseException as e:  # noqa: BLE001  (recorded, then re-raised)
         doc["status"], doc["error"] = "failed", f"{type(e).__name__}: {e}"
         doc.update({k: v for k, v in progress.items() if k not in doc})

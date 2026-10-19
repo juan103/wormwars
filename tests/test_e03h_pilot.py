@@ -76,3 +76,22 @@ def test_the_projection_follows_the_cut_order():
     t = P.projection_table({64: 400.0, 32: 300.0}, 6.0)  # 7.2 h; at 32, 5.4 h
     assert t["plan"] == {"W_t": 32, "SH": False}
     assert P.projection_table({64: 900.0, 32: 800.0}, 6.0)["plan"] is None
+
+
+def test_b_intervals_follow_heterogeneous_world_effects():
+    """B's shared-world intervals (Astra, round 2): a constant shift has no world uncertainty; a world-specific effect
+    shared by every graph gives an SE near its SD over sqrt(W); graph-specific offsets do not widen it."""
+    rng = np.random.default_rng(3)
+    W, G = 400, 3
+    base = [rng.normal(1.0, 0.5, (26, W)) for _ in range(G)]
+    lv = [b.copy() for b in base]
+    flat = P.b_readings({"level": lv, "relief": [b + 0.2 for b in base], "sham": base}, 300, 0)
+    assert abs(flat["decile_shift"]["lo"] - 0.2) < 1e-9 and abs(flat["decile_shift"]["hi"] - 0.2) < 1e-9
+    assert flat["U_mean_shared_world_se"] < 1e-9
+    e = rng.normal(0.0, 0.4, W)  # the same world-specific effect on every graph
+    offs = [0.0, 0.3, -0.2]  # and graph-specific offsets
+    het = P.b_readings({"level": lv, "relief": [b + 0.2 + o + e for b, o in zip(base, offs)], "sham": base}, 2000, 1)
+    want = e.std() / np.sqrt(W)
+    assert abs(het["U_mean_shared_world_se"] - want) < 0.15 * want
+    assert het["decile_shift"]["lo"] < het["decile_shift"]["mean"] < het["decile_shift"]["hi"]
+    assert abs(het["decile_shift"]["mean"] - (0.2 + np.mean(offs) + e.mean())) < 1e-9
