@@ -1,0 +1,166 @@
+{
+ "exploratory": true,
+ "specified_in": "DECISIONS.md D330, before the run",
+ "device": "cuda",
+ "smoke": false,
+ "graphs": {
+  "pilotSH101": {
+   "H_dir_partial": 0.03259623515033895,
+   "H_plain": -0.05749742504005493,
+   "S_plain": -0.017278696498054472,
+   "motor_turn_partial": 0.009662002883822017,
+   "raw_forward_partial": -0.007970917526499687
+  },
+  "pilotSH102": {
+   "H_dir_partial": 0.0962445452643614,
+   "H_plain": -0.0345716983291371,
+   "S_plain": -0.03862582970931563,
+   "motor_turn_partial": 0.02742978655471823,
+   "raw_forward_partial": 0.07194283899638179
+  },
+  "pilotSH103": {
+   "H_dir_partial": 0.009057426786215328,
+   "H_plain": 0.016149290455481802,
+   "S_plain": 0.00780427443350881,
+   "motor_turn_partial": 0.041033232844306766,
+   "raw_forward_partial": -0.050446589635255876
+  },
+  "pilotSH104": {
+   "H_dir_partial": -0.07035276035201483,
+   "H_plain": 0.07862640192263674,
+   "S_plain": 0.07171406500343326,
+   "motor_turn_partial": 0.03940713398711703,
+   "raw_forward_partial": -0.1177238928162822
+  },
+  "pilotSH105": {
+   "H_dir_partial": 0.0999608248135903,
+   "H_plain": 0.015495536736095213,
+   "S_plain": -0.006805762188143739,
+   "motor_turn_partial": 0.05116732877478349,
+   "raw_forward_partial": 0.10706789117238867
+  },
+  "pilotSH106": {
+   "H_dir_partial": 0.08941243247974344,
+   "H_plain": 0.0651679446097505,
+   "S_plain": 0.10004649233234147,
+   "motor_turn_partial": -0.03495617019866169,
+   "raw_forward_partial": -0.00845638033235443
+  },
+  "pilotSH107": {
+   "H_dir_partial": 0.04964947598700816,
+   "H_plain": -0.09335374227512015,
+   "S_plain": -0.12915212291142136,
+   "motor_turn_partial": 0.042918146446875444,
+   "raw_forward_partial": -0.0009221417242474094
+  },
+  "pilotSH108": {
+   "H_dir_partial": 0.0013075498995868645,
+   "H_plain": -0.058759870679789404,
+   "S_plain": 0.03987611581597619,
+   "motor_turn_partial": -0.07810922893464683,
+   "raw_forward_partial": 0.015870585590561165
+  },
+  "pilotSH109": {
+   "H_dir_partial": 0.15750990276678467,
+   "H_plain": 0.011841954680704965,
+   "S_plain": 0.02404440375371938,
+   "motor_turn_partial": 0.02135397012958354,
+   "raw_forward_partial": 0.13272156729166731
+  },
+  "pilotSH110": {
+   "H_dir_partial": 0.073518224900725,
+   "H_plain": -0.08973806935225451,
+   "S_plain": -0.0757875085831998,
+   "motor_turn_partial": -0.019253875864018798,
+   "raw_forward_partial": -0.01125374178218955
+  },
+  "pilotSH111": {
+   "H_dir_partial": 0.20703971947744626,
+   "H_plain": 0.0779855230029755,
+   "S_plain": 0.06405999656672005,
+   "motor_turn_partial": 0.08393370788277048,
+   "raw_forward_partial": 0.033768950807447407
+  },
+  "pilotSH112": {
+   "H_dir_partial": 0.09264732644743563,
+   "H_plain": 0.00686298352025635,
+   "S_plain": 0.03585488670176241,
+   "motor_turn_partial": -0.01840875524591818,
+   "raw_forward_partial": -0.00522998370525264
+  },
+  "pilotSH113": {
+   "H_dir_partial": 0.03970518844821481,
+   "H_plain": -0.04796435111009383,
+   "S_plain": -0.01522373540856031,
+   "motor_turn_partial": -0.029407253342094195,
+   "raw_forward_partial": -0.03449094369456309
+  },
+  "pilotSH114": {
+   "H_dir_partial": 0.15101803779536505,
+   "H_plain": 0.04567549782558937,
+   "S_plain": 0.07344000343327992,
+   "motor_turn_partial": -0.034446600077054294,
+   "raw_forward_partial": 0.016915248353082588
+  },
+  "pilotSH115": {
+   "H_dir_partial": -0.054755458125146275,
+   "H_plain": -0.15711761844815744,
+   "S_plain": -0.12049310482948042,
+   "motor_turn_partial": -0.047521311736144246,
+   "raw_forward_partial": -0.06542221905371019
+  },
+  "pilotSH116": {
+   "H_dir_partial": 0.025283188796729944,
+   "H_plain": 0.02626173037308308,
+   "S_plain": -0.01838449874113069,
+   "motor_turn_partial": 0.10604384071851944,
+   "raw_forward_partial": 0.04310812960573488
+  }
+ },
+ "summary": {
+  "H_dir_partial": {
+   "mean": 0.06249011628352404,
+   "between_graph_sd": 0.0743926481452271,
+   "positive": 14,
+   "graphs": 16
+  },
+  "H_plain": {
+   "mean": -0.012183494506752114,
+   "between_graph_sd": 0.06797456996645358,
+   "positive": 9,
+   "graphs": 16
+  },
+  "S_plain": {
+   "mean": -0.0003069388017853062,
+   "between_graph_sd": 0.06708786238980191,
+   "positive": 8,
+   "graphs": 16
+  },
+  "motor_turn_partial": {
+   "mean": 0.010052872176497389,
+   "between_graph_sd": 0.050341407592054854,
+   "positive": 9,
+   "graphs": 16
+  },
+  "raw_forward_partial": {
+   "mean": 0.007467400096681798,
+   "between_graph_sd": 0.06274931168423936,
+   "positive": 7,
+   "graphs": 16
+  }
+ },
+ "note": "the spreads condition on 03's 16 shared worlds; none of this sets a primary, threshold or rule",
+ "provenance": {
+  "git_commit": "676fee6964f300c899de6c0b2b0373daad024d4a",
+  "branch": "roadmap",
+  "dirty": false,
+  "python": "3.13.3",
+  "numpy": "2.4.4",
+  "torch": "2.12.0+cu130",
+  "cuda": "13.0",
+  "gpu": "NVIDIA GeForce RTX 5080",
+  "connectome_cache_sha256": "43b87aa172a0042b9dce734b15bdf1c87efe3a33ac1cc0d9cd03255a60c96d4a",
+  "connectome_source_sha256": "1f4fdbf84746b69b49a8da0816f52787860ce349b638dce37924ba80f90c70c9"
+ },
+ "seconds": 39.25220847129822
+}

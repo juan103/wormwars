@@ -10292,3 +10292,35 @@ re-pick nothing):
 - **Each is reported** per graph, with its mean, between-graph SD and the count of positive graphs.
 - None of it sets a primary, a threshold or a rule.
 - N2's own association is not measured: 03's per-genome N2 measurements are local and drew separate genomes (both).
+
+## D331 — 03h step 0b (exploratory, specified in D330): directional history predicts T1 fitness weakly; magnitude does not
+
+**The run:** `scripts/e03h_step0b.py` on `676fee6`, 2026-10-19, under the owner's GPU word.
+- It took 39 s, on step 0's verified recipe, inside `replay_mode()`.
+- The record is `development-records/step0b.json`. `step0-compute.json` is updated and holds step 0, its
+  verifications and step 0b.
+
+**The read-outs:** 03's 16 pilot SH graphs × 256 genomes, against the committed T1-M0 fitness. The spreads condition
+on the 16 shared worlds.
+
+| Read-out | Mean | Between-graph SD | Positive |
+|---|---|---|---|
+| H_dir, given S (partial) | +0.062 | 0.074 | 14 of 16 |
+| H (plain) | −0.012 | 0.068 | 9 |
+| S (plain) | −0.000 | 0.067 | 8 |
+| \|motor-turn final difference\|, given its steady contrast | +0.010 | 0.050 | 9 |
+| \|raw-forward final difference\|, given its steady contrast | +0.007 | 0.063 | 7 |
+
+**The reading** (exploratory, one of five pre-listed read-outs):
+- **Direction:** random SH brains that turn more after a falling history than after a rising one forage slightly
+  better, with a mean partial Spearman of +0.062, positive in 14 of 16 graphs.
+- **Magnitude:** the size of the history difference does not predict fitness. That is P4's measure, in step 0 (−0.024)
+  and in its other forms here.
+- **Responsiveness:** S, the food-evoked response, does not predict it either. On these SH samples, then,
+  responsiveness alone does not account for fitness at generation 0 (the concern Fable raised for B).
+- **What this changes:** nothing in the registration. H_dir is already design v3.2's key secondary for A, which v3.3
+  makes a secondary claim, and 03h measures it on its own graphs and genomes. Five read-outs were examined, so the
+  14 of 16 is not adjusted for that choice.
+- **For the memory thread:** the history N2's random brains hold unusually strongly is P4's magnitude. Step 0 and
+  step 0b find no fitness value in that magnitude at generation 0 on SH graphs, but a small value in the direction of
+  the response to a fall.

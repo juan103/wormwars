@@ -28,6 +28,15 @@
    "stage": "step0",
    "default_category": "measure",
    "git_commit": "4af497f2421d29ef42101953c3c4e610847a3ef7"
+  },
+  {
+   "file": "20261019T070505Z-aa254300.json",
+   "status": "completed",
+   "experiment": "03h",
+   "script": "scripts/e03h_step0b.py",
+   "stage": "step0b",
+   "default_category": "measure",
+   "git_commit": "676fee6964f300c899de6c0b2b0373daad024d4a"
   }
  ],
  "failed_attempts": 0,
@@ -38,21 +47,21 @@
    "world_ticks": 1638400,
    "neural_updates": 1048576000,
    "neural_padding": 0,
-   "seconds": 64.47660739999264
+   "seconds": 74.62359489999653
   },
   "probe": {
    "worlds_built": 0,
    "world_ticks": 0,
-   "neural_updates": 60293120,
+   "neural_updates": 90439680,
    "neural_padding": 0,
-   "seconds": 54.54686070002208
+   "seconds": 83.49061740002071
   }
  },
  "totals": {
   "worlds_built": 8192,
   "world_ticks": 1638400,
-  "neural_updates": 1108869120,
+  "neural_updates": 1139015680,
   "neural_padding": 0,
-  "seconds_timed": 119.02346810001472
+  "seconds_timed": 158.11421230001724
  }
 }
