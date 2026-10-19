@@ -44,3 +44,35 @@ def test_b_readings_and_the_shift_rule():
     assert all(abs(u + 0.2) < 1e-9 for u in r["U"])
     worse = {"level": base, "sham": base, "relief": [b - 0.2 for b in base]}
     assert not P.b_readings(worse, 500, 1)["decile_shift"]["moves"]
+
+
+def test_the_shared_world_sd_pairs_worlds_across_graphs():
+    """A world effect shared by every graph moves both conditions together and leaves D unchanged (sd near 0); a
+    world effect that differs by condition makes D vary across resamples (Astra: heterogeneous world effects)."""
+    rng = np.random.default_rng(3)
+    G, W = 40, 16
+    H = [rng.normal(size=G) for _ in range(3)]
+    S = [rng.normal(size=G) for _ in range(3)]
+    base = [rng.normal(size=(G, 1)) + rng.normal(0, 0.01, (G, W)) for _ in range(3)]
+    shared = rng.normal(size=(1, W))
+    same = {"sham": [b + shared for b in base], "relief": [b + shared for b in base]}
+    assert P.shared_world_sd_of_mean_D(same, H, S, 200, 0) < 1e-9
+    het = {"sham": [b + H[i][:, None] * rng.normal(size=(1, W)) for i, b in enumerate(base)],
+           "relief": [b for b in base]}
+    assert P.shared_world_sd_of_mean_D(het, H, S, 200, 0) > 0.05
+
+
+def test_the_quartile_difference():
+    H = np.arange(8.0)
+    f = np.array([0, 0, 1, 1, 1, 1, 3, 3.0])
+    assert P.quartile_difference(H, f) == 3.0
+
+
+def test_the_projection_follows_the_cut_order():
+    t = P.projection_table({64: 200.0, 32: 120.0}, 6.0)  # 65 x 200 s = 3.6 h; with SH 7.2 h
+    assert t["plan"] == {"W_t": 64, "SH": False}
+    t = P.projection_table({64: 100.0, 32: 60.0}, 6.0)  # 1.8 h; with SH 3.6 h
+    assert t["plan"] == {"W_t": 64, "SH": True}
+    t = P.projection_table({64: 400.0, 32: 300.0}, 6.0)  # 7.2 h; at 32, 5.4 h
+    assert t["plan"] == {"W_t": 32, "SH": False}
+    assert P.projection_table({64: 900.0, 32: 800.0}, 6.0)["plan"] is None

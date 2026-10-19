@@ -17,7 +17,7 @@ def test_the_grids_are_02s():
     spec = importlib.util.spec_from_file_location("exp02_for_e03h_gate", ROOT / "scripts" / "exp02.py")
     m = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(m)
-    assert gate.K_GRID == m.K_GRID and gate.FALL_GRID == m.FALL_GRID
+    assert gate.K_GRID == m.K_GRID and gate.FALL_GRID == m.FALL_GRID and gate.PHYSICAL == m.PHYSICAL
 
 
 class FakeTune:
@@ -52,9 +52,10 @@ def test_the_families_nest(monkeypatch):
     assert fam["memoryless"]["tuning_score"] == max(fam["K"]["tuning_score"], fam["Graded"]["tuning_score"])
     assert fam["memoryless+bit"]["condition"] == "relief" and fam["memory"]["condition"] == "level"
     assert fam["Slow"]["params"]["T"] in gate.T_GRID
-    # Slow is tuned at M's optimum: every parameter but T, use_memory and use_bit is M's
+    # Slow is tuned at M's speed and turn parameters, over T and the fall grid (Fable)
     m, sl = fam["M"]["params"], fam["Slow"]["params"]
-    assert all(sl[k] == v for k, v in m.items())
+    assert all(sl[k] == m[k] for k in ("slow", "fast", "threshold", "turn"))
+    assert all("edges" in v for v in fam.values())
 
 
 def test_g2_tunes_only_the_memoryless_families(monkeypatch):
@@ -80,3 +81,37 @@ def test_the_paired_interval_and_the_verdicts():
     assert not gate.g1_verdicts(weak)["level"]["pass"]
     assert gate.g2_verdict({"memoryless": base, "memoryless+bit": base + 0.05})["pass"]
     assert not gate.g2_verdict({"memoryless": base, "memoryless+bit": base + 0.4})["pass"]
+
+
+class NoBitTune(FakeTune):
+    """Under relief the bit does not help, and reading it costs: the memory + bit family must fall back."""
+
+    def __call__(self, make, grid, cfg, iface, ids, seed, device):
+        import itertools
+        keys = sorted(grid)
+        best, bs = None, -np.inf
+        for vals in itertools.product(*(grid[k] for k in keys)):
+            p = dict(zip(keys, vals))
+            s = p.get("fast", 0) + 0.1 * p.get("slow", 0) - 0.5 * p.get("use_bit", 0) - 0.4 * p.get("use_memory", 0)                 + 0.2 * p.get("fall_turn", 0) * (cfg == "relief")
+            if s > bs:
+                best, bs = p, s
+        return best, bs
+
+
+def test_the_memory_plus_bit_family_falls_back(monkeypatch):
+    monkeypatch.setattr(gate, "_score_on", lambda member, cfg, *a: member[2] - 0.01)
+    fam = gate.tune_families({"level": "level", "relief": "relief"}, None, None, None, "cpu", tune=NoBitTune())
+    assert fam["memory+bit"]["kind"] == fam["memoryless+bit"]["kind"]
+    assert fam["memory+bit"]["tuning_score"] == fam["memoryless+bit"]["tuning_score"]
+
+
+def test_g2_reuses_g1s_families_and_checks_the_cap(monkeypatch):
+    monkeypatch.setattr(gate, "_score_on", lambda member, cfg, *a: member[2])
+    tune = FakeTune()
+    g1 = gate.tune_families({"level": "level", "relief": "relief"}, None, None, None, "cpu", tune=tune)
+    tune2, checks = FakeTune(), []
+    g2 = gate.tune_families({"level": "level", "sham": "sham"}, None, None, None, "cpu", tune=tune2,
+                            parts="memoryless", base=g1, check=lambda: checks.append(1))
+    assert [c[1] for c in tune2.calls] == ["sham"]  # only the bit family is tuned again
+    assert g2["memoryless"] == g1["memoryless"] and g2["K"]["params"] == g1["K"]["params"]
+    assert len(checks) >= 2  # before the tuning unit and before the fallback's scoring

@@ -135,7 +135,8 @@ def rollout_brain(cfg, iface, brain, world_ids, run_seed, device="cpu", ticks=No
     r = _play(cfg, iface, brain, world_ids, run_seed, device, ticks=ticks)
     return RolloutResult(r["score"], r["energy"], r["alive"], r["eaten"], r["ticks"], r["err"],
                          pellet_eaten=r["pellet"], food_start=r["food0"], ledger_rel_error=r["err_rel"],
-                         events=r["events"], progress=r["progress"], final_head=r["final_head"])
+                         events=r["events"], progress=r["progress"], final_head=r["final_head"],
+                         food_fell_counts=r["food_fell_counts"])
 
 
 def rollout(

@@ -10367,3 +10367,74 @@ stage end to end at smoke size, and the refusals), and the rollout count test.
 and P under the owner's GPU word.
 
 **Gate:** the full suite passed (rc 0).
+
+## D333 — 03h's pilot registration and code reviewed (Fable "bind and run, after small fixes", Astra "revise"); draft 3
+
+**The review:** run 20261019-100138, both at xhigh effort, archived in `docs/reviews/20261019-03h-pilot/`.
+- Fable: "bind and run, after small fixes". Nothing would mislead the verdicts.
+- Astra: "revise", with five high or medium findings. The statistical readings follow design v3.3. The budget control,
+  the stage dependencies and the seed isolation did not.
+
+**A disclosure** (Astra): *draft 1's world banks were played in part by the CUDA smoke preflight* (D332). Smoke then
+shared the registered gate ids and run seeds, and the selection and test starting ids, so the six smoke check worlds
+are members of draft 1's check bank.
+- Those banks (gate 3 610 000-3 611 255, selection 3 620 000-3 620 015, test 3 621 000-3 621 063, and their run seeds)
+  are retired.
+- Draft 3 registers fresh banks: 3 640 000 onward, graph seeds 3 660 001, and calibration seed 3 661 000.
+- Smoke now has its own ids and seeds from 3 690 000. A test checks that they are disjoint.
+
+**Taken in PILOT.md draft 3 and the code:**
+- **The cap** (Astra): it is checked before each stage and before every bounded unit: each tuning unit, each check
+  score, each calibration and each rollout. A started unit runs to completion, and the record notes any overrun.
+- **Stale records** (Astra): each record carries its predecessors' hashes, and a stage refuses a stale chain. P also
+  checks that G2 tested S1's rates.
+- **The budget** (Astra, Fable):
+  - DESIGN §8's cut order is now a decision table (`pilot.projection_table`): the primary run at W_t = 64, with SH if it
+    fits; then W_t = 32; then stop;
+  - a budget failure takes precedence over the amplitude rule.
+- **Calibration failures** (Fable, Astra):
+  - a sampler or calibration failure takes the next seed, recorded;
+  - P rebuilds S1's accepted seeds;
+  - the genomes' sha256 is recorded in S1 and checked in P.
+- **The gate:**
+  - it runs inside `replay_mode()`, and G2 reuses G1's K, Graded and memoryless families (Fable);
+  - the slow-memory family is tuned over T × FALL_GRID (Fable);
+  - memory + bit's base, when memory fell back, is `MemoryKinesis`'s optimum (both);
+  - grid-edge flags (02's `_edges`);
+  - the grids are passed in, so smoke no longer mutates the module (Fable).
+- **What is reported** (Fable, Astra):
+  - the H quartile difference;
+  - the realised counts of the relief bit and the injected bit per condition;
+  - the per-genome arrays, kept locally with their sha256.
+- **The amplitude rule** (Astra): P′ needs any completed P at 0.25 whose shift did not move. A failed P′ may be
+  retried; a completed one cannot be repeated.
+- **Binding** (Fable, Astra):
+  - the stages require HEAD pushed;
+  - the bound DESIGN.md hash is checked;
+  - `bind.json` is guarded;
+  - hashes are line-ending-normalised;
+  - the P′ command shows `--rerun --reason`;
+  - the status line says how binding works.
+- **Seeds:** the bootstrap seeds 3 653 000 and 3 653 001. Calibration's world ids are registered, and disjointness is
+  defined both as numeric ids and as (seed, id) identities (Astra).
+- **`rollout_brain`** forwards the counts too (Astra).
+- **The cost estimates** are revised: G1 at 0.1-0.2 h (Fable).
+
+**Tests:**
+- **The driver:**
+  - the stage order;
+  - a changed registration;
+  - a stale upstream record;
+  - an exhausted cap;
+  - a calibration failure taking the next seed, with P rebuilding S1's seeds;
+  - smoke and registered ranges disjoint;
+  - both amplitude branches, forced deterministically, and a second escalation refused;
+  - the budget's precedence.
+- **The gate:** 02's physical-edge set; the memory + bit fallback (a scorer under which the bit does not help); G2's
+  reuse and its cap checks.
+- **The pilot readings:**
+  - the shared-world SD with a shared effect (0) and a condition-specific one (above 0);
+  - the quartile difference;
+  - the cut order's decision table.
+
+**Gate:** the full suite passed (rc 0).

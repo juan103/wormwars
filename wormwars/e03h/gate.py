@@ -1,4 +1,4 @@
-"""03h's scripted gate (experiments/03h-history-use/PILOT.md §2; DESIGN.md v3.2 §4): nested families tuned on tuning
+"""03h's scripted gate (experiments/03h-history-use/PILOT.md §2; DESIGN.md v3.3 §4): nested families tuned on tuning
 worlds under their own condition, each scored once on check worlds, with paired bootstrap intervals over the check
 worlds (02's `_paired`)."""
 
@@ -9,14 +9,18 @@ import numpy as np
 from ..exp02 import scripted
 from .scripted import BitKinesis, SlowMemoryKinesis
 
-# 02's grids (scripts/exp02.py K_GRID and FALL_GRID; tests/test_e03h_gate.py checks they are still equal)
+# 02's grids and physical-edge set (scripts/exp02.py K_GRID, FALL_GRID, PHYSICAL; tests/test_e03h_gate.py checks they
+# are still equal)
 K_GRID = {"slow": [0.0, 0.25, 0.5, 0.75, 1.0], "fast": [0.5, 0.75, 1.0],
           "threshold": [0.001, 0.003, 0.01, 0.03, 0.1, 0.3, 0.6, 1.0, 1.5, 2.0, 3.0, 5.0],
           "turn": [0.0, 0.1, 0.2, 0.4, 0.7]}
 FALL_GRID = {"fall_turn": [0.4, 0.7, 1.0], "fall_threshold": [0.0, 0.001, 0.003]}
+PHYSICAL = {"fast": {1.0}, "slow": {0.0, 1.0}, "turn": {0.0}, "fall_turn": {1.0}, "fall_threshold": {0.0},
+            "threshold": {5.0}, "k": {8192.0}}
 G_GRID = {"slow": [0.0, 0.25, 0.5, 0.75, 1.0], "fast": [0.5, 0.75, 1.0], "scale": [0.03, 0.1, 0.3, 1.0, 3.0],
           "turn": [0.0, 0.1, 0.2, 0.4, 0.7]}
 T_GRID = [1.0, 2.0, 5.0, 10.0, 20.0]
+GRIDS = {"K": K_GRID, "G": G_GRID, "FALL": FALL_GRID, "T": T_GRID}
 
 MAKERS = {
     "K": lambda **p: scripted.LevelKinesis(**p),
@@ -25,6 +29,7 @@ MAKERS = {
     "Bit": lambda **p: BitKinesis(**p),
     "Slow": lambda **p: SlowMemoryKinesis(**p),
 }
+_SPEED_TURN = ("slow", "fast", "threshold", "turn")
 
 
 def near(params: dict, grid: dict) -> dict:
@@ -37,45 +42,87 @@ def near(params: dict, grid: dict) -> dict:
     return out
 
 
-def tune_families(cfgs: dict, iface, ids, seed, device, tune=scripted.tune_batched, parts: str = "all") -> dict:
+def edges(params: dict, grid: dict) -> list:
+    """02's `_edges`: the parameters chosen at a grid edge that is not a physical bound."""
+    out = []
+    for k, v in params.items():
+        if k not in grid:
+            continue
+        vals = sorted(grid[k])
+        if len(vals) > 1 and v in (vals[0], vals[-1]) and v not in PHYSICAL.get(k, set()):
+            out.append(f"{k}={v}")
+    return out
+
+
+def tune_families(cfgs: dict, iface, ids, seed, device, tune=scripted.tune_batched, parts: str = "all",
+                  grids: dict | None = None, check=None, base: dict | None = None) -> dict:
     """`cfgs` maps a condition ("level", and "relief" or "sham") to its configuration. Returns, per family, its kind,
-    parameters, tuning score and condition; the "+ bit" families are tuned under the condition that is not "level".
-    `parts` = "memoryless" stops after the memoryless and memoryless + bit families (G2).
+    parameters, tuning score, condition and grid-edge flags; the "+ bit" families are tuned under the condition that
+    is not "level". `parts` = "memoryless" stops after the memoryless + bit family (G2). `base`, if given, supplies
+    the K, Graded and memoryless families already tuned (G2 reuses G1's, Fable). `check()` runs before each tuning
+    unit (the cap; Astra). `grids` defaults to the registered ones.
 
     Nesting (02's rule, PILOT.md §2): K and Graded on their grids; memoryless = the better. Bit around K's optimum,
-    falling back to memoryless. M around K's optimum with FALL_GRID; Slow at M's optimum over T (so T = 1 is M itself);
-    memory = the best of memoryless, M and Slow. Memory + bit: Slow at the memory optimum's parameters over T, with
-    use_memory and use_bit each in {0, 1}, or the memoryless + bit optimum, whichever is better."""
+    falling back to memoryless. M around K's optimum with FALL_GRID; Slow at M's speed and turn parameters over T x
+    FALL_GRID (so T = 1 contains M itself; Fable); memory = the best of memoryless, M and Slow. Memory + bit: Slow at the
+    memory optimum's speed, turn and fall parameters (M's when memory fell back to memoryless) over T, with use_memory
+    and use_bit each in {0, 1}, or the memoryless + bit optimum, whichever is better."""
+    gr = dict(GRIDS, **(grids or {}))
     lv = cfgs["level"]
     bit_name = next(k for k in cfgs if k != "level")
     bitc = cfgs[bit_name]
-    t = lambda kind, grid, cfg: tune(MAKERS[kind], grid, cfg, iface, ids, seed, device)  # noqa: E731
-    kp, ks = t("K", K_GRID, lv)
-    gp, gs = t("Graded", G_GRID, lv)
-    loc = near(kp, K_GRID)
-    fam = {"K": ("K", kp, ks, "level"), "Graded": ("Graded", gp, gs, "level")}
-    fam["memoryless"] = fam["K"] if ks >= gs else fam["Graded"]
-    bp, bs = t("Bit", dict(loc, fall_turn=FALL_GRID["fall_turn"]), bitc)
+    edge_grid, preset = {}, {}
+
+    def t(kind, grid, cfg):
+        if check is not None:
+            check()
+        edge_grid[kind] = grid
+        return tune(MAKERS[kind], grid, cfg, iface, ids, seed, device)
+
+    if base is None:
+        kp, ks = t("K", gr["K"], lv)
+        gp, gs = t("Graded", gr["G"], lv)
+        fam = {"K": ("K", kp, ks, "level"), "Graded": ("Graded", gp, gs, "level")}
+        fam["memoryless"] = fam["K"] if ks >= gs else fam["Graded"]
+    else:
+        fam = {k: (base[k]["kind"], base[k]["params"], base[k]["tuning_score"], base[k]["condition"])
+               for k in ("K", "Graded", "memoryless")}
+        preset = {k: base[k]["edges"] for k in ("K", "Graded", "memoryless")}
+        kp = fam["K"][1]
+    loc = near(kp, gr["K"])
+    bp, bs = t("Bit", dict(loc, fall_turn=gr["FALL"]["fall_turn"]), bitc)
+    if check is not None:
+        check()
     ml_on_bit = _score_on(fam["memoryless"], bitc, iface, ids, seed, device)
     fam["memoryless+bit"] = ("Bit", bp, bs, bit_name) if bs > ml_on_bit else (
         fam["memoryless"][0], fam["memoryless"][1], ml_on_bit, bit_name)
     if parts == "memoryless":
-        return _out(fam)
-    mp, ms = t("M", dict(loc, **FALL_GRID), lv)
+        return _out(fam, edge_grid, preset)
+    mp, ms = t("M", dict(loc, **gr["FALL"]), lv)
     one = lambda d: {k: [v] for k, v in d.items()}  # noqa: E731
-    sp, ss = t("Slow", dict(one(mp), T=T_GRID, use_memory=[1.0], use_bit=[0.0]), lv)
+    st = {k: mp[k] for k in _SPEED_TURN}
+    sp, ss = t("Slow", dict(one(st), **gr["FALL"], T=gr["T"], use_memory=[1.0], use_bit=[0.0]), lv)
     fam["M"], fam["Slow"] = ("M", mp, ms, "level"), ("Slow", sp, ss, "level")
     fam["memory"] = max([fam["memoryless"], fam["M"], fam["Slow"]], key=lambda c: c[2])  # first maximum on ties
-    base = sp if fam["memory"][0] == "Slow" else mp  # the memory optimum's speed, turn and fall parameters
-    base = {k: v for k, v in base.items() if k not in ("T", "use_memory", "use_bit")}
-    xp, xs = t("Slow", dict(one(base), T=T_GRID, use_memory=[0.0, 1.0], use_bit=[0.0, 1.0]), bitc)
+    src = sp if fam["memory"][0] == "Slow" else mp  # M's optimum also when memory fell back to memoryless
+    bx = {k: v for k, v in src.items() if k not in ("T", "use_memory", "use_bit")}
+    xp, xs = t("Slow", dict(one(bx), T=gr["T"], use_memory=[0.0, 1.0], use_bit=[0.0, 1.0]), bitc)
     fam["memory+bit"] = max([fam["memoryless+bit"], ("Slow", xp, xs, bit_name)], key=lambda c: c[2])
-    return _out(fam)
+    return _out(fam, edge_grid, preset)
 
 
-def _out(fam: dict) -> dict:
-    return {k: {"kind": v[0], "params": _plain(v[1]), "tuning_score": float(v[2]), "condition": v[3]}
-            for k, v in fam.items()}
+def _out(fam: dict, edge_grid: dict, preset: dict) -> dict:
+    out = {}
+    for k, v in fam.items():
+        kind, params = v[0], _plain(v[1])
+        if k in preset:
+            e = preset[k]
+        elif k == "memoryless+bit" and kind != "Bit":  # the fallback: the memoryless family's own flags
+            e = out["memoryless"]["edges"] if "memoryless" in out else edges(params, edge_grid.get(kind, {}))
+        else:
+            e = edges(params, edge_grid.get(kind, {}))
+        out[k] = {"kind": kind, "params": params, "tuning_score": float(v[2]), "condition": v[3], "edges": e}
+    return out
 
 
 def _plain(p: dict) -> dict:
@@ -87,10 +134,15 @@ def _score_on(member, cfg, iface, ids, seed, device) -> float:
     return float(scripted.score_policy(cfg, iface, MAKERS[kind](**params), ids, seed, device).mean())
 
 
-def check_scores(fams: dict, cfgs: dict, iface, ids, seed, device) -> dict:
+def check_scores(fams: dict, cfgs: dict, iface, ids, seed, device, check=None) -> dict:
     """Each family's chosen policy scored once on the check worlds, under its condition: per-world arrays."""
-    return {k: np.asarray(scripted.score_policy(cfgs[v["condition"]], iface, MAKERS[v["kind"]](**v["params"]), ids,
-                                                seed, device), dtype=np.float64) for k, v in fams.items()}
+    out = {}
+    for k, v in fams.items():
+        if check is not None:
+            check()
+        out[k] = np.asarray(scripted.score_policy(cfgs[v["condition"]], iface, MAKERS[v["kind"]](**v["params"]), ids,
+                                                  seed, device), dtype=np.float64)
+    return out
 
 
 def paired(a, b, level: float, n: int = 20_000, seed: int = 0) -> dict:

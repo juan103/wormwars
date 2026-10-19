@@ -77,3 +77,27 @@ def b_readings(test: dict, n_boot: int, seed: int) -> dict:
             "U_mean_shared_world_se": float(u_b.std(ddof=1)),
             "decile_shift": {"per_graph": (-U).tolist(), "mean": float((-U).mean()), "lo": float(lo), "hi": float(hi),
                              "moves": bool(lo > 0)}}
+
+
+def quartile_difference(H, fit_means) -> float:
+    """PILOT.md §5.2: the fitness difference between the top and the bottom quartile of H (stable order; it describes
+    the effect, it is not a conversion of rho into fitness units, Astra)."""
+    q = np.argsort(np.asarray(H, dtype=np.float64), kind="stable")
+    k = max(1, len(q) // 4)
+    f = np.asarray(fit_means, dtype=np.float64)
+    return float(f[q[-k:]].mean() - f[q[:k]].mean())
+
+
+def projection_table(per_graph_seconds: dict, cap_hours: float, n_primary: int = 65, n_sh: int = 64) -> dict:
+    """DESIGN §8's cut order as a decision table (Astra): `per_graph_seconds[W_t]` for W_t in (64, 32). The primary run
+    (SH-mirror-ASK and N2) at W_t = 64 if it fits, with SH added only if that also fits; otherwise the primary at
+    W_t = 32; otherwise nothing fits, and 03h stops for redesign (this takes precedence over the amplitude rule)."""
+    h = {wt: {"primary": n_primary * s / 3600, "with_SH": (n_primary + n_sh) * s / 3600}
+         for wt, s in per_graph_seconds.items()}
+    if h[64]["primary"] <= cap_hours:
+        plan = {"W_t": 64, "SH": bool(h[64]["with_SH"] <= cap_hours)}
+    elif h[32]["primary"] <= cap_hours:
+        plan = {"W_t": 32, "SH": bool(h[32]["with_SH"] <= cap_hours)}
+    else:
+        plan = None
+    return {"hours": {str(k): v for k, v in h.items()}, "cap_hours": cap_hours, "plan": plan, "fits": plan is not None}
