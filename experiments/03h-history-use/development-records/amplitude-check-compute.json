@@ -1,0 +1,40 @@
+{
+ "time_unit": "synchronised wall-clock seconds per category (not GPU kernel time)",
+ "neural_update_unit": "strains x batch x substeps network updates (network size not included)",
+ "attempts": [
+  {
+   "file": "20261019T173311Z-9f9b4c88.json",
+   "status": "completed",
+   "experiment": "03h",
+   "script": "scripts/e03h_amplitude.py",
+   "stage": "amplitude-check",
+   "default_category": "measure",
+   "git_commit": "f0b4bb051c516bf0dcbcb86c7fd3b595bbcdb363"
+  }
+ ],
+ "failed_attempts": 0,
+ "uncategorised": false,
+ "categories": {
+  "measure": {
+   "worlds_built": 69120,
+   "world_ticks": 13824000,
+   "neural_updates": 8847360000,
+   "neural_padding": 0,
+   "seconds": 499.28045579997706
+  },
+  "probe": {
+   "worlds_built": 0,
+   "world_ticks": 0,
+   "neural_updates": 5013504,
+   "neural_padding": 0,
+   "seconds": 4.686542400013423
+  }
+ },
+ "totals": {
+  "worlds_built": 69120,
+  "world_ticks": 13824000,
+  "neural_updates": 8852373504,
+  "neural_padding": 0,
+  "seconds_timed": 503.9669981999905
+ }
+}

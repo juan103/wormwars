@@ -299,6 +299,13 @@ def run(dv, ck, pilot: dict) -> dict:
                     "questions"}
 
 
+def _say(text: str) -> None:
+    """Print on any console: a Windows console's code page cannot encode "−", which crashed the check's final line
+    after its record was written (D339)."""
+    enc = getattr(sys.stdout, "encoding", None) or "utf-8"
+    print(text.encode(enc, "replace").decode(enc))
+
+
 def main(argv=None) -> dict:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--smoke", action="store_true")
@@ -351,9 +358,9 @@ def main(argv=None) -> dict:
             doc["over_cap_at_end"] = f"unreadable: {e}"
         reg.write_json(rec_path(), doc, atomic=True)
     g = doc.get("guide", {})
-    print(f"amplitude check: {doc['status']} in {doc['seconds']:.0f} s -> {rec_path()}; {g.get('branch', '')}")
+    _say(f"amplitude check: {doc['status']} in {doc['seconds']:.0f} s -> {rec_path()}; {g.get('branch', '')}")
     for f in g.get("flags", []):
-        print(f"  flag: {f}")
+        _say(f"  flag: {f}")
     return doc
 
 

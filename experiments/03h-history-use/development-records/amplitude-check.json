@@ -1,0 +1,510 @@
+{
+ "check": "amplitude",
+ "smoke": false,
+ "device": "cuda",
+ "provenance": {
+  "git_commit": "f0b4bb051c516bf0dcbcb86c7fd3b595bbcdb363",
+  "branch": "roadmap",
+  "dirty": false,
+  "python": "3.13.3",
+  "numpy": "2.4.4",
+  "torch": "2.12.0+cu130",
+  "cuda": "13.0",
+  "gpu": "NVIDIA GeForce RTX 5080",
+  "connectome_cache_sha256": "43b87aa172a0042b9dce734b15bdf1c87efe3a33ac1cc0d9cd03255a60c96d4a",
+  "connectome_source_sha256": "1f4fdbf84746b69b49a8da0816f52787860ce349b638dce37924ba80f90c70c9"
+ },
+ "upstream": {
+  "bind": "b88917b65ec0d64ed268e6bd88363c57a76a68195bec393ebce7eacf6bbe69de",
+  "gate": "6887de2c695332e6643d32aa3b1111c6dce282f27b68499c23d7169f25e56c07",
+  "sham-rates": "45e2fc9e3a566e7b704ea0ff469c1f67d6797018fdad9ad0abf755bf2f8f6c27",
+  "gate-sham": "526088b4bacdaac132a74ae1d2f4c2f6022e551f36b176619ebf603f987a3d2f",
+  "pilot": "10df96609d5afa53c8338511360024e24afa65ab3bdfc8c80e2358c5ef0d27cc"
+ },
+ "started_utc": "2026-10-19T17:33:11Z",
+ "amplitudes": [
+  0.5,
+  1.0
+ ],
+ "readings": {
+  "0.5": {
+   "decile_shift": {
+    "per_graph": [
+     0.025441692622665046,
+     -0.010635591667288669,
+     0.006450268207117915
+    ],
+    "mean": 0.007085456387498097,
+    "lo": 0.0038742633546905436,
+    "hi": 0.010117340018936938,
+    "moves": true
+   },
+   "between_graph_sd": 0.018047027690257095,
+   "ratio_mean_to_sd": {
+    "ratio": 0.39261071180841967,
+    "lo": 0.0889185641432867,
+    "hi": 0.6795378372045806
+   },
+   "graphs": [
+    "pilotSH-mirror-ASK-3660001",
+    "pilotSH-mirror-ASK-3660002",
+    "pilotSH-mirror-ASK-3660003"
+   ],
+   "selection_bank": {
+    "graphs": [
+     "pilotSH-mirror-ASK-3660001",
+     "pilotSH-mirror-ASK-3660002",
+     "pilotSH-mirror-ASK-3660003"
+    ],
+    "relief_minus_sham_all_genomes": {
+     "per_graph": [
+      0.004469955762033351,
+      -0.0009526181893306784,
+      -0.0017237544889212586
+     ],
+     "mean": 0.0005978610279271379,
+     "lo": -8.777326183917465e-05,
+     "hi": 0.001363586077301685
+    },
+    "relief_minus_level_all_genomes": {
+     "per_graph": [
+      0.002514561216230504,
+      -0.0010405503926449455,
+      -0.0011122581563540734
+     ],
+     "mean": 0.00012058422241049509,
+     "lo": -0.0006926503296199372,
+     "hi": 0.000895004235098895
+    },
+    "sham_minus_level_all_genomes": {
+     "per_graph": [
+      -0.0019553945458028466,
+      -8.79322033142671e-05,
+      0.0006114963325671852
+     ],
+     "mean": -0.0004772768055166428,
+     "lo": -0.001173495467749793,
+     "hi": 0.0001786495439470545
+    },
+    "relief_minus_sham_level_decile": [
+     0.021447514900221273,
+     0.006063617192781889,
+     0.0052865020071084685
+    ]
+   },
+   "realised_food_fell_counts": [
+    {
+     "relief": {
+      "relief": [
+       10596348,
+       402622,
+       426109,
+       4741779
+      ],
+      "injected": [
+       10596348,
+       402622,
+       426109,
+       4741779
+      ]
+     },
+     "sham": {
+      "relief": [
+       10603520,
+       401229,
+       424722,
+       4737147
+      ],
+      "injected": [
+       10718127,
+       408841,
+       410059,
+       4629591
+      ]
+     }
+    },
+    {
+     "relief": {
+      "relief": [
+       10628279,
+       408523,
+       432467,
+       4708402
+      ],
+      "injected": [
+       10628279,
+       408523,
+       432467,
+       4708402
+      ]
+     },
+     "sham": {
+      "relief": [
+       10629591,
+       407220,
+       431006,
+       4710124
+      ],
+      "injected": [
+       10725938,
+       409139,
+       410375,
+       4632489
+      ]
+     }
+    },
+    {
+     "relief": {
+      "relief": [
+       10513057,
+       406441,
+       429557,
+       4826372
+      ],
+      "injected": [
+       10513057,
+       406441,
+       429557,
+       4826372
+      ]
+     },
+     "sham": {
+      "relief": [
+       10509792,
+       406468,
+       429462,
+       4829632
+      ],
+      "injected": [
+       10723778,
+       409095,
+       410314,
+       4632167
+      ]
+     }
+    }
+   ],
+   "turn_response_mean_abs": [
+    0.0001770619273884222,
+    0.00037265324499458075,
+    0.00021027628099545836
+   ]
+  },
+  "1.0": {
+   "decile_shift": {
+    "per_graph": [
+     0.046506577440035946,
+     -0.007263002308228739,
+     0.016413016692520266
+    ],
+    "mean": 0.018552197274775823,
+    "lo": 0.015567231105449403,
+    "hi": 0.021714091175594,
+    "moves": true
+   },
+   "between_graph_sd": 0.026948543499582187,
+   "ratio_mean_to_sd": {
+    "ratio": 0.6884304257505961,
+    "lo": 0.155915880869203,
+    "hi": 1.1915480360318491
+   },
+   "graphs": [
+    "pilotSH-mirror-ASK-3660001",
+    "pilotSH-mirror-ASK-3660002",
+    "pilotSH-mirror-ASK-3660003"
+   ],
+   "selection_bank": {
+    "graphs": [
+     "pilotSH-mirror-ASK-3660001",
+     "pilotSH-mirror-ASK-3660002",
+     "pilotSH-mirror-ASK-3660003"
+    ],
+    "relief_minus_sham_all_genomes": {
+     "per_graph": [
+      0.007453798520145938,
+      -0.0003137991516268812,
+      -0.0021190561092225835
+     ],
+     "mean": 0.0016736477530988243,
+     "lo": 0.0008323148634493313,
+     "hi": 0.0025196114422821325
+    },
+    "relief_minus_level_all_genomes": {
+     "per_graph": [
+      0.004935778728395235,
+      0.0010490126151125878,
+      -0.0018077278655255213
+     ],
+     "mean": 0.0013923544926607672,
+     "lo": 0.0004237056478208009,
+     "hi": 0.002376110346328156
+    },
+    "sham_minus_level_all_genomes": {
+     "per_graph": [
+      -0.002518019791750703,
+      0.001362811766739469,
+      0.00031132824369706213
+     ],
+     "mean": -0.0002812932604380573,
+     "lo": -0.0010922004010960034,
+     "hi": 0.0004830539450267679
+    },
+    "relief_minus_sham_level_decile": [
+     0.0312503448759134,
+     0.014767317244639764,
+     0.010694863561254282
+    ]
+   },
+   "realised_food_fell_counts": [
+    {
+     "relief": {
+      "relief": [
+       10592338,
+       405024,
+       428460,
+       4741162
+      ],
+      "injected": [
+       10592338,
+       405024,
+       428460,
+       4741162
+      ]
+     },
+     "sham": {
+      "relief": [
+       10603097,
+       401523,
+       424904,
+       4736097
+      ],
+      "injected": [
+       10717561,
+       408792,
+       410019,
+       4629249
+      ]
+     }
+    },
+    {
+     "relief": {
+      "relief": [
+       10631553,
+       408975,
+       432895,
+       4704666
+      ],
+      "injected": [
+       10631553,
+       408975,
+       432895,
+       4704666
+      ]
+     },
+     "sham": {
+      "relief": [
+       10630043,
+       407453,
+       431281,
+       4709200
+      ],
+      "injected": [
+       10725964,
+       409118,
+       410344,
+       4632551
+      ]
+     }
+    },
+    {
+     "relief": {
+      "relief": [
+       10507702,
+       407410,
+       430453,
+       4829789
+      ],
+      "injected": [
+       10507702,
+       407410,
+       430453,
+       4829789
+      ]
+     },
+     "sham": {
+      "relief": [
+       10513657,
+       406039,
+       429267,
+       4826368
+      ],
+      "injected": [
+       10723695,
+       409086,
+       410321,
+       4632229
+      ]
+     }
+    }
+   ],
+   "turn_response_mean_abs": [
+    0.00034476828295737505,
+    0.0007353178225457668,
+    0.00041861238423734903
+   ]
+  }
+ },
+ "at_0.25": {
+  "decile_shift": {
+   "per_graph": [
+    0.01915569039276588,
+    -0.0003461563744797669,
+    0.0044113576877862215
+   ],
+   "mean": 0.007740297235357445,
+   "lo": 0.004361587392990124,
+   "hi": 0.010962915463964057,
+   "moves": true
+  },
+  "between_graph_sd": 0.01016818005922496,
+  "ratio_mean_to_sd": {
+   "ratio": 0.7612273966701791,
+   "lo": 0.17240295555530713,
+   "hi": 1.3175463714972273
+  },
+  "graphs": [
+   "pilotSH-mirror-ASK-3660001",
+   "pilotSH-mirror-ASK-3660002",
+   "pilotSH-mirror-ASK-3660003"
+  ],
+  "selection_bank": {
+   "graphs": [
+    "pilotSH-mirror-ASK-3660001",
+    "pilotSH-mirror-ASK-3660002",
+    "pilotSH-mirror-ASK-3660003"
+   ],
+   "relief_minus_sham_all_genomes": {
+    "per_graph": [
+     0.0028426088611013256,
+     -0.00034934723225887865,
+     -0.0006766821825294755
+    ],
+    "mean": 0.0006055264821043238,
+    "lo": 4.330260489950889e-05,
+    "hi": 0.001233649844167908
+   },
+   "relief_minus_level_all_genomes": {
+    "per_graph": [
+     0.001505848384113051,
+     -0.0005306265738909133,
+     -0.0004937685371260159
+    ],
+    "mean": 0.00016048442436537394,
+    "lo": -0.00045476684948274245,
+    "hi": 0.0007054474731072937
+   },
+   "sham_minus_level_all_genomes": {
+    "per_graph": [
+     -0.0013367604769882746,
+     -0.00018127934163203463,
+     0.00018291364540345967
+    ],
+    "mean": -0.00044504205773894984,
+    "lo": -0.001125770198753647,
+    "hi": 0.00021243180187108606
+   },
+   "relief_minus_sham_level_decile": [
+    0.01127995650928754,
+    0.0028200456156180454,
+    0.0022550304062091387
+   ]
+  },
+  "turn_response_mean_abs": [
+   8.932644414016977e-05,
+   0.00018706612172536552,
+   0.00010513119923416525
+  ],
+  "pilot_recorded_decile_shift": {
+   "per_graph": [
+    0.01915569039276588,
+    -0.0003461563744797669,
+    0.0044113576877862215
+   ],
+   "mean": 0.007740297235357445,
+   "lo": 0.004421628379256994,
+   "hi": 0.010683668032139321,
+   "moves": true
+  },
+  "note": "recomputed from the pilot's hash-checked arrays with this check's bootstrap seed; the pilot's own interval (seed 3 653 001) is quoted beside it"
+ },
+ "guide": {
+  "branch": "discordant evidence: the readings go to the owner as they are, with the flags",
+  "flags": [
+   "1.0: the all-genome relief \u2212 sham is above 0 by its interval while the ratio is under 1"
+  ],
+  "discordant": true
+ },
+ "timing": [
+  {
+   "name": "pilotSH-mirror-ASK-3660001",
+   "amplitude": 0.5,
+   "selection_relief": 26.419086900015827,
+   "test_relief": 9.428166800003964,
+   "selection_sham": 25.1071246000065,
+   "test_sham": 9.761045399995055,
+   "turn_response": 0.7837900999875274
+  },
+  {
+   "name": "pilotSH-mirror-ASK-3660001",
+   "amplitude": 1.0,
+   "selection_relief": 24.825847000000067,
+   "test_relief": 9.465090500016231,
+   "selection_sham": 26.87442690000171,
+   "test_sham": 9.948328099999344,
+   "turn_response": 0.7807013000128791
+  },
+  {
+   "name": "pilotSH-mirror-ASK-3660002",
+   "amplitude": 0.5,
+   "selection_relief": 26.611929099977715,
+   "test_relief": 9.796510699990904,
+   "selection_sham": 26.10104860001593,
+   "test_sham": 10.104141499992693,
+   "turn_response": 0.7787227999942843
+  },
+  {
+   "name": "pilotSH-mirror-ASK-3660002",
+   "amplitude": 1.0,
+   "selection_relief": 25.227721499977633,
+   "test_relief": 10.098397599998862,
+   "selection_sham": 25.322469399980037,
+   "test_sham": 9.905975799978478,
+   "turn_response": 0.7811131000053138
+  },
+  {
+   "name": "pilotSH-mirror-ASK-3660003",
+   "amplitude": 0.5,
+   "selection_relief": 25.34017660000245,
+   "test_relief": 9.556894400011515,
+   "selection_sham": 25.32139029999962,
+   "test_sham": 9.871320399979595,
+   "turn_response": 0.7817479999794159
+  },
+  {
+   "name": "pilotSH-mirror-ASK-3660003",
+   "amplitude": 1.0,
+   "selection_relief": 24.977522000001045,
+   "test_relief": 9.549932399997488,
+   "selection_sham": 25.371073100017384,
+   "test_sham": 9.865062199998647,
+   "turn_response": 0.7811231999949086
+  }
+ ],
+ "arrays_npz": "amplitude-arrays.npz",
+ "arrays_npz_sha256": "cfdbe41917b03b3fae73a57239a3dacbd47409ac8c6b7759386cf1c3fd793cb8",
+ "note": "exploratory and disclosed (D338); outside PILOT.md's amplitude rule; not a test of 03h's questions",
+ "status": "completed",
+ "seconds": 504.12717294692993,
+ "over_cap_at_end": false,
+ "over_own_budget_at_end": false
+}

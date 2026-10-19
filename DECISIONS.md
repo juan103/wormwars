@@ -10705,3 +10705,51 @@ The flag test's consistent fakes fail on the round-1 flag. **A CUDA smoke prefli
 round 2's fixes. It is rerun before the check.
 
 **Gate:** the hygiene tests and every 03h test passed (pytest rc 0). No library code changed.
+
+## D339 — 03h's amplitude check ran: the ratio stays under 1 at 0.5 and 1.0, with one discordance flag; to the owner
+
+**The run:** 2026-10-19, from 19:33 to 19:41 local time, on the RTX 5080, at f0b4bb0 (D338), under the owner's choice.
+- The check took 504 s (0.140 h; `development-records/amplitude-check-compute.json`).
+- Everything before the pre-registration now totals 0.349 of the 1.0-hour cap.
+- The record is `development-records/amplitude-check.json`, with status "completed". The per-genome arrays stay local,
+  and their sha256 is in the record.
+- **After the record was written,** the console line crashed: a Windows code page cannot print "−". The process
+  exited with code 1. The print is fixed (`_say`), with a test seen failing on a plain `print`. The fix touches no
+  reading.
+- **The owner paused the GPU** during the run ("once it finishes … don't stop it"). No GPU work follows until the owner
+  frees it.
+
+**The readings** (exploratory; relief − sham, on the pilot's 3 graphs):
+
+| Amplitude | Decile shift per graph | Mean [95%] | Between-graph SD | Ratio [90% range] |
+|---|---|---|---|---|
+| 0.25 (the pilot) | +0.019, −0.000, +0.004 | +0.0077 [0.0044, 0.0110] | 0.0102 | 0.76 [0.17, 1.32] |
+| 0.5 | +0.025, −0.011, +0.007 | +0.0071 [0.0039, 0.0101] | 0.0180 | 0.39 [0.09, 0.68] |
+| 1.0 | +0.047, −0.007, +0.016 | +0.0186 [0.0156, 0.0217] | 0.0269 | 0.69 [0.16, 1.19] |
+
+- **The heterogeneity grows with the amplitude as fast as the mean** (Fable, D337). The second graph's shift is
+  negative at 0.5 and 1.0, and the first graph carries most of the shift at every amplitude.
+- **On the selection bank, over all 256 genomes,** relief − sham:
+  - +0.0006 [0.0000, 0.0012] at 0.25;
+  - +0.0006 [−0.0001, 0.0014] at 0.5;
+  - +0.0017 [0.0008, 0.0025] at 1.0.
+
+  Relief − level at 1.0 is +0.0014 [0.0004, 0.0024]. So at 1.0 random brains as a whole gain a small, detectable
+  amount, about 0.2% of the +0.96 that a scripted bit reader gains (G1).
+- **No sham damage:** sham − level contains 0 at every amplitude.
+- **The turn response** roughly doubles with each doubling of the amplitude: about 1-2 × 10⁻⁴ at 0.25, 2-4 × 10⁻⁴ at
+  0.5, and 3-7 × 10⁻⁴ at 1.0.
+- **The relief bit's realised counts** barely change across amplitudes, so the sham's rates still match.
+
+**The guide, fixed in D338:** both ratios are under 1, which would read "the rank route is not supported at these
+amplitudes". But one flag fired: at 1.0, the all-genome relief − sham is above 0 by its interval while the ratio is
+under 1. The branch is therefore "discordant evidence: the readings go to the owner as they are".
+
+**What it means, as data, not a decision:**
+- A stronger ASK bit does not separate the graphs any better: the spread across graphs grows with the mean.
+- At 1.0 the bit does reach random brains as a whole, but the gain is about 0.2% of what a scripted reader gets.
+- No number here is a test of 03h's questions.
+
+**The decision is the owner's:** stop 03h and report, or a redesign round.
+
+**Gate:** the hygiene tests and the amplitude tests passed (pytest rc 0).

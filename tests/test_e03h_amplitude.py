@@ -220,3 +220,15 @@ def test_under_level_the_amplitude_changes_nothing():
     assert np.array_equal(a, b)
     r, _ = D._scores(D.t1("relief", None), interface_03h(con, 1.0), g, ids, 3_699_100, "cpu")
     assert not np.array_equal(a, r)  # the check can fail: the live bit at 1.0 changes the scores
+
+
+def test_the_final_line_prints_on_a_cp1252_console(monkeypatch):
+    """The check's last line crashed on a Windows console after its record was written (D339)."""
+    import io
+    import sys
+    A = _module("e03h_amp_say", "e03h_amplitude.py")
+    out = io.TextIOWrapper(io.BytesIO(), encoding="cp1252")
+    monkeypatch.setattr(sys, "stdout", out)
+    A._say("  flag: 1.0: the all-genome relief \u2212 sham is above 0")
+    out.flush()
+    assert b"relief ? sham" in out.buffer.getvalue()
