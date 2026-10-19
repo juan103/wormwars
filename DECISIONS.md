@@ -10519,3 +10519,75 @@ recorded here as an open fix.
 - **The record:** `experiments/03h-history-use/pilot/bind.json`, committed and pushed here before any stage runs
   (PILOT.md §0).
 - **What runs next, under the owner's GPU word of 2026-10-19:** G1, S1, G2 and P, inside the 1.0-hour cap.
+
+## D336 — 03h's pilot ran (G1, S1, G2, P): every gate passed; the decile shift moved at 0.25; proceed to the pre-registration
+
+**The run:** on 2026-10-19, from 12:31 to 12:41 UTC, on the RTX 5080. The code was the bound `ff1fd31` (D335), under
+the owner's GPU word of the same day.
+- Every stage completed on its first attempt, and none overran the cap.
+- **Compute:** 594 s (0.165 h) by T0's accounting (`pilot/compute.json`). With step 0's 0.044 h, that is 0.209 of
+  the 1.0-hour cap.
+- **The records:** `experiments/03h-history-use/pilot/{gate,sham-rates,gate-sham,pilot}.json`. The per-genome arrays
+  stay local, and their sha256 is in `pilot.json`.
+
+**G1 (the scripted gate, level and relief): passed** (`gate.json`).
+- **Level:** memory − memoryless = +0.985, with a 95% lower bound of 0.944 (registered: ≥ 0.5).
+  - The memory family is `SlowMemoryKinesis` at T = 5. It beat `MemoryKinesis` (tuning 3.174 against 3.138).
+  - The memoryless family is K (2.205 against Graded's 2.185).
+- **Relief:** memory + bit − memoryless + bit = +0.023, with a 90% interval of [0.007, 0.039] (registered: inside
+  ±0.3).
+  - The memory + bit family is the slow-memory policy with `use_bit` = 0: on the tuning worlds, reading the bit did
+    not add to slow memory.
+  - The memoryless + bit family is `BitKinesis`, at 3.138 on tuning.
+- **The recovered share:** 0.976, in [0.957, 0.996]. A policy that reads only the relief bit recovers almost all of
+  what memory gains in this task.
+- **Grid-edge flags:** only Graded's `scale=3.0`.
+
+**S1 (the sham's rates): completed** (`sham-rates.json`).
+- **The graphs:** the 3 SH-mirror-ASK graphs at seeds 3 660 001-3 660 003, with no sampler or calibration failures.
+- **The counts:** N00..N11 = 31 734 313, 1 216 628, 1 287 119, 14 282 115.
+- **The rates:** p̂01 = 0.0369 and p̂10 = 0.0827, so the stationary occupancy is 0.309.
+- **The times:** the sampler took 69.6 s of CPU and calibration 34.4 s.
+
+**G2 (the sham part): passed** (`gate-sham.json`).
+- Under sham, `BitKinesis` did not beat the memoryless policy on the tuning worlds, so the memoryless + bit family
+  fell back to it exactly (K).
+- The difference is therefore 0, with an interval of [0, 0], inside ±0.3. A scripted policy finds nothing to use in
+  the sham bit, as intended.
+
+**P (the pilot proper), at amplitude 0.25: completed. Its action is "proceed to the pre-registration"** (`pilot.json`).
+- **Reliability:** 0.986 (per graph 0.985-0.987), so W = 16.
+- **The manipulation check (B's decile shift) moved:** the mean is +0.0077, with a 95% interval of [0.0044, 0.0107].
+  - Per graph the shift is +0.0192, −0.0003 and +0.0044. It is small, about 0.5% of a decile's mean test score of
+    about 1.55, and one of the three graphs shows none.
+  - U's between-graph SD is 0.0102, against a shared-world SE of 0.0016.
+  - The interval conditions on these three graphs and their frozen deciles, as registered. It is not B's effect size,
+    and it is not B's power.
+- **The bit's turn response** (a diagnostic): the mean absolute response is 0.9-1.9 × 10⁻⁴ per graph. Random genomes
+  barely turn on the bit at 0.25.
+- **A (secondary):**
+  - ρ_level per graph is −0.073, +0.046 and +0.067;
+  - D = −0.00003, +0.0072 and +0.0015 (mean +0.0029);
+  - H_dir's ρ under level is +0.038, +0.003 and +0.067;
+  - the H quartile difference is −0.005, +0.074 and +0.043.
+  - **A2's power (reported, not a stop):** 1.00 at δ 0.05. The SE is 0.0077, with s_graph at step 0's floor of 0.060
+    and s_shared 0.0016.
+- **The budget:** projected per graph at 118 s (W_t = 64), giving 2.14 h for the primary run and 4.24 h with SH.
+  - The plan is therefore W_t = 64 with SH, inside the 6-hour cap.
+  - The sampler's 23 s of CPU per graph is not counted (DESIGN §8).
+- **The realised counts:**
+  - under relief, the injected bit's counts equal the relief bit's;
+  - under sham, the injected bit has occupancy 0.31, matching S1's rates;
+  - the relief bit's counts barely differ between conditions.
+
+**What the pilot fixes for the pre-registration** (PILOT.md §6): the sham's rates (0.0369, 0.0827), W = 16, the
+amplitude 0.25, W_t = 64, and SH runs.
+
+**For the pre-registration round, flagged now:** B's manipulation moved, but only just.
+- The shift is small, heterogeneous across graphs, and absent in one of three. The genomes' turn response to the bit
+  is tiny.
+- The pilot was not built to establish B's power (PILOT.md §5.3), so the pre-registration's review should examine B's
+  power and its decision wording directly.
+- No pilot number is a test of 03h's questions.
+
+**Gate:** the hygiene tests passed (records and DECISIONS only; no code changed since the bound commit).

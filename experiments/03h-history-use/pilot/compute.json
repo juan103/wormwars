@@ -1,0 +1,90 @@
+{
+ "time_unit": "synchronised wall-clock seconds per category (not GPU kernel time)",
+ "neural_update_unit": "strains x batch x substeps network updates (network size not included)",
+ "attempts": [
+  {
+   "file": "20261019T123035Z-cf49915f.json",
+   "status": "completed",
+   "experiment": "03h",
+   "script": "scripts/e03h.py",
+   "stage": "bind",
+   "default_category": "measure",
+   "git_commit": "ff1fd31a85d78190c798ff20679c943ad6d864c7"
+  },
+  {
+   "file": "20261019T123121Z-f652576f.json",
+   "status": "completed",
+   "experiment": "03h",
+   "script": "scripts/e03h.py",
+   "stage": "gate",
+   "default_category": "calibration",
+   "git_commit": "69606fd4440513bf759dcf981c9aa415fc431a5f"
+  },
+  {
+   "file": "20261019T123245Z-6c311f28.json",
+   "status": "completed",
+   "experiment": "03h",
+   "script": "scripts/e03h.py",
+   "stage": "sham-rates",
+   "default_category": "measure",
+   "git_commit": "69606fd4440513bf759dcf981c9aa415fc431a5f"
+  },
+  {
+   "file": "20261019T123547Z-c5e588ab.json",
+   "status": "completed",
+   "experiment": "03h",
+   "script": "scripts/e03h.py",
+   "stage": "gate-sham",
+   "default_category": "calibration",
+   "git_commit": "69606fd4440513bf759dcf981c9aa415fc431a5f"
+  },
+  {
+   "file": "20261019T123605Z-c6e7c152.json",
+   "status": "completed",
+   "experiment": "03h",
+   "script": "scripts/e03h.py",
+   "stage": "pilot",
+   "default_category": "measure",
+   "git_commit": "69606fd4440513bf759dcf981c9aa415fc431a5f"
+  }
+ ],
+ "failed_attempts": 0,
+ "uncategorised": false,
+ "categories": {
+  "measure": {
+   "worlds_built": 54912,
+   "world_ticks": 10982400,
+   "neural_updates": 6635520000,
+   "neural_padding": 0,
+   "seconds": 475.9348950999847
+  },
+  "calibration": {
+   "worlds_built": 9344,
+   "world_ticks": 762880,
+   "neural_updates": 471859200,
+   "neural_padding": 0,
+   "seconds": 39.379978199955076
+  },
+  "tuning": {
+   "worlds_built": 137600,
+   "world_ticks": 27520000,
+   "neural_updates": 0,
+   "neural_padding": 0,
+   "seconds": 70.78889300001902
+  },
+  "probe": {
+   "worlds_built": 0,
+   "world_ticks": 0,
+   "neural_updates": 8159232,
+   "neural_padding": 0,
+   "seconds": 7.696048300043913
+  }
+ },
+ "totals": {
+  "worlds_built": 201856,
+  "world_ticks": 39265280,
+  "neural_updates": 7115538432,
+  "neural_padding": 0,
+  "seconds_timed": 593.7998146000027
+ }
+}

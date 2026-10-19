@@ -1,0 +1,355 @@
+{
+ "stage": "pilot",
+ "smoke": false,
+ "device": "cuda",
+ "provenance": {
+  "git_commit": "69606fd4440513bf759dcf981c9aa415fc431a5f",
+  "branch": "roadmap",
+  "dirty": false,
+  "python": "3.13.3",
+  "numpy": "2.4.4",
+  "torch": "2.12.0+cu130",
+  "cuda": "13.0",
+  "gpu": "NVIDIA GeForce RTX 5080",
+  "connectome_cache_sha256": "43b87aa172a0042b9dce734b15bdf1c87efe3a33ac1cc0d9cd03255a60c96d4a",
+  "connectome_source_sha256": "1f4fdbf84746b69b49a8da0816f52787860ce349b638dce37924ba80f90c70c9"
+ },
+ "config": {
+  "gate": {
+   "tuning": [
+    3640000,
+    64
+   ],
+   "check": [
+    3641000,
+    256
+   ],
+   "seeds": [
+    3642001,
+    3642002
+   ]
+  },
+  "graphs": {
+   "kind": "SH-mirror-ASK",
+   "first_seed": 3660001,
+   "n": 3,
+   "passes": 20,
+   "max_failures": 10
+  },
+  "calibration": {
+   "seed": 3661000,
+   "strains": 1024
+  },
+  "genome_salt": "03h-pilot:",
+  "genomes": 256,
+  "selection": [
+   3650000,
+   16
+  ],
+  "test": [
+   3651000,
+   64
+  ],
+  "run_seeds": [
+   3652001,
+   3652002
+  ],
+  "boot_seeds": [
+   3653000,
+   3653001
+  ],
+  "shared_boots": 2000,
+  "cap_hours": 1.0,
+  "delta_A": 0.05,
+  "reliability_floor": 0.85,
+  "formal": {
+   "primary_graphs": 65,
+   "sh_graphs": 64,
+   "cap_hours": 6.0
+  }
+ },
+ "upstream": {
+  "gate-sham": "526088b4bacdaac132a74ae1d2f4c2f6022e551f36b176619ebf603f987a3d2f",
+  "sham-rates": "45e2fc9e3a566e7b704ea0ff469c1f67d6797018fdad9ad0abf755bf2f8f6c27",
+  "gate": "6887de2c695332e6643d32aa3b1111c6dce282f27b68499c23d7169f25e56c07"
+ },
+ "rerun_reason": null,
+ "started_utc": "2026-10-19T12:36:05Z",
+ "amplitude": 0.25,
+ "per_graph": [
+  {
+   "name": "pilotSH-mirror-ASK-3660001",
+   "reliability_level": 0.9846036292249831,
+   "rho": {
+    "level": -0.07295251111066088,
+    "relief": -0.07264154672664401,
+    "sham": -0.07267579179075533
+   },
+   "degenerate": {
+    "level": false,
+    "relief": false,
+    "sham": false
+   },
+   "D": -3.424506411131567e-05,
+   "rho_H_dir_level": 0.03783248667262877,
+   "quartile_difference_level": -0.005431170196970925,
+   "turn_response_mean_abs": 8.932644414016977e-05,
+   "realised_food_fell_counts": {
+    "level": null,
+    "relief": {
+     "relief": [
+      10593276,
+      402067,
+      425659,
+      4745395
+     ],
+     "injected": [
+      10593276,
+      402067,
+      425659,
+      4745395
+     ]
+    },
+    "sham": {
+     "relief": [
+      10602486,
+      401398,
+      425004,
+      4737415
+     ],
+     "injected": [
+      10718066,
+      408808,
+      410029,
+      4629400
+     ]
+    }
+   }
+  },
+  {
+   "name": "pilotSH-mirror-ASK-3660002",
+   "reliability_level": 0.9865408478698088,
+   "rho": {
+    "level": 0.04613564914346454,
+    "relief": 0.03689402880928994,
+    "sham": 0.04412455135410683
+   },
+   "degenerate": {
+    "level": false,
+    "relief": false,
+    "sham": false
+   },
+   "D": 0.007230522544816889,
+   "rho_H_dir_level": 0.002979840851988258,
+   "quartile_difference_level": 0.07422549274633639,
+   "turn_response_mean_abs": 0.00018706612172536552,
+   "realised_food_fell_counts": {
+    "level": null,
+    "relief": {
+     "relief": [
+      10630211,
+      408023,
+      431883,
+      4707545
+     ],
+     "injected": [
+      10630211,
+      408023,
+      431883,
+      4707545
+     ]
+    },
+    "sham": {
+     "relief": [
+      10628165,
+      407506,
+      431318,
+      4710754
+     ],
+     "injected": [
+      10725771,
+      409124,
+      410351,
+      4632497
+     ]
+    }
+   }
+  },
+  {
+   "name": "pilotSH-mirror-ASK-3660003",
+   "reliability_level": 0.9862891105090777,
+   "rho": {
+    "level": 0.0666045057679817,
+    "relief": 0.06094993447433991,
+    "sham": 0.06244408863491641
+   },
+   "degenerate": {
+    "level": false,
+    "relief": false,
+    "sham": false
+   },
+   "D": 0.001494154160576501,
+   "rho_H_dir_level": 0.06702243736912479,
+   "quartile_difference_level": 0.04292767684091814,
+   "turn_response_mean_abs": 0.00010513119923416525,
+   "realised_food_fell_counts": {
+    "level": null,
+    "relief": {
+     "relief": [
+      10511070,
+      406236,
+      429412,
+      4828753
+     ],
+     "injected": [
+      10511070,
+      406236,
+      429412,
+      4828753
+     ]
+    },
+    "sham": {
+     "relief": [
+      10511176,
+      405932,
+      429067,
+      4829256
+     ],
+     "injected": [
+      10723731,
+      409104,
+      410311,
+      4632285
+     ]
+    }
+   }
+  }
+ ],
+ "timing": [
+  {
+   "name": "pilotSH-mirror-ASK-3660001",
+   "selection_level": 2.5800021830946207e-05,
+   "test_level": 11.10413360001985,
+   "selection_relief": 24.74804049998056,
+   "test_relief": 9.501792399998521,
+   "selection_sham": 25.12376870002481,
+   "test_sham": 9.768355899985181,
+   "history_and_probe": 2.5697069999878295
+  },
+  {
+   "name": "pilotSH-mirror-ASK-3660002",
+   "selection_level": 9.99998883344233e-06,
+   "test_level": 9.774424699979136,
+   "selection_relief": 24.732170100003714,
+   "test_relief": 9.483773400017526,
+   "selection_sham": 25.075424499984365,
+   "test_sham": 9.786542099987855,
+   "history_and_probe": 2.5626285999896936
+  },
+  {
+   "name": "pilotSH-mirror-ASK-3660003",
+   "selection_level": 9.100011084228754e-06,
+   "test_level": 9.839462600008119,
+   "selection_relief": 24.79777980002109,
+   "test_relief": 9.486113800026942,
+   "selection_sham": 25.13602519998676,
+   "test_sham": 9.767542500019772,
+   "history_and_probe": 2.5641153000178747
+  }
+ ],
+ "arrays_npz": "pilot-arrays-amp0.25.npz",
+ "arrays_npz_sha256": "e9cf3c3233213efab5770717d0623c104976cf563069aae0199f00c9014dd12c",
+ "readings": {
+  "reliability_level_mean": 0.9858111958679565,
+  "W": 16,
+  "A_secondary": {
+   "D": [
+    -3.424506411131567e-05,
+    0.007230522544816889,
+    0.001494154160576501
+   ],
+   "D_mean": 0.0028968105470940247
+  },
+  "power_A2_reported": {
+   "se": 0.007680463319208596,
+   "power": 1.0,
+   "s_graph": 0.060043945514234434,
+   "s_shared": 0.001630057907986924,
+   "delta": 0.05,
+   "graphs": 64
+  },
+  "B": {
+   "T": {
+    "level": [
+     1.50465222062149,
+     1.5607498819724872,
+     1.5924458095194916
+    ],
+    "relief": [
+     1.5181041595418578,
+     1.5634716726803721,
+     1.5918569214498768
+    ],
+    "sham": [
+     1.498948469149092,
+     1.563817829054852,
+     1.5874455637620906
+    ]
+   },
+   "U": [
+    -0.01915569039276588,
+    0.0003461563744797669,
+    -0.0044113576877862215
+   ],
+   "U_between_graph_sd": 0.01016818005922496,
+   "U_mean_shared_world_se": 0.0016228542015260838
+  },
+  "manipulation": {
+   "decile_shift": {
+    "per_graph": [
+     0.01915569039276588,
+     -0.0003461563744797669,
+     0.0044113576877862215
+    ],
+    "mean": 0.007740297235357445,
+    "lo": 0.004421628379256994,
+    "hi": 0.010683668032139321,
+    "moves": true
+   },
+   "turn_response_mean_abs": [
+    8.932644414016977e-05,
+    0.00018706612172536552,
+    0.00010513119923416525
+   ]
+  },
+  "projection": {
+   "hours": {
+    "64": {
+     "primary": 2.1365230960187684,
+     "with_SH": 4.2401766059449395
+    },
+    "32": {
+     "primary": 1.8701671161575275,
+     "with_SH": 3.711562430528016
+    }
+   },
+   "cap_hours": 6.0,
+   "plan": {
+    "W_t": 64,
+    "SH": true
+   },
+   "fits": true,
+   "per_graph_seconds": {
+    "64": 118.33050993334716,
+    "32": 103.57848643333999
+   },
+   "W": 16,
+   "sampler_cpu_seconds_per_graph_not_counted": 23.19216399999762,
+   "note": "an extrapolation from the pilot's compositions (at smoke size it is meaningless)"
+  }
+ },
+ "action": "proceed to the pre-registration",
+ "status": "completed",
+ "over_cap_at_end": false,
+ "seconds": 318.4370262622833
+}

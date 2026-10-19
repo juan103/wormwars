@@ -1,0 +1,318 @@
+{
+ "stage": "sham-rates",
+ "smoke": false,
+ "device": "cuda",
+ "provenance": {
+  "git_commit": "69606fd4440513bf759dcf981c9aa415fc431a5f",
+  "branch": "roadmap",
+  "dirty": false,
+  "python": "3.13.3",
+  "numpy": "2.4.4",
+  "torch": "2.12.0+cu130",
+  "cuda": "13.0",
+  "gpu": "NVIDIA GeForce RTX 5080",
+  "connectome_cache_sha256": "43b87aa172a0042b9dce734b15bdf1c87efe3a33ac1cc0d9cd03255a60c96d4a",
+  "connectome_source_sha256": "1f4fdbf84746b69b49a8da0816f52787860ce349b638dce37924ba80f90c70c9"
+ },
+ "config": {
+  "gate": {
+   "tuning": [
+    3640000,
+    64
+   ],
+   "check": [
+    3641000,
+    256
+   ],
+   "seeds": [
+    3642001,
+    3642002
+   ]
+  },
+  "graphs": {
+   "kind": "SH-mirror-ASK",
+   "first_seed": 3660001,
+   "n": 3,
+   "passes": 20,
+   "max_failures": 10
+  },
+  "calibration": {
+   "seed": 3661000,
+   "strains": 1024
+  },
+  "genome_salt": "03h-pilot:",
+  "genomes": 256,
+  "selection": [
+   3650000,
+   16
+  ],
+  "test": [
+   3651000,
+   64
+  ],
+  "run_seeds": [
+   3652001,
+   3652002
+  ],
+  "boot_seeds": [
+   3653000,
+   3653001
+  ],
+  "shared_boots": 2000,
+  "cap_hours": 1.0,
+  "delta_A": 0.05,
+  "reliability_floor": 0.85,
+  "formal": {
+   "primary_graphs": 65,
+   "sh_graphs": 64,
+   "cap_hours": 6.0
+  }
+ },
+ "upstream": {
+  "gate": "6887de2c695332e6643d32aa3b1111c6dce282f27b68499c23d7169f25e56c07"
+ },
+ "rerun_reason": null,
+ "started_utc": "2026-10-19T12:32:45Z",
+ "graphs": [
+  {
+   "name": "pilotSH-mirror-ASK-3660001",
+   "seed": 3660001,
+   "graph_sha256": "97f30b5344f8d1150c6b1bff117543dec7a6adb3eddebe2212bc9341f8557ed6",
+   "genome_sha256": "938ad1611aa679bc9847e2945c67777c3043a7a6b5e24efa77e2b7b9901cf992",
+   "gains": [
+    4.459013772799821,
+    2.828314334154919
+   ],
+   "calibration": {
+    "graph": "SH-mirror-ASK-3660001",
+    "forward_gain": 4.459013772799821,
+    "turn_gain": 2.828314334154919,
+    "target": [
+     0.5,
+     0.4
+    ],
+    "achieved": {
+     "forward": 0.4967705924063921,
+     "turn": 0.3991716576740146,
+     "clip_forward": 0.15087675340473652,
+     "clip_turn": 0.05162657051114365,
+     "displacement": 0.1145552891306579,
+     "forward_signed": 0.03233494972810149,
+     "reversing": 0.4810863111168146
+    },
+    "iterations": 3,
+    "history": [
+     {
+      "forward_gain": 4.0,
+      "turn_gain": 2.0,
+      "forward": 0.45836728997528553,
+      "turn": 0.28780109705403445,
+      "clip_forward": 0.10793748029973357,
+      "clip_turn": 0.003366174209077144,
+      "displacement": 0.10504779936745763,
+      "forward_signed": 0.03096584512386471,
+      "reversing": 0.4806508027017117
+     },
+     {
+      "forward_gain": 4.363313097904165,
+      "turn_gain": 2.779697534821421,
+      "forward": 0.4892688518390059,
+      "turn": 0.3931242721155286,
+      "clip_forward": 0.1413400025689043,
+      "clip_turn": 0.04668206361675402,
+      "displacement": 0.11290360330604017,
+      "forward_signed": 0.032074768550228325,
+      "reversing": 0.4810356192290783
+     },
+     {
+      "forward_gain": 4.459013772799821,
+      "turn_gain": 2.828314334154919,
+      "forward": 0.4967705924063921,
+      "turn": 0.3991716576740146,
+      "clip_forward": 0.15087675340473652,
+      "clip_turn": 0.05162657051114365,
+      "displacement": 0.1145552891306579,
+      "forward_signed": 0.03233494972810149,
+      "reversing": 0.4810863111168146
+     }
+    ]
+   },
+   "relief_counts": [
+    10595200,
+    402325,
+    425840,
+    4743316
+   ],
+   "seconds": {
+    "selection_level": 25.566652999987127
+   }
+  },
+  {
+   "name": "pilotSH-mirror-ASK-3660002",
+   "seed": 3660002,
+   "graph_sha256": "a8fd3a0564ca04075b20f196d9778efe2912253ad27d7e6362d25734efe87ef4",
+   "genome_sha256": "df9140de872bb2f68f61761d1e807b72436ac81daf43b8c1cf834487f80aeef2",
+   "gains": [
+    4.519590638341232,
+    3.009686304400625
+   ],
+   "calibration": {
+    "graph": "SH-mirror-ASK-3660002",
+    "forward_gain": 4.519590638341232,
+    "turn_gain": 3.009686304400625,
+    "target": [
+     0.5,
+     0.4
+    ],
+    "achieved": {
+     "forward": 0.49599333126097916,
+     "turn": 0.39905298221856356,
+     "clip_forward": 0.15867892818059773,
+     "clip_turn": 0.05400951902847737,
+     "displacement": 0.10840218584053218,
+     "forward_signed": -0.021766836958704516,
+     "reversing": 0.5263187170028687
+    },
+    "iterations": 3,
+    "history": [
+     {
+      "forward_gain": 4.0,
+      "turn_gain": 2.0,
+      "forward": 0.4540464337915182,
+      "turn": 0.2707793727517128,
+      "clip_forward": 0.11042696200311183,
+      "clip_turn": 0.0007879703816342954,
+      "displacement": 0.09855077667161823,
+      "forward_signed": -0.020101887226337566,
+      "reversing": 0.5261744953691959
+     },
+     {
+      "forward_gain": 4.404835829892957,
+      "turn_gain": 2.954434792688394,
+      "forward": 0.48730473425239323,
+      "turn": 0.39265684112906457,
+      "clip_forward": 0.1474154758907389,
+      "clip_turn": 0.0491645391259226,
+      "displacement": 0.10659611676819622,
+      "forward_signed": -0.02150175361894071,
+      "reversing": 0.5263205505907536
+     },
+     {
+      "forward_gain": 4.519590638341232,
+      "turn_gain": 3.009686304400625,
+      "forward": 0.49599333126097916,
+      "turn": 0.39905298221856356,
+      "clip_forward": 0.15867892818059773,
+      "clip_turn": 0.05400951902847737,
+      "displacement": 0.10840218584053218,
+      "forward_signed": -0.021766836958704516,
+      "reversing": 0.5263187170028687
+     }
+    ]
+   },
+   "relief_counts": [
+    10627739,
+    408230,
+    432080,
+    4709912
+   ],
+   "seconds": {
+    "selection_level": 24.79020909999963
+   }
+  },
+  {
+   "name": "pilotSH-mirror-ASK-3660003",
+   "seed": 3660003,
+   "graph_sha256": "7c0308f4c59f31c6401a2e61fcd1c89d61b9418dfede835c129ba7f6931d5498",
+   "genome_sha256": "60f0333c1876ecb0774fb68f41c75c06b878fe11f6b86707e3fe2494efd446e5",
+   "gains": [
+    4.232701314889874,
+    3.0398478818332206
+   ],
+   "calibration": {
+    "graph": "SH-mirror-ASK-3660003",
+    "forward_gain": 4.232701314889874,
+    "turn_gain": 3.0398478818332206,
+    "target": [
+     0.5,
+     0.4
+    ],
+    "achieved": {
+     "forward": 0.4986387912184,
+     "turn": 0.3989808546379209,
+     "clip_forward": 0.14020830919835134,
+     "clip_turn": 0.04911496514541795,
+     "displacement": 0.10956626636907459,
+     "forward_signed": -0.01576102120216092,
+     "reversing": 0.512060484662652
+    },
+    "iterations": 3,
+    "history": [
+     {
+      "forward_gain": 4.0,
+      "turn_gain": 2.0,
+      "forward": 0.47732646446675064,
+      "turn": 0.2690108818933368,
+      "clip_forward": 0.11642069898662158,
+      "clip_turn": 0.0024524621810996907,
+      "displacement": 0.103496969724074,
+      "forward_signed": -0.014963361014360998,
+      "reversing": 0.512213334813714
+     },
+     {
+      "forward_gain": 4.19000442859232,
+      "turn_gain": 2.9738573933124433,
+      "forward": 0.4949563076719642,
+      "turn": 0.391316606476903,
+      "clip_forward": 0.13581203975409153,
+      "clip_turn": 0.04413870486896485,
+      "displacement": 0.10873182197101414,
+      "forward_signed": -0.015679386507235903,
+      "reversing": 0.5120403576642275
+     },
+     {
+      "forward_gain": 4.232701314889874,
+      "turn_gain": 3.0398478818332206,
+      "forward": 0.4986387912184,
+      "turn": 0.3989808546379209,
+      "clip_forward": 0.14020830919835134,
+      "clip_turn": 0.04911496514541795,
+      "displacement": 0.10956626636907459,
+      "forward_signed": -0.01576102120216092,
+      "reversing": 0.512060484662652
+     }
+    ]
+   },
+   "relief_counts": [
+    10511374,
+    406073,
+    429199,
+    4828887
+   ],
+   "seconds": {
+    "selection_level": 24.808752700017067
+   }
+  }
+ ],
+ "failures": [],
+ "seconds_s1": {
+  "sampler_cpu": 69.57649199999287,
+  "calibration": 34.36312470000121
+ },
+ "counts": [
+  31734313,
+  1216628,
+  1287119,
+  14282115
+ ],
+ "rates": [
+  0.036922405341929386,
+  0.08267066960391244
+ ],
+ "stationary_occupancy": 0.3087336399590849,
+ "level_selection_npz_sha256": "c2ede705d5ba4d789dccef6eb2ca05a23a0634d6399f2f178bb4b02ba8c5c472",
+ "note": "level trajectories only, bits computed but not injected (DESIGN \u00a73)",
+ "status": "completed",
+ "over_cap_at_end": false,
+ "seconds": 179.30854964256287
+}
