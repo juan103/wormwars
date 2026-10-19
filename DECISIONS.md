@@ -10591,3 +10591,49 @@ amplitude 0.25, W_t = 64, and SH runs.
 - No pilot number is a test of 03h's questions.
 
 **Gate:** the hygiene tests passed (records and DECISIONS only; no code changed since the bound commit).
+
+## D337 — 03h: B's power after the pilot is near zero; review without consensus; the choice goes to the owner
+
+**Why:** D336 flagged B's decile shift as small and heterogeneous: +0.019, −0.0003 and +0.004 per graph. The pilot
+registered no rule on B's power, since PILOT.md §5.3 concerns A2.
+
+**The check:** `experiments/03h-history-use/development-records/b_power.py`, exploratory, written after the pilot, and
+its output `b-power.json`. It runs on the CPU from `pilot/pilot.json`.
+- **The model:** the null graphs' U = T_sham − T_relief is normal, with the pilot's mean −0.0077 and SD 0.0102. The SD
+  rests on 2 degrees of freedom, with 90% bounds of 0.0059 and 0.045.
+- **The test:** B's rank part passes if at most 2 of the 64 nulls have U at or above N2's.
+- **If N2 gains nothing from the relief (u = 0),** the extreme of the hypothesis short of N2 doing better under sham,
+  the pass rate is:
+  - 0.005 with world noise only on N2, or 0.22 at the lower SD bound;
+  - 0.17 if N2 carries the nulls' graph spread, or 0.34 at the lower SD bound.
+- **The u needed for 80%** is +0.014 to +0.019 at the point SD. N2 would then have to do better under sham than under
+  relief by about twice the nulls' gain.
+- **The selection bank adds context.** Over all 256 genomes, relief − sham averages +0.003, −0.0003 and −0.0007 per
+  graph. A scripted reader gains +0.96 from the bit (G1). Random brains barely use the bit at 0.25.
+- **These are scenario rates for B's rank part,** under a normal model fitted to three graphs. They are not B's power
+  (Astra).
+
+**The review:** run 20261019-154542, archived in `docs/reviews/20261019-03h-bpower/`. There was no consensus, and both
+said not to run as designed.
+- **Fable: "other".**
+  - Stop B as a confirmatory claim. A formal run would publish a near-certain "not established" that readers would
+    count against the memory thread.
+  - Optionally, a disclosed exploratory check at amplitudes 0.5 and 1.0 on the three pilot graphs, about 0.2
+    GPU-hours. If the decile shift stays under about one between-graph SD, close the ASK-bit relief and stop 03h. If
+    it nears two, a redesign round is justified. A relief through the food channel is the candidate.
+  - Switching to a test against the ensemble mean ignores the graph heterogeneity that the rank test respects: about
+    a fifth of null graphs would pass it.
+- **Astra: "redesign B".**
+  - The rank arithmetic is right, but three graphs cannot establish the tail. The √3 noise conversion is unjustified,
+    and "harm" was the wrong word, since U compares relief with sham, not with level.
+  - Test Δ = U_N2 − mean U over the ensemble, by the conditional intervals, with the rank as a secondary. This needs
+    a dated, owner-approved amendment before fresh data. It must not be read as N2 being exceptional among graphs.
+  - Astra would not stop on the claim that random brains cannot respond.
+
+**Taken:** in `b_power.py`, Fable's second reading of N2's noise, and Astra's wording ("better under sham", "scenario
+rates, not B's power").
+
+**The decision is the owner's** (a change of scientific direction). The formal run and the pre-registration are on
+hold until the owner chooses.
+
+**Gate:** the hygiene tests passed (a development record, a review archive and DECISIONS only; no library code changed).

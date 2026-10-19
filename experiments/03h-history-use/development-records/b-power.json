@@ -1,0 +1,108 @@
+{
+  "source": "experiments/03h-history-use/pilot/pilot.json",
+  "source_sha256": "10df96609d5afa53c8338511360024e24afa65ab3bdfc8c80e2358c5ef0d27cc",
+  "model": {
+    "null_mean_U": -0.007740297235357445,
+    "null_sd_U": {
+      "point": 0.01016818005922496,
+      "lower_90": 0.005874781641697788,
+      "upper_90": 0.04489654606225324
+    },
+    "n2_se": 0.0028108659303197987,
+    "n_null": 64,
+    "max_above": 2,
+    "sims": 200000,
+    "seed": 3670000
+  },
+  "u": {
+    "N2 like the nulls": -0.007740297235357445,
+    "N2 gains half": -0.0038701486176787223,
+    "N2 gains nothing": 0.0,
+    "N2 better under sham by the nulls' gain": 0.007740297235357445,
+    "N2 better under sham by twice the nulls' gain": 0.01548059447071489
+  },
+  "pass_rate": {
+    "world_noise_only": {
+      "point": {
+        "N2 like the nulls": 0.0,
+        "N2 gains half": 0.00014,
+        "N2 gains nothing": 0.004705,
+        "N2 better under sham by the nulls' gain": 0.28693,
+        "N2 better under sham by twice the nulls' gain": 0.91176
+      },
+      "lower_90": {
+        "N2 like the nulls": 0.000605,
+        "N2 gains half": 0.023435,
+        "N2 gains nothing": 0.22037,
+        "N2 better under sham by the nulls' gain": 0.94456,
+        "N2 better under sham by twice the nulls' gain": 0.99997
+      },
+      "upper_90": {
+        "N2 like the nulls": 0.0,
+        "N2 gains half": 0.0,
+        "N2 gains nothing": 0.0,
+        "N2 better under sham by the nulls' gain": 0.0,
+        "N2 better under sham by twice the nulls' gain": 0.0
+      }
+    },
+    "graph_spread": {
+      "point": {
+        "N2 like the nulls": 0.04628,
+        "N2 gains half": 0.093635,
+        "N2 gains nothing": 0.16982,
+        "N2 better under sham by the nulls' gain": 0.41361,
+        "N2 better under sham by twice the nulls' gain": 0.69504
+      },
+      "lower_90": {
+        "N2 like the nulls": 0.04585,
+        "N2 gains half": 0.1471,
+        "N2 gains nothing": 0.339685,
+        "N2 better under sham by the nulls' gain": 0.804125,
+        "N2 better under sham by twice the nulls' gain": 0.983035
+      },
+      "upper_90": {
+        "N2 like the nulls": 0.04595,
+        "N2 gains half": 0.054865,
+        "N2 gains nothing": 0.06473,
+        "N2 better under sham by the nulls' gain": 0.08881,
+        "N2 better under sham by twice the nulls' gain": 0.117995
+      }
+    }
+  },
+  "u_for_80pct_power": {
+    "world_noise_only": {
+      "point": 0.013759702764642535,
+      "lower_90": 0.005259702764642544,
+      "upper_90": 0.08125970276464248
+    },
+    "graph_spread": {
+      "point": 0.01925970276464253,
+      "lower_90": 0.007759702764642541,
+      "upper_90": 0.11025970276464245
+    }
+  },
+  "decile_shift_mean": 0.007740297235357445,
+  "selection_bank_relief_minus_sham": {
+    "arrays_sha256": "e9cf3c3233213efab5770717d0623c104976cf563069aae0199f00c9014dd12c",
+    "per_graph": {
+      "pilotSH-mirror-ASK-3660001": {
+        "all_genomes_mean": 0.0028426088611013256,
+        "all_genomes_sd": 0.019539307782032327,
+        "level_decile_mean": 0.01127995650928754,
+        "decile_overlap_relief_sham": 23
+      },
+      "pilotSH-mirror-ASK-3660002": {
+        "all_genomes_mean": -0.00034934723225887865,
+        "all_genomes_sd": 0.0184743016814149,
+        "level_decile_mean": 0.0028200456156180454,
+        "decile_overlap_relief_sham": 25
+      },
+      "pilotSH-mirror-ASK-3660003": {
+        "all_genomes_mean": -0.0006766821825294755,
+        "all_genomes_sd": 0.009751472876337116,
+        "level_decile_mean": 0.0022550304062091387,
+        "decile_overlap_relief_sham": 25
+      }
+    }
+  }
+}
