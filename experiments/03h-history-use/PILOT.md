@@ -1,6 +1,7 @@
-# 03h: the pilot's registration (draft, for review; DESIGN.md v3.2 §7.3)
+# 03h: the pilot's registration (draft, for review; DESIGN.md v3.3 §7.3)
 
-**Status:** draft 1, 2026-10-19. Not bound.
+**Status:** draft 2, 2026-10-19. Not bound. Draft 2 follows design v3.3 (D330): B is the only registered claim,
+the manipulation rule keys on the decile shift, and the power rule is reported.
 - **Before any registered gate or pilot stage runs,** this registration is reviewed by both, bound (committed, its hash
   recorded) and pushed.
 - **The owner's GPU word** was given on 2026-10-19 ("you have my go ahead for the gpu I'm not using it now"). It covers
@@ -135,18 +136,21 @@ var_residual / 16), averaged over the 3 graphs.
   (one resample applied to every graph and condition, with ρ recomputed; seed 3 623 000).
 - **SE** = sqrt(s_graph² / 64 + s_shared²).
 - **Power** = 1 − Φ(1.96 − 2 × 0.05 / SE).
-- If the power is below 0.8, 03h stops for redesign.
+- The power is computed and reported. It concerns A2, which is now a secondary, so it is not a stop (DESIGN §13).
+- Also reported, for B: each pilot graph's U = T_sham − T_relief, its between-graph SD, and the shared-world SE of
+  the mean U from 2 000 resamples of the test worlds (Fable).
 
 ### 5.4 The manipulation (Fable)
 
 - **The decile shift:** per graph, the selected decile's test-bank mean under relief minus under sham. Its mean over
   the 3 graphs has a 95% interval from a shared bootstrap of the 64 test worlds.
-- **The turn response:** per graph, the mean over its 256 genomes of |the bit's turn response| (§4). It reads as
-  moved if it is at least 0.02, on the motor turn read-out's [−1, 1] scale, in at least 2 of the 3 graphs.
-- **If neither moves** (the shift's interval contains 0, and the turn response is below 0.02 in at least 2 graphs):
+- **The turn response** (a diagnostic, not a rule): per graph, the mean over its 256 genomes of |the bit's turn
+  response| (§4).
+- **If the decile shift does not move** (its 95% interval contains 0 or lies below it):
   - the amplitude becomes 0.5, once;
   - P reruns as P′ with the same graphs, genomes and worlds;
-  - if neither moves at 0.5 either, 03h stops for redesign.
+  - if the shift does not move above 0 at 0.5 either, 03h stops for redesign: B could not be read (DESIGN §13;
+    Fable).
 
 ### 5.5 Timing
 

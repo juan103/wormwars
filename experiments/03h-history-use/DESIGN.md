@@ -1,6 +1,6 @@
-# 03h: does the history random brains hold predict how well they forage? Design v3.2 (draft, for review)
+# 03h: does the history random brains hold predict how well they forage? Design v3.3
 
-**Status:** design v3.2, 2026-10-18. Not coded, not run.
+**Status:** design v3.3, 2026-10-19. Not coded, not run.
 - **Review rounds:**
   - round 1 reviewed v1 (`de22cc4`, D321-D322; run 20261018-152829);
   - round 2 reviewed v2 (`e0efdd8`; run 20261018-154121). Both said "revise" and accepted the task change and the
@@ -9,6 +9,9 @@
 - **Round 3 reviewed v3** (`0ddf41f`; run 20261018-155410). Fable said "ready for code and the pilot's registration,
   with small fixes"; Astra said "revise", with one blocking point (B's inference). v3.1 takes every finding (§11;
   D324).
+- **v3.3** (D330): after step 0 (D329), the owner chose B as the only registered claim, with A kept as a
+  pre-specified secondary (Fable's proposal; Astra called it defensible). This was decided after seeing step 0, which
+  bears on A only, and before any B data. §13 lists the changes.
 - **v3.1 was confirmed** (run 20261018-160748). Fable said "ready for code and the pilot's registration"; Astra said
   "revise" only for the power rule. v3.2 makes their fixes (§12; D325).
 - **GPU:** any GPU work, step 0 and the pilot included, needs the owner's word.
@@ -460,3 +463,35 @@ not in this design, and it does not block 03h.
 - **The label "head start"** says "for this genome draw" (Fable).
 - **The budget's cut order** keeps the pilot-selected W (Astra 2).
 - **Rule 7's CUDA check** runs inside `replay_mode()` (Fable 6, Astra 3).
+
+## 13. Changes in v3.3 (after step 0; the owner's choice, 2026-10-19; D330)
+
+These amend §6 and the pilot's rules. The text above is kept as agreed.
+
+**The registered claim is B alone, at α = 0.05** (no Holm family).
+- At 64 graphs, B passes if at most two null graphs have U at or above N2's (3/65 = 0.046), not one, which held under
+  Holm when A failed (Fable).
+- The gate to stage C is B's label at 0.05.
+
+**A becomes a pre-specified secondary, outside the gate:**
+- A1, A2, H_dir and every reading of §6 A are measured and reported as written;
+- their wordings are fixed in advance;
+- a failure of A reads "A's positive criterion was not met", with each component's estimate and interval. It is not
+  "history is useless" (Astra);
+- an affirmative "negligible association" would need its own margin and rule, and is not claimed.
+
+**B's label is conditional on the manipulation's sign** (Fable):
+- "head start larger when memory is needed" requires, besides the rank p and N2's level advantage, that the ensemble's
+  mean decile shift (relief − sham) is above 0 by its 95% interval;
+- otherwise B reads "not interpretable: the relief did not improve the null graphs' selected deciles".
+
+**The pilot's manipulation rule** (PILOT.md §5.4) keys on the decile shift: the amplitude doubles once, and 03h stops,
+on the shift alone. The bit's turn response is a diagnostic (Fable).
+
+**The power rule** (§7.7, PILOT.md §5.3) concerns A2, so it is computed and reported, not a stop (Fable, Astra).
+s_graph keeps the observed 0.060 as the floor (Astra).
+
+**The pilot also reports** the per-graph U and its between-graph SD, against the shared-world SE, so that B's rank
+test can be read (Fable).
+
+**§9's attainable ranks:** B passes at rank ≤ 3 of 65 (at most two nulls at or above N2).

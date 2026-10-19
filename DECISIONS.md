@@ -10241,3 +10241,54 @@ with H = |raw-turn final difference| and S = |raw-turn steady contrast| measured
   nothing by the registered rules.
 - **Whether to continue to the pilot and the formal run as designed, or to change course, was decided after seeing
   this.** It is a direction question, so it goes to both reviewers and then to the owner.
+
+## D330 — After step 0: the owner makes B 03h's only registered claim (A secondary); D329 corrected; step 0b specified
+
+**The direction round:** run 20261019-014242, both at xhigh effort, archived in
+`docs/reviews/20261019-03h-direction/`. Neither reviewer recommended stopping.
+- **Fable:** continue to the pilot with B as the only Holm claim, keep A's read-outs as pre-specified secondaries
+  outside the gate, run step 0b's cheap read-outs, and fix two defects in B.
+- **Astra:** prefers keeping A and B under Holm, but calls B as the only primary, with A secondary, "scientifically
+  defensible" if disclosed as decided after step 0.
+- **The arithmetic both gave:** if A stays in the family and fails, B needs N2 first of 65 graphs (p = 1/65). B alone at
+  0.05 allows two null graphs above N2 (p = 3/65).
+
+**The owner's choice** (2026-10-19, asked with both positions): "B primary, A secondary". It was decided after step 0,
+which bears on A only, and before any B data. Design v3.3 §13 records it:
+- **The claim:** B is the only registered claim, at α = 0.05, and the gate to stage C is B's label.
+- **A:** a pre-specified secondary. A failure reads "A's positive criterion was not met", with its components (Astra).
+- **B's label requires the relief to help:** the ensemble's mean decile shift, relief − sham, above 0 by its 95%
+  interval. Otherwise B is "not interpretable" (Fable).
+- **The pilot's amplitude rule keys on the decile shift.** The turn response is a diagnostic (Fable).
+- **The power rule is reported, not a stop,** since it concerns A2.
+- **The pilot reports each graph's U,** with its between-graph and shared-world spreads (Fable).
+- PILOT.md draft 2 follows.
+
+**Corrections to D329** (2026-10-19; Fable, Astra):
+- *Its title said "history does not predict T1 fitness".* The measurement supports a near-zero mean partial Spearman
+  association of this H, given S, in these SH samples, nothing broader.
+- *It said "between-graph SD 0.060, so an SE of the mean of 0.015".* That SE is conditional on the 16 shared worlds. It
+  leaves out the uncertainty of drawing other worlds (Astra).
+- *It said the spread "is consistent with no link in any graph rather than a link that varies".* The observed spread
+  does not itself demonstrate between-graph heterogeneity, and 16 graphs cannot exclude small heterogeneity (Fable,
+  Astra).
+- *It said "(−0.079 to +0.069)" beside a mean, as if an interval.* That is the per-graph range (Fable).
+- *It said "03's genomes and graphs are reproduced exactly".* The verification ran on `pilotSH101`. It reproduces that
+  graph exactly in both modes, and supports the recipe for the other fifteen (Astra).
+- *It said "B is untouched".* A's expected failure would have changed B's threshold under Holm, which is what the
+  direction question turned on (Fable).
+
+**Step 0b, specified before it runs** (exploratory; Fable 3; Astra: fix the full set first, report every result,
+re-pick nothing):
+- **The genomes:** 03's 16 pilot SH graphs × 256 fitness genomes, by step 0's verified recipe, in `replay_mode()`.
+- **The read-outs, all reported:**
+  1. the partial Spearman of H_dir with fitness, given S. H_dir is |motor turn after the falling history| − |motor
+     turn after the rising history|, at the final tick;
+  2. the plain Spearman of H with fitness;
+  3. the plain Spearman of S with fitness, for responsiveness: if S predicts fitness, N2's head start may be
+     responsiveness rather than memory (Fable);
+  4. the partial Spearman of |motor-turn final difference| with fitness, given |motor-turn steady contrast|;
+  5. the partial Spearman of |raw-forward final difference| with fitness, given |raw-forward steady contrast|.
+- **Each is reported** per graph, with its mean, between-graph SD and the count of positive graphs.
+- None of it sets a primary, a threshold or a rule.
+- N2's own association is not measured: 03's per-genome N2 measurements are local and drew separate genomes (both).
