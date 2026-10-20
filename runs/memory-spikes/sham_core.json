@@ -1,0 +1,56 @@
+{
+ "sham300": {
+  "kept_all": 0.2721329338055026,
+  "kept_core_internal": 0.592964824120603,
+  "kept_core_boundary": 0.29028132992327366,
+  "kept_rest": 0.24312267657992565,
+  "kept_triangle_edges": 0.28334287349742415,
+  "kept_other_edges": 0.05084745762711865,
+  "core_internal_edges_after": 199
+ },
+ "sham301": {
+  "kept_all": 0.2729501498229365,
+  "kept_core_internal": 0.5778894472361809,
+  "kept_core_boundary": 0.2928388746803069,
+  "kept_rest": 0.24460966542750928,
+  "kept_triangle_edges": 0.28362907842014884,
+  "kept_other_edges": 0.062146892655367235,
+  "core_internal_edges_after": 183
+ },
+ "sham302": {
+  "kept_all": 0.2721329338055026,
+  "kept_core_internal": 0.5829145728643216,
+  "kept_core_boundary": 0.2966751918158568,
+  "kept_rest": 0.24200743494423793,
+  "kept_triangle_edges": 0.28334287349742415,
+  "kept_other_edges": 0.05084745762711865,
+  "core_internal_edges_after": 201
+ },
+ "free400": {
+  "kept_all": 0.2696812857532008,
+  "kept_core_internal": 0.3165829145728643,
+  "kept_core_boundary": 0.309462915601023,
+  "kept_rest": 0.25464684014869887,
+  "kept_triangle_edges": 0.27389811104751,
+  "kept_other_edges": 0.1864406779661017,
+  "core_internal_edges_after": 123
+ },
+ "free401": {
+  "kept_all": 0.271043312448924,
+  "kept_core_internal": 0.36180904522613067,
+  "kept_core_boundary": 0.30179028132992325,
+  "kept_rest": 0.2553903345724907,
+  "kept_triangle_edges": 0.27475672581568406,
+  "kept_other_edges": 0.1977401129943503,
+  "core_internal_edges_after": 111
+ },
+ "free402": {
+  "kept_all": 0.2721329338055026,
+  "kept_core_internal": 0.271356783919598,
+  "kept_core_boundary": 0.2749360613810742,
+  "kept_rest": 0.27137546468401486,
+  "kept_triangle_edges": 0.2707498568975386,
+  "kept_other_edges": 0.2994350282485876,
+  "core_internal_edges_after": 99
+ }
+}

@@ -10896,3 +10896,75 @@ costs time.
 **Publication:** 03h goes to `main` (D342) once all three jobs are green on `roadmap`.
 
 **Gate:** the hygiene tests passed (pytest rc 0).
+
+## D345 — CI: the amplitude check's retry test no longer depends on the runner's speed
+
+**What happened:** with D344's split, all three CI parts ran to the end (run 39348303411): `cpu (fast)` and
+`cpu (slow)` passed, and `cpu (slow-03h)` took 1 h 43 min with one failure.
+`tests/test_e03h_amplitude.py::test_a_failed_attempt_is_kept_beside_the_retry` stopped with "the amplitude check's own
+budget of 0.3 h is reached". The check's own budget counts every recorded attempt. On GitHub's runners the module
+fixture's smoke run alone took about 20 minutes (setup 1184 s), so the retry was refused before it started. Locally the
+same runs take a few minutes, which is why the test passed here. The budget behaves as designed; the test assumed a fast
+machine.
+
+**The change** (`tests/test_e03h_amplitude.py`): before the retry, the test raises the check's own budget with
+`monkeypatch`. The budget's refusal stays tested by `test_its_own_budget_refuses_before_the_record_moves`.
+`scripts/e03h_amplitude.py` and `scripts/e03h.py` are not changed.
+
+**Rule 9:** the failing run is GitHub's (log in `runs/ci-d344-slow03h-log.txt`, local only); the fixed file passes
+locally.
+
+**Gate:** the amplitude tests passed locally, 12 of 12. The same run's one failure was the hygiene check on D346's new
+spike scripts (`np.load` without `allow_pickle=False`); after that fix the hygiene tests passed (pytest rc 0).
+
+## D346 — The memory question: a three-round brainstorm, exploratory CPU checks, and a roadmap agreed by both
+
+**The owner's request** (2026-10-20): explain why the history difference decays more slowly in N2's random brains
+(03mc's Q-D). Use a new kind of ceremony beside the reviews: a blind, divergent round with "a bit of crazy" ideas, then
+building, then a critical, honest selection. Claude is the master of ceremonies; the owner contributed three ideas (ring
+attractors, waves trapped in loops, transplanting) and a roadmap written by ChatGPT. The owner then left it to Claude
+("come back with a new roadmap to answer the question about the memory").
+
+**The ceremony,** archived in `docs/reviews/`:
+- `20261020-memory-diverge/`: round 1, blind. Claude's 13 ideas were written before the consult started. Fable gave
+  17, Astra 18. The owner's ideas are archived beside them. The ChatGPT document the owner supplied
+  (`chatgpt.roadmap.md`) stays local until the owner agrees to publish it, because the repository is public; the
+  prompts and reviews that cite it are archived as they were.
+- `20261020-memory-build/`: round 2. Families, hybrids, and the discriminating experiments.
+- `20261020-memory-select/`:
+  - round 3: Astra advocated the dynamical families, Fable the structural ones, and Claude's selection was written
+    before either answer;
+  - the two-round review of the roadmap: draft 1 (archived verbatim), with both reviewers at "revise"; then draft
+    2, which both agreed to with small fixes.
+
+**The checks** (exploratory; CPU; fresh panels or 03mc's committed records; `scripts/memory_spikes/`, with a
+README; outputs in `runs/memory-spikes/`): eight batches, plus checks of mixture, structure, the core's surviving
+edges and 03mc's settled census. Their reading is in the roadmap's "What the ceremony found".
+- **Corrections made on the way, before any publication:**
+  - **substeps:** Claude told the owner that batch 1 ran "2× or 4× finer" integration. T1 already runs 32 substeps, so
+    batch 1 compared 16 with 32 (Fable).
+  - **the extrapolation (0.438):** it was quoted from a run whose saved output lacked it. `check_structure.txt` was
+    regenerated from the script (Astra).
+  - **batch 8:** Claude's first reading, "a latch, a flip-flop", was too strong. The Jacobians are at relaxing
+    states, not fixed points. 03mc's census shows that null graphs settle too: 3 to 7 of 128 per ensemble reach N2's
+    count (Fable, Astra).
+
+**The roadmap:** `docs/memory/MEMORY-ROADMAP.md` (draft 2.1). In brief:
+- N2's lead is in the amplitude-weighted share, not in the typical genome;
+- a minority of brains in N2 and in the nulls may hold the history in separate states;
+- a head core around the turn read-out preserves most of the lead in an otherwise shuffled graph, conditionally;
+- steps M1 to M4 are exploratory, on the CPU;
+- M5 is the owner's transplant, pre-registered, with the GPU only on the owner's word.
+
+`ROADMAP.md` gets a status entry and a pointer from "The thread worth following: memory".
+
+**Who caught what:** in round 3, Fable found the substeps baseline and the sampler conventions, and Astra the missing
+extrapolation output and the voltage-against-tanh forecast. In the roadmap review, Fable found the settled census and
+the unarchived draft 1. Astra found the fixed-point and settling-rule objections. The full lists are in the archived
+reviews.
+
+**Compute:** CPU only, about 3 hours in total. No GPU.
+
+**Next:** M1, when the owner wants it run. Nothing in it needs the GPU.
+
+**Gate:** the hygiene tests passed (pytest rc 0).

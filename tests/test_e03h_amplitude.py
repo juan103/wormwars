@@ -125,6 +125,9 @@ def test_a_failed_attempt_is_kept_beside_the_retry(run, monkeypatch):
     k = max(int(f.stem.split("attempt")[1]) for f in rec.glob("amplitude-check.attempt*.json"))
     assert json.loads((rec / f"amplitude-check.attempt{k}.json").read_text(encoding="utf-8"))["status"] == "completed"
     monkeypatch.undo()
+    # the module fixture's smoke run counts against the check's own 0.3-h budget; on GitHub's slower runners it alone
+    # reached the budget, so the retry was refused (D345). The budget is tested above; here it must not interfere.
+    monkeypatch.setattr(A, "OWN_CAP_HOURS", 1e6)
     assert A.main(["--smoke"])["status"] == "completed"
     assert json.loads((rec / f"amplitude-check.attempt{k + 1}.json").read_text(encoding="utf-8"))["status"] == "failed"
 

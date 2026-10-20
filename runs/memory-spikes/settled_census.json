@@ -1,0 +1,47 @@
+{
+ "N2": {
+  "settled_and_remaining": 26,
+  "eligible": 1977,
+  "share30": 0.4361605395316749
+ },
+ "SH-route": {
+  "graphs": 128,
+  "median": 0.0,
+  "graphs_at_or_above_N2": 3,
+  "graphs_with_any": 54,
+  "max": 28,
+  "spearman_settled_vs_share30": 0.3985043780879403
+ },
+ "SH-class": {
+  "graphs": 128,
+  "median": 0.0,
+  "graphs_at_or_above_N2": 7,
+  "graphs_with_any": 56,
+  "max": 113,
+  "spearman_settled_vs_share30": 0.46265993132909705
+ },
+ "SH-mirror": {
+  "graphs": 128,
+  "median": 0.0,
+  "graphs_at_or_above_N2": 4,
+  "graphs_with_any": 50,
+  "max": 81,
+  "spearman_settled_vs_share30": 0.4776645290263345
+ },
+ "SH-recip": {
+  "graphs": 128,
+  "median": 1.0,
+  "graphs_at_or_above_N2": 4,
+  "graphs_with_any": 84,
+  "max": 126,
+  "spearman_settled_vs_share30": 0.4465540708660007
+ },
+ "SH": {
+  "graphs": 128,
+  "median": 0.0,
+  "graphs_at_or_above_N2": 3,
+  "graphs_with_any": 34,
+  "max": 41,
+  "spearman_settled_vs_share30": 0.355178367727192
+ }
+}

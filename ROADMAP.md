@@ -2,7 +2,25 @@
 
 *27 September 2026. Replaces v2. Written from roadmap v2, Astra 6's review of v2, and Claude Code's status report of the same day. A local v2.2 exists on the `roadmap` branch and was not seen when this version was written, so merge anything it adds. (Merged: see "Carried over from v2.2" below. Four factual corrections were made on installation; they are listed in D062.) This is a living document, not a pre-registration. When a result changes it, the change is recorded here with the reason.*
 
-## Status, 1-19 October 2026 (updates the section below; that section's later edits are recorded in DECISIONS.md)
+## Status, 1-20 October 2026 (updates the section below; that section's later edits are recorded in DECISIONS.md)
+
+**20 October 2026** (D346): **a roadmap for the memory question** ([`docs/memory/MEMORY-ROADMAP.md`](docs/memory/MEMORY-ROADMAP.md)).
+- **The question:** why the history difference decays more slowly in N2's random brains (03mc's Q-D).
+- **How it was answered:** the owner asked for a new kind of ceremony beside the reviews: a blind, divergent round,
+  then building on each other's ideas, then an honest selection, with Claude as master of ceremonies and Astra and
+  Fable as the other voices. Exploratory CPU checks ran between the rounds. The roadmap was reviewed twice by both and
+  agreed. Everything is archived in `docs/reviews/20261020-memory-*`.
+- **What it found, exploratory:**
+  - N2's lead is in the amplitude-weighted share, not in the typical genome;
+  - a minority of brains in N2 and in the nulls may hold the history in separate states, and N2 has more of them
+    than most null graphs;
+  - a head core around the turn read-out (RIA, RIM, AIB, AIZ, RMD, SMD and others) preserves most of the lead in an
+    otherwise shuffled graph, conditionally. Triangle counts as such do not.
+- **The plan:** accounting, amplitude and cheap kills (M1); a validated dynamical census (M2); a core defined from
+  the anatomy alone (M3); write, hold and read, separated, with a transplant screen (M4). All exploratory, on the CPU.
+  Then the owner's transplant, pre-registered (M5).
+- **Next:** M1, when the owner wants it. It needs no GPU.
+
 
 **19 October 2026** (D321-D342): **03h stopped before its pre-registration; exploratory**
 (`experiments/03h-history-use/`, RESULTS.md). It was the memory thread's first design: does the history random brains
@@ -362,6 +380,10 @@ Several results point the same way:
 **Hypothesis.** N2 starts with more capacity to hold recent history. Evolution then builds such memory into every graph, which would explain why N2's early advantages fade.
 
 **Status.** 03r tested the first link, and it replicated (D080). So, the testable predictions include these: N2's early advantage should be larger on tasks that require memory than on tasks that do not; it should shrink over generations; and the history effect should localise to identifiable circuitry.
+
+*20 October 2026 (D346): why N2's history lasts longer in unevolved brains now has its own exploratory roadmap,
+[`docs/memory/MEMORY-ROADMAP.md`](docs/memory/MEMORY-ROADMAP.md). Its first checks point at a head circuit around the
+turn read-out, which bears on the third prediction.*
 
 ## Two tracks, one priority
 
