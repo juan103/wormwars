@@ -10873,3 +10873,26 @@ pipeline between the two 03h test files would save only a few minutes.
 **Publication:** 03h goes to `main` (D342) once both jobs are green on `roadmap`.
 
 **Gate:** the hygiene tests passed (pytest rc 0).
+
+## D344 — CI: 03h's slow tests get a job of their own; verbose, unbuffered output
+
+**What happened:** D343's split ran on `roadmap` (run 39333416654). `cpu (fast)` passed in 25 minutes; `cpu (slow)` was
+cancelled at its 120-minute timeout with no test output at all, because pytest's output was buffered when the job was
+killed. The slow tests' cost grew at D338, when the amplitude check's tests were added: locally, on a CPU shared with
+other work, that file alone took 14 minutes (its module fixture 536 s, the retry test 310 s), and GitHub's runners are
+slower. A hang is not ruled out by this; the new output settings will show it if there is one.
+
+**The change** (`.github/workflows/tests.yml`): the slow job becomes two, so the matrix has three parts:
+- `cpu (fast)`: `tests -m "not gpu and not slow"`, as before;
+- `cpu (slow)`: `tests --ignore-glob=tests/test_e03h_* -m "slow and not gpu"` (4 files, 10 tests);
+- `cpu (slow-03h)`: `tests/test_e03h_*.py -m "slow and not gpu"` (4 files, 36 tests).
+
+The two slow parts collect 46 tests together, the same 46 as D343's slow job. Every part now runs with
+`PYTHONUNBUFFERED=1`, `-v` and `--durations=25`, so that a timeout shows which test was running and a pass shows what
+costs time.
+
+**Not changed:** the tests, and `scripts/e03h.py`.
+
+**Publication:** 03h goes to `main` (D342) once all three jobs are green on `roadmap`.
+
+**Gate:** the hygiene tests passed (pytest rc 0).

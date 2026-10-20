@@ -2,8 +2,9 @@
 # The connectome is downloaded from its source and hash-checked at run time by
 # scripts/fetch_connectome.py; it is never committed or cached here (AGENTS.md rule 1).
 # GPU tests (marker `gpu`) need CUDA and are not run.
-# The `slow` tests run in a job of their own, in parallel with the rest: in one job the suite had grown past the
-# 90-minute timeout (D343).
+# The `slow` tests run in jobs of their own, in parallel with the rest: in one job the suite had grown past the
+# 90-minute timeout (D343). The slow job alone then passed 120 minutes, so 03h's slow tests have a job of their own,
+# and the output is unbuffered and verbose so that a timeout shows where it stopped (D344).
 name: tests
 
 on:
@@ -19,8 +20,9 @@ jobs:
       fail-fast: false
       matrix:
         part:
-          - {name: fast, markers: "not gpu and not slow"}
-          - {name: slow, markers: "slow and not gpu"}
+          - {name: fast, markers: "not gpu and not slow", paths: "tests"}
+          - {name: slow, markers: "slow and not gpu", paths: "tests --ignore-glob=tests/test_e03h_*"}
+          - {name: slow-03h, markers: "slow and not gpu", paths: "tests/test_e03h_*.py"}
     name: cpu (${{ matrix.part.name }})
     steps:
       - uses: actions/checkout@v4
@@ -38,4 +40,6 @@ jobs:
       - name: Fetch and hash-check the connectome
         run: python scripts/fetch_connectome.py
       - name: CPU tests
-        run: python -m pytest -m "${{ matrix.part.markers }}" -p no:cacheprovider
+        env:
+          PYTHONUNBUFFERED: "1"
+        run: python -m pytest ${{ matrix.part.paths }} -m "${{ matrix.part.markers }}" -p no:cacheprovider -v --durations=25
