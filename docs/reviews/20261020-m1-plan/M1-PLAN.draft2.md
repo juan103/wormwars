@@ -1,0 +1,189 @@
+# M1: accounting, amplitude and the cheap kills — the plan
+
+*Draft 2, 2026-10-20, after round 1 of review (both "revise"; draft 1 and the reviews are archived in
+[`docs/reviews/20261020-m1-plan/`](../reviews/20261020-m1-plan/)). Exploratory: nothing here is a pre-registration.
+This plan fixes the definitions, panels and decision rules before the analyses run, as
+[`MEMORY-ROADMAP.md`](MEMORY-ROADMAP.md) asks ("the definition of settling fixed in advance"; formulas "frozen before
+validation"). Anything changed after seeing data is labelled as such in the results. CPU only.*
+
+**Facts used in this draft, gathered without looking at any result:** a full-size fresh panel (1024 genomes, every
+arm) took 250 s on this machine; N2's two-step in-neighbourhood of the turn read-out holds 207 of 302 neurons, its
+one-step neighbourhood 84.
+
+## What M1 must decide
+
+- **D1, amplitude.** Does N2's lead in the share shrink to little when genomes are compared at matched amplitude across
+  graphs? If so, the focus moves to the size of the response.
+- **D2, alignment.** Does the change in alignment with the turn read-out account for most of N2's excess, rather than
+  the persistence of the activity difference? If so, the focus moves from a store to read-out geometry.
+
+Both are **accounting**, not mechanism (Astra): D1 cannot show that amplitude causes the lead, and D2 cannot exclude a
+store. A rule that fires points the next step; it proves nothing by itself. Each rule has three outcomes: it fires, it
+does not, or **inconclusive** (its uncertainty interval crosses the threshold, or its conditions are not met). An
+inconclusive rule changes nothing until a targeted replication (more graphs) resolves it.
+
+M1 also hands M2 the settling cohort's contribution to the excess, runs the round-3 cheap kills, and runs M3's anatomy
+predictors, frozen here.
+
+## Definitions (fixed)
+
+From 03mc ([`scripts/p4mc.py`](../../scripts/p4mc.py) lines 549-557, `REGISTERED`; `wormwars/exp03/twin.py`),
+unchanged:
+- **The history difference** of genome *i* at tick *t* of the follow-up: δy_i(t), the raw turn read-out of the rising
+  history minus the falling one. a_i = |δy_i(0)|, its value at the ramp's end.
+- **The share** at tick *t*: mean_i |δy_i(t)| / mean_i a_i over all genomes (03mc's, with its denominator floor 10⁻⁴).
+  The primary tick is 30; ticks 100 and 300 are secondary.
+- **Eligible:** a_i ≥ 10⁻³. **The eligible share:** the same ratio over eligible genomes. D1 and D2 use the
+  eligible share throughout, so that a contrast and its baseline are on one population; the ineligible genomes'
+  fractions of the numerator and denominator are reported beside it. **Per-genome retention:** r_i(t) = |δy_i(t)| / a_i.
+- **Remaining:** eligible and |δy_i(300)| > 0.1 a_i. **Settled:** the largest range of the voltage, over both
+  histories and every neuron, during ticks 291-300 of the follow-up, is below 10⁻⁴ (03mc's `_Range`). **The settling
+  cohort** is the genomes that are settled *and* remaining; "settled" alone is never used for it.
+- **Activity** a = tanh v. The raw turn read-out is cᵀa, with c = +1/4 on SMDDL, SMDDR, RMDDL, RMDDR and −1/4 on SMDVL,
+  SMDVR, RMDVL, RMDVR (`wormwars/exp03/measures.py` lines 82-88). So, exactly, |δy(t)| = ‖c‖ ‖δa(t)‖ |cos θ(t)|, where
+  θ is the angle between δa and c.
+- **The lead,** for any statistic X: X(N2) minus the median of X over the reference null graphs.
+- **Uncertainty** on the fresh panels: a bootstrap over graphs (within each ensemble) combined with a bootstrap over
+  genomes, the intervention arms of a genome always resampled together; 2000 resamples, 90% intervals. On 03mc's
+  arrays: N2's rank among the 128 graphs of each ensemble.
+
+## A. Accounting on 03mc's arrays (seconds)
+
+Inputs: `runs/p4mc/arrays/N2__long.npz` and the 640 `graph__<ensemble>-<id>__long.npz` (2048 genomes each, local), and
+`experiments/03mc-p4-confirm/measurements.json`; the script first checks that the arrays reproduce 03mc's committed
+shares and settling counts. For every quantity: N2's value, each ensemble's median and range, and N2's rank.
+
+- **A1, the decomposition** on eligible genomes: eligible share = E[r] + Cov(a, r) / E[a], with the population
+  covariance (exact). Overall, and within each amplitude stratum of A2.
+- **A2, amplitude standardisation.** **Strata:** the pooled eligible a_i of all 641 graphs, cut at the deciles, with
+  the top decile cut again at the 95th and 99th percentiles: 12 strata. **Common support:** a stratum is used only if
+  every one of the 641 graphs has at least 10 genomes in it; the strata dropped, and their share of each graph's
+  numerator, are reported. **Standardised share** of a graph: Σ_k π_k E[|δy(30)| | k] / Σ_k π_k E[a | k] over the
+  used strata, with π_k the pooled proportions. **Baseline:** the eligible share restricted to the same used strata.
+  **Balance:** per graph and stratum, E[a | k], so a mismatch inside a stratum is visible. Per-stratum shares, N2
+  against each ensemble.
+- **A3, overlap of contributors:** the fraction of the top 10% of eligible genomes by |δy(300)| that are also in the
+  top 10% by |δy(30)|.
+- **A4, trimming:** the share at tick 30 after removing each graph's top 2% and top 5% of genomes by |δy(30)|.
+- **A5, the settling cohort's contribution:** C(t) = Σ_cohort |δy_i(t)| / Σ_eligible a_i, at ticks 30 and 300. Its
+  part of N2's lead is C_N2(t) − median C_G(t), beside the lead itself. The share with the cohort removed is reported
+  as a description only. This is M1's estimate for M2.
+
+## B. Fresh CPU panels
+
+**Graphs.** N2, and **6 graphs per ensemble sampled at random from all 128** (30), with
+`numpy.random.default_rng(20261020)`. Separately, **the selected graphs**: per ensemble, the one with the highest 03mc
+tick-30 share and the one with the most genomes in the settling cohort (the next by count if they coincide); 10 in all.
+A selected graph may also be drawn at random; it is then simulated once and counted in both roles. The reference null
+graphs for every summary and rule are the 30 random ones; the selected ones are reported beside them, never pooled.
+
+**Genomes.** 1024 per graph, `Genome.random` with seed 7600 (fresh; CPU genomes are not 03mc's CUDA genomes). N2 also
+gets a second panel, seed 7700. With 1024 genomes N2 should have about 13 genomes in the settling cohort and most null
+graphs none (03mc's rates), so B2 is a few-genome proxy; A5 carries M1's estimate (Fable).
+
+**The probe** is 03mc's: a warm-up of 100 ticks at 0.25× or 1.75× the final food level, a 10-tick ramp, and a 300-tick
+follow-up at the final level, with T1's 32 substeps, in `scripts/memory_m1/` (it reuses `scripts/memory_spikes/
+spikes.py` for the graphs, genomes, input and read-out, not that file's summary). It records δy, δv and δa at ticks
+0, 10, 30, 100 and 300, and the settling range. The interventions at the ramp's end run as extra row pairs in one batch
+with a 30-tick follow-up; the intact pair runs again alone for 300 ticks. **Check:** the intact pair's tick-0 and
+tick-30 differences must agree between the two runs to 10⁻⁵, or the run stops. The scripts run inside
+`wormwars.accounting` (rule 8).
+
+- **B1, persistence against alignment (D2).** On eligible genomes, with s(t) the eligible share:
+  - **N(t)** = Σ ‖c‖ ‖δa_i(t)‖ |cos θ_i(0)| / Σ a_i: the share if each genome's alignment stayed as at tick 0;
+  - **A′(t)** = Σ ‖c‖ ‖δa_i(0)‖ |cos θ_i(t)| / Σ a_i: the share if each genome's activity norm stayed as at tick 0.
+
+  Two exact splits of log s: log N + log(s/N), and log A′ + log(s/A′). Against the reference, with s_ref = the median
+  s of the 30 random graphs and N_ref, A′_ref their medians, the **total contrast** is T = log(s_N2/s_ref) and the
+  **alignment part** is P₁ = log(s_N2/N_N2) − log(s_ref/N_ref) under the first split and P₂ = log(A′_N2/A′_ref) under
+  the second. Reported at ticks 30 and 100, overall and per ensemble, and on the top quartile of a; also the
+  per-genome medians of the norm ratio and the alignment ratio, descriptively.
+- **B2, settling on the fresh panels:** the cohort's size and C(30), as A5.
+- **B3, the amplitude arm (D1).** At the ramp's end each pair is also continued with its difference scaled about the
+  midpoint, v± ← m + k(v± − m), k ∈ {0.25, 0.5, 2} (k = 1 is the intact arm), on N2 (both panels) and the 30 random
+  graphs, 30 ticks. Reported per k: the actual ‖δv(0)‖, ‖δa(0)‖ and a, and the share at tick 30; and the median
+  within-genome ratio r(k = 2)/r(k = 0.5). **The pooled population** of a graph: its eligible genomes at all four k,
+  each (genome, k) counted once, so every k has equal weight. A2's standardisation is applied to it, with strata cut
+  at the pooled deciles (top decile split at 95 and 99) of N2's two panels and the 30 graphs, and the same common
+  support rule (at least 10 per graph and stratum). Beside it, the same standardisation on ‖δa(0)‖ instead of a,
+  because a mixes the size of the state difference with its alignment (Fable); D1 uses a, to match A2.
+- **B4, the cheap kills** (N2 and the 30 random graphs unless stated). Each reads only on its own diagnostic: a
+  failed kill rejects that test of the idea, not the idea (Astra).
+  - **Complement erasure:** at the ramp's end, every neuron outside a set is set to its two rows' midpoint; the share
+    at tick 30 over the intact a. Two sets: batch 6's `top30_start` (the 30 neurons with the largest mean difference
+    at the ramp's end in N2, `batch6.py` lines 73-74; result-defined, labelled so) and the anatomy core of C3. The
+    erasure of each set itself runs beside it.
+  - **The gap dissipation ratio:** δvᵀ L_G δv / ‖δv‖², with L_G the graph's gap Laplacian (the gap weights are the
+    same for every genome of a graph), at ticks 0 and 30. It ignores the time constants, so the τ-weighted version
+    δvᵀ T⁻¹ L_G δv / δvᵀ T⁻¹ δv, with T = diag(τ), is reported beside it. Median and a-weighted mean. Fable's test:
+    if N2's a-weighted ratio at tick 30 is not below the median of the nulls under both versions, this test finds no
+    support for the gap-geometry idea's strong form.
+  - **The left-right antisymmetric share:** over the 99 mirror pairs, Σ (δv_L − δv_R)²/2 over Σ (δv_L² + δv_R²), at
+    ticks 0 and 30; and the antisymmetric part's retention, ‖δv_anti(30)‖ / ‖δv_anti(0)‖, a-weighted, against the
+    same for the paired neurons' whole difference. Fable's test: an a-weighted share under 10% at tick 30 and an
+    antisymmetric retention in N2 no higher than the nulls' median: the bilateral idea finds no support here.
+  - **The equal-tau control:** the same genomes with each genome's taus all set to its geometric mean; the share at
+    tick 30. The lead **survives** if the equal-tau lead is at least half the intact lead. This tests the taus'
+    heterogeneity only, not every time-constant explanation (Astra). The tau-permutation arm is **dropped as a kill**:
+    taus are drawn independently of the weights (`brain.py` lines 235-239), so permuting them draws from the same
+    distribution and N2's lead would survive by construction (Fable). It runs on N2 and one graph per ensemble only as
+    a per-genome diagnostic: the correlation of r_i(30) between intact and permuted genomes.
+  - **Growers and the forecast** (Fable): the midpoint Jacobian at the ramp's end (batch 3's method), on 512 genomes,
+    for N2 and one random graph per ensemble (6 panels). Reported: the fraction of eligible genomes whose linear state
+    norm grows over 10 ticks with spectral radius below 1, **and their part of the tick-30 numerator** (a minority can
+    carry the weighted signal, Astra); the same for output growers (r(30) > 1); and the Spearman between the forecast
+    and the observed r(30) without the radius-above-1 genomes. The forecast is made tanh-consistent: the read-out
+    vector is c ⊙ (1 − tanh²(m)), with m the midpoint at the ramp's end, and the forecast retention is
+    |c_mᵀ J³⁰ δv(0)| / a. Fable's test, on N2: growers with radius below 1 under 2% of genomes *and* under 10% of the
+    numerator: the transient-growth family finds no support in this one-direction, frozen-linearisation test.
+
+## C. M3's anatomy predictors (minutes; frozen here)
+
+For each of the 641 graphs, on the binary chemical adjacency without autapses (A[i, j] = 1 for an edge i → j); R is
+the 8 turn read-out neurons, S the 6 food sensors (AWAL, AWAR, AWCL, AWCR, ASEL, ASER).
+- **K.** Fable's fallback applies: N2's two-step in-neighbourhood of R holds 207 of 302 neurons, more than half, so K
+  is **R with its one-step chemical in-neighbours** (84 neurons in N2). The two-step versions are reported beside it,
+  labelled secondary. |K| is reported per graph.
+- **C1, local density** (Fable): edges inside K over |K|(|K| − 1). **C1′:** the same count over
+  Σ_{i,j∈K, i≠j} k_out(i) k_in(j) / E (E the graph's edge count). C1′ is a reference for a fixed set under a stub
+  model, not the exact expectation given how K was selected nor under the ensembles' constraints (Astra).
+- **C2, write-read walks** (Fable): w = 1_Sᵀ(A + A²), r = (A + A²) 1_R, C2 = log Σ_j w_j r_j: walks from S through j
+  into R of total length 2 to 4, where a length-3 walk is counted twice, once for each split.
+- **C3, the anatomy core** (for B4's complement erasure): N2's K ranked by degree inside K (in plus out), the top 30,
+  ties broken by name. Its overlap with batch 7's hub set and with `top30_start` is reported.
+
+Spearman correlations within each ensemble (128 graphs) between C1, C1′, C2, |K| and four outcomes from 03mc: the
+tick-30 share, the upper quartile of r(30), the settling cohort's size, and the growth fraction (r(30) > 1). Reported on
+all 128 and on the two halves by graph id; the halves are a stability check, not validation. **Validation is
+reserved:** any predictor revised after this is frozen and tested on freshly sampled graphs in M3. **No veto**
+(roadmap, M3). **Inspection** (roadmap, M3): for the top 5 graphs of each ensemble by share and by cohort size, their
+predictor values and the fraction of N2's chemical edges inside `top30_start` and inside C3 that each keeps.
+
+## Decision rules (fixed)
+
+- **D1** (on the eligible basis, same strata for contrast and baseline):
+  - f = (standardised share_N2 − median standardised share_ref) / (baseline share_N2 − median baseline share_ref).
+  - A2: computed per ensemble, against the 128 graphs of each. B3: against the 30 random graphs, on each N2 panel.
+  - **Conditions:** a positive baseline lead (N2's baseline share at least 10% above the reference median) in each
+    comparison; otherwise D1 is inconclusive for it.
+  - **Fires** ("most of the lead is accounted for by amplitude") if f < 0.25 in every ensemble on A2 and on both N2
+    panels on B3, with B3's 90% interval below 0.5. **Does not fire** if f > 0.75 in all of them. Anything else:
+    partial or inconclusive, reported with both numbers.
+- **D2** (at tick 30, eligible genomes, all 30 random graphs as the reference):
+  - **Conditions:** T ≥ log 1.2 (N2's share at least 20% above the reference median) on both N2 panels; otherwise D2
+    is inconclusive.
+  - **Fires** ("alignment accounts for most of the excess") if P₁/T > 0.5 and P₂/T > 0.5 on both N2 panels, with the
+    90% intervals of P₁/T and P₂/T above 0.3. **Does not fire** if both are below 0.5 on both panels. Otherwise
+    inconclusive. The per-ensemble values are descriptive.
+  - D2 uses all eligible genomes, a-weighted, rather than only "the genomes that carry the signal": the a-weights
+    already put the carriers first, and a cut would be a choice made per graph. The top quartile is reported beside it.
+- **For M2:** A5's C_N2(t) − median C_G(t) against the lead, per ensemble.
+- Every other number is descriptive.
+
+## Outputs and cost
+
+Scripts in `scripts/memory_m1/` (a README beside them); outputs in `runs/memory-m1/` (JSON committed; per-genome arrays
+and logs local); the results on `docs/memory/M1-RESULTS.md`, reviewed by Astra and Fable before they are committed as
+findings. **Cost,** from the measured 250 s per full panel: 42 panels (N2 twice, 30 random, 10 selected), about
+2.9 hours; the equal-tau arm about 1 hour; the tau-permutation diagnostic and six Jacobian panels about 40 minutes. In
+all about 4.5 to 5 hours of CPU, all on this machine. No GPU.

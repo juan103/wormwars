@@ -10996,3 +10996,41 @@ stays at 120 minutes.
 `main` gets a green run.
 
 **Gate:** the hygiene tests passed (pytest rc 0).
+
+## D349 — M1's plan, reviewed in seven rounds before anything ran; scripts and tests committed before the run
+
+**The owner's word** (2026-10-20, "Sure, both", D347): start M1, the roadmap's first step (`docs/memory/MEMORY-ROADMAP.md`).
+Claude wrote `docs/memory/M1-PLAN.md` to fix M1's definitions, panels and decision rules before any analysis ran, as the
+roadmap asks. Nothing in M1 is registered; it is exploratory, on the CPU.
+
+**What M1 decides.** D1: does N2's lead shrink to little at matched amplitude across graphs (B3, the amplitude arm,
+decides; A2 on 03mc's arrays is a check)? D2: does the change in alignment with the turn read-out account for most of the
+excess (B1's two exact splits)? Both are accounting, not mechanism. Each fires or does not only when its 90% interval
+lies wholly on one side of its threshold; otherwise it is inconclusive, and an inconclusive rule changes nothing until a
+targeted replication. M1 also hands M2 the settling cohort's part of the lead, runs the round-3 cheap kills (complement
+erasure, gap dissipation, left-right antisymmetry, equal taus, growers) and M3's anatomy predictors, frozen in the plan.
+
+**The review** (`docs/reviews/20261020-m1-plan/`, every draft and answer archived): rounds 1 to 3, both "revise"; rounds 4
+to 7, Fable "agree" with small fixes and Astra "revise" on narrowing points. The main catches:
+- **Fable:** the tau-permutation kill could not fail (taus are drawn independently of the weights), so it became a
+  diagnostic; N2's start amplitude is about 5 times the nulls', so the first amplitude standardisation would have dropped
+  the strata holding N2's lead (coverage is now judged per genome, with B3 deciding); the read-out's two-step
+  neighbourhood holds 207 of 302 neurons, so K became the one-step neighbourhood under the pre-committed fallback; a cross-
+  composition gap is not a bug; π from observations, support from distinct genomes; an independent seed for the grower
+  draw.
+- **Astra:** D2's per-graph ratio could fire with no lead, and needed signed contrasts and a second split; the seed-7600
+  panels share their genome draws index by index, so the bootstrap resamples genome indices jointly; the cohort
+  contribution must come from additive (averaged pairwise) contrasts; validity, zero cases, undefined ratios and empty
+  ensembles must give "unavailable", never a substantive reading; the tau control must compare one population.
+- Claude's own timing run put a full panel at 250 s, not the 80 s first extrapolated; the reviewers' cost estimates were
+  closer.
+
+**What is committed now, before the run:** the plan (draft 8), `scripts/memory_m1/` with a README, and
+`tests/test_memory_m1.py` (the rules' boundaries, part A's guarded paths, the zero-difference paths, and a sabotage check:
+a NaN planted in one arm must stop the probe; with the guard removed that test failed, with it in place it passes). The
+code passed end-to-end smoke runs at 32 genomes per panel into a scratch folder whose numbers Claude did not read,
+including runs with a whole ensemble forced invalid and one panel forced below B3's minimum.
+
+**Cost:** about 4.5 to 5 hours of CPU. No GPU.
+
+**Gate:** the hygiene tests passed (pytest rc 0), and `tests/test_memory_m1.py` passed (4 of 4).
