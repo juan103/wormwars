@@ -18,6 +18,14 @@ def test_the_decision_rules_and_the_guarded_summary_paths():
     summarise.test_rules()
 
 
+def test_amendment_1_drops_small_arms_below_the_floor_and_its_balance_rule_can_fail():
+    """M1-PLAN, amendment 1: a new arm's observation below the floor is dropped, never put in stratum 0; the replaced
+    balance condition fails any used stratum out of balance, however little of the numerator it holds, and ignores the
+    unused strata; coverage is zero and positive on constructed cases."""
+    import d1_small_k
+    d1_small_k.test_rules()
+
+
 def test_part_a_guards_a_zero_baseline_and_missing_support():
     import accounting
     accounting.test_standardise()

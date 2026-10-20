@@ -14,6 +14,7 @@ is registered.** CPU only.
 | `tau.py` | B4's equal-tau control and the tau-permutation diagnostic. Needs `panels/`. | `tau.json` |
 | `growers.py` | B4's growers and forecast check (midpoint Jacobians), on an independent draw of 512 genomes (seed 7602). | `growers.json` |
 | `summarise.py` | The spreads, the bootstrap, D1, D2, the kills' readings and the handoff to M2; `test_rules()` runs first. | `summary.json` |
+| `d1_small_k.py` | Amendment 1: D1's targeted replication, smaller k on N2 only, on M1's population and strata; checks it reproduces M1 first. Needs `summary.json` and `panels/`. | `d1_small_k.json` |
 
 Run them in that order from this folder (`python accounting.py`, and so on). Inputs: the connectome
 (`scripts/fetch_connectome.py`), and 03mc's local graph files and per-genome arrays (`runs/p4mc/graphs/`,

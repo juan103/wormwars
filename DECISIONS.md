@@ -11085,3 +11085,32 @@ naming of N and A′.
 **Next:** M2's pilot goes ahead. D1's targeted replication (smaller k on N2 only, coverage reported against the original
 population, the balance condition addressed) is written as a dated amendment to the plan before it runs; Astra would run
 it before M2's large census.
+
+## D351 — M1 amendment 1: D1's targeted replication, smaller k on N2 only, fixed before it runs (2026-10-20)
+
+D1 read inconclusive on its coverage condition (D350). As both reviewers asked, a dated amendment is appended to
+[`docs/memory/M1-PLAN.md`](docs/memory/M1-PLAN.md) ("Amendment 1"); nothing above it changes. N2's two panels are rerun
+with M1's four amplitude arms and four new ones (k = 1/8, 1/16, 1/32, 1/64), and D1 is read again on M1's population,
+strata, used strata, weights and reference, with N2's new observations added. The rerun must reproduce M1's arrays
+for the old arms (M1's batch policy), and the old arms are then taken from M1's arrays. Coverage is judged against the
+original population. M1's balance condition, which tested nothing, is replaced: N2's E[a | k] must be within 25% of the
+reference median's in every used stratum. The readings and wording are M1's. f is stated to be the fraction of the
+lead within the used strata that survives standardisation, not the fraction of the original intact lead removed. If
+it is inconclusive again, D1 stays open on this probe and M2 is not held.
+
+**Code:** `scripts/memory_m1/d1_small_k.py`. It first recomputes M1's B3 point values from M1's arrays with the new arms
+left out, matching `summary.json` within 10⁻⁹ (it fails when one stratum edge moves by 1%). Its rule test
+(`tests/test_memory_m1.py`) was seen failing under three sabotages: a below-floor observation kept, the balance cut over
+the whole numerator, and draft 1's heavy-stratum cut.
+
+**The review** (`docs/reviews/20261020-m1-amendment1/`). Round 1: both "revise". **Astra** and **Fable** each showed
+that draft 1's balance gate (strata holding 5% of N2's used numerator) did not match the π-weighted standardisation,
+and both proposed every used stratum. Astra separated D1's question from its estimand, placed the small arms'
+linearisation on the moving midpoint trajectory, and kept the within-genome ratios as diagnostics. Fable noted that
+coverage now passes almost by construction and proposed an annotation band. Fable also found five small script items,
+among them that the intact arm should be the state itself. Round 2: both "agree", with small fixes: a stale test
+docstring (Fable); a wrong rationale sentence, a print that could crash on f = None, and the intact-lead comparison for
+the ‖δa(0)‖ basis (Astra). All are fixed in draft 3.
+
+**Next:** commit, push, run (a few minutes of CPU), and report the reading. The M2 pilot plan is under review
+separately.
