@@ -11034,3 +11034,9 @@ including runs with a whole ensemble forced invalid and one panel forced below B
 **Cost:** about 4.5 to 5 hours of CPU. No GPU.
 
 **Gate:** the hygiene tests passed (pytest rc 0), and `tests/test_memory_m1.py` passed (4 of 4).
+
+**D349 follow-up (2026-10-20, after round 8).** Both reviewers said "agree" in round 8 (`r8.*.md`); the full run started
+at `954d220`. Both asked, non-blocking, for the mixed-eligibility case to be a committed test rather than a smoke run:
+`tests/test_memory_m1.py::test_the_summary_runs_with_a_reference_panel_below_b3s_minimum` (marked slow) builds real
+panels on N2's wiring, rewrites one reference as `panels.py` writes a panel below B3's minimum, and runs the summary. It
+passes, and on the round-7 code it fails with the `KeyError` Astra found. No script changed.

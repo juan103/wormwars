@@ -49,6 +49,44 @@ def test_a_zero_state_difference_leaves_the_kills_unavailable():
     assert not c.diagnostic_available(np.full(20, 2e-5), steady, np.full(20, 0.01))  # below the start floors
 
 
+@pytest.mark.slow
+def test_the_summary_runs_with_a_reference_panel_below_b3s_minimum(monkeypatch):
+    """Astra, rounds 7 and 8: a valid reference panel with fewer than 10 genomes eligible at every k (written by
+    panels.py without its B3 fields) must leave B3 to the other panels, not crash the summary. Real panels on N2's wiring
+    stand in for the null graphs, whose files are local; parts A, the tau control and the growers are stubbed."""
+    import json
+    import common as c
+    import panels
+    import summarise
+    monkeypatch.setattr(c.S, "graph", lambda name: c.S.CON)
+    refs = ["SH-2010000", "SH-route-2020000", "SH-class-2030000"]
+    json.dump({"random": refs, "selected": {}}, open(c.OUT / "panel.json", "w"))
+    for name, seed in [("N2", c.SEED), ("N2", c.SEED2)] + [(r, c.SEED) for r in refs]:
+        assert panels.run(name, seed, 48)["valid"]
+    f = panels.DIR / f"{refs[2]}__{c.SEED}.json"  # rewrite one reference as panels.py writes a panel below B3's minimum
+    r = json.load(open(f))
+    r["B3_ok"] = False
+    r.pop("B3_median_r2_over_r05", None)
+    r.pop("B3_r2_over_r05_undefined", None)
+    for arm in r["arms"].values():
+        for k in [k for k in arm if k.startswith("B3_")]:
+            arm.pop(k)
+    json.dump(r, open(f, "w"))
+    check = {"supported": False, "f": None}
+    graphs = {g: {"eligible_share30": 0.3, "eligible_share300": 0.05, "cohort_C30": 0.0, "cohort_C300": 0.0} for g in refs}
+    json.dump({"A2": {e: {"N2_check": check} for e in c.ENSEMBLES}, "graphs": graphs,
+               "N2": {"eligible_share30": 0.4, "eligible_share300": 0.08, "cohort_C30": 0.01, "cohort_C300": 0.005}},
+              open(c.OUT / "accounting.json", "w"))
+    json.dump({"summary": {"reading_available": False}}, open(c.OUT / "tau.json", "w"))
+    json.dump({"N2": {"available": False}}, open(c.OUT / "growers.json", "w"))
+    summarise.main()
+    s = json.load(open(c.OUT / "summary.json"))
+    assert s["reference_graphs"] == 3
+    assert f"{refs[2]}__{c.SEED}" not in s["B3_median_r2_over_r05"]["undefined_genomes"]
+    assert f"{refs[2]}__{c.SEED}" not in s["D1_B3_a"].get("per_graph", {})
+    assert isinstance(s["D1_reading"], str) and isinstance(s["D2"]["reading"], str)
+
+
 def test_a_non_finite_arm_stops_the_probe():
     import common as c
     torch.set_grad_enabled(False)
