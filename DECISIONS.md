@@ -10968,3 +10968,13 @@ reviews.
 **Next:** M1, when the owner wants it run. Nothing in it needs the GPU.
 
 **Gate:** the hygiene tests passed (pytest rc 0).
+
+## D347 — The ChatGPT roadmap from the memory ceremony published, with the owner's agreement
+
+**The owner agreed** (2026-10-20, "Sure, both", answering whether to publish it and whether to start M1). D346 kept
+`docs/reviews/20261020-memory-diverge/chatgpt.roadmap.md` local until then, because the repository is public. It is
+now committed verbatim, as the owner supplied it, beside the owner's ideas and the three blind answers. Claude read it
+in full before committing it: it holds no personal data, only links to this repository's public pages and to the
+literature it cites. Its citations were not checked for this commit; the roadmap uses its ideas, not its references.
+
+**Gate:** the hygiene tests passed (pytest rc 0).
