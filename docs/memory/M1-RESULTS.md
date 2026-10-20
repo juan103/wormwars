@@ -25,7 +25,7 @@ the plan is marked **descriptive** or **after the data**.*
 
 | Rule | Reading | In one line |
 |---|---|---|
-| **D1, amplitude** | **inconclusive (conditions)** | B3's coverage condition fails (34% and 41% of N2's numerator covered, against 75%). Descriptively, every amplitude-matched comparison keeps most of the lead. |
+| **D1, amplitude** | **inconclusive (conditions)** | B3's coverage condition fails (34% and 41% of N2's numerator covered, against 75%). Descriptively, every amplitude-matched comparison keeps most of the lead. *Updated 2026-10-20: the targeted replication (amendment 1) reads **does not fire**; see the end of this file.* |
 | **D2, alignment** | **does not fire** | The alignment part of the excess is *negative* on both panels: persistence of the activity difference carries all of it. |
 | Kill: gap dissipation | support (narrow; seed 7600) | N2 is below the null median under both ratios at tick 30, by small margins. On seed 7700 the same rule reads partial. |
 | Kill: left-right antisymmetry | not rejected | The antisymmetric share is 0.47, far above 10%; but it is not distinctive of N2. |
@@ -47,7 +47,11 @@ the plan is marked **descriptive** or **after the data**.*
 - **On ‖δa(0)‖ instead of a** (descriptive, as planned): the conditions are met (coverage 76% and 78% of the numerator,
   84% and 88% of the denominator; balance again vacuous, largest used stratum 6.2%), and f = 0.85 [0.70, 0.98] and
   0.92 [0.82, 1.02]. The first interval lies wholly below 1, so on this basis a small part of the lead is
-  attributable to amplitude.
+  attributable to amplitude. *Annotated 2026-10-20 (amendment 1, D352): this comparison was not balanced. Its
+  balance condition read 0 only because it was vacuous; under amendment 1's rule (every used stratum within 25%),
+  N2's mean a on M1's own arms is 1.4 to 2.4 times the reference median's in every used ‖δa(0)‖ stratum (seed 7600;
+  1.5 to 2.4 at seed 7700; `runs/memory-m1/check_da_balance.json`, from `scripts/memory_m1/check_da_balance.py`, a
+  check written after the data). So the "small part attributable to amplitude" reading does not stand (Fable).*
 - **A2, the check on 03mc's arrays:** every ensemble is "unsupported", as the plan expected (the used strata drop 90–92%
   of N2's numerator and 92–94% of its denominator). f = 1.09 to 1.13. Descriptively, N2's share is above the median graph's in
   every used stratum, by factors of 1.5 to 3.3 (`accounting.json`, `A2.*.N2_strata.stratum_share` against
@@ -239,3 +243,54 @@ Pointers, not proofs, and D1 is inconclusive:
 - The complement erasures use N2's neuron sets in every graph; there are no per-graph cores.
 - The selected graphs are reported beside the reference, never pooled; two of the ten beat N2 on fresh panels.
 - Everything here is on one probe (a 10-tick ramp from 0.25 or 1.75 of the final food level).
+
+## Amendment 1's result: D1's targeted replication (2026-10-20)
+
+*Added after the replication ran, without changing the text above. The design is M1-PLAN's amendment 1, reviewed in
+two rounds and committed and pushed before it ran (d025d7a, D351). Numbers from `runs/memory-m1/d1_small_k.json`
+(compute in `d1_small_k-compute-record.json`, the run's console output in `d1_small_k_run.txt`).*
+
+- **The run.** On 2026-10-20 at 14:33 UTC, at commit d025d7a: N2's two panels with M1's four amplitude arms and four
+  new ones (k = 1/8, 1/16, 1/32, 1/64), 184 s of wall-clock time for the recorded section, exit 0. The rerun reproduced M1's arrays exactly for the old
+  arms (largest gap 0; the batch had M1's row count).
+- **D1 does not fire.** On D1's basis (a), the conditions are now met on both panels:
+  - coverage 100% of N2's intact-arm numerator and denominator;
+  - the baseline lead ratio 1.69 and 1.76;
+  - balance: the worst used stratum is 9.5% (seed 7600) and 9.3% (seed 7700) from the reference median's E[a | k],
+    in stratum 0; every other used stratum is within about 2.15%.
+
+  f = **1.01 [0.96, 1.05]** on seed 7600 and **1.03 [0.98, 1.07]** on seed 7700, with no bad resamples. Both
+  intervals lie wholly above 0.25, so D1 does not fire: **amplitude does not account for most of N2's tick-30 lead;
+  at matched amplitude more than a quarter of it remains.** Both point estimates are above 0.75 (descriptive).
+- **What f is here** (fixed in the amendment). f is the fraction of N2's lead *within the used strata* that survives
+  standardisation, over a mixture of observations that the new arms changed. It is not the fraction of the original
+  intact lead removed. Beside it, descriptively: N2's standardised lead is 0.175 and 0.195, against M1's intact
+  eligible leads of 0.170 and 0.169 (ratios 1.03 and 1.15). The new arms supply 32% (seed 7600) and 25% (seed 7700)
+  of N2's used-strata numerator, and the old arms the rest. They are most of N2's observations in the lowest strata
+  (85% and 84% in stratum 0, 58% and 59% in stratum 2) and few in the highest (16% and 10% in stratum 9). So the
+  result is carried mostly by M1's old-arm observations, and the new arms chiefly make coverage complete (Fable).
+- **Scale sensitivity** (diagnostics, gating nothing). N2's median within-genome ratios r(1/64)/r(1/32) and
+  r(1/8)/r(1/4) are 0.9999 and 0.9998 (seed 7600), 0.9999 and 0.9998 (seed 7700), inside the band [0.8, 1.25], so the
+  reading carries no annotation. N2's share against each new arm's own start is 0.47, 0.53, 0.56 and 0.54 at
+  k = 1/8 to 1/64 (seed 7600) and 0.56, 0.45, 0.44 and 0.46 (seed 7700), against its intact 0.444 and 0.443. As k
+  falls, the population above the floor shrinks (849 to 385 genomes at seed 7600), so these shares are over different
+  genomes.
+- **On ‖δa(0)‖** (descriptive, as planned). The balance condition fails there, and badly: in the used ‖δa(0)‖
+  strata, N2's mean a is 1.3 to 2.4 times the reference median's (worst 2.44, seed 7600). The imbalance predates the
+  new arms: on M1's old arms alone it is 1.4 to 2.4 (Fable; annotated at M1's ‖δa(0)‖ reading above). In strata 1 to
+  9, N2's mean ‖δa(0)‖ is within about 1.2% of the reference median's (`check_da_balance.json`), so there the higher a means that, over the
+  mixture of scaled arms at matched norm, N2's activity difference at the follow-up's start is about twice as visible
+  to the turn read-out. Stratum 0 is not norm-matched (N2's mean norm is 0.59 of the reference's), and the statement
+  does not cover it (Astra). f = 1.01 and 1.02
+  on that basis, with the conditions unmet; the standardised lead is 0.61 and 0.65 of the intact lead. M1's own
+  ‖δa(0)‖ reading (f = 0.85 [0.70, 0.98] and 0.92 [0.82, 1.02], above) was on the old arms only.
+- **Reading.** On the a basis and against the reference panel, D1 is resolved on this probe: matching amplitude
+  across graphs, with every genome of the fixed B3 population (919 and 926 of 1024) represented at some matched
+  amplitude, leaves N2's lead in place. This is accounting, not mechanism. The match is on a, with mismatched k:
+  N2's matched observations in the low strata come mostly from strongly shrunk arms, and the nulls' from natural or
+  enlarged ones. The two median small-k diagnostics trigger no annotation; the effect of mismatched k on the weighted
+  comparison remains unquantified (Astra). The ‖δa(0)‖ imbalance is a separate, descriptive observation about the
+  starting alignment of the difference with the read-out (a = ‖c‖ ‖δa‖ |cos θ|). D2 measured the change in alignment
+  over the follow-up, not its starting level, so this is a separate quantity, and it does not establish an
+  explanation of retention.
+

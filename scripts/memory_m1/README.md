@@ -15,6 +15,8 @@ is registered.** CPU only.
 | `growers.py` | B4's growers and forecast check (midpoint Jacobians), on an independent draw of 512 genomes (seed 7602). | `growers.json` |
 | `summarise.py` | The spreads, the bootstrap, D1, D2, the kills' readings and the handoff to M2; `test_rules()` runs first. | `summary.json` |
 | `d1_small_k.py` | Amendment 1: D1's targeted replication, smaller k on N2 only, on M1's population and strata; checks it reproduces M1 first. Needs `summary.json` and `panels/`. | `d1_small_k.json` |
+| `check_b3_balance.py` | A check written after M1's data: why B3's balance condition read 0. Needs `summary.json` and `panels/`. | `check_b3_balance.json` |
+| `check_da_balance.py` | A check written after amendment 1's result: the replaced balance rule on M1's own arms on the ‖δa(0)‖ basis, and the norm match per stratum. Needs `d1_small_k/`. | `check_da_balance.json` |
 
 Run them in that order from this folder (`python accounting.py`, and so on). Inputs: the connectome
 (`scripts/fetch_connectome.py`), and 03mc's local graph files and per-genome arrays (`runs/p4mc/graphs/`,

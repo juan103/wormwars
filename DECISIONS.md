@@ -11114,3 +11114,33 @@ the ‖δa(0)‖ basis (Astra). All are fixed in draft 3.
 
 **Next:** commit, push, run (a few minutes of CPU), and report the reading. The M2 pilot plan is under review
 separately.
+
+## D352 — M1 amendment 1's result: D1 does not fire; M1's ‖δa(0)‖ reading withdrawn as unbalanced (2026-10-20)
+
+Amendment 1 (D351) ran at d025d7a, 14:33 UTC, 184 s wall-clock, exit 0. The rerun reproduced M1's old arms exactly.
+On D1's a basis the conditions are met on both N2 panels: coverage 100% of the fixed B3 population (919 and 926
+genomes), balance worst 9.5% and 9.3% (stratum 0), and lead ratios 1.69 and 1.76. f = 1.01 [0.96, 1.05] and
+1.03 [0.98, 1.07], so **D1 does not fire**: at matched amplitude across graphs, amplitude does not account for most
+of N2's tick-30 lead. The result is written up as a dated section at the end of
+[`docs/memory/M1-RESULTS.md`](docs/memory/M1-RESULTS.md), with a dated note in its readings table and an annotation in
+the memory roadmap. The text above them is not changed. The section says what f is here (the lead within the used
+strata, over a mixture the new arms changed), and that the result is carried mostly by M1's old-arm observations,
+the new arms chiefly completing coverage. It also says that the effect of mismatched k remains unquantified.
+
+**Correction (rule 4).** M1's ‖δa(0)‖ reading ("a small part of the lead is attributable to amplitude", f = 0.85
+[0.70, 0.98]) rested on an unbalanced comparison. M1's balance condition was vacuous; under amendment 1's rule, N2's
+mean a on M1's own arms is 1.4 to 2.4 times the reference's in every used ‖δa(0)‖ stratum. A dated annotation
+withdraws that reading. The numbers come from `scripts/memory_m1/check_da_balance.py`, a check written after the data.
+Descriptively, in the norm-matched ‖δa(0)‖ strata (1 to 9, norms within about 1.2%), N2's activity difference at the
+follow-up's start is about twice as visible to the read-out. That is a statement about starting alignment, separate
+from D2, and it does not explain retention.
+
+**The review** (`docs/reviews/20261020-m1-amendment1/`, r3 and r4). Round 1: both "revise", the reading confirmed.
+**Fable** re-derived every number and found that the ‖δa(0)‖ imbalance predates the new arms, so M1's own reading had
+to be withdrawn. Fable also found the strata composition, the population scope, the wall-clock unit and a rounding.
+**Astra** recomputed the point estimates, balance and coverage from the arrays. Astra caught that the scale-sensitivity
+medians cannot dismiss the mismatched-k caveat, that stratum 0 is not norm-matched, the population scope and two
+roundings. Round 2: both "agree". The reviewed draft is rebuilt in `result.draft1.md`.
+
+**Next:** the M2 pilot plan (`docs/memory/M2-PILOT-PLAN.md`) is in its third review round; then its code, reviewed,
+committed and pushed before it runs.
