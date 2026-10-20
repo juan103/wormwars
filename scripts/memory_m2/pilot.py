@@ -202,10 +202,51 @@ def continuation(b64, start, roots, P32, cur, cap=CAP, substeps=None):
     return d0, T, T >= cap, win_d, win_f, v_fin
 
 
-def locate_and_reach(b64, states, cur, substeps=SUBSTEPS, cap=CAP):
+def continuation_compact(b64, start, roots, P32, cur, cap=CAP, substeps=None):
+    """continuation(), but a strain leaves the batch once all its rows are done, so the batch shrinks to the strains
+    still running (the census plan: the pilot integrated every row until the slowest was done). Same stopping rule,
+    windows and returned states; the strains run as before, each with its own matrices. Built for one row per strain,
+    as locate_and_reach() calls it."""
+    S_, R, N = start.shape
+    assert R == 1, "one row per strain"
+    d0 = (start - roots).abs().amax(-1).numpy()
+    buf_d, buf_f = np.zeros((K.WINDOW, S_, R)), np.zeros((K.WINDOW, S_, R))
+    win_d, win_f = np.zeros((S_, R, K.WINDOW)), np.zeros((S_, R, K.WINDOW))
+    T = np.full((S_, R), cap)
+    below = np.zeros((S_, R), int)
+    v_fin = start.clone()
+    act = np.arange(S_)  # the strains still running, in their original order
+    v, x, rt, P, cu, brain = start.clone(), (start - roots).clone(), roots, P32, cur, b64
+    for t in range(1, cap + 1):
+        v = brain.step(v, cu, substeps)
+        x = torch.einsum("sij,srj->sri", P, x).clamp(-1e30, 1e30)
+        k = (t - 1) % K.WINDOW
+        buf_d[k][act] = (v - rt).abs().amax(-1).numpy()
+        buf_f[k][act] = x.abs().amax(-1).numpy()
+        below[act] = np.where(buf_f[k][act] < FORECAST_STOP * np.maximum(d0[act], 1e-300), below[act] + 1, 0)
+        fin = (below[act, 0] >= 100) & (t >= MIN_T)
+        if t == cap:
+            fin[:] = True
+        if fin.any():
+            order = [(k + 1 + j) % K.WINDOW for j in range(K.WINDOW)]  # oldest to newest
+            done_ = act[fin]
+            win_d[done_] = np.moveaxis(buf_d[order][:, done_], 0, -1)
+            win_f[done_] = np.moveaxis(buf_f[order][:, done_], 0, -1)
+            T[done_] = t
+            v_fin[torch.from_numpy(done_)] = v[torch.from_numpy(np.where(fin)[0])]
+            if fin.all():
+                break
+            keep = torch.from_numpy(np.where(~fin)[0])
+            act = act[~fin]
+            v, x, rt, P, cu = v[keep], x[keep], rt[keep], P[keep], cu[keep]
+            brain = E.brain64(b64.genome.select([int(i) for i in act]))
+    return d0, T, T >= cap, win_d, win_f, v_fin
+
+
+def locate_and_reach(b64, states, cur, substeps=SUBSTEPS, cap=CAP, compact=False):
     """For each row of states [S, R, N] (float64): damped Newton, the error bound, P's verdict, and whether the row
     reaches its located root (continuation against the forecast at matching ticks). Returns a dict of [S, R] arrays and
-    the roots [S, R, N]."""
+    the roots [S, R, N]. compact: the continuation drops finished strains from its batch (the census)."""
     S_, R, N = states.shape
     sysm = E.System(b64, cur[:, :1])
     keys = ("located", "error", "sigma", "verdict", "rho", "cont", "near", "reach", "T", "residual", "failed_ls", "singular",
@@ -244,8 +285,8 @@ def locate_and_reach(b64, states, cur, substeps=SUBSTEPS, cap=CAP):
         for j, s_ in enumerate(loc):
             res["residual_sub"][s_, r] = float(res_sub[j])
         P32 = torch.linalg.matrix_power(sub_sys.P(roots[loc, r], substeps), substeps)
-        d0, T, capped, wd, wf, _ = continuation(sub, states[loc, r:r + 1], roots[loc, r:r + 1], P32, cur[loc, :1],
-                                                cap, substeps)
+        cont = continuation_compact if compact else continuation
+        d0, T, capped, wd, wf, _ = cont(sub, states[loc, r:r + 1], roots[loc, r:r + 1], P32, cur[loc, :1], cap, substeps)
         for j, s_ in enumerate(loc):
             res["reach"][s_, r] = K.reached(wd[j, 0], wf[j, 0], d0[j, 0], bool(res["near"][s_, r]), bool(capped[j, 0]),
                                             float(res["error"][s_, r]))
@@ -320,14 +361,14 @@ def oscillation_check(g_one, cfg, end_row, tail_row, cur_one, starts, row, cap=C
 
 # ----------------------------------------------------------------------------------------------------------- classify
 def full_classify(g_sel, cfg, run, starts=(0.25, 1.75), substeps=SUBSTEPS, cap=CAP, candidates=True, initial=None,
-                  dtype=torch.float32):
+                  dtype=torch.float32, compact=False):
     """Classify every genome of g_sel from a probe_states() result: locate and reach both histories' roots, run the
     oscillation procedure on candidates, and apply the classes. Returns the per-genome records and the roots."""
     b64 = E.brain64(g_sel)
     end, cur = run["end"].double(), run["cur"].double()
     y = run["y"]
     a = np.abs(y[:, 0, 0] - y[:, 0, 1])
-    res, roots = locate_and_reach(b64, end, cur, substeps, cap)
+    res, roots = locate_and_reach(b64, end, cur, substeps, cap, compact=compact)
     ro = ((torch.tanh(roots[:, 0]) - torch.tanh(roots[:, 1])) @ c.C.double()).abs().numpy()
     rd = (roots[:, 0] - roots[:, 1]).abs().amax(1).numpy()
     cand = np.zeros((end.shape[0], 2), bool)
@@ -778,8 +819,12 @@ def planted_genomes():
 
 
 def stage_r6():
+    dump(planted_check(), "r6.json")
+
+
+def planted_check(compact=False):
     """R6: each planted genome is first confirmed by a long direct float64 simulation, then classified by the pipeline
-    from its constructed start states (no ramp)."""
+    from its constructed start states (no ramp). compact: through the census's compacted continuation (its C2)."""
     cases, cfg, where = planted_genomes()
     out = {"neurons": where, "cases": {}}
     for name, (g, init, expected) in cases.items():
@@ -806,7 +851,7 @@ def stage_r6():
         if not confirm:
             out["cases"][name] = {"confirmed": False, "note": "the construction does not behave as intended; not used"}
             continue
-        recs, _ = full_classify(g, cfg, run, initial=init)
+        recs, _ = full_classify(g, cfg, run, initial=init, compact=compact)
         got = recs[0]["class"]
         ok = got == expected  # exact: "separate states" and its read-out-silent subclass are told apart (Fable, round 6)
         veto_only = None
@@ -823,7 +868,7 @@ def stage_r6():
                               "correct": bool(ok), "veto_alone_rejects": veto_only, "oscillation": recs[0]["oscillation"]}
         print("R6", name, got, recs[0]["reason"], "correct" if ok else "WRONG", flush=True)
     out["passes"] = all(v.get("correct") for v in out["cases"].values())
-    dump(out, "r6.json")
+    return out
 
 
 # -------------------------------------------------------------------------------------------------------------- summary

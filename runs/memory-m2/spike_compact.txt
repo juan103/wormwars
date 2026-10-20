@@ -1,0 +1,2 @@
+SH-2010013 pilot 113.5 s, compact 34.3 s, same verdicts and T: True
+N2 pilot 133.2 s, compact 37.7 s, same verdicts and T: True

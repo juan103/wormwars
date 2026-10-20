@@ -11263,3 +11263,76 @@ each share and states that the whole numerator is derived (from the carriers' sh
 - **Round 3:** Astra confirmed both edits. Its one remaining item, that D354 must be committed with the results file, is met by this commit.
 
 **Next:** the census plan, written from what the pilot hands it, reviewed before it runs.
+
+## D355 — M2's census: the split of N2's lead by class of dynamics, its readings, checks and code, reviewed before it runs (2026-10-21)
+
+The owner said "continue as normal" after the pilot's results (D354). The census plan is
+[`docs/memory/M2-CENSUS-PLAN.md`](docs/memory/M2-CENSUS-PLAN.md) (draft 5). Exploratory; the estimands, readings and
+thresholds are fixed in it before anything runs. CPU only.
+
+- **What runs.** Every eligible genome of 48 panels is classified by the pilot's frozen classifier at 2000 ticks:
+  N2 at seeds 7600 and 7700, M1's 30 random reference graphs, M1's 10 selected graphs, and batch 7's three
+  core-frozen and three hub-frozen shuffles (regenerated and checked against `batch7.json`). The selected and batch-7
+  graphs are reported apart.
+- **The split.** It follows M1's A5: the eligible share is cut into class contributions that add up (separate states
+  S, fading F, oscillation O, unresolved U), and N2's mean lead over the 30 references into Λ_S + Λ_F + Λ_O + Λ_U.
+  - φ_S = Λ_S / Λ is its estimand, with an unresolved band.
+  - The bootstrap is M1's.
+  - The readings, at tick 30 on both N2 panels: "most" (lower φ_S⁻ > 0.5), "little" (upper φ_S⁺ < 0.25), "a part,
+    between a quarter and a half", or "inconclusive".
+  - The two panels are combined in a fixed order.
+  - The roadmap's branch is taken only on "little", with lower φ_F⁻ > 0.5 on both panels.
+- **Beforehand,** from M1's panel records, the cohort alone would give φ_S of about 0.44 and 0.32. So "a part" or
+  "inconclusive" is the likely reading, and the split itself is the deliverable.
+- **One engineering change:** the continuation drops finished strains from its batch (`continuation_compact` in
+  `pilot.py`, off by default). In a spike it was 3.3 to 3.5 times faster with identical verdicts and stopping times,
+  and a committed test with a sabotage checks it.
+- **The checks:**
+  - C1: the census reproduces M1's arrays, by M1's own rule;
+  - C2: the planted genomes are run through the census path;
+  - C3: P³² against the tick's derivative;
+  - C4: resolution against the pilot's thresholds;
+  - C5: the pilot's 467 genomes are reclassified against the pilot at R3's thresholds.
+  - The checks gate the panels and the reading. A 16-hour cost guard holds on restarts.
+- **Descriptions:**
+  - composition against retention against presence, for S and F;
+  - the contributions over time;
+  - where the two states differ (core, hubs, rest) on N2, the reference and batch 7's arms;
+  - the cohort against the classes, with numerators;
+  - the cheap rule;
+  - a locating-radius sensitivity, prompted by the pilot's genome 349;
+  - the settling-share association, weak by design.
+- **Cost:** about 10 to 11 CPU hours, from a smoke test of the census code (35.5 s for 64 N2 genomes,
+  `runs/memory-m2/smoke_census.txt`).
+
+**The review** (`docs/reviews/20261021-m2-census-plan/`, five rounds; rounds 3 to 5 include the code).
+- **Fable** caught:
+  - that the expected reading follows from M1's panel records, so the deliverable is the split;
+  - C5, the end-to-end check against the pilot's classes;
+  - the candidate-history cost;
+  - the A1-style composition-retention split;
+  - the core needing a hub control;
+  - the cohort table's numerators;
+  - in the code: the branch folded into the reading, so that two "little" panels could fail to replicate;
+  - an untested band term and an untested bootstrap;
+  - the radius sensitivity applying one history at a time;
+  - a cost guard that was not sticky.
+- **Astra** caught:
+  - that "a part" must not cover a wide interval, and that "little" needs fading's support before the branch;
+  - the denominator's precedence over the combination;
+  - C1's numerators and tick-300 aggregates;
+  - the whole panel drawn before slicing;
+  - the correct arithmetic of the expectation (0.44 and 0.32), and the empty-class case of the decomposition, which
+    became its presence part;
+  - the candidate cost counted by histories;
+  - in the code: failed checks that did not block what followed;
+  - C5 passing with a lost separate-states genome;
+  - an early C3 that could save an empty pass;
+  - a guard that a restart could bypass.
+- **Claude** dropped draft 2's reduced main-run record by classifying each chunk right after its own main run.
+
+Each code fix has a regression test that a sabotage makes fail (`scripts/memory_m2/sabotage_census.py`,
+`runs/m2-split-sabotage.txt`).
+
+**Next:** push, check CI, tell the owner of the ~11-hour CPU run, run it, then the results, reviewed before they
+are committed.

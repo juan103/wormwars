@@ -1,0 +1,3 @@
+  N2__7600 chunk 1/1 35.5 s
+N2__7600 35.5 s, valid True, eligible 60, {'separate states': 2, 'separate states, read-out silent': 0, 'fading': 58, 'persistent oscillation': 0, 'unresolved': 0}
+per genome 0.555 s; radius cases 0

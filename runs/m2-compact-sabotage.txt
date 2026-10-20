@@ -1,0 +1,35 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+_____________ test_the_compacted_continuation_matches_the_pilots ______________
+
+    def test_the_compacted_continuation_matches_the_pilots():
+        """The census plan (Astra, round 1): dropping finished strains from the batch must change nothing. Eight strains
+        started at different distances from their roots, so that they finish at different ticks, leave survivors at
+        non-contiguous indices and a last strain running alone, with a cap that some rows reach. Stopping times and capped
+        flags must be equal, the distance and forecast windows and the returned states within 1e-12. The sabotage: a
+        window read one tick late must fail the same comparison."""
+        import numpy as np
+        import pilot
+        E, b, sysm, near, far, cur = _roots(n=8, ticks=300)
+        r = sysm.newton(near)["v"]
+        scale = torch.tensor([0.0, 1.0, 1e-2, 1.0, 1e-4, 1.0, 1e-1, 1.0], dtype=torch.float64).unsqueeze(1)
+        start = (r + scale * (near - r)).clone()
+        start[7] = far[7]  # far from its root: the slowest, alone at the end
+        P32 = torch.linalg.matrix_power(sysm.P(r, 32), 32)
+        args = (b, start.unsqueeze(1), r.unsqueeze(1), P32, cur.double())
+        ref = pilot.continuation(*args, cap=700, substeps=32)
+        new = pilot.continuation_compact(*args, cap=700, substeps=32)
+        d0, T, capped, wd, wf, v = ref
+        assert len(set(T[:, 0].tolist())) >= 3, T  # staggered completions
+        assert (T[:, 0] == T[:, 0].max()).sum() == 1 or capped.any(), T  # one strain alone at the end, or the cap
+        assert np.array_equal(T, new[1]) and np.array_equal(capped, new[2]) and np.array_equal(d0, new[0])
+>       assert np.abs(wd - new[3]).max() <= 1e-12 and np.abs(wf - new[4]).max() <= 1e-12
+E       AssertionError: assert (np.float64(0.000902922686093599) <= 1e-12)
+E        +  where np.float64(0.000902922686093599) = <built-in method max of numpy.ndarray object at 0x000002667FE7AC10>()
+E        +    where <built-in method max of numpy.ndarray object at 0x000002667FE7AC10> = array([[[0.00000000e+00, 0.00000000e+00, 0.00000000e+00, 0.00000000e+00,\n         0.00000000e+00, 0.00000000e+00, 0.00...089490e-07, 2.67199399e-07, 2.54024003e-07,\n         2.41524853e-07, 2.29665657e-07, 2.18412160e-07, 9.02922686e-04]]]).max
+E        +      where array([[[0.00000000e+00, 0.00000000e+00, 0.00000000e+00, 0.00000000e+00,\n         0.00000000e+00, 0.00000000e+00, 0.00...089490e-07, 2.67199399e-07, 2.54024003e-07,\n         2.41524853e-07, 2.29665657e-07, 2.18412160e-07, 9.02922686e-04]]]) = <ufunc 'absolute'>((array([[[3.46389584e-14, 3.46389584e-14, 3.46389584e-14, 3.46389584e-14,\n         3.46389584e-14, 3.46389584e-14, 3.46...465160e-06, 5.59356211e-06, 5.32636271e-06,\n         5.07233871e-06, 4.83081386e-06, 4.60114820e-06, 4.38273604e-06]]]) - array([[[3.46389584e-14, 3.46389584e-14, 3.46389584e-14, 3.46389584e-14,\n         3.46389584e-14, 3.46389584e-14, 3.46...356211e-06, 5.32636271e-06, 5.07233871e-06,\n         4.83081386e-06, 4.60114820e-06, 4.38273604e-06, 9.07305422e-04]]])))
+E        +        where <ufunc 'absolute'> = <module 'numpy' from 'C:\\Users\\gonza\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\numpy\\__init__.py'>.abs
+
+tests\test_memory_m2.py:160: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_memory_m2.py::test_the_compacted_continuation_matches_the_pilots

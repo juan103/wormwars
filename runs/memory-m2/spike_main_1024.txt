@@ -1,0 +1,2 @@
+graph_run 0.0 s
+main run, 1024 genomes, 2000 ticks, no records: 1131.7 s

@@ -1,0 +1,9 @@
+band without the reference's unresolved: fails, as it must
+genome indices not shared: fails, as it must
+graphs resampled across ensembles: fails, as it must
+two 'little' panels not replicated: fails, as it must
+radius sensitivity one history at a time: fails, as it must
+C5 ignores a lost separate-states genome: fails, as it must
+projection after two panels: about 16.2 h
+cost guard enforced only once: fails, as it must
+C3 without the completeness gate: fails, as it must
