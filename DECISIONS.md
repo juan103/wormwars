@@ -10978,3 +10978,21 @@ in full before committing it: it holds no personal data, only links to this repo
 literature it cites. Its citations were not checked for this commit; the roadmap uses its ideas, not its references.
 
 **Gate:** the hygiene tests passed (pytest rc 0).
+
+## D348 — CI: 03h's slow tests split again; the pilot-driver tests get a job of their own
+
+**What happened.** After D344, 03h's slow tests ran in one job with a 120-minute timeout. On `roadmap` (`ba134ef`) the
+job passed in 117 minutes (7028 s of tests). On `main` (`5e1cff0`, the same code without the banner) it was cancelled
+at 120 minutes (run 39369417333); the fast and slow jobs passed. So `main`'s publication of 03h (D343-D346) has no
+green CI run yet. The job was simply too close to its limit, and runner speed decided the outcome.
+
+**The change.** `slow-03h` becomes two jobs: `slow-03h-pilot` (`tests/test_e03h_pilot_driver.py`, 17 tests, about 81
+minutes in the passing run's durations) and `slow-03h-rest` (the other 03h files with slow tests, 19 tests, about 36
+minutes). Collected locally, the two hold the same 36 tests as before. `--ignore` does not apply to files named on the
+command line, so the rest is selected as `tests --ignore=tests/test_e03h_pilot_driver.py -k test_e03h`. The timeout
+stays at 120 minutes.
+
+**Next:** when this commit's CI is green on `roadmap`, `main` is brought up to it by the usual cycle (D342), so that
+`main` gets a green run.
+
+**Gate:** the hygiene tests passed (pytest rc 0).

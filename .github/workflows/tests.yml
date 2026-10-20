@@ -4,7 +4,9 @@
 # GPU tests (marker `gpu`) need CUDA and are not run.
 # The `slow` tests run in jobs of their own, in parallel with the rest: in one job the suite had grown past the
 # 90-minute timeout (D343). The slow job alone then passed 120 minutes, so 03h's slow tests have a job of their own,
-# and the output is unbuffered and verbose so that a timeout shows where it stopped (D344).
+# and the output is unbuffered and verbose so that a timeout shows where it stopped (D344). That job then took 117 of
+# its 120 minutes on roadmap and was cancelled at 120 on main, so 03h's pilot-driver tests have a job of their own
+# (D348); the two 03h parts hold the same 36 tests (17 + 19).
 name: tests
 
 on:
@@ -22,7 +24,8 @@ jobs:
         part:
           - {name: fast, markers: "not gpu and not slow", paths: "tests"}
           - {name: slow, markers: "slow and not gpu", paths: "tests --ignore-glob=tests/test_e03h_*"}
-          - {name: slow-03h, markers: "slow and not gpu", paths: "tests/test_e03h_*.py"}
+          - {name: slow-03h-pilot, markers: "slow and not gpu", paths: "tests/test_e03h_pilot_driver.py"}
+          - {name: slow-03h-rest, markers: "slow and not gpu", paths: "tests --ignore=tests/test_e03h_pilot_driver.py -k test_e03h"}
     name: cpu (${{ matrix.part.name }})
     steps:
       - uses: actions/checkout@v4
