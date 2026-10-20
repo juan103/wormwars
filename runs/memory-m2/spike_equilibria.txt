@@ -1,0 +1,11 @@
+2000 ticks 21.6 s
+initial residual median 8.025461665184253e-05 after newton max 1.7763568394002505e-15
+dist end->eq quantiles [7.12348240e-05 1.32444867e-04 2.22999752e-04]
+sep >1e-6: 2 of 64 ; max Re [-0.0518 -0.0417]
+any unstable eq among converged: 0
+H from float32 matrices cast: one float64 tick at 8 substeps moves a located root by at most 1.6069378028227277e-07 (64 of 64 genomes located in both histories)
+H from float32 matrices cast: one float64 tick at 32 substeps moves a located root by at most 1.7623153580892392e-07 (64 of 64 genomes located in both histories)
+H from float32 matrices cast: one float64 tick at 64 substeps moves a located root by at most 1.7904134597124255e-07 (64 of 64 genomes located in both histories)
+H from float64 brain: one float64 tick at 8 substeps moves a located root by at most 7.105427357601002e-15 (64 of 64 genomes located in both histories)
+H from float64 brain: one float64 tick at 32 substeps moves a located root by at most 1.4210854715202004e-14 (64 of 64 genomes located in both histories)
+H from float64 brain: one float64 tick at 64 substeps moves a located root by at most 5.684341886080802e-14 (64 of 64 genomes located in both histories)

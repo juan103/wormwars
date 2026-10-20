@@ -1,0 +1,211 @@
+# M2 pilot: validating a dynamical census — the plan
+
+*Draft 2, 2026-10-20, after one round of review (both "revise"; draft 1 and the reviews are archived in
+[`docs/reviews/20261020-m2-pilot-plan/`](../reviews/20261020-m2-pilot-plan/)). Exploratory: nothing here is a
+pre-registration. Step M2 of [`MEMORY-ROADMAP.md`](MEMORY-ROADMAP.md) begins with "a small pilot first, then several
+graphs per ensemble". This plan is the pilot's. Its job is to build a per-genome classifier and to test whether it
+can be trusted before a census uses it at scale. The census gets its own plan, written after the pilot. M1's results
+([`M1-RESULTS.md`](M1-RESULTS.md)) supply the inputs: the settling cohort carries 30-38% of the mean tick-30 lead and
+66-68% of the tick-300 lead, and under the frozen ramp-end Jacobian, transient growers with radius below 1 are more
+common in N2 than in the five null graphs sampled. CPU only.*
+
+**Facts used in this draft,** from a spike ([`scripts/memory_m2/spike_equilibria.py`](../../scripts/memory_m2/spike_equilibria.py),
+output `runs/memory-m2/spike_equilibria.txt`):
+- on 64 N2 genomes drawn directly with seed 7600, 2000 ticks of follow-up took 22 s in the committed output (earlier runs
+  took 26 to 72 s, depending on what else shared the CPU). These 64 are **not** a
+  subset of M1's 1024-genome panel: `Genome.random` draws parameters in batches, so a draw of 64 differs from the
+  first 64 of a draw of 1024 (Astra). The pilot draws 1024 and selects;
+- Newton's method in float64 from the tick-2000 states converges to residuals of 10⁻¹⁵, at distances of 7 × 10⁻⁵
+  (median) to 2.2 × 10⁻⁴ (largest) from the float32 end states. 2 of the 64 end in two distinct roots, both with
+  negative continuous rates (largest real parts −0.05 and −0.04);
+- built from the float64 brain's own matrices, a root moves by less than 3 × 10⁻¹⁴ under one tick of the float64
+  integrator at 8, 32 and 64 substeps (at most 5.7 × 10⁻¹⁴). Built from the float32 brain's matrices cast to float64,
+  it moved by up to 1.8 × 10⁻⁷, so the pilot builds H from the brain it integrates with.
+
+## What can be verified, and what cannot
+
+The brain's substep is v ← (v + c (d + tanh(v) M + v G)) / (1 + c (1 + g)), with c = h/τ and h = 1/k for k substeps,
+d the bias plus the input, M the chemical drive matrix (`W_drive`, row-vector convention), G the symmetric gap matrix
+and g its row sums (`wormwars/brain.py`, `Brain.step`). M1's probe uses no silence mask, clamp or output gate, any of
+which would change what follows. Under the follow-up's constant input, a state is fixed by **one substep** if and only if
+
+  H(v) = d + tanh(v) M + v G − v ∘ (1 + g) = 0,
+
+which contains neither τ nor h. So the substep map's fixed points are the continuous system's equilibria
+(τ ∘ dv/dt = H(v)) for every substep count and every set of time constants, and Newton's method on H can locate
+them in float64 whatever precision the trajectory ran at.
+
+Two limits (Fable, Astra):
+- **The tick map is the substep map applied k times.** Its fixed points also include substep cycles whose period
+  divides k. H = 0 does not find those.
+- **A stable continuous equilibrium need not be stable for the integrator.** Linearised at a root of H, one substep is
+  P = I + diag(h / (τ + h (1 + g))) J_H, with J_H the Jacobian of H (columns indexed by the target neuron, as in the
+  substep). Explicit in the chemical and off-diagonal gap terms, this can flip (an eigenvalue through −1) where the
+  continuous system is stable.
+
+So the classifier's **stability is P's spectral radius**, the integrator's own. The continuous sign is reported beside
+it, and a disagreement between the two is a reported quantity, not a silent class. P is checked against automatic
+differentiation of `Brain.step` at a sample of roots. "Verified" is too strong for what Newton gives (Astra): a small
+residual establishes an accurate root only up to its conditioning, and nearness to a root does not establish that the
+trajectory converges to it, least of all near a basin boundary. The plan says **located** for a root, and
+**reached** only where a float64 continuation confirms it (below).
+
+## The sample
+
+- **Genomes:** M1's fresh panels, seed 7600, 1024 genomes per graph, regenerated in full, so M1's per-genome numbers
+  (a, |δy(30)|, the cohort) apply to the same brains. M1's probe, unchanged: 100 ticks of warm-up at 0.25× or 1.75×
+  the final food level, a 10-tick ramp, then the follow-up at the final level, 32 substeps, float32.
+- **Graphs (5):**
+  - N2;
+  - the two selected graphs that beat N2 on M1's fresh panels and lean much more on settling (M1-RESULTS, part A):
+    SH-recip-2050039 and SH-class-2030099;
+  - two of the random reference graphs, the first of SH and the first of SH-mirror in `runs/memory-m1/panel.json`:
+    SH-2010013 and SH-mirror-2040045.
+- **Groups per graph:**
+  - **the carriers:** the eligible genomes ranked by |δy(30)|, from the largest, up to and including the one that
+    brings the total to half of the graph's eligible tick-30 numerator, capped at 64. The part of the numerator the
+    capped set holds is reported;
+  - **the cohort:** M1's settling cohort (settled and remaining at tick 300), all of it;
+  - **the growers:** M1's growers were found on another draw (512 genomes, seed 7602; `growers.py`), so they are not
+    these brains (Astra). The pilot computes the same midpoint Jacobian at the ramp's end on all 1024 genomes and takes
+    the eligible genomes whose linear state norm grows over 10 ticks with radius below 1, up to 32 at random
+    (`default_rng(20261023)`). This replicates M1's grower diagnostic on a new draw; it does not classify M1's own
+    growers;
+  - **the controls:** 32 further eligible genomes drawn at random (`default_rng(20261023)`, after the growers) from
+    those in no other group.
+
+  A genome in two groups is simulated once and counted in each. Expected size: about 450 genomes.
+- **Planted genomes** (Fable; a sabotage check under rule 9): constructed brains with known behaviour on N2's mask,
+  with every other weight set to zero:
+  - a strongly coupled mutually excitatory pair with a bias that makes two stable states;
+  - a directed inhibitory three-neuron cycle with high gain, which oscillates;
+  - the same pair with weak weights, which fades to one state.
+
+  The script first confirms each by a long direct simulation in float64. A construction that does not behave as
+  intended is replaced or reported, not used. The classifier must name each correctly. If N2's mask has no suitable
+  three-cycle, the oscillating case is built on a small spec of its own and said so.
+
+## What is recorded
+
+For each pilot genome, both histories:
+- the full state every tick from 0 to 300 of the follow-up, every 10th tick to 1800, and every tick from 1801 to 2000
+  (float32, local; about 100 MB for the last stretch, Fable);
+- the read-out difference δy(t) every tick;
+- 03mc's settling range over ticks 291-300, 1891-1900 and 1991-2000;
+- the midpoint Jacobian at the ramp's end: its spectral radius, and whether the linear state norm grows over 10 ticks.
+
+## The classifier (provisional; the pilot tests it)
+
+**Locating a root.** From a history's state at tick 2000, damped Newton (backtracking on |H|) in float64, at most 100
+iterations. A root is **located** if max |H| falls below 10⁻¹²; non-convergence is recorded, not hidden. Recorded with
+it: the final residual, the size of the last steps, the smallest singular value of J_H (conditioning), the distance to
+the starting state, and the float32 residual |H| at the starting state (a precision-aware second reading, Fable).
+
+**Reaching it.** A history **reaches** a located root if the root lies within 10⁻³ of its tick-2000 state *and* a
+float64 continuation of 2000 further ticks from that state ends within 10⁻⁸ of the root, with the distance falling.
+10⁻³ is calibrated by this continuation: the pilot reports, for every history, the tick-2000 distance against the
+continuation's verdict, so the census can use the cheaper rule only if the two agree.
+
+**Stability.** Stable if P's spectral radius is below 1 − 10⁻⁶ per substep (raised to the 32nd power, below
+1 − 3.2 × 10⁻⁵ per tick), unstable if above 1 + 10⁻⁶, otherwise **marginal**. The largest real part of
+diag(1/τ) J_H is reported beside it.
+
+**Classes,** per genome:
+- **separate states:** both histories reach stable roots, distinct (max-norm distance above 10⁻⁶), with a read-out
+  difference between them of at least 0.1 a (03mc's "remaining");
+- **separate states, read-out silent:** the same with a read-out difference below 0.1 a: the state differs, the
+  read-out does not show it;
+- **fading:** both histories reach the same stable root (distance at most 10⁻⁶);
+- **oscillating:** at least one history reaches no root, its settling range is above 10⁻⁴ in both 1891-1900 and
+  1991-2000, the ranges of 1801-1900 and 1901-2000 differ by less than 10%, and there is a lag L from 2 to 50 ticks
+  at which the state returns to within 1% of the window's range at least three times in a row (Astra: one near-return
+  can be a damped oscillation or an irregular transient). Cycles longer than 50 ticks and quasi-periodic trajectories
+  are **unresolved**, not oscillating;
+- **unresolved:** anything else, including an unstable or marginal root, a located root that is not reached, and a
+  Newton failure.
+
+The class distances (10⁻⁶ for "distinct", 10⁻⁸ for "reached") rest on the conditioning recorded above. The class
+counts are also reported with the distinct-root threshold at 10⁻⁴ and 10⁻⁸, as a sensitivity check.
+
+**Descriptions beside the class:**
+- for fading genomes, the decay of the difference near the common root: P³²'s eigenvalues give the discrete rates
+  per tick. A mode's part in δy is its read-out visibility (c ⊙ sech² on its right eigenvector) times its
+  excitation (its left eigenvector on δv at tick 300) (Astra). The predicted late decay is set against the observed
+  slope of log |δy| fitted over windows above the numerical floor. Complex pairs are taken by modulus, and
+  cancellations are reported;
+- for every genome, M1's tanh-consistent midpoint forecast of r(30) against the observed r(30).
+
+## The checks (the pilot's readings)
+
+Each check has a threshold fixed here. A check that fails does not stop the pilot; it says what the census must
+change, and the census plan answers each failure before it is written. **Every check reports the tick-30 and tick-300
+numerator held by the genomes it flags** (Astra): 5% of genomes can carry most of the signal.
+
+- **R1, the 03mc criterion against the classifier.** Among genomes settled at tick 300 by 03mc's criterion (both
+  histories, range below 10⁻⁴), the fraction whose histories both reach stable roots. Passes at 95% or more.
+  *Contemporaneous* agreement too (Astra): the same rules applied to the tick-300 states, Newton from tick 300, so
+  the census knows what a 300-tick follow-up can classify. M1's cohort against "separate states" is reported both
+  ways.
+- **R2, resolution.** The fraction of pilot genomes unresolved at tick 2000, and their numerator. Passes at 5% or
+  less of genomes overall and per graph, **and** at 10% or less of each graph's tick-30 numerator. Class changes
+  between the tick-300 and the tick-2000 classification are tabulated by pair of classes.
+- **R3, integration and batch.** Representatives: every genome not classed fading (both "separate states"
+  subclasses included), and 20 fading genomes per graph (`default_rng(20261024)`). They are rerun at 64 substeps, in
+  float64 at 32 substeps, and at 32 substeps in float32 in a different batch composition (the representatives alone,
+  in batches of 16). Passes if the class agrees in at least 95% of representatives under each, and if each history
+  of every "separate states" genome reaches the same root (within 10⁻⁶ after Newton) under all four. A genome whose
+  basin changes is named: basin choice that depends on rounding, substeps or batch would make the census noisy near
+  basin boundaries. For oscillating genomes, the 64-substep rerun also checks that the cycle is not an artefact of
+  the substep count (aliasing).
+- **R4, local stability by perturbation.** At every root that a representative reaches, perturbations of max norm
+  10⁻⁸, 10⁻⁶ and 10⁻⁴, 8 random ones and the eigenvectors of P's two slowest modes, are integrated in float64 at 32
+  substeps. The horizon is chosen from the discrete decay rate so that the linear forecast falls to 10⁻³ of the
+  initial size, capped at 20,000 ticks. "Returns" if the final distance is below max(10⁻¹², 10 × the linear forecast).
+  Passes if return and P's verdict agree at every root and size; a disagreement is investigated and reported. A
+  10⁻⁴ perturbation that ends at the other history's root is counted apart, as a small basin (Astra: finite
+  perturbations can leave a basin). This **supports** local stability; it does not prove agreement with an
+  eigenvalue sign.
+- **R4′, P against the integrator.** At 20 roots (or all, if fewer), P is compared with the automatic derivative of one
+  `Brain.step` substep at the root. Passes if they agree within 10⁻⁸ (max norm). Where P's radius and the continuous
+  sign disagree, the genome is named.
+- **R5, the family of histories.** For every "separate states" genome and 20 fading genomes per graph
+  (`default_rng(20261025)`): nine ramp starts, 0.25 to 1.75 of the final level in steps of 0.1875, each followed
+  for 2000 ticks and Newton-located as above. Reported: the number of distinct stable roots reached per genome, as a
+  **lower bound** on the states the histories can reach; which starts reach which root; and how many genomes reach
+  more than two. Nine starts cannot show a continuum, nor show that two separate runs of starts reaching one root
+  are one basin (Astra). So R5 reads only "two states" against "more than two" among those reached. A continuum is
+  non-generic for this system, and what would look like one is near-degenerate slow fading (Fable); it is not
+  claimed either way.
+- **R6, the planted genomes.** The classifier names each planted genome's class correctly. Passes only if all do.
+
+## Descriptive outputs for the census
+
+- Per graph and group (carriers, cohort, growers, controls): the class counts, and each class's part of the group's
+  tick-30 and tick-300 numerators. These are not population rates: the groups are chosen, and the census estimates
+  rates.
+- Where the growers fall among the classes.
+- The forecast and decay-rate comparisons, per class.
+- Timing per genome and per check, for the census's cost.
+
+## What the pilot hands the census
+
+- the classifier, revised wherever a check fails, and frozen before the census runs;
+- the follow-up length: 300 or 2000 ticks, or longer if R2 fails at 2000;
+- whether the cheaper "reaches" rule (distance at tick 2000 alone) agrees with the float64 continuation;
+- whether the census needs float64, finer integration or fixed batches (R3);
+- whether the histories reach two states or more (R5), which decides whether the census counts states;
+- the cost per genome.
+
+The census then answers the roadmap's split: how much of N2's excess over the nulls is separate states, and how much
+is fading. It runs on randomly sampled graphs per ensemble, the high-settling null graphs, and batch 7's core-frozen
+and hub-frozen graphs. Genomes the classifier leaves unresolved enter the split as an explicit uncertainty band, not
+as zero.
+
+## Outputs and cost
+
+Scripts in `scripts/memory_m2/` (a README beside them), inside `wormwars.accounting`; outputs in `runs/memory-m2/`
+(JSON committed; trajectories and arrays local). Cost: from the spike's 22 to 30 s per 64 genomes for 2000 ticks, the main
+run is about 4 minutes. The midpoint Jacobians on 5 × 1024 genomes take about 20; R3 about 15; R4 in float64 about
+20 to 30 (Fable); R5 about 10; Newton, conditioning and eigenvalues a few minutes. About 1.5 hours of CPU in all.
+No GPU. The plan and its scripts are reviewed by Astra and Fable before anything runs, and the results before they
+are committed.

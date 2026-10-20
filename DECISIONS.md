@@ -11144,3 +11144,74 @@ roundings. Round 2: both "agree". The reviewed draft is rebuilt in `result.draft
 
 **Next:** the M2 pilot plan (`docs/memory/M2-PILOT-PLAN.md`) is in its third review round; then its code, reviewed,
 committed and pushed before it runs.
+
+## D353 — M2's pilot: a classifier for the census, its checks and its code, reviewed in nine rounds before it runs (2026-10-20)
+
+Step M2 of the memory roadmap starts with a pilot. Its job is to build a per-genome classifier and to test whether it
+can be trusted before a census uses it. The plan is [`docs/memory/M2-PILOT-PLAN.md`](docs/memory/M2-PILOT-PLAN.md)
+(draft 9); the code is `scripts/memory_m2/` (`equilibria.py`, `classify.py`, `pilot.py`), with
+`tests/test_memory_m2.py`. Exploratory; CPU only.
+
+**The central idea.** Under constant input, a state is fixed by one substep of `Brain.step` if and only if
+H(v) = d + tanh(v) M + v G − v ∘ (1 + g) = 0. H contains neither τ nor the substep length, so Newton's method in
+float64 can locate the substep map's fixed points. The spike `scripts/memory_m2/spike_equilibria.py` showed residuals of
+10⁻¹⁵. A root moves by less than 6 × 10⁻¹⁴ under one float64 tick when H is built from the float64 brain itself; built
+from float32 matrices cast to float64, it moves by 1.8 × 10⁻⁷. Stability is the integrator's own: P = I + D Aᵀ, checked
+against the automatic derivative of a full tick (P³², 10⁻¹⁴).
+
+**The classifier.** Separate states (and its read-out-silent subclass), fading, persistent oscillation over the
+observed horizon, and unresolved, named by its reason. A history "reaches" its root if a float64 continuation follows
+the linear propagation of its own difference tick by tick. Root accuracy gates the class. An oscillation needs a
+whole-period recurrence at the integrator being classified, persistence over 20,000 ticks, and a conservative veto: no
+stable or marginal root located from the orbit.
+
+**The checks.**
+- R1: 03mc's settling criterion against the classifier, with the full rules also applied at tick 300.
+- R2: the unresolved fraction and numerator.
+- R3: 64 substeps, float64 and another batch composition.
+- R4: perturbation return.
+- R4′: P against the integrator.
+- R5: nine ramp starts.
+- R6: six planted genomes with known classes.
+
+Five graphs (N2, two high-settling nulls that beat N2, two random nulls) and about 450 genomes.
+
+**Found while building it** (smoke tests in a scratch folder; to be confirmed by the pilot's own records):
+- the integrator destabilises weakly damped rotations. A planted ring stable for the continuous system has P's
+  radius 1.00009 a substep, about (ωh)²/2 from the explicit chemical term, and the integrator cycles;
+- float32 trajectories stall: two fading histories stop at slightly different float32 points near their common root,
+  and |δy| freezes, at 4 × 10⁻⁸ to 7 × 10⁻⁵ on six N2 genomes. A stalled fading genome is "settled" by 03mc's criterion
+  and can be "remaining", so it could enter 03mc's and M1's settling cohort without separate states. The pilot
+  counts this;
+- once the slopes are fitted on float64 continuations, the predicted and observed late decay of fading genomes agree to
+  three digits.
+
+**The review** (`docs/reviews/20261020-m2-pilot-plan/`, nine rounds; rounds 1 to 8 both "revise", round 9 both
+"agree" with cosmetic fixes).
+- **Fable** caught:
+  - that the tick map can hold substep cycles and that P, not the continuous sign, decides stability;
+  - the hidden minimum rate in "reached", its window-against-endpoint bug and the floor below the accuracy gate;
+  - the oscillation rule's tick sampling and its integer lag;
+  - the planted controls (rule 9) and, later, that the damped spiral did not exercise the veto;
+  - the class precedence;
+  - that the rule tests ran nowhere in the suite;
+  - several code defects: the line search, the sticky give-up, the substep count in the oscillation check, and the R4
+    pass rule.
+- **Astra** caught:
+  - that "verified" and "reached" were too strong, with the accuracy gate and the conditioning;
+  - that the seed-7600 growers are not M1's growers, and that the spike's 64 genomes are not a subset of the panel;
+  - the signal-weighted reporting of every check;
+  - that the oscillation rule accepted slow damped spirals, and that a stable cycle can coexist with a stable root,
+    so the root condition is a conservative veto, not a contradiction;
+  - the Newton batch-slicing bug;
+  - the missing full tick-300 classification;
+  - R4's false basin switches;
+  - the precision in R3's float64 variant.
+- **Claude** found and fixed, in smoke tests:
+  - the already-at-root bug in "reached";
+  - the float32 stall;
+  - the integrator cycle;
+  - the recording at the wrong substep count.
+
+**Next:** push, then run the pilot (CPU, a few hours by the plan's estimate, with a stop at a projected 8 hours),
+then its results, reviewed before they are committed.
