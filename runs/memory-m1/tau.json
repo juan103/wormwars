@@ -1,0 +1,261 @@
+{
+ "excluded_invalid_panels": [],
+ "equal": {
+  "N2": {
+   "valid": true,
+   "paired_genomes": 977,
+   "intact": 0.4442157242977326,
+   "control": 0.2339880984692071,
+   "seconds": 74.5
+  },
+  "SH-2010013": {
+   "valid": true,
+   "paired_genomes": 984,
+   "intact": 0.20904748669003473,
+   "control": 0.06124916244561347,
+   "seconds": 74.5
+  },
+  "SH-2010016": {
+   "valid": true,
+   "paired_genomes": 906,
+   "intact": 0.2891079682415122,
+   "control": 0.08349146544228588,
+   "seconds": 73.7
+  },
+  "SH-2010058": {
+   "valid": true,
+   "paired_genomes": 946,
+   "intact": 0.3026177240966653,
+   "control": 0.05228003102158645,
+   "seconds": 74.4
+  },
+  "SH-2010104": {
+   "valid": true,
+   "paired_genomes": 949,
+   "intact": 0.26436987313556315,
+   "control": 0.06016642679118796,
+   "seconds": 75.0
+  },
+  "SH-2010107": {
+   "valid": true,
+   "paired_genomes": 949,
+   "intact": 0.25704272076950474,
+   "control": 0.07713161338896403,
+   "seconds": 73.2
+  },
+  "SH-2010110": {
+   "valid": true,
+   "paired_genomes": 965,
+   "intact": 0.1783702368342912,
+   "control": 0.03272263403600666,
+   "seconds": 73.5
+  },
+  "SH-route-2020011": {
+   "valid": true,
+   "paired_genomes": 884,
+   "intact": 0.2555681885486732,
+   "control": 0.05354918071905425,
+   "seconds": 73.9
+  },
+  "SH-route-2020049": {
+   "valid": true,
+   "paired_genomes": 981,
+   "intact": 0.25388318149622563,
+   "control": 0.036741278048962926,
+   "seconds": 73.1
+  },
+  "SH-route-2020080": {
+   "valid": true,
+   "paired_genomes": 941,
+   "intact": 0.23167882976791562,
+   "control": 0.04312393171270893,
+   "seconds": 74.4
+  },
+  "SH-route-2020110": {
+   "valid": true,
+   "paired_genomes": 989,
+   "intact": 0.22118560870905563,
+   "control": 0.04514693578651798,
+   "seconds": 73.5
+  },
+  "SH-route-2020116": {
+   "valid": true,
+   "paired_genomes": 949,
+   "intact": 0.28247908885044487,
+   "control": 0.07273968533976596,
+   "seconds": 76.7
+  },
+  "SH-route-2020120": {
+   "valid": true,
+   "paired_genomes": 919,
+   "intact": 0.2846573357150342,
+   "control": 0.08666165921297507,
+   "seconds": 74.8
+  },
+  "SH-class-2030024": {
+   "valid": true,
+   "paired_genomes": 933,
+   "intact": 0.2702626443341283,
+   "control": 0.08987833574965584,
+   "seconds": 74.1
+  },
+  "SH-class-2030034": {
+   "valid": true,
+   "paired_genomes": 914,
+   "intact": 0.263020504609924,
+   "control": 0.04751736941197071,
+   "seconds": 73.0
+  },
+  "SH-class-2030048": {
+   "valid": true,
+   "paired_genomes": 970,
+   "intact": 0.31699104365386166,
+   "control": 0.1300193337155858,
+   "seconds": 73.1
+  },
+  "SH-class-2030054": {
+   "valid": true,
+   "paired_genomes": 940,
+   "intact": 0.2727670662573798,
+   "control": 0.0608660674880574,
+   "seconds": 73.8
+  },
+  "SH-class-2030065": {
+   "valid": true,
+   "paired_genomes": 964,
+   "intact": 0.2815150450665795,
+   "control": 0.08014277652092412,
+   "seconds": 73.3
+  },
+  "SH-class-2030109": {
+   "valid": true,
+   "paired_genomes": 963,
+   "intact": 0.2936636838654711,
+   "control": 0.08271559613830454,
+   "seconds": 73.9
+  },
+  "SH-mirror-2040045": {
+   "valid": true,
+   "paired_genomes": 963,
+   "intact": 0.2916553217393367,
+   "control": 0.08885607077653196,
+   "seconds": 73.4
+  },
+  "SH-mirror-2040067": {
+   "valid": true,
+   "paired_genomes": 930,
+   "intact": 0.27464064574087965,
+   "control": 0.07178457309393868,
+   "seconds": 73.2
+  },
+  "SH-mirror-2040077": {
+   "valid": true,
+   "paired_genomes": 883,
+   "intact": 0.28352840947648167,
+   "control": 0.07789225078905042,
+   "seconds": 74.4
+  },
+  "SH-mirror-2040082": {
+   "valid": true,
+   "paired_genomes": 933,
+   "intact": 0.2674765440367234,
+   "control": 0.06005442823832986,
+   "seconds": 73.2
+  },
+  "SH-mirror-2040094": {
+   "valid": true,
+   "paired_genomes": 968,
+   "intact": 0.272608063095819,
+   "control": 0.07706456423375194,
+   "seconds": 75.0
+  },
+  "SH-mirror-2040108": {
+   "valid": true,
+   "paired_genomes": 913,
+   "intact": 0.226079344217382,
+   "control": 0.07000773888048985,
+   "seconds": 75.2
+  },
+  "SH-recip-2050005": {
+   "valid": true,
+   "paired_genomes": 919,
+   "intact": 0.23819184558937093,
+   "control": 0.06687335275093453,
+   "seconds": 74.5
+  },
+  "SH-recip-2050008": {
+   "valid": true,
+   "paired_genomes": 927,
+   "intact": 0.4048915765619558,
+   "control": 0.2540369968977605,
+   "seconds": 74.2
+  },
+  "SH-recip-2050031": {
+   "valid": true,
+   "paired_genomes": 950,
+   "intact": 0.24068564021878197,
+   "control": 0.09404502069356845,
+   "seconds": 74.3
+  },
+  "SH-recip-2050057": {
+   "valid": true,
+   "paired_genomes": 929,
+   "intact": 0.26525247162351956,
+   "control": 0.08092271709705927,
+   "seconds": 73.9
+  },
+  "SH-recip-2050084": {
+   "valid": true,
+   "paired_genomes": 952,
+   "intact": 0.2905376643020077,
+   "control": 0.09139706409774988,
+   "seconds": 73.9
+  },
+  "SH-recip-2050122": {
+   "valid": true,
+   "paired_genomes": 970,
+   "intact": 0.3168676226963675,
+   "control": 0.1675264400387774,
+   "seconds": 74.4
+  }
+ },
+ "permuted": {
+  "N2": {
+   "valid": true,
+   "paired_genomes": 977,
+   "spearman_r30_intact_vs_permuted": 0.3321376060535842
+  },
+  "SH-2010013": {
+   "valid": true,
+   "paired_genomes": 974,
+   "spearman_r30_intact_vs_permuted": 0.35431251271293823
+  },
+  "SH-route-2020011": {
+   "valid": true,
+   "paired_genomes": 884,
+   "spearman_r30_intact_vs_permuted": 0.2964902834835505
+  },
+  "SH-class-2030024": {
+   "valid": true,
+   "paired_genomes": 935,
+   "spearman_r30_intact_vs_permuted": 0.3988573126499818
+  },
+  "SH-mirror-2040045": {
+   "valid": true,
+   "paired_genomes": 966,
+   "spearman_r30_intact_vs_permuted": 0.3565640453505906
+  },
+  "SH-recip-2050005": {
+   "valid": true,
+   "paired_genomes": 920,
+   "spearman_r30_intact_vs_permuted": 0.43416384409511455
+  }
+ },
+ "summary": {
+  "reading_available": true,
+  "usable_reference_graphs": 30,
+  "intact_lead": 0.17278037058275897,
+  "equal_lead": 0.15908597368244815,
+  "random_at_or_above_N2_equal": 1
+ }
+}

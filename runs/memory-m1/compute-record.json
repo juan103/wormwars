@@ -1,0 +1,51 @@
+{
+ "time_unit": "synchronised wall-clock seconds per category (not GPU kernel time)",
+ "neural_update_unit": "strains x batch x substeps network updates (network size not included)",
+ "attempts": [
+  {
+   "file": "20261020T072422Z-5e190b1f.json",
+   "status": "completed",
+   "experiment": "memory-M1",
+   "script": "panels.py",
+   "argv": [],
+   "default_category": "probe",
+   "git_commit": "954d2205e3dff76b37a2a42388f83b85bdf8e3e0"
+  },
+  {
+   "file": "20261020T101814Z-ca7cf269.json",
+   "status": "completed",
+   "experiment": "memory-M1",
+   "script": "tau.py",
+   "argv": [],
+   "default_category": "probe",
+   "git_commit": "f1a9df8e6555285a630bc62847d26102b817c9b0"
+  },
+  {
+   "file": "20261020T110355Z-e1ce04f5.json",
+   "status": "completed",
+   "experiment": "memory-M1",
+   "script": "growers.py",
+   "argv": [],
+   "default_category": "probe",
+   "git_commit": "f1a9df8e6555285a630bc62847d26102b817c9b0"
+  }
+ ],
+ "failed_attempts": 0,
+ "uncategorised": false,
+ "categories": {
+  "probe": {
+   "worlds_built": 0,
+   "world_ticks": 0,
+   "neural_updates": 2156232704,
+   "neural_padding": 0,
+   "seconds": 13837.160206500033
+  }
+ },
+ "totals": {
+  "worlds_built": 0,
+  "world_ticks": 0,
+  "neural_updates": 2156232704,
+  "neural_padding": 0,
+  "seconds_timed": 13837.160206500033
+ }
+}

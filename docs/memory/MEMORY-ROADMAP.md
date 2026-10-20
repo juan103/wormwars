@@ -36,6 +36,16 @@ ideas, then a critical, honest selection.
    - **What is extreme is the registered, amplitude-weighted share.** N2's upper quartile of per-genome retention is high (0.558; 0 to 3 of 128 graphs per ensemble reach it), and the largest tick-30 contributors carry an unusual part of the signal. These two selections overlap, but how much has not been measured.
    - **The amplitude-retention association is weaker in N2:** −0.13, against −0.39 to −0.42. It is negative in both, and a Pearson correlation of log amplitude against a ratio that contains the amplitude is a crude measure of it.
    - Astra's wording is the accurate one: **N2 retains a larger amplitude-weighted fraction of its turn-history signal.**
+
+   *Corrected 2026-10-20 (M1, D350; [`M1-RESULTS.md`](M1-RESULTS.md)). "What is extreme is the registered,
+   amplitude-weighted share" is misleading. On 03mc's arrays the exact decomposition, eligible share = E[r] +
+   Cov(a, r)/E[a], shows N2's unweighted mean per-genome retention to be extreme too (0.586, against ensemble medians of
+   0.370 to 0.412; none of the 640 graphs reaches it), and the amplitude weighting lowers N2's share (covariance term
+   −0.152, against medians of −0.111 to −0.128). N2's retention is above the median graph's in every amplitude stratum
+   with common support, and its largest contributors carry much of the lead. "The typical N2 brain is not shown to
+   forget more slowly" still holds for the median genome. The "weaker amplitude-retention association" above is a
+   Pearson correlation of log a against r; it does not carry over to the exact covariance term, which is more negative
+   in N2.*
 2. **A minority of brains may be multistable, in N2 and in some nulls.** This is batch 8 (512 genomes, seed 7500, follow 300) read against 03mc's committed census.
    - **Expansion at the midpoint.** In 21 of 512 N2 genomes, the one-tick Jacobian has spectral radius above 1 at the midpoint between the two histories' ramp-end states. Only 6 of 512 have a radius above 1 at a history's own ramp-end state. Their overlap with the 21 was not recorded.
    - **The settled genomes.** 8 N2 genomes meet the script's "settled" rule: a start difference of at least 10⁻³, more than 10% of it left at tick 300, and a change between ticks 250 and 300 of less than 2% of the start difference. All 8 are among the 21, and none of the 8 has an own-state radius above 1.
@@ -63,9 +73,9 @@ ideas, then a critical, honest selection.
    |---|---|
    | a numerical artefact | 16 substeps against the baseline 32 give very similar aggregate retention. That does not rule out numerical effects on the rare classes in finding 2. |
    | warm-up length, food level | The N2-SH lead holds from 25 to 400 ticks of warm-up and from half to twice the food level. Pulses, other ramp durations and other input directions are untested. |
-   | a time-constant lottery | Single-neuron correlations of tau or bias with retention are small: at most 0.10 in N2, and 0.12 in SH-class. Interactions, tau permutation and equal taus are untested (Astra). |
+   | a time-constant lottery | Single-neuron correlations of tau or bias with retention are small: at most 0.10 in N2, and 0.12 in SH-class. Interactions, tau permutation and equal taus are untested (Astra). *Annotated 2026-10-20 (M1): with equal taus the lead survives (92% of the intact lead); the permutation diagnostic correlates 0.30 to 0.43 in N2 and the nulls alike.* |
    | a pharyngeal reservoir | The pharynx keeps its own difference longest, but erasing it does not change the tick-30 read-out. |
-   | a network-wide slow mode, or transient growth | Spectra and non-normality are as in the nulls. |
+   | a network-wide slow mode, or transient growth | Spectra and non-normality are as in the nulls. *Annotated 2026-10-20 (M1): at the genome level, under the frozen ramp-end Jacobian, 4.8% of N2's eligible genomes grow transiently with radius below 1 and carry 30% of the tick-30 numerator, against 0 to 0.6% (and at most 4.8% of the numerator) in the five null graphs sampled. The transient-growth kill is not rejected; one graph per ensemble is a small reference.* |
    | the eight read-out neurons as the store | Erased, the signal regrows to about 82% from outside the eight. Where outside is not isolated. |
    | gap junctions | The chemical layer carries most of the effect, and turning gaps off lengthens memory in N2 and in the one SH graph tested. Their different penalties (0.07 for N2, 0.19 for SH) could still contribute to the gap between graphs. |
    | triangle counts as such | Not sufficient; loops in particular weighted arrangements are untested. |
@@ -73,9 +83,9 @@ ideas, then a critical, honest selection.
 5. **The reviewers' objections, and where the plan takes them up.**
    - **The core was selected on the result** (Fable). M3 defines a core from the anatomy alone.
    - **Writing, holding and reading are not separated** (both). M4 intervenes during the hold only.
-   - **Persistence and alignment are not separated** (Astra). The output's retention factors into the persistence of the activity difference and its alignment with the turn read-out; M1 measures both in the genomes that carry the signal.
+   - **Persistence and alignment are not separated** (Astra). The output's retention factors into the persistence of the activity difference and its alignment with the turn read-out; M1 measures both in the genomes that carry the signal. *Annotated 2026-10-20 (M1): measured on all eligible genomes, a-weighted; the alignment part of N2's excess is negative, and persistence carries all of it (D2 does not fire).*
    - **Batch 3's linear forecast projects the voltage, not the tanh output** (Astra). M2 corrects the observable.
-   - **Response amplitude is untested** (Fable, using Astra's round-2 design). M1 scales it.
+   - **Response amplitude is untested** (Fable, using Astra's round-2 design). M1 scales it. *Annotated 2026-10-20 (M1): scaled; D1 is inconclusive on its coverage condition, and most of the lead survives every amplitude match that could be made.*
    - **Erasures conflate location with amount** (both). M4 matches controls for erased norm and immediate output effect.
    - **The spike rewirings are not 03's samplers** (Fable): they keep the parent's autapses and carry each weight with its edge. Genomes are drawn per graph, so the same seed does not give the same signed brain, and "frozen" protects the core's edges without forbidding new internal ones (Astra). M4 adds 03's conventions and paired genomes.
    - **Dissolution changes two things at once** (Astra): internal edges go and boundary edges come. M4 separates them.

@@ -11040,3 +11040,48 @@ at `954d220`. Both asked, non-blocking, for the mixed-eligibility case to be a c
 `tests/test_memory_m1.py::test_the_summary_runs_with_a_reference_panel_below_b3s_minimum` (marked slow) builds real
 panels on N2's wiring, rewrites one reference as `panels.py` writes a panel below B3's minimum, and runs the summary. It
 passes, and on the round-7 code it fails with the `KeyError` Astra found. No script changed.
+
+## D350 — M1's results: D2 does not fire, D1 inconclusive on its conditions; the memory roadmap's finding 1 corrected (2026-10-20)
+
+M1 ran in full on the CPU (07:24 to 11:15 UTC; every step exited 0; all 42 panels valid; the largest batch-composition
+gap 6.3 × 10⁻⁷). The results are [`docs/memory/M1-RESULTS.md`](docs/memory/M1-RESULTS.md); the outputs are committed in
+`runs/memory-m1/` (the JSON files, `run_steps.txt`, a copy of the step log, and `compute-record.json`, a copy of the compute record; per-genome arrays, compute attempts
+and the other logs stay local).
+
+**Readings, as the plan's coded rules give them:**
+- **D1, amplitude: inconclusive (conditions).** B3's covered genomes hold 34% and 41% of N2's numerator (75% needed).
+  Descriptively f = 1.08 and 1.23 on a, 0.85 and 0.92 on ‖δa(0)‖; the unmatched top stratum, which holds 79 to 83% of N2's
+  numerator, is not settled by these.
+- **D2, alignment: does not fire.** The alignment part of N2's excess is negative on both panels; persistence of the
+  activity difference carries all of it.
+- **Kills:** gap "support" on seed 7600 (seed 7600 is the coded panel; seed 7700 reads partial); antisymmetry not
+  rejected and not distinctive; equal tau survives (92% of the lead); growers not rejected (under the frozen ramp-end
+  Jacobian, 4.8% of N2's genomes, 30% of the numerator, against at most 0.6% in five sampled nulls).
+- **For M2:** the settling cohort carries 0.30 to 0.38 of the mean tick-30 lead and 0.66 to 0.68 of the tick-300 lead.
+
+**Corrections (rule 4).** The memory roadmap's finding 1 called the amplitude-weighted share the extreme quantity; the
+exact decomposition shows N2's unweighted mean retention is extreme too (0.586; no graph of 640 reaches it) and the
+weighting lowers N2's share. A dated correction is added beside the finding, and four other statements M1 overtakes are
+annotated. Claude's own two chat statements to the owner during the run ("the average genome keeps 0.59", "the upper
+half generally"; then "roughly the top quarter") went further than the files; `M1-RESULTS.md` corrects them.
+
+**After the data:** `scripts/memory_m1/check_b3_balance.py` shows why B3's balance condition reads 0 (no used stratum
+holds 10% of N2's numerator), so that condition was vacuous. `tests/test_memory_m1.py` now always writes into a fresh
+temporary folder (it used `setdefault`, which an inherited `MEMORY_M1_OUT` could point at `runs/`).
+
+**The review** (`docs/reviews/20261020-m1-results/`): round 1, both "revise", no reading changed; round 2, both
+"revise" on three sentences (Fable and Astra: "alignment improves in every graph" was false, 3 of 30 have A′ below 1;
+Astra: "N2's lead is mostly graded" survived from draft 1, and the top stratum's 82% is SH's value, 79 to 83% by
+ensemble; Fable: the step log cited was local), fixed in draft 3. Round 3: Fable "revise" on one item (the compute
+record cited was gitignored; now committed as `compute-record.json`), Astra "agree" after that fix (run with an explicit
+effort after a first attempt was refused by `consult.py` for lacking one). Draft 3 is committed. **Fable** re-derived
+every reading and caught the gap kill's partial second panel, the overclaim "every descriptive number points the same
+way" (N2 is below the median graph in the top stratum in four of five ensembles), three untraceable numbers, a population
+label, the stale roadmap statements, and that smaller k on every graph would collapse the null population. **Astra**
+reproduced `summary.json` and its bootstrap, and caught that a one-time complement erasure does not locate a store, that
+the grower check is a frozen linearisation, the "upper quarter" overreach, the all-genome population labels, and the
+naming of N and A′.
+
+**Next:** M2's pilot goes ahead. D1's targeted replication (smaller k on N2 only, coverage reported against the original
+population, the balance condition addressed) is written as a dated amendment to the plan before it runs; Astra would run
+it before M2's large census.

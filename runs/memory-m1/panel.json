@@ -1,0 +1,56 @@
+{
+ "random": [
+  "SH-2010013",
+  "SH-2010016",
+  "SH-2010058",
+  "SH-2010104",
+  "SH-2010107",
+  "SH-2010110",
+  "SH-route-2020011",
+  "SH-route-2020049",
+  "SH-route-2020080",
+  "SH-route-2020110",
+  "SH-route-2020116",
+  "SH-route-2020120",
+  "SH-class-2030024",
+  "SH-class-2030034",
+  "SH-class-2030048",
+  "SH-class-2030054",
+  "SH-class-2030065",
+  "SH-class-2030109",
+  "SH-mirror-2040045",
+  "SH-mirror-2040067",
+  "SH-mirror-2040077",
+  "SH-mirror-2040082",
+  "SH-mirror-2040094",
+  "SH-mirror-2040108",
+  "SH-recip-2050005",
+  "SH-recip-2050008",
+  "SH-recip-2050031",
+  "SH-recip-2050057",
+  "SH-recip-2050084",
+  "SH-recip-2050122"
+ ],
+ "selected": {
+  "SH": {
+   "top_share": "SH-2010075",
+   "top_cohort": "SH-2010091"
+  },
+  "SH-route": {
+   "top_share": "SH-route-2020092",
+   "top_cohort": "SH-route-2020004"
+  },
+  "SH-class": {
+   "top_share": "SH-class-2030099",
+   "top_cohort": "SH-class-2030029"
+  },
+  "SH-mirror": {
+   "top_share": "SH-mirror-2040028",
+   "top_cohort": "SH-mirror-2040124"
+  },
+  "SH-recip": {
+   "top_share": "SH-recip-2050039",
+   "top_cohort": "SH-recip-2050040"
+  }
+ }
+}

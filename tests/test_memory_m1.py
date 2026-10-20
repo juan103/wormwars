@@ -9,7 +9,7 @@ import pytest
 import torch
 
 ROOT = Path(__file__).resolve().parents[1]
-os.environ.setdefault("MEMORY_M1_OUT", tempfile.mkdtemp(prefix="memory-m1-test-"))  # nothing is written into runs/
+os.environ["MEMORY_M1_OUT"] = tempfile.mkdtemp(prefix="memory-m1-test-")  # always a scratch folder: nothing is written into runs/
 sys.path.insert(0, str(ROOT / "scripts" / "memory_m1"))
 
 
