@@ -1,0 +1,410 @@
+{
+ "graphs": {
+  "N2": {
+   "genomes": 100,
+   "unresolved_at_300": 15,
+   "reasons_at_300": {
+    "Newton failure; unstable or marginal root": 1,
+    "located root not reached": 13,
+    "Newton failure": 1
+   },
+   "class_changes_300_to_2000": {
+    "unresolved (located root not reached) -> fading": 12,
+    "unresolved (Newton failure) -> fading": 1
+   },
+   "unresolved": [
+    {
+     "genome": 26,
+     "groups": [
+      "carriers"
+     ],
+     "reason": "Newton failure; no root located from the orbit; unconfirmed candidate; unstable or marginal root",
+     "a": 0.3829537406563759,
+     "d30": 1.1015714406967163,
+     "d300": 0.13000178337097168,
+     "dist_end_root": [
+      0.579232875204905,
+      1.9304928962095944
+     ],
+     "sigma_min": [
+      6.516578556754902e-07,
+      0.042304115721016854
+     ],
+     "reach": [
+      "not located",
+      "not approaching"
+     ],
+     "oscillation": [
+      {
+       "period_substeps": null,
+       "range_late": 3.9443505232410314,
+       "range_ref": 3.9446465969085693,
+       "verdict": "unconfirmed candidate"
+      },
+      {
+       "period_substeps": null,
+       "range_late": 3.944707437749217,
+       "range_ref": 3.9445667266845703,
+       "verdict": "no root located from the orbit"
+      }
+     ]
+    },
+    {
+     "genome": 349,
+     "groups": [
+      "carriers",
+      "cohort"
+     ],
+     "reason": "located root not reached",
+     "a": 0.722900390625,
+     "d30": 0.7596508860588074,
+     "d300": 0.7125714719295502,
+     "dist_end_root": [
+      0.0001628002080553692,
+      0.0013808271234689862
+     ],
+     "sigma_min": [
+      0.06786439324485315,
+      0.00793716365203691
+     ],
+     "reach": [
+      "reached",
+      "not approaching"
+     ],
+     "oscillation": [
+      null,
+      null
+     ]
+    }
+   ],
+   "separate_outside_cohort": [
+    {
+     "genome": 666,
+     "groups": [
+      "carriers"
+     ],
+     "settled300": false,
+     "class300": "separate states",
+     "reason300": null
+    }
+   ],
+   "fading_dy300_above_remaining": [
+    {
+     "genome": 460,
+     "groups": [
+      "carriers"
+     ]
+    },
+    {
+     "genome": 593,
+     "groups": [
+      "carriers"
+     ]
+    },
+    {
+     "genome": 759,
+     "groups": [
+      "growers"
+     ]
+    }
+   ],
+   "pilot_share_of_eligible_numerator30": 0.5901619797350103,
+   "unresolved_share_of_eligible_numerator30": 0.03389689147746292,
+   "unresolved_share_of_pilot_numerator30": {
+    "26": 0.033994061825924626,
+    "349": 0.023442527858627788
+   },
+   "grower_criterion_by_class": {
+    "fading (not in the growers group)": 10,
+    "fading (in the growers group)": 32,
+    "separate states (not in the growers group)": 1
+   },
+   "fading_slope_differences_above_1e-3": [
+    {
+     "genome": 460,
+     "predicted": -0.037979204546001476,
+     "observed": -0.034527790425857414
+    },
+    {
+     "genome": 593,
+     "predicted": -0.0112152652949106,
+     "observed": -0.009709062186834051
+    }
+   ],
+   "root_distance_300_and_2000_unresolved": {
+    "26": {
+     "tick300": [
+      1.7393204156270605,
+      0.5781058784807214
+     ],
+     "tick2000": [
+      0.579232875204905,
+      1.9304928962095944
+     ]
+    },
+    "349": {
+     "tick300": [
+      0.0001628002080553692,
+      0.0013808271234689862
+     ],
+     "tick2000": [
+      0.0001628002080553692,
+      0.0013808271234689862
+     ]
+    }
+   },
+   "r3_representatives": 36,
+   "r3_discordant_or_root_changed": [
+    {
+     "variant": "substeps64",
+     "genome": 26,
+     "main": "unresolved",
+     "variant_class": "unresolved",
+     "variant_reason": "no root located from the orbit; unconfirmed candidate; unstable or marginal root",
+     "same_root": [
+      false,
+      false
+     ]
+    },
+    {
+     "variant": "substeps64",
+     "genome": 349,
+     "main": "unresolved",
+     "variant_class": "separate states",
+     "variant_reason": null,
+     "same_root": [
+      true,
+      true
+     ]
+    },
+    {
+     "variant": "float64",
+     "genome": 26,
+     "main": "unresolved",
+     "variant_class": "unresolved",
+     "variant_reason": "Newton failure; unconfirmed candidate; unstable or marginal root",
+     "same_root": [
+      false,
+      false
+     ]
+    },
+    {
+     "variant": "float64",
+     "genome": 349,
+     "main": "unresolved",
+     "variant_class": "separate states",
+     "variant_reason": null,
+     "same_root": [
+      true,
+      true
+     ]
+    },
+    {
+     "variant": "batch16",
+     "genome": 26,
+     "main": "unresolved",
+     "variant_class": "unresolved",
+     "variant_reason": "Newton failure; no root located from the orbit; unconfirmed candidate; unstable or marginal root",
+     "same_root": [
+      false,
+      false
+     ]
+    },
+    {
+     "variant": "batch16",
+     "genome": 349,
+     "main": "unresolved",
+     "variant_class": "unresolved",
+     "variant_reason": "located root not reached",
+     "same_root": [
+      true,
+      false
+     ]
+    }
+   ],
+   "r5_switches": {
+    "separate states: 2 roots, 1 switches, 0 unresolved starts": 14,
+    "fading: 1 roots, 0 switches, 0 unresolved starts": 20
+   },
+   "seconds": {
+    "classify": 356.5,
+    "r3": 381.5,
+    "r5": 69.5
+   }
+  },
+  "SH-recip-2050039": {
+   "genomes": 104,
+   "unresolved_at_300": 5,
+   "reasons_at_300": {
+    "located root not reached": 5
+   },
+   "class_changes_300_to_2000": {
+    "unresolved (located root not reached) -> separate states": 4,
+    "unresolved (located root not reached) -> fading": 1
+   },
+   "unresolved": [],
+   "separate_outside_cohort": [
+    {
+     "genome": 118,
+     "groups": [
+      "carriers"
+     ],
+     "settled300": false,
+     "class300": "unresolved",
+     "reason300": "located root not reached"
+    },
+    {
+     "genome": 632,
+     "groups": [
+      "carriers"
+     ],
+     "settled300": false,
+     "class300": "unresolved",
+     "reason300": "located root not reached"
+    },
+    {
+     "genome": 654,
+     "groups": [
+      "carriers"
+     ],
+     "settled300": false,
+     "class300": "unresolved",
+     "reason300": "located root not reached"
+    },
+    {
+     "genome": 777,
+     "groups": [
+      "carriers"
+     ],
+     "settled300": false,
+     "class300": "unresolved",
+     "reason300": "located root not reached"
+    }
+   ],
+   "fading_dy300_above_remaining": [],
+   "pilot_share_of_eligible_numerator30": 0.6216649231505028,
+   "unresolved_share_of_eligible_numerator30": 0.0,
+   "unresolved_share_of_pilot_numerator30": {},
+   "grower_criterion_by_class": {},
+   "fading_slope_differences_above_1e-3": [],
+   "root_distance_300_and_2000_unresolved": {},
+   "r3_representatives": 88,
+   "r3_discordant_or_root_changed": [],
+   "r5_switches": {
+    "separate states: 2 roots, 1 switches, 0 unresolved starts": 68,
+    "fading: 1 roots, 0 switches, 0 unresolved starts": 20
+   },
+   "seconds": {
+    "classify": 221.9,
+    "r3": 467.5,
+    "r5": 458.7
+   }
+  },
+  "SH-class-2030099": {
+   "genomes": 68,
+   "unresolved_at_300": 1,
+   "reasons_at_300": {
+    "located root not reached": 1
+   },
+   "class_changes_300_to_2000": {
+    "unresolved (located root not reached) -> fading": 1
+   },
+   "unresolved": [],
+   "separate_outside_cohort": [],
+   "fading_dy300_above_remaining": [],
+   "pilot_share_of_eligible_numerator30": 0.7211192891756454,
+   "unresolved_share_of_eligible_numerator30": 0.0,
+   "unresolved_share_of_pilot_numerator30": {},
+   "grower_criterion_by_class": {
+    "fading (in the growers group)": 2
+   },
+   "fading_slope_differences_above_1e-3": [],
+   "root_distance_300_and_2000_unresolved": {},
+   "r3_representatives": 54,
+   "r3_discordant_or_root_changed": [],
+   "r5_switches": {
+    "separate states: 2 roots, 1 switches, 0 unresolved starts": 34,
+    "fading: 1 roots, 0 switches, 0 unresolved starts": 20
+   },
+   "seconds": {
+    "classify": 81.7,
+    "r3": 137.3,
+    "r5": 97.3
+   }
+  },
+  "SH-2010013": {
+   "genomes": 96,
+   "unresolved_at_300": 3,
+   "reasons_at_300": {
+    "located root not reached": 2,
+    "Newton failure": 1
+   },
+   "class_changes_300_to_2000": {
+    "unresolved (located root not reached) -> fading": 2,
+    "unresolved (Newton failure) -> fading": 1
+   },
+   "unresolved": [],
+   "separate_outside_cohort": [],
+   "fading_dy300_above_remaining": [],
+   "pilot_share_of_eligible_numerator30": 0.3918716083633558,
+   "unresolved_share_of_eligible_numerator30": 0.0,
+   "unresolved_share_of_pilot_numerator30": {},
+   "grower_criterion_by_class": {
+    "fading (in the growers group)": 1
+   },
+   "fading_slope_differences_above_1e-3": [
+    {
+     "genome": 371,
+     "predicted": -0.023957009276082797,
+     "observed": -0.019873387982102145
+    }
+   ],
+   "root_distance_300_and_2000_unresolved": {},
+   "r3_representatives": 20,
+   "r3_discordant_or_root_changed": [],
+   "r5_switches": {
+    "fading: 1 roots, 0 switches, 0 unresolved starts": 20
+   },
+   "seconds": {
+    "classify": 298.7,
+    "r3": 58.7,
+    "r5": 44.3
+   }
+  },
+  "SH-mirror-2040045": {
+   "genomes": 99,
+   "unresolved_at_300": 5,
+   "reasons_at_300": {
+    "located root not reached": 5
+   },
+   "class_changes_300_to_2000": {
+    "unresolved (located root not reached) -> fading": 5
+   },
+   "unresolved": [],
+   "separate_outside_cohort": [],
+   "fading_dy300_above_remaining": [],
+   "pilot_share_of_eligible_numerator30": 0.40400693678841004,
+   "unresolved_share_of_eligible_numerator30": 0.0,
+   "unresolved_share_of_pilot_numerator30": {},
+   "grower_criterion_by_class": {
+    "fading (in the growers group)": 3
+   },
+   "fading_slope_differences_above_1e-3": [],
+   "root_distance_300_and_2000_unresolved": {},
+   "r3_representatives": 20,
+   "r3_discordant_or_root_changed": [],
+   "r5_switches": {
+    "fading: 1 roots, 0 switches, 0 unresolved starts": 20
+   },
+   "seconds": {
+    "classify": 239.6,
+    "r3": 57.0,
+    "r5": 41.9
+   }
+  }
+ },
+ "stationary_stalls": {
+  "genomes": 345,
+  "median_dy2000": 7.092952728271484e-06
+ }
+}

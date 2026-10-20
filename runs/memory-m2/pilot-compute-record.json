@@ -1,0 +1,33 @@
+{
+ "time_unit": "synchronised wall-clock seconds per category (not GPU kernel time)",
+ "neural_update_unit": "strains x batch x substeps network updates (network size not included)",
+ "attempts": [
+  {
+   "file": "20261020T163957Z-06c06c66.json",
+   "status": "completed",
+   "experiment": "memory-M2-pilot",
+   "script": "pilot.py",
+   "argv": [],
+   "default_category": "probe",
+   "git_commit": "6809c25ccd0136ca8922ef301142af3c085fc8bb"
+  }
+ ],
+ "failed_attempts": 0,
+ "uncategorised": false,
+ "categories": {
+  "probe": {
+   "worlds_built": 0,
+   "world_ticks": 0,
+   "neural_updates": 672680896,
+   "neural_padding": 0,
+   "seconds": 4714.3756181999925
+  }
+ },
+ "totals": {
+  "worlds_built": 0,
+  "world_ticks": 0,
+  "neural_updates": 672680896,
+  "neural_padding": 0,
+  "seconds_timed": 4714.3756181999925
+ }
+}

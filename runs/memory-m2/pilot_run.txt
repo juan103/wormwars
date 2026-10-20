@@ -1,0 +1,49 @@
+N2 {'carriers': 38, 'carriers_uncapped': 38, 'carriers_numerator_frac': 0.5055279617335637, 'cohort': 14, 'growers': 32, 'growers_pool': 61, 'controls': 32, 'all': 100}
+SH-recip-2050039 {'carriers': 39, 'carriers_uncapped': 39, 'carriers_numerator_frac': 0.5009893808259778, 'cohort': 64, 'growers': 0, 'growers_pool': 0, 'controls': 32, 'all': 104}
+SH-class-2030099 {'carriers': 20, 'carriers_uncapped': 20, 'carriers_numerator_frac': 0.513707729640695, 'cohort': 34, 'growers': 2, 'growers_pool': 2, 'controls': 32, 'all': 68}
+SH-2010013 {'carriers': 64, 'carriers_uncapped': 118, 'carriers_numerator_frac': 0.3660854458785132, 'cohort': 0, 'growers': 1, 'growers_pool': 1, 'controls': 32, 'all': 96}
+SH-mirror-2040045 {'carriers': 64, 'carriers_uncapped': 116, 'carriers_numerator_frac': 0.373333873591127, 'cohort': 0, 'growers': 3, 'growers_pool': 3, 'controls': 32, 'all': 99}
+stage sample 402.0 s
+N2 100 genomes 40.7 s
+SH-recip-2050039 104 genomes 38.0 s
+SH-class-2030099 68 genomes 27.2 s
+SH-2010013 96 genomes 36.2 s
+SH-mirror-2040045 99 genomes 38.9 s
+stage main 181.1 s
+N2 356.5 s {'fading': 84, 'separate states': 14, 'unresolved': 2}
+projection after the first graph: about 1.5 h
+SH-recip-2050039 221.9 s {'fading': 36, 'separate states': 68}
+SH-class-2030099 81.7 s {'fading': 34, 'separate states': 34}
+SH-2010013 298.7 s {'fading': 96}
+SH-mirror-2040045 239.6 s {'fading': 99}
+stage classify 1198.4 s
+R3 N2 36 representatives 381.5 s
+R3 SH-recip-2050039 88 representatives 467.5 s
+R3 SH-class-2030099 54 representatives 137.3 s
+R3 SH-2010013 20 representatives 58.7 s
+R3 SH-mirror-2040045 20 representatives 57.0 s
+stage r3 1101.9 s
+R4 N2 49 roots 64.5 s
+R4 SH-recip-2050039 156 roots 402.4 s
+R4 SH-class-2030099 88 roots 95.0 s
+R4 SH-2010013 20 roots 22.5 s
+R4 SH-mirror-2040045 20 roots 20.5 s
+stage r4 605.0 s
+R4' 1.2878587085651816e-14 0 sign disagreements
+stage r4p 9.0 s
+R5 N2 34 genomes 69.5 s
+R5 SH-recip-2050039 88 genomes 458.7 s
+R5 SH-class-2030099 54 genomes 97.3 s
+R5 SH-2010013 20 genomes 44.3 s
+R5 SH-mirror-2040045 20 genomes 41.9 s
+stage r5 711.8 s
+R6 bistable separate states None correct
+R6 bistable, read-out silent separate states, read-out silent None correct
+R6 fading fading None correct
+R6 oscillating persistent oscillation None correct
+R6 integrator cycle persistent oscillation None correct
+R6 damped spiral unresolved candidate around a stable root; unstable or marginal root correct
+stage r6 505.1 s
+{"R1": true, "R2": true, "R3": true, "R4": true, "R4p": true, "R5": null, "R6": true}
+stage summary 0.1 s
+rc=0

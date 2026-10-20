@@ -1,0 +1,753 @@
+{
+ "representatives": [
+  26,
+  56,
+  81,
+  90,
+  134,
+  174,
+  194,
+  227,
+  229,
+  243,
+  298,
+  349,
+  373,
+  419,
+  460,
+  507,
+  513,
+  520,
+  558,
+  564,
+  576,
+  591,
+  618,
+  666,
+  713,
+  715,
+  767,
+  810,
+  818,
+  869,
+  902,
+  965,
+  986,
+  996,
+  1019,
+  1022
+ ],
+ "variants": {
+  "substeps64": {
+   "classes": [
+    "unresolved",
+    "fading",
+    "fading",
+    "fading",
+    "fading",
+    "separate states",
+    "fading",
+    "separate states",
+    "fading",
+    "fading",
+    "fading",
+    "separate states",
+    "fading",
+    "fading",
+    "fading",
+    "fading",
+    "separate states",
+    "fading",
+    "fading",
+    "fading",
+    "fading",
+    "fading",
+    "separate states",
+    "separate states",
+    "separate states",
+    "fading",
+    "separate states",
+    "separate states",
+    "separate states",
+    "separate states",
+    "fading",
+    "separate states",
+    "fading",
+    "separate states",
+    "separate states",
+    "separate states"
+   ],
+   "reasons": [
+    "no root located from the orbit; unconfirmed candidate; unstable or marginal root",
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+   ],
+   "same_root": [
+    [
+     false,
+     false
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ]
+   ]
+  },
+  "float64": {
+   "classes": [
+    "unresolved",
+    "fading",
+    "fading",
+    "fading",
+    "fading",
+    "separate states",
+    "fading",
+    "separate states",
+    "fading",
+    "fading",
+    "fading",
+    "separate states",
+    "fading",
+    "fading",
+    "fading",
+    "fading",
+    "separate states",
+    "fading",
+    "fading",
+    "fading",
+    "fading",
+    "fading",
+    "separate states",
+    "separate states",
+    "separate states",
+    "fading",
+    "separate states",
+    "separate states",
+    "separate states",
+    "separate states",
+    "fading",
+    "separate states",
+    "fading",
+    "separate states",
+    "separate states",
+    "separate states"
+   ],
+   "reasons": [
+    "Newton failure; unconfirmed candidate; unstable or marginal root",
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+   ],
+   "same_root": [
+    [
+     false,
+     false
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ]
+   ]
+  },
+  "batch16": {
+   "classes": [
+    "unresolved",
+    "fading",
+    "fading",
+    "fading",
+    "fading",
+    "separate states",
+    "fading",
+    "separate states",
+    "fading",
+    "fading",
+    "fading",
+    "unresolved",
+    "fading",
+    "fading",
+    "fading",
+    "fading",
+    "separate states",
+    "fading",
+    "fading",
+    "fading",
+    "fading",
+    "fading",
+    "separate states",
+    "separate states",
+    "separate states",
+    "fading",
+    "separate states",
+    "separate states",
+    "separate states",
+    "separate states",
+    "fading",
+    "separate states",
+    "fading",
+    "separate states",
+    "separate states",
+    "separate states"
+   ],
+   "reasons": [
+    "Newton failure; no root located from the orbit; unconfirmed candidate; unstable or marginal root",
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    "located root not reached",
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+   ],
+   "same_root": [
+    [
+     false,
+     false
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     false
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ]
+   ]
+  }
+ },
+ "main_classes": [
+  "unresolved",
+  "fading",
+  "fading",
+  "fading",
+  "fading",
+  "separate states",
+  "fading",
+  "separate states",
+  "fading",
+  "fading",
+  "fading",
+  "unresolved",
+  "fading",
+  "fading",
+  "fading",
+  "fading",
+  "separate states",
+  "fading",
+  "fading",
+  "fading",
+  "fading",
+  "fading",
+  "separate states",
+  "separate states",
+  "separate states",
+  "fading",
+  "separate states",
+  "separate states",
+  "separate states",
+  "separate states",
+  "fading",
+  "separate states",
+  "fading",
+  "separate states",
+  "separate states",
+  "separate states"
+ ],
+ "seconds": 381.5
+}

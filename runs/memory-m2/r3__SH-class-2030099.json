@@ -1,0 +1,1113 @@
+{
+ "representatives": [
+  5,
+  25,
+  26,
+  27,
+  54,
+  74,
+  85,
+  125,
+  140,
+  146,
+  155,
+  184,
+  196,
+  230,
+  241,
+  285,
+  289,
+  316,
+  317,
+  320,
+  342,
+  353,
+  367,
+  372,
+  398,
+  406,
+  452,
+  470,
+  491,
+  500,
+  522,
+  563,
+  573,
+  579,
+  600,
+  628,
+  671,
+  706,
+  724,
+  750,
+  751,
+  808,
+  827,
+  852,
+  881,
+  890,
+  930,
+  938,
+  964,
+  965,
+  969,
+  972,
+  981,
+  1003
+ ],
+ "variants": {
+  "substeps64": {
+   "classes": [
+    "separate states",
+    "separate states",
+    "separate states",
+    "fading",
+    "separate states",
+    "separate states",
+    "separate states",
+    "fading",
+    "separate states",
+    "separate states",
+    "separate states",
+    "separate states",
+    "fading",
+    "separate states",
+    "separate states",
+    "fading",
+    "fading",
+    "separate states",
+    "separate states",
+    "fading",
+    "fading",
+    "fading",
+    "fading",
+    "separate states",
+    "separate states",
+    "separate states",
+    "separate states",
+    "separate states",
+    "separate states",
+    "separate states",
+    "separate states",
+    "fading",
+    "fading",
+    "separate states",
+    "fading",
+    "separate states",
+    "separate states",
+    "fading",
+    "separate states",
+    "separate states",
+    "separate states",
+    "separate states",
+    "separate states",
+    "fading",
+    "fading",
+    "separate states",
+    "fading",
+    "separate states",
+    "fading",
+    "fading",
+    "fading",
+    "separate states",
+    "separate states",
+    "fading"
+   ],
+   "reasons": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+   ],
+   "same_root": [
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ]
+   ]
+  },
+  "float64": {
+   "classes": [
+    "separate states",
+    "separate states",
+    "separate states",
+    "fading",
+    "separate states",
+    "separate states",
+    "separate states",
+    "fading",
+    "separate states",
+    "separate states",
+    "separate states",
+    "separate states",
+    "fading",
+    "separate states",
+    "separate states",
+    "fading",
+    "fading",
+    "separate states",
+    "separate states",
+    "fading",
+    "fading",
+    "fading",
+    "fading",
+    "separate states",
+    "separate states",
+    "separate states",
+    "separate states",
+    "separate states",
+    "separate states",
+    "separate states",
+    "separate states",
+    "fading",
+    "fading",
+    "separate states",
+    "fading",
+    "separate states",
+    "separate states",
+    "fading",
+    "separate states",
+    "separate states",
+    "separate states",
+    "separate states",
+    "separate states",
+    "fading",
+    "fading",
+    "separate states",
+    "fading",
+    "separate states",
+    "fading",
+    "fading",
+    "fading",
+    "separate states",
+    "separate states",
+    "fading"
+   ],
+   "reasons": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+   ],
+   "same_root": [
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ]
+   ]
+  },
+  "batch16": {
+   "classes": [
+    "separate states",
+    "separate states",
+    "separate states",
+    "fading",
+    "separate states",
+    "separate states",
+    "separate states",
+    "fading",
+    "separate states",
+    "separate states",
+    "separate states",
+    "separate states",
+    "fading",
+    "separate states",
+    "separate states",
+    "fading",
+    "fading",
+    "separate states",
+    "separate states",
+    "fading",
+    "fading",
+    "fading",
+    "fading",
+    "separate states",
+    "separate states",
+    "separate states",
+    "separate states",
+    "separate states",
+    "separate states",
+    "separate states",
+    "separate states",
+    "fading",
+    "fading",
+    "separate states",
+    "fading",
+    "separate states",
+    "separate states",
+    "fading",
+    "separate states",
+    "separate states",
+    "separate states",
+    "separate states",
+    "separate states",
+    "fading",
+    "fading",
+    "separate states",
+    "fading",
+    "separate states",
+    "fading",
+    "fading",
+    "fading",
+    "separate states",
+    "separate states",
+    "fading"
+   ],
+   "reasons": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+   ],
+   "same_root": [
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ],
+    [
+     true,
+     true
+    ]
+   ]
+  }
+ },
+ "main_classes": [
+  "separate states",
+  "separate states",
+  "separate states",
+  "fading",
+  "separate states",
+  "separate states",
+  "separate states",
+  "fading",
+  "separate states",
+  "separate states",
+  "separate states",
+  "separate states",
+  "fading",
+  "separate states",
+  "separate states",
+  "fading",
+  "fading",
+  "separate states",
+  "separate states",
+  "fading",
+  "fading",
+  "fading",
+  "fading",
+  "separate states",
+  "separate states",
+  "separate states",
+  "separate states",
+  "separate states",
+  "separate states",
+  "separate states",
+  "separate states",
+  "fading",
+  "fading",
+  "separate states",
+  "fading",
+  "separate states",
+  "separate states",
+  "fading",
+  "separate states",
+  "separate states",
+  "separate states",
+  "separate states",
+  "separate states",
+  "fading",
+  "fading",
+  "separate states",
+  "fading",
+  "separate states",
+  "fading",
+  "fading",
+  "fading",
+  "separate states",
+  "separate states",
+  "fading"
+ ],
+ "seconds": 137.3
+}

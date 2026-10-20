@@ -1,0 +1,106 @@
+{
+ "checks": [
+  {
+   "graph": "N2",
+   "genome": 98,
+   "max_abs_diff": 1.0103029524088925e-14
+  },
+  {
+   "graph": "N2",
+   "genome": 180,
+   "max_abs_diff": 7.993605777301127e-15
+  },
+  {
+   "graph": "N2",
+   "genome": 669,
+   "max_abs_diff": 7.993605777301127e-15
+  },
+  {
+   "graph": "N2",
+   "genome": 994,
+   "max_abs_diff": 9.325873406851315e-15
+  },
+  {
+   "graph": "N2",
+   "genome": 1019,
+   "max_abs_diff": 9.325873406851315e-15
+  },
+  {
+   "graph": "SH-recip-2050039",
+   "genome": 37,
+   "max_abs_diff": 1.27675647831893e-14
+  },
+  {
+   "graph": "SH-recip-2050039",
+   "genome": 312,
+   "max_abs_diff": 1.1435297153639112e-14
+  },
+  {
+   "graph": "SH-recip-2050039",
+   "genome": 651,
+   "max_abs_diff": 9.658940314238862e-15
+  },
+  {
+   "graph": "SH-recip-2050039",
+   "genome": 760,
+   "max_abs_diff": 1.2878587085651816e-14
+  },
+  {
+   "graph": "SH-recip-2050039",
+   "genome": 950,
+   "max_abs_diff": 8.659739592076221e-15
+  },
+  {
+   "graph": "SH-recip-2050039",
+   "genome": 995,
+   "max_abs_diff": 7.882583474838611e-15
+  },
+  {
+   "graph": "SH-2010013",
+   "genome": 8,
+   "max_abs_diff": 8.659739592076221e-15
+  },
+  {
+   "graph": "SH-2010013",
+   "genome": 189,
+   "max_abs_diff": 1.2656542480726785e-14
+  },
+  {
+   "graph": "SH-2010013",
+   "genome": 556,
+   "max_abs_diff": 1.0880185641326534e-14
+  },
+  {
+   "graph": "SH-2010013",
+   "genome": 622,
+   "max_abs_diff": 8.881784197001252e-15
+  },
+  {
+   "graph": "SH-2010013",
+   "genome": 725,
+   "max_abs_diff": 9.769962616701378e-15
+  },
+  {
+   "graph": "SH-mirror-2040045",
+   "genome": 523,
+   "max_abs_diff": 1.0325074129013956e-14
+  },
+  {
+   "graph": "SH-mirror-2040045",
+   "genome": 662,
+   "max_abs_diff": 1.1213252548714081e-14
+  },
+  {
+   "graph": "SH-mirror-2040045",
+   "genome": 762,
+   "max_abs_diff": 1.1102230246251565e-14
+  },
+  {
+   "graph": "SH-mirror-2040045",
+   "genome": 959,
+   "max_abs_diff": 1.2101430968414206e-14
+  }
+ ],
+ "passes": true,
+ "P_vs_continuous_disagreements": []
+}

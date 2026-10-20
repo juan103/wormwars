@@ -1,0 +1,679 @@
+{
+ "graphs": {
+  "N2": {
+   "pilot_genomes": 100,
+   "carriers_numerator_frac": 0.5055279617335637,
+   "by_group": {
+    "carriers": {
+     "fading": {
+      "genomes": 24,
+      "numerator30_frac": 0.5672143813545358,
+      "numerator300_frac": 0.0486855208610409
+     },
+     "separate states": {
+      "genomes": 12,
+      "numerator30_frac": 0.36573316251381277,
+      "numerator300_frac": 0.8766122426589918
+     },
+     "unresolved": {
+      "genomes": 2,
+      "numerator30_frac": 0.06705245613165138,
+      "numerator300_frac": 0.07470223647996731
+     }
+    },
+    "cohort": {
+     "separate states": {
+      "genomes": 13,
+      "numerator30_frac": 0.9244519098569322,
+      "numerator300_frac": 0.927507348688968
+     },
+     "unresolved": {
+      "genomes": 1,
+      "numerator30_frac": 0.07554809014306783,
+      "numerator300_frac": 0.07249265131103198
+     }
+    },
+    "growers": {
+     "fading": {
+      "genomes": 32,
+      "numerator30_frac": 1.0,
+      "numerator300_frac": 1.0
+     }
+    },
+    "controls": {
+     "fading": {
+      "genomes": 32,
+      "numerator30_frac": 1.0,
+      "numerator300_frac": 1.0
+     }
+    }
+   },
+   "unresolved": 2,
+   "unresolved_frac": 0.02,
+   "unresolved_numerator30_frac": 0.05743658968455242,
+   "unresolved_numerator300_frac": 0.07042424719418129,
+   "unresolved_reasons": {
+    "Newton failure; no root located from the orbit; unconfirmed candidate; unstable or marginal root": 1,
+    "located root not reached": 1
+   },
+   "sensitivity": {
+    "0.0001": {
+     "fading": 84,
+     "separate states": 14,
+     "unresolved": 2
+    },
+    "1e-08": {
+     "fading": 84,
+     "separate states": 14,
+     "unresolved": 2
+    }
+   },
+   "classes": {
+    "fading": 84,
+    "separate states": 14,
+    "unresolved": 2
+   },
+   "R1": {
+    "settled300": 76,
+    "both_reach_stable": 75,
+    "flagged_numerator30_frac": 0.023442527858627788,
+    "flagged_numerator300_frac": 0.05955839348922801,
+    "same_class_at_300": 87,
+    "same_class_and_roots_at_300": 86,
+    "transitions_300_to_2000": {
+     "unresolved -> unresolved": 2,
+     "fading -> fading": 71,
+     "unresolved -> fading": 13,
+     "separate states -> separate states": 14
+    },
+    "cohort_vs_separate": {
+     "cohort_and_separate": 13,
+     "cohort": 14,
+     "separate": 14
+    }
+   }
+  },
+  "SH-recip-2050039": {
+   "pilot_genomes": 104,
+   "carriers_numerator_frac": 0.5009893808259778,
+   "by_group": {
+    "carriers": {
+     "fading": {
+      "genomes": 4,
+      "numerator30_frac": 0.10724041120418963,
+      "numerator300_frac": 7.855379657980494e-06
+     },
+     "separate states": {
+      "genomes": 35,
+      "numerator30_frac": 0.8927595887958104,
+      "numerator300_frac": 0.999992144620342
+     }
+    },
+    "cohort": {
+     "separate states": {
+      "genomes": 64,
+      "numerator30_frac": 1.0,
+      "numerator300_frac": 1.0
+     }
+    },
+    "growers": {},
+    "controls": {
+     "fading": {
+      "genomes": 32,
+      "numerator30_frac": 1.0,
+      "numerator300_frac": 1.0
+     }
+    }
+   },
+   "unresolved": 0,
+   "unresolved_frac": 0.0,
+   "unresolved_numerator30_frac": 0.0,
+   "unresolved_numerator300_frac": 0.0,
+   "unresolved_reasons": {},
+   "sensitivity": {
+    "0.0001": {
+     "fading": 36,
+     "separate states": 68
+    },
+    "1e-08": {
+     "fading": 36,
+     "separate states": 68
+    }
+   },
+   "classes": {
+    "fading": 36,
+    "separate states": 68
+   },
+   "R1": {
+    "settled300": 99,
+    "both_reach_stable": 99,
+    "flagged_numerator30_frac": 0.0,
+    "flagged_numerator300_frac": 0.0,
+    "same_class_at_300": 99,
+    "same_class_and_roots_at_300": 99,
+    "transitions_300_to_2000": {
+     "separate states -> separate states": 64,
+     "fading -> fading": 35,
+     "unresolved -> separate states": 4,
+     "unresolved -> fading": 1
+    },
+    "cohort_vs_separate": {
+     "cohort_and_separate": 64,
+     "cohort": 64,
+     "separate": 68
+    }
+   }
+  },
+  "SH-class-2030099": {
+   "pilot_genomes": 68,
+   "carriers_numerator_frac": 0.513707729640695,
+   "by_group": {
+    "carriers": {
+     "separate states": {
+      "genomes": 20,
+      "numerator30_frac": 1.0,
+      "numerator300_frac": 1.0
+     }
+    },
+    "cohort": {
+     "separate states": {
+      "genomes": 34,
+      "numerator30_frac": 1.0,
+      "numerator300_frac": 1.0
+     }
+    },
+    "growers": {
+     "fading": {
+      "genomes": 2,
+      "numerator30_frac": 1.0,
+      "numerator300_frac": 1.0
+     }
+    },
+    "controls": {
+     "fading": {
+      "genomes": 32,
+      "numerator30_frac": 1.0,
+      "numerator300_frac": 1.0
+     }
+    }
+   },
+   "unresolved": 0,
+   "unresolved_frac": 0.0,
+   "unresolved_numerator30_frac": 0.0,
+   "unresolved_numerator300_frac": 0.0,
+   "unresolved_reasons": {},
+   "sensitivity": {
+    "0.0001": {
+     "fading": 34,
+     "separate states": 34
+    },
+    "1e-08": {
+     "fading": 34,
+     "separate states": 34
+    }
+   },
+   "classes": {
+    "fading": 34,
+    "separate states": 34
+   },
+   "R1": {
+    "settled300": 67,
+    "both_reach_stable": 67,
+    "flagged_numerator30_frac": 0.0,
+    "flagged_numerator300_frac": 0.0,
+    "same_class_at_300": 67,
+    "same_class_and_roots_at_300": 67,
+    "transitions_300_to_2000": {
+     "separate states -> separate states": 34,
+     "fading -> fading": 33,
+     "unresolved -> fading": 1
+    },
+    "cohort_vs_separate": {
+     "cohort_and_separate": 34,
+     "cohort": 34,
+     "separate": 34
+    }
+   }
+  },
+  "SH-2010013": {
+   "pilot_genomes": 96,
+   "carriers_numerator_frac": 0.3660854458785132,
+   "by_group": {
+    "carriers": {
+     "fading": {
+      "genomes": 64,
+      "numerator30_frac": 1.0,
+      "numerator300_frac": 1.0
+     }
+    },
+    "cohort": {},
+    "growers": {
+     "fading": {
+      "genomes": 1,
+      "numerator30_frac": 1.0,
+      "numerator300_frac": 1.0
+     }
+    },
+    "controls": {
+     "fading": {
+      "genomes": 32,
+      "numerator30_frac": 1.0,
+      "numerator300_frac": 1.0
+     }
+    }
+   },
+   "unresolved": 0,
+   "unresolved_frac": 0.0,
+   "unresolved_numerator30_frac": 0.0,
+   "unresolved_numerator300_frac": 0.0,
+   "unresolved_reasons": {},
+   "sensitivity": {
+    "0.0001": {
+     "fading": 96
+    },
+    "1e-08": {
+     "fading": 96
+    }
+   },
+   "classes": {
+    "fading": 96
+   },
+   "R1": {
+    "settled300": 92,
+    "both_reach_stable": 92,
+    "flagged_numerator30_frac": 0.0,
+    "flagged_numerator300_frac": 0.0,
+    "same_class_at_300": 93,
+    "same_class_and_roots_at_300": 93,
+    "transitions_300_to_2000": {
+     "fading -> fading": 93,
+     "unresolved -> fading": 3
+    },
+    "cohort_vs_separate": {
+     "cohort_and_separate": 0,
+     "cohort": 0,
+     "separate": 0
+    }
+   }
+  },
+  "SH-mirror-2040045": {
+   "pilot_genomes": 99,
+   "carriers_numerator_frac": 0.373333873591127,
+   "by_group": {
+    "carriers": {
+     "fading": {
+      "genomes": 64,
+      "numerator30_frac": 1.0,
+      "numerator300_frac": 1.0
+     }
+    },
+    "cohort": {},
+    "growers": {
+     "fading": {
+      "genomes": 3,
+      "numerator30_frac": 1.0,
+      "numerator300_frac": 1.0
+     }
+    },
+    "controls": {
+     "fading": {
+      "genomes": 32,
+      "numerator30_frac": 1.0,
+      "numerator300_frac": 1.0
+     }
+    }
+   },
+   "unresolved": 0,
+   "unresolved_frac": 0.0,
+   "unresolved_numerator30_frac": 0.0,
+   "unresolved_numerator300_frac": 0.0,
+   "unresolved_reasons": {},
+   "sensitivity": {
+    "0.0001": {
+     "fading": 99
+    },
+    "1e-08": {
+     "fading": 99
+    }
+   },
+   "classes": {
+    "fading": 99
+   },
+   "R1": {
+    "settled300": 87,
+    "both_reach_stable": 87,
+    "flagged_numerator30_frac": 0.0,
+    "flagged_numerator300_frac": 0.0,
+    "same_class_at_300": 94,
+    "same_class_and_roots_at_300": 94,
+    "transitions_300_to_2000": {
+     "fading -> fading": 94,
+     "unresolved -> fading": 5
+    },
+    "cohort_vs_separate": {
+     "cohort_and_separate": 0,
+     "cohort": 0,
+     "separate": 0
+    }
+   }
+  }
+ },
+ "checks": {
+  "R1": {
+   "fraction": 0.997624703087886,
+   "passes": true
+  },
+  "R2": {
+   "overall_frac": 0.004282655246252677,
+   "passes": true
+  },
+  "R3": {
+   "substeps64": {
+    "agreement": 0.9954128440366973,
+    "basin_changes": [],
+    "discordant_numerator30_frac": 0.013880425307895147,
+    "discordant_numerator300_frac": 0.025710999697674777
+   },
+   "float64": {
+    "agreement": 0.9954128440366973,
+    "basin_changes": [],
+    "discordant_numerator30_frac": 0.013880425307895147,
+    "discordant_numerator300_frac": 0.025710999697674777
+   },
+   "batch16": {
+    "agreement": 1.0,
+    "basin_changes": [],
+    "discordant_numerator30_frac": 0.0,
+    "discordant_numerator300_frac": 0.0
+   },
+   "passes": true
+  },
+  "R4": {
+   "tests": 9990,
+   "returns": 9990,
+   "does_not_return": 0,
+   "inconclusive": 0,
+   "small_basin": 0,
+   "small_basin_by_size": {
+    "1e-08": 0,
+    "1e-06": 0,
+    "0.0001": 0
+   },
+   "flagged_numerator30_frac": 0.0,
+   "flagged_numerator300_frac": 0.0,
+   "passes": true
+  },
+  "R4p": {
+   "passes": true,
+   "P_vs_continuous_disagreements": []
+  },
+  "R5": {
+   "genomes": 216,
+   "more_than_two_states": 0,
+   "distribution": {
+    "1": 100,
+    "2": 116
+   }
+  },
+  "R6": {
+   "neurons": {
+    "pair": [
+     "I1L",
+     "I2L"
+    ],
+    "readout_pair": [
+     "RMDDL",
+     "CEPVL"
+    ],
+    "cycle": [
+     "I4",
+     "M3R",
+     "M4"
+    ],
+    "damped_spiral_gain": 1.977253019809723
+   },
+   "cases": {
+    "bistable": {
+     "confirmed": true,
+     "class": "separate states",
+     "reason": null,
+     "expected": "separate states",
+     "correct": true,
+     "veto_alone_rejects": null,
+     "oscillation": [
+      null,
+      null
+     ]
+    },
+    "bistable, read-out silent": {
+     "confirmed": true,
+     "class": "separate states, read-out silent",
+     "reason": null,
+     "expected": "separate states, read-out silent",
+     "correct": true,
+     "veto_alone_rejects": null,
+     "oscillation": [
+      null,
+      null
+     ]
+    },
+    "fading": {
+     "confirmed": true,
+     "class": "fading",
+     "reason": null,
+     "expected": "fading",
+     "correct": true,
+     "veto_alone_rejects": null,
+     "oscillation": [
+      null,
+      null
+     ]
+    },
+    "oscillating": {
+     "confirmed": true,
+     "class": "persistent oscillation",
+     "reason": null,
+     "expected": "persistent oscillation",
+     "correct": true,
+     "veto_alone_rejects": null,
+     "oscillation": [
+      {
+       "period_substeps": 459.0,
+       "range_late": 3.041261340182481,
+       "range_ref": 3.0411019325256348,
+       "orbit_roots": [
+        "unstable",
+        "unstable"
+       ],
+       "orbit_root_rho_substep": [
+        1.0040779779390168,
+        1.0040779779390168
+       ],
+       "orbit_root_cont_max_re": [
+        0.12500000000000006,
+        0.12500000000000006
+       ],
+       "orbit_root_distance_from_mean": [
+        0.037480074607300615,
+        0.037480074607271485
+       ],
+       "recording_dtype": "float32",
+       "verdict": "persistent oscillation"
+      },
+      {
+       "period_substeps": 459.0,
+       "range_late": 3.041133832388075,
+       "range_ref": 3.0412423610687256,
+       "orbit_roots": [
+        "unstable",
+        "unstable"
+       ],
+       "orbit_root_rho_substep": [
+        1.0040779779390168,
+        1.0040779779390168
+       ],
+       "orbit_root_cont_max_re": [
+        0.12500000000000006,
+        0.12500000000000006
+       ],
+       "orbit_root_distance_from_mean": [
+        0.03730406673938856,
+        0.03730406673935879
+       ],
+       "recording_dtype": "float32",
+       "verdict": "persistent oscillation"
+      }
+     ]
+    },
+    "integrator cycle": {
+     "confirmed": true,
+     "class": "persistent oscillation",
+     "reason": null,
+     "expected": "persistent oscillation",
+     "correct": true,
+     "veto_alone_rejects": null,
+     "oscillation": [
+      {
+       "period_substeps": 473.0,
+       "range_late": 0.42933375993367645,
+       "range_ref": 0.42933517694473267,
+       "orbit_roots": [
+        "unstable",
+        "unstable"
+       ],
+       "orbit_root_rho_substep": [
+        1.0000900950402798,
+        1.0000900950402798
+       ],
+       "orbit_root_cont_max_re": [
+        -1.2516975403109587e-06,
+        -1.2516975403109587e-06
+       ],
+       "orbit_root_distance_from_mean": [
+        0.0027594305069069697,
+        0.0027594305069069697
+       ],
+       "recording_dtype": "float32",
+       "verdict": "persistent oscillation"
+      },
+      {
+       "period_substeps": 473.0,
+       "range_late": 0.42933394864876573,
+       "range_ref": 0.42933812737464905,
+       "orbit_roots": [
+        "unstable",
+        "unstable"
+       ],
+       "orbit_root_rho_substep": [
+        1.0000900950402798,
+        1.0000900950402798
+       ],
+       "orbit_root_cont_max_re": [
+        -1.2516975403109587e-06,
+        -1.2516975403109587e-06
+       ],
+       "orbit_root_distance_from_mean": [
+        0.0028572364746890324,
+        0.0028572364746890324
+       ],
+       "recording_dtype": "float32",
+       "verdict": "persistent oscillation"
+      }
+     ]
+    },
+    "damped spiral": {
+     "confirmed": true,
+     "class": "unresolved",
+     "reason": "candidate around a stable root; unstable or marginal root",
+     "expected": "unresolved",
+     "correct": true,
+     "veto_alone_rejects": true,
+     "oscillation": [
+      {
+       "period_substeps": 473.0,
+       "range_late": 0.008233103646991436,
+       "range_ref": 0.008766135200858116,
+       "orbit_roots": [
+        "marginal",
+        "marginal"
+       ],
+       "orbit_root_rho_substep": [
+        0.9999999371484535,
+        0.9999999371484535
+       ],
+       "orbit_root_cont_max_re": [
+        -0.0028433799743651372,
+        -0.0028433799743651372
+       ],
+       "orbit_root_distance_from_mean": [
+        5.135427239818258e-05,
+        5.1354272511586054e-05
+       ],
+       "recording_dtype": "float32",
+       "verdict": "candidate around a stable root"
+      },
+      {
+       "period_substeps": 473.0,
+       "range_late": 0.007373765505552433,
+       "range_ref": 0.007816743105649948,
+       "orbit_roots": [
+        "marginal",
+        "marginal"
+       ],
+       "orbit_root_rho_substep": [
+        0.9999999371484535,
+        0.9999999371484535
+       ],
+       "orbit_root_cont_max_re": [
+        -0.0028433799743651372,
+        -0.0028433799743651372
+       ],
+       "orbit_root_distance_from_mean": [
+        4.8152787317947066e-05,
+        4.815278740298055e-05
+       ],
+       "recording_dtype": "float32",
+       "verdict": "candidate around a stable root"
+      }
+     ]
+    }
+   },
+   "passes": true
+  }
+ },
+ "descriptive": {
+  "forecast_by_class": {
+   "fading": {
+    "genomes": 349,
+    "spearman_forecast_r30": 0.9410572077857918
+   },
+   "separate states": {
+    "genomes": 116,
+    "spearman_forecast_r30": 0.14694191365855533
+   }
+  },
+  "fading_slopes": {
+   "genomes": 349,
+   "with_both_slopes": 349,
+   "median_observed": -0.04206979077823837,
+   "median_predicted": -0.04206962911872613,
+   "median_abs_difference": 4.057597307177696e-07,
+   "cancellations": 307
+  },
+  "float32_stall": {
+   "fading_genomes": 349,
+   "stationary_stalls": 345,
+   "stall2000_above_remaining": 0,
+   "dy300_above_remaining": 3,
+   "stall2000_above_remaining_in_cohort": 0,
+   "fading_in_cohort": 0,
+   "median_stall_dy2000": 7.212162017822266e-06
+  },
+  "cheap_rule": {
+   "both_yes": 931,
+   "cheap_only": 0,
+   "full_only": 0,
+   "both_no": 3
+  }
+ }
+}

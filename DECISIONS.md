@@ -11215,3 +11215,51 @@ Five graphs (N2, two high-settling nulls that beat N2, two random nulls) and abo
 
 **Next:** push, then run the pilot (CPU, a few hours by the plan's estimate, with a stop at a projected 8 hours),
 then its results, reviewed before they are committed.
+
+## D354 — M2 pilot's results: every check passes, two states only, M1's cohort consists of separate-states genomes (2026-10-20)
+
+The pilot (D353) ran at 6809c25, 16:40 to 17:58 UTC, on the CPU, all stages, exit 0: 79 minutes and 6.73 × 10⁸
+neural updates (the plan expected under 4 hours). 467 genomes on five graphs, 934 histories. The write-up is
+[`docs/memory/M2-PILOT-RESULTS.md`](docs/memory/M2-PILOT-RESULTS.md), with the stage records in `runs/memory-m2/`
+and a descriptive script written after the data (`scripts/memory_m2/describe.py`, `describe.json`).
+
+- **The checks:** R1 420 of 421; R2 2 of 467 unresolved; R3 99.5%, 99.5% and 100%, with no basin change; R4 9990 of
+  9990 perturbations return; R4′ 1.3 × 10⁻¹⁴; R6 six of six, the damped spiral rejected by the veto alone. All pass.
+  R5 (descriptive): every "separate states" genome reaches exactly two stable roots from nine ramp starts, switching
+  once along them, and every sampled fading genome one root. No check forces a revision of the classifier.
+- **For the census (descriptive):**
+  - M1's cohort consists of separate-states genomes (111 of 112; the 112th, N2 genome 349, is separate states under
+    float64 and 64 substeps), and no fading genome is in it, so the float32 stall contaminates none of it here;
+  - more than half of what N2's carriers hold at tick 30 is fading, which is not a split of N2's lead over the nulls;
+  - the growers group fades throughout, but one N2 genome meeting the grower criterion has separate states;
+  - every genome resolved at tick 300 keeps its class and roots at 2000, but at 300 N2 leaves 15% unresolved;
+  - the cheap reaching rule agrees on all 934 histories, at the 10⁻³ radius.
+- **One choice left to the census plan:** genome 349's float32 history stalls 1.38 × 10⁻³ from a stable, accurate
+  root, just outside the 10⁻³ locating radius, so it is "not reached". Whether the census runs the continuation at
+  any distance is for its plan to decide, with the cheap rule's agreement re-read if the radius changes.
+
+**Deviation (rule 4).** The plan's R2 bounds the unresolved genomes' share of "each graph's tick-30 numerator"; the
+code computed every numerator share in `summary.json` against the pilot genomes' summed |δy|. The pilot genomes
+hold 39% to 72% of each graph's eligible numerator, so every flagged share is smaller against the whole: N2's
+unresolved genomes hold 3.4% of its eligible numerator, 5.7% of the pilot's. R2 passes either way. The write-up labels
+each share and states that the whole numerator is derived (from the carriers' share in `sample.json`).
+
+**The review** (`docs/reviews/20261020-m2-pilot-results/`, three rounds).
+- **Round 1, both "revise".** Both re-derived the numbers and checks and found them correct.
+  - **Fable** caught:
+    - that "N2's lead" was its numerator, not its excess over the nulls;
+    - that the cohort claim was one-directional;
+    - that genome 349's stall is in the records;
+    - the share labels and the derived numerator;
+    - that the tick-300 agreement holds for roots too.
+  - **Astra** caught:
+    - a grower with separate states (N2 genome 767), which made "transient growth is not separate states" false;
+    - the same lead-versus-numerator error;
+    - that R5, R3 and the 300-tick claim had to be limited to what was tested;
+    - three fading-slope exceptions;
+    - the stalls' median.
+- **Round 2:** Fable "agree"; Astra "revise" on two wordings for genome 26, where with no period found the "orbit
+  mean" is the final state. Both taken.
+- **Round 3:** Astra confirmed both edits. Its one remaining item, that D354 must be committed with the results file, is met by this commit.
+
+**Next:** the census plan, written from what the pilot hands it, reviewed before it runs.
