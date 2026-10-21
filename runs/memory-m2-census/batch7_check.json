@@ -1,0 +1,155 @@
+{
+ "arms": [
+  {
+   "arm": "core-frozen-shuffle0",
+   "matches_batch7": true,
+   "matched": {
+    "structure": {
+     "cycles3": 1351,
+     "recip_pairs": 183,
+     "ff_triangles": 5185,
+     "edges": 3671,
+     "in": [
+      4,
+      4,
+      6
+     ],
+     "out": [
+      11,
+      13,
+      10
+     ]
+    },
+    "kept_all": 0.2726777444837919,
+    "kept_core_internal": 1.0,
+    "accepted": 2900
+   }
+  },
+  {
+   "arm": "core-frozen-shuffle1",
+   "matches_batch7": true,
+   "matched": {
+    "structure": {
+     "cycles3": 1355,
+     "recip_pairs": 158,
+     "ff_triangles": 5258,
+     "edges": 3671,
+     "in": [
+      4,
+      4,
+      6
+     ],
+     "out": [
+      11,
+      13,
+      10
+     ]
+    },
+    "kept_all": 0.266412421683465,
+    "kept_core_internal": 1.0,
+    "accepted": 2950
+   }
+  },
+  {
+   "arm": "core-frozen-shuffle2",
+   "matches_batch7": true,
+   "matched": {
+    "structure": {
+     "cycles3": 1344,
+     "recip_pairs": 161,
+     "ff_triangles": 5258,
+     "edges": 3671,
+     "in": [
+      4,
+      4,
+      6
+     ],
+     "out": [
+      11,
+      13,
+      10
+     ]
+    },
+    "kept_all": 0.2704985017706347,
+    "kept_core_internal": 1.0,
+    "accepted": 3050
+   }
+  },
+  {
+   "arm": "hub-frozen-shuffle0",
+   "matches_batch7": true,
+   "matched": {
+    "structure": {
+     "cycles3": 1458,
+     "recip_pairs": 168,
+     "ff_triangles": 5450,
+     "edges": 3671,
+     "in": [
+      4,
+      4,
+      6
+     ],
+     "out": [
+      11,
+      13,
+      10
+     ]
+    },
+    "kept_all": 0.2683192590574775,
+    "kept_core_internal": 0.23618090452261306,
+    "accepted": 3000
+   }
+  },
+  {
+   "arm": "hub-frozen-shuffle1",
+   "matches_batch7": true,
+   "matched": {
+    "structure": {
+     "cycles3": 1459,
+     "recip_pairs": 163,
+     "ff_triangles": 5493,
+     "edges": 3671,
+     "in": [
+      4,
+      4,
+      6
+     ],
+     "out": [
+      11,
+      13,
+      10
+     ]
+    },
+    "kept_all": 0.2713157177880686,
+    "kept_core_internal": 0.23618090452261306,
+    "accepted": 2850
+   }
+  },
+  {
+   "arm": "hub-frozen-shuffle2",
+   "matches_batch7": true,
+   "matched": {
+    "structure": {
+     "cycles3": 1493,
+     "recip_pairs": 151,
+     "ff_triangles": 5507,
+     "edges": 3671,
+     "in": [
+      4,
+      4,
+      6
+     ],
+     "out": [
+      11,
+      13,
+      10
+     ]
+    },
+    "kept_all": 0.2721329338055026,
+    "kept_core_internal": 0.2864321608040201,
+    "accepted": 2900
+   }
+  }
+ ],
+ "all_match": true
+}

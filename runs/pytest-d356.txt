@@ -1,0 +1,134 @@
+........................................................................ [  3%]
+........................................................................ [  7%]
+........................................................................ [ 10%]
+........................................................................ [ 14%]
+..........................................................F............. [ 17%]
+........................................................................ [ 21%]
+........................................................................ [ 24%]
+........................................................................ [ 28%]
+........................................................................ [ 32%]
+........................................................................ [ 35%]
+........................................................................ [ 39%]
+........................................................................ [ 42%]
+........................................................................ [ 46%]
+........................................................................ [ 49%]
+........................................................................ [ 53%]
+........................................................................ [ 57%]
+........................................................................ [ 60%]
+........................................................................ [ 64%]
+........................................................................ [ 67%]
+........................................................................ [ 71%]
+........................................................................ [ 74%]
+........................................................................ [ 78%]
+........................................................................ [ 81%]
+........................................................................ [ 85%]
+........................................................................ [ 89%]
+........................................................................ [ 92%]
+........................................................................ [ 96%]
+........................................................................ [ 99%]
+....                                                                     [100%]
+================================== FAILURES ===================================
+__________ test_a_completed_gate_writes_the_outcome_then_the_events ___________
+
+tmp_path = WindowsPath('C:/Users/gonza/AppData/Local/Temp/pytest-of-gonza/pytest-10622/test_a_completed_gate_writes_t0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000027823450DE0>
+
+    def test_a_completed_gate_writes_the_outcome_then_the_events(tmp_path, monkeypatch):
+        m = _module(tmp_path)
+        _freeze(m)
+        monkeypatch.setattr(m, "rollout_brain", FakeRollout())
+>       m.cmd_gate(_args())
+
+tests\test_e1_commands.py:89: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+scripts\e1.py:677: in cmd_gate
+    not_completed(result, counts, events, ids, f"{type(e).__name__}: {e}", t0, "stopped", reraise=e)
+scripts\e1.py:600: in not_completed
+    raise reraise
+scripts\e1.py:661: in cmd_gate
+    checkpoint(counts, events, ids)  # on disk after every arm, so even a killed process keeps them
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+counts = {'navigator': array([3., 3., 3., ..., 3., 3., 3.], shape=(1024,), dtype=float32), 'navigator mirrored': array([3., 3.,..., 3., 3.], shape=(1024,), dtype=float32), 'oracle': array([3., 3., 3., ..., 3., 3., 3.], shape=(1024,), dtype=float32)}
+events = {'navigator': {'activation_tick': array([[[ 0, 11, 21],
+        [ 0, 11, 21],
+        [ 0, 11, 21],
+        ...,
+     ...., 5., 5.],
+        ...,
+        [5., 5., 5.],
+        [5., 5., 5.],
+        [5., 5., 5.]]], shape=(1, 1024, 3)), ...}}
+ids = array([1000, 1001, 1002, ..., 2021, 2022, 2023], shape=(1024,))
+
+    def checkpoint(counts: dict, events: dict, ids) -> None:
+        """Every completed arm, written to a temporary file and then atomically moved over the previous
+        checkpoint, so a kill during the write leaves the previous checkpoint intact (Astra, Fable, D098)."""
+        import os
+        tmp = GATE_PARTIAL.with_name(GATE_PARTIAL.stem + ".tmp.npz")
+        np.savez_compressed(tmp, world_ids=ids,
+                            **{f"{label}|count": v for label, v in counts.items()},
+                            **{f"{label}|{k}": v[0] for label, ev in events.items() for k, v in ev.items()})
+>       os.replace(tmp, GATE_PARTIAL)
+E       PermissionError: [WinError 5] Access is denied: 'C:\\Users\\gonza\\AppData\\Local\\Temp\\pytest-of-gonza\\pytest-10622\\test_a_completed_gate_writes_t0\\gate_partial.tmp.npz' -> 'C:\\Users\\gonza\\AppData\\Local\\Temp\\pytest-of-gonza\\pytest-10622\\test_a_completed_gate_writes_t0\\gate_partial.npz'
+
+scripts\e1.py:583: PermissionError
+============================== warnings summary ===============================
+tests/test_e03a_script.py::test_every_stage_completes
+  D:\Claude\random\wormWars\scripts\e03a.py:1233: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+    rho = np.array([spearmanr(sw[k], r_mean[k]).statistic for k in range(len(sets))], dtype=float)
+
+tests/test_e3c_stages.py::test_an_unusable_p_fixed_mean_is_a_registered_outcome
+  D:\Claude\random\wormWars\scripts\e3c.py:1599: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+    "spearman_with_seed": (float(st.spearmanr(_visits(r["intact"]), seed_pm).correlation)
+
+tests/test_exp02_report.py::test_missing_sh_first_runs_withhold_the_verdict_even_with_second_runs_present
+tests/test_exp03_report_rules.py::test_no_valid_p3_reference_withholds_instead_of_crashing
+  C:\Users\gonza\AppData\Local\Programs\Python\Python313\Lib\site-packages\numpy\lib\_nanfunctions_impl.py:1573: RuntimeWarning: All-NaN slice encountered
+    return _nanquantile_unchecked(
+
+tests/test_exp03r_replication.py::test_ensembles_too_small_for_statistics_keep_their_rows_and_n2_is_not_called_invalid
+  C:\Users\gonza\AppData\Local\Programs\Python\Python313\Lib\site-packages\numpy\_core\_methods.py:219: RuntimeWarning: Degrees of freedom <= 0 for slice
+    ret = _var(a, axis=axis, dtype=dtype, out=out, ddof=ddof,
+
+tests/test_exp03r_replication.py::test_ensembles_too_small_for_statistics_keep_their_rows_and_n2_is_not_called_invalid
+  C:\Users\gonza\AppData\Local\Programs\Python\Python313\Lib\site-packages\numpy\_core\_methods.py:211: RuntimeWarning: invalid value encountered in scalar divide
+    ret = ret.dtype.type(ret / rcount)
+
+tests/test_exp03r_replication.py::test_ensembles_too_small_for_statistics_keep_their_rows_and_n2_is_not_called_invalid
+  C:\Users\gonza\AppData\Local\Programs\Python\Python313\Lib\site-packages\numpy\_core\_methods.py:178: RuntimeWarning: invalid value encountered in divide
+    arrmean = um.true_divide(arrmean, div, out=arrmean,
+
+tests/test_exp03r_replication.py::test_ensembles_too_small_for_statistics_keep_their_rows_and_n2_is_not_called_invalid
+  D:\Claude\random\wormWars\wormwars\exp03\report.py:82: RuntimeWarning: Mean of empty slice
+    return [float(x.mean()), float(x.mean() - q * se), float(x.mean() + q * se)]
+
+tests/test_exp03r_replication.py::test_ensembles_too_small_for_statistics_keep_their_rows_and_n2_is_not_called_invalid
+  C:\Users\gonza\AppData\Local\Programs\Python\Python313\Lib\site-packages\numpy\_core\_methods.py:142: RuntimeWarning: invalid value encountered in scalar divide
+    ret = ret.dtype.type(ret / rcount)
+
+tests/test_exp03r_replication.py::test_ensembles_too_small_for_statistics_keep_their_rows_and_n2_is_not_called_invalid
+  C:\Users\gonza\AppData\Local\Programs\Python\Python313\Lib\site-packages\numpy\lib\_nanfunctions_impl.py:1592: RuntimeWarning: Mean of empty slice
+    return np.nanmean(a, axis, out=out, keepdims=keepdims)
+
+tests/test_memory_m1.py::test_part_a_guards_a_zero_baseline_and_missing_support
+  D:\Claude\random\wormWars\scripts\memory_m1\accounting.py:90: RuntimeWarning: invalid value encountered in scalar divide
+    "dropped_numerator_frac": float(nums[n][~inside].sum() / nums[n].sum()),
+
+tests/test_memory_m1.py::test_part_a_guards_a_zero_baseline_and_missing_support
+  D:\Claude\random\wormWars\scripts\memory_m1\accounting.py:94: RuntimeWarning: invalid value encountered in scalar divide
+    "stratum_numerator_frac": [float(nums[n][b[n] == k].sum() / nums[n].sum()) for k in range(K)],
+
+tests/test_memory_m1.py::test_part_a_guards_a_zero_baseline_and_missing_support
+  D:\Claude\random\wormWars\scripts\memory_m1\accounting.py:102: RuntimeWarning: All-NaN slice encountered
+    med_a = [float(np.nanmedian([o["stratum_mean_a"][k] for o in others])) for k in range(K)]
+
+tests/test_t1_equivalence_script.py::test_matching_non_finite_values_do_not_pass[inf]
+  D:\Claude\random\wormWars\scripts\t1_equivalence.py:205: RuntimeWarning: invalid value encountered in subtract
+    diff = np.abs(a.astype(np.float64) - b.astype(np.float64))
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_e1_commands.py::test_a_completed_gate_writes_the_outcome_then_the_events
+1 failed, 2019 passed, 51 deselected, 14 warnings in 1167.55s (0:19:27)

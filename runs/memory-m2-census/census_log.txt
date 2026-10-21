@@ -1,0 +1,444 @@
+R6 bistable separate states None correct
+R6 bistable, read-out silent separate states, read-out silent None correct
+R6 fading fading None correct
+R6 oscillating persistent oscillation None correct
+R6 integrator cycle persistent oscillation None correct
+R6 damped spiral unresolved candidate around a stable root; unstable or marginal root correct
+stage c2 512.7 s
+  N2__7600 chunk 1/8 164.6 s
+  N2__7600 chunk 2/8 107.3 s
+  N2__7600 chunk 3/8 105.6 s
+  N2__7600 chunk 4/8 111.3 s
+  N2__7600 chunk 5/8 107.2 s
+  N2__7600 chunk 6/8 106.6 s
+  N2__7600 chunk 7/8 164.0 s
+  N2__7600 chunk 8/8 106.0 s
+N2__7600 972.8 s, valid True, eligible 990, {'separate states': 15, 'separate states, read-out silent': 0, 'fading': 972, 'persistent oscillation': 1, 'unresolved': 2}
+  SH-2010013__7600 chunk 1/8 111.1 s
+  SH-2010013__7600 chunk 2/8 115.2 s
+  SH-2010013__7600 chunk 3/8 108.9 s
+  SH-2010013__7600 chunk 4/8 109.7 s
+  SH-2010013__7600 chunk 5/8 109.1 s
+  SH-2010013__7600 chunk 6/8 112.6 s
+  SH-2010013__7600 chunk 7/8 112.1 s
+  SH-2010013__7600 chunk 8/8 109.0 s
+SH-2010013__7600 887.7 s, valid True, eligible 1008, {'separate states': 0, 'separate states, read-out silent': 0, 'fading': 1007, 'persistent oscillation': 0, 'unresolved': 1}
+projection after two panels: about 12.8 h
+  SH-route-2020011__7600 chunk 1/8 99.7 s
+  SH-route-2020011__7600 chunk 2/8 99.6 s
+  SH-route-2020011__7600 chunk 3/8 104.8 s
+  SH-route-2020011__7600 chunk 4/8 104.4 s
+  SH-route-2020011__7600 chunk 5/8 104.6 s
+  SH-route-2020011__7600 chunk 6/8 102.4 s
+  SH-route-2020011__7600 chunk 7/8 104.0 s
+  SH-route-2020011__7600 chunk 8/8 100.8 s
+SH-route-2020011__7600 820.2 s, valid True, eligible 938, {'separate states': 0, 'separate states, read-out silent': 0, 'fading': 938, 'persistent oscillation': 0, 'unresolved': 0}
+  SH-class-2030024__7600 chunk 1/8 100.7 s
+  SH-class-2030024__7600 chunk 2/8 109.7 s
+  SH-class-2030024__7600 chunk 3/8 111.1 s
+  SH-class-2030024__7600 chunk 4/8 107.7 s
+  SH-class-2030024__7600 chunk 5/8 111.7 s
+  SH-class-2030024__7600 chunk 6/8 107.1 s
+  SH-class-2030024__7600 chunk 7/8 108.7 s
+  SH-class-2030024__7600 chunk 8/8 112.5 s
+SH-class-2030024__7600 869.1 s, valid True, eligible 970, {'separate states': 4, 'separate states, read-out silent': 0, 'fading': 966, 'persistent oscillation': 0, 'unresolved': 0}
+  SH-mirror-2040045__7600 chunk 1/8 111.5 s
+  SH-mirror-2040045__7600 chunk 2/8 109.3 s
+  SH-mirror-2040045__7600 chunk 3/8 110.9 s
+  SH-mirror-2040045__7600 chunk 4/8 109.3 s
+  SH-mirror-2040045__7600 chunk 5/8 111.9 s
+  SH-mirror-2040045__7600 chunk 6/8 108.7 s
+  SH-mirror-2040045__7600 chunk 7/8 110.2 s
+  SH-mirror-2040045__7600 chunk 8/8 112.1 s
+SH-mirror-2040045__7600 883.9 s, valid True, eligible 997, {'separate states': 0, 'separate states, read-out silent': 0, 'fading': 997, 'persistent oscillation': 0, 'unresolved': 0}
+  SH-recip-2050005__7600 chunk 1/8 107.9 s
+  SH-recip-2050005__7600 chunk 2/8 111.3 s
+  SH-recip-2050005__7600 chunk 3/8 105.6 s
+  SH-recip-2050005__7600 chunk 4/8 109.7 s
+  SH-recip-2050005__7600 chunk 5/8 109.0 s
+  SH-recip-2050005__7600 chunk 6/8 114.8 s
+  SH-recip-2050005__7600 chunk 7/8 114.2 s
+  SH-recip-2050005__7600 chunk 8/8 108.9 s
+SH-recip-2050005__7600 881.4 s, valid True, eligible 962, {'separate states': 0, 'separate states, read-out silent': 0, 'fading': 962, 'persistent oscillation': 0, 'unresolved': 0}
+  SH-2010016__7600 chunk 1/8 110.8 s
+  SH-2010016__7600 chunk 2/8 108.0 s
+  SH-2010016__7600 chunk 3/8 104.9 s
+  SH-2010016__7600 chunk 4/8 109.9 s
+  SH-2010016__7600 chunk 5/8 108.8 s
+  SH-2010016__7600 chunk 6/8 111.0 s
+  SH-2010016__7600 chunk 7/8 112.0 s
+  SH-2010016__7600 chunk 8/8 111.5 s
+SH-2010016__7600 876.9 s, valid True, eligible 952, {'separate states': 0, 'separate states, read-out silent': 0, 'fading': 952, 'persistent oscillation': 0, 'unresolved': 0}
+  SH-route-2020049__7600 chunk 1/8 112.8 s
+  SH-route-2020049__7600 chunk 2/8 119.4 s
+  SH-route-2020049__7600 chunk 3/8 111.0 s
+  SH-route-2020049__7600 chunk 4/8 113.3 s
+  SH-route-2020049__7600 chunk 5/8 113.7 s
+  SH-route-2020049__7600 chunk 6/8 110.1 s
+  SH-route-2020049__7600 chunk 7/8 122.8 s
+  SH-route-2020049__7600 chunk 8/8 119.3 s
+SH-route-2020049__7600 922.5 s, valid True, eligible 998, {'separate states': 0, 'separate states, read-out silent': 0, 'fading': 998, 'persistent oscillation': 0, 'unresolved': 0}
+  SH-class-2030034__7600 chunk 1/8 100.3 s
+  SH-class-2030034__7600 chunk 2/8 100.7 s
+  SH-class-2030034__7600 chunk 3/8 96.7 s
+  SH-class-2030034__7600 chunk 4/8 97.5 s
+  SH-class-2030034__7600 chunk 5/8 101.0 s
+  SH-class-2030034__7600 chunk 6/8 96.7 s
+  SH-class-2030034__7600 chunk 7/8 99.4 s
+  SH-class-2030034__7600 chunk 8/8 97.3 s
+SH-class-2030034__7600 789.6 s, valid True, eligible 956, {'separate states': 0, 'separate states, read-out silent': 0, 'fading': 956, 'persistent oscillation': 0, 'unresolved': 0}
+  SH-mirror-2040067__7600 chunk 1/8 98.6 s
+  SH-mirror-2040067__7600 chunk 2/8 96.3 s
+  SH-mirror-2040067__7600 chunk 3/8 102.7 s
+  SH-mirror-2040067__7600 chunk 4/8 97.0 s
+  SH-mirror-2040067__7600 chunk 5/8 95.4 s
+  SH-mirror-2040067__7600 chunk 6/8 98.6 s
+  SH-mirror-2040067__7600 chunk 7/8 96.3 s
+  SH-mirror-2040067__7600 chunk 8/8 99.0 s
+SH-mirror-2040067__7600 783.9 s, valid True, eligible 966, {'separate states': 3, 'separate states, read-out silent': 0, 'fading': 963, 'persistent oscillation': 0, 'unresolved': 0}
+  SH-recip-2050008__7600 chunk 1/8 155.7 s
+  SH-recip-2050008__7600 chunk 2/8 159.5 s
+  SH-recip-2050008__7600 chunk 3/8 164.6 s
+  SH-recip-2050008__7600 chunk 4/8 159.5 s
+  SH-recip-2050008__7600 chunk 5/8 162.4 s
+  SH-recip-2050008__7600 chunk 6/8 161.0 s
+  SH-recip-2050008__7600 chunk 7/8 95.2 s
+  SH-recip-2050008__7600 chunk 8/8 96.6 s
+SH-recip-2050008__7600 1154.6 s, valid True, eligible 961, {'separate states': 5, 'separate states, read-out silent': 1, 'fading': 949, 'persistent oscillation': 2, 'unresolved': 4}
+  SH-2010058__7600 chunk 1/8 99.5 s
+  SH-2010058__7600 chunk 2/8 96.9 s
+  SH-2010058__7600 chunk 3/8 97.5 s
+  SH-2010058__7600 chunk 4/8 97.4 s
+  SH-2010058__7600 chunk 5/8 97.8 s
+  SH-2010058__7600 chunk 6/8 99.7 s
+  SH-2010058__7600 chunk 7/8 98.4 s
+  SH-2010058__7600 chunk 8/8 99.5 s
+SH-2010058__7600 786.7 s, valid True, eligible 976, {'separate states': 0, 'separate states, read-out silent': 0, 'fading': 976, 'persistent oscillation': 0, 'unresolved': 0}
+  SH-route-2020080__7600 chunk 1/8 96.9 s
+  SH-route-2020080__7600 chunk 2/8 104.5 s
+  SH-route-2020080__7600 chunk 3/8 99.7 s
+  SH-route-2020080__7600 chunk 4/8 101.4 s
+  SH-route-2020080__7600 chunk 5/8 100.3 s
+  SH-route-2020080__7600 chunk 6/8 102.8 s
+  SH-route-2020080__7600 chunk 7/8 97.6 s
+  SH-route-2020080__7600 chunk 8/8 100.3 s
+SH-route-2020080__7600 803.6 s, valid True, eligible 979, {'separate states': 0, 'separate states, read-out silent': 0, 'fading': 979, 'persistent oscillation': 0, 'unresolved': 0}
+  SH-class-2030048__7600 chunk 1/8 105.9 s
+  SH-class-2030048__7600 chunk 2/8 107.7 s
+  SH-class-2030048__7600 chunk 3/8 105.4 s
+  SH-class-2030048__7600 chunk 4/8 105.6 s
+  SH-class-2030048__7600 chunk 5/8 106.0 s
+  SH-class-2030048__7600 chunk 6/8 105.3 s
+  SH-class-2030048__7600 chunk 7/8 104.4 s
+  SH-class-2030048__7600 chunk 8/8 107.9 s
+SH-class-2030048__7600 848.1 s, valid True, eligible 996, {'separate states': 4, 'separate states, read-out silent': 0, 'fading': 992, 'persistent oscillation': 0, 'unresolved': 0}
+  SH-mirror-2040077__7600 chunk 1/8 99.5 s
+  SH-mirror-2040077__7600 chunk 2/8 97.1 s
+  SH-mirror-2040077__7600 chunk 3/8 95.7 s
+  SH-mirror-2040077__7600 chunk 4/8 96.3 s
+  SH-mirror-2040077__7600 chunk 5/8 99.4 s
+  SH-mirror-2040077__7600 chunk 6/8 98.7 s
+  SH-mirror-2040077__7600 chunk 7/8 99.4 s
+  SH-mirror-2040077__7600 chunk 8/8 103.3 s
+SH-mirror-2040077__7600 789.3 s, valid True, eligible 937, {'separate states': 0, 'separate states, read-out silent': 0, 'fading': 937, 'persistent oscillation': 0, 'unresolved': 0}
+  SH-recip-2050031__7600 chunk 1/8 102.2 s
+  SH-recip-2050031__7600 chunk 2/8 105.2 s
+  SH-recip-2050031__7600 chunk 3/8 160.7 s
+  SH-recip-2050031__7600 chunk 4/8 101.4 s
+  SH-recip-2050031__7600 chunk 5/8 168.0 s
+  SH-recip-2050031__7600 chunk 6/8 105.9 s
+  SH-recip-2050031__7600 chunk 7/8 105.3 s
+  SH-recip-2050031__7600 chunk 8/8 105.9 s
+SH-recip-2050031__7600 954.7 s, valid True, eligible 989, {'separate states': 2, 'separate states, read-out silent': 0, 'fading': 985, 'persistent oscillation': 0, 'unresolved': 2}
+  SH-2010104__7600 chunk 1/8 102.7 s
+  SH-2010104__7600 chunk 2/8 104.8 s
+  SH-2010104__7600 chunk 3/8 97.9 s
+  SH-2010104__7600 chunk 4/8 100.4 s
+  SH-2010104__7600 chunk 5/8 102.4 s
+  SH-2010104__7600 chunk 6/8 101.7 s
+  SH-2010104__7600 chunk 7/8 99.9 s
+  SH-2010104__7600 chunk 8/8 102.6 s
+SH-2010104__7600 812.3 s, valid True, eligible 983, {'separate states': 0, 'separate states, read-out silent': 0, 'fading': 983, 'persistent oscillation': 0, 'unresolved': 0}
+  SH-route-2020110__7600 chunk 1/8 103.2 s
+  SH-route-2020110__7600 chunk 2/8 103.2 s
+  SH-route-2020110__7600 chunk 3/8 105.9 s
+  SH-route-2020110__7600 chunk 4/8 103.4 s
+  SH-route-2020110__7600 chunk 5/8 104.1 s
+  SH-route-2020110__7600 chunk 6/8 104.4 s
+  SH-route-2020110__7600 chunk 7/8 104.9 s
+  SH-route-2020110__7600 chunk 8/8 102.6 s
+SH-route-2020110__7600 831.8 s, valid True, eligible 1004, {'separate states': 0, 'separate states, read-out silent': 0, 'fading': 1004, 'persistent oscillation': 0, 'unresolved': 0}
+  SH-class-2030054__7600 chunk 1/8 100.1 s
+  SH-class-2030054__7600 chunk 2/8 101.5 s
+  SH-class-2030054__7600 chunk 3/8 100.1 s
+  SH-class-2030054__7600 chunk 4/8 104.1 s
+  SH-class-2030054__7600 chunk 5/8 102.4 s
+  SH-class-2030054__7600 chunk 6/8 104.9 s
+  SH-class-2030054__7600 chunk 7/8 101.9 s
+  SH-class-2030054__7600 chunk 8/8 99.5 s
+SH-class-2030054__7600 814.7 s, valid True, eligible 978, {'separate states': 0, 'separate states, read-out silent': 0, 'fading': 978, 'persistent oscillation': 0, 'unresolved': 0}
+  SH-mirror-2040082__7600 chunk 1/8 100.8 s
+  SH-mirror-2040082__7600 chunk 2/8 104.3 s
+  SH-mirror-2040082__7600 chunk 3/8 99.6 s
+  SH-mirror-2040082__7600 chunk 4/8 103.2 s
+  SH-mirror-2040082__7600 chunk 5/8 108.9 s
+  SH-mirror-2040082__7600 chunk 6/8 104.9 s
+  SH-mirror-2040082__7600 chunk 7/8 105.2 s
+  SH-mirror-2040082__7600 chunk 8/8 109.7 s
+SH-mirror-2040082__7600 836.6 s, valid True, eligible 972, {'separate states': 0, 'separate states, read-out silent': 0, 'fading': 972, 'persistent oscillation': 0, 'unresolved': 0}
+  SH-recip-2050057__7600 chunk 1/8 109.5 s
+  SH-recip-2050057__7600 chunk 2/8 112.3 s
+  SH-recip-2050057__7600 chunk 3/8 108.5 s
+  SH-recip-2050057__7600 chunk 4/8 108.2 s
+  SH-recip-2050057__7600 chunk 5/8 104.6 s
+  SH-recip-2050057__7600 chunk 6/8 111.0 s
+  SH-recip-2050057__7600 chunk 7/8 104.6 s
+  SH-recip-2050057__7600 chunk 8/8 103.9 s
+SH-recip-2050057__7600 862.5 s, valid True, eligible 974, {'separate states': 0, 'separate states, read-out silent': 0, 'fading': 974, 'persistent oscillation': 0, 'unresolved': 0}
+  SH-2010107__7600 chunk 1/8 102.3 s
+  SH-2010107__7600 chunk 2/8 109.5 s
+  SH-2010107__7600 chunk 3/8 108.1 s
+  SH-2010107__7600 chunk 4/8 172.4 s
+  SH-2010107__7600 chunk 5/8 175.5 s
+  SH-2010107__7600 chunk 6/8 110.9 s
+  SH-2010107__7600 chunk 7/8 112.0 s
+  SH-2010107__7600 chunk 8/8 109.4 s
+SH-2010107__7600 1000.0 s, valid True, eligible 984, {'separate states': 3, 'separate states, read-out silent': 0, 'fading': 979, 'persistent oscillation': 0, 'unresolved': 2}
+  SH-route-2020116__7600 chunk 1/8 106.2 s
+  SH-route-2020116__7600 chunk 2/8 107.9 s
+  SH-route-2020116__7600 chunk 3/8 109.5 s
+  SH-route-2020116__7600 chunk 4/8 109.0 s
+  SH-route-2020116__7600 chunk 5/8 105.5 s
+  SH-route-2020116__7600 chunk 6/8 108.2 s
+  SH-route-2020116__7600 chunk 7/8 110.9 s
+  SH-route-2020116__7600 chunk 8/8 107.6 s
+SH-route-2020116__7600 864.8 s, valid True, eligible 978, {'separate states': 0, 'separate states, read-out silent': 0, 'fading': 978, 'persistent oscillation': 0, 'unresolved': 0}
+  SH-class-2030065__7600 chunk 1/8 109.6 s
+  SH-class-2030065__7600 chunk 2/8 107.5 s
+  SH-class-2030065__7600 chunk 3/8 107.8 s
+  SH-class-2030065__7600 chunk 4/8 101.0 s
+  SH-class-2030065__7600 chunk 5/8 103.7 s
+  SH-class-2030065__7600 chunk 6/8 101.2 s
+  SH-class-2030065__7600 chunk 7/8 102.1 s
+  SH-class-2030065__7600 chunk 8/8 101.8 s
+SH-class-2030065__7600 834.7 s, valid True, eligible 990, {'separate states': 0, 'separate states, read-out silent': 0, 'fading': 990, 'persistent oscillation': 0, 'unresolved': 0}
+  SH-mirror-2040094__7600 chunk 1/8 107.7 s
+  SH-mirror-2040094__7600 chunk 2/8 107.5 s
+  SH-mirror-2040094__7600 chunk 3/8 108.4 s
+  SH-mirror-2040094__7600 chunk 4/8 106.8 s
+  SH-mirror-2040094__7600 chunk 5/8 108.9 s
+  SH-mirror-2040094__7600 chunk 6/8 107.3 s
+  SH-mirror-2040094__7600 chunk 7/8 107.1 s
+  SH-mirror-2040094__7600 chunk 8/8 105.3 s
+SH-mirror-2040094__7600 859.2 s, valid True, eligible 996, {'separate states': 2, 'separate states, read-out silent': 0, 'fading': 994, 'persistent oscillation': 0, 'unresolved': 0}
+  SH-recip-2050084__7600 chunk 1/8 104.8 s
+  SH-recip-2050084__7600 chunk 2/8 105.3 s
+  SH-recip-2050084__7600 chunk 3/8 106.9 s
+  SH-recip-2050084__7600 chunk 4/8 107.1 s
+  SH-recip-2050084__7600 chunk 5/8 104.2 s
+  SH-recip-2050084__7600 chunk 6/8 107.6 s
+  SH-recip-2050084__7600 chunk 7/8 105.9 s
+  SH-recip-2050084__7600 chunk 8/8 104.9 s
+SH-recip-2050084__7600 846.7 s, valid True, eligible 985, {'separate states': 7, 'separate states, read-out silent': 0, 'fading': 978, 'persistent oscillation': 0, 'unresolved': 0}
+  SH-2010110__7600 chunk 1/8 106.3 s
+  SH-2010110__7600 chunk 2/8 105.1 s
+  SH-2010110__7600 chunk 3/8 104.4 s
+  SH-2010110__7600 chunk 4/8 105.7 s
+  SH-2010110__7600 chunk 5/8 106.2 s
+  SH-2010110__7600 chunk 6/8 105.9 s
+  SH-2010110__7600 chunk 7/8 107.0 s
+  SH-2010110__7600 chunk 8/8 102.2 s
+SH-2010110__7600 842.9 s, valid True, eligible 993, {'separate states': 0, 'separate states, read-out silent': 0, 'fading': 993, 'persistent oscillation': 0, 'unresolved': 0}
+  SH-route-2020120__7600 chunk 1/8 99.5 s
+  SH-route-2020120__7600 chunk 2/8 96.8 s
+  SH-route-2020120__7600 chunk 3/8 97.0 s
+  SH-route-2020120__7600 chunk 4/8 100.3 s
+  SH-route-2020120__7600 chunk 5/8 100.0 s
+  SH-route-2020120__7600 chunk 6/8 96.8 s
+  SH-route-2020120__7600 chunk 7/8 98.4 s
+  SH-route-2020120__7600 chunk 8/8 94.9 s
+SH-route-2020120__7600 783.7 s, valid True, eligible 959, {'separate states': 1, 'separate states, read-out silent': 0, 'fading': 958, 'persistent oscillation': 0, 'unresolved': 0}
+  SH-class-2030109__7600 chunk 1/8 97.0 s
+  SH-class-2030109__7600 chunk 2/8 102.3 s
+  SH-class-2030109__7600 chunk 3/8 101.9 s
+  SH-class-2030109__7600 chunk 4/8 100.9 s
+  SH-class-2030109__7600 chunk 5/8 100.7 s
+  SH-class-2030109__7600 chunk 6/8 101.0 s
+  SH-class-2030109__7600 chunk 7/8 99.7 s
+  SH-class-2030109__7600 chunk 8/8 100.7 s
+SH-class-2030109__7600 804.1 s, valid True, eligible 987, {'separate states': 0, 'separate states, read-out silent': 0, 'fading': 987, 'persistent oscillation': 0, 'unresolved': 0}
+  SH-mirror-2040108__7600 chunk 1/8 98.4 s
+  SH-mirror-2040108__7600 chunk 2/8 100.3 s
+  SH-mirror-2040108__7600 chunk 3/8 97.4 s
+  SH-mirror-2040108__7600 chunk 4/8 97.4 s
+  SH-mirror-2040108__7600 chunk 5/8 97.2 s
+  SH-mirror-2040108__7600 chunk 6/8 99.5 s
+  SH-mirror-2040108__7600 chunk 7/8 100.4 s
+  SH-mirror-2040108__7600 chunk 8/8 100.9 s
+SH-mirror-2040108__7600 791.6 s, valid True, eligible 957, {'separate states': 1, 'separate states, read-out silent': 0, 'fading': 956, 'persistent oscillation': 0, 'unresolved': 0}
+  SH-recip-2050122__7600 chunk 1/8 106.7 s
+  SH-recip-2050122__7600 chunk 2/8 102.6 s
+  SH-recip-2050122__7600 chunk 3/8 105.3 s
+  SH-recip-2050122__7600 chunk 4/8 106.0 s
+  SH-recip-2050122__7600 chunk 5/8 100.2 s
+  SH-recip-2050122__7600 chunk 6/8 175.1 s
+  SH-recip-2050122__7600 chunk 7/8 105.0 s
+  SH-recip-2050122__7600 chunk 8/8 106.7 s
+SH-recip-2050122__7600 907.7 s, valid True, eligible 990, {'separate states': 5, 'separate states, read-out silent': 0, 'fading': 984, 'persistent oscillation': 0, 'unresolved': 1}
+  N2__7700 chunk 1/8 163.5 s
+  N2__7700 chunk 2/8 103.1 s
+  N2__7700 chunk 3/8 164.3 s
+  N2__7700 chunk 4/8 104.7 s
+  N2__7700 chunk 5/8 103.6 s
+  N2__7700 chunk 6/8 102.6 s
+  N2__7700 chunk 7/8 103.6 s
+  N2__7700 chunk 8/8 102.0 s
+N2__7700 947.5 s, valid True, eligible 1003, {'separate states': 13, 'separate states, read-out silent': 0, 'fading': 987, 'persistent oscillation': 2, 'unresolved': 1}
+  SH-2010075__7600 chunk 1/8 102.8 s
+  SH-2010075__7600 chunk 2/8 103.2 s
+  SH-2010075__7600 chunk 3/8 104.4 s
+  SH-2010075__7600 chunk 4/8 105.3 s
+  SH-2010075__7600 chunk 5/8 103.0 s
+  SH-2010075__7600 chunk 6/8 105.2 s
+  SH-2010075__7600 chunk 7/8 102.7 s
+  SH-2010075__7600 chunk 8/8 104.5 s
+SH-2010075__7600 831.0 s, valid True, eligible 971, {'separate states': 12, 'separate states, read-out silent': 0, 'fading': 959, 'persistent oscillation': 0, 'unresolved': 0}
+  SH-2010091__7600 chunk 1/8 101.5 s
+  SH-2010091__7600 chunk 2/8 102.4 s
+  SH-2010091__7600 chunk 3/8 105.3 s
+  SH-2010091__7600 chunk 4/8 103.1 s
+  SH-2010091__7600 chunk 5/8 103.2 s
+  SH-2010091__7600 chunk 6/8 100.9 s
+  SH-2010091__7600 chunk 7/8 106.9 s
+  SH-2010091__7600 chunk 8/8 107.6 s
+SH-2010091__7600 831.0 s, valid True, eligible 967, {'separate states': 21, 'separate states, read-out silent': 0, 'fading': 946, 'persistent oscillation': 0, 'unresolved': 0}
+  SH-route-2020092__7600 chunk 1/8 102.7 s
+  SH-route-2020092__7600 chunk 2/8 103.4 s
+  SH-route-2020092__7600 chunk 3/8 105.0 s
+  SH-route-2020092__7600 chunk 4/8 107.7 s
+  SH-route-2020092__7600 chunk 5/8 106.7 s
+  SH-route-2020092__7600 chunk 6/8 107.5 s
+  SH-route-2020092__7600 chunk 7/8 108.4 s
+  SH-route-2020092__7600 chunk 8/8 105.6 s
+SH-route-2020092__7600 847.1 s, valid True, eligible 970, {'separate states': 20, 'separate states, read-out silent': 0, 'fading': 950, 'persistent oscillation': 0, 'unresolved': 0}
+  SH-route-2020004__7600 chunk 1/8 105.0 s
+  SH-route-2020004__7600 chunk 2/8 111.3 s
+  SH-route-2020004__7600 chunk 3/8 108.5 s
+  SH-route-2020004__7600 chunk 4/8 105.1 s
+  SH-route-2020004__7600 chunk 5/8 108.0 s
+  SH-route-2020004__7600 chunk 6/8 111.1 s
+  SH-route-2020004__7600 chunk 7/8 112.1 s
+  SH-route-2020004__7600 chunk 8/8 111.0 s
+SH-route-2020004__7600 872.1 s, valid True, eligible 990, {'separate states': 17, 'separate states, read-out silent': 0, 'fading': 973, 'persistent oscillation': 0, 'unresolved': 0}
+  SH-class-2030099__7600 chunk 1/8 110.3 s
+  SH-class-2030099__7600 chunk 2/8 98.5 s
+  SH-class-2030099__7600 chunk 3/8 100.1 s
+  SH-class-2030099__7600 chunk 4/8 96.8 s
+  SH-class-2030099__7600 chunk 5/8 100.4 s
+  SH-class-2030099__7600 chunk 6/8 101.0 s
+  SH-class-2030099__7600 chunk 7/8 100.1 s
+  SH-class-2030099__7600 chunk 8/8 99.8 s
+SH-class-2030099__7600 807.0 s, valid True, eligible 981, {'separate states': 34, 'separate states, read-out silent': 1, 'fading': 946, 'persistent oscillation': 0, 'unresolved': 0}
+  SH-class-2030029__7600 chunk 1/8 102.0 s
+  SH-class-2030029__7600 chunk 2/8 104.4 s
+  SH-class-2030029__7600 chunk 3/8 98.4 s
+  SH-class-2030029__7600 chunk 4/8 102.8 s
+  SH-class-2030029__7600 chunk 5/8 102.1 s
+  SH-class-2030029__7600 chunk 6/8 100.3 s
+  SH-class-2030029__7600 chunk 7/8 100.2 s
+  SH-class-2030029__7600 chunk 8/8 101.1 s
+SH-class-2030029__7600 811.3 s, valid True, eligible 995, {'separate states': 75, 'separate states, read-out silent': 3, 'fading': 917, 'persistent oscillation': 0, 'unresolved': 0}
+  SH-mirror-2040028__7600 chunk 1/8 100.3 s
+  SH-mirror-2040028__7600 chunk 2/8 102.8 s
+  SH-mirror-2040028__7600 chunk 3/8 102.4 s
+  SH-mirror-2040028__7600 chunk 4/8 101.8 s
+  SH-mirror-2040028__7600 chunk 5/8 104.5 s
+  SH-mirror-2040028__7600 chunk 6/8 103.1 s
+  SH-mirror-2040028__7600 chunk 7/8 101.5 s
+  SH-mirror-2040028__7600 chunk 8/8 100.7 s
+SH-mirror-2040028__7600 817.2 s, valid True, eligible 975, {'separate states': 16, 'separate states, read-out silent': 0, 'fading': 959, 'persistent oscillation': 0, 'unresolved': 0}
+  SH-mirror-2040124__7600 chunk 1/8 102.0 s
+  SH-mirror-2040124__7600 chunk 2/8 98.5 s
+  SH-mirror-2040124__7600 chunk 3/8 99.7 s
+  SH-mirror-2040124__7600 chunk 4/8 98.3 s
+  SH-mirror-2040124__7600 chunk 5/8 101.2 s
+  SH-mirror-2040124__7600 chunk 6/8 101.2 s
+  SH-mirror-2040124__7600 chunk 7/8 101.1 s
+  SH-mirror-2040124__7600 chunk 8/8 100.2 s
+SH-mirror-2040124__7600 802.3 s, valid True, eligible 994, {'separate states': 49, 'separate states, read-out silent': 1, 'fading': 944, 'persistent oscillation': 0, 'unresolved': 0}
+  SH-recip-2050039__7600 chunk 1/8 99.3 s
+  SH-recip-2050039__7600 chunk 2/8 103.2 s
+  SH-recip-2050039__7600 chunk 3/8 100.6 s
+  SH-recip-2050039__7600 chunk 4/8 96.4 s
+  SH-recip-2050039__7600 chunk 5/8 100.3 s
+  SH-recip-2050039__7600 chunk 6/8 101.5 s
+  SH-recip-2050039__7600 chunk 7/8 100.3 s
+  SH-recip-2050039__7600 chunk 8/8 98.4 s
+SH-recip-2050039__7600 799.9 s, valid True, eligible 964, {'separate states': 69, 'separate states, read-out silent': 2, 'fading': 893, 'persistent oscillation': 0, 'unresolved': 0}
+  SH-recip-2050040__7600 chunk 1/8 106.4 s
+  SH-recip-2050040__7600 chunk 2/8 106.0 s
+  SH-recip-2050040__7600 chunk 3/8 104.8 s
+  SH-recip-2050040__7600 chunk 4/8 104.3 s
+  SH-recip-2050040__7600 chunk 5/8 103.1 s
+  SH-recip-2050040__7600 chunk 6/8 103.2 s
+  SH-recip-2050040__7600 chunk 7/8 103.7 s
+  SH-recip-2050040__7600 chunk 8/8 104.5 s
+SH-recip-2050040__7600 836.0 s, valid True, eligible 1010, {'separate states': 64, 'separate states, read-out silent': 3, 'fading': 941, 'persistent oscillation': 0, 'unresolved': 2}
+  core-frozen-shuffle0__7600 chunk 1/8 102.6 s
+  core-frozen-shuffle0__7600 chunk 2/8 163.0 s
+  core-frozen-shuffle0__7600 chunk 3/8 105.2 s
+  core-frozen-shuffle0__7600 chunk 4/8 225.0 s
+  core-frozen-shuffle0__7600 chunk 5/8 240.4 s
+  core-frozen-shuffle0__7600 chunk 6/8 100.7 s
+  core-frozen-shuffle0__7600 chunk 7/8 168.1 s
+  core-frozen-shuffle0__7600 chunk 8/8 101.4 s
+core-frozen-shuffle0__7600 1206.4 s, valid True, eligible 990, {'separate states': 9, 'separate states, read-out silent': 0, 'fading': 974, 'persistent oscillation': 2, 'unresolved': 5}
+  core-frozen-shuffle1__7600 chunk 1/8 100.6 s
+  core-frozen-shuffle1__7600 chunk 2/8 102.8 s
+  core-frozen-shuffle1__7600 chunk 3/8 102.4 s
+  core-frozen-shuffle1__7600 chunk 4/8 224.8 s
+  core-frozen-shuffle1__7600 chunk 5/8 226.1 s
+  core-frozen-shuffle1__7600 chunk 6/8 103.9 s
+  core-frozen-shuffle1__7600 chunk 7/8 226.8 s
+  core-frozen-shuffle1__7600 chunk 8/8 99.6 s
+core-frozen-shuffle1__7600 1187.1 s, valid True, eligible 988, {'separate states': 17, 'separate states, read-out silent': 0, 'fading': 965, 'persistent oscillation': 4, 'unresolved': 2}
+  core-frozen-shuffle2__7600 chunk 1/8 244.2 s
+  core-frozen-shuffle2__7600 chunk 2/8 238.9 s
+  core-frozen-shuffle2__7600 chunk 3/8 110.2 s
+  core-frozen-shuffle2__7600 chunk 4/8 296.9 s
+  core-frozen-shuffle2__7600 chunk 5/8 171.2 s
+  core-frozen-shuffle2__7600 chunk 6/8 295.4 s
+  core-frozen-shuffle2__7600 chunk 7/8 295.5 s
+  core-frozen-shuffle2__7600 chunk 8/8 168.5 s
+core-frozen-shuffle2__7600 1821.0 s, valid True, eligible 995, {'separate states': 26, 'separate states, read-out silent': 0, 'fading': 954, 'persistent oscillation': 6, 'unresolved': 9}
+  hub-frozen-shuffle0__7600 chunk 1/8 107.1 s
+  hub-frozen-shuffle0__7600 chunk 2/8 105.1 s
+  hub-frozen-shuffle0__7600 chunk 3/8 103.9 s
+  hub-frozen-shuffle0__7600 chunk 4/8 106.8 s
+  hub-frozen-shuffle0__7600 chunk 5/8 106.8 s
+  hub-frozen-shuffle0__7600 chunk 6/8 106.2 s
+  hub-frozen-shuffle0__7600 chunk 7/8 104.9 s
+  hub-frozen-shuffle0__7600 chunk 8/8 107.6 s
+hub-frozen-shuffle0__7600 848.4 s, valid True, eligible 996, {'separate states': 1, 'separate states, read-out silent': 0, 'fading': 995, 'persistent oscillation': 0, 'unresolved': 0}
+  hub-frozen-shuffle1__7600 chunk 1/8 104.6 s
+  hub-frozen-shuffle1__7600 chunk 2/8 110.1 s
+  hub-frozen-shuffle1__7600 chunk 3/8 104.2 s
+  hub-frozen-shuffle1__7600 chunk 4/8 102.6 s
+  hub-frozen-shuffle1__7600 chunk 5/8 166.1 s
+  hub-frozen-shuffle1__7600 chunk 6/8 104.6 s
+  hub-frozen-shuffle1__7600 chunk 7/8 106.3 s
+  hub-frozen-shuffle1__7600 chunk 8/8 102.4 s
+hub-frozen-shuffle1__7600 901.0 s, valid True, eligible 1000, {'separate states': 2, 'separate states, read-out silent': 0, 'fading': 997, 'persistent oscillation': 0, 'unresolved': 1}
+  hub-frozen-shuffle2__7600 chunk 1/8 104.3 s
+  hub-frozen-shuffle2__7600 chunk 2/8 105.2 s
+  hub-frozen-shuffle2__7600 chunk 3/8 139.0 s
+  hub-frozen-shuffle2__7600 chunk 4/8 98.9 s
+  hub-frozen-shuffle2__7600 chunk 5/8 99.3 s
+  hub-frozen-shuffle2__7600 chunk 6/8 101.6 s
+  hub-frozen-shuffle2__7600 chunk 7/8 98.2 s
+  hub-frozen-shuffle2__7600 chunk 8/8 100.5 s
+hub-frozen-shuffle2__7600 847.0 s, valid True, eligible 990, {'separate states': 4, 'separate states, read-out silent': 0, 'fading': 985, 'persistent oscillation': 0, 'unresolved': 1}
+stage panels 42743.2 s
+stage c3 9.6 s
+stage c5 50.8 s
+rc=0

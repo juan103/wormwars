@@ -184,6 +184,21 @@ def test_batch_7s_shuffles_regenerate():
             census.batch7_graph(arm, k)
 
 
+def test_batch_7s_check_raises_on_a_mismatch(tmp_path, monkeypatch):
+    """Fable, census results round 2: the mismatch had never been seen firing. With one recorded count changed in
+    batch7.json, the regeneration must raise Batch7Mismatch, the one exception the census's skip catches."""
+    import json
+    import shutil
+    import census
+    shutil.copy(census.SPIKES / "batch6.json", tmp_path / "batch6.json")
+    book = json.load(open(census.SPIKES / "batch7.json"))
+    book["N2/core-frozen-shuffle0/7100"]["info"]["accepted"] += 50
+    json.dump(book, open(tmp_path / "batch7.json", "w"))
+    monkeypatch.setattr(census, "SPIKES", tmp_path)
+    with pytest.raises(census.Batch7Mismatch):
+        census.batch7_graph("core-frozen-shuffle", 0)
+
+
 def test_c5_fails_when_a_separate_states_genome_is_lost():
     """Astra, round 3: a pilot genome with separate states that the census no longer classifies (lost to eligibility)
     must count as a basin change, so C5 fails even with 99% agreement."""

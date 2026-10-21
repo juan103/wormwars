@@ -1,0 +1,17 @@
+**Revise.** I reproduced `tables.txt` exactly and recalculated both bootstraps. The tick-30 readings, their combination, the untaken branch, and tick-300 “most” readings follow the plan. I found no arithmetic error in `census_tables.py` on these records.
+
+Findings, ranked, in the [results draft](/D:/Claude/random/wormWars/docs/memory/M2-CENSUS-RESULTS.md):
+
+1. **High — The roadmap conclusion overstates an inconclusive result (lines 219–220).** “Settling does not explain little … Neither does it explain most” is wrong. Neither reading is **established**; failure to establish either does not exclude it. Likewise, tick-100 “more than half” needs “by point estimate”; no tick-100 bootstrap reading was calculated.
+
+2. **High — There are 11 read-out-silent separate-states genomes, not zero (line 70).** The records contain one reference genome (`SH-recip-2050008`, genome 455) and ten across six selected graphs. The reported S totals correctly include both subclasses, so the split remains correct. `census_tables.py` combines the subclasses and therefore cannot support the “none” claim. Add subclass counts to its output.
+
+3. **High — The late unresolved contribution is misattributed (lines 165–166).** At tick 300, N2 genome 349 contributes `|δy| = 0.7125715`, versus `0.1300018` from genome 26: approximately **6.22% versus 1.13% of Λ**, before subtracting reference U. Genome 349 remains material afterward. The remainder is not solely genome 26’s sustained motion; at tick 300 fading also carries 5.82% and oscillation 0.44%.
+
+4. **Medium — Restore the plan’s explicit attribution caveat.** Plan lines 129–132 specify a split **by genome**: an S genome’s whole tick-30 difference includes its transient component. The draft omits this while describing two mechanisms and genomes holding “their difference indefinitely.” Say “classified as reaching distinct stable roots,” and distinguish class attribution from a decomposition of persistent versus transient signal. Also, `ρ_S ≈ 1` is an observed aggregate, not a class identity; “the whole of Λ_S” should be “almost all.” State the classifier’s finite observation limits for oscillations.
+
+5. **Medium — Batch-7 wording overgeneralizes the reductions.** “Lose the separate states” and “nearly vanish” describe counts better than contributions. Hub-frozen-2 has **S(30)=0.0677**, essentially N2 seed 7700’s **0.0681**. Hub-frozen-1’s separation is **53.1% on the core**, contradicting an unqualified “mostly off the core” across the arm. Report fewer classified genomes, heterogeneous S contributions, and the measured location ranges. Counts and averaged locations do not establish preservation of the same states.
+
+6. **Medium — Keep the retention ranking’s scope explicit.** The after-data ranking is numerically correct against all **30 reference and 10 selected graphs**. “N2-specific among these graphs” becomes false if it includes batch 7: core-frozen-0 and -2 have retention **0.411 and 0.406**, exceeding both N2 panels. These are amplitude-weighted class aggregates; they do not establish slower fading for most individual genomes or statistical superiority to every graph.
+
+7. **Low — Correct exactness and sample-size wording.** C1 establishes agreement within the reported tolerance, not that “the census’s arrays are M1’s.” The census drew **49,152 genomes**, of which **47,084** were eligible—not 48,000. The planned detailed numerical outputs otherwise appear in the supplied records; the principal omissions are interpretive qualifications.

@@ -4,6 +4,7 @@ graphs resampled across ensembles: fails, as it must
 two 'little' panels not replicated: fails, as it must
 radius sensitivity one history at a time: fails, as it must
 C5 ignores a lost separate-states genome: fails, as it must
-projection after two panels: about 16.2 h
+projection after two panels: about 20.2 h
 cost guard enforced only once: fails, as it must
 C3 without the completeness gate: fails, as it must
+batch 7's comparison disabled: fails, as it must

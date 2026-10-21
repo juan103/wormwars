@@ -125,3 +125,27 @@ for label, patch, test in (
          T.test_c3_refuses_an_incomplete_census_and_an_empty_cached_pass)):
     with tempfile.TemporaryDirectory() as d:
         run(label, patch, lambda test=test, d=d: test(Path(d)))
+
+# census results, round 2 (Fable): batch 7's mismatch never seen firing
+import json as _json  # noqa: E402
+import types  # noqa: E402
+
+blind = types.SimpleNamespace(load=_json.load, dump=_json.dump, dumps=_json.dumps, loads=lambda s: {})  # got == want == {}
+with tempfile.TemporaryDirectory() as d:
+    class _MP:  # pytest's monkeypatch, enough for the test
+        def __init__(self):
+            self.undo = []
+
+        def setattr(self, obj, name, value):
+            self.undo.append((obj, name, getattr(obj, name)))
+            setattr(obj, name, value)
+
+    def _batch7_test(d=d):
+        mp = _MP()
+        try:
+            T.test_batch_7s_check_raises_on_a_mismatch(Path(d), mp)
+        finally:
+            for obj, name, value in reversed(mp.undo):
+                setattr(obj, name, value)
+
+    run("batch 7's comparison disabled", [(census, "json", blind)], _batch7_test)

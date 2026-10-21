@@ -1,0 +1,314 @@
+panels 48, valid 48
+panel seconds: total 42732, median 847, max 1821
+chunk seconds: 384 chunks, 94.9 to 296.9, median 104.5
+separate states, read-out silent (inside the S counts below): {'SH-class-2030029__7600': (3, 'selected'), 'SH-class-2030099__7600': (1, 'selected'), 'SH-mirror-2040124__7600': (1, 'selected'), 'SH-recip-2050008__7600': (1, 'reference'), 'SH-recip-2050039__7600': (2, 'selected'), 'SH-recip-2050040__7600': (3, 'selected')}, total 11
+   N2__7600: separate-states genomes' own |dy(30)|/a, 0.766 to 1.689
+   N2__7700: separate-states genomes' own |dy(30)|/a, 0.265 to 1.460
+stages (stage seconds; the panel seconds above are the panel records') {'c2': 512.7, 'panels': 42743.2, 'c3': 9.6, 'c5': 50.8} guard 12.79575
+ineligible numerator(30) fraction, max over panels 0.0478 (SH-route-2020011__7600); N2 0.0017, 0.0015; denominator, max 0.00479
+
+== C1
+panels 42; largest gaps {'a': 5.257263182567584e-07, 'd30': 5.065536499149204e-07, 'd100': 4.573516845240988e-07}; largest fraction above 1e-3 0.0
+eligibility changes []; cohort changes []; largest share/C gap 1.67e-07, missing 0
+
+== C3 20 roots, max 1.40e-14, passes True
+== C5 genomes 467, agreement 1.0, basin changes [], passes True
+== C2 6/6 named correctly
+
+== C4 and classes per panel (counts S F O U; unresolved fraction of eligible and of numerator 30)
+N2__7600                         N2                   elig   990  S  15 F  972 O 1 U 2  Ufrac 0.0020 Unum 0.0339
+SH-2010013__7600                 reference            elig  1008  S   0 F 1007 O 0 U 1  Ufrac 0.0010 Unum 0.0011
+SH-route-2020011__7600           reference            elig   938  S   0 F  938 O 0 U 0  Ufrac 0.0000 Unum 0.0000
+SH-class-2030024__7600           reference            elig   970  S   4 F  966 O 0 U 0  Ufrac 0.0000 Unum 0.0000
+SH-mirror-2040045__7600          reference            elig   997  S   0 F  997 O 0 U 0  Ufrac 0.0000 Unum 0.0000
+SH-recip-2050005__7600           reference            elig   962  S   0 F  962 O 0 U 0  Ufrac 0.0000 Unum 0.0000
+SH-2010016__7600                 reference            elig   952  S   0 F  952 O 0 U 0  Ufrac 0.0000 Unum 0.0000
+SH-route-2020049__7600           reference            elig   998  S   0 F  998 O 0 U 0  Ufrac 0.0000 Unum 0.0000
+SH-class-2030034__7600           reference            elig   956  S   0 F  956 O 0 U 0  Ufrac 0.0000 Unum 0.0000
+SH-mirror-2040067__7600          reference            elig   966  S   3 F  963 O 0 U 0  Ufrac 0.0000 Unum 0.0000
+SH-recip-2050008__7600           reference            elig   961  S   6 F  949 O 2 U 4  Ufrac 0.0042 Unum 0.0027
+SH-2010058__7600                 reference            elig   976  S   0 F  976 O 0 U 0  Ufrac 0.0000 Unum 0.0000
+SH-route-2020080__7600           reference            elig   979  S   0 F  979 O 0 U 0  Ufrac 0.0000 Unum 0.0000
+SH-class-2030048__7600           reference            elig   996  S   4 F  992 O 0 U 0  Ufrac 0.0000 Unum 0.0000
+SH-mirror-2040077__7600          reference            elig   937  S   0 F  937 O 0 U 0  Ufrac 0.0000 Unum 0.0000
+SH-recip-2050031__7600           reference            elig   989  S   2 F  985 O 0 U 2  Ufrac 0.0020 Unum 0.0073
+SH-2010104__7600                 reference            elig   983  S   0 F  983 O 0 U 0  Ufrac 0.0000 Unum 0.0000
+SH-route-2020110__7600           reference            elig  1004  S   0 F 1004 O 0 U 0  Ufrac 0.0000 Unum 0.0000
+SH-class-2030054__7600           reference            elig   978  S   0 F  978 O 0 U 0  Ufrac 0.0000 Unum 0.0000
+SH-mirror-2040082__7600          reference            elig   972  S   0 F  972 O 0 U 0  Ufrac 0.0000 Unum 0.0000
+SH-recip-2050057__7600           reference            elig   974  S   0 F  974 O 0 U 0  Ufrac 0.0000 Unum 0.0000
+SH-2010107__7600                 reference            elig   984  S   3 F  979 O 0 U 2  Ufrac 0.0020 Unum 0.0040
+SH-route-2020116__7600           reference            elig   978  S   0 F  978 O 0 U 0  Ufrac 0.0000 Unum 0.0000
+SH-class-2030065__7600           reference            elig   990  S   0 F  990 O 0 U 0  Ufrac 0.0000 Unum 0.0000
+SH-mirror-2040094__7600          reference            elig   996  S   2 F  994 O 0 U 0  Ufrac 0.0000 Unum 0.0000
+SH-recip-2050084__7600           reference            elig   985  S   7 F  978 O 0 U 0  Ufrac 0.0000 Unum 0.0000
+SH-2010110__7600                 reference            elig   993  S   0 F  993 O 0 U 0  Ufrac 0.0000 Unum 0.0000
+SH-route-2020120__7600           reference            elig   959  S   1 F  958 O 0 U 0  Ufrac 0.0000 Unum 0.0000
+SH-class-2030109__7600           reference            elig   987  S   0 F  987 O 0 U 0  Ufrac 0.0000 Unum 0.0000
+SH-mirror-2040108__7600          reference            elig   957  S   1 F  956 O 0 U 0  Ufrac 0.0000 Unum 0.0000
+SH-recip-2050122__7600           reference            elig   990  S   5 F  984 O 0 U 1  Ufrac 0.0010 Unum 0.0007
+N2__7700                         N2                   elig  1003  S  13 F  987 O 2 U 1  Ufrac 0.0010 Unum 0.0009
+SH-2010075__7600                 selected             elig   971  S  12 F  959 O 0 U 0  Ufrac 0.0000 Unum 0.0000
+SH-2010091__7600                 selected             elig   967  S  21 F  946 O 0 U 0  Ufrac 0.0000 Unum 0.0000
+SH-route-2020092__7600           selected             elig   970  S  20 F  950 O 0 U 0  Ufrac 0.0000 Unum 0.0000
+SH-route-2020004__7600           selected             elig   990  S  17 F  973 O 0 U 0  Ufrac 0.0000 Unum 0.0000
+SH-class-2030099__7600           selected             elig   981  S  35 F  946 O 0 U 0  Ufrac 0.0000 Unum 0.0000
+SH-class-2030029__7600           selected             elig   995  S  78 F  917 O 0 U 0  Ufrac 0.0000 Unum 0.0000
+SH-mirror-2040028__7600          selected             elig   975  S  16 F  959 O 0 U 0  Ufrac 0.0000 Unum 0.0000
+SH-mirror-2040124__7600          selected             elig   994  S  50 F  944 O 0 U 0  Ufrac 0.0000 Unum 0.0000
+SH-recip-2050039__7600           selected             elig   964  S  71 F  893 O 0 U 0  Ufrac 0.0000 Unum 0.0000
+SH-recip-2050040__7600           selected             elig  1010  S  67 F  941 O 0 U 2  Ufrac 0.0020 Unum 0.0015
+core-frozen-shuffle0__7600       core-frozen-shuffle  elig   990  S   9 F  974 O 2 U 5  Ufrac 0.0051 Unum 0.0233
+core-frozen-shuffle1__7600       core-frozen-shuffle  elig   988  S  17 F  965 O 4 U 2  Ufrac 0.0020 Unum 0.0113
+core-frozen-shuffle2__7600       core-frozen-shuffle  elig   995  S  26 F  954 O 6 U 9  Ufrac 0.0090 Unum 0.0421
+hub-frozen-shuffle0__7600        hub-frozen-shuffle   elig   996  S   1 F  995 O 0 U 0  Ufrac 0.0000 Unum 0.0000
+hub-frozen-shuffle1__7600        hub-frozen-shuffle   elig  1000  S   2 F  997 O 0 U 1  Ufrac 0.0010 Unum 0.0100
+hub-frozen-shuffle2__7600        hub-frozen-shuffle   elig   990  S   4 F  985 O 0 U 1  Ufrac 0.0010 Unum 0.0110
+
+== totals by role (genomes, S, F, O, U; graphs with any S)
+N2                   panels  2 eligible   1993 {'S': 28, 'F': 1959, 'O': 3, 'U': 3} graphs with S 2
+reference            panels 30 eligible  29315 {'S': 38, 'F': 29265, 'O': 2, 'U': 10} graphs with S 11
+selected             panels 10 eligible   9817 {'S': 387, 'F': 9428, 'O': 0, 'U': 2} graphs with S 10
+core-frozen-shuffle  panels  3 eligible   2973 {'S': 52, 'F': 2893, 'O': 12, 'U': 16} graphs with S 3
+hub-frozen-shuffle   panels  3 eligible   2986 {'S': 7, 'F': 2977, 'O': 0, 'U': 2} graphs with S 3
+
+== unresolved reasons and oscillation periods (in ticks)
+N2__7600: {'Newton failure; no root located from the orbit; unconfirmed candidate; unstable or marginal root': 1, 'located root not reached': 1} periods [[11.34, 11.34]]
+SH-2010013__7600: {'located root not reached': 1} periods []
+SH-recip-2050008__7600: {'unconfirmed candidate; unstable or marginal root': 4} periods [[23.28, 23.28], [39.5, 39.5]]
+SH-recip-2050031__7600: {'candidate around a stable root; located root not reached': 1, 'Newton failure; candidate around a stable root': 1} periods []
+SH-2010107__7600: {'unconfirmed candidate; unstable or marginal root': 1, 'Newton failure; no root located from the orbit': 1} periods []
+SH-recip-2050122__7600: {'candidate around a stable root; located root not reached': 1} periods []
+N2__7700: {'located root not reached': 1} periods [[20.75, 20.75], [42.91, 42.91]]
+SH-recip-2050040__7600: {'located root not reached': 2} periods []
+core-frozen-shuffle0__7600: {'unconfirmed candidate; unstable or marginal root': 2, 'located root not reached': 1, 'candidate around a stable root; located root not reached': 1, 'no root located from the orbit; unconfirmed candidate; unstable or marginal root': 1} periods [[44.06, 44.06], [25.53, 25.53]]
+core-frozen-shuffle1__7600: {'unconfirmed candidate; unstable or marginal root': 2} periods [[27.31, 27.31], [29.72, 29.72], [26.84, 26.84], [27.28, 27.28]]
+core-frozen-shuffle2__7600: {'Newton failure; no root located from the orbit': 2, 'candidate around a stable root; located root not reached': 1, 'unconfirmed candidate; unstable or marginal root': 3, 'Newton failure; no root located from the orbit; unstable or marginal root': 2, 'Newton failure; unconfirmed candidate': 1} periods [[43.5, 43.5], [19.28, 19.28], [11.56, 11.56], [38.78, 38.78], [19.53, 19.53], [33.91, 33.91]]
+hub-frozen-shuffle1__7600: {'unconfirmed candidate; unstable or marginal root': 1} periods []
+hub-frozen-shuffle2__7600: {'candidate around a stable root; located root not reached': 1} periods []
+
+== N2's unresolved and oscillating genomes: |dy(t)| / denominator / Lambda(t), at ticks 30 and 300
+   N2__7600 genome 26 unresolved: t30 |dy| 1.1016, /den/Lambda 0.0520, t300 |dy| 0.1300, /den/Lambda 0.0113
+   N2__7600 genome 349 unresolved: t30 |dy| 0.7597, /den/Lambda 0.0359, t300 |dy| 0.7126, /den/Lambda 0.0622
+   N2__7600 genome 777 persistent oscillation: t30 |dy| 0.0346, /den/Lambda 0.0016, t300 |dy| 0.0537, /den/Lambda 0.0047
+   N2__7700 genome 12 persistent oscillation: t30 |dy| 0.0017, /den/Lambda 0.0001, t300 |dy| 0.0115, /den/Lambda 0.0018
+   N2__7700 genome 265 persistent oscillation: t30 |dy| 0.0267, /den/Lambda 0.0015, t300 |dy| 0.0921, /den/Lambda 0.0146
+   N2__7700 genome 606 unresolved: t30 |dy| 0.0406, /den/Lambda 0.0022, t300 |dy| 0.0017, /den/Lambda 0.0003
+
+== split at t30: reading inconclusive ['inconclusive', 'inconclusive'] branch None
+N2__7600: Lambda 0.1714 [0.1272, 0.2143], median-definition lead 0.1697, resamples Lambda<=0 0
+   phi_S     +0.471 [+0.277, +0.671]
+   phi_S_lo  +0.470 [+0.277, +0.671]
+   phi_S_hi  +0.559 [+0.354, +0.755]
+   phi_F     +0.441 [+0.245, +0.645]
+   phi_F_lo  +0.440 [+0.244, +0.644]
+   phi_F_hi  +0.529 [+0.328, +0.723]
+   phi_O     +0.001 [-0.001, +0.005]
+   phi_U     +0.087 [-0.001, +0.193]
+   by ensemble phi_S / phi_F: SH 0.44/0.48, SH-route 0.46/0.46, SH-class 0.53/0.38, SH-mirror 0.49/0.42, SH-recip 0.44/0.46
+   S: w_N2 0.0901 rho_N2 0.984 w_ref 0.0078 | composition +0.0253 retention -0.0007 presence +0.0561 (19 pairs)
+   F: w_N2 0.8997 rho_N2 0.378 w_ref 0.9918 | composition -0.0296 retention +0.1052 presence +0.0000 (0 pairs)
+N2__7700: Lambda 0.1705 [0.1259, 0.2141], median-definition lead 0.1688, resamples Lambda<=0 0
+   phi_S     +0.353 [+0.142, +0.554]
+   phi_S_lo  +0.352 [+0.140, +0.553]
+   phi_S_hi  +0.355 [+0.147, +0.555]
+   phi_F     +0.645 [+0.444, +0.854]
+   phi_F_lo  +0.644 [+0.444, +0.853]
+   phi_F_hi  +0.647 [+0.445, +0.858]
+   phi_O     +0.001 [-0.001, +0.004]
+   phi_U     +0.001 [-0.002, +0.006]
+   by ensemble phi_S / phi_F: SH 0.34/0.66, SH-route 0.35/0.65, SH-class 0.40/0.60, SH-mirror 0.37/0.62, SH-recip 0.31/0.70
+   S: w_N2 0.0666 rho_N2 1.023 w_ref 0.0078 | composition +0.0170 retention +0.0001 presence +0.0431 (19 pairs)
+   F: w_N2 0.9311 rho_N2 0.402 w_ref 0.9918 | composition -0.0202 retention +0.1301 presence +0.0000 (0 pairs)
+   reference mean: s 0.2730, S 0.0079, F 0.2649, O 0.0001, U 0.0001
+   reference s range: 0.1808 to 0.4053
+   N2__7600                         s 0.4444, S 0.0886, F 0.3405, O 0.0003, U 0.0151
+   N2__7700                         s 0.4435, S 0.0681, F 0.3748, O 0.0003, U 0.0004
+   SH-2010075__7600                 s 0.3678, S 0.0385, F 0.3293, O 0.0000, U 0.0000
+   SH-2010091__7600                 s 0.2990, S 0.1030, F 0.1960, O 0.0000, U 0.0000
+   SH-route-2020092__7600           s 0.3785, S 0.0938, F 0.2847, O 0.0000, U 0.0000
+   SH-route-2020004__7600           s 0.3223, S 0.0618, F 0.2606, O 0.0000, U 0.0000
+   SH-class-2030099__7600           s 0.5438, S 0.3853, F 0.1586, O 0.0000, U 0.0000
+   SH-class-2030029__7600           s 0.3466, S 0.1189, F 0.2277, O 0.0000, U 0.0000
+   SH-mirror-2040028__7600          s 0.4104, S 0.0854, F 0.3250, O 0.0000, U 0.0000
+   SH-mirror-2040124__7600          s 0.3447, S 0.1358, F 0.2088, O 0.0000, U 0.0000
+   SH-recip-2050039__7600           s 0.5625, S 0.3155, F 0.2470, O 0.0000, U 0.0000
+   SH-recip-2050040__7600           s 0.2469, S 0.0751, F 0.1715, O 0.0000, U 0.0004
+   core-frozen-shuffle0__7600       s 0.4623, S 0.0781, F 0.3710, O 0.0023, U 0.0108
+   core-frozen-shuffle1__7600       s 0.4383, S 0.1227, F 0.3010, O 0.0096, U 0.0050
+   core-frozen-shuffle2__7600       s 0.5434, S 0.2086, F 0.2981, O 0.0137, U 0.0229
+   hub-frozen-shuffle0__7600        s 0.3554, S 0.0013, F 0.3541, O 0.0000, U 0.0000
+   hub-frozen-shuffle1__7600        s 0.3227, S 0.0091, F 0.3104, O 0.0000, U 0.0032
+   hub-frozen-shuffle2__7600        s 0.3720, S 0.0677, F 0.3001, O 0.0000, U 0.0041
+
+== split at t300: reading most ['most', 'most'] branch None
+N2__7600: Lambda 0.0928 [0.0535, 0.1348], median-definition lead 0.1027, resamples Lambda<=0 0
+   phi_S     +0.866 [+0.713, +0.964]
+   phi_S_lo  +0.864 [+0.710, +0.961]
+   phi_S_hi  +0.940 [+0.857, +0.989]
+   phi_F     +0.058 [+0.009, +0.137]
+   phi_F_lo  +0.056 [+0.007, +0.136]
+   phi_F_hi  +0.132 [+0.033, +0.283]
+   phi_O     +0.004 [-0.001, +0.016]
+   phi_U     +0.071 [-0.003, +0.182]
+   by ensemble phi_S / phi_F: SH 0.86/0.07, SH-route 0.86/0.06, SH-class 0.86/0.06, SH-mirror 0.86/0.06, SH-recip 0.88/0.03
+   S: w_N2 0.0901 rho_N2 0.991 w_ref 0.0078 | composition +0.0276 retention -0.0037 presence +0.0565 (19 pairs)
+   F: w_N2 0.8997 rho_N2 0.008 w_ref 0.9918 | composition -0.0004 retention +0.0058 presence +0.0000 (0 pairs)
+N2__7700: Lambda 0.0587 [0.0203, 0.1005], median-definition lead 0.0686, resamples Lambda<=0 5
+   phi_S     +0.990 [+0.919, +1.042]
+   phi_S_lo  +0.987 [+0.915, +1.035]
+   phi_S_hi  +0.990 [+0.920, +1.042]
+   phi_F     -0.003 [-0.057, +0.049]
+   phi_F_lo  -0.007 [-0.065, +0.044]
+   phi_F_hi  -0.003 [-0.056, +0.049]
+   phi_O     +0.016 [-0.000, +0.067]
+   phi_U     -0.003 [-0.013, +0.000]
+   by ensemble phi_S / phi_F: SH 0.98/0.01, SH-route 0.97/0.01, SH-class 0.98/0.00, SH-mirror 0.97/0.01, SH-recip 1.09/-0.09
+   S: w_N2 0.0666 rho_N2 1.006 w_ref 0.0078 | composition +0.0183 retention -0.0026 presence +0.0424 (19 pairs)
+   F: w_N2 0.9311 rho_N2 0.002 w_ref 0.9918 | composition -0.0001 retention -0.0001 presence +0.0000 (0 pairs)
+   reference mean: s 0.0109, S 0.0089, F 0.0018, O 0.0000, U 0.0002
+   reference s range: 0.0002 to 0.1320
+   N2__7600                         s 0.1037, S 0.0892, F 0.0072, O 0.0004, U 0.0068
+   N2__7700                         s 0.0695, S 0.0669, F 0.0016, O 0.0010, U 0.0000
+   SH-2010075__7600                 s 0.0448, S 0.0388, F 0.0060, O 0.0000, U 0.0000
+   SH-2010091__7600                 s 0.1016, S 0.1012, F 0.0004, O 0.0000, U 0.0000
+   SH-route-2020092__7600           s 0.0991, S 0.0880, F 0.0111, O 0.0000, U 0.0000
+   SH-route-2020004__7600           s 0.0710, S 0.0670, F 0.0040, O 0.0000, U 0.0000
+   SH-class-2030099__7600           s 0.3864, S 0.3849, F 0.0015, O 0.0000, U 0.0000
+   SH-class-2030029__7600           s 0.1164, S 0.1160, F 0.0004, O 0.0000, U 0.0000
+   SH-mirror-2040028__7600          s 0.0949, S 0.0891, F 0.0058, O 0.0000, U 0.0000
+   SH-mirror-2040124__7600          s 0.1357, S 0.1355, F 0.0002, O 0.0000, U 0.0000
+   SH-recip-2050039__7600           s 0.3140, S 0.3132, F 0.0007, O 0.0000, U 0.0000
+   SH-recip-2050040__7600           s 0.0753, S 0.0722, F 0.0029, O 0.0000, U 0.0001
+   core-frozen-shuffle0__7600       s 0.0900, S 0.0822, F 0.0038, O 0.0017, U 0.0022
+   core-frozen-shuffle1__7600       s 0.1434, S 0.1207, F 0.0025, O 0.0126, U 0.0076
+   core-frozen-shuffle2__7600       s 0.2571, S 0.2071, F 0.0036, O 0.0088, U 0.0375
+   hub-frozen-shuffle0__7600        s 0.0051, S 0.0018, F 0.0032, O 0.0000, U 0.0000
+   hub-frozen-shuffle1__7600        s 0.0142, S 0.0085, F 0.0044, O 0.0000, U 0.0013
+   hub-frozen-shuffle2__7600        s 0.0861, S 0.0805, F 0.0036, O 0.0000, U 0.0020
+
+== contributions over time: N2 and the reference mean (S, F)
+t     0: N2__7600 S 0.0901 F 0.8997 | N2__7700 S 0.0666 F 0.9311 | reference_mean S 0.0078 F 0.9918
+t    10: N2__7600 S 0.0905 F 0.6838 | N2__7700 S 0.0678 F 0.7240 | reference_mean S 0.0078 F 0.6330
+t    30: N2__7600 S 0.0886 F 0.3405 | N2__7700 S 0.0681 F 0.3748 | reference_mean S 0.0079 F 0.2649
+t   100: N2__7600 S 0.0885 F 0.0719 | N2__7700 S 0.0673 F 0.0522 | reference_mean S 0.0086 F 0.0223
+t   300: N2__7600 S 0.0892 F 0.0072 | N2__7700 S 0.0669 F 0.0016 | reference_mean S 0.0089 F 0.0018
+t  1000: N2__7600 S 0.0892 F 0.0001 | N2__7700 S 0.0669 F 0.0001 | reference_mean S 0.0095 F 0.0004
+t  2000: N2__7600 S 0.0892 F 0.0001 | N2__7700 S 0.0669 F 0.0001 | reference_mean S 0.0095 F 0.0003
+phi over time (point estimates, from the same contributions):
+t    10: N2__7600 Lambda 0.1489 phi_S 0.555 phi_F 0.341 | N2__7700 Lambda 0.1521 phi_S 0.395 phi_F 0.599
+t    30: N2__7600 Lambda 0.1714 phi_S 0.471 phi_F 0.441 | N2__7700 Lambda 0.1705 phi_S 0.353 phi_F 0.645
+t    50: N2__7600 Lambda 0.1397 phi_S 0.573 phi_F 0.380 | N2__7700 Lambda 0.1401 phi_S 0.427 phi_F 0.564
+t   100: N2__7600 Lambda 0.1370 phi_S 0.583 phi_F 0.362 | N2__7700 Lambda 0.0936 phi_S 0.627 phi_F 0.320
+t   200: N2__7600 Lambda 0.1040 phi_S 0.773 phi_F 0.171 | N2__7700 Lambda 0.0664 phi_S 0.878 phi_F 0.097
+t   300: N2__7600 Lambda 0.0928 phi_S 0.866 phi_F 0.058 | N2__7700 Lambda 0.0587 phi_S 0.990 phi_F -0.003
+t  1000: N2__7600 Lambda 0.0968 phi_S 0.824 phi_F -0.003 | N2__7700 Lambda 0.0616 phi_S 0.932 phi_F -0.005
+t  2000: N2__7600 Lambda 0.0883 phi_S 0.902 phi_F -0.003 | N2__7700 Lambda 0.0578 phi_S 0.993 phi_F -0.005
+
+== where the two states differ (fractions of |v1-v2|^2, weighted by |dy(30)|), and fading's slow rate
+N2__7600                         N2                   S  15 core 0.917 hubs 0.002 rest 0.081 readout 0.602          slow rate -0.0393
+SH-2010013__7600                 reference            S   0                                                         slow rate -0.0415
+SH-route-2020011__7600           reference            S   0                                                         slow rate -0.0461
+SH-class-2030024__7600           reference            S   4 core 0.067 hubs 0.037 rest 0.896 readout 0.003          slow rate -0.0412
+SH-mirror-2040045__7600          reference            S   0                                                         slow rate -0.0420
+SH-recip-2050005__7600           reference            S   0                                                         slow rate -0.0410
+SH-2010016__7600                 reference            S   0                                                         slow rate -0.0434
+SH-route-2020049__7600           reference            S   0                                                         slow rate -0.0463
+SH-class-2030034__7600           reference            S   0                                                         slow rate -0.0446
+SH-mirror-2040067__7600          reference            S   3 core 0.074 hubs 0.010 rest 0.916 readout 0.001          slow rate -0.0441
+SH-recip-2050008__7600           reference            S   6 core 0.415 hubs 0.161 rest 0.425 readout 0.103          slow rate -0.0395
+SH-2010058__7600                 reference            S   0                                                         slow rate -0.0459
+SH-route-2020080__7600           reference            S   0                                                         slow rate -0.0462
+SH-class-2030048__7600           reference            S   4 core 0.316 hubs 0.297 rest 0.387 readout 0.210          slow rate -0.0379
+SH-mirror-2040077__7600          reference            S   0                                                         slow rate -0.0426
+SH-recip-2050031__7600           reference            S   2 core 0.300 hubs 0.175 rest 0.526 readout 0.023          slow rate -0.0434
+SH-2010104__7600                 reference            S   0                                                         slow rate -0.0439
+SH-route-2020110__7600           reference            S   0                                                         slow rate -0.0439
+SH-class-2030054__7600           reference            S   0                                                         slow rate -0.0448
+SH-mirror-2040082__7600          reference            S   0                                                         slow rate -0.0444
+SH-recip-2050057__7600           reference            S   0                                                         slow rate -0.0434
+SH-2010107__7600                 reference            S   3 core 0.268 hubs 0.152 rest 0.580 readout 0.016          slow rate -0.0444
+SH-route-2020116__7600           reference            S   0                                                         slow rate -0.0446
+SH-class-2030065__7600           reference            S   0                                                         slow rate -0.0401
+SH-mirror-2040094__7600          reference            S   2 core 0.258 hubs 0.298 rest 0.444 readout 0.050          slow rate -0.0443
+SH-recip-2050084__7600           reference            S   7 core 0.031 hubs 0.021 rest 0.948 readout 0.005          slow rate -0.0424
+SH-2010110__7600                 reference            S   0                                                         slow rate -0.0469
+SH-route-2020120__7600           reference            S   1 core 0.053 hubs 0.332 rest 0.615 readout 0.036          slow rate -0.0431
+SH-class-2030109__7600           reference            S   0                                                         slow rate -0.0466
+SH-mirror-2040108__7600          reference            S   1 core 0.238 hubs 0.125 rest 0.638 readout 0.009          slow rate -0.0442
+SH-recip-2050122__7600           reference            S   5 core 0.303 hubs 0.098 rest 0.600 readout 0.245          slow rate -0.0374
+N2__7700                         N2                   S  13 core 0.930 hubs 0.002 rest 0.068 readout 0.679          slow rate -0.0424
+SH-2010075__7600                 selected             S  12 core 0.483 hubs 0.141 rest 0.375 readout 0.019          slow rate -0.0420
+SH-2010091__7600                 selected             S  21 core 0.248 hubs 0.060 rest 0.692 readout 0.013          slow rate -0.0443
+SH-route-2020092__7600           selected             S  20 core 0.071 hubs 0.470 rest 0.459 readout 0.047          slow rate -0.0452
+SH-route-2020004__7600           selected             S  17 core 0.054 hubs 0.369 rest 0.578 readout 0.025          slow rate -0.0454
+SH-class-2030099__7600           selected             S  35 core 0.165 hubs 0.044 rest 0.791 readout 0.130          slow rate -0.0450
+SH-class-2030029__7600           selected             S  78 core 0.766 hubs 0.056 rest 0.178 readout 0.013          slow rate -0.0446
+SH-mirror-2040028__7600          selected             S  16 core 0.210 hubs 0.179 rest 0.611 readout 0.030          slow rate -0.0360
+SH-mirror-2040124__7600          selected             S  50 core 0.065 hubs 0.481 rest 0.454 readout 0.036          slow rate -0.0461
+SH-recip-2050039__7600           selected             S  71 core 0.508 hubs 0.033 rest 0.459 readout 0.013          slow rate -0.0414
+SH-recip-2050040__7600           selected             S  67 core 0.233 hubs 0.394 rest 0.374 readout 0.004          slow rate -0.0411
+core-frozen-shuffle0__7600       core-frozen-shuffle  S   9 core 0.916 hubs 0.010 rest 0.074 readout 0.602          slow rate -0.0375
+core-frozen-shuffle1__7600       core-frozen-shuffle  S  17 core 0.920 hubs 0.009 rest 0.071 readout 0.653          slow rate -0.0412
+core-frozen-shuffle2__7600       core-frozen-shuffle  S  26 core 0.854 hubs 0.015 rest 0.131 readout 0.486          slow rate -0.0398
+hub-frozen-shuffle0__7600        hub-frozen-shuffle   S   1 core 0.343 hubs 0.096 rest 0.561 readout 0.106          slow rate -0.0412
+hub-frozen-shuffle1__7600        hub-frozen-shuffle   S   2 core 0.531 hubs 0.126 rest 0.342 readout 0.256          slow rate -0.0399
+hub-frozen-shuffle2__7600        hub-frozen-shuffle   S   4 core 0.464 hubs 0.062 rest 0.474 readout 0.227          slow rate -0.0414
+
+== M1's cohort against separate states (genomes; numerator 30 / 300), summed by role
+N2                   cohort_and_separate 25 (15.73 / 15.56); cohort_only 1 (0.76 / 0.71); separate_only 3 (2.51 / 2.64); neither 1964 (83.47 / 1.35); cohort not separate: {'unresolved': 1}
+reference            cohort_and_separate 28 (3.55 / 3.84); cohort_only 0 (0.00 / 0.00); separate_only 10 (1.13 / 1.32); neither 29277 (153.68 / 1.17); cohort not separate: {}
+selected             cohort_and_separate 351 (30.94 / 30.89); cohort_only 0 (0.00 / 0.00); separate_only 36 (2.76 / 2.59); neither 9430 (54.84 / 0.76); cohort not separate: {}
+core-frozen-shuffle  cohort_and_separate 38 (28.32 / 28.59); cohort_only 0 (0.00 / 0.00); separate_only 14 (8.59 / 8.31); neither 2921 (88.56 / 7.45); cohort not separate: {}
+hub-frozen-shuffle   cohort_and_separate 3 (0.31 / 0.40); cohort_only 0 (0.00 / 0.00); separate_only 4 (2.12 / 2.38); neither 2979 (34.61 / 0.53); cohort not separate: {}
+   N2__7600: cohort_and_separate 13 (9.30 / 9.12); cohort_only 1 (0.76 / 0.71); separate_only 2 (1.65 / 1.91); neither 974 (43.20 / 1.07)
+   N2__7700: cohort_and_separate 12 (6.44 / 6.44); cohort_only 0 (0.00 / 0.00); separate_only 1 (0.86 / 0.74); neither 990 (40.26 / 0.28)
+
+== the cheap rule against the full verdict, every history
+{'both_yes': 94073, 'cheap_only': 0, 'full_only': 0, 'both_no': 95}
+
+== the locating-radius sensitivity
+histories 13; genomes changing class {'N2__7600': 1, 'SH-2010013__7600': 1, 'SH-recip-2050122__7600': 1, 'N2__7700': 1, 'SH-recip-2050040__7600': 2, 'core-frozen-shuffle0__7600': 2, 'core-frozen-shuffle2__7600': 0, 'hub-frozen-shuffle2__7600': 0}; phi_S(30) {'N2__7600': 0.5067432707165521, 'N2__7700': 0.35291123289026954}
+   N2__7600 genome 349: unresolved -> separate states; h1 1.38e-03 reached
+   SH-2010013__7600 genome 208: unresolved -> fading; h1 3.95e-03 reached
+   SH-recip-2050122__7600 genome 673: unresolved -> fading; h0 4.74e-03 reached; h1 4.75e-03 reached
+   N2__7700 genome 606: unresolved -> fading; h1 1.05e-03 reached
+   SH-recip-2050040__7600 genome 55: unresolved -> fading; h0 2.49e-03 reached
+   SH-recip-2050040__7600 genome 269: unresolved -> fading; h0 1.08e-03 reached; h1 1.27e-03 reached
+   core-frozen-shuffle0__7600 genome 442: unresolved -> fading; h1 3.79e-03 reached
+   core-frozen-shuffle0__7600 genome 540: unresolved -> fading; h0 6.13e-03 reached; h1 3.24e-03 reached
+   core-frozen-shuffle2__7600 genome 83: unresolved -> unresolved; h1 8.25e-03 reached
+   hub-frozen-shuffle2__7600 genome 267: unresolved -> unresolved; h1 1.41e-03 reached
+
+== fading's own retention per panel: w_F = sum_F a / sum_E a, rho_F(t) = sum_F |dy(t)| / sum_F a (from the panel records)
+N2                   rho_F(30) median 0.390 range [0.378, 0.402]
+   N2__7600                         w_F 0.900 rho_F(30) 0.378 rho_F(300) 0.0080
+   N2__7700                         w_F 0.931 rho_F(30) 0.402 rho_F(300) 0.0017
+reference            rho_F(30) median 0.271 range [0.181, 0.337]
+selected             rho_F(30) median 0.271 range [0.191, 0.365]
+   SH-2010075__7600                 w_F 0.960 rho_F(30) 0.343 rho_F(300) 0.0063
+   SH-2010091__7600                 w_F 0.900 rho_F(30) 0.218 rho_F(300) 0.0004
+   SH-route-2020092__7600           w_F 0.894 rho_F(30) 0.318 rho_F(300) 0.0124
+   SH-route-2020004__7600           w_F 0.944 rho_F(30) 0.276 rho_F(300) 0.0042
+   SH-class-2030099__7600           w_F 0.616 rho_F(30) 0.257 rho_F(300) 0.0025
+   SH-class-2030029__7600           w_F 0.855 rho_F(30) 0.266 rho_F(300) 0.0005
+   SH-mirror-2040028__7600          w_F 0.915 rho_F(30) 0.355 rho_F(300) 0.0064
+   SH-mirror-2040124__7600          w_F 0.852 rho_F(30) 0.245 rho_F(300) 0.0003
+   SH-recip-2050039__7600           w_F 0.677 rho_F(30) 0.365 rho_F(300) 0.0011
+   SH-recip-2050040__7600           w_F 0.897 rho_F(30) 0.191 rho_F(300) 0.0032
+core-frozen-shuffle  rho_F(30) median 0.406 range [0.356, 0.411]
+   core-frozen-shuffle0__7600       w_F 0.903 rho_F(30) 0.411 rho_F(300) 0.0042
+   core-frozen-shuffle1__7600       w_F 0.845 rho_F(30) 0.356 rho_F(300) 0.0030
+   core-frozen-shuffle2__7600       w_F 0.734 rho_F(30) 0.406 rho_F(300) 0.0049
+hub-frozen-shuffle   rho_F(30) median 0.324 range [0.314, 0.355]
+   hub-frozen-shuffle0__7600        w_F 0.998 rho_F(30) 0.355 rho_F(300) 0.0032
+   hub-frozen-shuffle1__7600        w_F 0.989 rho_F(30) 0.314 rho_F(300) 0.0045
+   hub-frozen-shuffle2__7600        w_F 0.927 rho_F(30) 0.324 rho_F(300) 0.0039
+   N2__7600 rho_F(30) 0.378: above 30 of 30 reference graphs
+   N2__7700 rho_F(30) 0.402: above 30 of 30 reference graphs
+fading's slow rate, reference median -0.0439 range [-0.0469, -0.0374]
+   N2__7600 -0.0393: slower than 28 of 30
+   N2__7700 -0.0424: slower than 22 of 30
+
+== settling and share (Spearman, the 30 reference graphs)
+{"pooled": {"cohort_fraction": 0.3701709494240685, "separate_fraction": 0.3169910078308785}, "by_ensemble": {"SH": {"cohort_fraction": -0.13093073414159545, "separate_fraction": -0.13093073414159545}, "SH-route": {"cohort_fraction": 0.6546536707079772, "separate_fraction": 0.6546536707079772}, "SH-class": {"cohort_fraction": 0.06761234037828133, "separate_fraction": 0.06761234037828133}, "SH-mirror": {"cohort_fraction": 0.033806170189140665, "separate_fraction": -0.27322953332351235}, "SH-recip": {"cohort_fraction": 0.5797710356524485, "separate_fraction": 0.6377481392176932}}}

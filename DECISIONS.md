@@ -11336,3 +11336,49 @@ Each code fix has a regression test that a sabotage makes fail (`scripts/memory_
 
 **Next:** push, check CI, tell the owner of the ~11-hour CPU run, run it, then the results, reviewed before they
 are committed.
+
+## D356 — M2 census results: N2's tick-30 lead splits between separate states and fading, the reading inconclusive; the branch not taken (2026-10-21)
+
+The census of D355 ran to completion on the CPU (12.0 hours, 7.83 × 10⁹ neural updates; 48 panels, 47,084 eligible
+genomes). Results: [`docs/memory/M2-CENSUS-RESULTS.md`](docs/memory/M2-CENSUS-RESULTS.md). Exploratory, by the plan's
+fixed rules.
+
+- **Every check passed:** C1 (M1's arrays within 5.3 × 10⁻⁷ on 42 panels), C2 (six of six), C3 (1.4 × 10⁻¹⁴), C4 (no
+  panel named), C5 (467 of 467, no basin change). Batch 7's six arms regenerated; a positive record was written
+  after the run (`batch7_check.json`, `scripts/memory_m2/batch7_record.py`).
+- **The reading at tick 30: "inconclusive" on both panels.** φ_S = 0.47 (0.28 to 0.67) at seed 7600 and 0.35
+  (0.14 to 0.55) at seed 7700; φ_F 0.44 and 0.64. Neither "most", "little" nor "a part" is established; "little" is
+  excluded only at seed 7600, "most" on neither panel. The plan expected this. **The roadmap's branch is not taken.**
+- **Descriptions:** separate states enter N2's lead by N2's having more of them (15 and 13 genomes; 19 of 30
+  reference graphs have none); fading by retention (N2's fading genomes keep 0.38 and 0.40 at tick 30, the
+  reference's median 0.27; after the data, above all 30 reference and 10 selected graphs). Fading's part is
+  transient: at tick 300 separate states carry 0.87 and 0.99 ("most", as a description). The core-frozen shuffles
+  have 9, 17 and 26 separate-states genomes (N2: 15 and 13), located on the core as in N2, and its fading retention; the hub-frozen shuffles have fewer
+  separate states (one of the three keeps N2-level S(30)) and retention near the reference's. Three graphs per arm,
+  a core chosen on the result.
+- **Persistent oscillations** were confirmed in 17 genomes (none in the pilot), 12 of them on the core-frozen
+  shuffles, with negligible contributions.
+
+**The review** (`docs/reviews/20261021-m2-census-results/`, three rounds; round 3 Astra "agree", Fable "revise" on two
+slips in this entry and the roadmap's annotation, fixed; in round 1 each reviewer was asked twice by
+an accidental double launch, and all four answers are archived).
+- **Astra** caught: the roadmap section turning "not established" into "excluded"; 11 read-out-silent genomes the
+  draft said were none; the tick-300 unresolved contribution being mostly genome 349's, not genome 26's; the missing
+  split-by-genome caveat and S's individual retention range; hub-frozen-2's N2-level S(30) behind "lose"; the
+  retention ranking's scope against the core-frozen arms; C1's "identity" and the sample size.
+- **Fable** caught: "real and N2-specific" with no criterion; hub-frozen retention lying mostly within the reference's
+  range; "presence" alone where composition is a third of Λ_S; the location of hub-frozen states; batch 7's
+  regeneration leaving no positive record, and its mismatch never seen firing (now a test with a sabotage); the chunk
+  costs; the timing sources; fragilities in `census_tables.py`; hub-frozen s(30) lying within the reference's range;
+  the missing README row and roadmap annotation.
+- **Astra, round 2,** caught "most" said to be excluded at seed 7700 (its upper bound is 0.555).
+
+Committed: the 48 panel records (about 0.65 MB each; the arrays stay local), the checks, `split.json`, `summary.json`,
+`tables.txt`, `batch7_check.json`, the log (`census_log.txt`) and the compute record (`census-compute-record.json`).
+
+Tests: the non-slow, non-GPU suite gave 2019 passed and one failure, `test_a_completed_gate_writes_the_outcome_then_the_events`
+(E1), a Windows "access denied" when renaming a temporary file, which passed alone on rerun (`runs/pytest-d356.txt`,
+`runs/pytest-e1-rerun.txt`); the commit is gated on the hygiene tests and the M2 tests on the staged tree.
+
+**Next:** M3, a core defined without the result (the roadmap): its plan, reviewed before it runs. The owner is
+informed.

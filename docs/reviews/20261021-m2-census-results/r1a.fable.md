@@ -1,0 +1,21 @@
+**Verdict: revise, minor.** Every number I checked traces to the records, and the readings, their combination and the branch follow the plan's rules exactly. The fixes are wording, mostly in the sections you flagged.
+
+What I verified against the files: the In-short bullets, the run and compute figures (start 23:01:36Z plus 43,317 s gives 11:03Z; rc=0 in the log), the checks table, the class counts and totals, every φ, band and interval at ticks 30 and 300, the median-definition lead, the composition-retention-presence arithmetic (parts sum to Λ_S and Λ_F, and Λ_S + Λ_F + Λ_O + Λ_U = Λ within rounding), the over-time table, the batch-7 table, the cohort 2×2, the cheap rule, the radius sensitivity (13 histories, 10 genomes, 8 changes, 7 to fading), the Spearman values, and the genome identities 26, 349 and 777 in the N2 record. The Λ_F peaks at tick 20 (0.0917) and tick 26 (0.1127) I recomputed from the over-time F arrays, and both are local maxima. The reading logic: lower(φ_S⁻) 0.277 and 0.140, upper(φ_S⁺) 0.755 and 0.555, no rule fires on either panel, rule 2 gives "inconclusive", branch null. Tick 300: both lower(φ_S⁻) above 0.5, "most". Correct.
+
+Findings, ranked:
+
+1. **Hub-frozen retention is overstated** (In short, batch 7's text, "What this means"). "Keep part of the retention (0.31 to 0.36)" and "the fading retention partly stays": two of the three hub-frozen graphs (0.314, 0.324) lie inside the reference's range (0.181 to 0.337); only 0.355 is above it. Say that hub-frozen ρ_F(30) lies within or just above the reference's range and below N2's. Same for "both parts survive freezing the core and are reduced by freezing hubs": the second half should read "the separate states nearly vanish; ρ_F falls to the reference's range on two of three".
+
+2. **"The graded part ... is real and N2-specific among these graphs"** ("What this means"). The plan fixed no reading for φ_F, so "real" has no criterion. What the data support: φ_F's 90% intervals exclude zero on both panels (0.24 to 0.65, 0.44 to 0.85), and retention is positive. "N2-specific" rests on the after-the-data ranking of ρ_F; it is marked so in In short and the composition section but not here. Reword and carry the mark.
+
+3. **"located mostly off the core"** for the hub-frozen separate states (In short). Hub-frozen-shuffle1 has 0.531 on the core. With 1, 2 and 4 genomes, say "about half on the core" or drop the location claim from In short; the body table is right.
+
+4. **"Separate states enter N2's lead by presence"** (In short). Presence is 0.056 of Λ_S = 0.081; composition is 0.025, a third. The body's "the whole of Λ_S is N2's having more of the class" is accurate; In short should say "by having more of them (composition and presence), not by retention".
+
+5. **Batch-7 regeneration check has no positive record.** The plan says each arm is checked against batch7.json; a pass leaves nothing, only a mismatch would write `.skipped.json`. The draft's "No batch-7 arm failed to regenerate" traces only to the absence of skipped files and the raise in census.py. Say so in the run section, or record the matched counts next time.
+
+6. **Per-chunk cost** (plan: "per panel, per chunk and per stage"). Chunk seconds are in the panel records and the log but not mentioned. One clause suffices: chunks took 98 to 166 s.
+
+7. **census_tables.py**: no numerical errors found. Periods are stored in substeps and divided by 32 correctly; ρ_F uses eligible genomes only (the record's `genomes` list is eligible-only, census.py:241); "slower than" and "above" comparisons have the right sign. Two fragilities: the glob `*__7*.json` (line 23) would also pick up a `.skipped.json` arm and fail on `r["panel"]`, and the over-time φ division (line 118) has no guard for Λ ≤ 0. Neither bites on these data.
+
+Nothing else the plan asked for is missing: the C1 change counts, the ineligible fractions, Λ ≤ 0 resample counts, presence pairs, the "where" split on every arm, N2 and the reference, and the asymptotic rate are all reported.
