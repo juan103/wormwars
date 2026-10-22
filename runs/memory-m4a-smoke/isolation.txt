@@ -1,0 +1,10 @@
+seed 7600: internal 260, inputs 678, gaps touching C3 190
+  internal        core at tick 30 (cut/intact) 0.226; loss at 60: state +0.642, read-out +0.680
+  inputs          core at tick 30 (cut/intact) 0.076; loss at 60: state +0.671, read-out +0.704
+  gaps_C3         core at tick 30 (cut/intact) 1.327; loss at 60: state -0.078, read-out -0.032
+  inputs+gaps_C3  core at tick 30 (cut/intact) 0.109; loss at 60: state +0.635, read-out +0.755
+seed 7700: internal 260, inputs 678, gaps touching C3 190
+  internal        core at tick 30 (cut/intact) 0.546; loss at 60: state +0.321, read-out +0.509
+  inputs          core at tick 30 (cut/intact) 0.149; loss at 60: state +0.488, read-out +0.655
+  gaps_C3         core at tick 30 (cut/intact) 1.624; loss at 60: state -0.276, read-out +0.025
+  inputs+gaps_C3  core at tick 30 (cut/intact) 0.218; loss at 60: state +0.405, read-out +0.561

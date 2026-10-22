@@ -1,0 +1,12 @@
+  N2__7600 C3-early-30 17 s
+  N2__7600 C3-early-10 21 s
+  N2__7600 C3-late-30 25 s
+  N2__7600 C3-write 27 s
+  N2__7600 gaps-off-30 28 s
+N2__7600 27.8 s
+  N2__7700 C3-early-30 17 s
+  N2__7700 C3-early-10 21 s
+  N2__7700 C3-late-30 24 s
+  N2__7700 C3-write 27 s
+  N2__7700 gaps-off-30 28 s
+N2__7700 27.6 s

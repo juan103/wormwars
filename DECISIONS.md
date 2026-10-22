@@ -11382,3 +11382,48 @@ Tests: the non-slow, non-GPU suite gave 2019 passed and one failure, `test_a_com
 
 **Next:** M3, a core defined without the result (the roadmap): its plan, reviewed before it runs. The owner is
 informed.
+
+## D357 — M3 closed as a completed screen; M4a, the first slice of M4, planned, coded and reviewed before it runs (2026-10-22)
+
+The owner said "let's resume now" (credits reset in about 14 hours, about 20% of the week's left). The direction (close
+M3; M4's first slice next) was agreed with Astra and Fable in one round (`docs/reviews/20261022-m3-m4-direction/`).
+
+- **M3 is closed** ([`docs/memory/M3-NOTE.md`](docs/memory/M3-NOTE.md)): M1's part C had already defined and frozen the
+  anatomy predictors and the anatomy core C3, and found no strong within-ensemble association over 640 graphs. Added,
+  as description: the frozen predictors against M2's census measures on the census's graphs and batch 7's arms
+  ([`scripts/memory_m3/close.py`](scripts/memory_m3/close.py); `runs/memory-m3-close.txt`). N2 is outside the
+  reference's range on every predictor; within the 30 reference graphs the correlations run from −0.17 to +0.46; the
+  core-frozen shuffles sit above the hub-frozen ones on local density, largely by construction. The scope limit is
+  stated: N2 lies outside the nulls' range, so within-ensemble variation cannot test N2's own density.
+- **M4a** ([`docs/memory/M4A-PLAN.md`](docs/memory/M4A-PLAN.md), draft 4): does removing C3's internal chemical edges
+  for a window (ticks 1 to 30 primary; 1 to 10 and 31 to 60 secondary) cost more of the full-state history difference
+  later than removing sampled external sets of equal size, 20 stratified on endpoint degree and 10 on anatomical
+  weight? Over all eligible genomes of N2's two panels, with the core's collapse and an actual loss required, D against
+  the maximum of the 30 sets with a coherent genome bootstrap, a 0.10 margin, both panels. Part 2 starts M2's
+  separate-states genomes (N2, reference, selected) from their roots in float64 and asks whether a 30-tick cut erases
+  their basin identity. The reference graphs as a description. Code in `scripts/memory_m4/` with 10 tests and 11
+  sabotages. About 3 CPU hours, with a cost guard.
+- **A smoke run changed the design** (64 N2 genomes per seed, other draws; `runs/memory-m4a-smoke/`). Draft 2's
+  controls, matched per genome on the three-tick attenuation, matched only 15 and 24 of about 60 genomes, because C3's
+  260 edges attenuate the separation more at once than all 2696 external edges; and the matched subset selected the
+  genomes the C3 cut barely affects. So draft 3 reads over all genomes against sampled sets of equal size, and the
+  effect-matched controls became a flagged secondary. The smoke also showed C3's edges to carry about twice the |w|
+  of degree-matched sets, hence the weight family; with it the largest set's loss rose from 0.24 to 0.52 at seed 7600.
+  **The plan records that the smoke predicts "unresolved"** (seed 7700's core collapse, 0.545, is above the declared
+  0.5).
+
+**The review** (`docs/reviews/20261022-m4a-plan/`, four rounds; in round 4, a confirmation, Fable "agree" and Astra
+"revise" on the reader's per-class and per-arm descriptions, added before the commit).
+- **Fable** caught: reading on the read-out, where C3 holds the read-out's afferents (now the full state); the
+  matching grid's gaps (bisection); Part 2's bare distance rule (M2's reaching rule, float64, an intact baseline); the
+  write and late arms read as maintenance; the M3 note's wrong sentence on the selected graphs; the collapse claimed in
+  the redesign, false at seed 7700; degree stratification, then that each family matches one property only; the
+  bootstrap against the maximum; the interval level; the combined wording; a listed check without code.
+- **Astra** caught: "access" from a null; settling against maintenance and basin identity (Part 2 from the roots);
+  the weak matching and the balance; the collapse against the concurrent intact state; coverage by the estimand; the
+  M3 note's range sentence and the location fractions (batch 7's set, not C3); the masks' uncertainty (the reading
+  conditional on the sampled sets); the smoke's invalid eligibility; Part 2's control counting; Part 2's gate bypassed
+  on restart; the missing cost guard; the reader's missing descriptions; committing before the run.
+- **Claude** ran the smoke that showed the selection bias and the weight confound, and added the weight family.
+
+**Next:** run M4a (CPU), then its results, reviewed before they are committed. The owner is informed.

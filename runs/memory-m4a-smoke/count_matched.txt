@@ -1,0 +1,12 @@
+seed 7600
+  internal (260)             tick 3 +0.290; tick 30 +0.707; core at 30 0.226; tick 60 +0.642; tick 100 +0.824; read-out 60 +0.680
+  external, all              tick 3 +0.077; tick 30 +0.279; core at 30 0.750; tick 60 +0.360; tick 100 +0.486; read-out 60 +0.759
+  external, random 260 #0    tick 3 +0.004; tick 30 +0.067; core at 30 0.935; tick 60 -0.011; tick 100 -0.209; read-out 60 +0.037
+  external, random 260 #1    tick 3 +0.028; tick 30 +0.245; core at 30 0.749; tick 60 +0.371; tick 100 +0.453; read-out 60 +0.594
+  external, random 260 #2    tick 3 +0.009; tick 30 +0.080; core at 30 0.933; tick 60 +0.160; tick 100 -0.053; read-out 60 +0.466
+seed 7700
+  internal (260)             tick 3 +0.178; tick 30 +0.363; core at 30 0.546; tick 60 +0.321; tick 100 +0.542; read-out 60 +0.509
+  external, all              tick 3 +0.110; tick 30 +0.300; core at 30 0.767; tick 60 +0.501; tick 100 +0.744; read-out 60 +0.413
+  external, random 260 #0    tick 3 +0.002; tick 30 -0.077; core at 30 1.112; tick 60 +0.031; tick 100 +0.426; read-out 60 +0.153
+  external, random 260 #1    tick 3 +0.026; tick 30 +0.180; core at 30 0.845; tick 60 +0.303; tick 100 +0.517; read-out 60 +0.621
+  external, random 260 #2    tick 3 +0.010; tick 30 +0.138; core at 30 0.877; tick 60 +0.249; tick 100 +0.603; read-out 60 +0.453

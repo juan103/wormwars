@@ -1,0 +1,11 @@
+no bisection: fails, as it must
+controls matched at tick 10: fails, as it must
+the cut made in place: fails, as it must
+the cut never restored: fails, as it must
+no margin: fails, as it must
+no collapse condition: fails, as it must
+any root counts as the same: fails, as it must
+random cuts not degree-stratified: fails, as it must
+D against the draws' mean: fails, as it must
+weight key ignored: fails, as it must
+Part 2's gate skipped on restart: fails, as it must

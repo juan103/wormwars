@@ -147,7 +147,7 @@ Jacobians; exploratory).
 **M3. A core defined without the result** (CPU, minutes for anatomy and existing arrays; exploratory; Fable step 3).
 - **Define the core from the anatomy alone,** for example the turn read-out's two-step in-neighbourhood ranked by internal density, plus a write-read path measure. Correlate them within ensembles with the upper quartile, the settled count and the share across the 640 03mc graphs.
 - **Inspect the top two to five graphs of each ensemble** by share and by settled count: what do they share with N2?
-- **No veto** (Astra). A weak correlation rejects that predictor, not the existence of a structural handle, and it does not cancel a controlled transplant. Formulas chosen after looking at results are exploratory choices, so they are frozen before validation on graphs not yet used.
+- **No veto** (Astra). A weak correlation rejects that predictor, not the existence of a structural handle, and it does not cancel a controlled transplant. Formulas chosen after looking at results are exploratory choices, so they are frozen before validation on graphs not yet used. *Annotated 2026-10-22 (D357; [`M3-NOTE.md`](M3-NOTE.md)): M3 closed as a completed screen. M1's part C defined and froze the predictors and the anatomy core C3 and found no strong within-ensemble association; against M2's census measures they add only weak to moderate associations over 30 graphs. N2 lies outside the nulls' range on every predictor, so within-ensemble variation cannot test N2's own density. C3 goes to M4.*
 
 **M4. Write, hold, read; dissection; a transplant screen** (CPU, several hours; exploratory; Astra steps 3 and 4, Fable step 4).
 - **Hold-only interventions on branched identical states:**
@@ -172,7 +172,7 @@ Jacobians; exploratory).
   - untouched parameters preserved;
   - placement away from the read-out with an independent way to observe the state.
 - **Output:** the smallest successful structure among those tested.
-- **Changes the plan if:** no hold-only intervention beats its matched control. "Store" is then dropped for "access", and M5 tests portability of access rather than of a store.
+- **Changes the plan if:** no hold-only intervention beats its matched control. "Store" is then dropped for "access", and M5 tests portability of access rather than of a store. *Annotated 2026-10-22 (M4a plan, D357; [`M4A-PLAN.md`](M4A-PLAN.md)): on both reviewers' advice, a null from M4a is read as "not demonstrated", not as "access": it could reflect a short cut, redundant maintenance or the sampled controls.*
 
 **M5. The transplant, pre-registered** (the owner's idea; the confirmatory run perhaps on the GPU, with the owner's word; Fable step 5, Astra step 5).
 - **Hosts and controls:**
