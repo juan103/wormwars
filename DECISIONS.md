@@ -11427,3 +11427,38 @@ M3; M4's first slice next) was agreed with Astra and Fable in one round (`docs/r
 - **Claude** ran the smoke that showed the selection bias and the weight confound, and added the weight family.
 
 **Next:** run M4a (CPU), then its results, reviewed before they are committed. The owner is informed.
+
+## D358 — M4a's results: C3's cut beats every sampled cut at the point estimate but the reading is unresolved; it sends nearly all of N2's switches into one basin (2026-10-23)
+
+M4a (D357) ran on the CPU (6.4 hours, 2.23 × 10⁹ neural updates). Results:
+[`docs/memory/M4A-RESULTS.md`](docs/memory/M4A-RESULTS.md). Exploratory, by the plan's fixed rules.
+
+- **The run:** the gates passed (the intact arm reproduced the census within 5.3 × 10⁻⁷; every Part 2 intact arm kept
+  both roots, 453 of 453). The first N2 panel took 7360 s, not the smoke's extrapolated 35 minutes, so **the cost
+  guard reduced the reference comparison to one graph per ensemble**, as the plan provided.
+- **The reading is "unresolved" on every arm.** Primary (C3's internal edges cut for ticks 1 to 30, read at tick 60):
+  C3's loss of the full-state separation is 0.51 and 0.54, against at most 0.35 and 0.15 for the 30 sampled external
+  sets of equal size; D = +0.16 (90% interval 0.008 to 0.27) at seed 7600, "unresolved" on the margin, and +0.39 (0.24
+  to 0.47) at seed 7700, "positive". The 10-tick arm does not collapse the core; the late arm repeats the primary's
+  pattern. C3's cut is nearly four times stronger at once (0.24 against at most 0.07 at the third tick), which the plan
+  says a positive reading could not have separated from maintenance.
+- **Descriptions:** the separate-states genomes, 6% and 5% of the start separation, hold a third of it at tick 60 and
+  account for over half of C3's loss. **Started from their roots, 26 of N2's 28 separate-states genomes are sent into
+  one basin by C3's 30-tick cut, against 14% under the sampled sets;** on the selected graphs, whose states lie mostly
+  off C3, C3's cut does no more than their sampled sets (12% each). That contrast is consistent with a location-
+  dependent effect but confounded with graph identity and cut size (85 to 131 edges inside C3's neurons there, 260 on
+  N2). Cutting C3 removes most of N2's lead over the five reference graphs at tick 60 (0.094 to 0.011), not like for
+  like.
+- **For the roadmap:** nothing is dropped for "access" (D357's annotation). Proposed, for a decision with the owner and
+  the reviewers: M4's next slice on the separate-states genomes from their roots: cuts of subsets of C3, and in the
+  selected graphs cuts of equal size on the states' own neurons, to separate location from graph identity.
+
+**The review** (`docs/reviews/20261023-m4a-results/`, two rounds).
+- **Fable** caught: "most of the separation" for the separate-states genomes (a third, though over half of C3's loss);
+  the sampled sets' ranges given as two examples; the reference "within range" only pooled; the cut-size confound in
+  Part 2's contrast and the within-group counterexamples; the missing outcomes; the pooled location medians' source.
+- **Astra** caught: the same share error; Part 2's location claim, and "erased" as a lost history distinction rather
+  than lost bistability; the per-graph reference exceptions and the lead's panel; the missing beside-the-reading and
+  per-class numbers for the secondary arms.
+
+**Next:** the owner is informed; the next slice of M4 is proposed, not started.

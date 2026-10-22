@@ -1,0 +1,47 @@
+  N2__7600 C3-early-30 3108 s
+  N2__7600 C3-early-10 5040 s
+  N2__7600 C3-late-30 7067 s
+  N2__7600 C3-write 7256 s
+  N2__7600 gaps-off-30 7353 s
+N2__7600 7359.9 s
+projection after the first N2 panel: about 11.1 h; reference reduced: True
+  N2__7700 C3-early-30 5425 s
+  N2__7700 C3-early-10 8395 s
+  N2__7700 C3-late-30 10984 s
+  N2__7700 C3-write 11098 s
+  N2__7700 gaps-off-30 11152 s
+N2__7700 11156.6 s
+part2 N2__7600: 15 genomes, 32.3 s, intact not kept []
+part2 SH-class-2030024__7600: 4 genomes, 13.2 s, intact not kept []
+part2 SH-mirror-2040067__7600: 3 genomes, 11.9 s, intact not kept []
+part2 SH-recip-2050008__7600: 6 genomes, 18.0 s, intact not kept []
+part2 SH-class-2030048__7600: 4 genomes, 15.1 s, intact not kept []
+part2 SH-recip-2050031__7600: 2 genomes, 10.9 s, intact not kept []
+part2 SH-2010107__7600: 3 genomes, 12.6 s, intact not kept []
+part2 SH-mirror-2040094__7600: 2 genomes, 9.5 s, intact not kept []
+part2 SH-recip-2050084__7600: 7 genomes, 18.4 s, intact not kept []
+part2 SH-route-2020120__7600: 1 genomes, 7.2 s, intact not kept []
+part2 SH-mirror-2040108__7600: 1 genomes, 3.9 s, intact not kept []
+part2 SH-recip-2050122__7600: 5 genomes, 16.1 s, intact not kept []
+part2 N2__7700: 13 genomes, 30.0 s, intact not kept []
+part2 SH-2010075__7600: 12 genomes, 30.0 s, intact not kept []
+part2 SH-2010091__7600: 21 genomes, 43.3 s, intact not kept []
+part2 SH-route-2020092__7600: 20 genomes, 45.6 s, intact not kept []
+part2 SH-route-2020004__7600: 17 genomes, 39.8 s, intact not kept []
+part2 SH-class-2030099__7600: 35 genomes, 72.9 s, intact not kept []
+part2 SH-class-2030029__7600: 78 genomes, 235.0 s, intact not kept []
+part2 SH-mirror-2040028__7600: 16 genomes, 33.5 s, intact not kept []
+part2 SH-mirror-2040124__7600: 50 genomes, 114.1 s, intact not kept []
+part2 SH-recip-2050039__7600: 71 genomes, 195.8 s, intact not kept []
+part2 SH-recip-2050040__7600: 67 genomes, 175.5 s, intact not kept []
+  SH-2010013__7600 C3-early-30 640 s
+SH-2010013__7600 640.7 s
+  SH-route-2020011__7600 C3-early-30 645 s
+SH-route-2020011__7600 645.6 s
+  SH-class-2030024__7600 C3-early-30 640 s
+SH-class-2030024__7600 640.8 s
+  SH-mirror-2040045__7600 C3-early-30 646 s
+SH-mirror-2040045__7600 646.1 s
+  SH-recip-2050005__7600 C3-early-30 642 s
+SH-recip-2050005__7600 642.7 s
+rc=0

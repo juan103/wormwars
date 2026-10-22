@@ -172,7 +172,7 @@ Jacobians; exploratory).
   - untouched parameters preserved;
   - placement away from the read-out with an independent way to observe the state.
 - **Output:** the smallest successful structure among those tested.
-- **Changes the plan if:** no hold-only intervention beats its matched control. "Store" is then dropped for "access", and M5 tests portability of access rather than of a store. *Annotated 2026-10-22 (M4a plan, D357; [`M4A-PLAN.md`](M4A-PLAN.md)): on both reviewers' advice, a null from M4a is read as "not demonstrated", not as "access": it could reflect a short cut, redundant maintenance or the sampled controls.*
+- **Changes the plan if:** no hold-only intervention beats its matched control. "Store" is then dropped for "access", and M5 tests portability of access rather than of a store. *Annotated 2026-10-22 (M4a plan, D357; [`M4A-PLAN.md`](M4A-PLAN.md)): on both reviewers' advice, a null from M4a is read as "not demonstrated", not as "access": it could reflect a short cut, redundant maintenance or the sampled controls.* *Annotated 2026-10-23 (M4a results, D358; [`M4A-RESULTS.md`](M4A-RESULTS.md)): the reading is "unresolved": C3's 30-tick cut costs more than every one of 30 sampled external cuts of equal size at the point estimate on both panels, but at seed 7600 the interval reaches the margin; the cut is also nearly four times stronger at once. Descriptively, it sends 26 of N2's 28 separate-states genomes into one basin from their roots, against 14% for the sampled cuts. Nothing is dropped for "access".*
 
 **M5. The transplant, pre-registered** (the owner's idea; the confirmatory run perhaps on the GPU, with the owner's word; Fable step 5, Astra step 5).
 - **Hosts and controls:**

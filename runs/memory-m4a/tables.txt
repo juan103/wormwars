@@ -1,0 +1,83 @@
+== the sampled sets (N2__7600's record; the same sets on both panels)
+  degree: 20 sets; endpoint degree 84.07 to 87.55; sum|w| 41.43 to 61.07
+  weight: 10 sets; endpoint degree 63.10 to 69.61; sum|w| 73.95 to 89.24
+  C3: endpoint degree 85.93; sum|w| 83.04
+
+== each class's share of the intact full-state separation (sum ||dv||), ticks 0 and 60
+  N2__7600 tick 0: separate states 0.0615, fading 0.9284, persistent oscillation 0.0015, unresolved 0.0086
+  N2__7600 tick 60: separate states 0.3298, fading 0.6250, persistent oscillation 0.0011, unresolved 0.0441
+  N2__7600: the separate-states genomes' share of C3's early-30 loss at tick 60: 0.5376
+  N2__7700 tick 0: separate states 0.0548, fading 0.9414, persistent oscillation 0.0017, unresolved 0.0021
+  N2__7700 tick 60: separate states 0.3443, fading 0.6372, persistent oscillation 0.0124, unresolved 0.0061
+  N2__7700: the separate-states genomes' share of C3's early-30 loss at tick 60: 0.5823
+
+== beside each reading (all arms)
+  N2__7600 C3-early-30: tick-3 C3 0.241 vs max 0.062; read-out L 0.569 vs max 0.398; exterior 0.217; uniform [0.042, 0.177, 0.035, 0.039, 0.127]; effect-matched 526/990 L -0.223 ctrl 0.256
+  N2__7600 C3-early-10: tick-3 C3 0.241 vs max 0.062; read-out L 0.370 vs max 0.188; exterior 0.143; uniform []; effect-matched 526/990 L -0.071 ctrl 0.169
+  N2__7600 C3-late-30: tick-3 C3 0.301 vs max 0.025; read-out L 0.827 vs max 0.587; exterior 0.221; uniform []; effect-matched 479/990 L -0.932 ctrl 0.222
+  N2__7600 C3-write: L 0.161, read-out 0.210
+  N2__7600 gaps-off-30: L -0.068, read-out -0.008
+  N2__7700 C3-early-30: tick-3 C3 0.240 vs max 0.067; read-out L 0.496 vs max 0.114; exterior 0.145; uniform [-0.041, 0.034, -0.079, 0.004, -0.023]; effect-matched 539/1003 L 0.004 ctrl 0.080
+  N2__7700 C3-early-10: tick-3 C3 0.240 vs max 0.067; read-out L 0.100 vs max 0.151; exterior 0.092; uniform []; effect-matched 539/1003 L -0.123 ctrl 0.126
+  N2__7700 C3-late-30: tick-3 C3 0.292 vs max 0.026; read-out L 0.822 vs max 0.332; exterior 0.253; uniform []; effect-matched 490/1003 L -0.030 ctrl 0.301
+  N2__7700 C3-write: L -0.023, read-out -0.058
+  N2__7700 gaps-off-30: L -0.237, read-out -0.370
+
+== per class, every maintenance arm: C3's loss against the sampled sets' median (and the core's collapse)
+  N2__7600 C3-early-30 separate states: 15 genomes; L 0.824 vs median 0.158; collapse 0.070
+  N2__7600 C3-early-30 fading: 972 genomes; L 0.315 vs median 0.042; collapse 0.391
+  N2__7600 C3-early-10 separate states: 15 genomes; L 0.556 vs median 0.012; collapse 0.251
+  N2__7600 C3-early-10 fading: 972 genomes; L 0.190 vs median 0.044; collapse 0.559
+  N2__7600 C3-late-30 separate states: 15 genomes; L 0.937 vs median 0.186; collapse 0.052
+  N2__7600 C3-late-30 fading: 972 genomes; L 0.528 vs median 0.250; collapse 0.300
+  N2__7700 C3-early-30 separate states: 13 genomes; L 0.914 vs median 0.129; collapse 0.060
+  N2__7700 C3-early-30 fading: 987 genomes; L 0.333 vs median -0.038; collapse 0.388
+  N2__7700 C3-early-10 separate states: 13 genomes; L 0.237 vs median 0.016; collapse 0.227
+  N2__7700 C3-early-10 fading: 987 genomes; L 0.082 vs median -0.008; collapse 0.547
+  N2__7700 C3-late-30 separate states: 13 genomes; L 0.946 vs median 0.151; collapse 0.043
+  N2__7700 C3-late-30 fading: 987 genomes; L 0.542 vs median 0.008; collapse 0.343
+
+== Part 2: every outcome, per group (counts; the sampled sets pooled over 5 sets each)
+  N2        intact  both kept 28, erased 0, swapped 0, other root 0, not reached 0
+  N2        C3      both kept 1, erased 26, swapped 0, other root 0, not reached 1
+  N2        random  both kept 115, erased 20, swapped 0, other root 0, not reached 5
+  selected  intact  both kept 387, erased 0, swapped 0, other root 0, not reached 0
+  selected  C3      both kept 328, erased 45, swapped 0, other root 0, not reached 14
+  selected  random  both kept 1609, erased 238, swapped 0, other root 2, not reached 86
+  reference intact  both kept 38, erased 0, swapped 0, other root 0, not reached 0
+  reference C3      both kept 22, erased 8, swapped 0, other root 0, not reached 8
+  reference random  both kept 102, erased 40, swapped 0, other root 0, not reached 48
+
+== Part 2: per graph, edges inside C3's neuron set (cut by 'C3'), genomes, erased by C3, location median
+  N2__7600                     internal edges  260; genomes  15; erased by C3  14; location on C3 median 0.893
+  N2__7700                     internal edges  260; genomes  13; erased by C3  12; location on C3 median 0.905
+  SH-2010075__7600             internal edges   85; genomes  12; erased by C3   3; location on C3 median 0.619
+  SH-2010091__7600             internal edges  105; genomes  21; erased by C3  12; location on C3 median 0.069
+  SH-2010107__7600             internal edges  115; genomes   3; erased by C3   0; location on C3 median 0.086
+  SH-class-2030024__7600       internal edges  120; genomes   4; erased by C3   0; location on C3 median 0.533
+  SH-class-2030029__7600       internal edges  112; genomes  78; erased by C3   3; location on C3 median 0.051
+  SH-class-2030048__7600       internal edges  116; genomes   4; erased by C3   1; location on C3 median 0.398
+  SH-class-2030099__7600       internal edges  103; genomes  35; erased by C3   0; location on C3 median 0.151
+  SH-mirror-2040028__7600      internal edges  121; genomes  16; erased by C3   1; location on C3 median 0.199
+  SH-mirror-2040067__7600      internal edges  112; genomes   3; erased by C3   0; location on C3 median 0.922
+  SH-mirror-2040094__7600      internal edges  113; genomes   2; erased by C3   1; location on C3 median 0.162
+  SH-mirror-2040108__7600      internal edges  125; genomes   1; erased by C3   0; location on C3 median 0.156
+  SH-mirror-2040124__7600      internal edges  131; genomes  50; erased by C3  12; location on C3 median 0.100
+  SH-recip-2050008__7600       internal edges  100; genomes   6; erased by C3   3; location on C3 median 0.368
+  SH-recip-2050031__7600       internal edges   99; genomes   2; erased by C3   0; location on C3 median 0.127
+  SH-recip-2050039__7600       internal edges   92; genomes  71; erased by C3   5; location on C3 median 0.054
+  SH-recip-2050040__7600       internal edges  101; genomes  67; erased by C3   2; location on C3 median 0.035
+  SH-recip-2050084__7600       internal edges  109; genomes   7; erased by C3   0; location on C3 median 0.028
+  SH-recip-2050122__7600       internal edges  105; genomes   5; erased by C3   3; location on C3 median 0.320
+  SH-route-2020004__7600       internal edges  107; genomes  17; erased by C3   4; location on C3 median 0.043
+  SH-route-2020092__7600       internal edges  101; genomes  20; erased by C3   3; location on C3 median 0.262
+  SH-route-2020120__7600       internal edges   90; genomes   1; erased by C3   0; location on C3 median 0.068
+  pooled location-on-C3 medians: N2 0.895 (28 genomes), selected 0.064 (387 genomes), reference 0.264 (38 genomes)
+
+== the reference, per graph (early-30, tick 60)
+  SH-2010013__7600: internal edges 99; C3 loss 0.037; its 8 sets -0.006 to 0.108
+  SH-class-2030024__7600: internal edges 120; C3 loss -0.019; its 8 sets -0.008 to 0.173
+  SH-mirror-2040045__7600: internal edges 121; C3 loss 0.038; its 8 sets 0.019 to 0.072
+  SH-recip-2050005__7600: internal edges 113; C3 loss 0.136; its 8 sets -0.004 to 0.073
+  SH-route-2020011__7600: internal edges 97; C3 loss 0.053; its 8 sets 0.010 to 0.079
+  N2's lead over the five graphs' mean v(60), N2 seed 7600: {'intact': 0.09394360073048696, 'cut': 0.010989855974912643}
