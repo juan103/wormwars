@@ -114,3 +114,71 @@ def _gate_test():
 
 
 run("Part 2's gate skipped on restart", [(m4a, "part2_gate", gate_skipped)], _gate_test)
+
+# M4b
+import m4b  # noqa: E402
+import m4b_read  # noqa: E402
+
+
+def smallest_difference(roots_one, k=m4b.TOP):  # the k neurons where the roots differ least
+    import numpy as np
+    d = np.abs(roots_one[0] - roots_one[1])
+    return np.argsort(d)[:k]
+
+
+run("M4b: no margin", [(m4b_read, "MARGIN", 0.0)], T.test_m4b_reading_and_contrast)
+run("M4b: the own set is where the roots differ least", [(m4b, "top_difference", smallest_difference)],
+    T.test_m4b_own_location_sets)
+
+
+def validate_nothing(p, ids, name=None, role=None):
+    return None
+
+
+def _validate_test():
+    try:
+        T.test_m4b_rejects_invalid_records()
+    except BaseException as err:
+        if type(err).__name__ == "Failed":
+            raise AssertionError("did not raise")
+        raise
+
+
+run("M4b: records not validated", [(m4b, "validate", validate_nothing)], _validate_test)
+
+
+def incoming_instead(spec, nodes):  # edges into the 30 neurons instead of out of them
+    import numpy as np
+    i, j = spec.chem_i.numpy(), spec.chem_j.numpy()
+    inn = np.zeros(spec.n, bool)
+    inn[list(nodes)] = True
+    return np.where(~inn[i] & inn[j] & (i != j))[0]
+
+
+run("M4b: incoming edges as the outgoing control", [(m4b, "out_edges", incoming_instead)], T.test_m4b_own_location_sets)
+
+
+def trust_the_flag(p, ids, name=None, role=None):  # draft 2's code: a saved N2 flag is trusted, not compared
+    p = dict(p)
+    if p.get("role") == "N2":
+        p["role"] = "N2-trusted"
+    if p.get("role") == "N2-trusted" and p.get("matches_m4a_part2") is not False:
+        return None
+    return orig_validate(p, ids, name, role)
+
+
+orig_validate = m4b.validate
+
+
+def _n2_test():
+    import tempfile
+    with tempfile.TemporaryDirectory() as d:
+        try:
+            T.test_m4b_n2_records_are_checked_against_m4a(Path(d))
+        except BaseException as err:
+            if type(err).__name__ == "Failed":
+                raise AssertionError("did not raise")
+            raise
+
+
+run("M4b: N2's saved flag trusted", [(m4b, "validate", trust_the_flag)], _n2_test)

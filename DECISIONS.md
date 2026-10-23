@@ -11462,3 +11462,33 @@ M4a (D357) ran on the CPU (6.4 hours, 2.23 × 10⁹ neural updates). Results:
   per-class numbers for the secondary arms.
 
 **Next:** the owner is informed; the next slice of M4 is proposed, not started.
+
+## D359 — M4b, the switch from its roots: a targeting rule across graphs and the dissection of N2's core, planned, coded and reviewed before it runs (2026-10-23)
+
+The owner said "credits restored" after D358 proposed M4's next slice. Plan:
+[`docs/memory/M4B-PLAN.md`](docs/memory/M4B-PLAN.md) (draft 3); code `scripts/memory_m4/m4b.py`, `m4b_read.py`.
+Exploratory; CPU only, about an hour.
+
+- **Q2 (read):** for each of the census's 512 separate-states genomes (N2, the selected and reference graphs, batch 7's
+  arms), started at its two stable roots in float64: cut for 30 ticks the chemical edges among its 30 neurons with the
+  largest |v₁* − v₂*| ("own"), against 5 weight-stratified sets of as many edges outside those neurons and 5 of as many
+  edges running out of them (the outgoing control shares the own cut's asymmetry). Erased = both histories at one root
+  after 300 ticks of the intact network. The reading needs lower(D) > 0.10 against both controls in N2 and in the
+  selected graphs: "preferential erasure under this targeting rule", not storage location as such.
+- **Q1 (described):** on N2's 28 genomes, C3's internal edges cut by read-out partition and neuron by neuron.
+- **Checks:** N2's intact and C3 arms must equal M4a's Part 2 exactly; saved records are validated on every restart
+  and reading; empty own sets excluded (none, counted before the run); 3 N2 genomes short of outgoing edges kept, with
+  a sensitivity.
+
+**The review** (`docs/reviews/20261023-m4b-plan/`, three rounds; plan and code together from round 1; in round 3 Fable
+"agree", Astra "revise" on three narrow points taken before the commit: N2's panels pooled before the bootstrap,
+the graph identity validated, the equal-count wording qualified for 3 genomes).
+- **Fable** caught: the exterior control cannot erase the way the own cut can (hence the outgoing control); cut size
+  returning across groups (terciles pre-stated); the free check against M4a's Part 2; empty own sets; the smoke folder;
+  the untested outgoing arm.
+- **Astra** caught: records read without validation (now validated in full, N2 against M4a directly); the claim beyond
+  the design ("whatever the graph", "within each genome"); per-graph reporting; resampling within the batch-7 arms'
+  fixed graphs; the smoke count (78, not 89); the reader's missing reporting; counting the short outgoing sets before
+  the run.
+
+**Next:** run M4b, then its results, reviewed before they are committed.

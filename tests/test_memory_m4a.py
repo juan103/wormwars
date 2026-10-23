@@ -165,3 +165,73 @@ def test_weight_stratified_draws_follow_c3s_weights():
         got, want = np.bincount(b(key[e]), minlength=m4a.BINS), np.bincount(b(key[internal]), minlength=m4a.BINS)
         avail = np.bincount(b(key[external]), minlength=m4a.BINS)
         assert len(e) == len(internal) and all(got[k] >= min(want[k], avail[k]) for k in range(m4a.BINS))
+
+
+def test_m4b_reading_and_contrast():
+    import m4b_read
+    m4b_read.test_rules()
+
+
+def test_m4b_own_location_sets():
+    """M4b: the top-difference neurons are the k largest |v1 - v2|; the own set's edges lie inside them, the controls'
+    outside, as many as the own set's, without repeats."""
+    import m4a
+    import m4b
+    import common as c
+    roots = np.zeros((2, 302))
+    roots[0, [5, 7, 9]] = [3.0, 2.0, 1.0]
+    assert m4b.top_difference(roots, 2).tolist() == [5, 7]
+    g, cfg = c.S.genomes(c.S.CON, 1, 7600)
+    nodes = np.arange(40, 70)
+    inside, outside = m4b.set_edges(g.spec, nodes)
+    i, j = g.spec.chem_i.numpy(), g.spec.chem_j.numpy()
+    assert np.isin(i[inside], nodes).all() and np.isin(j[inside], nodes).all() and (i[inside] != j[inside]).all()
+    assert (~np.isin(i[outside], nodes)).all() and (~np.isin(j[outside], nodes)).all()
+    for e in m4a.stratified_draws(g.spec, inside, outside, 3, 1, key=g.spec.chem_anat.numpy()):
+        assert len(e) == len(inside) == len(set(e.tolist())) and set(e.tolist()) <= set(outside.tolist())
+    out = m4b.out_edges(g.spec, nodes)  # Fable, round 2: presynaptic inside, postsynaptic outside, no autapses
+    assert len(out) and np.isin(i[out], nodes).all() and (~np.isin(j[out], nodes)).all() and (i[out] != j[out]).all()
+    k = min(len(inside), len(out))
+    for e in m4a.stratified_draws(g.spec, inside[:k], out, 3, 1, key=g.spec.chem_anat.numpy()):
+        assert len(e) == k == len(set(e.tolist())) and set(e.tolist()) <= set(out.tolist())
+
+
+def test_m4b_rejects_invalid_records():
+    """Astra, round 1: a saved panel with other genome ids (a smoke), an incomplete arm or a failed intact arm stops the
+    run and the reading."""
+    import pytest
+    import m4b
+    arms = {a: ["both kept", "erased"] for a in m4b.expected_arms("selected")}
+    arms["intact"] = ["both kept"] * 2
+    good = {"panel": "X", "role": "selected", "genomes": [1, 2], "info": [{"genome": 1}, {"genome": 2}], "arms": arms}
+    m4b.validate(good, [1, 2], "X", "selected")
+    with pytest.raises(SystemExit):
+        m4b.validate(good, [1, 2, 3])  # truncated, as a smoke record would be
+    with pytest.raises(SystemExit):
+        m4b.validate({**good, "arms": {**arms, "own": ["erased"]}}, [1, 2])  # an incomplete arm
+    with pytest.raises(SystemExit):
+        m4b.validate({**good, "arms": {k: v for k, v in arms.items() if k != "out3"}}, [1, 2])  # a missing arm
+    with pytest.raises(SystemExit):
+        m4b.validate({**good, "arms": {**arms, "intact": ["both kept", "erased"]}}, [1, 2])  # failed intact
+    with pytest.raises(SystemExit):
+        m4b.validate(good, [1, 2], "Y")  # another panel's record
+    with pytest.raises(SystemExit):
+        m4b.validate({**good, "info": [{"genome": 2}, {"genome": 1}]}, [1, 2])  # info not aligned
+
+
+def test_m4b_n2_records_are_checked_against_m4a(tmp_path):
+    """Astra, round 2: an N2 record whose C3 outcomes differ from M4a's Part 2 is rejected, whatever flag it carries."""
+    import json
+    import pytest
+    import m4b
+    real = json.load(open(m4b.ROOT / "runs" / "memory-m4a" / "part2__N2__7600.json"))
+    ids = real["genomes"]
+    arms = {a: ["both kept"] * len(ids) for a in m4b.expected_arms("N2")}
+    arms["intact"], arms["C3"] = real["arms"]["intact"], real["arms"]["C3"]
+    rec = {"panel": "N2__7600", "role": "N2", "genomes": ids, "info": [{"genome": i} for i in ids], "arms": arms,
+           "matches_m4a_part2": True}
+    m4b.validate(rec, ids, "N2__7600", "N2")
+    changed = list(real["arms"]["C3"])
+    changed[0] = "both kept" if changed[0] != "both kept" else "erased"
+    with pytest.raises(SystemExit):
+        m4b.validate({**rec, "arms": {**arms, "C3": changed}}, ids, "N2__7600", "N2")

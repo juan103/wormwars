@@ -9,3 +9,8 @@ random cuts not degree-stratified: fails, as it must
 D against the draws' mean: fails, as it must
 weight key ignored: fails, as it must
 Part 2's gate skipped on restart: fails, as it must
+M4b: no margin: fails, as it must
+M4b: the own set is where the roots differ least: fails, as it must
+M4b: records not validated: fails, as it must
+M4b: incoming edges as the outgoing control: fails, as it must
+M4b: N2's saved flag trusted: fails, as it must

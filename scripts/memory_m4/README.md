@@ -9,6 +9,7 @@ Exploratory; the arms, controls, measures and readings are fixed in
 | `m4a.py` | The arms (C3's internal edges cut for a window), the sampled external cuts (20 degree-, 10 weight-stratified), uniform sets, the whole exterior, the flagged effect-matched controls; Part 2 from the separate-states roots (float64); the reference comparison; the cost guard. Stages `n2`, `part2`, `reference`. | `runs/memory-m4a/`: `<panel>.json`, `part2__<panel>.json`, `guard.json`, `stages.json` (arrays `<panel>.npz` local) |
 | `m4a_read.py` | The readings, with `test_rules()`. | `runs/memory-m4a/readings.json` |
 | `m4a_tables.py` | *After the data:* the tables behind the results write-up (the sampled sets' ranges, each class's share of the separation, beside-the-reading numbers for every arm, Part 2's outcomes and edge counts, each reference graph); no simulation. | `runs/memory-m4a/tables.txt` |
+| `m4b.py`, `m4b_read.py` | M4b ([`docs/memory/M4B-PLAN.md`](../../docs/memory/M4B-PLAN.md)): every separate-states genome from its roots; the own-location cut against exterior and outgoing weight-stratified controls; C3's dissection on N2; record validation on restart and reading. | `runs/memory-m4b/<panel>.json`, `readings.json` |
 | `sabotage_m4a.py` | Rule 9: each guarded behaviour broken in turn; the matching test must fail. | `runs/m4a-sabotage.txt` |
 | `smoke_isolation.py`, `smoke_count_matched.py` | The smoke diagnostics behind draft 3's redesign (64 N2 genomes per seed, other draws). | `runs/memory-m4a-smoke/` |
 
