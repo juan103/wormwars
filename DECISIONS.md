@@ -11492,3 +11492,35 @@ the graph identity validated, the equal-count wording qualified for 3 genomes).
   the run.
 
 **Next:** run M4b, then its results, reviewed before they are committed.
+
+## D360 — M4b's results: preferential erasure clear in N2, not shown across the selected graphs (unresolved); RIA's core edges alone erase most of N2's switches (2026-10-23)
+
+M4b (D359) ran on the CPU (41 minutes). Results: [`docs/memory/M4B-RESULTS.md`](docs/memory/M4B-RESULTS.md).
+Exploratory, by the plan's fixed rules.
+
+- **Checks:** all 29 panels validated on reading; 512 of 512 intact arms kept both roots; N2's intact and C3 outcomes
+  equal M4a's Part 2 exactly.
+- **The reading is "unresolved".** N2: the own-location cut erases 89% of the switches, against 31% (exterior) and 11%
+  (outgoing); D = +0.58 and +0.79, both intervals far above 0.10. The selected graphs: 31% against 11% and 11%, D =
+  +0.20 and +0.20, intervals reaching −0.03 and −0.02. After the data, the selected graphs split: two graphs respond
+  like N2 (83% and 90% against at most 7%) and hold 89 of the 121 erasures; in six of the other eight the own cut erases
+  fewer than the exterior control. The reference and core-frozen groups go N2's way (not read).
+- **Found in review:** the outgoing controls carry only 0.39 of the own sets' anatomical weight in N2 (0.53 in the
+  core-frozen shuffles), because the stratification fell back to lighter edges; the exterior controls are near matched
+  (0.92 to 0.95). Disclosed; the outgoing contrast in N2 is weaker than its name.
+- **The dissection (description):** cutting only RIAR's 26 or RIAL's 29 C3-internal edges erases 20 and 17 of N2's 28
+  switches (all of C3: 26); 14 of C3's 30 neurons erase none. A place of vulnerability, not evidence of storage; RIA's
+  prominence in 03mc motivates a test, it does not confirm a mechanism. RIA does not distinguish the two responding
+  selected graphs.
+- **Proposed next, for a decision:** a pre-specified test of RIA on fresh N2 draws from the roots, against weight- and
+  size-matched sets of other neurons' edges inside and outside C3, with the weight shortfall fixed.
+
+**The review** (`docs/reviews/20261023-m4b-results/`, two rounds).
+- **Fable** caught: the roadmap's storage and "held elsewhere" claims; the missing terciles, weights and outcomes; the
+  weight imbalance; the per-graph negatives and the 89 of 121; numeric slips; then the six (not three) graphs below
+  the exterior control.
+- **Astra** caught: the same overclaims and the 03mc link as a different endpoint; the outgoing controls' weight ratio
+  (0.39); the per-graph table as the plan's own reporting; the missing indices; numeric slips; then the six graphs and
+  the RIA statistic (the larger neuron's frequency, not the union).
+
+**Next:** the owner is informed; the RIA test is proposed, not started.

@@ -1,0 +1,802 @@
+{
+ "groups": {
+  "N2": {
+   "graphs": 1,
+   "panels": 2,
+   "genomes": 28,
+   "unit": "genomes within the fixed graphs",
+   "excluded_empty_own": 0,
+   "E_own": 0.8928571428571429,
+   "E_ctrl": 0.31428571428571433,
+   "D": 0.5785714285714285,
+   "D_interval": [
+    0.4357142857142858,
+    0.7071428571428572
+   ],
+   "E_out": 0.10714285714285714,
+   "D_out": 0.7857142857142858,
+   "D_out_interval": [
+    0.6214285714285714,
+    0.9285714285714286
+   ],
+   "by_own_edges_tercile": {
+    "low": {
+     "genomes": 10,
+     "E_own": 0.8,
+     "E_ext": 0.44000000000000006,
+     "E_out": 0.1,
+     "D_ext": 0.36,
+     "D_out": 0.7000000000000001
+    },
+    "mid": {
+     "genomes": 9,
+     "E_own": 1.0,
+     "E_ext": 0.4222222222222223,
+     "E_out": 0.2,
+     "D_ext": 0.5777777777777777,
+     "D_out": 0.8
+    },
+    "high": {
+     "genomes": 9,
+     "E_own": 0.8888888888888888,
+     "E_ext": 0.06666666666666668,
+     "E_out": 0.022222222222222223,
+     "D_ext": 0.8222222222222222,
+     "D_out": 0.8666666666666666
+    }
+   },
+   "D_out_without_short_outgoing": {
+    "excluded": 3,
+    "D_out": 0.76
+   },
+   "own_edges_terciles": [
+    162.0,
+    172.0
+   ],
+   "outcomes": {
+    "own": {
+     "erased": 25,
+     "both kept": 2,
+     "not reached": 1
+    },
+    "ctrl": {
+     "both kept": 90,
+     "not reached": 6,
+     "erased": 44
+    },
+    "out": {
+     "both kept": 120,
+     "erased": 15,
+     "not reached": 5
+    }
+   },
+   "own_edges_median": 167.5,
+   "overlap_C3_median": 14.0,
+   "location_own_median": 0.9912993118761214,
+   "sum_anat_own_median": 1846.0,
+   "sum_anat_ctrl_median": 1723.0
+  },
+  "selected": {
+   "graphs": 10,
+   "panels": 10,
+   "genomes": 387,
+   "unit": "graphs",
+   "excluded_empty_own": 0,
+   "E_own": 0.31266149870801035,
+   "E_ctrl": 0.11214470284237728,
+   "D": 0.2005167958656331,
+   "D_interval": [
+    -0.027042253521126783,
+    0.4371109513358056
+   ],
+   "E_out": 0.10801033591731266,
+   "D_out": 0.2046511627906977,
+   "D_out_interval": [
+    -0.01882992448000325,
+    0.44419966809987155
+   ],
+   "by_own_edges_tercile": {
+    "low": {
+     "genomes": 130,
+     "E_own": 0.2692307692307692,
+     "E_ext": 0.12769230769230772,
+     "E_out": 0.10000000000000002,
+     "D_ext": 0.1415384615384615,
+     "D_out": 0.16923076923076918
+    },
+    "mid": {
+     "genomes": 132,
+     "E_own": 0.45454545454545453,
+     "E_ext": 0.1106060606060606,
+     "E_out": 0.09393939393939396,
+     "D_ext": 0.34393939393939393,
+     "D_out": 0.3606060606060606
+    },
+    "high": {
+     "genomes": 125,
+     "E_own": 0.208,
+     "E_ext": 0.0976,
+     "E_out": 0.13119999999999998,
+     "D_ext": 0.11039999999999998,
+     "D_out": 0.07680000000000001
+    }
+   },
+   "D_out_without_short_outgoing": null,
+   "own_edges_terciles": [
+    79.0,
+    90.0
+   ],
+   "outcomes": {
+    "own": {
+     "both kept": 249,
+     "erased": 121,
+     "not reached": 16,
+     "swapped": 1
+    },
+    "ctrl": {
+     "both kept": 1625,
+     "erased": 217,
+     "not reached": 93
+    },
+    "out": {
+     "both kept": 1642,
+     "erased": 209,
+     "not reached": 83,
+     "other root": 1
+    }
+   },
+   "own_edges_median": 84.0,
+   "overlap_C3_median": 6.0,
+   "location_own_median": 0.9401238212486654,
+   "sum_anat_own_median": 814.0,
+   "sum_anat_ctrl_median": 749.0
+  },
+  "reference": {
+   "graphs": 11,
+   "panels": 11,
+   "genomes": 38,
+   "unit": "graphs",
+   "excluded_empty_own": 0,
+   "E_own": 0.5526315789473685,
+   "E_ctrl": 0.18947368421052632,
+   "D": 0.3631578947368421,
+   "D_interval": [
+    0.22664912280701757,
+    0.4799999999999999
+   ],
+   "E_out": 0.1894736842105263,
+   "D_out": 0.3631578947368422,
+   "D_out_interval": [
+    0.1904118404118404,
+    0.5081572481572482
+   ],
+   "by_own_edges_tercile": {
+    "low": {
+     "genomes": 14,
+     "E_own": 0.5714285714285714,
+     "E_ext": 0.18571428571428575,
+     "E_out": 0.14285714285714285,
+     "D_ext": 0.3857142857142857,
+     "D_out": 0.42857142857142855
+    },
+    "mid": {
+     "genomes": 11,
+     "E_own": 0.5454545454545454,
+     "E_ext": 0.18181818181818182,
+     "E_out": 0.2545454545454545,
+     "D_ext": 0.3636363636363636,
+     "D_out": 0.2909090909090909
+    },
+    "high": {
+     "genomes": 13,
+     "E_own": 0.5384615384615384,
+     "E_ext": 0.2,
+     "E_out": 0.18461538461538465,
+     "D_ext": 0.3384615384615384,
+     "D_out": 0.3538461538461538
+    }
+   },
+   "D_out_without_short_outgoing": null,
+   "own_edges_terciles": [
+    80.0,
+    90.66666666666666
+   ],
+   "outcomes": {
+    "own": {
+     "erased": 21,
+     "both kept": 9,
+     "not reached": 8
+    },
+    "ctrl": {
+     "both kept": 105,
+     "erased": 36,
+     "not reached": 49
+    },
+    "out": {
+     "erased": 36,
+     "both kept": 104,
+     "not reached": 45,
+     "other root": 5
+    }
+   },
+   "own_edges_median": 85.5,
+   "overlap_C3_median": 7.0,
+   "location_own_median": 0.8923680670494182,
+   "sum_anat_own_median": 908.5,
+   "sum_anat_ctrl_median": 841.5
+  },
+  "core-frozen-shuffle": {
+   "graphs": 3,
+   "panels": 3,
+   "genomes": 52,
+   "unit": "genomes within the fixed graphs",
+   "excluded_empty_own": 0,
+   "E_own": 0.75,
+   "E_ctrl": 0.28846153846153844,
+   "D": 0.46153846153846156,
+   "D_interval": [
+    0.3423076923076923,
+    0.573076923076923
+   ],
+   "E_out": 0.23846153846153847,
+   "D_out": 0.5115384615384615,
+   "D_out_interval": [
+    0.4,
+    0.6232692307692306
+   ],
+   "by_own_edges_tercile": {
+    "low": {
+     "genomes": 18,
+     "E_own": 0.8888888888888888,
+     "E_ext": 0.3222222222222222,
+     "E_out": 0.2777777777777778,
+     "D_ext": 0.5666666666666667,
+     "D_out": 0.611111111111111
+    },
+    "mid": {
+     "genomes": 18,
+     "E_own": 0.6666666666666666,
+     "E_ext": 0.2777777777777778,
+     "E_out": 0.14444444444444446,
+     "D_ext": 0.38888888888888884,
+     "D_out": 0.5222222222222221
+    },
+    "high": {
+     "genomes": 16,
+     "E_own": 0.6875,
+     "E_ext": 0.2625,
+     "E_out": 0.30000000000000004,
+     "D_ext": 0.425,
+     "D_out": 0.38749999999999996
+    }
+   },
+   "D_out_without_short_outgoing": null,
+   "own_edges_terciles": [
+    120.0,
+    133.0
+   ],
+   "outcomes": {
+    "own": {
+     "erased": 39,
+     "not reached": 9,
+     "both kept": 3,
+     "swapped": 1
+    },
+    "ctrl": {
+     "both kept": 138,
+     "erased": 75,
+     "not reached": 47
+    },
+    "out": {
+     "both kept": 155,
+     "erased": 62,
+     "not reached": 43
+    }
+   },
+   "own_edges_median": 126.5,
+   "overlap_C3_median": 14.0,
+   "location_own_median": 0.9670154756706919,
+   "sum_anat_own_median": 1720.0,
+   "sum_anat_ctrl_median": 1663.0
+  },
+  "hub-frozen-shuffle": {
+   "graphs": 3,
+   "panels": 3,
+   "genomes": 7,
+   "unit": "genomes within the fixed graphs",
+   "excluded_empty_own": 0,
+   "E_own": 0.42857142857142855,
+   "E_ctrl": 0.19999999999999998,
+   "D": 0.22857142857142856,
+   "D_interval": [
+    -0.11428571428571432,
+    0.6
+   ],
+   "E_out": 0.14285714285714285,
+   "D_out": 0.2857142857142857,
+   "D_out_interval": [
+    0.0857142857142857,
+    0.5142857142857142
+   ],
+   "by_own_edges_tercile": {
+    "low": {
+     "genomes": 3,
+     "E_own": 0.3333333333333333,
+     "E_ext": 0.0,
+     "E_out": 0.19999999999999998,
+     "D_ext": 0.3333333333333333,
+     "D_out": 0.13333333333333333
+    },
+    "mid": {
+     "genomes": 2,
+     "E_own": 0.0,
+     "E_ext": 0.4,
+     "E_out": 0.0,
+     "D_ext": -0.4,
+     "D_out": 0.0
+    },
+    "high": {
+     "genomes": 2,
+     "E_own": 1.0,
+     "E_ext": 0.3,
+     "E_out": 0.2,
+     "D_ext": 0.7,
+     "D_out": 0.8
+    }
+   },
+   "D_out_without_short_outgoing": null,
+   "own_edges_terciles": [
+    85.0,
+    98.0
+   ],
+   "outcomes": {
+    "own": {
+     "not reached": 4,
+     "erased": 3
+    },
+    "ctrl": {
+     "not reached": 8,
+     "both kept": 20,
+     "erased": 7
+    },
+    "out": {
+     "not reached": 10,
+     "both kept": 20,
+     "erased": 5
+    }
+   },
+   "own_edges_median": 95.0,
+   "overlap_C3_median": 11.0,
+   "location_own_median": 0.8427193341989306,
+   "sum_anat_own_median": 1192.0,
+   "sum_anat_ctrl_median": 1089.0
+  }
+ },
+ "dissection": {
+  "C3": {
+   "erased": 26,
+   "of": 28,
+   "edges": 260
+  },
+  "C3:read-out among themselves": {
+   "erased": 3,
+   "of": 28,
+   "edges": 19
+  },
+  "C3:read-out with the rest of C3": {
+   "erased": 19,
+   "of": 28,
+   "edges": 105
+  },
+  "C3:without the read-out": {
+   "erased": 21,
+   "of": 28,
+   "edges": 136
+  },
+  "C3:RIAL": {
+   "erased": 17,
+   "of": 28,
+   "edges": 29
+  },
+  "C3:SMDDR": {
+   "erased": 0,
+   "of": 28,
+   "edges": 25
+  },
+  "C3:RIAR": {
+   "erased": 20,
+   "of": 28,
+   "edges": 26
+  },
+  "C3:RIML": {
+   "erased": 3,
+   "of": 28,
+   "edges": 24
+  },
+  "C3:SMDDL": {
+   "erased": 7,
+   "of": 28,
+   "edges": 25
+  },
+  "C3:SMDVL": {
+   "erased": 13,
+   "of": 28,
+   "edges": 19
+  },
+  "C3:RMDL": {
+   "erased": 10,
+   "of": 28,
+   "edges": 21
+  },
+  "C3:RMDR": {
+   "erased": 10,
+   "of": 28,
+   "edges": 24
+  },
+  "C3:RICR": {
+   "erased": 0,
+   "of": 28,
+   "edges": 21
+  },
+  "C3:RIMR": {
+   "erased": 3,
+   "of": 28,
+   "edges": 22
+  },
+  "C3:RMDDL": {
+   "erased": 0,
+   "of": 28,
+   "edges": 15
+  },
+  "C3:SMDVR": {
+   "erased": 11,
+   "of": 28,
+   "edges": 21
+  },
+  "C3:RIS": {
+   "erased": 0,
+   "of": 28,
+   "edges": 26
+  },
+  "C3:RMDVR": {
+   "erased": 0,
+   "of": 28,
+   "edges": 14
+  },
+  "C3:CEPDL": {
+   "erased": 0,
+   "of": 28,
+   "edges": 16
+  },
+  "C3:OLLR": {
+   "erased": 0,
+   "of": 28,
+   "edges": 18
+  },
+  "C3:AIBR": {
+   "erased": 4,
+   "of": 28,
+   "edges": 14
+  },
+  "C3:RMGL": {
+   "erased": 1,
+   "of": 28,
+   "edges": 13
+  },
+  "C3:CEPVL": {
+   "erased": 0,
+   "of": 28,
+   "edges": 15
+  },
+  "C3:RIBR": {
+   "erased": 1,
+   "of": 28,
+   "edges": 16
+  },
+  "C3:RMDVL": {
+   "erased": 1,
+   "of": 28,
+   "edges": 12
+  },
+  "C3:RICL": {
+   "erased": 0,
+   "of": 28,
+   "edges": 15
+  },
+  "C3:AIBL": {
+   "erased": 2,
+   "of": 28,
+   "edges": 10
+  },
+  "C3:CEPDR": {
+   "erased": 1,
+   "of": 28,
+   "edges": 13
+  },
+  "C3:RIBL": {
+   "erased": 1,
+   "of": 28,
+   "edges": 14
+  },
+  "C3:RMDDR": {
+   "erased": 0,
+   "of": 28,
+   "edges": 12
+  },
+  "C3:SMBDR": {
+   "erased": 0,
+   "of": 28,
+   "edges": 8
+  },
+  "C3:CEPVR": {
+   "erased": 0,
+   "of": 28,
+   "edges": 12
+  },
+  "C3:RMHL": {
+   "erased": 0,
+   "of": 28,
+   "edges": 10
+  },
+  "C3:SAAVR": {
+   "erased": 0,
+   "of": 28,
+   "edges": 10
+  }
+ },
+ "per_graph": {
+  "N2": {
+   "role": "N2",
+   "genomes": 28,
+   "used": 28,
+   "E_own": 0.8928571428571429,
+   "E_ext": 0.31428571428571433,
+   "E_out": 0.10714285714285714,
+   "own_edges_median": 167.5
+  },
+  "SH-2010075": {
+   "role": "selected",
+   "genomes": 12,
+   "used": 12,
+   "E_own": 0.4166666666666667,
+   "E_ext": 0.25,
+   "E_out": 0.3833333333333333,
+   "own_edges_median": 77.5
+  },
+  "SH-2010091": {
+   "role": "selected",
+   "genomes": 21,
+   "used": 21,
+   "E_own": 0.14285714285714285,
+   "E_ext": 0.35238095238095246,
+   "E_out": 0.26666666666666666,
+   "own_edges_median": 89.0
+  },
+  "SH-route-2020092": {
+   "role": "selected",
+   "genomes": 20,
+   "used": 20,
+   "E_own": 0.3,
+   "E_ext": 0.39,
+   "E_out": 0.34,
+   "own_edges_median": 70.5
+  },
+  "SH-route-2020004": {
+   "role": "selected",
+   "genomes": 17,
+   "used": 17,
+   "E_own": 0.11764705882352941,
+   "E_ext": 0.18823529411764706,
+   "E_out": 0.023529411764705882,
+   "own_edges_median": 73.0
+  },
+  "SH-class-2030099": {
+   "role": "selected",
+   "genomes": 35,
+   "used": 35,
+   "E_own": 0.8285714285714286,
+   "E_ext": 0.005714285714285714,
+   "E_out": 0.011428571428571429,
+   "own_edges_median": 85.0
+  },
+  "SH-class-2030029": {
+   "role": "selected",
+   "genomes": 78,
+   "used": 78,
+   "E_own": 0.08974358974358974,
+   "E_ext": 0.06923076923076923,
+   "E_out": 0.10256410256410256,
+   "own_edges_median": 89.0
+  },
+  "SH-mirror-2040028": {
+   "role": "selected",
+   "genomes": 16,
+   "used": 16,
+   "E_own": 0.0625,
+   "E_ext": 0.1,
+   "E_out": 0.1,
+   "own_edges_median": 87.0
+  },
+  "SH-mirror-2040124": {
+   "role": "selected",
+   "genomes": 50,
+   "used": 50,
+   "E_own": 0.08,
+   "E_ext": 0.10800000000000001,
+   "E_out": 0.08800000000000001,
+   "own_edges_median": 72.0
+  },
+  "SH-recip-2050039": {
+   "role": "selected",
+   "genomes": 71,
+   "used": 71,
+   "E_own": 0.056338028169014086,
+   "E_ext": 0.06478873239436621,
+   "E_out": 0.08169014084507042,
+   "own_edges_median": 98.0
+  },
+  "SH-recip-2050040": {
+   "role": "selected",
+   "genomes": 67,
+   "used": 67,
+   "E_own": 0.8955223880597015,
+   "E_ext": 0.07164179104477612,
+   "E_out": 0.06268656716417913,
+   "own_edges_median": 83.0
+  },
+  "SH-class-2030024": {
+   "role": "reference",
+   "genomes": 4,
+   "used": 4,
+   "E_own": 0.25,
+   "E_ext": 0.05,
+   "E_out": 0.15,
+   "own_edges_median": 77.5
+  },
+  "SH-mirror-2040067": {
+   "role": "reference",
+   "genomes": 3,
+   "used": 3,
+   "E_own": 0.0,
+   "E_ext": 0.0,
+   "E_out": 0.0,
+   "own_edges_median": 69.0
+  },
+  "SH-recip-2050008": {
+   "role": "reference",
+   "genomes": 6,
+   "used": 6,
+   "E_own": 0.5,
+   "E_ext": 0.13333333333333333,
+   "E_out": 0.16666666666666666,
+   "own_edges_median": 90.5
+  },
+  "SH-class-2030048": {
+   "role": "reference",
+   "genomes": 4,
+   "used": 4,
+   "E_own": 0.25,
+   "E_ext": 0.2,
+   "E_out": 0.2,
+   "own_edges_median": 105.0
+  },
+  "SH-recip-2050031": {
+   "role": "reference",
+   "genomes": 2,
+   "used": 2,
+   "E_own": 0.5,
+   "E_ext": 0.2,
+   "E_out": 0.1,
+   "own_edges_median": 83.0
+  },
+  "SH-2010107": {
+   "role": "reference",
+   "genomes": 3,
+   "used": 3,
+   "E_own": 0.6666666666666666,
+   "E_ext": 0.06666666666666667,
+   "E_out": 0.06666666666666667,
+   "own_edges_median": 102.0
+  },
+  "SH-mirror-2040094": {
+   "role": "reference",
+   "genomes": 2,
+   "used": 2,
+   "E_own": 0.5,
+   "E_ext": 0.30000000000000004,
+   "E_out": 0.6,
+   "own_edges_median": 93.0
+  },
+  "SH-recip-2050084": {
+   "role": "reference",
+   "genomes": 7,
+   "used": 7,
+   "E_own": 0.8571428571428571,
+   "E_ext": 0.2,
+   "E_out": 0.17142857142857143,
+   "own_edges_median": 80.0
+  },
+  "SH-route-2020120": {
+   "role": "reference",
+   "genomes": 1,
+   "used": 1,
+   "E_own": 1.0,
+   "E_ext": 0.2,
+   "E_out": 0.0,
+   "own_edges_median": 68.0
+  },
+  "SH-mirror-2040108": {
+   "role": "reference",
+   "genomes": 1,
+   "used": 1,
+   "E_own": 0.0,
+   "E_ext": 0.0,
+   "E_out": 0.0,
+   "own_edges_median": 91.0
+  },
+  "SH-recip-2050122": {
+   "role": "reference",
+   "genomes": 5,
+   "used": 5,
+   "E_own": 1.0,
+   "E_ext": 0.52,
+   "E_out": 0.4,
+   "own_edges_median": 85.0
+  },
+  "core-frozen-shuffle0": {
+   "role": "core-frozen-shuffle",
+   "genomes": 9,
+   "used": 9,
+   "E_own": 0.8888888888888888,
+   "E_ext": 0.2888888888888889,
+   "E_out": 0.24444444444444446,
+   "own_edges_median": 118.0
+  },
+  "core-frozen-shuffle1": {
+   "role": "core-frozen-shuffle",
+   "genomes": 17,
+   "used": 17,
+   "E_own": 0.8235294117647058,
+   "E_ext": 0.4,
+   "E_out": 0.23529411764705882,
+   "own_edges_median": 125.0
+  },
+  "core-frozen-shuffle2": {
+   "role": "core-frozen-shuffle",
+   "genomes": 26,
+   "used": 26,
+   "E_own": 0.6538461538461539,
+   "E_ext": 0.2153846153846154,
+   "E_out": 0.23846153846153847,
+   "own_edges_median": 132.0
+  },
+  "hub-frozen-shuffle0": {
+   "role": "hub-frozen-shuffle",
+   "genomes": 1,
+   "used": 1,
+   "E_own": 0.0,
+   "E_ext": 0.0,
+   "E_out": 0.0,
+   "own_edges_median": 80.0
+  },
+  "hub-frozen-shuffle1": {
+   "role": "hub-frozen-shuffle",
+   "genomes": 2,
+   "used": 2,
+   "E_own": 0.5,
+   "E_ext": 0.4,
+   "E_out": 0.2,
+   "own_edges_median": 100.5
+  },
+  "hub-frozen-shuffle2": {
+   "role": "hub-frozen-shuffle",
+   "genomes": 4,
+   "used": 4,
+   "E_own": 0.5,
+   "E_ext": 0.15,
+   "E_out": 0.15,
+   "own_edges_median": 90.0
+  }
+ },
+ "reading": "unresolved"
+}

@@ -1,0 +1,142 @@
+== the controls' summed anatomical weight against the own set's, per genome (median ratio; the own set's edge count range)
+  N2                   exterior 0.921; outgoing 0.389 (without short sets 0.390); own edges 146 to 197
+  selected             exterior 0.921; outgoing 0.829 (without short sets 0.829); own edges 52 to 127
+  reference            exterior 0.938; outgoing 0.835 (without short sets 0.835); own edges 51 to 114
+  core-frozen-shuffle  exterior 0.948; outgoing 0.526 (without short sets 0.526); own edges 90 to 184
+  hub-frozen-shuffle   exterior 0.937; outgoing 0.691 (without short sets 0.691); own edges 65 to 103
+
+== by the own set's edge count (terciles within each group)
+  N2: tercile bounds [162.0, 172.0]
+     low   10 genomes: own 0.800, exterior 0.440, outgoing 0.100; D_ext +0.360, D_out +0.700
+     mid    9 genomes: own 1.000, exterior 0.422, outgoing 0.200; D_ext +0.578, D_out +0.800
+     high   9 genomes: own 0.889, exterior 0.067, outgoing 0.022; D_ext +0.822, D_out +0.867
+  selected: tercile bounds [79.0, 90.0]
+     low  130 genomes: own 0.269, exterior 0.128, outgoing 0.100; D_ext +0.142, D_out +0.169
+     mid  132 genomes: own 0.455, exterior 0.111, outgoing 0.094; D_ext +0.344, D_out +0.361
+     high 125 genomes: own 0.208, exterior 0.098, outgoing 0.131; D_ext +0.110, D_out +0.077
+  reference: tercile bounds [80.0, 90.7]
+     low   14 genomes: own 0.571, exterior 0.186, outgoing 0.143; D_ext +0.386, D_out +0.429
+     mid   11 genomes: own 0.545, exterior 0.182, outgoing 0.255; D_ext +0.364, D_out +0.291
+     high  13 genomes: own 0.538, exterior 0.200, outgoing 0.185; D_ext +0.338, D_out +0.354
+  core-frozen-shuffle: tercile bounds [120.0, 133.0]
+     low   18 genomes: own 0.889, exterior 0.322, outgoing 0.278; D_ext +0.567, D_out +0.611
+     mid   18 genomes: own 0.667, exterior 0.278, outgoing 0.144; D_ext +0.389, D_out +0.522
+     high  16 genomes: own 0.688, exterior 0.263, outgoing 0.300; D_ext +0.425, D_out +0.387
+  hub-frozen-shuffle: tercile bounds [85.0, 98.0]
+     low    3 genomes: own 0.333, exterior 0.000, outgoing 0.200; D_ext +0.333, D_out +0.133
+     mid    2 genomes: own 0.000, exterior 0.400, outgoing 0.000; D_ext -0.400, D_out +0.000
+     high   2 genomes: own 1.000, exterior 0.300, outgoing 0.200; D_ext +0.700, D_out +0.800
+
+== every outcome, by group and arm (genomes; controls pooled over their 5 sets)
+  N2                   own   both kept 2, erased 25, swapped 0, other root 0, not reached 1
+  N2                   ctrl  both kept 90, erased 44, swapped 0, other root 0, not reached 6
+  N2                   out   both kept 120, erased 15, swapped 0, other root 0, not reached 5
+  selected             own   both kept 249, erased 121, swapped 1, other root 0, not reached 16
+  selected             ctrl  both kept 1625, erased 217, swapped 0, other root 0, not reached 93
+  selected             out   both kept 1642, erased 209, swapped 0, other root 1, not reached 83
+  reference            own   both kept 9, erased 21, swapped 0, other root 0, not reached 8
+  reference            ctrl  both kept 105, erased 36, swapped 0, other root 0, not reached 49
+  reference            out   both kept 104, erased 36, swapped 0, other root 5, not reached 45
+  core-frozen-shuffle  own   both kept 3, erased 39, swapped 1, other root 0, not reached 9
+  core-frozen-shuffle  ctrl  both kept 138, erased 75, swapped 0, other root 0, not reached 47
+  core-frozen-shuffle  out   both kept 155, erased 62, swapped 0, other root 0, not reached 43
+  hub-frozen-shuffle   own   both kept 0, erased 3, swapped 0, other root 0, not reached 4
+  hub-frozen-shuffle   ctrl  both kept 20, erased 7, swapped 0, other root 0, not reached 8
+  hub-frozen-shuffle   out   both kept 20, erased 5, swapped 0, other root 0, not reached 10
+
+== every graph (N2's two panels together)
+  N2                     N2                    28 genomes: own 0.893, exterior 0.314, outgoing 0.107; own edges (median) 167.5
+  SH-2010075             selected              12 genomes: own 0.417, exterior 0.250, outgoing 0.383; own edges (median) 77.5
+  SH-2010091             selected              21 genomes: own 0.143, exterior 0.352, outgoing 0.267; own edges (median) 89.0
+  SH-route-2020092       selected              20 genomes: own 0.300, exterior 0.390, outgoing 0.340; own edges (median) 70.5
+  SH-route-2020004       selected              17 genomes: own 0.118, exterior 0.188, outgoing 0.024; own edges (median) 73.0
+  SH-class-2030099       selected              35 genomes: own 0.829, exterior 0.006, outgoing 0.011; own edges (median) 85.0
+  SH-class-2030029       selected              78 genomes: own 0.090, exterior 0.069, outgoing 0.103; own edges (median) 89.0
+  SH-mirror-2040028      selected              16 genomes: own 0.062, exterior 0.100, outgoing 0.100; own edges (median) 87.0
+  SH-mirror-2040124      selected              50 genomes: own 0.080, exterior 0.108, outgoing 0.088; own edges (median) 72.0
+  SH-recip-2050039       selected              71 genomes: own 0.056, exterior 0.065, outgoing 0.082; own edges (median) 98.0
+  SH-recip-2050040       selected              67 genomes: own 0.896, exterior 0.072, outgoing 0.063; own edges (median) 83.0
+  SH-class-2030024       reference              4 genomes: own 0.250, exterior 0.050, outgoing 0.150; own edges (median) 77.5
+  SH-mirror-2040067      reference              3 genomes: own 0.000, exterior 0.000, outgoing 0.000; own edges (median) 69.0
+  SH-recip-2050008       reference              6 genomes: own 0.500, exterior 0.133, outgoing 0.167; own edges (median) 90.5
+  SH-class-2030048       reference              4 genomes: own 0.250, exterior 0.200, outgoing 0.200; own edges (median) 105.0
+  SH-recip-2050031       reference              2 genomes: own 0.500, exterior 0.200, outgoing 0.100; own edges (median) 83.0
+  SH-2010107             reference              3 genomes: own 0.667, exterior 0.067, outgoing 0.067; own edges (median) 102.0
+  SH-mirror-2040094      reference              2 genomes: own 0.500, exterior 0.300, outgoing 0.600; own edges (median) 93.0
+  SH-recip-2050084       reference              7 genomes: own 0.857, exterior 0.200, outgoing 0.171; own edges (median) 80.0
+  SH-route-2020120       reference              1 genomes: own 1.000, exterior 0.200, outgoing 0.000; own edges (median) 68.0
+  SH-mirror-2040108      reference              1 genomes: own 0.000, exterior 0.000, outgoing 0.000; own edges (median) 91.0
+  SH-recip-2050122       reference              5 genomes: own 1.000, exterior 0.520, outgoing 0.400; own edges (median) 85.0
+  core-frozen-shuffle0   core-frozen-shuffle    9 genomes: own 0.889, exterior 0.289, outgoing 0.244; own edges (median) 118.0
+  core-frozen-shuffle1   core-frozen-shuffle   17 genomes: own 0.824, exterior 0.400, outgoing 0.235; own edges (median) 125.0
+  core-frozen-shuffle2   core-frozen-shuffle   26 genomes: own 0.654, exterior 0.215, outgoing 0.238; own edges (median) 132.0
+  hub-frozen-shuffle0    hub-frozen-shuffle     1 genomes: own 0.000, exterior 0.000, outgoing 0.000; own edges (median) 80.0
+  hub-frozen-shuffle1    hub-frozen-shuffle     2 genomes: own 0.500, exterior 0.400, outgoing 0.200; own edges (median) 100.5
+  hub-frozen-shuffle2    hub-frozen-shuffle     4 genomes: own 0.500, exterior 0.150, outgoing 0.150; own edges (median) 90.0
+  selected: own-cut erasures 121, of which SH-class-2030099 29 and SH-recip-2050040 60
+
+== every dissection arm (N2, 28 genomes)
+  C3                                   260 edges, erased 26
+  C3:without the read-out              136 edges, erased 21
+  C3:RIAR                               26 edges, erased 20
+  C3:read-out with the rest of C3      105 edges, erased 19
+  C3:RIAL                               29 edges, erased 17
+  C3:SMDVL                              19 edges, erased 13
+  C3:SMDVR                              21 edges, erased 11
+  C3:RMDL                               21 edges, erased 10
+  C3:RMDR                               24 edges, erased 10
+  C3:SMDDL                              25 edges, erased 7
+  C3:AIBR                               14 edges, erased 4
+  C3:RIML                               24 edges, erased 3
+  C3:RIMR                               22 edges, erased 3
+  C3:read-out among themselves          19 edges, erased 3
+  C3:AIBL                               10 edges, erased 2
+  C3:CEPDR                              13 edges, erased 1
+  C3:RIBL                               14 edges, erased 1
+  C3:RIBR                               16 edges, erased 1
+  C3:RMDVL                              12 edges, erased 1
+  C3:RMGL                               13 edges, erased 1
+  C3:CEPDL                              16 edges, erased 0
+  C3:CEPVL                              15 edges, erased 0
+  C3:CEPVR                              12 edges, erased 0
+  C3:OLLR                               18 edges, erased 0
+  C3:RICL                               15 edges, erased 0
+  C3:RICR                               21 edges, erased 0
+  C3:RIS                                26 edges, erased 0
+  C3:RMDDL                              15 edges, erased 0
+  C3:RMDDR                              12 edges, erased 0
+  C3:RMDVR                              14 edges, erased 0
+  C3:RMHL                               10 edges, erased 0
+  C3:SAAVR                              10 edges, erased 0
+  C3:SMBDR                               8 edges, erased 0
+  C3:SMDDR                              25 edges, erased 0
+
+== the neurons most often among a genome's 30 most-differing (share of the graph's switch genomes)
+  core-frozen-shuffle0     9 genomes; RIAL or RIAR among them 1.000; top: RMDDR 1.00, RMDVL 1.00, RIAL 1.00, SMDVR 1.00, RIAR 1.00, RMDL 0.89, RMDR 0.89, SMDDL 0.89
+  core-frozen-shuffle1    17 genomes; RIAL or RIAR among them 1.000; top: RIAL 1.00, RIAR 1.00, SMDDR 1.00, RMDL 1.00, RMDDL 0.94, RMDR 0.94, RMDVR 0.94, RMDVL 0.88
+  core-frozen-shuffle2    26 genomes; RIAL or RIAR among them 1.000; top: RMDDR 1.00, RMDVL 0.96, RMDVR 0.92, RIAR 0.88, SMDDR 0.88, RIAL 0.88, SMDVR 0.88, AIYL 0.88
+  hub-frozen-shuffle0      1 genomes; RIAL or RIAR among them 1.000; top: AVEL 1.00, IL1VL 1.00, ASHR 1.00, DA04 1.00, SMDDR 1.00, RMDL 1.00, I1R 1.00, RIAL 1.00
+  hub-frozen-shuffle1      2 genomes; RIAL or RIAR among them 0.500; top: RMDVR 1.00, RMDDL 1.00, AIZR 1.00, ADAR 1.00, ASER 1.00, AIYR 1.00, RIBR 1.00, RMGL 1.00
+  hub-frozen-shuffle2      4 genomes; RIAL or RIAR among them 1.000; top: RMDVL 1.00, RMDR 1.00, VA01 1.00, RMDDL 1.00, RMDVR 1.00, RIAR 1.00, VD13 1.00, IL1DR 1.00
+  N2                      28 genomes; RIAL or RIAR among them 1.000; top: RIAR 1.00, SMDVL 1.00, RMDR 1.00, RMDVR 0.96, RIAL 0.96, SMDVR 0.96, SMDDL 0.96, RMDVL 0.93
+  SH-2010075              12 genomes; RIAL or RIAR among them 0.333; top: RIBL 1.00, AWAR 1.00, SAADL 1.00, SMBVR 0.92, RICR 0.92, VC02 0.92, AVEL 0.92, ADLR 0.92
+  SH-2010091              21 genomes; RIAL or RIAR among them 0.048; top: ASER 1.00, SIAVR 1.00, OLLR 1.00, RIPL 1.00, IL1DR 1.00, AIBL 1.00, URADR 0.95, AVJR 0.95
+  SH-2010107               3 genomes; RIAL or RIAR among them 0.000; top: DA08 1.00, AWCR 1.00, ADER 1.00, AIZL 1.00, PVCR 1.00, VB05 1.00, ADLL 1.00, AVAL 1.00
+  SH-class-2030024         4 genomes; RIAL or RIAR among them 0.000; top: OLLR 1.00, ASKL 1.00, URAVR 1.00, VA02 1.00, RMDL 1.00, RIR 1.00, AS07 1.00, RMHR 1.00
+  SH-class-2030029        78 genomes; RIAL or RIAR among them 0.590; top: AWCR 1.00, ADAR 1.00, CEPVR 1.00, PDEL 1.00, FLPL 0.99, URAVL 0.74, OLQVR 0.68, ASEL 0.67
+  SH-class-2030048         4 genomes; RIAL or RIAR among them 1.000; top: SMDDL 0.75, CEPDL 0.75, PVR 0.75, ASER 0.75, RIAR 0.75, IL1R 0.75, SABD 0.75, AVKR 0.75
+  SH-class-2030099        35 genomes; RIAL or RIAR among them 0.514; top: IL2R 1.00, SMDVR 1.00, IL1DR 1.00, URYDL 1.00, SAADR 1.00, ASEL 1.00, CEPVR 1.00, AWCL 1.00
+  SH-mirror-2040028       16 genomes; RIAL or RIAR among them 0.500; top: SIAVR 0.94, AIBL 0.88, URAVR 0.88, URYDL 0.81, CEPDL 0.81, RIGL 0.81, PVWR 0.81, SMDVL 0.69
+  SH-mirror-2040067        3 genomes; RIAL or RIAR among them 0.333; top: SMBDR 1.00, RIBL 1.00, AIAR 1.00, AS10 1.00, SABVR 1.00, RIFL 1.00, IL2VR 1.00, AUAR 1.00
+  SH-mirror-2040094        2 genomes; RIAL or RIAR among them 0.500; top: HSNR 1.00, AVAL 1.00, AIAR 1.00, PVDL 1.00, AWCL 1.00, DB07 1.00, AUAL 1.00, SIBDR 1.00
+  SH-mirror-2040108        1 genomes; RIAL or RIAR among them 1.000; top: I4 1.00, RIPR 1.00, AIZL 1.00, VB07 1.00, RIAR 1.00, SMBDL 1.00, ADAL 1.00, RIAL 1.00
+  SH-mirror-2040124       50 genomes; RIAL or RIAR among them 0.560; top: URXL 1.00, SIAVL 1.00, URBR 1.00, VB01 1.00, RMDDR 1.00, CEPDR 1.00, ALA 1.00, M1 0.98
+  SH-recip-2050008         6 genomes; RIAL or RIAR among them 1.000; top: RIAL 0.83, RIMR 0.83, OLLL 0.67, ALNR 0.67, AIAL 0.67, AIZL 0.67, RIAR 0.67, URXL 0.67
+  SH-recip-2050031         2 genomes; RIAL or RIAR among them 1.000; top: AVER 1.00, ADEL 1.00, RIGR 1.00, DD01 1.00, AVEL 1.00, SAADL 1.00, PLNR 1.00, SMBDL 1.00
+  SH-recip-2050039        71 genomes; RIAL or RIAR among them 0.873; top: AWCR 1.00, VA03 1.00, SABD 1.00, AIBL 1.00, ASKR 1.00, AVBR 0.97, AVER 0.94, IL1R 0.92
+  SH-recip-2050040        67 genomes; RIAL or RIAR among them 0.881; top: AVDR 1.00, AWCL 1.00, RMFR 1.00, DD03 1.00, AIZL 1.00, VA02 1.00, AVKL 1.00, CEPVR 1.00
+  SH-recip-2050084         7 genomes; RIAL or RIAR among them 0.429; top: NSMR 1.00, VA11 1.00, I6 1.00, RMDL 1.00, URXL 1.00, VD06 1.00, RMDVL 1.00, FLPR 1.00
+  SH-recip-2050122         5 genomes; RIAL or RIAR among them 0.800; top: RIR 1.00, RIH 0.80, CEPDR 0.80, ASHL 0.80, RMDR 0.80, RIAR 0.80, ADAR 0.80, AVDR 0.60
+  SH-route-2020004        17 genomes; RIAL or RIAR among them 0.176; top: AVHL 0.94, NSML 0.94, IL1DR 0.94, ADLL 0.94, AVAR 0.94, VD06 0.94, SIAVL 0.94, DA05 0.94
+  SH-route-2020092        20 genomes; RIAL or RIAR among them 0.200; top: URXL 1.00, RICR 1.00, IL2R 1.00, SMDDR 1.00, RIFR 0.95, M4 0.90, OLQVR 0.90, AVDR 0.85
+  SH-route-2020120         1 genomes; RIAL or RIAR among them 0.000; top: AVBL 1.00, SIADL 1.00, AIAR 1.00, VD09 1.00, PVCR 1.00, M3L 1.00, VD05 1.00, DA01 1.00
