@@ -182,3 +182,100 @@ def _n2_test():
 
 
 run("M4b: N2's saved flag trusted", [(m4b, "validate", trust_the_flag)], _n2_test)
+
+
+# ---------------------------------------------------------------------------------------------------------------- M4c
+import numpy as np  # noqa: E402
+import m4c  # noqa: E402
+import m4c_read  # noqa: E402
+
+orig_matched = m4c.matched_draw
+
+
+def no_tolerance(target, pool, key, rng, tol=None, tries=None):  # the weight tolerance removed: one draw, kept
+    return orig_matched(target, pool, key, rng, tol=10.0, tries=1)
+
+
+run("M4c: the weight tolerance removed", [(m4c, "matched_draw", no_tolerance)], T.test_m4c_matched_draws)
+
+
+def ria_allowed(spec):  # the controls may hold RIA's own edges
+    return np.zeros(len(spec.chem_i), bool)
+
+
+run("M4c: RIA's edges allowed in the controls", [(m4c, "touches_ria", ria_allowed)], T.test_m4c_sets_follow_the_plan)
+run("M4c: the reading without the margin", [(m4c_read, "MARGIN", 0.0)], m4c_read.test_rules)
+
+
+def sets_fixed(e, M, rng, b=m4c_read.B):  # the bootstrap resamples the genomes only
+    n = len(e)
+    D = [e[g].mean() - M[g].mean() for g in (rng.integers(0, n, n) for _ in range(b))]
+    return float(e.mean()), float(M.mean()), float(e.mean() - M.mean()), [float(np.percentile(D, 5)),
+                                                                           float(np.percentile(D, 95))]
+
+
+run("M4c: the sets not resampled", [(m4c_read, "two_way", sets_fixed)], m4c_read.test_rules)
+def _m4c_validate_test():
+    try:
+        T.test_m4c_rejects_invalid_records()
+    except BaseException as err:
+        if type(err).__name__ == "Failed":
+            raise AssertionError("did not raise")
+        raise
+
+
+run("M4c: records not validated", [(m4c, "validate", lambda *a, **k: None)], _m4c_validate_test)
+
+
+def _failed_as_assertion(test):  # pytest.raises that does not raise is a failure of the test (Failed), as an assertion
+    def go():
+        import tempfile
+        with tempfile.TemporaryDirectory() as d:
+            mp = __import__("pytest").MonkeyPatch()
+            try:
+                args = test.__code__.co_varnames[:test.__code__.co_argcount]
+                test(*[Path(d) if a == "tmp_path" else mp for a in args])
+            except BaseException as err:
+                if type(err).__name__ == "Failed":
+                    raise AssertionError("did not raise")
+                raise
+            finally:
+                mp.undo()
+    return go
+
+
+def census_unchecked(seed):  # draft 1: a cached census record trusted by its file name
+    import json
+    return json.load(open(m4c.OUT / "census" / f"N2__{seed}.json"))
+
+
+run("M4c: cached census records not checked", [(m4c, "census_record", census_unchecked)],
+    _failed_as_assertion(T.test_m4c_census_records_and_the_extra_panels))
+
+
+def classify_unrestored(seed):  # the census patched without restoring it
+    m4c.census.OUT, m4c.census.N_PANEL, m4c.census.c1 = m4c.OUT / "census", m4c.N_PANEL, (lambda *a, **k: None)
+    m4c.census.run_panel(f"N2__{seed}", "N2", seed, "fresh", None, None)
+
+
+_census_saved = (m4c.census.OUT, m4c.census.N_PANEL, m4c.census.c1)
+run("M4c: the census left patched", [(m4c, "classify", classify_unrestored)],
+    _failed_as_assertion(T.test_m4c_classify_patches_the_census_only_inside))
+m4c.census.OUT, m4c.census.N_PANEL, m4c.census.c1 = _census_saved
+
+
+def any_count(n, total, pool, key, rng, k=m4c.N_SETS, **kw):  # the core sets matched on weight only, at any count
+    return [m4c.weight_fill(total, pool, key, rng) for _ in range(k)], None
+
+
+def _stop_as_assertion(test):  # the test's own check_sets stopping counts as the test failing
+    def go():
+        try:
+            test()
+        except SystemExit as err:
+            raise AssertionError(str(err)[:80])
+    return go
+
+
+run("M4c: core count not matched", [(m4c, "count_weight_chain", any_count)],
+    _stop_as_assertion(T.test_m4c_sets_follow_the_plan))

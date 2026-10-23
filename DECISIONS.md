@@ -11524,3 +11524,35 @@ Exploratory, by the plan's fixed rules.
   the RIA statistic (the larger neuron's frequency, not the union).
 
 **Next:** the owner is informed; the RIA test is proposed, not started.
+
+## D361 — M4c, is RIA's part of the switch more than its weight?: planned, coded and reviewed before its arms run (2026-10-23)
+
+The owner said "Go" to the RIA test proposed in D360. Plan: [`docs/memory/M4C-PLAN.md`](docs/memory/M4C-PLAN.md),
+draft 3; code `scripts/memory_m4/m4c.py`, `m4c_read.py`. Exploratory, with the arms, controls and reading fixed before
+any arm runs. CPU only.
+
+- **Found while planning:** RIA's C3-internal edges carry 560 (RIAR) and 503 (RIAL) of anatomical weight, against at
+  most 217 for any other C3 neuron; across C3's neurons, weight and M4b's dissection erasures correlate (Spearman 0.50,
+  partly a restatement of RIA, since the neurons' edge sets overlap). So the test is against weight.
+- **The design:** about 150 separate-states genomes from eight fresh N2 panels (seeds 7801 to 7808, classified by the
+  census code with C1 skipped, since fresh seeds have no M1 arrays); each RIA side's 26 or 29 C3-internal edges cut for
+  30 ticks from the roots, against three read families of 20 weight-matched sets (within 2%): X, as many exterior
+  edges of matched weights; W, more core edges (67 to 99); C, as many core edges, from a swap chain. Positive only if
+  every lower bound (both sides, three families) exceeds 0.10; otherwise an advantage ruled out against named
+  families, or unresolved. Descriptive: the AVA stars, the heaviest same-count core set, RIA outside C3, the dissection
+  again.
+- **Disclosed:** the census stage (classification only) started during review round 1; the 60-genome rule was fixed
+  in draft 1.
+
+**The review** (`docs/reviews/20261023-m4c-plan/`, two rounds).
+- **Astra** caught: that count and total weight can both be matched inside C3 (family C added); that W is not
+  conservative (its squared weights are 0.47 and 0.53 of RIA's); "matched by weight" as an overclaim (renamed, families
+  named); unchecked cached census records; untested orchestration; then C's uniformity as an MCMC approximation, the
+  per-set diagnostics, and invalid panels named in the reading.
+- **Fable** caught: that the reading was W-driven and a W match could be coverage; panel validity unchecked; the side
+  arms not checked against their identical dissection arms; the Spearman's overlap; the early census start; the power
+  note; then the chain's reachability wording, its acceptance rate, a descent cap, the expected count, and a test that
+  the C sets differ.
+
+**Next:** the census finishes (about 2.5 hours, running), then the sets and the arms (about 2.4 hours); results,
+review, D362. Tests: 21 pass; sabotages 24 of 24 fail as they must.

@@ -235,3 +235,163 @@ def test_m4b_n2_records_are_checked_against_m4a(tmp_path):
     changed[0] = "both kept" if changed[0] != "both kept" else "erased"
     with pytest.raises(SystemExit):
         m4b.validate({**rec, "arms": {**arms, "C3": changed}}, ids, "N2__7600", "N2")
+
+
+def test_m4c_reading_and_bootstrap():
+    import m4c_read
+    m4c_read.test_rules()
+
+
+def test_m4c_matched_draws():
+    """M4c: a matched draw has the target's count, from the pool, without repeats, its summed weight within the
+    tolerance and each weight near one of the target's; a weight fill is from the pool, without repeats, within the
+    tolerance."""
+    import m4c
+    rng = np.random.default_rng(3)
+    key = np.concatenate([rng.integers(1, 60, 400), rng.integers(1, 5, 2000)]).astype(float)
+    target = np.arange(30)
+    pool = np.arange(30, len(key))
+    for _ in range(5):
+        e, r = m4c.matched_draw(target, pool, key, rng)
+        assert e is not None and len(e) == len(target) == len(set(e.tolist())) and set(e.tolist()) <= set(pool.tolist())
+        assert abs(key[e].sum() / key[target].sum() - 1) <= m4c.TOL + 1e-12 and abs(r - key[e].sum() / key[target].sum()) < 1e-9
+        tw, ew = np.sort(key[target]), np.sort(key[e])
+        assert (np.abs(ew - tw) <= np.maximum(1.0, m4c.NEAR * tw) + 1e-9).mean() >= 0.9
+        f, r = m4c.weight_fill(float(key[target].sum()), pool, key, rng)
+        assert len(f) == len(set(f.tolist())) and set(f.tolist()) <= set(pool.tolist())
+        assert abs(key[f].sum() / key[target].sum() - 1) <= m4c.TOL + 1e-12
+
+
+def test_m4c_sets_follow_the_plan():
+    """M4c: the sides are M4b's dissection arms (26 and 29 edges, weight 560 and 503); no control holds an edge of
+    either RIA (checked here independently of the code's own rule); the sets pass check_sets, and a set breaking a
+    rule does not."""
+    import copy
+    import pytest
+    import m4a
+    import m4c
+    c = m4a.c
+    spec = m4c.n2_spec()
+    sets = m4c.build_sets(spec)
+    m4c.check_sets(sets, spec)
+    key = spec.chem_anat.numpy()
+    i, j = spec.chem_i.numpy(), spec.chem_j.numpy()
+    ria = {c.NAMES.index("RIAL"), c.NAMES.index("RIAR")}
+    for side, n, w in (("RIAR", 26, 560.0), ("RIAL", 29, 503.0)):
+        s = sets["sides"][side]
+        assert len(s["edges"]) == n and abs(key[s["edges"]].sum() - w) < 1e-6
+        assert all(len(e) == n for e in s["C"])
+        assert len({tuple(sorted(e)) for e in s["C"]}) > 1 and 0 < s["C_acceptance"] < 1  # Fable, round 2
+        for e in s["X"] + s["W"] + s["C"] + [s["heaviest"]] + [x["edges"] for x in s["stars"].values()]:
+            assert not any(i[k] in ria or j[k] in ria for k in e)
+    bad = copy.deepcopy(sets)
+    bad["sides"]["RIAR"]["X"][0][0] = sets["sides"]["RIAR"]["edges"][0]  # an RIA edge in a control
+    with pytest.raises(SystemExit):
+        m4c.check_sets(bad, spec)
+    bad = copy.deepcopy(sets)
+    bad["sides"]["RIAL"]["W"][3] = bad["sides"]["RIAL"]["W"][3][:-10]  # lighter than the tolerance
+    with pytest.raises(SystemExit):
+        m4c.check_sets(bad, spec)
+    bad = copy.deepcopy(sets)
+    bad["sides"]["RIAR"]["X"][5] = bad["sides"]["RIAR"]["W"][5][:26]  # inside C3, not exterior
+    with pytest.raises(SystemExit):
+        m4c.check_sets(bad, spec)
+    bad = copy.deepcopy(sets)
+    bad["sides"]["RIAR"]["C"][2] = bad["sides"]["RIAR"]["W"][2]  # more edges than the side
+    with pytest.raises(SystemExit):
+        m4c.check_sets(bad, spec)
+
+
+def test_m4c_rejects_invalid_records():
+    """M4c: a saved panel with other genome ids, a missing, incomplete or unexpected arm, a failed intact arm or
+    another panel's name stops the run and the reading."""
+    import pytest
+    import m4c
+    side = {"edges": [1], "X": [[2]] * m4c.N_SETS, "W": [[3]] * m4c.N_SETS, "C": [[6]] * m4c.N_SETS, "heaviest": [4],
+            "stars": {}}
+    sets = {"sides": {"RIAR": side, "RIAL": side}, "descriptive": {"RIA both": [1]},
+            "dissection": {"C3": [5], "C3:RIAR": [1], "C3:RIAL": [1]}}
+    arms = {a: ["both kept", "erased"] for a in m4c.arm_edges(sets)}
+    arms["intact"] = ["both kept"] * 2
+    good = {"panel": "N2__1", "genomes": [1, 2], "arms": arms}
+    m4c.validate(good, [1, 2], sets, "N2__1")
+    for rec, ids, name in ((good, [1, 2, 3], None), (good, [1, 2], "N2__2"),
+                           ({**good, "arms": {**arms, "RIAR": ["erased"]}}, [1, 2], None),
+                           ({**good, "arms": {k: v for k, v in arms.items() if k != "RIAL:W7"}}, [1, 2], None),
+                           ({**good, "arms": {**arms, "other": ["erased"] * 2}}, [1, 2], None),
+                           ({**good, "arms": {**arms, "intact": ["both kept", "erased"]}}, [1, 2], None),
+                           ({**good, "arms": {**arms, "C3:RIAL": ["both kept", "both kept"]}}, [1, 2], None)):
+        with pytest.raises(SystemExit):
+            m4c.validate(rec, ids, sets, name)
+
+
+def _fake_census(out, seed_, n_panel, classes, **over):
+    import json
+    (out / "census").mkdir(parents=True, exist_ok=True)
+    rec = {"panel": f"N2__{seed_}", "graph": "N2", "seed": seed_, "role": "fresh", "valid": True,
+           "all": {"a": [1.0] * n_panel}, "genomes": [{"genome": k, "class": c_} for k, c_ in enumerate(classes)]}
+    rec.update(over)
+    json.dump(rec, open(out / "census" / f"N2__{seed_}.json", "w"))
+    np.savez(out / "census" / f"N2__{seed_}.npz", idx=np.arange(len(classes)), roots=np.zeros((len(classes), 2, 3)))
+
+
+def test_m4c_census_records_and_the_extra_panels(tmp_path, monkeypatch):
+    """M4c (Astra, Fable, round 1): a cached census record must be this fresh N2 panel's, of the panel size, with
+    aligned arrays; an invalid panel gives no genomes; the four extra panels join only below MIN_GENOMES."""
+    import pytest
+    import m4c
+    monkeypatch.setattr(m4c, "OUT", tmp_path)
+    sep = ["separate states"] * 8 + ["fading"] * 2
+    for s in m4c.SEEDS:
+        _fake_census(tmp_path, s, m4c.N_PANEL, sep)
+    assert m4c.switch_ids(m4c.SEEDS[0]) == list(range(8))
+    assert m4c.panel_seeds() == m4c.SEEDS  # 64 genomes: no extra panels
+    _fake_census(tmp_path, m4c.SEEDS[1], m4c.N_PANEL, sep, valid=False)
+    assert m4c.switch_ids(m4c.SEEDS[1]) == []
+    assert m4c.panel_seeds() == m4c.SEEDS + m4c.EXTRA_SEEDS  # 56 genomes: the extra panels join
+    for over in ({"graph": "SH-1"}, {"seed": 1}, {"role": "N2"}, {"all": {"a": [1.0] * 5}}):
+        _fake_census(tmp_path, m4c.SEEDS[2], m4c.N_PANEL, sep, **over)
+        with pytest.raises(SystemExit):
+            m4c.census_record(m4c.SEEDS[2])
+    _fake_census(tmp_path, m4c.SEEDS[2], m4c.N_PANEL, sep)
+    np.savez(tmp_path / "census" / f"N2__{m4c.SEEDS[2]}.npz", idx=np.arange(1, 11), roots=np.zeros((10, 2, 3)))
+    with pytest.raises(SystemExit):
+        m4c.census_record(m4c.SEEDS[2])  # arrays not aligned with the eligible genomes
+
+
+def test_m4c_classify_patches_the_census_only_inside(tmp_path, monkeypatch):
+    """M4c: C1 is skipped and the census writes to M4c's folder only during classify, and both are restored even when
+    the panel fails."""
+    import pytest
+    import m4c
+    census = m4c.census
+    before = census.OUT, census.N_PANEL, census.c1
+    seen = {}
+
+    def boom(name, gname, seed, role, core, hubs):
+        seen.update(out=census.OUT, c1=census.c1, role=role, gname=gname)
+        raise RuntimeError("stop")
+    monkeypatch.setattr(m4c, "OUT", tmp_path)
+    monkeypatch.setattr(census, "run_panel", boom)
+    with pytest.raises(RuntimeError):
+        m4c.classify(7801)
+    assert seen["out"] == tmp_path / "census" and seen["c1"] is not before[2] and seen["role"] == "fresh"
+    assert seen["gname"] == "N2" and (census.OUT, census.N_PANEL, census.c1) == before
+
+
+def test_m4c_rejects_a_changed_sets_file(tmp_path, monkeypatch):
+    """M4c (Astra, round 1): a saved sets.json that differs from the code's rebuild stops the run and the reading."""
+    import json
+    import pytest
+    import m4c
+    monkeypatch.setattr(m4c, "OUT", tmp_path)
+    monkeypatch.setattr(m4c, "n2_spec", lambda: None)
+    monkeypatch.setattr(m4c, "build_sets", lambda spec: {"sides": {"RIAR": {"edges": [1, 2]}}})
+    monkeypatch.setattr(m4c, "check_sets", lambda sets, spec: None)
+    json.dump({"sides": {"RIAR": {"edges": [1, 3]}}}, open(tmp_path / "sets.json", "w"))
+    with pytest.raises(SystemExit):
+        m4c.load_sets()
+    with pytest.raises(SystemExit):
+        m4c.stage_sets()
+    json.dump({"sides": {"RIAR": {"edges": [1, 2]}}}, open(tmp_path / "sets.json", "w"))
+    assert m4c.load_sets() == {"sides": {"RIAR": {"edges": [1, 2]}}}

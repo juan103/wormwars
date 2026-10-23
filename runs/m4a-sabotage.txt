@@ -14,3 +14,11 @@ M4b: the own set is where the roots differ least: fails, as it must
 M4b: records not validated: fails, as it must
 M4b: incoming edges as the outgoing control: fails, as it must
 M4b: N2's saved flag trusted: fails, as it must
+M4c: the weight tolerance removed: fails, as it must
+M4c: RIA's edges allowed in the controls: fails, as it must
+M4c: the reading without the margin: fails, as it must
+M4c: the sets not resampled: fails, as it must
+M4c: records not validated: fails, as it must
+M4c: cached census records not checked: fails, as it must
+M4c: the census left patched: fails, as it must
+M4c: core count not matched: fails, as it must
