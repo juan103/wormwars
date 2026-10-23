@@ -1,0 +1,74 @@
+  N2__7801 chunk 1/8 163.0 s
+  N2__7801 chunk 2/8 99.8 s
+  N2__7801 chunk 3/8 98.1 s
+  N2__7801 chunk 4/8 100.0 s
+  N2__7801 chunk 5/8 171.4 s
+  N2__7801 chunk 6/8 104.4 s
+  N2__7801 chunk 7/8 100.7 s
+  N2__7801 chunk 8/8 170.0 s
+N2__7801 1007.5 s, valid True, eligible 988, {'separate states': 18, 'separate states, read-out silent': 1, 'fading': 965, 'persistent oscillation': 2, 'unresolved': 2}
+  N2__7802 chunk 1/8 198.4 s
+  N2__7802 chunk 2/8 114.8 s
+  N2__7802 chunk 3/8 186.0 s
+  N2__7802 chunk 4/8 101.6 s
+  N2__7802 chunk 5/8 104.9 s
+  N2__7802 chunk 6/8 99.0 s
+  N2__7802 chunk 7/8 163.4 s
+  N2__7802 chunk 8/8 94.6 s
+N2__7802 1062.8 s, valid True, eligible 992, {'separate states': 19, 'separate states, read-out silent': 0, 'fading': 968, 'persistent oscillation': 2, 'unresolved': 3}
+  N2__7803 chunk 1/8 97.6 s
+  N2__7803 chunk 2/8 98.1 s
+  N2__7803 chunk 3/8 158.0 s
+  N2__7803 chunk 4/8 161.6 s
+  N2__7803 chunk 5/8 98.9 s
+  N2__7803 chunk 6/8 98.6 s
+  N2__7803 chunk 7/8 101.4 s
+  N2__7803 chunk 8/8 96.9 s
+N2__7803 911.1 s, valid True, eligible 1000, {'separate states': 16, 'separate states, read-out silent': 1, 'fading': 981, 'persistent oscillation': 0, 'unresolved': 2}
+  N2__7804 chunk 1/8 99.3 s
+  N2__7804 chunk 2/8 97.6 s
+  N2__7804 chunk 3/8 98.5 s
+  N2__7804 chunk 4/8 158.4 s
+  N2__7804 chunk 5/8 195.2 s
+  N2__7804 chunk 6/8 95.8 s
+  N2__7804 chunk 7/8 159.1 s
+  N2__7804 chunk 8/8 98.1 s
+N2__7804 1002.0 s, valid True, eligible 996, {'separate states': 26, 'separate states, read-out silent': 0, 'fading': 966, 'persistent oscillation': 1, 'unresolved': 3}
+  N2__7805 chunk 1/8 97.5 s
+  N2__7805 chunk 2/8 98.1 s
+  N2__7805 chunk 3/8 96.8 s
+  N2__7805 chunk 4/8 96.1 s
+  N2__7805 chunk 5/8 112.5 s
+  N2__7805 chunk 6/8 196.9 s
+  N2__7805 chunk 7/8 213.5 s
+  N2__7805 chunk 8/8 239.7 s
+N2__7805 1151.2 s, valid True, eligible 995, {'separate states': 14, 'separate states, read-out silent': 0, 'fading': 980, 'persistent oscillation': 0, 'unresolved': 1}
+  N2__7806 chunk 1/8 249.6 s
+  N2__7806 chunk 2/8 349.1 s
+  N2__7806 chunk 3/8 311.6 s
+  N2__7806 chunk 4/8 215.5 s
+  N2__7806 chunk 5/8 226.3 s
+  N2__7806 chunk 6/8 267.0 s
+  N2__7806 chunk 7/8 269.5 s
+  N2__7806 chunk 8/8 422.8 s
+N2__7806 2311.4 s, valid True, eligible 992, {'separate states': 19, 'separate states, read-out silent': 2, 'fading': 966, 'persistent oscillation': 3, 'unresolved': 2}
+  N2__7807 chunk 1/8 273.9 s
+  N2__7807 chunk 2/8 251.3 s
+  N2__7807 chunk 3/8 338.4 s
+  N2__7807 chunk 4/8 220.7 s
+  N2__7807 chunk 5/8 252.4 s
+  N2__7807 chunk 6/8 398.4 s
+  N2__7807 chunk 7/8 100.7 s
+  N2__7807 chunk 8/8 99.8 s
+N2__7807 1935.7 s, valid True, eligible 999, {'separate states': 12, 'separate states, read-out silent': 0, 'fading': 984, 'persistent oscillation': 2, 'unresolved': 1}
+  N2__7808 chunk 1/8 161.3 s
+  N2__7808 chunk 2/8 97.9 s
+  N2__7808 chunk 3/8 160.0 s
+  N2__7808 chunk 4/8 98.3 s
+  N2__7808 chunk 5/8 100.3 s
+  N2__7808 chunk 6/8 99.8 s
+  N2__7808 chunk 7/8 102.2 s
+  N2__7808 chunk 8/8 98.2 s
+N2__7808 918.1 s, valid True, eligible 992, {'separate states': 13, 'separate states, read-out silent': 0, 'fading': 976, 'persistent oscillation': 1, 'unresolved': 2}
+census: [(7801, 19), (7802, 19), (7803, 17), (7804, 26), (7805, 14), (7806, 21), (7807, 12), (7808, 13)]
+rc=0

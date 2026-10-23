@@ -1,0 +1,51 @@
+reading: RIA's core edges erase the switch more often than every weight-matched control family  (141 genomes; panels [('N2__7801', 19, True), ('N2__7802', 19, True), ('N2__7803', 17, True), ('N2__7804', 26, True), ('N2__7805', 14, True), ('N2__7806', 21, True), ('N2__7807', 12, True), ('N2__7808', 13, True)])
+  RIAR: erased 101 of 141 = 0.716 [0.652, 0.78]
+     X: 0.296, D +0.421 [0.339, 0.501]; largest set 0.461; sets reaching the side 0; squared-weight ratio [0.93, 1.02, 1.07]
+     W: 0.254, D +0.462 [0.382, 0.539]; largest set 0.305; sets reaching the side 0; squared-weight ratio [0.32, 0.47, 0.63]
+     C: 0.289, D +0.428 [0.348, 0.507]; largest set 0.340; sets reaching the side 0; squared-weight ratio [0.75, 0.76, 0.78]
+  RIAL: erased 82 of 141 = 0.582 [0.511, 0.652]
+     X: 0.217, D +0.364 [0.287, 0.442]; largest set 0.418; sets reaching the side 0; squared-weight ratio [0.96, 1.01, 1.11]
+     W: 0.249, D +0.333 [0.26, 0.408]; largest set 0.319; sets reaching the side 0; squared-weight ratio [0.41, 0.53, 0.69]
+     C: 0.265, D +0.317 [0.234, 0.396]; largest set 0.340; sets reaching the side 0; squared-weight ratio [0.88, 0.9, 0.93]
+  intact                               erased   0  (None edges, weight None)
+  RIAR                                 erased 101  (26 edges, weight 560.0)
+  RIAL                                 erased  82  (29 edges, weight 503.0)
+  RIAR:heaviest core                   erased  47  (26 edges, weight 597.0)
+  RIAR:star AVAR                       erased   4  (26 edges, weight 535.0)
+  RIAL:heaviest core                   erased  48  (29 edges, weight 640.0)
+  RIAL:star AVAL                       erased   3  (29 edges, weight 479.0)
+  RIAL:star AVAR                       erased   2  (29 edges, weight 487.0)
+  RIAR outside C3                      erased  49  (33 edges, weight 298.0)
+  RIAL outside C3                      erased  36  (34 edges, weight 331.0)
+  RIA both                             erased 111  (53 edges, weight 1002.0)
+  C3                                   erased 116  (260 edges, weight 2347.0)
+  C3:read-out among themselves         erased  24  (19 edges, weight 212.0)
+  C3:read-out with the rest of C3      erased  90  (105 edges, weight 1112.0)
+  C3:without the read-out              erased  96  (136 edges, weight 1023.0)
+  C3:RIAL                              erased  82  (29 edges, weight 503.0)
+  C3:SMDDR                             erased   7  (25 edges, weight 188.0)
+  C3:RIAR                              erased 101  (26 edges, weight 560.0)
+  C3:RIML                              erased  23  (24 edges, weight 208.0)
+  C3:SMDDL                             erased  33  (25 edges, weight 206.0)
+  C3:SMDVL                             erased  69  (19 edges, weight 184.0)
+  C3:RMDL                              erased  36  (21 edges, weight 168.0)
+  C3:RMDR                              erased  51  (24 edges, weight 201.0)
+  C3:RICR                              erased   9  (21 edges, weight 112.0)
+  C3:RIMR                              erased  21  (22 edges, weight 189.0)
+  C3:RMDDL                             erased   3  (15 edges, weight 188.0)
+  C3:SMDVR                             erased  44  (21 edges, weight 163.0)
+  C3:RIS                               erased  12  (26 edges, weight 129.0)
+  C3:RMDVR                             erased   3  (14 edges, weight 189.0)
+  C3:OLLR                              erased  11  (18 edges, weight 143.0)
+  C3:AIBR                              erased  21  (14 edges, weight 127.0)
+  C3:RMGL                              erased   5  (13 edges, weight 51.0)
+  C3:RIBR                              erased  12  (16 edges, weight 85.0)
+  C3:RMDVL                             erased   5  (12 edges, weight 217.0)
+  C3:RICL                              erased   4  (15 edges, weight 96.0)
+  C3:AIBL                              erased  19  (10 edges, weight 115.0)
+  C3:RIBL                              erased  12  (14 edges, weight 69.0)
+  C3:RMDDR                             erased   1  (12 edges, weight 201.0)
+  C3:SMBDR                             erased   1  (8 edges, weight 26.0)
+  C3:RMHL                              erased   0  (10 edges, weight 28.0)
+  C3:SAAVR                             erased   5  (10 edges, weight 59.0)
+  dissection: Spearman of weight and erased over C3's 30 neurons +0.56

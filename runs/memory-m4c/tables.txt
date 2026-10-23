@@ -1,0 +1,106 @@
+141 genomes in 8 panels; reading: RIA's core edges erase the switch more often than every weight-matched control family
+
+== every outcome by arm (genomes; each family pooled over its 20 sets, so its counts sum to 20 x genomes)
+  intact   141 / 0 / 0 / 0 / 0  (of 141)
+  RIAR     25 / 101 / 1 / 1 / 13  (of 141)
+  RIAL     48 / 82 / 1 / 2 / 8  (of 141)
+  RIAR:X   1676 / 834 / 1 / 20 / 289  (of 2820)
+  RIAR:W   1835 / 717 / 0 / 9 / 259  (of 2820)
+  RIAR:C   1730 / 814 / 1 / 2 / 273  (of 2820)
+  RIAL:X   1926 / 613 / 0 / 13 / 268  (of 2820)
+  RIAL:W   1851 / 701 / 0 / 10 / 258  (of 2820)
+  RIAL:C   1787 / 746 / 1 / 6 / 280  (of 2820)
+  (order: both kept / erased / swapped / other root / not reached)
+
+== every panel: genomes, erased by each side and the mean over each family's sets
+  N2__7801  19: RIAR 0.63 (X 0.37, W 0.22, C 0.29); RIAL 0.53 (X 0.28, W 0.21, C 0.24)
+  N2__7802  19: RIAR 0.79 (X 0.34, W 0.41, C 0.45); RIAL 0.58 (X 0.21, W 0.42, C 0.46)
+  N2__7803  17: RIAR 0.59 (X 0.28, W 0.21, C 0.19); RIAL 0.53 (X 0.16, W 0.18, C 0.21)
+  N2__7804  26: RIAR 0.81 (X 0.22, W 0.23, C 0.27); RIAL 0.69 (X 0.19, W 0.24, C 0.23)
+  N2__7805  14: RIAR 0.71 (X 0.34, W 0.26, C 0.31); RIAL 0.50 (X 0.23, W 0.24, C 0.30)
+  N2__7806  21: RIAR 0.76 (X 0.31, W 0.22, C 0.25); RIAL 0.52 (X 0.28, W 0.22, C 0.20)
+  N2__7807  12: RIAR 0.83 (X 0.27, W 0.34, C 0.38); RIAL 0.67 (X 0.21, W 0.33, C 0.35)
+  N2__7808  13: RIAR 0.54 (X 0.25, W 0.17, C 0.16); RIAL 0.62 (X 0.17, W 0.14, C 0.17)
+
+== each family's 20 sets: erased fraction (min / median / max), and Spearman of a set's erased fraction with its squared-weight ratio and with its heaviest edge
+  RIAR X: 0.078 / 0.298 / 0.461; side 0.716; rho(squared ratio) +0.18, rho(heaviest edge) -0.02
+  RIAR W: 0.191 / 0.266 / 0.305; side 0.716; rho(squared ratio) +0.51, rho(heaviest edge) +0.58
+  RIAR C: 0.241 / 0.294 / 0.340; side 0.716; rho(squared ratio) +0.13, rho(heaviest edge) +nan
+  RIAL X: 0.099 / 0.188 / 0.418; side 0.582; rho(squared ratio) +0.02, rho(heaviest edge) -0.02
+  RIAL W: 0.170 / 0.252 / 0.319; side 0.582; rho(squared ratio) +0.70, rho(heaviest edge) +0.52
+  RIAL C: 0.213 / 0.262 / 0.340; side 0.582; rho(squared ratio) -0.08, rho(heaviest edge) +nan
+
+== the two sides per genome (RIAR erased x RIAL erased)
+  both 63, RIAR only 38, RIAL only 19, neither 21; RIA both sides cut together erased 111, of which 7 erased by neither side alone; not erased by both sides together but by one alone 16
+
+== descriptive arms: erased, edges, weight, erased per 100 of weight
+  RIAR                               101 / 141   26 edges, weight    560, 18.0
+  RIAL                                82 / 141   29 edges, weight    503, 16.3
+  RIAR:heaviest core                  47 / 141   26 edges, weight    597, 7.9
+  RIAR:star AVAR                       4 / 141   26 edges, weight    535, 0.7
+  RIAL:heaviest core                  48 / 141   29 edges, weight    640, 7.5
+  RIAL:star AVAL                       3 / 141   29 edges, weight    479, 0.6
+  RIAL:star AVAR                       2 / 141   29 edges, weight    487, 0.4
+  RIAR outside C3                     49 / 141   33 edges, weight    298, 16.4
+  RIAL outside C3                     36 / 141   34 edges, weight    331, 10.9
+  RIA both                           111 / 141   53 edges, weight   1002, 11.1
+  C3                                 116 / 141  260 edges, weight   2347, 4.9
+  C3:read-out among themselves        24 / 141   19 edges, weight    212, 11.3
+  C3:read-out with the rest of C3     90 / 141  105 edges, weight   1112, 8.1
+  C3:without the read-out             96 / 141  136 edges, weight   1023, 9.4
+
+== how concentrated each descriptive set's weight is: summed squared weights and heaviest edge, against the side's (needs the local connectome)
+  RIAR                   squared ratio 1.00, heaviest edge 57 (side's 57)
+  RIAR:heaviest core     squared ratio 0.82, heaviest edge 56 (side's 57)
+  RIAR:star AVAR         squared ratio 0.85, heaviest edge 52 (side's 57)
+  RIAR outside C3        squared ratio 0.47, heaviest edge 61 (side's 57)
+  RIAL                   squared ratio 1.00, heaviest edge 48 (side's 48)
+  RIAL:heaviest core     squared ratio 1.11, heaviest edge 56 (side's 48)
+  RIAL:star AVAL         squared ratio 0.94, heaviest edge 56 (side's 48)
+  RIAL:star AVAR         squared ratio 0.93, heaviest edge 52 (side's 48)
+  RIAL outside C3        squared ratio 0.54, heaviest edge 51 (side's 48)
+  AVAL's pool for the star sets: 106 off-diagonal chemical edges not touching RIA
+  AVAR's pool for the star sets: 106 off-diagonal chemical edges not touching RIA
+
+== the dissection: each C3 neuron's internal edges alone, fresh genomes (M4c) against M4b's 28
+  RIAR   26 edges, weight  560: M4c 101 / 141 (0.716); M4b 20 / 28 (0.714)
+  RIAL   29 edges, weight  503: M4c  82 / 141 (0.582); M4b 17 / 28 (0.607)
+  SMDVL  19 edges, weight  184: M4c  69 / 141 (0.489); M4b 13 / 28 (0.464)
+  RMDR   24 edges, weight  201: M4c  51 / 141 (0.362); M4b 10 / 28 (0.357)
+  SMDVR  21 edges, weight  163: M4c  44 / 141 (0.312); M4b 11 / 28 (0.393)
+  RMDL   21 edges, weight  168: M4c  36 / 141 (0.255); M4b 10 / 28 (0.357)
+  SMDDL  25 edges, weight  206: M4c  33 / 141 (0.234); M4b  7 / 28 (0.250)
+  RIML   24 edges, weight  208: M4c  23 / 141 (0.163); M4b  3 / 28 (0.107)
+  AIBR   14 edges, weight  127: M4c  21 / 141 (0.149); M4b  4 / 28 (0.143)
+  RIMR   22 edges, weight  189: M4c  21 / 141 (0.149); M4b  3 / 28 (0.107)
+  AIBL   10 edges, weight  115: M4c  19 / 141 (0.135); M4b  2 / 28 (0.071)
+  RIBL   14 edges, weight   69: M4c  12 / 141 (0.085); M4b  1 / 28 (0.036)
+  RIBR   16 edges, weight   85: M4c  12 / 141 (0.085); M4b  1 / 28 (0.036)
+  RIS    26 edges, weight  129: M4c  12 / 141 (0.085); M4b  0 / 28 (0.000)
+  OLLR   18 edges, weight  143: M4c  11 / 141 (0.078); M4b  0 / 28 (0.000)
+  RICR   21 edges, weight  112: M4c   9 / 141 (0.064); M4b  0 / 28 (0.000)
+  SMDDR  25 edges, weight  188: M4c   7 / 141 (0.050); M4b  0 / 28 (0.000)
+  RMDVL  12 edges, weight  217: M4c   5 / 141 (0.035); M4b  1 / 28 (0.036)
+  RMGL   13 edges, weight   51: M4c   5 / 141 (0.035); M4b  1 / 28 (0.036)
+  SAAVR  10 edges, weight   59: M4c   5 / 141 (0.035); M4b  0 / 28 (0.000)
+  CEPVL  15 edges, weight   87: M4c   4 / 141 (0.028); M4b  0 / 28 (0.000)
+  RICL   15 edges, weight   96: M4c   4 / 141 (0.028); M4b  0 / 28 (0.000)
+  CEPDL  16 edges, weight   63: M4c   3 / 141 (0.021); M4b  0 / 28 (0.000)
+  CEPDR  13 edges, weight   69: M4c   3 / 141 (0.021); M4b  1 / 28 (0.036)
+  RMDDL  15 edges, weight  188: M4c   3 / 141 (0.021); M4b  0 / 28 (0.000)
+  RMDVR  14 edges, weight  189: M4c   3 / 141 (0.021); M4b  0 / 28 (0.000)
+  CEPVR  12 edges, weight   70: M4c   2 / 141 (0.014); M4b  0 / 28 (0.000)
+  RMDDR  12 edges, weight  201: M4c   1 / 141 (0.007); M4b  0 / 28 (0.000)
+  SMBDR   8 edges, weight   26: M4c   1 / 141 (0.007); M4b  0 / 28 (0.000)
+  RMHL   10 edges, weight   28: M4c   0 / 141 (0.000); M4b  0 / 28 (0.000)
+  30 neurons; Spearman M4c against M4b +0.86; weight against M4c's erased +0.56 (without the two RIAs +0.46)
+  C3                                 M4c 116 / 141 (0.823); M4b 26 / 28
+  C3:read-out among themselves       M4c  24 / 141 (0.170); M4b 3 / 28
+  C3:read-out with the rest of C3    M4c  90 / 141 (0.638); M4b 19 / 28
+  C3:without the read-out            M4c  96 / 141 (0.681); M4b 21 / 28
+
+== the sides against M4b (E with its 90% genome-bootstrap interval)
+  RIAR: 101 / 141 = 0.716 [0.652, 0.780]; M4b 20 / 28 = 0.714
+  RIAL: 82 / 141 = 0.582 [0.511, 0.652]; M4b 17 / 28 = 0.607
+
+sets.json sides: RIAR 26 edges, RIAL 29 edges

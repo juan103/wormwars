@@ -1,0 +1,2684 @@
+{
+ "panels": [
+  [
+   "N2__7801",
+   19,
+   true
+  ],
+  [
+   "N2__7802",
+   19,
+   true
+  ],
+  [
+   "N2__7803",
+   17,
+   true
+  ],
+  [
+   "N2__7804",
+   26,
+   true
+  ],
+  [
+   "N2__7805",
+   14,
+   true
+  ],
+  [
+   "N2__7806",
+   21,
+   true
+  ],
+  [
+   "N2__7807",
+   12,
+   true
+  ],
+  [
+   "N2__7808",
+   13,
+   true
+  ]
+ ],
+ "invalid_panels": [],
+ "genomes": 141,
+ "sides": {
+  "RIAR": {
+   "E": 0.7163120567375887,
+   "E_interval": [
+    0.6524822695035462,
+    0.7801418439716312
+   ],
+   "erased": 101,
+   "X": {
+    "E": 0.2957446808510638,
+    "D": 0.4205673758865249,
+    "D_interval": [
+     0.33900709219858155,
+     0.5014184397163121
+    ],
+    "set_max": 0.46099290780141844,
+    "sets_reaching_E_side": 0,
+    "per_set": [
+     0.23404255319148937,
+     0.44680851063829785,
+     0.3475177304964539,
+     0.3971631205673759,
+     0.3262411347517731,
+     0.46099290780141844,
+     0.2127659574468085,
+     0.3333333333333333,
+     0.3475177304964539,
+     0.24113475177304963,
+     0.2978723404255319,
+     0.07801418439716312,
+     0.3262411347517731,
+     0.3333333333333333,
+     0.2765957446808511,
+     0.2978723404255319,
+     0.2765957446808511,
+     0.2695035460992908,
+     0.12056737588652482,
+     0.2907801418439716
+    ],
+    "match": {
+     "squared_ratio": [
+      0.9326698184013367,
+      1.016044592857361,
+      1.0681596994400024
+     ],
+     "squared_ratio_per_set": [
+      0.9326698184013367,
+      1.038007378578186,
+      1.0163934230804443,
+      0.9991705417633057,
+      1.0178083181381226,
+      1.008147954940796,
+      1.0654761791229248,
+      1.0681596994400024,
+      1.0345921516418457,
+      1.0216139554977417,
+      1.0399101972579956,
+      1.0243462324142456,
+      1.0645979642868042,
+      1.0079039335250854,
+      1.0151249170303345,
+      1.0485460758209229,
+      0.9607240557670593,
+      0.9940963983535767,
+      0.9472579956054688,
+      1.016344666481018
+     ],
+     "heaviest_edge": [
+      52.0,
+      67.0,
+      70.0,
+      70.0,
+      70.0,
+      67.0,
+      71.0,
+      70.0,
+      70.0,
+      71.0,
+      67.0,
+      71.0,
+      70.0,
+      70.0,
+      67.0,
+      70.0,
+      53.0,
+      56.0,
+      56.0,
+      71.0
+     ],
+     "overlap": 0.0874493927125506,
+     "edges": [
+      26,
+      26,
+      26,
+      26,
+      26,
+      26,
+      26,
+      26,
+      26,
+      26,
+      26,
+      26,
+      26,
+      26,
+      26,
+      26,
+      26,
+      26,
+      26,
+      26
+     ]
+    }
+   },
+   "W": {
+    "E": 0.2542553191489362,
+    "D": 0.4620567375886525,
+    "D_interval": [
+     0.3818971631205674,
+     0.5393794326241135
+    ],
+    "set_max": 0.3049645390070922,
+    "sets_reaching_E_side": 0,
+    "per_set": [
+     0.2198581560283688,
+     0.3049645390070922,
+     0.28368794326241137,
+     0.19858156028368795,
+     0.19148936170212766,
+     0.2695035460992908,
+     0.2624113475177305,
+     0.19148936170212766,
+     0.2765957446808511,
+     0.2978723404255319,
+     0.19148936170212766,
+     0.2907801418439716,
+     0.22695035460992907,
+     0.2624113475177305,
+     0.2624113475177305,
+     0.2765957446808511,
+     0.28368794326241137,
+     0.23404255319148937,
+     0.2695035460992908,
+     0.2907801418439716
+    ],
+    "match": {
+     "squared_ratio": [
+      0.3219652473926544,
+      0.46706918329000474,
+      0.6332455277442932
+     ],
+     "squared_ratio_per_set": [
+      0.3219652473926544,
+      0.4292545020580292,
+      0.40666472911834717,
+      0.408616304397583,
+      0.3344554901123047,
+      0.5683547854423523,
+      0.49897539615631104,
+      0.3694867193698883,
+      0.5837724208831787,
+      0.5221994519233704,
+      0.3757806420326233,
+      0.5242974162101746,
+      0.5032689571380615,
+      0.41769126057624817,
+      0.43281614780426025,
+      0.6332455277442932,
+      0.5383489727973938,
+      0.45838212966918945,
+      0.6157786846160889,
+      0.3980288803577423
+     ],
+     "heaviest_edge": [
+      26.0,
+      56.0,
+      47.0,
+      47.0,
+      26.0,
+      56.0,
+      47.0,
+      41.0,
+      56.0,
+      56.0,
+      41.0,
+      56.0,
+      56.0,
+      56.0,
+      56.0,
+      56.0,
+      56.0,
+      56.0,
+      56.0,
+      47.0
+     ],
+     "overlap": 0.4227522310567529,
+     "edges": [
+      87,
+      88,
+      82,
+      99,
+      84,
+      72,
+      71,
+      98,
+      70,
+      78,
+      83,
+      80,
+      85,
+      92,
+      94,
+      71,
+      76,
+      79,
+      74,
+      92
+     ]
+    }
+   },
+   "C": {
+    "E": 0.2886524822695035,
+    "D": 0.42765957446808517,
+    "D_interval": [
+     0.3475177304964539,
+     0.5067553191489362
+    ],
+    "set_max": 0.3404255319148936,
+    "sets_reaching_E_side": 0,
+    "per_set": [
+     0.24822695035460993,
+     0.24822695035460993,
+     0.3404255319148936,
+     0.3333333333333333,
+     0.3049645390070922,
+     0.24113475177304963,
+     0.2553191489361702,
+     0.2765957446808511,
+     0.2907801418439716,
+     0.3120567375886525,
+     0.3191489361702128,
+     0.2978723404255319,
+     0.2553191489361702,
+     0.3120567375886525,
+     0.2907801418439716,
+     0.2978723404255319,
+     0.2695035460992908,
+     0.2695035460992908,
+     0.2978723404255319,
+     0.3120567375886525
+    ],
+    "match": {
+     "squared_ratio": [
+      0.7522931098937988,
+      0.7626122117042542,
+      0.7787373065948486
+     ],
+     "squared_ratio_per_set": [
+      0.7696135640144348,
+      0.7539519667625427,
+      0.7699550986289978,
+      0.7568793892860413,
+      0.7628805637359619,
+      0.7688329219818115,
+      0.7632220983505249,
+      0.76258784532547,
+      0.7604898810386658,
+      0.7584894895553589,
+      0.7660031318664551,
+      0.7562938928604126,
+      0.7678571343421936,
+      0.7752732038497925,
+      0.7522931098937988,
+      0.7540007829666138,
+      0.7651736736297607,
+      0.7531713247299194,
+      0.7565378546714783,
+      0.7787373065948486
+     ],
+     "heaviest_edge": [
+      56.0,
+      56.0,
+      56.0,
+      56.0,
+      56.0,
+      56.0,
+      56.0,
+      56.0,
+      56.0,
+      56.0,
+      56.0,
+      56.0,
+      56.0,
+      56.0,
+      56.0,
+      56.0,
+      56.0,
+      56.0,
+      56.0,
+      56.0
+     ],
+     "overlap": 0.6293522267206478,
+     "edges": [
+      26,
+      26,
+      26,
+      26,
+      26,
+      26,
+      26,
+      26,
+      26,
+      26,
+      26,
+      26,
+      26,
+      26,
+      26,
+      26,
+      26,
+      26,
+      26,
+      26
+     ]
+    }
+   }
+  },
+  "RIAL": {
+   "E": 0.5815602836879432,
+   "E_interval": [
+    0.5106382978723404,
+    0.6524822695035462
+   ],
+   "erased": 82,
+   "X": {
+    "E": 0.2173758865248227,
+    "D": 0.3641843971631205,
+    "D_interval": [
+     0.2868794326241135,
+     0.4421985815602837
+    ],
+    "set_max": 0.41843971631205673,
+    "sets_reaching_E_side": 0,
+    "per_set": [
+     0.14893617021276595,
+     0.20567375886524822,
+     0.36879432624113473,
+     0.1347517730496454,
+     0.2907801418439716,
+     0.41843971631205673,
+     0.09929078014184398,
+     0.10638297872340426,
+     0.3262411347517731,
+     0.40425531914893614,
+     0.2127659574468085,
+     0.12056737588652482,
+     0.24113475177304963,
+     0.11347517730496454,
+     0.15602836879432624,
+     0.11347517730496454,
+     0.09929078014184398,
+     0.3475177304964539,
+     0.2695035460992908,
+     0.1702127659574468
+    ],
+    "match": {
+     "squared_ratio": [
+      0.9575571417808533,
+      1.00877346098423,
+      1.1131809949874878
+     ],
+     "squared_ratio_per_set": [
+      1.0053774118423462,
+      1.0056334733963013,
+      1.0127393007278442,
+      1.0348889827728271,
+      1.1131809949874878,
+      0.9575571417808533,
+      0.9899494051933289,
+      0.9951347708702087,
+      0.9969272017478943,
+      1.0292555093765259,
+      1.0888547897338867,
+      0.9971832633018494,
+      0.9993598461151123,
+      0.9957109093666077,
+      1.006529688835144,
+      0.9868126511573792,
+      1.020485281944275,
+      0.9858523607254028,
+      0.9697202444076538,
+      0.9843159914016724
+     ],
+     "heaviest_edge": [
+      56.0,
+      51.0,
+      56.0,
+      52.0,
+      56.0,
+      51.0,
+      53.0,
+      53.0,
+      56.0,
+      56.0,
+      56.0,
+      56.0,
+      56.0,
+      56.0,
+      52.0,
+      56.0,
+      53.0,
+      52.0,
+      48.0,
+      48.0
+     ],
+     "overlap": 0.06406533575317605,
+     "edges": [
+      29,
+      29,
+      29,
+      29,
+      29,
+      29,
+      29,
+      29,
+      29,
+      29,
+      29,
+      29,
+      29,
+      29,
+      29,
+      29,
+      29,
+      29,
+      29,
+      29
+     ]
+    }
+   },
+   "W": {
+    "E": 0.24858156028368794,
+    "D": 0.3329787234042553,
+    "D_interval": [
+     0.2599290780141844,
+     0.4078014184397163
+    ],
+    "set_max": 0.3191489361702128,
+    "sets_reaching_E_side": 0,
+    "per_set": [
+     0.2624113475177305,
+     0.24822695035460993,
+     0.2198581560283688,
+     0.2978723404255319,
+     0.2978723404255319,
+     0.2907801418439716,
+     0.3191489361702128,
+     0.1702127659574468,
+     0.2624113475177305,
+     0.1702127659574468,
+     0.2907801418439716,
+     0.23404255319148937,
+     0.2624113475177305,
+     0.22695035460992907,
+     0.24822695035460993,
+     0.2553191489361702,
+     0.24113475177304963,
+     0.24113475177304963,
+     0.2553191489361702,
+     0.1773049645390071
+    ],
+    "match": {
+     "squared_ratio": [
+      0.4118814468383789,
+      0.5305038154125213,
+      0.6876640319824219
+     ],
+     "squared_ratio_per_set": [
+      0.5025926828384399,
+      0.5401703119277954,
+      0.42730939388275146,
+      0.6401638984680176,
+      0.6454132199287415,
+      0.5388899445533752,
+      0.6740285754203796,
+      0.4512515068054199,
+      0.5433070659637451,
+      0.46917611360549927,
+      0.5102106332778931,
+      0.4616221785545349,
+      0.529095470905304,
+      0.4981115162372589,
+      0.6369630694389343,
+      0.4361436665058136,
+      0.5057294964790344,
+      0.4118814468383789,
+      0.6876640319824219,
+      0.5003520846366882
+     ],
+     "heaviest_edge": [
+      56.0,
+      56.0,
+      43.0,
+      56.0,
+      47.0,
+      43.0,
+      56.0,
+      41.0,
+      56.0,
+      43.0,
+      43.0,
+      41.0,
+      43.0,
+      47.0,
+      56.0,
+      41.0,
+      43.0,
+      26.0,
+      56.0,
+      41.0
+     ],
+     "overlap": 0.37883293865287576,
+     "edges": [
+      80,
+      77,
+      92,
+      73,
+      67,
+      67,
+      71,
+      79,
+      74,
+      83,
+      79,
+      76,
+      79,
+      72,
+      70,
+      85,
+      69,
+      80,
+      69,
+      68
+     ]
+    }
+   },
+   "C": {
+    "E": 0.2645390070921986,
+    "D": 0.31702127659574464,
+    "D_interval": [
+     0.23367021276595742,
+     0.39611702127659576
+    ],
+    "set_max": 0.3404255319148936,
+    "sets_reaching_E_side": 0,
+    "per_set": [
+     0.22695035460992907,
+     0.2695035460992908,
+     0.24113475177304963,
+     0.2907801418439716,
+     0.24822695035460993,
+     0.3049645390070922,
+     0.28368794326241137,
+     0.2624113475177305,
+     0.2127659574468085,
+     0.2624113475177305,
+     0.2695035460992908,
+     0.24822695035460993,
+     0.24113475177304963,
+     0.2695035460992908,
+     0.3120567375886525,
+     0.2624113475177305,
+     0.24113475177304963,
+     0.22695035460992907,
+     0.2765957446808511,
+     0.3404255319148936
+    ],
+    "match": {
+     "squared_ratio": [
+      0.8799692988395691,
+      0.9006945818662644,
+      0.9257410168647766
+     ],
+     "squared_ratio_per_set": [
+      0.8815056681632996,
+      0.8907880187034607,
+      0.9170347452163696,
+      0.8891236186027527,
+      0.8806734681129456,
+      0.9017988443374634,
+      0.895589292049408,
+      0.8799692988395691,
+      0.9067281484603882,
+      0.9032712578773499,
+      0.9044235348701477,
+      0.8967415690422058,
+      0.920491635799408,
+      0.9160745143890381,
+      0.8906599879264832,
+      0.9257410168647766,
+      0.8968695998191833,
+      0.9006465673446655,
+      0.904615581035614,
+      0.9111452698707581
+     ],
+     "heaviest_edge": [
+      56.0,
+      56.0,
+      56.0,
+      56.0,
+      56.0,
+      56.0,
+      56.0,
+      56.0,
+      56.0,
+      56.0,
+      56.0,
+      56.0,
+      56.0,
+      56.0,
+      56.0,
+      56.0,
+      56.0,
+      56.0,
+      56.0,
+      56.0
+     ],
+     "overlap": 0.3878402903811252,
+     "edges": [
+      29,
+      29,
+      29,
+      29,
+      29,
+      29,
+      29,
+      29,
+      29,
+      29,
+      29,
+      29,
+      29,
+      29,
+      29,
+      29,
+      29,
+      29,
+      29,
+      29
+     ]
+    }
+   }
+  }
+ },
+ "arms": {
+  "intact": {
+   "erased": 0,
+   "outcomes": {
+    "both kept": 141,
+    "erased": 0,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 0
+   },
+   "edges": null,
+   "weight": null
+  },
+  "RIAR": {
+   "erased": 101,
+   "outcomes": {
+    "both kept": 25,
+    "erased": 101,
+    "swapped": 1,
+    "other root": 1,
+    "not reached": 13
+   },
+   "edges": 26,
+   "weight": 560.0
+  },
+  "RIAL": {
+   "erased": 82,
+   "outcomes": {
+    "both kept": 48,
+    "erased": 82,
+    "swapped": 1,
+    "other root": 2,
+    "not reached": 8
+   },
+   "edges": 29,
+   "weight": 503.0
+  },
+  "RIAR:X0": {
+   "erased": 33,
+   "outcomes": {
+    "both kept": 93,
+    "erased": 33,
+    "swapped": 0,
+    "other root": 1,
+    "not reached": 14
+   },
+   "edges": 26,
+   "weight": 550.0
+  },
+  "RIAR:X1": {
+   "erased": 63,
+   "outcomes": {
+    "both kept": 61,
+    "erased": 63,
+    "swapped": 0,
+    "other root": 1,
+    "not reached": 16
+   },
+   "edges": 26,
+   "weight": 561.0
+  },
+  "RIAR:X2": {
+   "erased": 49,
+   "outcomes": {
+    "both kept": 79,
+    "erased": 49,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 13
+   },
+   "edges": 26,
+   "weight": 554.0
+  },
+  "RIAR:X3": {
+   "erased": 56,
+   "outcomes": {
+    "both kept": 71,
+    "erased": 56,
+    "swapped": 0,
+    "other root": 1,
+    "not reached": 13
+   },
+   "edges": 26,
+   "weight": 553.0
+  },
+  "RIAR:X4": {
+   "erased": 46,
+   "outcomes": {
+    "both kept": 82,
+    "erased": 46,
+    "swapped": 0,
+    "other root": 1,
+    "not reached": 12
+   },
+   "edges": 26,
+   "weight": 557.0
+  },
+  "RIAR:X5": {
+   "erased": 65,
+   "outcomes": {
+    "both kept": 56,
+    "erased": 65,
+    "swapped": 0,
+    "other root": 1,
+    "not reached": 19
+   },
+   "edges": 26,
+   "weight": 551.0
+  },
+  "RIAR:X6": {
+   "erased": 30,
+   "outcomes": {
+    "both kept": 96,
+    "erased": 30,
+    "swapped": 0,
+    "other root": 1,
+    "not reached": 14
+   },
+   "edges": 26,
+   "weight": 556.0
+  },
+  "RIAR:X7": {
+   "erased": 47,
+   "outcomes": {
+    "both kept": 81,
+    "erased": 47,
+    "swapped": 0,
+    "other root": 1,
+    "not reached": 12
+   },
+   "edges": 26,
+   "weight": 569.0
+  },
+  "RIAR:X8": {
+   "erased": 49,
+   "outcomes": {
+    "both kept": 78,
+    "erased": 49,
+    "swapped": 0,
+    "other root": 2,
+    "not reached": 12
+   },
+   "edges": 26,
+   "weight": 555.0
+  },
+  "RIAR:X9": {
+   "erased": 34,
+   "outcomes": {
+    "both kept": 95,
+    "erased": 34,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 12
+   },
+   "edges": 26,
+   "weight": 551.0
+  },
+  "RIAR:X10": {
+   "erased": 42,
+   "outcomes": {
+    "both kept": 78,
+    "erased": 42,
+    "swapped": 0,
+    "other root": 2,
+    "not reached": 19
+   },
+   "edges": 26,
+   "weight": 554.0
+  },
+  "RIAR:X11": {
+   "erased": 11,
+   "outcomes": {
+    "both kept": 117,
+    "erased": 11,
+    "swapped": 0,
+    "other root": 1,
+    "not reached": 12
+   },
+   "edges": 26,
+   "weight": 551.0
+  },
+  "RIAR:X12": {
+   "erased": 46,
+   "outcomes": {
+    "both kept": 81,
+    "erased": 46,
+    "swapped": 0,
+    "other root": 1,
+    "not reached": 13
+   },
+   "edges": 26,
+   "weight": 564.0
+  },
+  "RIAR:X13": {
+   "erased": 47,
+   "outcomes": {
+    "both kept": 76,
+    "erased": 47,
+    "swapped": 0,
+    "other root": 1,
+    "not reached": 17
+   },
+   "edges": 26,
+   "weight": 552.0
+  },
+  "RIAR:X14": {
+   "erased": 39,
+   "outcomes": {
+    "both kept": 84,
+    "erased": 39,
+    "swapped": 0,
+    "other root": 2,
+    "not reached": 16
+   },
+   "edges": 26,
+   "weight": 566.0
+  },
+  "RIAR:X15": {
+   "erased": 42,
+   "outcomes": {
+    "both kept": 85,
+    "erased": 42,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 14
+   },
+   "edges": 26,
+   "weight": 559.0
+  },
+  "RIAR:X16": {
+   "erased": 39,
+   "outcomes": {
+    "both kept": 81,
+    "erased": 39,
+    "swapped": 1,
+    "other root": 2,
+    "not reached": 18
+   },
+   "edges": 26,
+   "weight": 549.0
+  },
+  "RIAR:X17": {
+   "erased": 38,
+   "outcomes": {
+    "both kept": 87,
+    "erased": 38,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 16
+   },
+   "edges": 26,
+   "weight": 569.0
+  },
+  "RIAR:X18": {
+   "erased": 17,
+   "outcomes": {
+    "both kept": 111,
+    "erased": 17,
+    "swapped": 0,
+    "other root": 1,
+    "not reached": 12
+   },
+   "edges": 26,
+   "weight": 549.0
+  },
+  "RIAR:X19": {
+   "erased": 41,
+   "outcomes": {
+    "both kept": 84,
+    "erased": 41,
+    "swapped": 0,
+    "other root": 1,
+    "not reached": 15
+   },
+   "edges": 26,
+   "weight": 555.0
+  },
+  "RIAR:W0": {
+   "erased": 31,
+   "outcomes": {
+    "both kept": 96,
+    "erased": 31,
+    "swapped": 0,
+    "other root": 2,
+    "not reached": 12
+   },
+   "edges": 87,
+   "weight": 551.0
+  },
+  "RIAR:W1": {
+   "erased": 43,
+   "outcomes": {
+    "both kept": 86,
+    "erased": 43,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 12
+   },
+   "edges": 88,
+   "weight": 560.0
+  },
+  "RIAR:W2": {
+   "erased": 40,
+   "outcomes": {
+    "both kept": 89,
+    "erased": 40,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 12
+   },
+   "edges": 82,
+   "weight": 551.0
+  },
+  "RIAR:W3": {
+   "erased": 28,
+   "outcomes": {
+    "both kept": 103,
+    "erased": 28,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 10
+   },
+   "edges": 99,
+   "weight": 567.0
+  },
+  "RIAR:W4": {
+   "erased": 27,
+   "outcomes": {
+    "both kept": 102,
+    "erased": 27,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 12
+   },
+   "edges": 84,
+   "weight": 549.0
+  },
+  "RIAR:W5": {
+   "erased": 38,
+   "outcomes": {
+    "both kept": 87,
+    "erased": 38,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 16
+   },
+   "edges": 72,
+   "weight": 555.0
+  },
+  "RIAR:W6": {
+   "erased": 37,
+   "outcomes": {
+    "both kept": 92,
+    "erased": 37,
+    "swapped": 0,
+    "other root": 1,
+    "not reached": 11
+   },
+   "edges": 71,
+   "weight": 549.0
+  },
+  "RIAR:W7": {
+   "erased": 27,
+   "outcomes": {
+    "both kept": 100,
+    "erased": 27,
+    "swapped": 0,
+    "other root": 1,
+    "not reached": 13
+   },
+   "edges": 98,
+   "weight": 549.0
+  },
+  "RIAR:W8": {
+   "erased": 39,
+   "outcomes": {
+    "both kept": 87,
+    "erased": 39,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 15
+   },
+   "edges": 70,
+   "weight": 557.0
+  },
+  "RIAR:W9": {
+   "erased": 42,
+   "outcomes": {
+    "both kept": 84,
+    "erased": 42,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 15
+   },
+   "edges": 78,
+   "weight": 549.0
+  },
+  "RIAR:W10": {
+   "erased": 27,
+   "outcomes": {
+    "both kept": 102,
+    "erased": 27,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 12
+   },
+   "edges": 83,
+   "weight": 550.0
+  },
+  "RIAR:W11": {
+   "erased": 41,
+   "outcomes": {
+    "both kept": 86,
+    "erased": 41,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 14
+   },
+   "edges": 80,
+   "weight": 552.0
+  },
+  "RIAR:W12": {
+   "erased": 32,
+   "outcomes": {
+    "both kept": 94,
+    "erased": 32,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 15
+   },
+   "edges": 85,
+   "weight": 557.0
+  },
+  "RIAR:W13": {
+   "erased": 37,
+   "outcomes": {
+    "both kept": 91,
+    "erased": 37,
+    "swapped": 0,
+    "other root": 2,
+    "not reached": 11
+   },
+   "edges": 92,
+   "weight": 551.0
+  },
+  "RIAR:W14": {
+   "erased": 37,
+   "outcomes": {
+    "both kept": 93,
+    "erased": 37,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 11
+   },
+   "edges": 94,
+   "weight": 555.0
+  },
+  "RIAR:W15": {
+   "erased": 39,
+   "outcomes": {
+    "both kept": 88,
+    "erased": 39,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 14
+   },
+   "edges": 71,
+   "weight": 549.0
+  },
+  "RIAR:W16": {
+   "erased": 40,
+   "outcomes": {
+    "both kept": 88,
+    "erased": 40,
+    "swapped": 0,
+    "other root": 1,
+    "not reached": 12
+   },
+   "edges": 76,
+   "weight": 554.0
+  },
+  "RIAR:W17": {
+   "erased": 33,
+   "outcomes": {
+    "both kept": 92,
+    "erased": 33,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 16
+   },
+   "edges": 79,
+   "weight": 557.0
+  },
+  "RIAR:W18": {
+   "erased": 38,
+   "outcomes": {
+    "both kept": 90,
+    "erased": 38,
+    "swapped": 0,
+    "other root": 2,
+    "not reached": 11
+   },
+   "edges": 74,
+   "weight": 549.0
+  },
+  "RIAR:W19": {
+   "erased": 41,
+   "outcomes": {
+    "both kept": 85,
+    "erased": 41,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 15
+   },
+   "edges": 92,
+   "weight": 554.0
+  },
+  "RIAR:C0": {
+   "erased": 35,
+   "outcomes": {
+    "both kept": 93,
+    "erased": 35,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 13
+   },
+   "edges": 26,
+   "weight": 554.0
+  },
+  "RIAR:C1": {
+   "erased": 35,
+   "outcomes": {
+    "both kept": 90,
+    "erased": 35,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 16
+   },
+   "edges": 26,
+   "weight": 549.0
+  },
+  "RIAR:C2": {
+   "erased": 48,
+   "outcomes": {
+    "both kept": 79,
+    "erased": 48,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 14
+   },
+   "edges": 26,
+   "weight": 553.0
+  },
+  "RIAR:C3": {
+   "erased": 47,
+   "outcomes": {
+    "both kept": 81,
+    "erased": 47,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 13
+   },
+   "edges": 26,
+   "weight": 549.0
+  },
+  "RIAR:C4": {
+   "erased": 43,
+   "outcomes": {
+    "both kept": 85,
+    "erased": 43,
+    "swapped": 1,
+    "other root": 1,
+    "not reached": 11
+   },
+   "edges": 26,
+   "weight": 554.0
+  },
+  "RIAR:C5": {
+   "erased": 34,
+   "outcomes": {
+    "both kept": 96,
+    "erased": 34,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 11
+   },
+   "edges": 26,
+   "weight": 556.0
+  },
+  "RIAR:C6": {
+   "erased": 36,
+   "outcomes": {
+    "both kept": 89,
+    "erased": 36,
+    "swapped": 0,
+    "other root": 1,
+    "not reached": 15
+   },
+   "edges": 26,
+   "weight": 553.0
+  },
+  "RIAR:C7": {
+   "erased": 39,
+   "outcomes": {
+    "both kept": 89,
+    "erased": 39,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 13
+   },
+   "edges": 26,
+   "weight": 552.0
+  },
+  "RIAR:C8": {
+   "erased": 41,
+   "outcomes": {
+    "both kept": 83,
+    "erased": 41,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 17
+   },
+   "edges": 26,
+   "weight": 549.0
+  },
+  "RIAR:C9": {
+   "erased": 44,
+   "outcomes": {
+    "both kept": 83,
+    "erased": 44,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 14
+   },
+   "edges": 26,
+   "weight": 552.0
+  },
+  "RIAR:C10": {
+   "erased": 45,
+   "outcomes": {
+    "both kept": 83,
+    "erased": 45,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 13
+   },
+   "edges": 26,
+   "weight": 550.0
+  },
+  "RIAR:C11": {
+   "erased": 42,
+   "outcomes": {
+    "both kept": 85,
+    "erased": 42,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 14
+   },
+   "edges": 26,
+   "weight": 549.0
+  },
+  "RIAR:C12": {
+   "erased": 36,
+   "outcomes": {
+    "both kept": 91,
+    "erased": 36,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 14
+   },
+   "edges": 26,
+   "weight": 552.0
+  },
+  "RIAR:C13": {
+   "erased": 44,
+   "outcomes": {
+    "both kept": 85,
+    "erased": 44,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 12
+   },
+   "edges": 26,
+   "weight": 554.0
+  },
+  "RIAR:C14": {
+   "erased": 41,
+   "outcomes": {
+    "both kept": 87,
+    "erased": 41,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 13
+   },
+   "edges": 26,
+   "weight": 549.0
+  },
+  "RIAR:C15": {
+   "erased": 42,
+   "outcomes": {
+    "both kept": 85,
+    "erased": 42,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 14
+   },
+   "edges": 26,
+   "weight": 550.0
+  },
+  "RIAR:C16": {
+   "erased": 38,
+   "outcomes": {
+    "both kept": 91,
+    "erased": 38,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 12
+   },
+   "edges": 26,
+   "weight": 551.0
+  },
+  "RIAR:C17": {
+   "erased": 38,
+   "outcomes": {
+    "both kept": 90,
+    "erased": 38,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 13
+   },
+   "edges": 26,
+   "weight": 549.0
+  },
+  "RIAR:C18": {
+   "erased": 42,
+   "outcomes": {
+    "both kept": 83,
+    "erased": 42,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 16
+   },
+   "edges": 26,
+   "weight": 550.0
+  },
+  "RIAR:C19": {
+   "erased": 44,
+   "outcomes": {
+    "both kept": 82,
+    "erased": 44,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 15
+   },
+   "edges": 26,
+   "weight": 563.0
+  },
+  "RIAR:heaviest core": {
+   "erased": 47,
+   "outcomes": {
+    "both kept": 82,
+    "erased": 47,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 12
+   },
+   "edges": 26,
+   "weight": 597.0
+  },
+  "RIAR:star AVAR": {
+   "erased": 4,
+   "outcomes": {
+    "both kept": 132,
+    "erased": 4,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 5
+   },
+   "edges": 26,
+   "weight": 535.0
+  },
+  "RIAL:X0": {
+   "erased": 21,
+   "outcomes": {
+    "both kept": 109,
+    "erased": 21,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 11
+   },
+   "edges": 29,
+   "weight": 501.0
+  },
+  "RIAL:X1": {
+   "erased": 29,
+   "outcomes": {
+    "both kept": 97,
+    "erased": 29,
+    "swapped": 0,
+    "other root": 1,
+    "not reached": 14
+   },
+   "edges": 29,
+   "weight": 497.0
+  },
+  "RIAL:X2": {
+   "erased": 52,
+   "outcomes": {
+    "both kept": 75,
+    "erased": 52,
+    "swapped": 0,
+    "other root": 1,
+    "not reached": 13
+   },
+   "edges": 29,
+   "weight": 500.0
+  },
+  "RIAL:X3": {
+   "erased": 19,
+   "outcomes": {
+    "both kept": 107,
+    "erased": 19,
+    "swapped": 0,
+    "other root": 1,
+    "not reached": 14
+   },
+   "edges": 29,
+   "weight": 502.0
+  },
+  "RIAL:X4": {
+   "erased": 41,
+   "outcomes": {
+    "both kept": 83,
+    "erased": 41,
+    "swapped": 0,
+    "other root": 1,
+    "not reached": 16
+   },
+   "edges": 29,
+   "weight": 513.0
+  },
+  "RIAL:X5": {
+   "erased": 59,
+   "outcomes": {
+    "both kept": 69,
+    "erased": 59,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 13
+   },
+   "edges": 29,
+   "weight": 494.0
+  },
+  "RIAL:X6": {
+   "erased": 14,
+   "outcomes": {
+    "both kept": 110,
+    "erased": 14,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 17
+   },
+   "edges": 29,
+   "weight": 498.0
+  },
+  "RIAL:X7": {
+   "erased": 15,
+   "outcomes": {
+    "both kept": 112,
+    "erased": 15,
+    "swapped": 0,
+    "other root": 1,
+    "not reached": 13
+   },
+   "edges": 29,
+   "weight": 495.0
+  },
+  "RIAL:X8": {
+   "erased": 46,
+   "outcomes": {
+    "both kept": 77,
+    "erased": 46,
+    "swapped": 0,
+    "other root": 1,
+    "not reached": 17
+   },
+   "edges": 29,
+   "weight": 495.0
+  },
+  "RIAL:X9": {
+   "erased": 57,
+   "outcomes": {
+    "both kept": 72,
+    "erased": 57,
+    "swapped": 0,
+    "other root": 1,
+    "not reached": 11
+   },
+   "edges": 29,
+   "weight": 500.0
+  },
+  "RIAL:X10": {
+   "erased": 30,
+   "outcomes": {
+    "both kept": 95,
+    "erased": 30,
+    "swapped": 0,
+    "other root": 1,
+    "not reached": 15
+   },
+   "edges": 29,
+   "weight": 511.0
+  },
+  "RIAL:X11": {
+   "erased": 17,
+   "outcomes": {
+    "both kept": 110,
+    "erased": 17,
+    "swapped": 0,
+    "other root": 1,
+    "not reached": 13
+   },
+   "edges": 29,
+   "weight": 493.0
+  },
+  "RIAL:X12": {
+   "erased": 34,
+   "outcomes": {
+    "both kept": 92,
+    "erased": 34,
+    "swapped": 0,
+    "other root": 1,
+    "not reached": 14
+   },
+   "edges": 29,
+   "weight": 503.0
+  },
+  "RIAL:X13": {
+   "erased": 16,
+   "outcomes": {
+    "both kept": 112,
+    "erased": 16,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 13
+   },
+   "edges": 29,
+   "weight": 496.0
+  },
+  "RIAL:X14": {
+   "erased": 22,
+   "outcomes": {
+    "both kept": 106,
+    "erased": 22,
+    "swapped": 0,
+    "other root": 1,
+    "not reached": 12
+   },
+   "edges": 29,
+   "weight": 499.0
+  },
+  "RIAL:X15": {
+   "erased": 16,
+   "outcomes": {
+    "both kept": 117,
+    "erased": 16,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 8
+   },
+   "edges": 29,
+   "weight": 497.0
+  },
+  "RIAL:X16": {
+   "erased": 14,
+   "outcomes": {
+    "both kept": 119,
+    "erased": 14,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 8
+   },
+   "edges": 29,
+   "weight": 505.0
+  },
+  "RIAL:X17": {
+   "erased": 49,
+   "outcomes": {
+    "both kept": 74,
+    "erased": 49,
+    "swapped": 0,
+    "other root": 1,
+    "not reached": 17
+   },
+   "edges": 29,
+   "weight": 496.0
+  },
+  "RIAL:X18": {
+   "erased": 38,
+   "outcomes": {
+    "both kept": 87,
+    "erased": 38,
+    "swapped": 0,
+    "other root": 1,
+    "not reached": 15
+   },
+   "edges": 29,
+   "weight": 496.0
+  },
+  "RIAL:X19": {
+   "erased": 24,
+   "outcomes": {
+    "both kept": 103,
+    "erased": 24,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 14
+   },
+   "edges": 29,
+   "weight": 498.0
+  },
+  "RIAL:W0": {
+   "erased": 37,
+   "outcomes": {
+    "both kept": 90,
+    "erased": 37,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 14
+   },
+   "edges": 80,
+   "weight": 493.0
+  },
+  "RIAL:W1": {
+   "erased": 35,
+   "outcomes": {
+    "both kept": 95,
+    "erased": 35,
+    "swapped": 0,
+    "other root": 1,
+    "not reached": 10
+   },
+   "edges": 77,
+   "weight": 498.0
+  },
+  "RIAL:W2": {
+   "erased": 31,
+   "outcomes": {
+    "both kept": 94,
+    "erased": 31,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 16
+   },
+   "edges": 92,
+   "weight": 497.0
+  },
+  "RIAL:W3": {
+   "erased": 42,
+   "outcomes": {
+    "both kept": 85,
+    "erased": 42,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 14
+   },
+   "edges": 73,
+   "weight": 500.0
+  },
+  "RIAL:W4": {
+   "erased": 42,
+   "outcomes": {
+    "both kept": 86,
+    "erased": 42,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 13
+   },
+   "edges": 67,
+   "weight": 506.0
+  },
+  "RIAL:W5": {
+   "erased": 41,
+   "outcomes": {
+    "both kept": 82,
+    "erased": 41,
+    "swapped": 0,
+    "other root": 2,
+    "not reached": 16
+   },
+   "edges": 67,
+   "weight": 506.0
+  },
+  "RIAL:W6": {
+   "erased": 45,
+   "outcomes": {
+    "both kept": 82,
+    "erased": 45,
+    "swapped": 0,
+    "other root": 1,
+    "not reached": 13
+   },
+   "edges": 71,
+   "weight": 501.0
+  },
+  "RIAL:W7": {
+   "erased": 24,
+   "outcomes": {
+    "both kept": 103,
+    "erased": 24,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 14
+   },
+   "edges": 79,
+   "weight": 493.0
+  },
+  "RIAL:W8": {
+   "erased": 37,
+   "outcomes": {
+    "both kept": 89,
+    "erased": 37,
+    "swapped": 0,
+    "other root": 1,
+    "not reached": 14
+   },
+   "edges": 74,
+   "weight": 495.0
+  },
+  "RIAL:W9": {
+   "erased": 24,
+   "outcomes": {
+    "both kept": 103,
+    "erased": 24,
+    "swapped": 0,
+    "other root": 1,
+    "not reached": 13
+   },
+   "edges": 83,
+   "weight": 511.0
+  },
+  "RIAL:W10": {
+   "erased": 41,
+   "outcomes": {
+    "both kept": 87,
+    "erased": 41,
+    "swapped": 0,
+    "other root": 1,
+    "not reached": 12
+   },
+   "edges": 79,
+   "weight": 498.0
+  },
+  "RIAL:W11": {
+   "erased": 33,
+   "outcomes": {
+    "both kept": 99,
+    "erased": 33,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 9
+   },
+   "edges": 76,
+   "weight": 503.0
+  },
+  "RIAL:W12": {
+   "erased": 37,
+   "outcomes": {
+    "both kept": 93,
+    "erased": 37,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 11
+   },
+   "edges": 79,
+   "weight": 497.0
+  },
+  "RIAL:W13": {
+   "erased": 32,
+   "outcomes": {
+    "both kept": 95,
+    "erased": 32,
+    "swapped": 0,
+    "other root": 1,
+    "not reached": 13
+   },
+   "edges": 72,
+   "weight": 493.0
+  },
+  "RIAL:W14": {
+   "erased": 35,
+   "outcomes": {
+    "both kept": 91,
+    "erased": 35,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 15
+   },
+   "edges": 70,
+   "weight": 506.0
+  },
+  "RIAL:W15": {
+   "erased": 36,
+   "outcomes": {
+    "both kept": 94,
+    "erased": 36,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 11
+   },
+   "edges": 85,
+   "weight": 493.0
+  },
+  "RIAL:W16": {
+   "erased": 34,
+   "outcomes": {
+    "both kept": 94,
+    "erased": 34,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 13
+   },
+   "edges": 69,
+   "weight": 504.0
+  },
+  "RIAL:W17": {
+   "erased": 34,
+   "outcomes": {
+    "both kept": 95,
+    "erased": 34,
+    "swapped": 0,
+    "other root": 1,
+    "not reached": 11
+   },
+   "edges": 80,
+   "weight": 494.0
+  },
+  "RIAL:W18": {
+   "erased": 36,
+   "outcomes": {
+    "both kept": 89,
+    "erased": 36,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 16
+   },
+   "edges": 69,
+   "weight": 504.0
+  },
+  "RIAL:W19": {
+   "erased": 25,
+   "outcomes": {
+    "both kept": 105,
+    "erased": 25,
+    "swapped": 0,
+    "other root": 1,
+    "not reached": 10
+   },
+   "edges": 68,
+   "weight": 494.0
+  },
+  "RIAL:C0": {
+   "erased": 32,
+   "outcomes": {
+    "both kept": 93,
+    "erased": 32,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 16
+   },
+   "edges": 29,
+   "weight": 506.0
+  },
+  "RIAL:C1": {
+   "erased": 38,
+   "outcomes": {
+    "both kept": 91,
+    "erased": 38,
+    "swapped": 0,
+    "other root": 1,
+    "not reached": 11
+   },
+   "edges": 29,
+   "weight": 497.0
+  },
+  "RIAL:C2": {
+   "erased": 34,
+   "outcomes": {
+    "both kept": 91,
+    "erased": 34,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 16
+   },
+   "edges": 29,
+   "weight": 505.0
+  },
+  "RIAL:C3": {
+   "erased": 41,
+   "outcomes": {
+    "both kept": 87,
+    "erased": 41,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 13
+   },
+   "edges": 29,
+   "weight": 493.0
+  },
+  "RIAL:C4": {
+   "erased": 35,
+   "outcomes": {
+    "both kept": 92,
+    "erased": 35,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 14
+   },
+   "edges": 29,
+   "weight": 493.0
+  },
+  "RIAL:C5": {
+   "erased": 43,
+   "outcomes": {
+    "both kept": 82,
+    "erased": 43,
+    "swapped": 1,
+    "other root": 0,
+    "not reached": 15
+   },
+   "edges": 29,
+   "weight": 493.0
+  },
+  "RIAL:C6": {
+   "erased": 40,
+   "outcomes": {
+    "both kept": 85,
+    "erased": 40,
+    "swapped": 0,
+    "other root": 1,
+    "not reached": 15
+   },
+   "edges": 29,
+   "weight": 494.0
+  },
+  "RIAL:C7": {
+   "erased": 37,
+   "outcomes": {
+    "both kept": 92,
+    "erased": 37,
+    "swapped": 0,
+    "other root": 1,
+    "not reached": 11
+   },
+   "edges": 29,
+   "weight": 494.0
+  },
+  "RIAL:C8": {
+   "erased": 30,
+   "outcomes": {
+    "both kept": 99,
+    "erased": 30,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 12
+   },
+   "edges": 29,
+   "weight": 500.0
+  },
+  "RIAL:C9": {
+   "erased": 37,
+   "outcomes": {
+    "both kept": 87,
+    "erased": 37,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 17
+   },
+   "edges": 29,
+   "weight": 500.0
+  },
+  "RIAL:C10": {
+   "erased": 38,
+   "outcomes": {
+    "both kept": 91,
+    "erased": 38,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 12
+   },
+   "edges": 29,
+   "weight": 504.0
+  },
+  "RIAL:C11": {
+   "erased": 35,
+   "outcomes": {
+    "both kept": 95,
+    "erased": 35,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 11
+   },
+   "edges": 29,
+   "weight": 494.0
+  },
+  "RIAL:C12": {
+   "erased": 34,
+   "outcomes": {
+    "both kept": 92,
+    "erased": 34,
+    "swapped": 0,
+    "other root": 1,
+    "not reached": 14
+   },
+   "edges": 29,
+   "weight": 503.0
+  },
+  "RIAL:C13": {
+   "erased": 38,
+   "outcomes": {
+    "both kept": 86,
+    "erased": 38,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 17
+   },
+   "edges": 29,
+   "weight": 512.0
+  },
+  "RIAL:C14": {
+   "erased": 44,
+   "outcomes": {
+    "both kept": 84,
+    "erased": 44,
+    "swapped": 0,
+    "other root": 1,
+    "not reached": 12
+   },
+   "edges": 29,
+   "weight": 493.0
+  },
+  "RIAL:C15": {
+   "erased": 37,
+   "outcomes": {
+    "both kept": 90,
+    "erased": 37,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 14
+   },
+   "edges": 29,
+   "weight": 501.0
+  },
+  "RIAL:C16": {
+   "erased": 34,
+   "outcomes": {
+    "both kept": 89,
+    "erased": 34,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 18
+   },
+   "edges": 29,
+   "weight": 500.0
+  },
+  "RIAL:C17": {
+   "erased": 32,
+   "outcomes": {
+    "both kept": 93,
+    "erased": 32,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 16
+   },
+   "edges": 29,
+   "weight": 493.0
+  },
+  "RIAL:C18": {
+   "erased": 39,
+   "outcomes": {
+    "both kept": 87,
+    "erased": 39,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 15
+   },
+   "edges": 29,
+   "weight": 493.0
+  },
+  "RIAL:C19": {
+   "erased": 48,
+   "outcomes": {
+    "both kept": 81,
+    "erased": 48,
+    "swapped": 0,
+    "other root": 1,
+    "not reached": 11
+   },
+   "edges": 29,
+   "weight": 497.0
+  },
+  "RIAL:heaviest core": {
+   "erased": 48,
+   "outcomes": {
+    "both kept": 80,
+    "erased": 48,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 13
+   },
+   "edges": 29,
+   "weight": 640.0
+  },
+  "RIAL:star AVAL": {
+   "erased": 3,
+   "outcomes": {
+    "both kept": 132,
+    "erased": 3,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 6
+   },
+   "edges": 29,
+   "weight": 479.0
+  },
+  "RIAL:star AVAR": {
+   "erased": 2,
+   "outcomes": {
+    "both kept": 135,
+    "erased": 2,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 4
+   },
+   "edges": 29,
+   "weight": 487.0
+  },
+  "RIAR outside C3": {
+   "erased": 49,
+   "outcomes": {
+    "both kept": 74,
+    "erased": 49,
+    "swapped": 0,
+    "other root": 2,
+    "not reached": 16
+   },
+   "edges": 33,
+   "weight": 298.0
+  },
+  "RIAL outside C3": {
+   "erased": 36,
+   "outcomes": {
+    "both kept": 90,
+    "erased": 36,
+    "swapped": 0,
+    "other root": 1,
+    "not reached": 14
+   },
+   "edges": 34,
+   "weight": 331.0
+  },
+  "RIA both": {
+   "erased": 111,
+   "outcomes": {
+    "both kept": 13,
+    "erased": 111,
+    "swapped": 0,
+    "other root": 1,
+    "not reached": 16
+   },
+   "edges": 53,
+   "weight": 1002.0
+  },
+  "C3": {
+   "erased": 116,
+   "outcomes": {
+    "both kept": 8,
+    "erased": 116,
+    "swapped": 1,
+    "other root": 1,
+    "not reached": 15
+   },
+   "edges": 260,
+   "weight": 2347.0
+  },
+  "C3:read-out among themselves": {
+   "erased": 24,
+   "outcomes": {
+    "both kept": 110,
+    "erased": 24,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 7
+   },
+   "edges": 19,
+   "weight": 212.0
+  },
+  "C3:read-out with the rest of C3": {
+   "erased": 90,
+   "outcomes": {
+    "both kept": 36,
+    "erased": 90,
+    "swapped": 0,
+    "other root": 1,
+    "not reached": 14
+   },
+   "edges": 105,
+   "weight": 1112.0
+  },
+  "C3:without the read-out": {
+   "erased": 96,
+   "outcomes": {
+    "both kept": 30,
+    "erased": 96,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 15
+   },
+   "edges": 136,
+   "weight": 1023.0
+  },
+  "C3:RIAL": {
+   "erased": 82,
+   "outcomes": {
+    "both kept": 48,
+    "erased": 82,
+    "swapped": 1,
+    "other root": 2,
+    "not reached": 8
+   },
+   "edges": 29,
+   "weight": 503.0
+  },
+  "C3:SMDDR": {
+   "erased": 7,
+   "outcomes": {
+    "both kept": 121,
+    "erased": 7,
+    "swapped": 0,
+    "other root": 1,
+    "not reached": 12
+   },
+   "edges": 25,
+   "weight": 188.0
+  },
+  "C3:RIAR": {
+   "erased": 101,
+   "outcomes": {
+    "both kept": 25,
+    "erased": 101,
+    "swapped": 1,
+    "other root": 1,
+    "not reached": 13
+   },
+   "edges": 26,
+   "weight": 560.0
+  },
+  "C3:RIML": {
+   "erased": 23,
+   "outcomes": {
+    "both kept": 108,
+    "erased": 23,
+    "swapped": 0,
+    "other root": 2,
+    "not reached": 8
+   },
+   "edges": 24,
+   "weight": 208.0
+  },
+  "C3:SMDDL": {
+   "erased": 33,
+   "outcomes": {
+    "both kept": 97,
+    "erased": 33,
+    "swapped": 1,
+    "other root": 0,
+    "not reached": 10
+   },
+   "edges": 25,
+   "weight": 206.0
+  },
+  "C3:SMDVL": {
+   "erased": 69,
+   "outcomes": {
+    "both kept": 56,
+    "erased": 69,
+    "swapped": 0,
+    "other root": 2,
+    "not reached": 14
+   },
+   "edges": 19,
+   "weight": 184.0
+  },
+  "C3:RMDL": {
+   "erased": 36,
+   "outcomes": {
+    "both kept": 89,
+    "erased": 36,
+    "swapped": 0,
+    "other root": 1,
+    "not reached": 15
+   },
+   "edges": 21,
+   "weight": 168.0
+  },
+  "C3:RMDR": {
+   "erased": 51,
+   "outcomes": {
+    "both kept": 76,
+    "erased": 51,
+    "swapped": 0,
+    "other root": 2,
+    "not reached": 12
+   },
+   "edges": 24,
+   "weight": 201.0
+  },
+  "C3:RICR": {
+   "erased": 9,
+   "outcomes": {
+    "both kept": 118,
+    "erased": 9,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 14
+   },
+   "edges": 21,
+   "weight": 112.0
+  },
+  "C3:RIMR": {
+   "erased": 21,
+   "outcomes": {
+    "both kept": 108,
+    "erased": 21,
+    "swapped": 0,
+    "other root": 1,
+    "not reached": 11
+   },
+   "edges": 22,
+   "weight": 189.0
+  },
+  "C3:RMDDL": {
+   "erased": 3,
+   "outcomes": {
+    "both kept": 132,
+    "erased": 3,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 6
+   },
+   "edges": 15,
+   "weight": 188.0
+  },
+  "C3:SMDVR": {
+   "erased": 44,
+   "outcomes": {
+    "both kept": 84,
+    "erased": 44,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 13
+   },
+   "edges": 21,
+   "weight": 163.0
+  },
+  "C3:RIS": {
+   "erased": 12,
+   "outcomes": {
+    "both kept": 120,
+    "erased": 12,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 9
+   },
+   "edges": 26,
+   "weight": 129.0
+  },
+  "C3:RMDVR": {
+   "erased": 3,
+   "outcomes": {
+    "both kept": 129,
+    "erased": 3,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 9
+   },
+   "edges": 14,
+   "weight": 189.0
+  },
+  "C3:CEPDL": {
+   "erased": 3,
+   "outcomes": {
+    "both kept": 131,
+    "erased": 3,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 7
+   },
+   "edges": 16,
+   "weight": 63.0
+  },
+  "C3:OLLR": {
+   "erased": 11,
+   "outcomes": {
+    "both kept": 120,
+    "erased": 11,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 10
+   },
+   "edges": 18,
+   "weight": 143.0
+  },
+  "C3:AIBR": {
+   "erased": 21,
+   "outcomes": {
+    "both kept": 108,
+    "erased": 21,
+    "swapped": 1,
+    "other root": 0,
+    "not reached": 11
+   },
+   "edges": 14,
+   "weight": 127.0
+  },
+  "C3:RMGL": {
+   "erased": 5,
+   "outcomes": {
+    "both kept": 131,
+    "erased": 5,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 5
+   },
+   "edges": 13,
+   "weight": 51.0
+  },
+  "C3:CEPVL": {
+   "erased": 4,
+   "outcomes": {
+    "both kept": 131,
+    "erased": 4,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 6
+   },
+   "edges": 15,
+   "weight": 87.0
+  },
+  "C3:RIBR": {
+   "erased": 12,
+   "outcomes": {
+    "both kept": 118,
+    "erased": 12,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 11
+   },
+   "edges": 16,
+   "weight": 85.0
+  },
+  "C3:RMDVL": {
+   "erased": 5,
+   "outcomes": {
+    "both kept": 123,
+    "erased": 5,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 13
+   },
+   "edges": 12,
+   "weight": 217.0
+  },
+  "C3:RICL": {
+   "erased": 4,
+   "outcomes": {
+    "both kept": 130,
+    "erased": 4,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 7
+   },
+   "edges": 15,
+   "weight": 96.0
+  },
+  "C3:AIBL": {
+   "erased": 19,
+   "outcomes": {
+    "both kept": 110,
+    "erased": 19,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 12
+   },
+   "edges": 10,
+   "weight": 115.0
+  },
+  "C3:CEPDR": {
+   "erased": 3,
+   "outcomes": {
+    "both kept": 130,
+    "erased": 3,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 8
+   },
+   "edges": 13,
+   "weight": 69.0
+  },
+  "C3:RIBL": {
+   "erased": 12,
+   "outcomes": {
+    "both kept": 122,
+    "erased": 12,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 7
+   },
+   "edges": 14,
+   "weight": 69.0
+  },
+  "C3:RMDDR": {
+   "erased": 1,
+   "outcomes": {
+    "both kept": 132,
+    "erased": 1,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 8
+   },
+   "edges": 12,
+   "weight": 201.0
+  },
+  "C3:SMBDR": {
+   "erased": 1,
+   "outcomes": {
+    "both kept": 138,
+    "erased": 1,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 2
+   },
+   "edges": 8,
+   "weight": 26.0
+  },
+  "C3:CEPVR": {
+   "erased": 2,
+   "outcomes": {
+    "both kept": 129,
+    "erased": 2,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 10
+   },
+   "edges": 12,
+   "weight": 70.0
+  },
+  "C3:RMHL": {
+   "erased": 0,
+   "outcomes": {
+    "both kept": 137,
+    "erased": 0,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 4
+   },
+   "edges": 10,
+   "weight": 28.0
+  },
+  "C3:SAAVR": {
+   "erased": 5,
+   "outcomes": {
+    "both kept": 126,
+    "erased": 5,
+    "swapped": 0,
+    "other root": 0,
+    "not reached": 10
+   },
+   "edges": 10,
+   "weight": 59.0
+  }
+ },
+ "reading": "RIA's core edges erase the switch more often than every weight-matched control family",
+ "dissection_weight_spearman": 0.5587293927207134
+}

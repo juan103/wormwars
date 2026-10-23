@@ -1,0 +1,35 @@
+{
+ "experiment": "memory-M4c",
+ "script": "m4c.py",
+ "default_category": "probe",
+ "status": "completed",
+ "error": null,
+ "started_utc": "2026-10-23T15:55:11+00:00",
+ "ended_utc": "2026-10-23T18:46:53+00:00",
+ "pid": 36264,
+ "git_commit": "f2c025c730d479c8c93832961c7dbe5269040831",
+ "code_dirty": true,
+ "git_commit_at_end": "69fb86a1d8565fe95aa6854224ffb95ed411a6ba",
+ "cuda_devices": [
+  "NVIDIA GeForce RTX 5080"
+ ],
+ "time_unit": "synchronised wall-clock seconds per category (not GPU kernel time)",
+ "neural_update_unit": "strains x batch x substeps network updates (network size not included)",
+ "uncategorised": false,
+ "categories": {
+  "probe": {
+   "worlds_built": 0,
+   "world_ticks": 0,
+   "neural_updates": 1323390752,
+   "neural_padding": 0,
+   "seconds": 10302.019866999995
+  }
+ },
+ "totals": {
+  "worlds_built": 0,
+  "world_ticks": 0,
+  "neural_updates": 1323390752,
+  "neural_padding": 0,
+  "seconds_timed": 10302.019866999995
+ }
+}

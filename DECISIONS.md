@@ -11556,3 +11556,36 @@ any arm runs. CPU only.
 
 **Next:** the census finishes (about 2.5 hours, running), then the sets and the arms (about 2.4 hours); results,
 review, D362. Tests: 21 pass; sabotages 24 of 24 fail as they must.
+
+## D362 — M4c's results: RIA's core edges erase the switch more often than every weight-matched control family (positive); a place of vulnerability, not storage (2026-10-23)
+
+M4c (D361) ran on the CPU (census 2.9 h, sets and arms 2.9 h). Results:
+[`docs/memory/M4C-RESULTS.md`](docs/memory/M4C-RESULTS.md). Exploratory, by the plan's fixed rules.
+
+- **The genomes:** 8 valid fresh N2 panels, 141 separate-states genomes (the extra panels not needed). Every check
+  passed; 141 of 141 intact arms kept both roots; the side arms equal their dissection arms.
+- **The reading is positive.** RIAR's 26 C3-internal edges erase 0.716 of the switches, RIAL's 29 erase 0.582; the
+  weight-matched families erase 0.22 to 0.30 (X exterior, W core with more edges, C core same count). D = +0.32 to
+  +0.46, all six lower bounds 0.23 to 0.38, above the margin 0.10. No single control set of 60 per side reaches either
+  side.
+- **Described, after the data:** M4b's dissection repeats on the fresh genomes (0.716 and 0.582 against 0.714 and
+  0.607; neuron order Spearman +0.86). The heaviest same-count core sets (nested, heavier than RIA's) erase 47 and 48;
+  edge-matched subsets of AVA's edges erase 2 to 4; RIA's non-core edges erase 49 and 36. SMDVL, RMDR and SMDVR erase
+  many with less weight.
+- **Disclosed:** the census ran an unarchived working-tree `m4c.py` (D361 committed during it); M2's census code and the
+  library were unchanged; the attempt records are committed.
+- **What it does not show:** that RIA stores the switch; one graph, one 30-tick cut of chemical edges only.
+
+**The review** (`docs/reviews/20261023-m4c-results/`).
+- **Fable** caught: the incomplete provenance note (the executed script not archived; the attempt records local only);
+  the AVA arms called whole stars; the nested heaviest sets; CEPDL's 16 edges, the outside weights and W's most
+  concentrated sets' erasures; "outside the core" for edges with RIA at one end; then, in round 2, the AVA pool size not traceable to a
+  committed file (now printed by `m4c_tables.py`), AVAR alone for RIAR, and the plan's times quoted for the run's.
+- **Astra** caught: the AVA arms as 26 or 29 of 106 edges; RIA's gap junctions and RIAR's autapse left by the cut;
+  the provenance record and the limit of `census_record`; "concentration does not account" as too strong; the
+  unmatched outside comparison; "histories" for genome–set pairs; CEPDL; the after-data label on the M4b correlation;
+  the chain-mixing caveat; then, in round 2, the revised files to commit complete. Both "fix then publish" in round 1,
+  "agree" in round 2.
+
+**Next:** the owner is informed. Proposed, for a decision: M5 (an RIA-based transplant), or first a cheaper comparison
+of core neurons' stars against each other at matched weight and count.
