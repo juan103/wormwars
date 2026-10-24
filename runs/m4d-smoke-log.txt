@@ -1,0 +1,16 @@
+host 0: SH-2019000 (0 skipped), block 103 edges
+host 0: R {'accepted': 5200, 'attempted': 14402}, Rr {'accepted': 5200, 'attempted': 51603}; reciprocal {'T': 75, 'D': 36, 'R': 39, 'Rr': 75, 'P': 75}
+SH-2019000 I: 0 separate states, 0 unresolved, 210.4 s
+SH-2019000 D: 2 separate states, 1 unresolved, 248.6 s
+SH-2019000 R: 3 separate states, 0 unresolved, 265.2 s
+SH-2019000 Rr: 3 separate states, 5 unresolved, 455.2 s
+SH-2019000 P: 2 separate states, 1 unresolved, 272.0 s
+SH-2019000 T: 0 separate states, 0 unresolved, 267.1 s
+SH-2019000 T+G: 1 separate states, 0 unresolved, 265.9 s
+C:\Users\gonza\AppData\Local\Programs\Python\Python313\Lib\site-packages\numpy\_core\_methods.py:219: RuntimeWarning: Degrees of freedom <= 0 for slice
+  ret = _var(a, axis=axis, dtype=dtype, out=out, ddof=ddof,
+C:\Users\gonza\AppData\Local\Programs\Python\Python313\Lib\site-packages\numpy\_core\_methods.py:211: RuntimeWarning: invalid value encountered in scalar divide
+  ret = ret.dtype.type(ret / rcount)
+reading: No transplant effect of m or more
+D_TI +0.0000 [0.0, 0.0]; D_TR -0.0117 [-0.01171875, -0.01171875]
+rc=0

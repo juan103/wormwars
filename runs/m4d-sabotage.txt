@@ -1,0 +1,27 @@
+the arm genome redrawn on the arm's graph: fails, as it must
+the signs drawn fresh at the host's block edges: fails, as it must
+the eligibility floor restored: fails, as it must
+R without the degree constraint: fails, as it must
+the block checks not applied: fails, as it must
+the outside of the block not checked: fails, as it must
+the sham check not applied: fails, as it must
+the reading without the margin: fails, as it must
+genomes resampled within hosts: fails, as it must
+the unresolved bounds ignored: fails, as it must
+records not validated: fails, as it must
+the arm's content hash not checked: fails, as it must
+freshness not checked: fails, as it must
+content hashed another way: fails, as it must
+the host list not checked: fails, as it must
+the envelope from the two extreme assignments only: fails, as it must
+the single-host guard removed: fails, as it must
+the simulation's widened interval not widened: fails, as it must
+the companion copying the whole genome: fails, as it must
+the reader without verify_run: fails, as it must
+the reader's panels not validated: fails, as it must
+C:\Users\gonza\AppData\Local\Programs\Python\Python313\Lib\site-packages\numpy\_core\_methods.py:219: RuntimeWarning: Degrees of freedom <= 0 for slice
+  ret = _var(a, axis=axis, dtype=dtype, out=out, ddof=ddof,
+C:\Users\gonza\AppData\Local\Programs\Python\Python313\Lib\site-packages\numpy\_core\_methods.py:211: RuntimeWarning: invalid value encountered in scalar divide
+  ret = ret.dtype.type(ret / rcount)
+one host read: fails, as it must
+the pairing ignored: fails, as it must

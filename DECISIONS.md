@@ -11589,3 +11589,47 @@ M4c (D361) ran on the CPU (census 2.9 h, sets and arms 2.9 h). Results:
 
 **Next:** the owner is informed. Proposed, for a decision: M5 (an RIA-based transplant), or first a cheaper comparison
 of core neurons' stars against each other at matched weight and count.
+
+## D363 — M4d, does N2's head core carry the switch into other graphs?: the transplant screen, chosen by consensus, planned, coded and reviewed before its arms run (2026-10-24)
+
+After M4c (D362), the owner said "As you prefer, but confirm with fable and astra". Claude first preferred the cheaper
+comparison of core neurons' stars, then changed to the roadmap's transplant screen, and put that to both reviewers as
+a claim to attack ([`docs/reviews/20261024-m4-next/`](docs/reviews/20261024-m4-next/)). **Both recommended the screen**
+(Fable: M5 cannot be pre-registered without host base rates; Astra: stage it, keep the star comparison optional). A
+consensus decision under the delegation; the owner is informed.
+
+Plan: [`docs/memory/M4D-PLAN.md`](docs/memory/M4D-PLAN.md) (draft 5). Exploratory, fixed before any arm runs; CPU only.
+
+- **Hosts:** ten fresh graphs from 03's samplers, two per ensemble (03mc's seed bases + 1000), checked against every
+  committed graph name and content; hosts are the unit of replication.
+- **Arms:** C3's 30×30 chemical block replaced by N2's (T), or by controls with its 260 edges, weight multiset and
+  8 autapses: random positions (D), rewired at fixed in- and out-degrees (R, the primary control, M5's "internally
+  rewired copy"), the same with its 75 reciprocal pairs kept (Rr), N2's edges with weights shuffled (P); T with N2's
+  gap junctions (T+G); the intact host (I).
+- **Genomes:** one 1024-genome panel per host on the intact host; every arm's genome built from it (outside
+  parameters kept, block signs from the intact genome where the host has the edge); a sham reproduces
+  `Genome.random` bit for bit.
+- **Outcome:** the share of all drawn genomes classified separate states, with no eligibility floor.
+- **Reading:** D_TI and D_TR with host-bootstrap intervals hulled with Student-t (the coverage simulation, run before
+  any arm, found the bootstrap at 0.84 to 0.86), margin 0.004; positive needs both lower bounds above it; exclusions
+  are worded "as a mean across these ten hosts", guarded against a single responding host (0.01), and the reading is
+  checked against a conservative envelope over the unresolved genomes.
+- **The circuitry companion** (descriptive): M4c's 141 switch genomes' block parameters with fresh exteriors.
+
+**The review** (`docs/reviews/20261024-m4d-plan/`; four rounds).
+- **Both** caught: the sham could not be exact with fresh signs; the nested bootstrap counted genome noise twice;
+  the read-out-silent split depends on amplitude; the reader skipped the integrity checks; the cap reset on restart.
+- **Fable** caught: reciprocity uncontrolled (Rr added); the R strengths claim half true; the companion needing no
+  local arrays; the float32 divisor; then the 0.02 guard that could never change a reading (lowered to 0.01, with a
+  scenario that exercises it); the missing coverage test; a freshness test with no true positive; the raised-base
+  false-fire rate; wording.
+- **Astra** caught: the ladder described as single additions; the "dense block" reading overreaching (renamed); the
+  unresolved bounds needing worst cases; the write share as a squared norm; the runtime cap; then that the extreme
+  assignments do not bound the Student-t hull (the corner envelope, with her counterexample as a test); the sparse
+  case where coverage fails (0.62 to 0.66) and the wording that must say so in the output; the pairing's covariance;
+  the smoke printing a one-host reading; reader entry-point tests; then the guard paragraph's wording and 11 genomes.
+
+**Checks:** 19 tests pass; 23 of 23 sabotages fail as they must; the smoke (one host, 256 genomes) passed every
+check, and the reader on it checks everything and reads nothing.
+
+**Next:** push, CI, then the run (about 22 CPU hours, capped at 30); results, review, D364.
