@@ -1,0 +1,11 @@
+**Verdict: fix then publish.** The substantive scientific qualifications from round 1 are restored correctly. Remaining findings, ranked:
+
+1. **Medium — The new definitions need absolute values and distinct populations.** [Terms](/D:/Claude/random/wormWars/docs/memory/SYNTHESIS.md:48) defines sums of “differences,” which permits signed cancellation. Define \(a=|\delta y(0)|\) and share as \(\sum|\delta y(30)|/\sum|\delta y(0)|\). Distinguish the registered **all-genome** share from M1/M2’s **eligible-genome** share; the main decomposition now makes that distinction correctly.
+
+2. **Medium — The provenance summary still overstates.** [The opening](/D:/Claude/random/wormWars/docs/memory/SYNTHESIS.md:15) again says every plan was reviewed before its runs, without the M4c exception. Restore that qualification. Also replace [“which took no result number from it”](/D:/Claude/random/wormWars/docs/memory/SYNTHESIS.md:66): M4A-PLAN explicitly reports smoke numbers, uses them to change controls, and forecasts “unresolved.” Say the smoke used different genomes and informed the design; the reported run results came afterward.
+
+3. **Lower — Arm D’s autapses were not randomly positioned.** [The design paragraph](/D:/Claude/random/wormWars/docs/memory/SYNTHESIS.md:173) implies they were. `m4d.py` randomises off-diagonal positions and copies N2’s diagonal unchanged. Write “260 off-diagonal edges at random positions, plus N2’s eight autapses at their original neurons.”
+
+4. **Minor completeness/label fixes.** Fable’s requested credit for Astra’s independent reproduction of M2’s numbers remains absent (D354). Also, the summary’s “unrounded sum” label should say “summed before rounding”: the total is **56.351422… hours**, displayed as **56.35**.
+
+I independently checked the compute totals, arm genome counts, and revised overlap counts. The pilot guard and missing-verdict test address the reported defect by inspection. I could not rerun pytest: `py` reports **“No installed Python found!”** No files modified.

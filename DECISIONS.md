@@ -11706,3 +11706,31 @@ edges (Fable, Astra), and Fable for the owner's phrase to be quoted on record an
 
 **The merge** follows D342/D348's pattern, with no history rewritten: `main` fast-forwards to `roadmap`, one commit
 on `main` removes the working-branch banner, and `roadmap` fast-forwards to `main` and puts the banner back.
+
+## D366 — The memory thread's write-up: M1 to M4 in one page, its numbers from a checked summary (2026-10-25)
+
+**The owner's first item after D365.** `docs/memory/SYNTHESIS.md` puts M1 to M4d on one page for a reader of `main`:
+the question and the routine, what each step found at its fixed reading, what holds and what is open, the limits,
+the corrections, lessons, what comes next and who did what. It reports no new run and changes no reading.
+- **Numbers:** `scripts/memory_summary.py` writes `docs/memory/summary.json` from the committed records of M1 to M4d
+  (compute, readings and headline numbers; it stops on a failed attempt or a pilot check without its verdict).
+  `tests/test_memory_summary.py` checks that the committed summary is what the records give, with a sabotage (a
+  changed record changes it) and the two stops (4 tests). Everything else is quoted from the step's results file.
+- **Compute:** the thread's runs took 56.35 recorded CPU hours (2.79 × 10¹⁰ neural updates), no GPU.
+- The README's memory row now links to the synthesis; ROADMAP's 25 October entry notes it.
+
+**The review** (`docs/reviews/20261025-memory-synthesis/`, two rounds, both "fix then publish" twice; every finding
+taken; the second round's one-line slips without a further round, as Fable advised).
+- **Both** caught: switches' retention stated per genome (it is a class aggregate; genomes range 0.27 to 1.69); the
+  "count before claiming" example misreporting its own correction (the draft's "most" was 33% and 34% of the
+  separation, not the 54% and 58% share of C3's loss); an untraceable line about a missed review answer (dropped);
+  the two head cores (batch 7's `top30_start`, C3) run together; the review routine described as uniform (M4a's
+  smoke, M4c's census on an unarchived working tree); attribution gaps on both reviewers' sides.
+- **Fable** caught: degrees put among the robust contrasts (R − D holds on counted genomes only); "adds anything"
+  for an advantage of 0.004; D's edges called "the same edges"; the owner credited with every choice of direction;
+  RIA's single-neuron confound and the other strong cuts missing; arm letters undefined; "one shared per pair"
+  untraceable for P and R; then that D357's "not demonstrated" was Astra's, not both.
+- **Astra** caught: the decomposition labelled with the all-genome share (it is the eligible share: 0.43451 =
+  0.58615 − 0.15164); M4d's exclusion without its ten-host restriction; "never settle" for a finite horizon; the
+  fading-retention question left out of what is open; the read-out named as every result's endpoint (M4a read the
+  full state); absolute values in the definitions; D's autapses, which stay at N2's neurons.

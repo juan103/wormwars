@@ -33,7 +33,8 @@ arms ran after agreement (D361). None is a pre-registration.
 - **M4d** (D363-D364), "Unresolved (the unresolved genomes decide it)": N2's C3 block raises the share of
   separate-states genomes in all ten fresh host graphs (pooled over 10,240 genomes per arm: from 0.04% to 0.62%), but copies rewired at the same degrees
   reach 0.51%, so whether its exact wiring matters is unresolved.
-- **Next (the owner, 2026-10-25), in this order:** a write-up of M1 to M4; a planned study of what a dense block
+- **Next (the owner, 2026-10-25), in this order:** a write-up of M1 to M4 (*done the same day:*
+  [`docs/memory/SYNTHESIS.md`](docs/memory/SYNTHESIS.md), D366); a planned study of what a dense block
   carries (in the owner's words, "its size, weights and degrees"; D364 named density and degrees); then an M5 test of N2's exact wiring, after working out how many hosts it
   would need. All on the CPU unless the owner gives the GPU.
 
