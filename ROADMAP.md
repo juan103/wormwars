@@ -2,7 +2,40 @@
 
 *27 September 2026. Replaces v2. Written from roadmap v2, Astra 6's review of v2, and Claude Code's status report of the same day. A local v2.2 exists on the `roadmap` branch and was not seen when this version was written, so merge anything it adds. (Merged: see "Carried over from v2.2" below. Four factual corrections were made on installation; they are listed in D062.) This is a living document, not a pre-registration. When a result changes it, the change is recorded here with the reason.*
 
-## Status, 1-20 October 2026 (updates the section below; that section's later edits are recorded in DECISIONS.md)
+## Status, 1-25 October 2026 (updates the section below; that section's later edits are recorded in DECISIONS.md)
+
+**25 October 2026** (D349-D365): **the memory thread's M1 to M4 have run** (exploratory, on the CPU; results in
+[`docs/memory/`](docs/memory/), each stage annotated in [`MEMORY-ROADMAP.md`](docs/memory/MEMORY-ROADMAP.md)). Every
+stage's plan was reviewed by Astra and Fable and its results reviewed after; each plan was agreed before its runs,
+with one disclosed exception: M4c's classification census started during its plan's first review round, and only its
+arms ran after agreement (D361). None is a pre-registration.
+- **M1** (D349-D352) corrects the memory roadmap's first finding: N2's unweighted mean per-genome retention is extreme
+  too (0.586, against ensemble medians of 0.370 to 0.412; none of 640 graphs reaches it), and the amplitude weighting
+  lowers N2's share. Read-out alignment does not carry the lead (persistence does), and in a targeted replication
+  amplitude does not account for most of it (f = 1.01 and 1.03 at matched amplitude, a fraction of the lead within
+  the matched strata).
+- **M2** (D353-D356): a validated classifier finds a small minority of genomes holding the history in two stable
+  states, "separate states" (15 and 13 of N2's eligible genomes on its two panels). At tick 30 they carry 0.47 and
+  0.35 of N2's mean lead over 30 reference graphs ("inconclusive": the intervals are wide); fading genomes carry 0.44 and 0.64, through more retention as a class
+  (an amplitude-weighted aggregate, not a statement about most fading genomes). At tick 300 separate states carry
+  most of it.
+- **M3** (D357) closed as a completed screen; the head core C3, defined from the anatomy alone, went to M4.
+- **M4a** (D357-D358), "unresolved": cutting C3's internal edges for 30 ticks costs more than every one of 30 sampled
+  cuts of equal size on both of N2's panels, but one panel's interval reaches the margin. Started from their two roots,
+  26 of N2's 28 separate-states genomes end in one basin after C3's cut (14% under the sampled cuts).
+- **M4b** (D359-D360), "unresolved": in N2, cutting the edges where a switch's states differ erases 89% of the
+  switches, against 31% and 11% for controls; across ten selected graphs it is not demonstrated (two respond like N2). RIA's core edges alone
+  erase most of N2's switches.
+- **M4c** (D361-D362), positive: on 141 fresh N2 switch genomes, cutting RIAR's or RIAL's core edges for 30 ticks
+  (each side separately) erases the history distinction in 72% and 58% of them, against 22% to 30% for three families
+  of weight-matched edge sets ("erased": both histories end in one basin after the network is restored; both states
+  still exist). A place of vulnerability, not shown to be storage.
+- **M4d** (D363-D364), "Unresolved (the unresolved genomes decide it)": N2's C3 block raises the share of
+  separate-states genomes in all ten fresh host graphs (pooled over 10,240 genomes per arm: from 0.04% to 0.62%), but copies rewired at the same degrees
+  reach 0.51%, so whether its exact wiring matters is unresolved.
+- **Next (the owner, 2026-10-25), in this order:** a write-up of M1 to M4; a planned study of what a dense block
+  carries (in the owner's words, "its size, weights and degrees"; D364 named density and degrees); then an M5 test of N2's exact wiring, after working out how many hosts it
+  would need. All on the CPU unless the owner gives the GPU.
 
 **20 October 2026** (D346): **a roadmap for the memory question** ([`docs/memory/MEMORY-ROADMAP.md`](docs/memory/MEMORY-ROADMAP.md)).
 - **The question:** why the history difference decays more slowly in N2's random brains (03mc's Q-D).
@@ -11,7 +44,10 @@
   Fable as the other voices. Exploratory CPU checks ran between the rounds. The roadmap was reviewed twice by both and
   agreed. Everything is archived in `docs/reviews/20261020-memory-*`.
 - **What it found, exploratory:**
-  - N2's lead is in the amplitude-weighted share, not in the typical genome;
+  - N2's lead is in the amplitude-weighted share, not in the typical genome; *corrected 2026-10-25 (D365, from M1,
+    D350): the "amplitude-weighted share" half is misleading. N2's unweighted mean per-genome retention is extreme too,
+    and the weighting lowers its share. "Not in the typical genome" still holds for the median genome, while the upper
+    quartile of retention is extreme and the largest contributors carry much of the lead;*
   - a minority of brains in N2 and in the nulls may hold the history in separate states, and N2 has more of them
     than most null graphs;
   - a head core around the turn read-out (RIA, RIM, AIB, AIZ, RMD, SMD and others) preserves most of the lead in an
@@ -19,7 +55,8 @@
 - **The plan:** accounting, amplitude and cheap kills (M1); a validated dynamical census (M2); a core defined from
   the anatomy alone (M3); write, hold and read, separated, with a transplant screen (M4). All exploratory, on the CPU.
   Then the owner's transplant, pre-registered (M5).
-- **Next:** M1, when the owner wants it. It needs no GPU.
+- **Next:** M1, when the owner wants it. It needs no GPU. *Done: M1 to M4 ran from 20 to 25 October; see 25 October,
+  above.*
 
 
 **19 October 2026** (D321-D342): **03h stopped before its pre-registration; exploratory**
@@ -383,7 +420,9 @@ Several results point the same way:
 
 *20 October 2026 (D346): why N2's history lasts longer in unevolved brains now has its own exploratory roadmap,
 [`docs/memory/MEMORY-ROADMAP.md`](docs/memory/MEMORY-ROADMAP.md). Its first checks point at a head circuit around the
-turn read-out, which bears on the third prediction.*
+turn read-out, which bears on the third prediction.* *25 October 2026 (D365): M1 to M4 have run (status, above). In
+N2, RIA's head-core edges are a place where the history held in two stable states is vulnerable; whether N2's exact
+head-core wiring carries it into other graphs is unresolved.*
 
 ## Two tracks, one priority
 

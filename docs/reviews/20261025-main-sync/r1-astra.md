@@ -1,0 +1,9 @@
+**fix first**
+
+1. **README:41; ROADMAP:9 — the blanket pre-run review claim is false.** M4c’s census started during review round 1; its intervention arms ran afterward ([M4C-RESULTS.md:36](D:/Claude/random/wormWars/docs/memory/M4C-RESULTS.md:36), D361–D362). Replace “each … reviewed … before it ran” with a general statement that plans and results received both reviews, explicitly preserving this exception.
+
+2. **README:41; ROADMAP:14 — the amplitude conclusion is too absolute.** “Neither … response amplitude explains the lead” and “survives whole” exceed the planned reading: amplitude “does not account for most” of the tick-30 lead. Moreover, *f* measures the within-strata lead over a changed mixture, not preservation of the original intact lead ([M1-RESULTS.md:262](D:/Claude/random/wormWars/docs/memory/M1-RESULTS.md:262)). Use that narrower reading. If retaining “whole,” qualify it as a descriptive point estimate of the **within-strata** lead.
+
+3. **README:41 — clarify “erases … switches.”** The percentages concern RIAR and RIAL cut **separately**, and erasure means both histories end in one basin after restoring the network; bistability remains ([M4A-RESULTS.md:106](D:/Claude/random/wormWars/docs/memory/M4A-RESULTS.md:106)). Suggested wording: “Cutting either RIA neuron’s head-core edges erases the history distinction in 58%–72% of tested switch genomes.” Include the roadmap’s qualification that this establishes vulnerability, not storage.
+
+The reported numbers, M2–M4d outcome labels, and 18-commit count check out. The mean-versus-median correction is accurate and fair. Rule 4 is respected: earlier claims remain visible with dated corrections or quotations, recorded in D365.

@@ -11676,3 +11676,33 @@ screen as unresolved; do not resolve the 86 unresolved T and R genomes now (a re
 reading or "Unresolved", would be chosen knowing the lean, and most are unsettled histories); do not draft M4e. The
 thread's direction is the owner's: the M1 to M4 write-up (Astra's priority), a planned study of what a dense block
 carries (density and degrees; Fable), or an M5 test of N2's wiring after a power calculation for effects above m.
+
+## D365 — The memory thread's M1 to M4 go to `main`; ROADMAP's status and the README catch up; the owner orders what follows (2026-10-25)
+
+**The owner** asked whether `main` was up to date (it was 18 commits behind `roadmap`: D349-D364 and the banner) and
+said to bring it up to date, then to do all three next steps in this order. Their words, which repeat the list Claude
+had put to them: "alright, do that, then this: The M1–M4 write-up. This is Astra’s priority. * A study of what a
+dense block carries, its size, weights and degrees. Fable and the data lean this way. * An M5 test of N2’s exact
+wiring, after first working out how many hosts it would need to detect a given effect."
+
+**What changed before the merge:** `ROADMAP.md`'s status section still said "Next: M1", and the README had no entry
+for the memory thread.
+- `ROADMAP.md`: a dated 25 October status entry summarising M1 to M4d and the owner's order; the 20 October entry's
+  "N2's lead is in the amplitude-weighted share, not in the typical genome" annotated with M1's correction (D350),
+  and its "Next: M1" annotated as done; a dated note under "The thread worth following".
+- `README.md`: a row for the memory thread in "Experiments at a glance"; the biology bullet of "Next on the roadmap"
+  updated, the earlier sentence kept as an "Earlier" quote; the `roadmap` banner names M1 to M4.
+- Every number is taken from the results files and the memory roadmap's annotations.
+
+**The review** (`docs/reviews/20261025-main-sync/`, two rounds): both "fix first", wording only; every number checked
+out. Both caught the blanket "reviewed before it ran" (M4c's census started during its plan's first round, D361) and
+an amplitude claim beyond D1's reading ("does not account for most", f a within-strata fraction). Fable caught the
+correction's annotation tagging the whole line and "only the median genome is ordinary" (the top 5% trim puts N2 in
+range), M4a and M4b missing from the README row, the pooled percentages read as per host, and the dense-block gloss
+(now quoted from the owner's message, above); Astra, that the RIA percentages are per side and that "erased"
+leaves both states in place. All taken. In round 2 both asked for "cutting ... neurons" in the README row to say
+edges (Fable, Astra), and Fable for the owner's phrase to be quoted on record and the "Earlier" date to be 19 October
+(git blame: 0cf9aec, D341). Taken; no third round, since these are the reviewers' own wordings.
+
+**The merge** follows D342/D348's pattern, with no history rewritten: `main` fast-forwards to `roadmap`, one commit
+on `main` removes the working-branch banner, and `roadmap` fast-forwards to `main` and puts the banner back.
