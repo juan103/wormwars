@@ -25,3 +25,4 @@ C:\Users\gonza\AppData\Local\Programs\Python\Python313\Lib\site-packages\numpy\_
   ret = ret.dtype.type(ret / rcount)
 one host read: fails, as it must
 the pairing ignored: fails, as it must
+the tables' digest check removed: fails, as it must

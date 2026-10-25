@@ -1,0 +1,856 @@
+{
+ "source": "blocks.json (local: it holds N2's C3 weights)",
+ "sha256": "9e435cb673dbf12186f736d9e879b59df48cb02d7b4613550df0693e7e37d7c1",
+ "blocks": [
+  {
+   "host": 0,
+   "chains": {
+    "R": {
+     "accepted": 5200,
+     "attempted": 14402
+    },
+    "Rr": {
+     "accepted": 5200,
+     "attempted": 51603
+    }
+   },
+   "arms": {
+    "T": {
+     "edges": 260,
+     "weight": 2347.0,
+     "autapses": 8,
+     "reciprocal": 75,
+     "in_degree_range": [
+      4,
+      16
+     ],
+     "out_degree_range": [
+      1,
+      17
+     ]
+    },
+    "D": {
+     "edges": 260,
+     "weight": 2347.0,
+     "autapses": 8,
+     "reciprocal": 36,
+     "in_degree_range": [
+      4,
+      14
+     ],
+     "out_degree_range": [
+      3,
+      16
+     ]
+    },
+    "R": {
+     "edges": 260,
+     "weight": 2347.0,
+     "autapses": 8,
+     "reciprocal": 39,
+     "in_degree_range": [
+      4,
+      16
+     ],
+     "out_degree_range": [
+      1,
+      17
+     ]
+    },
+    "Rr": {
+     "edges": 260,
+     "weight": 2347.0,
+     "autapses": 8,
+     "reciprocal": 75,
+     "in_degree_range": [
+      4,
+      16
+     ],
+     "out_degree_range": [
+      1,
+      17
+     ]
+    },
+    "P": {
+     "edges": 260,
+     "weight": 2347.0,
+     "autapses": 8,
+     "reciprocal": 75,
+     "in_degree_range": [
+      4,
+      16
+     ],
+     "out_degree_range": [
+      1,
+      17
+     ]
+    }
+   }
+  },
+  {
+   "host": 1,
+   "chains": {
+    "R": {
+     "accepted": 5200,
+     "attempted": 14423
+    },
+    "Rr": {
+     "accepted": 5200,
+     "attempted": 51953
+    }
+   },
+   "arms": {
+    "T": {
+     "edges": 260,
+     "weight": 2347.0,
+     "autapses": 8,
+     "reciprocal": 75,
+     "in_degree_range": [
+      4,
+      16
+     ],
+     "out_degree_range": [
+      1,
+      17
+     ]
+    },
+    "D": {
+     "edges": 260,
+     "weight": 2347.0,
+     "autapses": 8,
+     "reciprocal": 37,
+     "in_degree_range": [
+      4,
+      14
+     ],
+     "out_degree_range": [
+      5,
+      14
+     ]
+    },
+    "R": {
+     "edges": 260,
+     "weight": 2347.0,
+     "autapses": 8,
+     "reciprocal": 44,
+     "in_degree_range": [
+      4,
+      16
+     ],
+     "out_degree_range": [
+      1,
+      17
+     ]
+    },
+    "Rr": {
+     "edges": 260,
+     "weight": 2347.0,
+     "autapses": 8,
+     "reciprocal": 75,
+     "in_degree_range": [
+      4,
+      16
+     ],
+     "out_degree_range": [
+      1,
+      17
+     ]
+    },
+    "P": {
+     "edges": 260,
+     "weight": 2347.0,
+     "autapses": 8,
+     "reciprocal": 75,
+     "in_degree_range": [
+      4,
+      16
+     ],
+     "out_degree_range": [
+      1,
+      17
+     ]
+    }
+   }
+  },
+  {
+   "host": 2,
+   "chains": {
+    "R": {
+     "accepted": 5200,
+     "attempted": 14644
+    },
+    "Rr": {
+     "accepted": 5200,
+     "attempted": 52102
+    }
+   },
+   "arms": {
+    "T": {
+     "edges": 260,
+     "weight": 2347.0,
+     "autapses": 8,
+     "reciprocal": 75,
+     "in_degree_range": [
+      4,
+      16
+     ],
+     "out_degree_range": [
+      1,
+      17
+     ]
+    },
+    "D": {
+     "edges": 260,
+     "weight": 2347.0,
+     "autapses": 8,
+     "reciprocal": 36,
+     "in_degree_range": [
+      5,
+      14
+     ],
+     "out_degree_range": [
+      5,
+      13
+     ]
+    },
+    "R": {
+     "edges": 260,
+     "weight": 2347.0,
+     "autapses": 8,
+     "reciprocal": 46,
+     "in_degree_range": [
+      4,
+      16
+     ],
+     "out_degree_range": [
+      1,
+      17
+     ]
+    },
+    "Rr": {
+     "edges": 260,
+     "weight": 2347.0,
+     "autapses": 8,
+     "reciprocal": 75,
+     "in_degree_range": [
+      4,
+      16
+     ],
+     "out_degree_range": [
+      1,
+      17
+     ]
+    },
+    "P": {
+     "edges": 260,
+     "weight": 2347.0,
+     "autapses": 8,
+     "reciprocal": 75,
+     "in_degree_range": [
+      4,
+      16
+     ],
+     "out_degree_range": [
+      1,
+      17
+     ]
+    }
+   }
+  },
+  {
+   "host": 3,
+   "chains": {
+    "R": {
+     "accepted": 5200,
+     "attempted": 14542
+    },
+    "Rr": {
+     "accepted": 5200,
+     "attempted": 52703
+    }
+   },
+   "arms": {
+    "T": {
+     "edges": 260,
+     "weight": 2347.0,
+     "autapses": 8,
+     "reciprocal": 75,
+     "in_degree_range": [
+      4,
+      16
+     ],
+     "out_degree_range": [
+      1,
+      17
+     ]
+    },
+    "D": {
+     "edges": 260,
+     "weight": 2347.0,
+     "autapses": 8,
+     "reciprocal": 33,
+     "in_degree_range": [
+      3,
+      13
+     ],
+     "out_degree_range": [
+      4,
+      13
+     ]
+    },
+    "R": {
+     "edges": 260,
+     "weight": 2347.0,
+     "autapses": 8,
+     "reciprocal": 38,
+     "in_degree_range": [
+      4,
+      16
+     ],
+     "out_degree_range": [
+      1,
+      17
+     ]
+    },
+    "Rr": {
+     "edges": 260,
+     "weight": 2347.0,
+     "autapses": 8,
+     "reciprocal": 75,
+     "in_degree_range": [
+      4,
+      16
+     ],
+     "out_degree_range": [
+      1,
+      17
+     ]
+    },
+    "P": {
+     "edges": 260,
+     "weight": 2347.0,
+     "autapses": 8,
+     "reciprocal": 75,
+     "in_degree_range": [
+      4,
+      16
+     ],
+     "out_degree_range": [
+      1,
+      17
+     ]
+    }
+   }
+  },
+  {
+   "host": 4,
+   "chains": {
+    "R": {
+     "accepted": 5200,
+     "attempted": 14805
+    },
+    "Rr": {
+     "accepted": 5200,
+     "attempted": 52071
+    }
+   },
+   "arms": {
+    "T": {
+     "edges": 260,
+     "weight": 2347.0,
+     "autapses": 8,
+     "reciprocal": 75,
+     "in_degree_range": [
+      4,
+      16
+     ],
+     "out_degree_range": [
+      1,
+      17
+     ]
+    },
+    "D": {
+     "edges": 260,
+     "weight": 2347.0,
+     "autapses": 8,
+     "reciprocal": 45,
+     "in_degree_range": [
+      3,
+      13
+     ],
+     "out_degree_range": [
+      5,
+      13
+     ]
+    },
+    "R": {
+     "edges": 260,
+     "weight": 2347.0,
+     "autapses": 8,
+     "reciprocal": 40,
+     "in_degree_range": [
+      4,
+      16
+     ],
+     "out_degree_range": [
+      1,
+      17
+     ]
+    },
+    "Rr": {
+     "edges": 260,
+     "weight": 2347.0,
+     "autapses": 8,
+     "reciprocal": 75,
+     "in_degree_range": [
+      4,
+      16
+     ],
+     "out_degree_range": [
+      1,
+      17
+     ]
+    },
+    "P": {
+     "edges": 260,
+     "weight": 2347.0,
+     "autapses": 8,
+     "reciprocal": 75,
+     "in_degree_range": [
+      4,
+      16
+     ],
+     "out_degree_range": [
+      1,
+      17
+     ]
+    }
+   }
+  },
+  {
+   "host": 5,
+   "chains": {
+    "R": {
+     "accepted": 5200,
+     "attempted": 14591
+    },
+    "Rr": {
+     "accepted": 5200,
+     "attempted": 51885
+    }
+   },
+   "arms": {
+    "T": {
+     "edges": 260,
+     "weight": 2347.0,
+     "autapses": 8,
+     "reciprocal": 75,
+     "in_degree_range": [
+      4,
+      16
+     ],
+     "out_degree_range": [
+      1,
+      17
+     ]
+    },
+    "D": {
+     "edges": 260,
+     "weight": 2347.0,
+     "autapses": 8,
+     "reciprocal": 35,
+     "in_degree_range": [
+      4,
+      14
+     ],
+     "out_degree_range": [
+      4,
+      15
+     ]
+    },
+    "R": {
+     "edges": 260,
+     "weight": 2347.0,
+     "autapses": 8,
+     "reciprocal": 35,
+     "in_degree_range": [
+      4,
+      16
+     ],
+     "out_degree_range": [
+      1,
+      17
+     ]
+    },
+    "Rr": {
+     "edges": 260,
+     "weight": 2347.0,
+     "autapses": 8,
+     "reciprocal": 75,
+     "in_degree_range": [
+      4,
+      16
+     ],
+     "out_degree_range": [
+      1,
+      17
+     ]
+    },
+    "P": {
+     "edges": 260,
+     "weight": 2347.0,
+     "autapses": 8,
+     "reciprocal": 75,
+     "in_degree_range": [
+      4,
+      16
+     ],
+     "out_degree_range": [
+      1,
+      17
+     ]
+    }
+   }
+  },
+  {
+   "host": 6,
+   "chains": {
+    "R": {
+     "accepted": 5200,
+     "attempted": 14627
+    },
+    "Rr": {
+     "accepted": 5200,
+     "attempted": 51342
+    }
+   },
+   "arms": {
+    "T": {
+     "edges": 260,
+     "weight": 2347.0,
+     "autapses": 8,
+     "reciprocal": 75,
+     "in_degree_range": [
+      4,
+      16
+     ],
+     "out_degree_range": [
+      1,
+      17
+     ]
+    },
+    "D": {
+     "edges": 260,
+     "weight": 2347.0,
+     "autapses": 8,
+     "reciprocal": 41,
+     "in_degree_range": [
+      3,
+      15
+     ],
+     "out_degree_range": [
+      5,
+      16
+     ]
+    },
+    "R": {
+     "edges": 260,
+     "weight": 2347.0,
+     "autapses": 8,
+     "reciprocal": 48,
+     "in_degree_range": [
+      4,
+      16
+     ],
+     "out_degree_range": [
+      1,
+      17
+     ]
+    },
+    "Rr": {
+     "edges": 260,
+     "weight": 2347.0,
+     "autapses": 8,
+     "reciprocal": 75,
+     "in_degree_range": [
+      4,
+      16
+     ],
+     "out_degree_range": [
+      1,
+      17
+     ]
+    },
+    "P": {
+     "edges": 260,
+     "weight": 2347.0,
+     "autapses": 8,
+     "reciprocal": 75,
+     "in_degree_range": [
+      4,
+      16
+     ],
+     "out_degree_range": [
+      1,
+      17
+     ]
+    }
+   }
+  },
+  {
+   "host": 7,
+   "chains": {
+    "R": {
+     "accepted": 5200,
+     "attempted": 14725
+    },
+    "Rr": {
+     "accepted": 5200,
+     "attempted": 51747
+    }
+   },
+   "arms": {
+    "T": {
+     "edges": 260,
+     "weight": 2347.0,
+     "autapses": 8,
+     "reciprocal": 75,
+     "in_degree_range": [
+      4,
+      16
+     ],
+     "out_degree_range": [
+      1,
+      17
+     ]
+    },
+    "D": {
+     "edges": 260,
+     "weight": 2347.0,
+     "autapses": 8,
+     "reciprocal": 39,
+     "in_degree_range": [
+      4,
+      13
+     ],
+     "out_degree_range": [
+      3,
+      13
+     ]
+    },
+    "R": {
+     "edges": 260,
+     "weight": 2347.0,
+     "autapses": 8,
+     "reciprocal": 41,
+     "in_degree_range": [
+      4,
+      16
+     ],
+     "out_degree_range": [
+      1,
+      17
+     ]
+    },
+    "Rr": {
+     "edges": 260,
+     "weight": 2347.0,
+     "autapses": 8,
+     "reciprocal": 75,
+     "in_degree_range": [
+      4,
+      16
+     ],
+     "out_degree_range": [
+      1,
+      17
+     ]
+    },
+    "P": {
+     "edges": 260,
+     "weight": 2347.0,
+     "autapses": 8,
+     "reciprocal": 75,
+     "in_degree_range": [
+      4,
+      16
+     ],
+     "out_degree_range": [
+      1,
+      17
+     ]
+    }
+   }
+  },
+  {
+   "host": 8,
+   "chains": {
+    "R": {
+     "accepted": 5200,
+     "attempted": 14391
+    },
+    "Rr": {
+     "accepted": 5200,
+     "attempted": 50962
+    }
+   },
+   "arms": {
+    "T": {
+     "edges": 260,
+     "weight": 2347.0,
+     "autapses": 8,
+     "reciprocal": 75,
+     "in_degree_range": [
+      4,
+      16
+     ],
+     "out_degree_range": [
+      1,
+      17
+     ]
+    },
+    "D": {
+     "edges": 260,
+     "weight": 2347.0,
+     "autapses": 8,
+     "reciprocal": 43,
+     "in_degree_range": [
+      5,
+      12
+     ],
+     "out_degree_range": [
+      2,
+      14
+     ]
+    },
+    "R": {
+     "edges": 260,
+     "weight": 2347.0,
+     "autapses": 8,
+     "reciprocal": 36,
+     "in_degree_range": [
+      4,
+      16
+     ],
+     "out_degree_range": [
+      1,
+      17
+     ]
+    },
+    "Rr": {
+     "edges": 260,
+     "weight": 2347.0,
+     "autapses": 8,
+     "reciprocal": 75,
+     "in_degree_range": [
+      4,
+      16
+     ],
+     "out_degree_range": [
+      1,
+      17
+     ]
+    },
+    "P": {
+     "edges": 260,
+     "weight": 2347.0,
+     "autapses": 8,
+     "reciprocal": 75,
+     "in_degree_range": [
+      4,
+      16
+     ],
+     "out_degree_range": [
+      1,
+      17
+     ]
+    }
+   }
+  },
+  {
+   "host": 9,
+   "chains": {
+    "R": {
+     "accepted": 5200,
+     "attempted": 14655
+    },
+    "Rr": {
+     "accepted": 5200,
+     "attempted": 50886
+    }
+   },
+   "arms": {
+    "T": {
+     "edges": 260,
+     "weight": 2347.0,
+     "autapses": 8,
+     "reciprocal": 75,
+     "in_degree_range": [
+      4,
+      16
+     ],
+     "out_degree_range": [
+      1,
+      17
+     ]
+    },
+    "D": {
+     "edges": 260,
+     "weight": 2347.0,
+     "autapses": 8,
+     "reciprocal": 35,
+     "in_degree_range": [
+      4,
+      14
+     ],
+     "out_degree_range": [
+      3,
+      14
+     ]
+    },
+    "R": {
+     "edges": 260,
+     "weight": 2347.0,
+     "autapses": 8,
+     "reciprocal": 44,
+     "in_degree_range": [
+      4,
+      16
+     ],
+     "out_degree_range": [
+      1,
+      17
+     ]
+    },
+    "Rr": {
+     "edges": 260,
+     "weight": 2347.0,
+     "autapses": 8,
+     "reciprocal": 75,
+     "in_degree_range": [
+      4,
+      16
+     ],
+     "out_degree_range": [
+      1,
+      17
+     ]
+    },
+    "P": {
+     "edges": 260,
+     "weight": 2347.0,
+     "autapses": 8,
+     "reciprocal": 75,
+     "in_degree_range": [
+      4,
+      16
+     ],
+     "out_degree_range": [
+      1,
+      17
+     ]
+    }
+   }
+  }
+ ]
+}

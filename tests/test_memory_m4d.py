@@ -331,3 +331,15 @@ def test_the_paired_counts():
     assert np.var(dis[0] - dis[1]) > np.var(nes[0] - nes[1])
     one = m4d_read.shifts("one host", 0.0012, np.random.default_rng(2))
     assert (one > 0).sum() == 1 and np.isclose(one.max(), 0.012)
+
+
+def test_the_tables_stop_on_a_changed_blocks_file(monkeypatch):
+    import m4d_tables
+    out = Path(tempfile.mkdtemp(prefix="m4d-tables-"))
+    monkeypatch.setattr(m4d_tables, "OUT", out)
+    (out / "blocks.json").write_text('{"blocks": []}')
+    assert m4d_tables.blocks_summary()["blocks"] == []  # the summary written from the local file
+    assert m4d_tables.blocks_summary()["blocks"] == []  # the same file passes
+    (out / "blocks.json").write_text('{"blocks": [] }')
+    with pytest.raises(SystemExit):
+        m4d_tables.blocks_summary()

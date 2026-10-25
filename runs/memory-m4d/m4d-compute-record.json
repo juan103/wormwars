@@ -1,0 +1,32 @@
+{
+ "time_unit": "synchronised wall-clock seconds per category (not GPU kernel time)",
+ "neural_update_unit": "strains x batch x substeps network updates (network size not included)",
+ "attempts": [
+  {
+   "file": "20261024T013237Z-ade28c69.json",
+   "status": "completed",
+   "experiment": "memory-M4d",
+   "script": "m4d.py",
+   "default_category": "probe",
+   "git_commit": "6553a9849caeff90ac88a96e066836847c637e86"
+  }
+ ],
+ "failed_attempts": 0,
+ "uncategorised": false,
+ "categories": {
+  "probe": {
+   "worlds_built": 0,
+   "world_ticks": 0,
+   "neural_updates": 12462791040,
+   "neural_padding": 0,
+   "seconds": 94818.63663600001
+  }
+ },
+ "totals": {
+  "worlds_built": 0,
+  "world_ticks": 0,
+  "neural_updates": 12462791040,
+  "neural_padding": 0,
+  "seconds_timed": 94818.63663600001
+ }
+}

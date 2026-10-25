@@ -1,0 +1,54 @@
+**Verdict: fix then publish.** The reading is the plan's, computed as the plan fixed it, and the after-the-data "no assignment makes it positive" argument is sound. Every number I checked in the write-up matches `readings.json`, `tables.txt`, `hosts.json`, `blocks-summary.json`, `companion.json`, the compute record and the run log. What needs fixing is one wrong description of the classifier, two comparisons the plan asked for and the write-up omits, and several interpretations that outrun the data. None of the fixes changes the reading.
+
+I had no shell in this session, so I checked by hand. The two read intervals are in fact the Student-t intervals on both ends (I recomputed them from the per-host differences: D_TI 0.00479 to 0.00693, D_TR −0.00087 to 0.00322). The bootstrap was narrower on both sides, so the hull is the t-interval here. Worth one clause in the write-up.
+
+## 1. The reading and the envelope argument
+
+Correct. Counts per host and arm sum to the pooled totals; D_TI is 60 of 10,240 and D_TR is 12 of 10,240; lower(D_TI) 0.0048 > m and upper(D_TR) 0.0032 < m give the second reading; the largest host T−R difference (0.0059) is under the guard; the envelope's D_TR upper bound 0.0087 breaks the exclusion; the two readings differ, so the rule gives "Unresolved (the unresolved genomes decide it)". The envelope is computed as the plan says: bootstrap at the two ends, Student-t over all 1024 corners. The t lower bound is mean minus a constant times a sample standard deviation, which is convex in the differences, so the lower bound is concave and its minimum sits at a corner. That is also why the envelope's D_TI lower bound (0.0046) is below the counted one (0.0048) even though I has no unresolved genomes: a mixed corner has more spread.
+
+The "no assignment makes it positive" argument holds. Each host's difference moves in steps of one genome, so the box is a product of integer ranges, and any assignment other than the all-for-T end is componentwise at or below that end with one host lowered by one genome. Each bootstrap resample mean is a non-negative weighted average of the host differences, and a percentile of a set whose every member rises weakly also rises weakly, so the bootstrap lower bound is monotone. Its maximum off the end is 0.00391 < m. At the end the t lower bound is 0.00366 < m, and the hull takes the minimum. Two small points:
+
+- "0.00400, just above the margin" cannot be read as strictly above from a five-decimal print. Say "at the margin to five decimals". It changes nothing because the t bound decides.
+- "The reading can lie only between the second reading and Unresolved" should add the single-host variant. At the all-for-T end SH-mirror-2041001's T−R is 11 of 1024 (0.0107), at the guard, so a resolution that leaned that way and still excluded would read "Unresolved (a single host responds)".
+
+## 2 and 3. What must change in the text
+
+Ranked.
+
+1. **The description of "unconfirmed candidate" is wrong.** The write-up glosses it as "a second root located but not confirmed". In `scripts/memory_m2/classify.py` lines 95 to 109 it is an oscillation candidate whose roots located from the orbit are all unstable and whose cycle was not confirmed (no period, or the late range fell below the persistence threshold). It is about a history that has not settled, not about a second root. Fix the gloss; it bears on what "resolving" these genomes would mean (a longer horizon, not a better root search).
+
+2. **Two comparisons the plan required are missing.** The plan says the companion is reported "against N2's base rate and each host's p_T". The hosts' selected share is 25 of 1410 (1.8%) against the T arm's 64 of 10,240 (0.62%) and the paired control's 10 of 1410 (0.7%, which matches the T arm). N2's base rate from M4c is 1.72%, against 4.6% selected and 2.1% control. Add one line. The plan also lists "each block's in- and out-degrees" among what is reported beside the reading; the summary gives ranges only, because R, Rr, P and T carry N2's within-block degree sequence. That is a reporting deviation under rule 1 and should be stated as one, next to the `blocks.json` note.
+
+3. **"P and T are close: moving the weights among N2's own 260 edges changes little in this pool" overstates.** Pooled counts are close, but P is the most host-variable arm: 1 to 19 per host against T's 4 to 10; T−P per host runs from −0.0117 to +0.0039; the interval, −0.0035 to +0.0025, spans half the whole transplant effect. Say the pooled means are close and the per-host differences are the largest of any contrast. The by-ensemble line two paragraphs earlier (P from 3 to 22) already contradicts "changes little".
+
+4. **The ladder's shares give false precision.** "About a third with D, about four fifths with R" are ratios of two noisy means whose intervals (R−I 0.0034 to 0.0060; T−I 0.0048 to 0.0069) overlap, and T−R includes zero. Say that R reaches most of T's rise and that T−R's interval includes zero, and drop the fractions.
+
+5. **"N2's gap junctions inside the block add nothing here."** The mean is negative and the interval, −0.0031 to +0.0004, barely reaches zero. "Do not add, and if anything subtract" is what the data say.
+
+6. **A pattern the write-up should report:** the non-settling genomes concentrate in the exact-wiring arms. Persistent oscillation plus unresolved is 76 in T and 70 in T+G, against 43 in R, 53 in D, 51 in Rr, 46 in P and 0 in I. The unresolved count is not noise spread evenly across arms; it tracks N2's wiring. That matters for how a reader weighs the envelope and for the next-step question. Descriptive, after the data.
+
+7. **The companion's wording.** "Roughly double the share in both places" rests, in N2, on 13 against 6; by itself that is not distinguishable from chance (pooled with the hosts it is). "95% of N2's switch genomes (269 of 282 classifications)" mixes genomes and classifications; 268 were classified non-separate and 1 is unresolved. Say "95% of classifications".
+
+8. **"Every check passed. The reader ran verify_run first (read_log.txt): ..."** reads as if the log lists the checks. It has three lines. Say the reader calls `verify_run`, stops on any failure, and exited 0; the checks named are the ones in the code.
+
+9. **Timing.** The log shows two slow stretches, not one: SH-route-2021001's D, R and Rr (1955 to 2495 s, morning UTC) and SH-mirror-2041001's P, T and T+G plus SH-recip-2051000's I (1815 to 3179 s, evening UTC). The slowest two panels are also the ones with the most unresolved genomes (12 and 10), so some of the time is the classifier's extra work, not only a shared CPU.
+
+10. **Deviations section.** "None from the plan in what ran" right after the `blocks.json` item reads oddly. Say: none in what ran; one in what is committed (`blocks.json`), one in what is reported (degrees as ranges).
+
+I could not confirm from here that `coverage.json` was in commit 6553a98; the plan text in that commit carries its numbers, which is what matters, but the write-up should point at the commit that holds the file.
+
+## 4. The `blocks.json` decision
+
+Right. T's entries are a 30×30 submatrix of the connectome; P's carry its edge positions and weight multiset; R and Rr carry its within-block degree sequence and out-strengths; D carries the weight multiset. All of it stays local, and `.gitignore` names it. The summary is enough for a reader with the connectome: `m4d.py hosts blocks` rebuilds `blocks.json` in minutes, the sha256 can be compared to the summary's by hand, and `m4d_read.py` then regenerates hosts, rebuilds and compares the blocks, runs the sham and re-reads the committed panels. The write-up's "Reproduce it" lists only the 26-hour rerun; add this cheap re-read path, and say the sha256 comparison is manual (no script does it). The sha256 should be stable: the file is written without indent, with Python floats, in `argwhere` order.
+
+`hosts.json` is acceptable but inconsistent on its face. It commits per-neuron within-block in- and out-degrees for the ten hosts while the summary script's docstring makes a point of omitting per-neuron degrees. The hosts' within-block degrees are those of seeded null graphs, not N2's (N2's block has 260 edges, the hosts' 94 to 127), and with ten samples they give only a noisy hint of N2's total degrees. Do not edit a run output written before the arms ran; add one sentence saying why these degrees are not N2's. The panel records carry only per-genome scalars and hashes, and the blocks summary's degree ranges for T are four numbers of the same kind as "260 edges, weight 2347".
+
+## 5. The next step
+
+I recommend (b): accept the screen as it stands, publish with the Unresolved reading, and put the direction to the owner. Three reasons.
+
+- **Resolution cannot change the decision.** Either outcome sends the direction to the owner, and the fact that decides it holds whichever way the 86 genomes fall: T−R is small. Counted it is 0.0012; with every unresolved genome given to T it is 0.0061 with lower bound 0.0037. A confirmatory T-against-R M5 would be testing whether an effect of that size exceeds 0.004. The plan's own simulation gives 4.5% power at δ = m with ten hosts. At this project's compute that test is out of reach, and the write-up should say so plainly in the roadmap section, because that is what the owner needs to decide.
+- **Any resolution procedure is chosen knowing the lean.** T has 50 unresolved genomes and 29 unconfirmed candidates, R has 36 and 18. A longer horizon that confirms candidates pushes toward Unresolved; one that rejects them pushes toward the second reading. Whatever is picked, the reading it yields carries that mark. The plan fixed "one classifier at one horizon" for exactly this.
+- **It delays a result that is complete under its plan** for a label change.
+
+The better option is to carry the lesson forward rather than patch M4d. Whatever follows (M5 in any form) should pre-specify a two-stage classification for all genomes in all arms, say 2000 ticks and then a longer horizon for the unresolved, so the unresolved share (0.3 to 0.5% of genomes here) falls below the effect sizes of interest. It should also set the margin against the hosts' observed base rate: the intact hosts gave 0.04%, a third of the 0.12% the plan took from M2's reference graphs. For the owner's three choices, the data favour "what does a dense block carry" over "does N2's wiring carry it": T and R against I are robust in every host and across every assignment, D−I and R−D are both above zero, and the wiring's extra is between "less than 0.004" and "not excluded". A planned resolution remains a cheap optional add-on if the owner wants a crisp label for the M1 to M4 write-up, labelled after this reading as the draft already says.

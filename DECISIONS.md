@@ -11633,3 +11633,46 @@ Plan: [`docs/memory/M4D-PLAN.md`](docs/memory/M4D-PLAN.md) (draft 5). Explorator
 check, and the reader on it checks everything and reads nothing.
 
 **Next:** push, CI, then the run (about 22 CPU hours, capped at 30); results, review, D364.
+
+## D364 — M4d's results: N2's head-core block raises the switch in every fresh host, but the wiring's share is unresolved; the direction goes to the owner (2026-10-25)
+
+M4d (D363) ran in one invocation on the CPU, 2026-10-24 01:32 to 2026-10-25 03:52 UTC (94,819 s, inside the 30-hour
+cap; commit 6553a98 at start and end). Results: [`docs/memory/M4D-RESULTS.md`](docs/memory/M4D-RESULTS.md) (draft 4).
+Exploratory, by the plan's fixed rules.
+
+- **The run:** ten fresh hosts from their first seeds, none skipped; every block and check as planned; all 70 panels
+  valid; the reader's `verify_run` passed (Astra reran it independently).
+- **The reading is "Unresolved (the unresolved genomes decide it)".** D_TI = +0.0059 (0.0048 to 0.0069), T above I
+  in all ten hosts, robust over every assignment of the unresolved genomes (envelope 0.0046 to 0.0125). D_TR = +0.0012
+  (−0.0009 to 0.0032): on the counted genomes the plan's second reading (a transplant benefit, a wiring advantage of
+  m or more ruled out), but the envelope reaches 0.0087. Checked after the data: no assignment can make the reading
+  positive.
+- **Counted shares** (of 10,240 genomes per arm): I 0.04%, D 0.23%, R 0.51%, Rr 0.31%, P 0.67%, T 0.62%, T+G 0.49%.
+  Unresolved genomes: 36 to 50 per block arm, none in I; genomes that do not settle gather in T and T+G (76, 70).
+- **Described, after the data:** R − I and D − I hold over every assignment, R − D only on counted genomes; the
+  separate-states genomes of T, P and R are almost entirely different genomes (one shared per pair); the companion's
+  selected C3 parameters keep the switch in 13 of 282 N2 trials (control 6) and 25 of 1410 host trials (control 10).
+- **Committed differently from the plan's output list:** `blocks.json` holds N2's C3 weights edge by edge, so it stays
+  local (rule 1; `.gitignore` names it); `blocks-summary.json` carries its counts, degree ranges and sha256, and
+  `m4d_tables.py` stops if the local file's sha256 differs (`check_digest`, with a test and a sabotage: 20 tests, 24 of
+  24 sabotages fail as they must).
+
+**The review** (`docs/reviews/20261025-m4d-results/`; three rounds).
+- **Both** caught: "unconfirmed candidate" glossed as a near-confirmed second root (it is an unconfirmed oscillation,
+  `classify.py`); "P and T close" hiding that they switch on different genomes and P's host spread; the T − P interval
+  width; the timing sentence (twice, then a missed tie).
+- **Fable** caught: the companion's missing comparisons with N2's base rate and the T arm; degrees reported as ranges
+  needing a deviation note; the not-settled pattern; the ladder's false precision; T+G "adds nothing"; the
+  single-host form of a resolution; `verify_run`'s wording; the re-read path; the untested digest stop.
+- **Astra** caught: the companion's 282 as trials, not genomes; provenance claimed beyond the attempt record; the
+  reproduction path; 25.15 h; autapses in the edge count; the minority parenthetical dropped from the quoted reading;
+  then that "about 5% power at δ = m" is the null boundary, not a ten-host limit (which removed "out of reach" for
+  M5, from Fable's round-1 advice); the weighted block, not the wiring, behind the not-settled pattern; R − D not robust.
+- Round 1 both "fix then publish"; round 2 both "fix then publish"; round 3 Astra "agree", Fable one mechanical fix
+  without a further round.
+
+**The next step, by consensus (Claude, Astra, Fable), under the plan's rule for an unresolved reading:** publish the
+screen as unresolved; do not resolve the 86 unresolved T and R genomes now (a resolution could only give the second
+reading or "Unresolved", would be chosen knowing the lean, and most are unsettled histories); do not draft M4e. The
+thread's direction is the owner's: the M1 to M4 write-up (Astra's priority), a planned study of what a dense block
+carries (density and degrees; Fable), or an M5 test of N2's wiring after a power calculation for effects above m.

@@ -16,6 +16,7 @@ import torch  # noqa: E402
 
 import m4d  # noqa: E402
 import m4d_read  # noqa: E402
+import m4d_tables  # noqa: E402
 import test_memory_m4d as T  # noqa: E402
 from wormwars.brain import BrainSpec, Genome  # noqa: E402
 
@@ -164,3 +165,5 @@ if __name__ == "__main__":
     run("the pairing ignored", [(m4d_read, "paired_counts", lambda pb, pt, pr, n, rng: (rng.binomial(n, pt),
                                                                                        rng.binomial(n, pb)))],
         T.test_the_paired_counts)
+    run("the tables' digest check removed", [(m4d_tables, "check_digest", lambda s, d: None)],
+        T.test_the_tables_stop_on_a_changed_blocks_file)

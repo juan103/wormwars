@@ -1,0 +1,135 @@
+10 hosts x 1024 genomes; reading: Unresolved (the unresolved genomes decide it)
+(before the unresolved bounds: A transplant benefit; an advantage of C3's wiring of m or more over rewired copies ruled out, as a mean across these ten hosts (a response confined to a minority of host graphs may be missed))
+
+== every class by arm, pooled over the ten hosts (10 240 genomes per arm)
+  arm   separate states / separate states, read-out silent / fading / persistent oscillation / unresolved; panels valid; eligible (a >= START_FLOOR); not settled (oscillation + unresolved)
+  I     4 / 0 / 10236 / 0 / 0; 10/10; 9726; 0
+  D     24 / 0 / 10163 / 10 / 43; 10/10; 9807; 53
+  R     51 / 1 / 10145 / 7 / 36; 10/10; 9846; 43
+  Rr    31 / 1 / 10157 / 15 / 36; 10/10; 9860; 51
+  P     68 / 1 / 10125 / 5 / 41; 10/10; 9863; 46
+  T     63 / 1 / 10100 / 26 / 50; 10/10; 9729; 76
+  T+G   50 / 0 / 10120 / 20 / 50; 10/10; 9748; 70
+
+== separate states (and unresolved) per host and arm, of 1024
+  host                         I        D        R       Rr        P        T      T+G
+  SH-2011000               0 (0)    3 (3)    2 (3)    2 (7)   13 (4)    7 (5)    2 (4)
+  SH-2011001               0 (0)    4 (7)    3 (0)    4 (1)    9 (7)    9 (3)    4 (4)
+  SH-route-2021000         0 (0)    1 (1)    9 (3)    0 (0)    1 (0)    4 (3)    8 (5)
+  SH-route-2021001         0 (0)    0 (3)    5 (4)    0 (1)    2 (1)    6 (3)    9 (2)
+  SH-class-2031000         0 (0)    2 (3)    3 (2)    1 (4)    1 (2)    4 (6)    4 (5)
+  SH-class-2031001         0 (0)    2 (7)    7 (1)    2 (4)   19 (0)    7 (1)    5 (1)
+  SH-mirror-2041000        1 (0)    2 (1)    4 (0)    1 (3)    6 (4)    7 (4)    7 (4)
+  SH-mirror-2041001        0 (0)    2 (2)    7 (5)    6 (5)    2 (4)    6 (12)    2 (10)
+  SH-recip-2051000         2 (0)    5 (8)    5 (10)   15 (8)    8 (13)   10 (5)    7 (8)
+  SH-recip-2051001         1 (0)    3 (8)    7 (8)    1 (3)    8 (6)    4 (8)    2 (7)
+  total                    4 (0)   24 (43)   52 (36)   32 (36)   69 (41)   64 (50)   50 (50)
+  rate (%)                  0.04     0.23     0.51     0.31     0.67     0.62     0.49
+  with unresolved (%)       0.04     0.65     0.86     0.66     1.07     1.11     0.98
+
+== the two read contrasts: counted, unresolved all against T (low), all for T (high); hull intervals
+  T-I  main: mean +0.0059 [+0.0048, +0.0069] (bootstrap [+0.0050, +0.0067], t [+0.0048, +0.0069]); host max +0.0088, min +0.0029; hosts above m 7, at or above the guard 0
+  T-I  low : mean +0.0059 [+0.0048, +0.0069] (bootstrap [+0.0050, +0.0067], t [+0.0048, +0.0069]); host max +0.0088, min +0.0029; hosts above m 7, at or above the guard 0
+  T-I  high: mean +0.0107 [+0.0090, +0.0125] (bootstrap [+0.0094, +0.0123], t [+0.0090, +0.0125]); host max +0.0176, min +0.0068; hosts above m 10, at or above the guard 5
+  T-I envelope over every assignment: [+0.0046, +0.0125]
+  T-R  main: mean +0.0012 [-0.0009, +0.0032] (bootstrap [-0.0006, +0.0028], t [-0.0009, +0.0032]); host max +0.0059, min -0.0049; hosts above m 3, at or above the guard 0
+  T-R  low : mean -0.0023 [-0.0053, +0.0006] (bootstrap [-0.0048, +0.0002], t [-0.0053, +0.0006]); host max +0.0059, min -0.0107; hosts above m 1, at or above the guard 0
+  T-R  high: mean +0.0061 [+0.0037, +0.0085] (bootstrap [+0.0040, +0.0080], t [+0.0037, +0.0085]); host max +0.0107, min -0.0020; hosts above m 7, at or above the guard 1
+  T-R envelope over every assignment: [-0.0054, +0.0087]
+  T-R's highest lower bound: at the all-for-T end bootstrap +0.00400391, Student-t +0.00365592; any other assignment's bootstrap lower bound <= +0.00390625 (margin 0.004)
+
+== the descriptive contrasts (not read)
+  D_TRr   +0.0031 [+0.0012, +0.0050]; host max +0.0059
+  D_TP    -0.0005 [-0.0035, +0.0025]; host max +0.0039
+  D_RD    +0.0027 [+0.0010, +0.0045]; host max +0.0078
+  D_DI    +0.0020 [+0.0013, +0.0026]; host max +0.0039
+  D_RI    +0.0047 [+0.0034, +0.0060]; host max +0.0088
+  D_T+GT  -0.0014 [-0.0031, +0.0004]; host max +0.0039
+  hosts with p_T > p_R: 6; with p_T > p_I: 10
+  D_RrR   -0.0020 [-0.0049, +0.0010]; hosts with Rr > R 2
+  R-D envelope over the unresolved: [-0.0043, +0.0090]
+  R-I envelope over the unresolved: [+0.0033, +0.0106]
+  D-I envelope over the unresolved: [+0.0009, +0.0082]
+  T-Rr envelope over the unresolved: [-0.0035, +0.0108]
+  T-P envelope over the unresolved: [-0.0080, +0.0084]
+  T+G-T envelope over the unresolved: [-0.0093, +0.0057]
+  T per host: 4 to 10
+  R per host: 2 to 9
+  P per host: 1 to 19
+  T-P per host: -0.0117 to +0.0039
+  the same genome (host and genome id) separate states in both arms:
+    T and P: both 1, T only 63, P only 68
+    T and R: both 1, T only 63, R only 51
+    T and T+G: both 25, T only 39, T+G only 25
+    R and Rr: both 1, R only 51, Rr only 31
+
+== by ensemble (separate states summed over its two hosts, of 2048)
+  SH         I 0  D 7  R 5  Rr 6  P 22  T 16  T+G 6
+  SH-route   I 0  D 1  R 14  Rr 0  P 3  T 10  T+G 17
+  SH-class   I 0  D 4  R 10  Rr 3  P 20  T 11  T+G 9
+  SH-mirror  I 1  D 4  R 11  Rr 7  P 8  T 13  T+G 9
+  SH-recip   I 3  D 8  R 12  Rr 16  P 16  T 14  T+G 9
+
+== the blocks (from blocks-summary.json): off-diagonal edges, their weight, autapses, reciprocal pairs; and the host's own
+  SH-2011000           I 106 edges, weight   610, autapses 2, reciprocal  7 | T 260/2347/8/75; D 260/2347/8/36; R 260/2347/8/39; Rr 260/2347/8/75; P 260/2347/8/75
+  SH-2011001           I  94 edges, weight   493, autapses 3, reciprocal  8 | T 260/2347/8/75; D 260/2347/8/37; R 260/2347/8/44; Rr 260/2347/8/75; P 260/2347/8/75
+  SH-route-2021000     I  94 edges, weight   592, autapses 4, reciprocal  5 | T 260/2347/8/75; D 260/2347/8/36; R 260/2347/8/46; Rr 260/2347/8/75; P 260/2347/8/75
+  SH-route-2021001     I 104 edges, weight   716, autapses 2, reciprocal  6 | T 260/2347/8/75; D 260/2347/8/33; R 260/2347/8/38; Rr 260/2347/8/75; P 260/2347/8/75
+  SH-class-2031000     I 115 edges, weight   639, autapses 4, reciprocal 12 | T 260/2347/8/75; D 260/2347/8/45; R 260/2347/8/40; Rr 260/2347/8/75; P 260/2347/8/75
+  SH-class-2031001     I 117 edges, weight   543, autapses 3, reciprocal 14 | T 260/2347/8/75; D 260/2347/8/35; R 260/2347/8/35; Rr 260/2347/8/75; P 260/2347/8/75
+  SH-mirror-2041000    I 127 edges, weight   670, autapses 0, reciprocal  9 | T 260/2347/8/75; D 260/2347/8/41; R 260/2347/8/48; Rr 260/2347/8/75; P 260/2347/8/75
+  SH-mirror-2041001    I 121 edges, weight   861, autapses 4, reciprocal 10 | T 260/2347/8/75; D 260/2347/8/39; R 260/2347/8/41; Rr 260/2347/8/75; P 260/2347/8/75
+  SH-recip-2051000     I 103 edges, weight   466, autapses 2, reciprocal 24 | T 260/2347/8/75; D 260/2347/8/43; R 260/2347/8/36; Rr 260/2347/8/75; P 260/2347/8/75
+  SH-recip-2051001     I 112 edges, weight   572, autapses 2, reciprocal 38 | T 260/2347/8/75; D 260/2347/8/35; R 260/2347/8/44; Rr 260/2347/8/75; P 260/2347/8/75
+  blocks.json sha256 9e435cb673dbf12186f736d9e879b59df48cb02d7b4613550df0693e7e37d7c1
+
+== write and read by arm (pooled medians over all genomes; read-out difference over separate-states genomes; silent share over separate-states genomes at or above the floor)
+  I     write 0.381, on C3 0.144, zero 0; read-out difference 0.026; silent share above the floor 0.000; invalid panels []; unresolved > 5% []
+  D     write 0.456, on C3 0.233, zero 0; read-out difference 0.313; silent share above the floor 0.000; invalid panels []; unresolved > 5% []
+  R     write 0.459, on C3 0.232, zero 0; read-out difference 0.308; silent share above the floor 0.019; invalid panels []; unresolved > 5% []
+  Rr    write 0.454, on C3 0.228, zero 0; read-out difference 0.340; silent share above the floor 0.031; invalid panels []; unresolved > 5% []
+  P     write 0.463, on C3 0.242, zero 0; read-out difference 0.384; silent share above the floor 0.015; invalid panels []; unresolved > 5% []
+  T     write 0.436, on C3 0.217, zero 0; read-out difference 0.329; silent share above the floor 0.016; invalid panels []; unresolved > 5% []
+  T+G   write 0.430, on C3 0.208, zero 0; read-out difference 0.630; silent share above the floor 0.000; invalid panels []; unresolved > 5% []
+
+== the unresolved genomes' reasons, by arm: genomes whose reason names each failure (a reason can name several), of the arm's unresolved
+  I     (0) 
+  D     (43) unconfirmed candidate 28; unstable or marginal root 27; candidate around a stable root 13; located root not reached 13; Newton failure 4; no root located from the orbit 3
+  R     (36) unconfirmed candidate 24; unstable or marginal root 23; located root not reached 9; candidate around a stable root 7; Newton failure 6; no root located from the orbit 5
+  Rr    (36) unconfirmed candidate 22; unstable or marginal root 20; located root not reached 10; Newton failure 9; candidate around a stable root 9; no root located from the orbit 6
+  P     (41) unstable or marginal root 28; unconfirmed candidate 27; candidate around a stable root 8; Newton failure 7; located root not reached 7; no root located from the orbit 6
+  T     (50) unstable or marginal root 38; unconfirmed candidate 37; Newton failure 12; no root located from the orbit 11; candidate around a stable root 7; located root not reached 5
+  T+G   (50) unstable or marginal root 36; unconfirmed candidate 31; located root not reached 12; candidate around a stable root 9; no root located from the orbit 7; Newton failure 5
+
+== the companion: M4c's 141 N2 switch genomes' C3 parameters on fresh exteriors (selected) against the same fresh genomes unchanged (control); separate states of 141
+  N2                   7931 selected   5 (unresolved 0); valid True
+  N2                   7931 control    4 (unresolved 0); valid True
+  N2                   7932 selected   8 (unresolved 1); valid True
+  N2                   7932 control    2 (unresolved 0); valid True
+  SH-2011000           7941 selected   4 (unresolved 0); valid True
+  SH-2011000           7941 control    0 (unresolved 0); valid True
+  SH-2011001           7942 selected   1 (unresolved 0); valid True
+  SH-2011001           7942 control    1 (unresolved 0); valid True
+  SH-route-2021000     7943 selected   1 (unresolved 0); valid True
+  SH-route-2021000     7943 control    2 (unresolved 1); valid True
+  SH-route-2021001     7944 selected   3 (unresolved 0); valid True
+  SH-route-2021001     7944 control    1 (unresolved 1); valid True
+  SH-class-2031000     7945 selected   2 (unresolved 0); valid True
+  SH-class-2031000     7945 control    2 (unresolved 0); valid True
+  SH-class-2031001     7946 selected   0 (unresolved 0); valid True
+  SH-class-2031001     7946 control    0 (unresolved 0); valid True
+  SH-mirror-2041000    7947 selected   3 (unresolved 0); valid True
+  SH-mirror-2041000    7947 control    1 (unresolved 0); valid True
+  SH-mirror-2041001    7948 selected   3 (unresolved 1); valid True
+  SH-mirror-2041001    7948 control    2 (unresolved 1); valid True
+  SH-recip-2051000     7949 selected   4 (unresolved 1); valid True
+  SH-recip-2051000     7949 control    1 (unresolved 4); valid True
+  SH-recip-2051001     7950 selected   4 (unresolved 1); valid True
+  SH-recip-2051001     7950 control    0 (unresolved 3); valid True
+  N2 total: selected 13 of 282, control 6 of 282; hosts total: selected 25 of 1410, control 10 of 1410
+  selected: N2 classes {0: 13, 2: 268, 4: 1}; hosts unresolved 3
+  control: N2 classes {0: 5, 1: 1, 2: 275, 3: 1}; hosts unresolved 10
+  distinct donor genomes separate in at least one N2 redraw: 12; in both: 1
+
+== seconds per arm, summed over hosts
+  I 2.69 h; D 3.78 h; R 3.43 h; Rr 3.53 h; P 3.61 h; T 4.13 h; T+G 3.98 h; all 90532 s, 25.15 h

@@ -1,0 +1,115 @@
+host 0: SH-2011000 (0 skipped), block 106 edges
+host 1: SH-2011001 (0 skipped), block 94 edges
+host 2: SH-route-2021000 (0 skipped), block 94 edges
+host 3: SH-route-2021001 (0 skipped), block 104 edges
+host 4: SH-class-2031000 (0 skipped), block 115 edges
+host 5: SH-class-2031001 (0 skipped), block 117 edges
+host 6: SH-mirror-2041000 (0 skipped), block 127 edges
+host 7: SH-mirror-2041001 (0 skipped), block 121 edges
+host 8: SH-recip-2051000 (0 skipped), block 103 edges
+host 9: SH-recip-2051001 (0 skipped), block 112 edges
+host 0: R {'accepted': 5200, 'attempted': 14402}, Rr {'accepted': 5200, 'attempted': 51603}; reciprocal {'T': 75, 'D': 36, 'R': 39, 'Rr': 75, 'P': 75}
+host 1: R {'accepted': 5200, 'attempted': 14423}, Rr {'accepted': 5200, 'attempted': 51953}; reciprocal {'T': 75, 'D': 37, 'R': 44, 'Rr': 75, 'P': 75}
+host 2: R {'accepted': 5200, 'attempted': 14644}, Rr {'accepted': 5200, 'attempted': 52102}; reciprocal {'T': 75, 'D': 36, 'R': 46, 'Rr': 75, 'P': 75}
+host 3: R {'accepted': 5200, 'attempted': 14542}, Rr {'accepted': 5200, 'attempted': 52703}; reciprocal {'T': 75, 'D': 33, 'R': 38, 'Rr': 75, 'P': 75}
+host 4: R {'accepted': 5200, 'attempted': 14805}, Rr {'accepted': 5200, 'attempted': 52071}; reciprocal {'T': 75, 'D': 45, 'R': 40, 'Rr': 75, 'P': 75}
+host 5: R {'accepted': 5200, 'attempted': 14591}, Rr {'accepted': 5200, 'attempted': 51885}; reciprocal {'T': 75, 'D': 35, 'R': 35, 'Rr': 75, 'P': 75}
+host 6: R {'accepted': 5200, 'attempted': 14627}, Rr {'accepted': 5200, 'attempted': 51342}; reciprocal {'T': 75, 'D': 41, 'R': 48, 'Rr': 75, 'P': 75}
+host 7: R {'accepted': 5200, 'attempted': 14725}, Rr {'accepted': 5200, 'attempted': 51747}; reciprocal {'T': 75, 'D': 39, 'R': 41, 'Rr': 75, 'P': 75}
+host 8: R {'accepted': 5200, 'attempted': 14391}, Rr {'accepted': 5200, 'attempted': 50962}; reciprocal {'T': 75, 'D': 43, 'R': 36, 'Rr': 75, 'P': 75}
+host 9: R {'accepted': 5200, 'attempted': 14655}, Rr {'accepted': 5200, 'attempted': 50886}; reciprocal {'T': 75, 'D': 35, 'R': 44, 'Rr': 75, 'P': 75}
+SH-2011000 I: 0 separate states, 0 unresolved, 812.8 s
+SH-2011000 D: 3 separate states, 3 unresolved, 1008.9 s
+SH-2011000 R: 2 separate states, 3 unresolved, 1120.7 s
+SH-2011000 Rr: 2 separate states, 7 unresolved, 1248.5 s
+SH-2011000 P: 13 separate states, 4 unresolved, 998.8 s
+SH-2011000 T: 7 separate states, 5 unresolved, 1245.8 s
+SH-2011000 T+G: 2 separate states, 4 unresolved, 1101.0 s
+SH-2011001 I: 0 separate states, 0 unresolved, 793.6 s
+SH-2011001 D: 4 separate states, 7 unresolved, 1363.1 s
+SH-2011001 R: 3 separate states, 0 unresolved, 806.5 s
+SH-2011001 Rr: 4 separate states, 1 unresolved, 868.0 s
+SH-2011001 P: 9 separate states, 7 unresolved, 1228.1 s
+SH-2011001 T: 9 separate states, 3 unresolved, 1204.4 s
+SH-2011001 T+G: 4 separate states, 4 unresolved, 1202.4 s
+SH-route-2021000 I: 0 separate states, 0 unresolved, 790.1 s
+SH-route-2021000 D: 1 separate states, 1 unresolved, 880.2 s
+SH-route-2021000 R: 9 separate states, 3 unresolved, 1064.3 s
+SH-route-2021000 Rr: 0 separate states, 0 unresolved, 822.8 s
+SH-route-2021000 P: 1 separate states, 0 unresolved, 834.8 s
+SH-route-2021000 T: 4 separate states, 3 unresolved, 1142.1 s
+SH-route-2021000 T+G: 8 separate states, 5 unresolved, 1295.9 s
+SH-route-2021001 I: 0 separate states, 0 unresolved, 822.9 s
+SH-route-2021001 D: 0 separate states, 3 unresolved, 1954.8 s
+SH-route-2021001 R: 5 separate states, 4 unresolved, 2494.6 s
+SH-route-2021001 Rr: 0 separate states, 1 unresolved, 2221.0 s
+SH-route-2021001 P: 2 separate states, 1 unresolved, 1610.8 s
+SH-route-2021001 T: 6 separate states, 3 unresolved, 1372.9 s
+SH-route-2021001 T+G: 9 separate states, 2 unresolved, 1323.3 s
+SH-class-2031000 I: 0 separate states, 0 unresolved, 1012.6 s
+SH-class-2031000 D: 2 separate states, 3 unresolved, 1379.9 s
+SH-class-2031000 R: 3 separate states, 2 unresolved, 1302.9 s
+SH-class-2031000 Rr: 1 separate states, 4 unresolved, 1228.6 s
+SH-class-2031000 P: 1 separate states, 2 unresolved, 1122.9 s
+SH-class-2031000 T: 4 separate states, 6 unresolved, 1557.1 s
+SH-class-2031000 T+G: 4 separate states, 5 unresolved, 1439.3 s
+SH-class-2031001 I: 0 separate states, 0 unresolved, 1000.9 s
+SH-class-2031001 D: 2 separate states, 7 unresolved, 1314.7 s
+SH-class-2031001 R: 7 separate states, 1 unresolved, 875.4 s
+SH-class-2031001 Rr: 2 separate states, 4 unresolved, 1028.2 s
+SH-class-2031001 P: 19 separate states, 0 unresolved, 873.7 s
+SH-class-2031001 T: 7 separate states, 1 unresolved, 868.3 s
+SH-class-2031001 T+G: 5 separate states, 1 unresolved, 861.9 s
+SH-mirror-2041000 I: 1 separate states, 0 unresolved, 808.9 s
+SH-mirror-2041000 D: 2 separate states, 1 unresolved, 903.4 s
+SH-mirror-2041000 R: 4 separate states, 0 unresolved, 841.8 s
+SH-mirror-2041000 Rr: 1 separate states, 3 unresolved, 924.9 s
+SH-mirror-2041000 P: 6 separate states, 4 unresolved, 1164.2 s
+SH-mirror-2041000 T: 7 separate states, 4 unresolved, 1382.7 s
+SH-mirror-2041000 T+G: 7 separate states, 4 unresolved, 1324.0 s
+SH-mirror-2041001 I: 0 separate states, 0 unresolved, 1039.0 s
+SH-mirror-2041001 D: 2 separate states, 2 unresolved, 1816.3 s
+SH-mirror-2041001 R: 7 separate states, 5 unresolved, 1309.6 s
+SH-mirror-2041001 Rr: 6 separate states, 5 unresolved, 1497.7 s
+SH-mirror-2041001 P: 2 separate states, 4 unresolved, 2292.3 s
+SH-mirror-2041001 T: 6 separate states, 12 unresolved, 3179.1 s
+SH-mirror-2041001 T+G: 2 separate states, 10 unresolved, 3124.6 s
+SH-recip-2051000 I: 2 separate states, 0 unresolved, 1814.8 s
+SH-recip-2051000 D: 5 separate states, 8 unresolved, 1623.7 s
+SH-recip-2051000 R: 5 separate states, 10 unresolved, 1305.7 s
+SH-recip-2051000 Rr: 15 separate states, 8 unresolved, 1894.2 s
+SH-recip-2051000 P: 8 separate states, 13 unresolved, 1652.7 s
+SH-recip-2051000 T: 10 separate states, 5 unresolved, 1516.8 s
+SH-recip-2051000 T+G: 7 separate states, 8 unresolved, 1395.0 s
+SH-recip-2051001 I: 1 separate states, 0 unresolved, 799.2 s
+SH-recip-2051001 D: 3 separate states, 8 unresolved, 1346.3 s
+SH-recip-2051001 R: 7 separate states, 8 unresolved, 1232.2 s
+SH-recip-2051001 Rr: 1 separate states, 3 unresolved, 974.3 s
+SH-recip-2051001 P: 8 separate states, 6 unresolved, 1211.7 s
+SH-recip-2051001 T: 4 separate states, 8 unresolved, 1395.1 s
+SH-recip-2051001 T+G: 2 separate states, 7 unresolved, 1262.3 s
+companion N2 7931 selected: 5 of 141
+companion N2 7931 control: 4 of 141
+companion N2 7932 selected: 8 of 141
+companion N2 7932 control: 2 of 141
+companion SH-2011000 selected: 4 of 141
+companion SH-2011000 control: 0 of 141
+companion SH-2011001 selected: 1 of 141
+companion SH-2011001 control: 1 of 141
+companion SH-route-2021000 selected: 1 of 141
+companion SH-route-2021000 control: 2 of 141
+companion SH-route-2021001 selected: 3 of 141
+companion SH-route-2021001 control: 1 of 141
+companion SH-class-2031000 selected: 2 of 141
+companion SH-class-2031000 control: 2 of 141
+companion SH-class-2031001 selected: 0 of 141
+companion SH-class-2031001 control: 0 of 141
+companion SH-mirror-2041000 selected: 3 of 141
+companion SH-mirror-2041000 control: 1 of 141
+companion SH-mirror-2041001 selected: 3 of 141
+companion SH-mirror-2041001 control: 2 of 141
+companion SH-recip-2051000 selected: 4 of 141
+companion SH-recip-2051000 control: 1 of 141
+companion SH-recip-2051001 selected: 4 of 141
+companion SH-recip-2051001 control: 0 of 141
+rc=0
