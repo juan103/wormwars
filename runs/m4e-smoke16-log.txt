@@ -1,0 +1,31 @@
+host 0: SH-2019100 (0 skipped), block 99 edges
+host 0 draw 0: E_h 99, K recip {'target': 47, 'achieved': 45, 'attempted': 62, 'matched': True}
+SH-2019100 d0 I: separate 0 (first pass), 0 (merged); unresolved 0; second pass 16 genomes in 64.0 s; 75.3 s
+SH-2019100 d0 U_LL: separate 0 (first pass), 0 (merged); unresolved 0; second pass 16 genomes in 66.6 s; 76.8 s
+SH-2019100 d0 U_LH: separate 0 (first pass), 0 (merged); unresolved 0; second pass 16 genomes in 63.2 s; 73.3 s
+SH-2019100 d0 U_HL: separate 0 (first pass), 0 (merged); unresolved 0; second pass 16 genomes in 63.7 s; 73.6 s
+SH-2019100 d0 U_HH: separate 0 (first pass), 0 (merged); unresolved 0; second pass 16 genomes in 63.8 s; 73.5 s
+SH-2019100 d0 W: separate 0 (first pass), 0 (merged); unresolved 0; second pass 16 genomes in 141.0 s; 227.6 s
+SH-2019100 d0 K: separate 0 (first pass), 0 (merged); unresolved 0; second pass 16 genomes in 63.7 s; 74.2 s
+SH-2019100 d0 T: separate 0 (first pass), 0 (merged); unresolved 0; second pass 16 genomes in 64.7 s; 74.3 s
+SH-2019100 d0 U_HX: separate 1 (first pass), 1 (merged); unresolved 0; second pass 16 genomes in 65.3 s; 77.5 s
+not read: 1 host(s); every check passed; {'separate': {'I': [0], 'U_LL': [0], 'U_LH': [0], 'U_HL': [0], 'U_HH': [0], 'W': [0], 'K': [0], 'T': [0], 'U_HX': [1]}, 'unresolved': {'I': [0], 'U_LL': [0], 'U_LH': [0], 'U_HL': [0], 'U_HH': [0], 'W': [0], 'K': [0], 'T': [0], 'U_HX': [0]}, 'separate_first_pass': {'I': [0], 'U_LL': [0], 'U_LH': [0], 'U_HL': [0], 'U_HH': [0], 'W': [0], 'K': [0], 'T': [0], 'U_HX': [1]}, 'hosts': ['SH-2019100'], 'n': 16}
+SH-2019100         d0 I     E  99 W   469.0 S1  16.59 S2   7.878 S3 0.777
+SH-2019100         d0 U_LL  E  99 W   469.0 S1  16.59 S2   2.782 S3 0.569
+SH-2019100         d0 U_LH  E  99 W  2347.0 S1  83.04 S2  69.659 S3 1.609
+SH-2019100         d0 U_HL  E 260 W   469.0 S1  16.59 S2   1.059 S3 0.566
+SH-2019100         d0 U_HH  E 260 W  2347.0 S1  83.04 S2  26.524 S3 0.965
+SH-2019100         d0 W     E 260 W  2347.0 S1  83.04 S2  70.911 S3 1.596
+SH-2019100         d0 K     E 260 W  2347.0 S1  83.04 S2  70.911 S3 1.543
+SH-2019100         d0 T     E 260 W  2347.0 S1  83.04 S2  70.911 S3 1.714
+SH-2019100         d0 U_HX  E 260 W  4694.0 S1 166.09 S2 106.095 S3 1.911
+I None 0.2862815365094264
+U_LL None 0.5329589916431049
+U_LH None 1.3589647597544312
+U_HL None 0.5612165838987022
+U_HH None 0.9519869912017486
+W None 1.3153885342591491
+K None 1.3658045044158218
+T None 1.3711688171288876
+U_HX 0.4666666666666667 1.7915783586286116
+rc=0

@@ -305,7 +305,7 @@ def history_record(res, s_, r):
 
 # ---------------------------------------------------------------------------------------------------------- oscillation
 def oscillation_check(g_one, cfg, end_row, tail_row, cur_one, starts, row, cap=CAP, initial=None, eval_substeps=SUBSTEPS,
-                      dtype=torch.float32):
+                      dtype=torch.float32, follow_ticks=FOLLOW, tail_from=TAIL_FROM):
     """One candidate history of one genome (strain g_one): a rerun of the integrator being classified, at its precision
     (eval_substeps: 32, or 64 in R3's variant) recorded at every substep over ticks 1801-2000, and a period search there;
     a float64 continuation of `cap` ticks from the main run's tick-2000 state; and Newton from the orbit's final state and
@@ -313,7 +313,9 @@ def oscillation_check(g_one, cfg, end_row, tail_row, cur_one, starts, row, cap=C
     count would test another integrator: a near-marginal spiral that the 32-substep integrator keeps decays by about 2% a
     period at 64 (found in a smoke test). At 32 substeps a cycle of 2 ticks or more has at least 64 samples a period.
     initial: for planted genomes, the start states instead of the probe. dtype: the precision being classified (float64
-    in R3's float64 variant); the recurrence rerun uses it too (Astra, round 8)."""
+    in R3's float64 variant); the recurrence rerun uses it too (Astra, round 8). follow_ticks and tail_from (M4e's
+    second pass): the follow's length and the first recorded tick, for a rerun from `initial`; the defaults are the
+    frozen 2000-tick path."""
     substeps = eval_substeps
     rec = []
     count = {"n": 0}
@@ -321,14 +323,14 @@ def oscillation_check(g_one, cfg, end_row, tail_row, cur_one, starts, row, cap=C
 
     def hook(v):
         count["n"] += 1
-        if count["n"] > (TAIL_FROM - 1) * substeps:
+        if count["n"] > (tail_from - 1) * substeps:
             rec.append(v[0, row].clone().numpy())
             seen["dtype"] = str(v.dtype).replace("torch.", "")
 
     if initial is None:
         probe_states(g_one, cfg, starts=starts, substeps=substeps, dtype=dtype, record=False, hook=hook)
     else:
-        follow_from(g_one, cfg, initial, substeps=substeps, dtype=dtype, record=False, hook=hook)
+        follow_from(g_one, cfg, initial, substeps=substeps, dtype=dtype, ticks=follow_ticks, record=False, hook=hook)
     sub = np.array(rec)
     L = K.returns(sub, 50 * substeps)
     b64 = E.brain64(g_one)
@@ -361,9 +363,10 @@ def oscillation_check(g_one, cfg, end_row, tail_row, cur_one, starts, row, cap=C
 
 # ----------------------------------------------------------------------------------------------------------- classify
 def full_classify(g_sel, cfg, run, starts=(0.25, 1.75), substeps=SUBSTEPS, cap=CAP, candidates=True, initial=None,
-                  dtype=torch.float32, compact=False):
+                  dtype=torch.float32, compact=False, follow_ticks=FOLLOW, tail_from=TAIL_FROM):
     """Classify every genome of g_sel from a probe_states() result: locate and reach both histories' roots, run the
-    oscillation procedure on candidates, and apply the classes. Returns the per-genome records and the roots."""
+    oscillation procedure on candidates, and apply the classes. Returns the per-genome records and the roots.
+    follow_ticks and tail_from pass to oscillation_check (M4e's second pass); the defaults are the frozen path."""
     b64 = E.brain64(g_sel)
     end, cur = run["end"].double(), run["cur"].double()
     y = run["y"]
@@ -385,7 +388,7 @@ def full_classify(g_sel, cfg, run, starts=(0.25, 1.75), substeps=SUBSTEPS, cap=C
             if candidates and cand[s_, r] and not (hs[r]["reach"] == "reached" and hs[r]["stability"] == "stable"):
                 detail[r], osc[r] = oscillation_check(g_sel.select([s_]), cfg, end[s_, r], run["tail"][s_, :, r],
                                                       cur[s_:s_ + 1, :1], starts, r, cap=cap, eval_substeps=substeps,
-                                                      dtype=dtype,
+                                                      dtype=dtype, follow_ticks=follow_ticks, tail_from=tail_from,
                                                       initial=None if initial is None else initial[s_:s_ + 1])
         cls, why = K.classify(hs[0], hs[1], float(rd[s_]), float(ro[s_]), float(a[s_]), osc[0], osc[1])
         sens = {str(d): K.classify(hs[0], hs[1], float(rd[s_]), float(ro[s_]), float(a[s_]), osc[0], osc[1], distinct=d)[0]

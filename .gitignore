@@ -75,3 +75,5 @@ experiments/*/compute.json
 
 # M4d: holds N2's C3 weights edge by edge (rule 1); blocks-summary.json is committed instead
 runs/memory-m4d/blocks.json
+# M4e: W, K and T carry N2's C3 weights (rule 1); blocks-summary.json is committed instead
+runs/memory-m4e/blocks.json

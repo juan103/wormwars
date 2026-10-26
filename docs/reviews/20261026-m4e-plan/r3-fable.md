@@ -1,0 +1,19 @@
+**Verdict: agree.** Every round-2 finding is implemented as described, and I found nothing that needs a code change before the first formal arm. What remains is cosmetic.
+
+**The fixes, checked against the files**
+
+- **Dose rule.** `scripts/memory_m4/m4e_read.py:125` returns None only when no arm switches, or every switch sits at the largest or at the smallest log S2. That is exactly the existence condition: the profile log-likelihood in β is concave, its derivative is Y times the gap between the count-weighted mean of x and the softmax-weighted mean, and the latter spans the open interval between min x and max x. So the MLE exists iff the count-weighted mean is interior, which fails only in the two cases the code names. Astra's example is the test at `tests/test_memory_m4e.py:227`, asserting before unpacking. The sabotage log shows all four dose sabotages failing by assertion, with `old_slope` now returning its last β instead of raising.
+- **Tables.** `m4e_tables.main` calls the reader's `load_counts`, which validates every panel and makes the global audit choice. `predictor` takes each panel's classes from `m4e_read.classes` and saves them per host, draw, arm and genome. The fallback test checks `classes` under a failed audit, and its sabotage fails by assertion.
+- **Audit.** The plan now calls zero transitions an expectation, reports `audited_fading_per_arm`, and states the bound as enough at 0.004 and not at 0.001. The reader computes the denominator from the first-pass class of each audited id.
+- **Seeds.** Lines 87, 91, 117 and 172 of the plan now agree with the code. Signs end at 20261530, audits at 20263509, no family overlaps.
+- **Tests.** 25 pass in the log. `check_skips` has a test and a sabotage. The batched test runs 128 strains and checks rows 1 and 77 and the single-strain rerun. 30 of 30 sabotages fail, 28 by assertion or "DID NOT RAISE".
+- **Cost.** 32 more audited genomes per panel at about 3 s over 160 panels is 4.3 hours. 33 to 34 total is right.
+- The archived draft 3 and the plan have the same length and the same marker lines. The classifier's two new parameters default to the frozen values and the second pass passes the first pass's first 301 read-out rows, which is all `full_classify` reads.
+
+**Minor items, none blocking**
+
+1. **A stale comment.** `scripts/memory_m4/m4e.py:48` still says the block range ends at 20261498. The plan says 20261499, which is right because `draw_blocks` builds U_HX's generator even when U_HX is out. Fix it in the same commit.
+2. **Two sabotages fail through the production guard, not an assertion.** "Supports not nested" and "N2's autapses" fail because `check_blocks` raises inside the test's first call. That is the right reason, since the guard under test catches the bad block, but the plan's "each by its test's own check" at line 283 is loose for those two.
+3. **Typical second-pass batches are not 128.** The `who` list is about 40 audit ids plus the non-fading genomes, so most second-pass batches hold 41 to 60 strains. Tested compositions are 1, 3 and 128. The plan's rule-6 wording is honest. Adding a 48-strain row to the same test would cost seconds and cover the common case.
+4. **The 0.0037 bound is marginal for T.** With the smoke's 5.5% non-fading share, T's audited fading count would be about 756 and its bound 0.00396. Any arm with more than about 6.5% non-fading genomes among its audited ids will bound above 0.004. The per-arm count is reported, so the reading will show this. "About 750 to 800" would be more exact than "about 800".
+5. `m4e_read.py:282` uses a literal 2 for fading rather than the named constant.

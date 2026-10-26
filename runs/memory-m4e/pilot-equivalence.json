@@ -1,0 +1,14 @@
+{
+ "before": "c037f7d",
+ "planted_identical": true,
+ "planted_passes": [
+  true,
+  true
+ ],
+ "host_genomes": 64,
+ "host_identical": true,
+ "host_classes": [
+  "fading"
+ ],
+ "identical": true
+}

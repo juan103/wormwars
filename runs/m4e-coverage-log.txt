@@ -1,0 +1,16 @@
+{'scenario': 'fixed', 'delta': 0.002, 'pairing': 'independent', 'coverage': 0.953, 'raises': 0.248, 'at_least_bench': 0.101, 'excluding': np.float64(0.227)}
+{'scenario': 'uniform', 'delta': 0.002, 'pairing': 'independent', 'coverage': 0.956, 'raises': 0.223, 'at_least_bench': 0.075, 'excluding': np.float64(0.232)}
+{'scenario': 'sparse', 'delta': 0.002, 'pairing': 'independent', 'coverage': 0.904, 'raises': 0.047, 'at_least_bench': 0.014, 'excluding': np.float64(0.166)}
+{'scenario': 'ensemble', 'delta': 0.002, 'pairing': 'independent', 'coverage': 0.985, 'raises': 0.15, 'at_least_bench': 0.042, 'excluding': np.float64(0.154)}
+{'scenario': 'raised base', 'delta': 0.002, 'pairing': 'independent', 'coverage': 0.955, 'raises': 0.073, 'at_least_bench': 0.047, 'excluding': np.float64(0.004)}
+{'scenario': 'fixed', 'delta': 0.004, 'pairing': 'independent', 'coverage': 0.953, 'raises': 0.651, 'at_least_bench': 0.447, 'excluding': np.float64(0.022)}
+{'scenario': 'uniform', 'delta': 0.004, 'pairing': 'independent', 'coverage': 0.963, 'raises': 0.562, 'at_least_bench': 0.364, 'excluding': np.float64(0.022)}
+{'scenario': 'sparse', 'delta': 0.004, 'pairing': 'independent', 'coverage': 0.751, 'raises': 0.036, 'at_least_bench': 0.017, 'excluding': np.float64(0.172)}
+{'scenario': 'ensemble', 'delta': 0.004, 'pairing': 'independent', 'coverage': 0.994, 'raises': 0.285, 'at_least_bench': 0.11, 'excluding': np.float64(0.001)}
+{'scenario': 'raised base', 'delta': 0.004, 'pairing': 'independent', 'coverage': 0.95, 'raises': 0.185, 'at_least_bench': 0.123, 'excluding': np.float64(0.002)}
+{'scenario': 'fixed', 'delta': 0.0, 'pairing': 'independent', 'coverage': 0.958, 'raises': 0.02, 'at_least_bench': 0.001, 'excluding': np.float64(0.451)}
+{'scenario': 'fixed', 'delta': 0.004, 'pairing': 'disjoint', 'coverage': 0.948, 'raises': 0.65, 'at_least_bench': 0.458, 'excluding': np.float64(0.03)}
+{'scenario': 'fixed', 'delta': 0.004, 'pairing': 'nested', 'coverage': 0.951, 'raises': 0.827, 'at_least_bench': 0.635, 'excluding': np.float64(0.035)}
+{'scenario': 'raised base', 'delta': 0.004, 'pairing': 'disjoint', 'coverage': 0.963, 'raises': 0.177, 'at_least_bench': 0.128, 'excluding': 0.0}
+{'scenario': 'raised base', 'delta': 0.004, 'pairing': 'nested', 'coverage': 0.963, 'raises': 0.263, 'at_least_bench': 0.173, 'excluding': np.float64(0.004)}
+exclusions read: True

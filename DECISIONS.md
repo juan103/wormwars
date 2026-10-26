@@ -11734,3 +11734,49 @@ taken; the second round's one-line slips without a further round, as Fable advis
   0.58615 − 0.15164); M4d's exclusion without its ten-host restriction; "never settle" for a finite horizon; the
   fading-retention question left out of what is open; the read-out named as every result's endpoint (M4a read the
   full state); absolute values in the definitions; D's autapses, which stay at N2's neurons.
+
+## D367 — M4e, what does a dense block carry?: designed with both reviewers, planned, coded and reviewed before its arms run (2026-10-26)
+
+**The owner's second item after M4d** (D365: "A study of what a dense block carries, its size, weights and degrees").
+`docs/memory/M4E-PLAN.md` (draft 4), `scripts/memory_m4/m4e.py`, `m4e_read.py`, `m4e_tables.py`, `m4e_stage0.py`,
+`m4e_pilot_equivalence.py`, `sabotage_m4e.py`, `tests/test_memory_m4e.py`; two optional parameters in
+`scripts/memory_m2/pilot.py`.
+- **The design** (`docs/reviews/20261025-dense-block-design/`, two rounds): Fable proposed a dose-response on a
+  sign-invariant block summary with a free stage 0 on M4d's records; Astra a factorial on edge count x total weight with
+  equal magnitudes, W and K arms, fresh hosts with two block draws, paired risk differences. Claude merged them on the
+  observation that the count contrast at fixed weight tests Fable's summary question; both agreed after revisions
+  (fresh hosts, U_HX conditional, two reporting fields, a larger audit).
+- **The arms:** I; U_LL, U_LH, U_HL, U_HH (the host's or N2's count x the host's or N2's total weight, equal
+  magnitudes); W (U_HH's support, N2's weights); K (N2's labelled degrees, weights shuffled, reciprocity matched to W);
+  T (N2's block); U_HX (twice N2's weight) out by the plan's rule after the smoke (about 54 projected hours with it).
+  The host's autapses in every arm but T. Ten fresh hosts (offset 1100), two draws of 512 paired genomes.
+- **The readings:** Δ_weight = U_HH − U_HL and Δ_count = U_HH − U_LH, 95% hull intervals each (90% jointly), each read
+  in two fields: direction against zero, size against 0.001 and an exclusion at 0.004 (guarded, envelope over the
+  unresolved). Coverage simulated before any arm: 0.948 to 0.994 outside the sparse scenario; power modest (a spread
+  0.004 reads "raises" in 56% to 83% of screens).
+- **The second pass:** every separate-states, oscillating or unresolved genome and 40 pre-drawn audit ids per panel
+  continued to a hold of 22,000 ticks and reclassified by the same rules; any audited fading genome turning separate
+  states drops the pass from the reading; the first-pass reading is reported beside it. The oscillation check's rerun
+  starts from the tick-21,800 state of the batched continuation (bitwise the same substeps; tested at 1, 48 and 128
+  genomes).
+- **Stage 0** (background, after the data, `runs/memory-m4e/stage0.json`): the per-genome coupling predictor
+  separates M4d's switch genomes at AUC 0.76; N2's block has a higher spectral summary S3 than its R copy in 9 of 10
+  hosts.
+- **Checks:** 25 tests pass; 30 of 30 sabotages fail as they must; the classifier change leaves the frozen path
+  identical to c037f7d on R6's planted genomes and 64 host genomes; M2's 14 tests pass with it. Smokes of 128 genomes
+  (benchmark) and 16 genomes (after round 1) ran every stage.
+
+**The review of the plan and code** (`docs/reviews/20261026-m4e-plan/`, three rounds).
+- **Both** caught: the dose model's non-existent maximum-likelihood slope on sparse counts (the smoke host's own
+  pattern; it could have stopped the readings); outputs and a test the plan named but the code lacked; the
+  batched-to-single replay untested in production shape.
+- **Fable** caught: overlapping seed families; the envelope dropping a size sub-field that held on both intervals; K's
+  target unchecked; then two stale seeds, an untested `check_skips`, sabotages failing by exception, a 48-genome batch.
+- **Astra** caught: the audit too small to bound an arm's transition rate near the effects (8 to 40 ids per panel);
+  `validate` accepting malformed second-pass codes; unexplained host seed jumps; a sabotage failing through a wrong
+  signature; the cap's wording; then the tables ignoring the audit fallback, the dose slope's existence rule (a single
+  interior switching arm has a finite slope), and the per-genome predictor not saved.
+- Round 1 both "revise"; round 2 Fable "agree" with text fixes, Astra "revise"; round 3 both "agree", minor items
+  taken.
+
+**Cost:** about 33 to 34 CPU hours (benchmarked), capped at 48 hours of recorded wall-clock time. No GPU.

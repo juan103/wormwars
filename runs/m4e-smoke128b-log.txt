@@ -1,0 +1,12 @@
+host 0: SH-2019100 (0 skipped), block 99 edges
+host 0 draw 0: E_h 99, K recip {'target': 37, 'achieved': 38, 'attempted': 55, 'matched': True}
+SH-2019100 d0 I: separate 0 (first pass), 0 (merged); unresolved 0; second pass 8 genomes in 39.5 s; 137.0 s
+SH-2019100 d0 U_LL: separate 0 (first pass), 0 (merged); unresolved 0; second pass 8 genomes in 39.6 s; 138.0 s
+SH-2019100 d0 U_LH: separate 1 (first pass), 1 (merged); unresolved 1; second pass 10 genomes in 115.6 s; 279.8 s
+SH-2019100 d0 U_HL: separate 0 (first pass), 0 (merged); unresolved 0; second pass 8 genomes in 39.4 s; 136.5 s
+SH-2019100 d0 U_HH: separate 0 (first pass), 0 (merged); unresolved 0; second pass 8 genomes in 40.0 s; 139.1 s
+SH-2019100 d0 W: separate 0 (first pass), 0 (merged); unresolved 0; second pass 8 genomes in 39.7 s; 139.6 s
+SH-2019100 d0 K: separate 0 (first pass), 0 (merged); unresolved 0; second pass 8 genomes in 39.6 s; 140.7 s
+SH-2019100 d0 T: separate 6 (first pass), 6 (merged); unresolved 1; second pass 15 genomes in 119.8 s; 281.6 s
+SH-2019100 d0 U_HX: separate 1 (first pass), 1 (merged); unresolved 7; second pass 15 genomes in 527.1 s; 1139.0 s
+rc=0

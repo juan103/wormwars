@@ -1,0 +1,27 @@
+R6 bistable separate states None correct
+R6 bistable, read-out silent separate states, read-out silent None correct
+R6 fading fading None correct
+R6 oscillating persistent oscillation None correct
+R6 integrator cycle persistent oscillation None correct
+R6 damped spiral unresolved candidate around a stable root; unstable or marginal root correct
+R6 bistable separate states None correct
+R6 bistable, read-out silent separate states, read-out silent None correct
+R6 fading fading None correct
+R6 oscillating persistent oscillation None correct
+R6 integrator cycle persistent oscillation None correct
+R6 damped spiral unresolved candidate around a stable root; unstable or marginal root correct
+{
+ "before": "c037f7d",
+ "planted_identical": true,
+ "planted_passes": [
+  true,
+  true
+ ],
+ "host_genomes": 64,
+ "host_identical": true,
+ "host_classes": [
+  "fading"
+ ],
+ "identical": true
+}
+rc=0

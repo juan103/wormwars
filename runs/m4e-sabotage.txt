@@ -1,0 +1,826 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+______________________ test_every_block_follows_the_plan ______________________
+
+M = <module 'm4e' from 'D:\\Claude\\random\\wormWars\\scripts\\memory_m4\\m4e.py'>
+drawn = (array([[ 0.,  1.,  0.,  0.,  0.,  0.,  0.,  0., 33.,  1.,  0.,  0.,  0.,
+         0.,  0.,  0.,  0.,  0.,  0.,  2.,  ..., 'attempted': 14654}, 'K_recip': {'achieved': 45, 'attempted': 62, 'matched': True, 'target': 47}, 'S_h': 469.0, ...})
+
+    def test_every_block_follows_the_plan(M, drawn):
+        hb, blocks, info = drawn
+>       M.check_blocks(blocks, info, hb)
+
+tests\test_memory_m4e.py:54: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+blocks = {'K': array([[ 0.,  2.,  1.,  2., 24.,  8., 15., 16.,  0.,  0.,  7., 11.,  0.,
+         0.,  0., 10.,  1.,  0.,  0.,  ...0.       ,  0.       ,
+         0.       ,  0.       ,  0.       ,  1.8038461,  0.       ]],
+      dtype=float32), ...}
+info = {'E_h': 99, 'K_chain': {'accepted': 5200, 'attempted': 14654}, 'K_recip': {'achieved': 45, 'attempted': 62, 'matched': True, 'target': 47}, 'S_h': 469.0, ...}
+host_block = array([[ 0.,  1.,  0.,  0.,  0.,  0.,  0.,  0., 33.,  1.,  0.,  0.,  0.,
+         0.,  0.,  0.,  0.,  0.,  0.,  2.,  0...,
+         0.,  0.,  1.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+         0.,  0.,  2.,  0.]], dtype=float32)
+
+    def check_blocks(blocks, info, host_block):
+        """The plan's rules for every block of one host and draw."""
+        Bn = m4d.n2_block()
+        n = len(Bn)
+        off = ~np.eye(n, dtype=bool)
+        bad = []
+        lo = {tuple(x) for x in info["low_support"]}
+        hi = {tuple(x) for x in info["high_support"]}
+        if not lo <= hi or len(lo) != info["E_h"] or len(hi) != N2_E:
+            bad.append("supports not nested, or of the wrong size")
+        for a, (sup, total) in {"U_LL": (lo, info["S_h"]), "U_LH": (lo, N2_S), "U_HL": (hi, info["S_h"]),
+                                "U_HH": (hi, N2_S), "U_HX": (hi, 2 * N2_S)}.items():
+            B = blocks[a]
+            got = {tuple(x) for x in np.argwhere(off & (B > 0))}
+            vals = B[off & (B > 0)]
+            if got != sup or not np.allclose(vals, total / len(sup), rtol=1e-6) or not np.isclose(vals.sum(), total,
+                                                                                                 rtol=1e-5):
+                bad.append(f"{a}: support, equal magnitudes or total")
+        if {tuple(x) for x in np.argwhere(off & (blocks["W"] > 0))} != hi or not np.array_equal(
+                np.sort(blocks["W"][off & (blocks["W"] > 0)]), np.sort(Bn[off & (Bn > 0)])):
+            bad.append("W: support or N2's weights")
+        sk, sn = m4d.block_stats(blocks["K"]), m4d.block_stats(Bn)
+        if sk["in_degree"] != sn["in_degree"] or sk["out_degree"] != sn["out_degree"] or not np.array_equal(
+                np.sort(blocks["K"][off & (blocks["K"] > 0)]), np.sort(Bn[off & (Bn > 0)])):
+            bad.append("K: N2's degrees or weights")
+        if sk["reciprocal"] != info["K_recip"]["achieved"] or info["K_recip"]["target"] != m4d.block_stats(blocks["W"])[
+                "reciprocal"]:
+            bad.append("K: reciprocal pairs differ from the record, or its target from W's count")
+        for a, B in blocks.items():
+            want = np.diag(Bn) if a == "T" else np.diag(host_block)
+            if not np.array_equal(np.diag(B), want.astype(B.dtype)):
+                bad.append(f"{a}: diagonal")
+        if not np.array_equal(blocks["T"], Bn):
+            bad.append("T: not N2's block")
+        if bad:
+>           raise Stop("blocks violate the plan: " + "; ".join(bad[:10]))
+E           m4e.Stop: blocks violate the plan: supports not nested, or of the wrong size
+
+scripts\memory_m4\m4e.py:285: Stop
+=========================== short test summary info ===========================
+FAILED tests/test_memory_m4e.py::test_every_block_follows_the_plan - m4e.Stop...
+### supports not nested: fails, as it must
+F                                                                        [100%]
+================================== FAILURES ===================================
+______________________ test_every_block_follows_the_plan ______________________
+
+M = <module 'm4e' from 'D:\\Claude\\random\\wormWars\\scripts\\memory_m4\\m4e.py'>
+drawn = (array([[ 0.,  1.,  0.,  0.,  0.,  0.,  0.,  0., 33.,  1.,  0.,  0.,  0.,
+         0.,  0.,  0.,  0.,  0.,  0.,  2.,  ..., 'attempted': 14654}, 'K_recip': {'achieved': 45, 'attempted': 62, 'matched': True, 'target': 47}, 'S_h': 469.0, ...})
+
+    def test_every_block_follows_the_plan(M, drawn):
+        hb, blocks, info = drawn
+>       M.check_blocks(blocks, info, hb)
+
+tests\test_memory_m4e.py:54: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+blocks = {'K': array([[ 0.,  2.,  1.,  2., 24.,  8., 15., 16.,  0.,  0.,  7., 11.,  0.,
+         0.,  0., 10.,  1.,  0.,  0.,  ...0.       ,  0.       ,
+         0.       ,  0.       ,  0.       ,  1.8038461,  1.       ]],
+      dtype=float32), ...}
+info = {'E_h': 99, 'K_chain': {'accepted': 5200, 'attempted': 14654}, 'K_recip': {'achieved': 45, 'attempted': 62, 'matched': True, 'target': 47}, 'S_h': 469.0, ...}
+host_block = array([[ 0.,  1.,  0.,  0.,  0.,  0.,  0.,  0., 33.,  1.,  0.,  0.,  0.,
+         0.,  0.,  0.,  0.,  0.,  0.,  2.,  0...,
+         0.,  0.,  1.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+         0.,  0.,  2.,  0.]], dtype=float32)
+
+    def check_blocks(blocks, info, host_block):
+        """The plan's rules for every block of one host and draw."""
+        Bn = m4d.n2_block()
+        n = len(Bn)
+        off = ~np.eye(n, dtype=bool)
+        bad = []
+        lo = {tuple(x) for x in info["low_support"]}
+        hi = {tuple(x) for x in info["high_support"]}
+        if not lo <= hi or len(lo) != info["E_h"] or len(hi) != N2_E:
+            bad.append("supports not nested, or of the wrong size")
+        for a, (sup, total) in {"U_LL": (lo, info["S_h"]), "U_LH": (lo, N2_S), "U_HL": (hi, info["S_h"]),
+                                "U_HH": (hi, N2_S), "U_HX": (hi, 2 * N2_S)}.items():
+            B = blocks[a]
+            got = {tuple(x) for x in np.argwhere(off & (B > 0))}
+            vals = B[off & (B > 0)]
+            if got != sup or not np.allclose(vals, total / len(sup), rtol=1e-6) or not np.isclose(vals.sum(), total,
+                                                                                                 rtol=1e-5):
+                bad.append(f"{a}: support, equal magnitudes or total")
+        if {tuple(x) for x in np.argwhere(off & (blocks["W"] > 0))} != hi or not np.array_equal(
+                np.sort(blocks["W"][off & (blocks["W"] > 0)]), np.sort(Bn[off & (Bn > 0)])):
+            bad.append("W: support or N2's weights")
+        sk, sn = m4d.block_stats(blocks["K"]), m4d.block_stats(Bn)
+        if sk["in_degree"] != sn["in_degree"] or sk["out_degree"] != sn["out_degree"] or not np.array_equal(
+                np.sort(blocks["K"][off & (blocks["K"] > 0)]), np.sort(Bn[off & (Bn > 0)])):
+            bad.append("K: N2's degrees or weights")
+        if sk["reciprocal"] != info["K_recip"]["achieved"] or info["K_recip"]["target"] != m4d.block_stats(blocks["W"])[
+                "reciprocal"]:
+            bad.append("K: reciprocal pairs differ from the record, or its target from W's count")
+        for a, B in blocks.items():
+            want = np.diag(Bn) if a == "T" else np.diag(host_block)
+            if not np.array_equal(np.diag(B), want.astype(B.dtype)):
+                bad.append(f"{a}: diagonal")
+        if not np.array_equal(blocks["T"], Bn):
+            bad.append("T: not N2's block")
+        if bad:
+>           raise Stop("blocks violate the plan: " + "; ".join(bad[:10]))
+E           m4e.Stop: blocks violate the plan: U_LL: diagonal; U_LH: diagonal; U_HL: diagonal; U_HH: diagonal; U_HX: diagonal; W: diagonal; K: diagonal
+
+scripts\memory_m4\m4e.py:285: Stop
+=========================== short test summary info ===========================
+FAILED tests/test_memory_m4e.py::test_every_block_follows_the_plan - m4e.Stop...
+### N2's autapses in the U, W and K arms: fails, as it must
+F                                                                        [100%]
+================================== FAILURES ===================================
+___________________ test_the_block_check_catches_each_rule ____________________
+
+M = <module 'm4e' from 'D:\\Claude\\random\\wormWars\\scripts\\memory_m4\\m4e.py'>
+drawn = (array([[ 0.,  1.,  0.,  0.,  0.,  0.,  0.,  0., 33.,  1.,  0.,  0.,  0.,
+         0.,  0.,  0.,  0.,  0.,  0.,  2.,  ..., 'attempted': 14654}, 'K_recip': {'achieved': 45, 'attempted': 62, 'matched': True, 'target': 47}, 'S_h': 469.0, ...})
+
+    def test_the_block_check_catches_each_rule(M, drawn):
+        hb, blocks, info = drawn
+        off = ~np.eye(30, dtype=bool)
+        for a, change in (("U_HH", lambda B: B.__setitem__(tuple(np.argwhere(off & (B > 0))[0]), 1.0)),  # unequal
+                          ("W", lambda B: B.__setitem__((0, 0), B[0, 0] + 1)),  # the diagonal
+                          ("K", lambda B: B.__setitem__(tuple(np.argwhere(off & (B > 0))[0]), 0.0)),  # a degree
+                          ("T", lambda B: B.__setitem__((1, 2), B[1, 2] + 1))):
+            bad = {k: v.copy() for k, v in blocks.items()}
+            change(bad[a])
+>           with pytest.raises(SystemExit):
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^
+E           Failed: DID NOT RAISE <class 'SystemExit'>
+
+tests\test_memory_m4e.py:76: Failed
+=========================== short test summary info ===========================
+FAILED tests/test_memory_m4e.py::test_the_block_check_catches_each_rule - Fai...
+### the block check disabled: fails, as it must
+F                                                                        [100%]
+================================== FAILURES ===================================
+_________________ test_the_reciprocal_matching_records_a_miss _________________
+
+M = <module 'm4e' from 'D:\\Claude\\random\\wormWars\\scripts\\memory_m4\\m4e.py'>
+
+    def test_the_reciprocal_matching_records_a_miss(M):
+        Bn = M.m4d.n2_block()
+        out, rec = M.match_recip(Bn, 1000, np.random.default_rng(0))  # unreachable
+>       assert not rec["matched"] and rec["achieved"] == M.m4d.block_stats(out)["reciprocal"]
+E       assert (not True)
+
+tests\test_memory_m4e.py:83: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_memory_m4e.py::test_the_reciprocal_matching_records_a_miss
+### a reciprocal miss reported as matched: fails, as it must
+F                                                                        [100%]
+================================== FAILURES ===================================
+_______________________ test_a_clamped_magnitude_stops ________________________
+
+M = <module 'm4e' from 'D:\\Claude\\random\\wormWars\\scripts\\memory_m4\\m4e.py'>
+host = Connectome(names=('I1L', 'I1R', 'I2L', 'I2R', 'I3', 'I4', 'I5', 'I6', 'M1', 'M2L', 'M2R', 'M3L', 'M3R', 'M4', 'M5', 'M...ted neurons (0): [] -- kept in the 302 regardless, so the node set is identical across N2/SH/RD']}, label='SH-2019100')
+
+    def test_a_clamped_magnitude_stops(M, host):
+        g, _ = M.m4d.host_genomes(host, 2, 1)
+        k = M.m4d.core_idx()
+        chem = host.chem.copy()
+        chem[k[0], k[1]] = 1e5
+>       with pytest.raises(SystemExit):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'SystemExit'>
+
+tests\test_memory_m4e.py:92: Failed
+=========================== short test summary info ===========================
+FAILED tests/test_memory_m4e.py::test_a_clamped_magnitude_stops - Failed: DID...
+### the clamp check disabled: fails, as it must
+F                                                                        [100%]
+================================== FAILURES ===================================
+________ test_the_hold_continued_from_tick_2000_equals_a_longer_probe _________
+
+M = <module 'm4e' from 'D:\\Claude\\random\\wormWars\\scripts\\memory_m4\\m4e.py'>
+host = Connectome(names=('I1L', 'I1R', 'I2L', 'I2R', 'I3', 'I4', 'I5', 'I6', 'M1', 'M2L', 'M2R', 'M3L', 'M3R', 'M4', 'M5', 'M...ted neurons (0): [] -- kept in the 302 regardless, so the node set is identical across N2/SH/RD']}, label='SH-2019100')
+
+    def test_the_hold_continued_from_tick_2000_equals_a_longer_probe(M, host):
+        g, cfg = M.m4d.host_genomes(host, 3, 11)
+        long = M.P.probe_states(g, cfg, ticks=2060)
+        short = M.P.probe_states(g, cfg)
+        cont = M.continue_hold(g, cfg, short["end"], 60, tail=40)
+        assert torch.equal(cont["end"], long["end"])
+        assert np.array_equal(cont["tail"], long["tail"][:, -40:])
+        # from tick 20, where the states still move (fading genomes stall in float32 well before tick 2000; the M2 pilot)
+        early = M.P.probe_states(g, cfg, ticks=20)
+        later = M.P.probe_states(g, cfg, ticks=80)
+        cont = M.continue_hold(g, cfg, early["end"], 60, tail=40)
+>       assert torch.equal(cont["end"], later["end"]) and not torch.equal(early["end"], later["end"])
+E       assert (False)
+E        +  where False = <built-in method equal of type object at 0x00007FF9B9B3EDF0>(tensor([[[ 0.2926, -0.0930, -0.2341,  ..., -0.3780, -0.9935,  0.2673],\n         [ 0.2927, -0.0931, -0.2338,  ..., -0.3... 0.5603,  0.9471],\n         [ 0.0252,  0.4146, -0.8190,  ...,  1.0376,  0.5603,  0.9471]]],\n       dtype=torch.float64), tensor([[[ 0.2926, -0.0930, -0.2341,  ..., -0.3780, -0.9935,  0.2673],\n         [ 0.2927, -0.0931, -0.2338,  ..., -0.3... 0.5603,  0.9471],\n         [ 0.0252,  0.4146, -0.8190,  ...,  1.0376,  0.5603,  0.9471]]],\n       dtype=torch.float64))
+E        +    where <built-in method equal of type object at 0x00007FF9B9B3EDF0> = torch.equal
+
+tests\test_memory_m4e.py:119: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_memory_m4e.py::test_the_hold_continued_from_tick_2000_equals_a_longer_probe
+### the hold continued one tick too far: fails, as it must
+F                                                                        [100%]
+================================== FAILURES ===================================
+______ test_the_rerun_from_the_pre_tail_state_records_the_same_substeps _______
+
+M = <module 'm4e' from 'D:\\Claude\\random\\wormWars\\scripts\\memory_m4\\m4e.py'>
+host = Connectome(names=('I1L', 'I1R', 'I2L', 'I2R', 'I3', 'I4', 'I5', 'I6', 'M1', 'M2L', 'M2R', 'M3L', 'M3R', 'M4', 'M5', 'M...ted neurons (0): [] -- kept in the 302 regardless, so the node set is identical across N2/SH/RD']}, label='SH-2019100')
+
+    def test_the_rerun_from_the_pre_tail_state_records_the_same_substeps(M, host):
+        """The oscillation check's rerun from the state TAIL ticks before the end records exactly the substeps a rerun from
+        tick 2000 records over the same final ticks (here 40 of a 60-tick continuation, while the states still move)."""
+        g, cfg = M.m4d.host_genomes(host, 1, 13)
+        end = M.P.probe_states(g, cfg, ticks=20)["end"].to(torch.float32)
+        cont = M.continue_hold(g, cfg, end, 60, tail=40)
+        a, b = [], []
+        n = {"a": 0}
+    
+        def hook_a(v):
+            n["a"] += 1
+            if n["a"] > 20 * 32:
+                a.append(v.clone())
+    
+        M.P.follow_from(g, cfg, end, substeps=32, ticks=60, record=False, hook=hook_a)
+        M.P.follow_from(g, cfg, cont["pre_tail"], substeps=32, ticks=40, record=False, hook=lambda v: b.append(v.clone()))
+>       assert len(a) == len(b) == 40 * 32 and all(torch.equal(x, y) for x, y in zip(a, b))
+E       assert (1280 == (40 * 32) and False)
+E        +  where 1280 = len([tensor([[[-1.1092e+00,  1.1654e-01,  3.5485e-01, -3.7572e-01, -1.2785e-02,\n           8.4939e-02, -2.2766e-01, -8.139...           1.7147e-01,  1.8813e-01,  1.2389e-01, -5.1373e-01, -5.0938e-01,\n           2.7694e-01, -4.1024e-01]]]), ...])
+E        +  and   False = all(<generator object test_the_rerun_from_the_pre_tail_state_records_the_same_substeps.<locals>.<genexpr> at 0x00000253A5FAF300>)
+
+tests\test_memory_m4e.py:158: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_memory_m4e.py::test_the_rerun_from_the_pre_tail_state_records_the_same_substeps
+### the pre-tail state one tick late: fails, as it must
+F                                                                        [100%]
+================================== FAILURES ===================================
+__________ test_the_oscillation_rerun_follows_the_requested_horizon ___________
+
+M = <module 'm4e' from 'D:\\Claude\\random\\wormWars\\scripts\\memory_m4\\m4e.py'>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x00000253A61B91D0>
+
+    def test_the_oscillation_rerun_follows_the_requested_horizon(M, monkeypatch):
+        calls = {}
+    
+        def fake_follow(g, cfg, initial, substeps=None, dtype=None, ticks=None, record=True, hook=None):
+            calls["ticks"] = ticks
+            n = 0
+            for _ in range(ticks * substeps):
+                n += 1
+                hook(torch.zeros(1, 2, 3))
+            return None
+    
+        monkeypatch.setattr(M.P, "follow_from", fake_follow)
+        monkeypatch.setattr(M.P.K, "returns", lambda sub, maxlag: (calls.__setitem__("samples", len(sub)), None)[1])
+        with pytest.raises(Exception):  # stops after the recurrence part; only the recording is under test
+            M.P.oscillation_check(None, None, torch.zeros(3), np.zeros((200, 3)), None, None, 0, initial=torch.zeros(1, 2, 3),
+                                  eval_substeps=4, follow_ticks=500, tail_from=301)
+>       assert calls["ticks"] == 500 and calls["samples"] == 200 * 4
+E       assert (500 == 500 and 0 == (200 * 4))
+
+tests\test_memory_m4e.py:139: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_memory_m4e.py::test_the_oscillation_rerun_follows_the_requested_horizon
+### the rerun recording the frozen ticks: fails, as it must
+F                                                                        [100%]
+================================== FAILURES ===================================
+__________ test_the_oscillation_rerun_follows_the_requested_horizon ___________
+
+M = <module 'm4e' from 'D:\\Claude\\random\\wormWars\\scripts\\memory_m4\\m4e.py'>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x00000253A61B9EF0>
+
+    def test_the_oscillation_rerun_follows_the_requested_horizon(M, monkeypatch):
+        calls = {}
+    
+        def fake_follow(g, cfg, initial, substeps=None, dtype=None, ticks=None, record=True, hook=None):
+            calls["ticks"] = ticks
+            n = 0
+            for _ in range(ticks * substeps):
+                n += 1
+                hook(torch.zeros(1, 2, 3))
+            return None
+    
+        monkeypatch.setattr(M.P, "follow_from", fake_follow)
+        monkeypatch.setattr(M.P.K, "returns", lambda sub, maxlag: (calls.__setitem__("samples", len(sub)), None)[1])
+        with pytest.raises(Exception):  # stops after the recurrence part; only the recording is under test
+            M.P.oscillation_check(None, None, torch.zeros(3), np.zeros((200, 3)), None, None, 0, initial=torch.zeros(1, 2, 3),
+                                  eval_substeps=4, follow_ticks=500, tail_from=301)
+>       assert calls["ticks"] == 500 and calls["samples"] == 200 * 4
+E       assert (2000 == 500)
+
+tests\test_memory_m4e.py:139: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_memory_m4e.py::test_the_oscillation_rerun_follows_the_requested_horizon
+### the rerun at the frozen length: fails, as it must
+F                                                                        [100%]
+================================== FAILURES ===================================
+______________________ test_merged_classes_and_the_audit ______________________
+
+M = <module 'm4e' from 'D:\\Claude\\random\\wormWars\\scripts\\memory_m4\\m4e.py'>
+
+    def test_merged_classes_and_the_audit(M):
+        rec = {"class": [2, 0, 4, 2, 2], "audit": [3, 4], "second": {"ids": [1, 2, 3, 4], "class": [2, 0, 2, 2]}}
+>       assert M.merged_classes(rec) == [2, 2, 0, 2, 2]
+E       assert [2, 0, 4, 2, 2] == [2, 2, 0, 2, 2]
+E         
+E         At index 1 diff: 0 != 2
+E         Use -v to get more diff
+
+tests\test_memory_m4e.py:171: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_memory_m4e.py::test_merged_classes_and_the_audit - assert [...
+### the merged classes from the first pass: fails, as it must
+F                                                                        [100%]
+================================== FAILURES ===================================
+______________________ test_merged_classes_and_the_audit ______________________
+
+M = <module 'm4e' from 'D:\\Claude\\random\\wormWars\\scripts\\memory_m4\\m4e.py'>
+
+    def test_merged_classes_and_the_audit(M):
+        rec = {"class": [2, 0, 4, 2, 2], "audit": [3, 4], "second": {"ids": [1, 2, 3, 4], "class": [2, 0, 2, 2]}}
+        assert M.merged_classes(rec) == [2, 2, 0, 2, 2]
+        assert not M.audit_failed(rec)
+        rec["second"]["class"] = [2, 0, 2, 1]  # an audited fading genome became separate states
+>       assert M.audit_failed(rec)
+E       AssertionError: assert False
+E        +  where False = <function <lambda> at 0x00000253A5D9BB00>({'audit': [3, 4], 'class': [2, 0, 4, 2, 2], 'second': {'class': [2, 0, 2, 1], 'ids': [1, 2, 3, 4]}})
+E        +    where <function <lambda> at 0x00000253A5D9BB00> = <module 'm4e' from 'D:\\Claude\\random\\wormWars\\scripts\\memory_m4\\m4e.py'>.audit_failed
+
+tests\test_memory_m4e.py:174: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_memory_m4e.py::test_merged_classes_and_the_audit - Assertio...
+### the audit never failing: fails, as it must
+F                                                                        [100%]
+================================== FAILURES ===================================
+________________________ test_the_audit_ids_are_fixed _________________________
+
+M = <module 'm4e' from 'D:\\Claude\\random\\wormWars\\scripts\\memory_m4\\m4e.py'>
+
+    def test_the_audit_ids_are_fixed(M):
+        a = M.audit_ids(3, 1, "K", 512)
+>       assert a == M.audit_ids(3, 1, "K", 512) and len(set(a)) == M.AUDIT_PER_PANEL == 40
+E       assert ([0, 24, 56, 89, 166, 184, ...] == [140, 177, 19...269, 375, ...]
+E         
+E         At index 0 diff: 0 != 140
+E         Use -v to get more diff)
+
+tests\test_memory_m4e.py:179: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_memory_m4e.py::test_the_audit_ids_are_fixed - assert ([0, 2...
+### the audit ids unseeded: fails, as it must
+F                                                                        [100%]
+================================== FAILURES ===================================
+______________ test_a_record_must_carry_the_planned_second_pass _______________
+
+M = <module 'm4e' from 'D:\\Claude\\random\\wormWars\\scripts\\memory_m4\\m4e.py'>
+
+    def test_a_record_must_carry_the_planned_second_pass(M):
+        r = {"host": 0, "name": "SH-x"}
+        n = M.N_DRAW
+        audit = M.audit_ids(0, 0, "U_HH")
+        cls = [2] * n
+        cls[1] = 0  # a separate-states genome must be in the second pass
+        want = sorted(set([1] + audit))
+        rec = {"host": 0, "name": "SH-x", "draw": 0, "arm": "U_HH", "genome_seed": M.GENOME_SEED, "n": n,
+               "arm_sha256": "h", "genomes": list(range(n)), "class": cls, "audit": audit,
+               **{k: [0.0] * n for k in ("reason", "a", "root_distance", "readout_difference", "write_sq", "write_core")},
+               "second": {"ids": want, "class": [2] * len(want),
+                          **{k: [0.0] * len(want) for k in ("reason", "root_distance", "readout_difference")}}}
+        M.validate(rec, r, 0, "U_HH", "h")
+        short = [i for i in want if i != 1]
+        rec["second"] = {"ids": short, "class": [2] * len(short),
+                         **{k: [0.0] * len(short) for k in ("reason", "root_distance", "readout_difference")}}
+>       with pytest.raises(SystemExit):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'SystemExit'>
+
+tests\test_memory_m4e.py:267: Failed
+=========================== short test summary info ===========================
+FAILED tests/test_memory_m4e.py::test_a_record_must_carry_the_planned_second_pass
+### the second pass not validated: fails, as it must
+F                                                                        [100%]
+================================== FAILURES ===================================
+___________________ test_the_two_fields_at_their_boundaries ___________________
+
+R = <module 'm4e_read' from 'D:\\Claude\\random\\wormWars\\scripts\\memory_m4\\m4e_read.py'>
+
+    def test_the_two_fields_at_their_boundaries(R):
+        assert R.direction((1e-9, 1)) == "raises" and R.direction((-1, -1e-9)) == "lowers"
+>       assert R.direction((0, 1)) == "direction unresolved"
+E       AssertionError: assert 'raises' == 'direction unresolved'
+E         
+E         - direction unresolved
+E         + raises
+
+tests\test_memory_m4e.py:186: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_memory_m4e.py::test_the_two_fields_at_their_boundaries - As...
+### the direction at zero inclusive: fails, as it must
+F                                                                        [100%]
+================================== FAILURES ===================================
+___________________ test_the_two_fields_at_their_boundaries ___________________
+
+R = <module 'm4e_read' from 'D:\\Claude\\random\\wormWars\\scripts\\memory_m4\\m4e_read.py'>
+
+    def test_the_two_fields_at_their_boundaries(R):
+        assert R.direction((1e-9, 1)) == "raises" and R.direction((-1, -1e-9)) == "lowers"
+        assert R.direction((0, 1)) == "direction unresolved"
+        assert R.size((0.0011, 0.0035), 0.0) == ["at least 0.001", "no effect of 0.004 or more" + R.LIMIT]
+        assert R.size((0.001, 0.0035), 0.0) == ["no effect of 0.004 or more" + R.LIMIT]
+        assert R.size((-0.004, 0.0), 0.0) == ["size unresolved"]  # strictly inside
+>       assert R.size((-0.002, 0.002), 0.01) == [R.SINGLE_HOST]  # the guard
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: assert ['no effect o...y be missed)'] == ['size unreso...st responds)']
+E         
+E         At index 0 diff: 'no effect of 0.004 or more, as a mean across these ten hosts (a response confined to a minority of host graphs may be missed)' != 'size unresolved (a single host responds)'
+E         Use -v to get more diff
+
+tests\test_memory_m4e.py:190: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_memory_m4e.py::test_the_two_fields_at_their_boundaries - As...
+### the single-host guard removed: fails, as it must
+F                                                                        [100%]
+================================== FAILURES ===================================
+___________________ test_the_two_fields_at_their_boundaries ___________________
+
+R = <module 'm4e_read' from 'D:\\Claude\\random\\wormWars\\scripts\\memory_m4\\m4e_read.py'>
+
+    def test_the_two_fields_at_their_boundaries(R):
+        assert R.direction((1e-9, 1)) == "raises" and R.direction((-1, -1e-9)) == "lowers"
+        assert R.direction((0, 1)) == "direction unresolved"
+        assert R.size((0.0011, 0.0035), 0.0) == ["at least 0.001", "no effect of 0.004 or more" + R.LIMIT]
+        assert R.size((0.001, 0.0035), 0.0) == ["no effect of 0.004 or more" + R.LIMIT]
+        assert R.size((-0.004, 0.0), 0.0) == ["size unresolved"]  # strictly inside
+        assert R.size((-0.002, 0.002), 0.01) == [R.SINGLE_HOST]  # the guard
+>       assert R.size((-0.002, 0.002), 0.0, exclusions_ok=False) == ["size unresolved"]  # the coverage's response
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: assert ['no effect o...y be missed)'] == ['size unresolved']
+E         
+E         At index 0 diff: 'no effect of 0.004 or more, as a mean across these ten hosts (a response confined to a minority of host graphs may be missed)' != 'size unresolved'
+E         Use -v to get more diff
+
+tests\test_memory_m4e.py:191: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_memory_m4e.py::test_the_two_fields_at_their_boundaries - As...
+### the coverage's response ignored: fails, as it must
+F                                                                        [100%]
+================================== FAILURES ===================================
+________________ test_the_poisson_slope_recovers_a_known_dose _________________
+
+R = <module 'm4e_read' from 'D:\\Claude\\random\\wormWars\\scripts\\memory_m4\\m4e_read.py'>
+
+    def test_the_poisson_slope_recovers_a_known_dose(R):
+        x = np.log([1.0, 2.0, 4.0, 8.0])
+        n = 10_000_000
+        counts = np.round(n * np.exp(-6 + 1.5 * x))
+        a, b = R.poisson_slope(counts, n, x)
+        assert abs(b - 1.5) < 1e-3 and abs(a + 6) < 1e-3
+        assert R.poisson_slope([0, 0, 0], 100, [0.0, 1.0, 2.0]) is None
+        # switches in one arm only: the MLE does not exist (Fable, Astra, round 1: the smoke host's own pattern)
+>       assert R.poisson_slope([0, 0, 0, 5], 1024, np.log([1.0, 2.0, 4.0, 8.0])) is None
+E       AssertionError: assert array([-109.013981  ,   49.86528596]) is None
+E        +  where array([-109.013981  ,   49.86528596]) = <function old_slope at 0x00000253A5DB4C20>([0, 0, 0, 5], 1024, array([0.        , 0.69314718, 1.38629436, 2.07944154]))
+E        +    where <function old_slope at 0x00000253A5DB4C20> = <module 'm4e_read' from 'D:\\Claude\\random\\wormWars\\scripts\\memory_m4\\m4e_read.py'>.poisson_slope
+E        +    and   array([0.        , 0.69314718, 1.38629436, 2.07944154]) = <ufunc 'log'>([1.0, 2.0, 4.0, 8.0])
+E        +      where <ufunc 'log'> = np.log
+
+tests\test_memory_m4e.py:224: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_memory_m4e.py::test_the_poisson_slope_recovers_a_known_dose
+### the dose's MLE taken when it does not exist: fails, as it must
+F                                                                        [100%]
+================================== FAILURES ===================================
+____________ test_the_dose_model_leaves_out_a_host_without_a_slope ____________
+
+R = <module 'm4e_read' from 'D:\\Claude\\random\\wormWars\\scripts\\memory_m4\\m4e_read.py'>
+
+    def test_the_dose_model_leaves_out_a_host_without_a_slope(R):
+        h = 3
+        sep = {"I": [0] * h, "U_LL": [0, 1, 2], "U_LH": [1, 3, 4], "U_HL": [0, 1, 1], "U_HH": [0, 2, 3], "W": [1, 2, 2],
+               "K": [0, 1, 2]}
+        s2 = {a: [v] * h for a, v in (("U_LL", 2.0), ("U_LH", 40.0), ("U_HL", 1.0), ("U_HH", 26.0), ("W", 71.0),
+                                      ("K", 71.0))}
+        out = R.dose_model(sep, 1024, s2, ["U_LL", "U_LH", "U_HL", "U_HH"], ["W", "K"])
+>       assert out["hosts_without_a_slope"] == [0] and len(out["slopes"]) == 2
+E       assert ([] == [0]
+E         
+E         Right contains one more item: 0
+E         Use -v to get more diff)
+
+tests\test_memory_m4e.py:240: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_memory_m4e.py::test_the_dose_model_leaves_out_a_host_without_a_slope
+### the dose model keeping a host without a slope: fails, as it must
+F                                                                        [100%]
+================================== FAILURES ===================================
+___________ test_a_batched_continuation_replays_one_genome_exactly ____________
+
+M = <module 'm4e' from 'D:\\Claude\\random\\wormWars\\scripts\\memory_m4\\m4e.py'>
+host = Connectome(names=('I1L', 'I1R', 'I2L', 'I2R', 'I3', 'I4', 'I5', 'I6', 'M1', 'M2L', 'M2R', 'M3L', 'M3R', 'M4', 'M5', 'M...ted neurons (0): [] -- kept in the 302 regardless, so the node set is identical across N2/SH/RD']}, label='SH-2019100')
+
+    def test_a_batched_continuation_replays_one_genome_exactly(M, host):
+        """Production continues up to 128 genomes in a batch and reruns one genome from its pre-tail state: the batched
+        continuation equals one genome's own, and its rerun records the same substeps (Fable, Astra, round 1)."""
+        g, cfg = M.m4d.host_genomes(host, 128, 17)  # the production chunk (Fable, round 2)
+        end = M.P.probe_states(g, cfg, ticks=20)["end"]
+        batch = M.continue_hold(g, cfg, end, 60, tail=40)
+        for k_ in (1, 77):
+            one = M.continue_hold(g.select([k_]), cfg, end[k_:k_ + 1], 60, tail=40)
+            assert torch.equal(batch["end"][k_:k_ + 1], one["end"])
+            assert np.array_equal(batch["tail"][k_:k_ + 1], one["tail"])
+>           assert torch.equal(batch["pre_tail"][k_:k_ + 1], one["pre_tail"])
+E           assert False
+E            +  where False = <built-in method equal of type object at 0x00007FF9B9B3EDF0>(tensor([[[-9.2394e-01,  3.3157e-01, -3.1399e-01,  4.3671e-01,  4.6098e-01,\n           6.6292e-01, -2.4474e-01, -4.1234...e+00,\n           2.1416e-01,  7.7454e-01, -6.3013e-01,  8.4129e-01,  1.5755e-01,\n           1.1294e-01,  4.8020e-02]]]), tensor([[[ 0.2020,  0.1912,  0.8092,  0.1934,  0.5178,  0.5839, -0.5425,\n          -0.1130, -0.3327, -0.1984, -0.8449,....1025,  0.5011, -0.8558,\n          -0.2444,  0.0208,  0.2590,  0.2557, -0.1683,  0.0384,  0.0104,\n          -0.0735]]]))
+E            +    where <built-in method equal of type object at 0x00007FF9B9B3EDF0> = torch.equal
+
+tests\test_memory_m4e.py:293: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_memory_m4e.py::test_a_batched_continuation_replays_one_genome_exactly
+### a batch's pre-tail states out of order: fails, as it must
+F                                                                        [100%]
+================================== FAILURES ===================================
+___________ test_a_second_pass_code_outside_the_classes_is_refused ____________
+
+M = <module 'm4e' from 'D:\\Claude\\random\\wormWars\\scripts\\memory_m4\\m4e.py'>
+
+    def test_a_second_pass_code_outside_the_classes_is_refused(M):
+        r = {"host": 0, "name": "SH-x"}
+        n = M.N_DRAW
+        audit = M.audit_ids(0, 0, "U_HH")
+        rec = {"host": 0, "name": "SH-x", "draw": 0, "arm": "U_HH", "genome_seed": M.GENOME_SEED, "n": n,
+               "arm_sha256": "h", "genomes": list(range(n)), "class": [2] * n, "audit": audit,
+               **{k: [0.0] * n for k in ("reason", "a", "root_distance", "readout_difference", "write_sq", "write_core")},
+               "second": {"ids": audit, **{k: [0.0] * len(audit) for k in ("reason", "root_distance",
+                                                                          "readout_difference")},
+                          "class": [2] * len(audit)}}
+        M.validate(rec, r, 0, "U_HH", "h")
+        rec["second"]["class"][0] = -1
+>       with pytest.raises(SystemExit):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'SystemExit'>
+
+tests\test_memory_m4e.py:320: Failed
+=========================== short test summary info ===========================
+FAILED tests/test_memory_m4e.py::test_a_second_pass_code_outside_the_classes_is_refused
+### second-pass codes and columns not checked: fails, as it must
+F                                                                        [100%]
+================================== FAILURES ===================================
+__________________ test_a_fresh_skipped_seed_stops_the_hosts __________________
+
+M = <module 'm4e' from 'D:\\Claude\\random\\wormWars\\scripts\\memory_m4\\m4e.py'>
+host = Connectome(names=('I1L', 'I1R', 'I2L', 'I2R', 'I3', 'I4', 'I5', 'I6', 'M1', 'M2L', 'M2R', 'M3L', 'M3R', 'M4', 'M5', 'M...ted neurons (0): [] -- kept in the 302 regardless, so the node set is identical across N2/SH/RD']}, label='SH-2019100')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x00000253A61CE890>
+
+    def test_a_fresh_skipped_seed_stops_the_hosts(M, host, monkeypatch):
+        """check_skips regenerates every recorded skip: one that is fresh should have been used (Astra, round 1; its test,
+        Fable, round 2)."""
+        rec = {"name": "SH-9", "ensemble": "SH", "content_sha256": "c", "skipped": [{"seed": 1, "why": "used"}]}
+        monkeypatch.setattr(M.m4d, "build_host", lambda kind, seed: (host, None))
+        monkeypatch.setattr(M.m4d, "fresh", lambda n, d, u: False)
+        M.check_skips([rec], (set(), set()))
+        monkeypatch.setattr(M.m4d, "fresh", lambda n, d, u: True)
+>       with pytest.raises(SystemExit):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'SystemExit'>
+
+tests\test_memory_m4e.py:386: Failed
+=========================== short test summary info ===========================
+FAILED tests/test_memory_m4e.py::test_a_fresh_skipped_seed_stops_the_hosts - ...
+### a fresh skipped seed accepted: fails, as it must
+F                                                                        [100%]
+================================== FAILURES ===================================
+_________ test_a_failed_audit_puts_every_panel_back_on_its_first_pass _________
+
+M = <module 'm4e' from 'D:\\Claude\\random\\wormWars\\scripts\\memory_m4\\m4e.py'>
+R = <module 'm4e_read' from 'D:\\Claude\\random\\wormWars\\scripts\\memory_m4\\m4e_read.py'>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x00000253A61B8C20>
+tmp_path = WindowsPath('C:/Users/gonza/AppData/Local/Temp/pytest-of-gonza/pytest-10820/test_a_failed_audit_puts_every0')
+
+    def test_a_failed_audit_puts_every_panel_back_on_its_first_pass(M, R, monkeypatch, tmp_path):
+        """The global fallback through the reader's counting (Astra, round 1)."""
+        import json
+        n = M.N_DRAW
+        r = {"host": 0, "name": "SH-x"}
+        arms = ("I", "U_HH")
+        files = {}
+        for a in arms:
+            audit = M.audit_ids(0, 0, a)
+            cls = [2] * n
+            cls[0] = 4  # unresolved in the first pass, separate states in the second
+            ids = sorted(set([0] + audit))
+            second = [0 if i == 0 else 2 for i in ids]
+            if a == "U_HH":
+                second[ids.index(audit[-1])] = 1  # an audited fading genome turned separate states
+            rec = {"class": cls, "audit": audit, "valid": True,
+                   "second": {"ids": ids, "class": second, "reason": [""] * len(ids)}}
+            f = tmp_path / f"{a}.json"
+            f.write_text(json.dumps(rec))
+            files[a] = f
+        monkeypatch.setattr(M, "panel_file", lambda rr, d, a: files[a])
+        monkeypatch.setattr(M, "validate", lambda *x: None)
+        verified = [{"rec": r, "draw": 0, "arms": {a: (None, "h") for a in arms}}]
+        counts = R.load_counts(verified, arms)
+        assert not counts["use_second"] and counts["audit_failed"]
+        assert counts["sep"]["I"] == [0] and counts["unres"]["I"] == [1]  # the first pass, for every panel
+>       assert R.classes(counts, ("SH-x", 0, "I"))[0] == 4  # and the tables take the same choice (Astra, round 2)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       assert 0 == 4
+
+tests\test_memory_m4e.py:363: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_memory_m4e.py::test_a_failed_audit_puts_every_panel_back_on_its_first_pass
+### the tables taking the merged classes after a failed audit: fails, as it must
+F                                                                        [100%]
+================================== FAILURES ===================================
+________________ test_the_poisson_slope_recovers_a_known_dose _________________
+
+R = <module 'm4e_read' from 'D:\\Claude\\random\\wormWars\\scripts\\memory_m4\\m4e_read.py'>
+
+    def test_the_poisson_slope_recovers_a_known_dose(R):
+        x = np.log([1.0, 2.0, 4.0, 8.0])
+        n = 10_000_000
+        counts = np.round(n * np.exp(-6 + 1.5 * x))
+        a, b = R.poisson_slope(counts, n, x)
+        assert abs(b - 1.5) < 1e-3 and abs(a + 6) < 1e-3
+        assert R.poisson_slope([0, 0, 0], 100, [0.0, 1.0, 2.0]) is None
+        # switches in one arm only: the MLE does not exist (Fable, Astra, round 1: the smoke host's own pattern)
+        assert R.poisson_slope([0, 0, 0, 5], 1024, np.log([1.0, 2.0, 4.0, 8.0])) is None
+        assert R.poisson_slope([0, 1, 0, 0], 1024, np.log([3.0, 50.0, 1.0, 26.0])) is None
+        # one switching arm at an interior dose has a finite slope (Astra, round 2, on the smoke host's S2 values)
+        res = R.poisson_slope([0, 0, 0, 5], 1024, np.log([2.7816, 69.6586, 1.05915, 26.5239]))
+>       assert res is not None
+E       assert None is not None
+
+tests\test_memory_m4e.py:228: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_memory_m4e.py::test_the_poisson_slope_recovers_a_known_dose
+### the slope refused for an interior singleton: fails, as it must
+F                                                                        [100%]
+================================== FAILURES ===================================
+___________________ test_a_host_seed_jump_must_be_recorded ____________________
+
+M = <module 'm4e' from 'D:\\Claude\\random\\wormWars\\scripts\\memory_m4\\m4e.py'>
+
+    def test_a_host_seed_jump_must_be_recorded(M):
+        h, kind, s0 = M.host_list()[0]
+        rec = {"host": h, "ensemble": kind, "seed": s0, "name": f"{kind}-{s0}", "content_sha256": "a", "skipped": []}
+        M.check_host_list([rec])
+        jumped = {**rec, "seed": s0 + 50, "name": f"{kind}-{s0 + 50}"}
+>       with pytest.raises(SystemExit):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'SystemExit'>
+
+tests\test_memory_m4e.py:333: Failed
+=========================== short test summary info ===========================
+FAILED tests/test_memory_m4e.py::test_a_host_seed_jump_must_be_recorded - Fai...
+### a host seed jump unrecorded: fails, as it must
+F                                                                        [100%]
+================================== FAILURES ===================================
+_________ test_a_failed_audit_puts_every_panel_back_on_its_first_pass _________
+
+M = <module 'm4e' from 'D:\\Claude\\random\\wormWars\\scripts\\memory_m4\\m4e.py'>
+R = <module 'm4e_read' from 'D:\\Claude\\random\\wormWars\\scripts\\memory_m4\\m4e_read.py'>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x00000253A61B91D0>
+tmp_path = WindowsPath('C:/Users/gonza/AppData/Local/Temp/pytest-of-gonza/pytest-10822/test_a_failed_audit_puts_every0')
+
+    def test_a_failed_audit_puts_every_panel_back_on_its_first_pass(M, R, monkeypatch, tmp_path):
+        """The global fallback through the reader's counting (Astra, round 1)."""
+        import json
+        n = M.N_DRAW
+        r = {"host": 0, "name": "SH-x"}
+        arms = ("I", "U_HH")
+        files = {}
+        for a in arms:
+            audit = M.audit_ids(0, 0, a)
+            cls = [2] * n
+            cls[0] = 4  # unresolved in the first pass, separate states in the second
+            ids = sorted(set([0] + audit))
+            second = [0 if i == 0 else 2 for i in ids]
+            if a == "U_HH":
+                second[ids.index(audit[-1])] = 1  # an audited fading genome turned separate states
+            rec = {"class": cls, "audit": audit, "valid": True,
+                   "second": {"ids": ids, "class": second, "reason": [""] * len(ids)}}
+            f = tmp_path / f"{a}.json"
+            f.write_text(json.dumps(rec))
+            files[a] = f
+        monkeypatch.setattr(M, "panel_file", lambda rr, d, a: files[a])
+        monkeypatch.setattr(M, "validate", lambda *x: None)
+        verified = [{"rec": r, "draw": 0, "arms": {a: (None, "h") for a in arms}}]
+        counts = R.load_counts(verified, arms)
+>       assert not counts["use_second"] and counts["audit_failed"]
+E       assert (not True)
+
+tests\test_memory_m4e.py:361: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_memory_m4e.py::test_a_failed_audit_puts_every_panel_back_on_its_first_pass
+### the reader's counts ignoring a failed audit: fails, as it must
+F                                                                        [100%]
+================================== FAILURES ===================================
+_____________ test_a_size_field_holding_on_both_intervals_stands ______________
+
+R = <module 'm4e_read' from 'D:\\Claude\\random\\wormWars\\scripts\\memory_m4\\m4e_read.py'>
+
+    def test_a_size_field_holding_on_both_intervals_stands(R):
+        h = 10
+        idx = np.random.default_rng(0).integers(0, h, (R.B, h))
+        sep = {"U_HH": [3] * h, "U_HL": [1] * h}  # 0.00195 in every host: at least 0.001 and inside 0.004
+        unres = {"U_HH": [1] * h, "U_HL": [0] * h}  # for U_HH: 0.0029, still at least 0.001; the exclusion still holds
+        c = R.contrast(sep, unres, 1024, idx, "U_HH", "U_HL")
+        assert "at least 0.001" in c["size"]
+        unres = {"U_HH": [3] * h, "U_HL": [0] * h}  # for U_HH: 0.0059, the exclusion fails on the envelope
+        c = R.contrast(sep, unres, 1024, idx, "U_HH", "U_HL")
+>       assert c["size"] == ["at least 0.001"]
+E       AssertionError: assert ['unresolved ...s decide it)'] == ['at least 0.001']
+E         
+E         At index 0 diff: 'unresolved (the unresolved genomes decide it)' != 'at least 0.001'
+E         Use -v to get more diff
+
+tests\test_memory_m4e.py:375: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_memory_m4e.py::test_a_size_field_holding_on_both_intervals_stands
+### a size sub-field dropped when the other differs: fails, as it must
+F                                                                        [100%]
+================================== FAILURES ===================================
+_____________ test_the_envelope_decides_when_the_unresolved_could _____________
+
+R = <module 'm4e_read' from 'D:\\Claude\\random\\wormWars\\scripts\\memory_m4\\m4e_read.py'>
+
+    def test_the_envelope_decides_when_the_unresolved_could(R):
+        h = 10
+        sep = {"U_HH": [3] * h, "U_HL": [1] * h}
+        unres = {"U_HH": [0] * h, "U_HL": [4] * h}  # counted against U_HH, every host's difference turns negative
+        idx = np.random.default_rng(0).integers(0, h, (R.B, h))
+        c = R.contrast(sep, unres, 1024, idx, "U_HH", "U_HL")
+        assert c["direction_before_bounds"] == "raises" and c["envelope_direction"] == "direction unresolved"
+>       assert c["direction"] == R.BY_UNRESOLVED
+E       AssertionError: assert 'raises' == 'unresolved (...es decide it)'
+E         
+E         - unresolved (the unresolved genomes decide it)
+E         + raises
+
+tests\test_memory_m4e.py:202: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_memory_m4e.py::test_the_envelope_decides_when_the_unresolved_could
+### the envelope ignored: fails, as it must
+F                                                                        [100%]
+================================== FAILURES ===================================
+________________ test_the_reader_refuses_fewer_than_ten_hosts _________________
+
+R = <module 'm4e_read' from 'D:\\Claude\\random\\wormWars\\scripts\\memory_m4\\m4e_read.py'>
+
+    def test_the_reader_refuses_fewer_than_ten_hosts(R):
+        counts = {"sep": {a: [1] * 9 for a in ("I", "U_LL", "U_LH", "U_HL", "U_HH")},
+                  "unres": {a: [0] * 9 for a in ("I", "U_LL", "U_LH", "U_HL", "U_HH")}}
+>       with pytest.raises(SystemExit):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'SystemExit'>
+
+tests\test_memory_m4e.py:212: Failed
+=========================== short test summary info ===========================
+FAILED tests/test_memory_m4e.py::test_the_reader_refuses_fewer_than_ten_hosts
+### one host read: fails, as it must
+F                                                                        [100%]
+================================== FAILURES ===================================
+________________ test_the_poisson_slope_recovers_a_known_dose _________________
+
+R = <module 'm4e_read' from 'D:\\Claude\\random\\wormWars\\scripts\\memory_m4\\m4e_read.py'>
+
+    def test_the_poisson_slope_recovers_a_known_dose(R):
+        x = np.log([1.0, 2.0, 4.0, 8.0])
+        n = 10_000_000
+        counts = np.round(n * np.exp(-6 + 1.5 * x))
+        a, b = R.poisson_slope(counts, n, x)
+>       assert abs(b - 1.5) < 1e-3 and abs(a + 6) < 1e-3
+E       assert (np.float64(3.942957288227689e-06) < 0.001 and np.float64(16.118103715914984) < 0.001)
+E        +  where np.float64(3.942957288227689e-06) = abs((np.float64(1.4999960570427118) - 1.5))
+E        +  and   np.float64(16.118103715914984) = abs((np.float64(10.118103715914984) + 6))
+
+tests\test_memory_m4e.py:221: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_memory_m4e.py::test_the_poisson_slope_recovers_a_known_dose
+### the Poisson model without its offset: fails, as it must
+F                                                                        [100%]
+================================== FAILURES ===================================
+___________________ test_the_reader_checks_before_it_reads ____________________
+
+M = <module 'm4e' from 'D:\\Claude\\random\\wormWars\\scripts\\memory_m4\\m4e.py'>
+R = <module 'm4e_read' from 'D:\\Claude\\random\\wormWars\\scripts\\memory_m4\\m4e_read.py'>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x00000253A61BA2E0>
+
+    def test_the_reader_checks_before_it_reads(M, R, monkeypatch):
+        class Checked(Exception):
+            pass
+    
+        def verify():
+            raise Checked
+    
+        monkeypatch.setattr(M, "verify_run", verify)
+>       with pytest.raises(Checked):
+             ^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'test_memory_m4e.test_the_reader_checks_before_it_reads.<locals>.Checked'>
+
+tests\test_memory_m4e.py:279: Failed
+=========================== short test summary info ===========================
+FAILED tests/test_memory_m4e.py::test_the_reader_checks_before_it_reads - Fai...
+### the reader without verify_run: fails, as it must
+30 of 30 sabotages fail as they must
