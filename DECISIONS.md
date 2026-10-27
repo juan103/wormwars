@@ -11780,3 +11780,42 @@ taken; the second round's one-line slips without a further round, as Fable advis
   taken.
 
 **Cost:** about 33 to 34 CPU hours (benchmarked), capped at 48 hours of recorded wall-clock time. No GPU.
+
+## D368 — M4e's results: concentrating the block's weight raises the switch; N2's block's effect arrives with its weights, degrees and wiring (2026-10-27)
+
+**The run:** one invocation, 2026-10-26 02:19 to 2026-10-27 10:59 UTC, commit 46869e7, CPU; 117,571 s (32.7 h)
+inside the 48-hour cap; 160 panels valid; ten fresh hosts, none skipped. `docs/memory/M4E-RESULTS.md` (draft 4);
+`runs/memory-m4e/` (the panels, `readings.json`, `tables.json`, `blocks-summary.json`, `hosts.json`, the logs, copies
+of the attempt and compute records). `blocks.json` stays local (rule 1).
+- **The reading:** Δ_count (U_HH − U_LH) −0.0026 (−0.0041 to −0.0012): "lowers", holding on the envelope (upper
+  −0.0004, about four genomes); size "unresolved (the unresolved genomes decide it)". Δ_weight (U_HH − U_HL) −0.0008
+  (−0.0017 to +0.0001): direction unresolved; "no effect of 0.004 or more, as a mean across these ten hosts (a response
+  confined to a minority of host graphs may be missed)".
+- **The second pass** was used: no audited fading genome became separate states (783 to 800 per arm). On the first
+  pass alone Δ_count's direction would have been unresolved.
+- **Beside it, not read:** W − U_HH +0.0026 (resolved on the envelope); K − W +0.0023 and T − K +0.0020 (unresolved
+  on the envelope); T − I +0.0062, in all ten hosts (M4d: +0.0059). The equal-magnitude block at N2's count and weight
+  is the lowest arm (4 of 10,240). The arm averages look threshold-like (low below S3 1, higher at 1.26 and above, no arm between); the
+  dose model's slope is uninformative.
+- **Incident:** the reader crashed printing "Δ" to a cp1252 console after writing `readings.json`; rerun with
+  `PYTHONIOENCODING=utf-8`, byte-identical; no code changed after the data.
+
+**The review** (`docs/reviews/20261027-m4e-results/`, three rounds). Round 1 both "fix then publish", each
+reproducing the readings independently.
+- **Fable** caught: "mostly a coupling-strength effect" contradicted by the draft's own ladder (U_HH − I is negative;
+  two of the three steps hold S2 fixed); "moves with S2 and S3" false for Δ_weight (a floor, not a dose); the M5
+  guidance missing the unresolved floor, an S3-matched control and pooled variance; the interaction's caveat; Δ_count's
+  thin envelope clearance; a band claim true only above 1.2.
+- **Astra** caught: the same overreach; the two M5 estimands (total against residual beyond a summary) and T − K being
+  a package (autapses, reciprocity); the variance's components (genomes about two fifths); the strong-arm comparison
+  not showing a failed common curve; "largest real eigenvalue" for the largest real part; a rounding effect in the saved
+  predictor; the envelope not covering missed transitions.
+- Round 2 both "fix then publish". **Both** caught draft 2's explanation of Δ_count's envelope (Fable's own round-1
+  mechanism, unchecked): U_LH's settlements clear zero, U_HH's alone do not (Astra recomputed each). **Fable**: the
+  reproduction claim overstated its round 1; the S3 gap (0.96 to 1.26) and "that is why" turning a description into
+  an explanation; in-band medians not in any file; W − U_HH's thin envelope. **Astra**: "outside the block" and "wrong
+  shape" unsupported; the S3 matching cost without its tolerance; M5's estimand, criterion and multiplicity first.
+- Round 3 both "agree"; two wording points taken (the AUC range for the strong arms; "random edges" in the headline).
+
+**For M5** (the owner's third item): the power calculation comes first, after M5's treatment of unresolved genomes is
+fixed; T − K's host spread (SD 0.0055) and M4d's T − R (0.0035) are its starting inputs.

@@ -57,7 +57,7 @@ selection acts on team results.
   average effect in random brains, so its head-start test looked very unlikely to pass. The memory thread then ran
   M1 to M4 on the CPU (exploratory, 2026-10-20 to 10-25; see its row above). Next, in the owner's order: a write-up
   of M1 to M4; a planned study of what a dense block carries (in the owner's words, "its size, weights and degrees"); then an M5 test of N2's
-  exact wiring, after working out how many hosts it would need. *Earlier (19 October): "What follows is not yet
+  exact wiring, after working out how many hosts it would need. *The write-up (D366) and the dense-block study, M4e (D367-D368, [`docs/memory/M4E-RESULTS.md`](docs/memory/M4E-RESULTS.md)), are done; M5's power calculation is next.* *Earlier (19 October): "What follows is not yet
   chosen."* *Earlier (18 October):
   "Next: a design round for the memory thread's predictions."* *Earlier (16 October): "03a's six-neuron proof of concept is next; it has not
   started."*

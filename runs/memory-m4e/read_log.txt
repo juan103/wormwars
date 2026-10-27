@@ -1,0 +1,2 @@
+Δ_weight -0.0008 [-0.0017009874318839446, 0.00013848743188394448]: direction unresolved; ['no effect of 0.004 or more, as a mean across these ten hosts (a response confined to a minority of host graphs may be missed)']
+Δ_count -0.0026 [-0.004111317118585359, -0.0011621203814146412]: lowers; ['unresolved (the unresolved genomes decide it)']

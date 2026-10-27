@@ -1,0 +1,1043 @@
+{
+ "primary": {
+  "weight": {
+   "D": -0.00078125,
+   "interval": [
+    -0.0017009874318839446,
+    0.00013848743188394448
+   ],
+   "per_host": [
+    -0.00390625,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    -0.0009765625,
+    -0.0009765625,
+    0.0,
+    -0.001953125,
+    0.0
+   ],
+   "host_absmax": 0.00390625,
+   "envelope": [
+    -0.001891260393789972,
+    0.0003984368303361661
+   ],
+   "direction": "direction unresolved",
+   "size": [
+    "no effect of 0.004 or more, as a mean across these ten hosts (a response confined to a minority of host graphs may be missed)"
+   ],
+   "direction_before_bounds": "direction unresolved",
+   "size_before_bounds": [
+    "no effect of 0.004 or more, as a mean across these ten hosts (a response confined to a minority of host graphs may be missed)"
+   ],
+   "envelope_direction": "direction unresolved",
+   "envelope_size": [
+    "no effect of 0.004 or more, as a mean across these ten hosts (a response confined to a minority of host graphs may be missed)"
+   ]
+  },
+  "count": {
+   "D": -0.00263671875,
+   "interval": [
+    -0.004111317118585359,
+    -0.0011621203814146412
+   ],
+   "per_host": [
+    -0.005859375,
+    -0.0029296875,
+    -0.0029296875,
+    -0.001953125,
+    -0.001953125,
+    -0.0009765625,
+    0.0009765625,
+    -0.001953125,
+    -0.0029296875,
+    -0.005859375
+   ],
+   "host_absmax": 0.005859375,
+   "envelope": [
+    -0.009360276419611983,
+    -0.0004019796102753656
+   ],
+   "direction": "lowers",
+   "size": [
+    "unresolved (the unresolved genomes decide it)"
+   ],
+   "direction_before_bounds": "lowers",
+   "size_before_bounds": [
+    "at least 0.001"
+   ],
+   "envelope_direction": "lowers",
+   "envelope_size": [
+    "size unresolved"
+   ]
+  }
+ },
+ "secondary": {
+  "U_LH - U_LL": {
+   "D": 0.00146484375,
+   "interval": [
+    -0.0003761044619126014,
+    0.0033057919619126014
+   ],
+   "per_host": [
+    -0.0009765625,
+    0.0029296875,
+    0.0029296875,
+    0.001953125,
+    0.001953125,
+    0.0009765625,
+    -0.00390625,
+    0.001953125,
+    0.0009765625,
+    0.005859375
+   ],
+   "host_absmax": 0.005859375,
+   "envelope": [
+    -0.0007044074335033762,
+    0.008583077508997046
+   ],
+   "direction": "direction unresolved",
+   "size": [
+    "unresolved (the unresolved genomes decide it)"
+   ],
+   "direction_before_bounds": "direction unresolved",
+   "size_before_bounds": [
+    "no effect of 0.004 or more, as a mean across these ten hosts (a response confined to a minority of host graphs may be missed)"
+   ],
+   "envelope_direction": "direction unresolved",
+   "envelope_size": [
+    "size unresolved"
+   ]
+  },
+  "U_HL - U_LL": {
+   "D": -0.000390625,
+   "interval": [
+    -0.0012106222678482108,
+    0.00042937226784821086
+   ],
+   "per_host": [
+    -0.0029296875,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0009765625,
+    -0.001953125,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "host_absmax": 0.0029296875,
+   "envelope": [
+    -0.0012106222678482108,
+    0.0005814332033108401
+   ],
+   "direction": "direction unresolved",
+   "size": [
+    "no effect of 0.004 or more, as a mean across these ten hosts (a response confined to a minority of host graphs may be missed)"
+   ],
+   "direction_before_bounds": "direction unresolved",
+   "size_before_bounds": [
+    "no effect of 0.004 or more, as a mean across these ten hosts (a response confined to a minority of host graphs may be missed)"
+   ],
+   "envelope_direction": "direction unresolved",
+   "envelope_size": [
+    "no effect of 0.004 or more, as a mean across these ten hosts (a response confined to a minority of host graphs may be missed)"
+   ]
+  },
+  "U_LL - I": {
+   "D": 0.000390625,
+   "interval": [
+    -0.0015352567318445438,
+    0.0023165067318445436
+   ],
+   "per_host": [
+    0.005859375,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0029296875,
+    0.0,
+    -0.0048828125,
+    0.0
+   ],
+   "host_absmax": 0.005859375,
+   "envelope": [
+    -0.0017911277335532188,
+    0.0023770652335532187
+   ],
+   "direction": "direction unresolved",
+   "size": [
+    "no effect of 0.004 or more, as a mean across these ten hosts (a response confined to a minority of host graphs may be missed)"
+   ],
+   "direction_before_bounds": "direction unresolved",
+   "size_before_bounds": [
+    "no effect of 0.004 or more, as a mean across these ten hosts (a response confined to a minority of host graphs may be missed)"
+   ],
+   "envelope_direction": "direction unresolved",
+   "envelope_size": [
+    "no effect of 0.004 or more, as a mean across these ten hosts (a response confined to a minority of host graphs may be missed)"
+   ]
+  },
+  "W - U_HH": {
+   "D": 0.00263671875,
+   "interval": [
+    0.0008314627430312525,
+    0.004441974756968748
+   ],
+   "per_host": [
+    -0.0009765625,
+    0.001953125,
+    0.0,
+    0.0029296875,
+    0.001953125,
+    0.005859375,
+    0.0009765625,
+    0.0048828125,
+    0.0068359375,
+    0.001953125
+   ],
+   "host_absmax": 0.0068359375,
+   "envelope": [
+    0.0005152651657782791,
+    0.007785775417160367
+   ],
+   "direction": "raises",
+   "size": [
+    "size unresolved"
+   ],
+   "direction_before_bounds": "raises",
+   "size_before_bounds": [
+    "size unresolved"
+   ],
+   "envelope_direction": "raises",
+   "envelope_size": [
+    "size unresolved"
+   ]
+  },
+  "K - W": {
+   "D": 0.00234375,
+   "interval": [
+    0.00038991496723527006,
+    0.00429758503276473
+   ],
+   "per_host": [
+    0.00390625,
+    0.00390625,
+    0.00390625,
+    0.0,
+    0.00390625,
+    -0.0029296875,
+    0.0048828125,
+    -0.0009765625,
+    0.0048828125,
+    0.001953125
+   ],
+   "host_absmax": 0.0048828125,
+   "envelope": [
+    -0.003588494304786207,
+    0.009518166575159888
+   ],
+   "direction": "unresolved (the unresolved genomes decide it)",
+   "size": [
+    "size unresolved"
+   ],
+   "direction_before_bounds": "raises",
+   "size_before_bounds": [
+    "size unresolved"
+   ],
+   "envelope_direction": "direction unresolved",
+   "envelope_size": [
+    "size unresolved"
+   ]
+  },
+  "T - K": {
+   "D": 0.001953125,
+   "interval": [
+    -0.0019573194145232715,
+    0.0058635694145232715
+   ],
+   "per_host": [
+    0.0126953125,
+    -0.0029296875,
+    0.0029296875,
+    0.001953125,
+    0.005859375,
+    0.0068359375,
+    -0.0048828125,
+    0.001953125,
+    -0.00390625,
+    -0.0009765625
+   ],
+   "host_absmax": 0.0126953125,
+   "envelope": [
+    -0.006973364595128203,
+    0.009601704138583416
+   ],
+   "direction": "direction unresolved",
+   "size": [
+    "size unresolved"
+   ],
+   "direction_before_bounds": "direction unresolved",
+   "size_before_bounds": [
+    "size unresolved"
+   ],
+   "envelope_direction": "direction unresolved",
+   "envelope_size": [
+    "size unresolved"
+   ]
+  },
+  "T - I": {
+   "D": 0.00615234375,
+   "interval": [
+    0.0028419113831726728,
+    0.009462776116827326
+   ],
+   "per_host": [
+    0.0146484375,
+    0.0029296875,
+    0.0068359375,
+    0.0048828125,
+    0.01171875,
+    0.009765625,
+    0.0009765625,
+    0.005859375,
+    0.0009765625,
+    0.0029296875
+   ],
+   "host_absmax": 0.0146484375,
+   "envelope": [
+    0.002274200089589594,
+    0.01305984076369903
+   ],
+   "direction": "raises",
+   "size": [
+    "at least 0.001"
+   ],
+   "direction_before_bounds": "raises",
+   "size_before_bounds": [
+    "at least 0.001"
+   ],
+   "envelope_direction": "raises",
+   "envelope_size": [
+    "at least 0.001"
+   ]
+  }
+ },
+ "interaction": {
+  "D": -0.00224609375,
+  "interval": [
+   -0.0037924902480065857,
+   -0.0006996972519934142
+  ],
+  "envelope": [
+   -0.00932269544626782,
+   9.349320455795396e-05
+  ]
+ },
+ "first_pass_reading": {
+  "weight": {
+   "D": -0.00078125,
+   "interval": [
+    -0.0017009874318839446,
+    0.00013848743188394448
+   ],
+   "per_host": [
+    -0.00390625,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    -0.0009765625,
+    -0.0009765625,
+    0.0,
+    -0.001953125,
+    0.0
+   ],
+   "host_absmax": 0.00390625,
+   "envelope": [
+    -0.001891260393789972,
+    0.0006413918153921976
+   ],
+   "direction": "direction unresolved",
+   "size": [
+    "no effect of 0.004 or more, as a mean across these ten hosts (a response confined to a minority of host graphs may be missed)"
+   ],
+   "direction_before_bounds": "direction unresolved",
+   "size_before_bounds": [
+    "no effect of 0.004 or more, as a mean across these ten hosts (a response confined to a minority of host graphs may be missed)"
+   ],
+   "envelope_direction": "direction unresolved",
+   "envelope_size": [
+    "no effect of 0.004 or more, as a mean across these ten hosts (a response confined to a minority of host graphs may be missed)"
+   ]
+  },
+  "count": {
+   "D": -0.00263671875,
+   "interval": [
+    -0.004111317118585359,
+    -0.0011621203814146412
+   ],
+   "per_host": [
+    -0.005859375,
+    -0.0029296875,
+    -0.0029296875,
+    -0.001953125,
+    -0.001953125,
+    -0.0009765625,
+    0.0009765625,
+    -0.001953125,
+    -0.0029296875,
+    -0.005859375
+   ],
+   "host_absmax": 0.005859375,
+   "envelope": [
+    -0.012098926325187678,
+    0.0004599764794867636
+   ],
+   "direction": "unresolved (the unresolved genomes decide it)",
+   "size": [
+    "unresolved (the unresolved genomes decide it)"
+   ],
+   "direction_before_bounds": "lowers",
+   "size_before_bounds": [
+    "at least 0.001"
+   ],
+   "envelope_direction": "direction unresolved",
+   "envelope_size": [
+    "size unresolved"
+   ]
+  }
+ },
+ "counts": {
+  "separate": {
+   "I": [
+    2,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    0,
+    9,
+    0
+   ],
+   "U_LL": [
+    8,
+    0,
+    0,
+    0,
+    0,
+    0,
+    4,
+    0,
+    4,
+    0
+   ],
+   "U_LH": [
+    7,
+    3,
+    3,
+    2,
+    2,
+    1,
+    0,
+    2,
+    5,
+    6
+   ],
+   "U_HL": [
+    5,
+    0,
+    0,
+    0,
+    0,
+    1,
+    2,
+    0,
+    4,
+    0
+   ],
+   "U_HH": [
+    1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    0,
+    2,
+    0
+   ],
+   "W": [
+    0,
+    2,
+    0,
+    3,
+    2,
+    6,
+    2,
+    5,
+    9,
+    2
+   ],
+   "K": [
+    4,
+    6,
+    4,
+    3,
+    6,
+    3,
+    7,
+    4,
+    14,
+    4
+   ],
+   "T": [
+    17,
+    3,
+    7,
+    5,
+    12,
+    10,
+    2,
+    6,
+    10,
+    3
+   ]
+  },
+  "unresolved": {
+   "I": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    0
+   ],
+   "U_LL": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "U_LH": [
+    3,
+    5,
+    10,
+    5,
+    2,
+    3,
+    1,
+    0,
+    5,
+    5
+   ],
+   "U_HL": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    0
+   ],
+   "U_HH": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    0,
+    2,
+    0
+   ],
+   "W": [
+    4,
+    1,
+    3,
+    4,
+    0,
+    3,
+    4,
+    2,
+    3,
+    7
+   ],
+   "K": [
+    5,
+    2,
+    5,
+    3,
+    1,
+    2,
+    7,
+    3,
+    9,
+    0
+   ],
+   "T": [
+    6,
+    0,
+    1,
+    1,
+    3,
+    2,
+    9,
+    3,
+    5,
+    3
+   ]
+  },
+  "separate_first_pass": {
+   "I": [
+    2,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    0,
+    9,
+    0
+   ],
+   "U_LL": [
+    8,
+    0,
+    0,
+    0,
+    0,
+    0,
+    4,
+    0,
+    4,
+    0
+   ],
+   "U_LH": [
+    7,
+    3,
+    3,
+    2,
+    2,
+    1,
+    0,
+    2,
+    5,
+    6
+   ],
+   "U_HL": [
+    5,
+    0,
+    0,
+    0,
+    0,
+    1,
+    2,
+    0,
+    4,
+    0
+   ],
+   "U_HH": [
+    1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    0,
+    2,
+    0
+   ],
+   "W": [
+    0,
+    2,
+    0,
+    3,
+    1,
+    6,
+    2,
+    5,
+    9,
+    2
+   ],
+   "K": [
+    4,
+    6,
+    4,
+    3,
+    6,
+    3,
+    7,
+    4,
+    14,
+    3
+   ],
+   "T": [
+    17,
+    3,
+    7,
+    5,
+    12,
+    10,
+    2,
+    6,
+    10,
+    3
+   ]
+  },
+  "hosts": [
+   "SH-2011100",
+   "SH-2011101",
+   "SH-route-2021100",
+   "SH-route-2021101",
+   "SH-class-2031100",
+   "SH-class-2031101",
+   "SH-mirror-2041100",
+   "SH-mirror-2041101",
+   "SH-recip-2051100",
+   "SH-recip-2051101"
+  ],
+  "n": 1024
+ },
+ "second_pass_used": true,
+ "audit_failed": [],
+ "audited_fading_per_arm": {
+  "I": 800,
+  "U_LL": 800,
+  "U_LH": 794,
+  "U_HL": 797,
+  "U_HH": 799,
+  "W": 795,
+  "K": 786,
+  "T": 783
+ },
+ "transitions": {
+  "I": {
+   "fading -> fading": 800,
+   "separate states -> separate states": 12,
+   "unresolved -> fading": 2,
+   "unresolved -> unresolved": 1
+  },
+  "U_LL": {
+   "fading -> fading": 800,
+   "separate states -> separate states": 16
+  },
+  "U_LH": {
+   "fading -> fading": 794,
+   "separate states -> separate states": 31,
+   "unresolved -> unresolved": 39,
+   "unresolved -> fading": 20,
+   "persistent oscillation -> persistent oscillation": 4
+  },
+  "U_HL": {
+   "fading -> fading": 797,
+   "separate states -> separate states": 11,
+   "separate states, read-out silent -> separate states, read-out silent": 1,
+   "persistent oscillation -> persistent oscillation": 1,
+   "unresolved -> unresolved": 1
+  },
+  "U_HH": {
+   "fading -> fading": 799,
+   "separate states -> separate states": 4,
+   "unresolved -> fading": 2,
+   "unresolved -> unresolved": 3
+  },
+  "W": {
+   "fading -> fading": 795,
+   "unresolved -> unresolved": 31,
+   "separate states -> separate states": 30,
+   "unresolved -> separate states": 1,
+   "unresolved -> fading": 8,
+   "persistent oscillation -> persistent oscillation": 3
+  },
+  "K": {
+   "fading -> fading": 786,
+   "unresolved -> unresolved": 37,
+   "separate states -> separate states": 54,
+   "persistent oscillation -> persistent oscillation": 10,
+   "unresolved -> fading": 13,
+   "unresolved -> separate states": 1
+  },
+  "T": {
+   "separate states -> separate states": 74,
+   "fading -> fading": 783,
+   "persistent oscillation -> persistent oscillation": 30,
+   "unresolved -> unresolved": 33,
+   "unresolved -> fading": 9,
+   "separate states, read-out silent -> separate states, read-out silent": 1
+  }
+ },
+ "not_settled": {
+  "I": {
+   "not_settled": 1,
+   "per_draw_separate": {
+    "SH-2011100 d0": 0,
+    "SH-2011100 d1": 2,
+    "SH-2011101 d0": 0,
+    "SH-2011101 d1": 0,
+    "SH-route-2021100 d0": 0,
+    "SH-route-2021100 d1": 0,
+    "SH-route-2021101 d0": 0,
+    "SH-route-2021101 d1": 0,
+    "SH-class-2031100 d0": 0,
+    "SH-class-2031100 d1": 0,
+    "SH-class-2031101 d0": 0,
+    "SH-class-2031101 d1": 0,
+    "SH-mirror-2041100 d0": 1,
+    "SH-mirror-2041100 d1": 0,
+    "SH-mirror-2041101 d0": 0,
+    "SH-mirror-2041101 d1": 0,
+    "SH-recip-2051100 d0": 3,
+    "SH-recip-2051100 d1": 6,
+    "SH-recip-2051101 d0": 0,
+    "SH-recip-2051101 d1": 0
+   },
+   "invalid_panels": []
+  },
+  "U_LL": {
+   "not_settled": 0,
+   "per_draw_separate": {
+    "SH-2011100 d0": 4,
+    "SH-2011100 d1": 4,
+    "SH-2011101 d0": 0,
+    "SH-2011101 d1": 0,
+    "SH-route-2021100 d0": 0,
+    "SH-route-2021100 d1": 0,
+    "SH-route-2021101 d0": 0,
+    "SH-route-2021101 d1": 0,
+    "SH-class-2031100 d0": 0,
+    "SH-class-2031100 d1": 0,
+    "SH-class-2031101 d0": 0,
+    "SH-class-2031101 d1": 0,
+    "SH-mirror-2041100 d0": 3,
+    "SH-mirror-2041100 d1": 1,
+    "SH-mirror-2041101 d0": 0,
+    "SH-mirror-2041101 d1": 0,
+    "SH-recip-2051100 d0": 2,
+    "SH-recip-2051100 d1": 2,
+    "SH-recip-2051101 d0": 0,
+    "SH-recip-2051101 d1": 0
+   },
+   "invalid_panels": []
+  },
+  "U_LH": {
+   "not_settled": 43,
+   "per_draw_separate": {
+    "SH-2011100 d0": 3,
+    "SH-2011100 d1": 4,
+    "SH-2011101 d0": 1,
+    "SH-2011101 d1": 2,
+    "SH-route-2021100 d0": 1,
+    "SH-route-2021100 d1": 2,
+    "SH-route-2021101 d0": 0,
+    "SH-route-2021101 d1": 2,
+    "SH-class-2031100 d0": 0,
+    "SH-class-2031100 d1": 2,
+    "SH-class-2031101 d0": 0,
+    "SH-class-2031101 d1": 1,
+    "SH-mirror-2041100 d0": 0,
+    "SH-mirror-2041100 d1": 0,
+    "SH-mirror-2041101 d0": 0,
+    "SH-mirror-2041101 d1": 2,
+    "SH-recip-2051100 d0": 3,
+    "SH-recip-2051100 d1": 2,
+    "SH-recip-2051101 d0": 5,
+    "SH-recip-2051101 d1": 1
+   },
+   "invalid_panels": []
+  },
+  "U_HL": {
+   "not_settled": 2,
+   "per_draw_separate": {
+    "SH-2011100 d0": 3,
+    "SH-2011100 d1": 2,
+    "SH-2011101 d0": 0,
+    "SH-2011101 d1": 0,
+    "SH-route-2021100 d0": 0,
+    "SH-route-2021100 d1": 0,
+    "SH-route-2021101 d0": 0,
+    "SH-route-2021101 d1": 0,
+    "SH-class-2031100 d0": 0,
+    "SH-class-2031100 d1": 0,
+    "SH-class-2031101 d0": 0,
+    "SH-class-2031101 d1": 1,
+    "SH-mirror-2041100 d0": 0,
+    "SH-mirror-2041100 d1": 2,
+    "SH-mirror-2041101 d0": 0,
+    "SH-mirror-2041101 d1": 0,
+    "SH-recip-2051100 d0": 1,
+    "SH-recip-2051100 d1": 3,
+    "SH-recip-2051101 d0": 0,
+    "SH-recip-2051101 d1": 0
+   },
+   "invalid_panels": []
+  },
+  "U_HH": {
+   "not_settled": 3,
+   "per_draw_separate": {
+    "SH-2011100 d0": 1,
+    "SH-2011100 d1": 0,
+    "SH-2011101 d0": 0,
+    "SH-2011101 d1": 0,
+    "SH-route-2021100 d0": 0,
+    "SH-route-2021100 d1": 0,
+    "SH-route-2021101 d0": 0,
+    "SH-route-2021101 d1": 0,
+    "SH-class-2031100 d0": 0,
+    "SH-class-2031100 d1": 0,
+    "SH-class-2031101 d0": 0,
+    "SH-class-2031101 d1": 0,
+    "SH-mirror-2041100 d0": 0,
+    "SH-mirror-2041100 d1": 1,
+    "SH-mirror-2041101 d0": 0,
+    "SH-mirror-2041101 d1": 0,
+    "SH-recip-2051100 d0": 0,
+    "SH-recip-2051100 d1": 2,
+    "SH-recip-2051101 d0": 0,
+    "SH-recip-2051101 d1": 0
+   },
+   "invalid_panels": []
+  },
+  "W": {
+   "not_settled": 34,
+   "per_draw_separate": {
+    "SH-2011100 d0": 0,
+    "SH-2011100 d1": 0,
+    "SH-2011101 d0": 0,
+    "SH-2011101 d1": 2,
+    "SH-route-2021100 d0": 0,
+    "SH-route-2021100 d1": 0,
+    "SH-route-2021101 d0": 0,
+    "SH-route-2021101 d1": 3,
+    "SH-class-2031100 d0": 1,
+    "SH-class-2031100 d1": 1,
+    "SH-class-2031101 d0": 2,
+    "SH-class-2031101 d1": 4,
+    "SH-mirror-2041100 d0": 1,
+    "SH-mirror-2041100 d1": 1,
+    "SH-mirror-2041101 d0": 5,
+    "SH-mirror-2041101 d1": 0,
+    "SH-recip-2051100 d0": 2,
+    "SH-recip-2051100 d1": 7,
+    "SH-recip-2051101 d0": 0,
+    "SH-recip-2051101 d1": 2
+   },
+   "invalid_panels": []
+  },
+  "K": {
+   "not_settled": 47,
+   "per_draw_separate": {
+    "SH-2011100 d0": 3,
+    "SH-2011100 d1": 1,
+    "SH-2011101 d0": 4,
+    "SH-2011101 d1": 2,
+    "SH-route-2021100 d0": 3,
+    "SH-route-2021100 d1": 1,
+    "SH-route-2021101 d0": 1,
+    "SH-route-2021101 d1": 2,
+    "SH-class-2031100 d0": 4,
+    "SH-class-2031100 d1": 2,
+    "SH-class-2031101 d0": 3,
+    "SH-class-2031101 d1": 0,
+    "SH-mirror-2041100 d0": 2,
+    "SH-mirror-2041100 d1": 5,
+    "SH-mirror-2041101 d0": 1,
+    "SH-mirror-2041101 d1": 3,
+    "SH-recip-2051100 d0": 9,
+    "SH-recip-2051100 d1": 5,
+    "SH-recip-2051101 d0": 2,
+    "SH-recip-2051101 d1": 2
+   },
+   "invalid_panels": []
+  },
+  "T": {
+   "not_settled": 63,
+   "per_draw_separate": {
+    "SH-2011100 d0": 12,
+    "SH-2011100 d1": 5,
+    "SH-2011101 d0": 0,
+    "SH-2011101 d1": 3,
+    "SH-route-2021100 d0": 4,
+    "SH-route-2021100 d1": 3,
+    "SH-route-2021101 d0": 2,
+    "SH-route-2021101 d1": 3,
+    "SH-class-2031100 d0": 4,
+    "SH-class-2031100 d1": 8,
+    "SH-class-2031101 d0": 4,
+    "SH-class-2031101 d1": 6,
+    "SH-mirror-2041100 d0": 2,
+    "SH-mirror-2041100 d1": 0,
+    "SH-mirror-2041101 d0": 2,
+    "SH-mirror-2041101 d1": 4,
+    "SH-recip-2051100 d0": 5,
+    "SH-recip-2051100 d1": 5,
+    "SH-recip-2051101 d0": 2,
+    "SH-recip-2051101 d1": 1
+   },
+   "invalid_panels": []
+  }
+ },
+ "dose": {
+  "hosts_without_a_slope": [
+   1,
+   2,
+   3,
+   4,
+   7,
+   9
+  ],
+  "slopes": [
+   -0.050696235410015236,
+   6.387854712751712e-09,
+   -0.5925892706535798,
+   0.0018979639451320595
+  ],
+  "hosts_where_the_arm_lies_outside_the_U_range": {
+   "W": 3,
+   "K": 3
+  },
+  "mean_slope": -0.16034688393265206,
+  "slope_interval": [
+   -0.6205115090309951,
+   0.29981774116569093
+  ],
+  "deviation": {
+   "W": {
+    "mean": 0.0018291004380625215,
+    "interval": [
+     -0.005614127402772311,
+     0.009272328278897355
+    ]
+   },
+   "K": {
+    "mean": 0.004514647313062522,
+    "interval": [
+     -0.0029297304238148237,
+     0.011959025049939868
+    ]
+   }
+  }
+ }
+}

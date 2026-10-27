@@ -1,0 +1,35 @@
+{
+ "experiment": "memory-M4e",
+ "script": "m4e.py",
+ "default_category": "probe",
+ "status": "completed",
+ "error": null,
+ "started_utc": "2026-10-26T02:19:48+00:00",
+ "ended_utc": "2026-10-27T10:59:18+00:00",
+ "pid": 7712,
+ "git_commit": "46869e7fc0a3803f125bbbd6abad4a4eec28ca7a",
+ "code_dirty": false,
+ "git_commit_at_end": "46869e7fc0a3803f125bbbd6abad4a4eec28ca7a",
+ "cuda_devices": [
+  "NVIDIA GeForce RTX 5080"
+ ],
+ "time_unit": "synchronised wall-clock seconds per category (not GPU kernel time)",
+ "neural_update_unit": "strains x batch x substeps network updates (network size not included)",
+ "uncategorised": false,
+ "categories": {
+  "probe": {
+   "worlds_built": 0,
+   "world_ticks": 0,
+   "neural_updates": 22482937920,
+   "neural_padding": 0,
+   "seconds": 117571.49454480002
+  }
+ },
+ "totals": {
+  "worlds_built": 0,
+  "world_ticks": 0,
+  "neural_updates": 22482937920,
+  "neural_padding": 0,
+  "seconds_timed": 117571.49454480002
+ }
+}

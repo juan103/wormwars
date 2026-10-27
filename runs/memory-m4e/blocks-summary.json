@@ -1,0 +1,3205 @@
+{
+ "blocks_sha256": "706c53bca778a41767168f080cc5d898a4e44e31d5472f77ae357133ff54af27",
+ "blocks": [
+  {
+   "host": "SH-2011100",
+   "draw": 0,
+   "arm": "I",
+   "edges": 96,
+   "weight": 627.0,
+   "autapses": 4,
+   "reciprocal": 8,
+   "in_degree_range": [
+    0,
+    8
+   ],
+   "out_degree_range": [
+    0,
+    9
+   ],
+   "S1": 22.18500435546169,
+   "S2": 13.747567050061456,
+   "S3": 0.7784212054547962
+  },
+  {
+   "host": "SH-2011100",
+   "draw": 0,
+   "arm": "U_LL",
+   "edges": 96,
+   "weight": 627.0,
+   "autapses": 4,
+   "reciprocal": 3,
+   "in_degree_range": [
+    0,
+    7
+   ],
+   "out_degree_range": [
+    0,
+    7
+   ],
+   "S1": 22.185004355461693,
+   "S2": 5.126816856790148,
+   "S3": 0.7786912899660525
+  },
+  {
+   "host": "SH-2011100",
+   "draw": 0,
+   "arm": "U_LH",
+   "edges": 96,
+   "weight": 2346.9999389648438,
+   "autapses": 4,
+   "reciprocal": 3,
+   "in_degree_range": [
+    0,
+    7
+   ],
+   "out_degree_range": [
+    0,
+    7
+   ],
+   "S1": 83.04338734960666,
+   "S2": 71.8354602343418,
+   "S3": 1.4875916457054943
+  },
+  {
+   "host": "SH-2011100",
+   "draw": 0,
+   "arm": "U_HL",
+   "edges": 260,
+   "weight": 626.9999742507935,
+   "autapses": 4,
+   "reciprocal": 37,
+   "in_degree_range": [
+    2,
+    13
+   ],
+   "out_degree_range": [
+    3,
+    14
+   ],
+   "S1": 22.185003444383128,
+   "S2": 1.8929783762588124,
+   "S3": 0.7784241360804841
+  },
+  {
+   "host": "SH-2011100",
+   "draw": 0,
+   "arm": "U_HH",
+   "edges": 260,
+   "weight": 2347.000026702881,
+   "autapses": 4,
+   "reciprocal": 37,
+   "in_degree_range": [
+    2,
+    13
+   ],
+   "out_degree_range": [
+    3,
+    14
+   ],
+   "S1": 83.04339045402251,
+   "S2": 26.52386422345861,
+   "S3": 0.9539411001180795
+  },
+  {
+   "host": "SH-2011100",
+   "draw": 0,
+   "arm": "W",
+   "edges": 260,
+   "weight": 2347.0,
+   "autapses": 4,
+   "reciprocal": 37,
+   "in_degree_range": [
+    2,
+    13
+   ],
+   "out_degree_range": [
+    3,
+    14
+   ],
+   "S1": 83.0433895092003,
+   "S2": 70.91120528936628,
+   "S3": 1.3652325890892303
+  },
+  {
+   "host": "SH-2011100",
+   "draw": 0,
+   "arm": "K",
+   "edges": 260,
+   "weight": 2347.0,
+   "autapses": 4,
+   "reciprocal": 38,
+   "in_degree_range": [
+    4,
+    16
+   ],
+   "out_degree_range": [
+    1,
+    17
+   ],
+   "S1": 83.0433895092003,
+   "S2": 70.91120528936628,
+   "S3": 1.459762948960438
+  },
+  {
+   "host": "SH-2011100",
+   "draw": 0,
+   "arm": "T",
+   "edges": 260,
+   "weight": 2347.0,
+   "autapses": 8,
+   "reciprocal": 75,
+   "in_degree_range": [
+    4,
+    16
+   ],
+   "out_degree_range": [
+    1,
+    17
+   ],
+   "S1": 83.0433895092003,
+   "S2": 70.91120528936626,
+   "S3": 1.7140019283515808
+  },
+  {
+   "host": "SH-2011100",
+   "draw": 1,
+   "arm": "I",
+   "edges": 96,
+   "weight": 627.0,
+   "autapses": 4,
+   "reciprocal": 8,
+   "in_degree_range": [
+    0,
+    8
+   ],
+   "out_degree_range": [
+    0,
+    9
+   ],
+   "S1": 22.18500435546169,
+   "S2": 13.747567050061456,
+   "S3": 0.7784212054547962
+  },
+  {
+   "host": "SH-2011100",
+   "draw": 1,
+   "arm": "U_LL",
+   "edges": 96,
+   "weight": 627.0,
+   "autapses": 4,
+   "reciprocal": 4,
+   "in_degree_range": [
+    0,
+    7
+   ],
+   "out_degree_range": [
+    1,
+    6
+   ],
+   "S1": 22.185004355461693,
+   "S2": 5.126816856790148,
+   "S3": 0.7784754129313715
+  },
+  {
+   "host": "SH-2011100",
+   "draw": 1,
+   "arm": "U_LH",
+   "edges": 96,
+   "weight": 2346.9999389648438,
+   "autapses": 4,
+   "reciprocal": 4,
+   "in_degree_range": [
+    0,
+    7
+   ],
+   "out_degree_range": [
+    1,
+    6
+   ],
+   "S1": 83.04338734960666,
+   "S2": 71.8354602343418,
+   "S3": 1.5553592532655118
+  },
+  {
+   "host": "SH-2011100",
+   "draw": 1,
+   "arm": "U_HL",
+   "edges": 260,
+   "weight": 626.9999742507935,
+   "autapses": 4,
+   "reciprocal": 32,
+   "in_degree_range": [
+    4,
+    13
+   ],
+   "out_degree_range": [
+    5,
+    14
+   ],
+   "S1": 22.185003444383128,
+   "S2": 1.8929783762588124,
+   "S3": 0.7785460229686988
+  },
+  {
+   "host": "SH-2011100",
+   "draw": 1,
+   "arm": "U_HH",
+   "edges": 260,
+   "weight": 2347.000026702881,
+   "autapses": 4,
+   "reciprocal": 32,
+   "in_degree_range": [
+    4,
+    13
+   ],
+   "out_degree_range": [
+    5,
+    14
+   ],
+   "S1": 83.04339045402251,
+   "S2": 26.52386422345861,
+   "S3": 0.9501351088526574
+  },
+  {
+   "host": "SH-2011100",
+   "draw": 1,
+   "arm": "W",
+   "edges": 260,
+   "weight": 2347.0,
+   "autapses": 4,
+   "reciprocal": 32,
+   "in_degree_range": [
+    4,
+    13
+   ],
+   "out_degree_range": [
+    5,
+    14
+   ],
+   "S1": 83.0433895092003,
+   "S2": 70.91120528936628,
+   "S3": 1.3671833082640932
+  },
+  {
+   "host": "SH-2011100",
+   "draw": 1,
+   "arm": "K",
+   "edges": 260,
+   "weight": 2347.0,
+   "autapses": 4,
+   "reciprocal": 34,
+   "in_degree_range": [
+    4,
+    16
+   ],
+   "out_degree_range": [
+    1,
+    17
+   ],
+   "S1": 83.0433895092003,
+   "S2": 70.91120528936626,
+   "S3": 1.7183985499373604
+  },
+  {
+   "host": "SH-2011100",
+   "draw": 1,
+   "arm": "T",
+   "edges": 260,
+   "weight": 2347.0,
+   "autapses": 8,
+   "reciprocal": 75,
+   "in_degree_range": [
+    4,
+    16
+   ],
+   "out_degree_range": [
+    1,
+    17
+   ],
+   "S1": 83.0433895092003,
+   "S2": 70.91120528936626,
+   "S3": 1.7140019283515808
+  },
+  {
+   "host": "SH-2011101",
+   "draw": 0,
+   "arm": "I",
+   "edges": 93,
+   "weight": 487.0,
+   "autapses": 2,
+   "reciprocal": 6,
+   "in_degree_range": [
+    0,
+    10
+   ],
+   "out_degree_range": [
+    0,
+    8
+   ],
+   "S1": 17.2314148662039,
+   "S2": 11.128505920043374,
+   "S3": 0.3817089226733222
+  },
+  {
+   "host": "SH-2011101",
+   "draw": 0,
+   "arm": "U_LL",
+   "edges": 93,
+   "weight": 486.99997901916504,
+   "autapses": 2,
+   "reciprocal": 5,
+   "in_degree_range": [
+    0,
+    6
+   ],
+   "out_degree_range": [
+    0,
+    8
+   ],
+   "S1": 17.231414123843585,
+   "S2": 3.1927057280365183,
+   "S3": 0.3468533238531874
+  },
+  {
+   "host": "SH-2011101",
+   "draw": 0,
+   "arm": "U_LH",
+   "edges": 93,
+   "weight": 2346.999979019165,
+   "autapses": 2,
+   "reciprocal": 5,
+   "in_degree_range": [
+    0,
+    6
+   ],
+   "out_degree_range": [
+    0,
+    8
+   ],
+   "S1": 83.04338876684,
+   "S2": 74.1527356761347,
+   "S3": 1.4508785332909953
+  },
+  {
+   "host": "SH-2011101",
+   "draw": 0,
+   "arm": "U_HL",
+   "edges": 260,
+   "weight": 486.99999809265137,
+   "autapses": 2,
+   "reciprocal": 46,
+   "in_degree_range": [
+    5,
+    14
+   ],
+   "out_degree_range": [
+    1,
+    14
+   ],
+   "S1": 17.231414798716592,
+   "S2": 1.1420063690978048,
+   "S3": 0.3204101124794958
+  },
+  {
+   "host": "SH-2011101",
+   "draw": 0,
+   "arm": "U_HH",
+   "edges": 260,
+   "weight": 2347.000026702881,
+   "autapses": 2,
+   "reciprocal": 46,
+   "in_degree_range": [
+    5,
+    14
+   ],
+   "out_degree_range": [
+    1,
+    14
+   ],
+   "S1": 83.04339045402253,
+   "S2": 26.523864223458606,
+   "S3": 0.9427967346982864
+  },
+  {
+   "host": "SH-2011101",
+   "draw": 0,
+   "arm": "W",
+   "edges": 260,
+   "weight": 2347.0,
+   "autapses": 2,
+   "reciprocal": 46,
+   "in_degree_range": [
+    5,
+    14
+   ],
+   "out_degree_range": [
+    1,
+    14
+   ],
+   "S1": 83.0433895092003,
+   "S2": 70.91120528936626,
+   "S3": 1.40785627243388
+  },
+  {
+   "host": "SH-2011101",
+   "draw": 0,
+   "arm": "K",
+   "edges": 260,
+   "weight": 2347.0,
+   "autapses": 2,
+   "reciprocal": 44,
+   "in_degree_range": [
+    4,
+    16
+   ],
+   "out_degree_range": [
+    1,
+    17
+   ],
+   "S1": 83.0433895092003,
+   "S2": 70.91120528936626,
+   "S3": 1.636547531503253
+  },
+  {
+   "host": "SH-2011101",
+   "draw": 0,
+   "arm": "T",
+   "edges": 260,
+   "weight": 2347.0,
+   "autapses": 8,
+   "reciprocal": 75,
+   "in_degree_range": [
+    4,
+    16
+   ],
+   "out_degree_range": [
+    1,
+    17
+   ],
+   "S1": 83.0433895092003,
+   "S2": 70.91120528936626,
+   "S3": 1.7140019283515808
+  },
+  {
+   "host": "SH-2011101",
+   "draw": 1,
+   "arm": "I",
+   "edges": 93,
+   "weight": 487.0,
+   "autapses": 2,
+   "reciprocal": 6,
+   "in_degree_range": [
+    0,
+    10
+   ],
+   "out_degree_range": [
+    0,
+    8
+   ],
+   "S1": 17.2314148662039,
+   "S2": 11.128505920043374,
+   "S3": 0.3817089226733222
+  },
+  {
+   "host": "SH-2011101",
+   "draw": 1,
+   "arm": "U_LL",
+   "edges": 93,
+   "weight": 486.99997901916504,
+   "autapses": 2,
+   "reciprocal": 7,
+   "in_degree_range": [
+    0,
+    8
+   ],
+   "out_degree_range": [
+    0,
+    7
+   ],
+   "S1": 17.231414123843585,
+   "S2": 3.1927057280365183,
+   "S3": 0.34154568694881815
+  },
+  {
+   "host": "SH-2011101",
+   "draw": 1,
+   "arm": "U_LH",
+   "edges": 93,
+   "weight": 2346.999979019165,
+   "autapses": 2,
+   "reciprocal": 7,
+   "in_degree_range": [
+    0,
+    8
+   ],
+   "out_degree_range": [
+    0,
+    7
+   ],
+   "S1": 83.04338876684,
+   "S2": 74.1527356761347,
+   "S3": 1.5704544783705696
+  },
+  {
+   "host": "SH-2011101",
+   "draw": 1,
+   "arm": "U_HL",
+   "edges": 260,
+   "weight": 486.99999809265137,
+   "autapses": 2,
+   "reciprocal": 33,
+   "in_degree_range": [
+    2,
+    14
+   ],
+   "out_degree_range": [
+    3,
+    12
+   ],
+   "S1": 17.231414798716592,
+   "S2": 1.1420063690978048,
+   "S3": 0.31988713996113693
+  },
+  {
+   "host": "SH-2011101",
+   "draw": 1,
+   "arm": "U_HH",
+   "edges": 260,
+   "weight": 2347.000026702881,
+   "autapses": 2,
+   "reciprocal": 33,
+   "in_degree_range": [
+    2,
+    14
+   ],
+   "out_degree_range": [
+    3,
+    12
+   ],
+   "S1": 83.04339045402253,
+   "S2": 26.52386422345861,
+   "S3": 0.9362445259919338
+  },
+  {
+   "host": "SH-2011101",
+   "draw": 1,
+   "arm": "W",
+   "edges": 260,
+   "weight": 2347.0,
+   "autapses": 2,
+   "reciprocal": 33,
+   "in_degree_range": [
+    2,
+    14
+   ],
+   "out_degree_range": [
+    3,
+    12
+   ],
+   "S1": 83.0433895092003,
+   "S2": 70.91120528936626,
+   "S3": 1.3440898902839131
+  },
+  {
+   "host": "SH-2011101",
+   "draw": 1,
+   "arm": "K",
+   "edges": 260,
+   "weight": 2347.0,
+   "autapses": 2,
+   "reciprocal": 35,
+   "in_degree_range": [
+    4,
+    16
+   ],
+   "out_degree_range": [
+    1,
+    17
+   ],
+   "S1": 83.0433895092003,
+   "S2": 70.91120528936626,
+   "S3": 1.6319246027176066
+  },
+  {
+   "host": "SH-2011101",
+   "draw": 1,
+   "arm": "T",
+   "edges": 260,
+   "weight": 2347.0,
+   "autapses": 8,
+   "reciprocal": 75,
+   "in_degree_range": [
+    4,
+    16
+   ],
+   "out_degree_range": [
+    1,
+    17
+   ],
+   "S1": 83.0433895092003,
+   "S2": 70.91120528936626,
+   "S3": 1.7140019283515808
+  },
+  {
+   "host": "SH-route-2021100",
+   "draw": 0,
+   "arm": "I",
+   "edges": 92,
+   "weight": 563.0,
+   "autapses": 2,
+   "reciprocal": 5,
+   "in_degree_range": [
+    0,
+    6
+   ],
+   "out_degree_range": [
+    0,
+    8
+   ],
+   "S1": 19.920506303229555,
+   "S2": 12.615812144929361,
+   "S3": 0.6469196819293415
+  },
+  {
+   "host": "SH-route-2021100",
+   "draw": 0,
+   "arm": "U_LL",
+   "edges": 92,
+   "weight": 562.9999809265137,
+   "autapses": 2,
+   "reciprocal": 7,
+   "in_degree_range": [
+    0,
+    7
+   ],
+   "out_degree_range": [
+    0,
+    6
+   ],
+   "S1": 19.920505628356544,
+   "S2": 4.313332005319399,
+   "S3": 0.5672346938265639
+  },
+  {
+   "host": "SH-route-2021100",
+   "draw": 0,
+   "arm": "U_LH",
+   "edges": 92,
+   "weight": 2347.0000381469727,
+   "autapses": 2,
+   "reciprocal": 7,
+   "in_degree_range": [
+    0,
+    7
+   ],
+   "out_degree_range": [
+    0,
+    6
+   ],
+   "S1": 83.04339085894631,
+   "S2": 74.95874744947531,
+   "S3": 1.4795536012066903
+  },
+  {
+   "host": "SH-route-2021100",
+   "draw": 0,
+   "arm": "U_HL",
+   "edges": 260,
+   "weight": 562.9999780654907,
+   "autapses": 2,
+   "reciprocal": 38,
+   "in_degree_range": [
+    2,
+    16
+   ],
+   "out_degree_range": [
+    4,
+    14
+   ],
+   "S1": 19.920505527125595,
+   "S2": 1.5262559248316976,
+   "S3": 0.5663347075153398
+  },
+  {
+   "host": "SH-route-2021100",
+   "draw": 0,
+   "arm": "U_HH",
+   "edges": 260,
+   "weight": 2347.000026702881,
+   "autapses": 2,
+   "reciprocal": 38,
+   "in_degree_range": [
+    2,
+    16
+   ],
+   "out_degree_range": [
+    4,
+    14
+   ],
+   "S1": 83.04339045402253,
+   "S2": 26.52386422345861,
+   "S3": 0.9449326565501042
+  },
+  {
+   "host": "SH-route-2021100",
+   "draw": 0,
+   "arm": "W",
+   "edges": 260,
+   "weight": 2347.0,
+   "autapses": 2,
+   "reciprocal": 38,
+   "in_degree_range": [
+    2,
+    16
+   ],
+   "out_degree_range": [
+    4,
+    14
+   ],
+   "S1": 83.0433895092003,
+   "S2": 70.91120528936628,
+   "S3": 1.5239245360951872
+  },
+  {
+   "host": "SH-route-2021100",
+   "draw": 0,
+   "arm": "K",
+   "edges": 260,
+   "weight": 2347.0,
+   "autapses": 2,
+   "reciprocal": 40,
+   "in_degree_range": [
+    4,
+    16
+   ],
+   "out_degree_range": [
+    1,
+    17
+   ],
+   "S1": 83.0433895092003,
+   "S2": 70.91120528936626,
+   "S3": 1.6056778346696023
+  },
+  {
+   "host": "SH-route-2021100",
+   "draw": 0,
+   "arm": "T",
+   "edges": 260,
+   "weight": 2347.0,
+   "autapses": 8,
+   "reciprocal": 75,
+   "in_degree_range": [
+    4,
+    16
+   ],
+   "out_degree_range": [
+    1,
+    17
+   ],
+   "S1": 83.0433895092003,
+   "S2": 70.91120528936626,
+   "S3": 1.7140019283515808
+  },
+  {
+   "host": "SH-route-2021100",
+   "draw": 1,
+   "arm": "I",
+   "edges": 92,
+   "weight": 563.0,
+   "autapses": 2,
+   "reciprocal": 5,
+   "in_degree_range": [
+    0,
+    6
+   ],
+   "out_degree_range": [
+    0,
+    8
+   ],
+   "S1": 19.920506303229555,
+   "S2": 12.615812144929361,
+   "S3": 0.6469196819293415
+  },
+  {
+   "host": "SH-route-2021100",
+   "draw": 1,
+   "arm": "U_LL",
+   "edges": 92,
+   "weight": 562.9999809265137,
+   "autapses": 2,
+   "reciprocal": 7,
+   "in_degree_range": [
+    0,
+    6
+   ],
+   "out_degree_range": [
+    0,
+    6
+   ],
+   "S1": 19.920505628356544,
+   "S2": 4.3133320053194,
+   "S3": 0.5662689806344737
+  },
+  {
+   "host": "SH-route-2021100",
+   "draw": 1,
+   "arm": "U_LH",
+   "edges": 92,
+   "weight": 2347.0000381469727,
+   "autapses": 2,
+   "reciprocal": 7,
+   "in_degree_range": [
+    0,
+    6
+   ],
+   "out_degree_range": [
+    0,
+    6
+   ],
+   "S1": 83.04339085894632,
+   "S2": 74.95874744947531,
+   "S3": 1.5268088907532755
+  },
+  {
+   "host": "SH-route-2021100",
+   "draw": 1,
+   "arm": "U_HL",
+   "edges": 260,
+   "weight": 562.9999780654907,
+   "autapses": 2,
+   "reciprocal": 42,
+   "in_degree_range": [
+    4,
+    13
+   ],
+   "out_degree_range": [
+    5,
+    16
+   ],
+   "S1": 19.920505527125595,
+   "S2": 1.5262559248316976,
+   "S3": 0.5662727023278139
+  },
+  {
+   "host": "SH-route-2021100",
+   "draw": 1,
+   "arm": "U_HH",
+   "edges": 260,
+   "weight": 2347.000026702881,
+   "autapses": 2,
+   "reciprocal": 42,
+   "in_degree_range": [
+    4,
+    13
+   ],
+   "out_degree_range": [
+    5,
+    16
+   ],
+   "S1": 83.04339045402253,
+   "S2": 26.52386422345861,
+   "S3": 0.9560622656066309
+  },
+  {
+   "host": "SH-route-2021100",
+   "draw": 1,
+   "arm": "W",
+   "edges": 260,
+   "weight": 2347.0,
+   "autapses": 2,
+   "reciprocal": 42,
+   "in_degree_range": [
+    4,
+    13
+   ],
+   "out_degree_range": [
+    5,
+    16
+   ],
+   "S1": 83.0433895092003,
+   "S2": 70.91120528936626,
+   "S3": 1.7137619559443693
+  },
+  {
+   "host": "SH-route-2021100",
+   "draw": 1,
+   "arm": "K",
+   "edges": 260,
+   "weight": 2347.0,
+   "autapses": 2,
+   "reciprocal": 44,
+   "in_degree_range": [
+    4,
+    16
+   ],
+   "out_degree_range": [
+    1,
+    17
+   ],
+   "S1": 83.0433895092003,
+   "S2": 70.91120528936626,
+   "S3": 1.2594134526108969
+  },
+  {
+   "host": "SH-route-2021100",
+   "draw": 1,
+   "arm": "T",
+   "edges": 260,
+   "weight": 2347.0,
+   "autapses": 8,
+   "reciprocal": 75,
+   "in_degree_range": [
+    4,
+    16
+   ],
+   "out_degree_range": [
+    1,
+    17
+   ],
+   "S1": 83.0433895092003,
+   "S2": 70.91120528936626,
+   "S3": 1.7140019283515808
+  },
+  {
+   "host": "SH-route-2021101",
+   "draw": 0,
+   "arm": "I",
+   "edges": 104,
+   "weight": 564.0,
+   "autapses": 2,
+   "reciprocal": 8,
+   "in_degree_range": [
+    0,
+    9
+   ],
+   "out_degree_range": [
+    0,
+    8
+   ],
+   "S1": 19.955889085295684,
+   "S2": 10.21584073659061,
+   "S3": 0.5629878210012674
+  },
+  {
+   "host": "SH-route-2021101",
+   "draw": 0,
+   "arm": "U_LL",
+   "edges": 104,
+   "weight": 564.0000190734863,
+   "autapses": 2,
+   "reciprocal": 10,
+   "in_degree_range": [
+    1,
+    8
+   ],
+   "out_degree_range": [
+    1,
+    7
+   ],
+   "S1": 19.955889760168695,
+   "S2": 3.829207078076978,
+   "S3": 0.36339635999261405
+  },
+  {
+   "host": "SH-route-2021101",
+   "draw": 0,
+   "arm": "U_LH",
+   "edges": 104,
+   "weight": 2347.0000762939453,
+   "autapses": 2,
+   "reciprocal": 10,
+   "in_degree_range": [
+    1,
+    8
+   ],
+   "out_degree_range": [
+    1,
+    7
+   ],
+   "S1": 83.04339220869232,
+   "S2": 66.30966336083368,
+   "S3": 1.510833788100833
+  },
+  {
+   "host": "SH-route-2021101",
+   "draw": 0,
+   "arm": "U_HL",
+   "edges": 260,
+   "weight": 563.999981880188,
+   "autapses": 2,
+   "reciprocal": 42,
+   "in_degree_range": [
+    5,
+    13
+   ],
+   "out_degree_range": [
+    5,
+    14
+   ],
+   "S1": 19.955888444166327,
+   "S2": 1.531682629215427,
+   "S3": 0.22780620289594047
+  },
+  {
+   "host": "SH-route-2021101",
+   "draw": 0,
+   "arm": "U_HH",
+   "edges": 260,
+   "weight": 2347.000026702881,
+   "autapses": 2,
+   "reciprocal": 42,
+   "in_degree_range": [
+    5,
+    13
+   ],
+   "out_degree_range": [
+    5,
+    14
+   ],
+   "S1": 83.04339045402253,
+   "S2": 26.523864223458606,
+   "S3": 0.9462372193169847
+  },
+  {
+   "host": "SH-route-2021101",
+   "draw": 0,
+   "arm": "W",
+   "edges": 260,
+   "weight": 2347.0,
+   "autapses": 2,
+   "reciprocal": 42,
+   "in_degree_range": [
+    5,
+    13
+   ],
+   "out_degree_range": [
+    5,
+    14
+   ],
+   "S1": 83.0433895092003,
+   "S2": 70.91120528936628,
+   "S3": 1.4100134862591474
+  },
+  {
+   "host": "SH-route-2021101",
+   "draw": 0,
+   "arm": "K",
+   "edges": 260,
+   "weight": 2347.0,
+   "autapses": 2,
+   "reciprocal": 44,
+   "in_degree_range": [
+    4,
+    16
+   ],
+   "out_degree_range": [
+    1,
+    17
+   ],
+   "S1": 83.0433895092003,
+   "S2": 70.91120528936626,
+   "S3": 1.5165370537164602
+  },
+  {
+   "host": "SH-route-2021101",
+   "draw": 0,
+   "arm": "T",
+   "edges": 260,
+   "weight": 2347.0,
+   "autapses": 8,
+   "reciprocal": 75,
+   "in_degree_range": [
+    4,
+    16
+   ],
+   "out_degree_range": [
+    1,
+    17
+   ],
+   "S1": 83.0433895092003,
+   "S2": 70.91120528936626,
+   "S3": 1.7140019283515808
+  },
+  {
+   "host": "SH-route-2021101",
+   "draw": 1,
+   "arm": "I",
+   "edges": 104,
+   "weight": 564.0,
+   "autapses": 2,
+   "reciprocal": 8,
+   "in_degree_range": [
+    0,
+    9
+   ],
+   "out_degree_range": [
+    0,
+    8
+   ],
+   "S1": 19.955889085295684,
+   "S2": 10.21584073659061,
+   "S3": 0.5629878210012674
+  },
+  {
+   "host": "SH-route-2021101",
+   "draw": 1,
+   "arm": "U_LL",
+   "edges": 104,
+   "weight": 564.0000190734863,
+   "autapses": 2,
+   "reciprocal": 7,
+   "in_degree_range": [
+    0,
+    9
+   ],
+   "out_degree_range": [
+    1,
+    9
+   ],
+   "S1": 19.95588976016869,
+   "S2": 3.8292070780769776,
+   "S3": 0.37449767846116283
+  },
+  {
+   "host": "SH-route-2021101",
+   "draw": 1,
+   "arm": "U_LH",
+   "edges": 104,
+   "weight": 2347.0000762939453,
+   "autapses": 2,
+   "reciprocal": 7,
+   "in_degree_range": [
+    0,
+    9
+   ],
+   "out_degree_range": [
+    1,
+    9
+   ],
+   "S1": 83.04339220869234,
+   "S2": 66.30966336083368,
+   "S3": 1.5577487442072993
+  },
+  {
+   "host": "SH-route-2021101",
+   "draw": 1,
+   "arm": "U_HL",
+   "edges": 260,
+   "weight": 563.999981880188,
+   "autapses": 2,
+   "reciprocal": 35,
+   "in_degree_range": [
+    4,
+    13
+   ],
+   "out_degree_range": [
+    3,
+    17
+   ],
+   "S1": 19.955888444166327,
+   "S2": 1.531682629215427,
+   "S3": 0.22602376557184464
+  },
+  {
+   "host": "SH-route-2021101",
+   "draw": 1,
+   "arm": "U_HH",
+   "edges": 260,
+   "weight": 2347.000026702881,
+   "autapses": 2,
+   "reciprocal": 35,
+   "in_degree_range": [
+    4,
+    13
+   ],
+   "out_degree_range": [
+    3,
+    17
+   ],
+   "S1": 83.04339045402253,
+   "S2": 26.52386422345861,
+   "S3": 0.9388246658796818
+  },
+  {
+   "host": "SH-route-2021101",
+   "draw": 1,
+   "arm": "W",
+   "edges": 260,
+   "weight": 2347.0,
+   "autapses": 2,
+   "reciprocal": 35,
+   "in_degree_range": [
+    4,
+    13
+   ],
+   "out_degree_range": [
+    3,
+    17
+   ],
+   "S1": 83.0433895092003,
+   "S2": 70.91120528936626,
+   "S3": 1.6106456377471035
+  },
+  {
+   "host": "SH-route-2021101",
+   "draw": 1,
+   "arm": "K",
+   "edges": 260,
+   "weight": 2347.0,
+   "autapses": 2,
+   "reciprocal": 36,
+   "in_degree_range": [
+    4,
+    16
+   ],
+   "out_degree_range": [
+    1,
+    17
+   ],
+   "S1": 83.0433895092003,
+   "S2": 70.91120528936628,
+   "S3": 1.5989487307815522
+  },
+  {
+   "host": "SH-route-2021101",
+   "draw": 1,
+   "arm": "T",
+   "edges": 260,
+   "weight": 2347.0,
+   "autapses": 8,
+   "reciprocal": 75,
+   "in_degree_range": [
+    4,
+    16
+   ],
+   "out_degree_range": [
+    1,
+    17
+   ],
+   "S1": 83.0433895092003,
+   "S2": 70.91120528936626,
+   "S3": 1.7140019283515808
+  },
+  {
+   "host": "SH-class-2031100",
+   "draw": 0,
+   "arm": "I",
+   "edges": 123,
+   "weight": 766.0,
+   "autapses": 2,
+   "reciprocal": 8,
+   "in_degree_range": [
+    1,
+    9
+   ],
+   "out_degree_range": [
+    0,
+    9
+   ],
+   "S1": 27.103211062653358,
+   "S2": 17.216696300195352,
+   "S3": 0.5504376967689636
+  },
+  {
+   "host": "SH-class-2031100",
+   "draw": 0,
+   "arm": "U_LL",
+   "edges": 123,
+   "weight": 765.9999732971191,
+   "autapses": 2,
+   "reciprocal": 7,
+   "in_degree_range": [
+    1,
+    7
+   ],
+   "out_degree_range": [
+    0,
+    9
+   ],
+   "S1": 27.103210117831143,
+   "S2": 5.972227631636622,
+   "S3": 0.4441326074388658
+  },
+  {
+   "host": "SH-class-2031100",
+   "draw": 0,
+   "arm": "U_LH",
+   "edges": 123,
+   "weight": 2346.999990463257,
+   "autapses": 2,
+   "reciprocal": 7,
+   "in_degree_range": [
+    1,
+    7
+   ],
+   "out_degree_range": [
+    0,
+    9
+   ],
+   "S1": 83.04338917176378,
+   "S2": 56.066703131162726,
+   "S3": 1.355891949958731
+  },
+  {
+   "host": "SH-class-2031100",
+   "draw": 0,
+   "arm": "U_HL",
+   "edges": 260,
+   "weight": 766.0000085830688,
+   "autapses": 2,
+   "reciprocal": 43,
+   "in_degree_range": [
+    4,
+    13
+   ],
+   "out_degree_range": [
+    3,
+    14
+   ],
+   "S1": 27.10321136634621,
+   "S2": 2.82532333218784,
+   "S3": 0.31078701305532624
+  },
+  {
+   "host": "SH-class-2031100",
+   "draw": 0,
+   "arm": "U_HH",
+   "edges": 260,
+   "weight": 2347.000026702881,
+   "autapses": 2,
+   "reciprocal": 43,
+   "in_degree_range": [
+    4,
+    13
+   ],
+   "out_degree_range": [
+    3,
+    14
+   ],
+   "S1": 83.04339045402251,
+   "S2": 26.523864223458606,
+   "S3": 0.9417429458581139
+  },
+  {
+   "host": "SH-class-2031100",
+   "draw": 0,
+   "arm": "W",
+   "edges": 260,
+   "weight": 2347.0,
+   "autapses": 2,
+   "reciprocal": 43,
+   "in_degree_range": [
+    4,
+    13
+   ],
+   "out_degree_range": [
+    3,
+    14
+   ],
+   "S1": 83.0433895092003,
+   "S2": 70.91120528936625,
+   "S3": 1.4885278030142508
+  },
+  {
+   "host": "SH-class-2031100",
+   "draw": 0,
+   "arm": "K",
+   "edges": 260,
+   "weight": 2347.0,
+   "autapses": 2,
+   "reciprocal": 41,
+   "in_degree_range": [
+    4,
+    16
+   ],
+   "out_degree_range": [
+    1,
+    17
+   ],
+   "S1": 83.0433895092003,
+   "S2": 70.91120528936626,
+   "S3": 1.6705387512034346
+  },
+  {
+   "host": "SH-class-2031100",
+   "draw": 0,
+   "arm": "T",
+   "edges": 260,
+   "weight": 2347.0,
+   "autapses": 8,
+   "reciprocal": 75,
+   "in_degree_range": [
+    4,
+    16
+   ],
+   "out_degree_range": [
+    1,
+    17
+   ],
+   "S1": 83.0433895092003,
+   "S2": 70.91120528936626,
+   "S3": 1.7140019283515808
+  },
+  {
+   "host": "SH-class-2031100",
+   "draw": 1,
+   "arm": "I",
+   "edges": 123,
+   "weight": 766.0,
+   "autapses": 2,
+   "reciprocal": 8,
+   "in_degree_range": [
+    1,
+    9
+   ],
+   "out_degree_range": [
+    0,
+    9
+   ],
+   "S1": 27.103211062653358,
+   "S2": 17.216696300195352,
+   "S3": 0.5504376967689636
+  },
+  {
+   "host": "SH-class-2031100",
+   "draw": 1,
+   "arm": "U_LL",
+   "edges": 123,
+   "weight": 765.9999732971191,
+   "autapses": 2,
+   "reciprocal": 8,
+   "in_degree_range": [
+    1,
+    8
+   ],
+   "out_degree_range": [
+    1,
+    10
+   ],
+   "S1": 27.103210117831143,
+   "S2": 5.972227631636622,
+   "S3": 0.4600837990096006
+  },
+  {
+   "host": "SH-class-2031100",
+   "draw": 1,
+   "arm": "U_LH",
+   "edges": 123,
+   "weight": 2346.999990463257,
+   "autapses": 2,
+   "reciprocal": 8,
+   "in_degree_range": [
+    1,
+    8
+   ],
+   "out_degree_range": [
+    1,
+    10
+   ],
+   "S1": 83.04338917176379,
+   "S2": 56.066703131162726,
+   "S3": 1.4031701845146267
+  },
+  {
+   "host": "SH-class-2031100",
+   "draw": 1,
+   "arm": "U_HL",
+   "edges": 260,
+   "weight": 766.0000085830688,
+   "autapses": 2,
+   "reciprocal": 37,
+   "in_degree_range": [
+    4,
+    13
+   ],
+   "out_degree_range": [
+    4,
+    15
+   ],
+   "S1": 27.10321136634621,
+   "S2": 2.82532333218784,
+   "S3": 0.31116172213632154
+  },
+  {
+   "host": "SH-class-2031100",
+   "draw": 1,
+   "arm": "U_HH",
+   "edges": 260,
+   "weight": 2347.000026702881,
+   "autapses": 2,
+   "reciprocal": 37,
+   "in_degree_range": [
+    4,
+    13
+   ],
+   "out_degree_range": [
+    4,
+    15
+   ],
+   "S1": 83.04339045402253,
+   "S2": 26.52386422345861,
+   "S3": 0.945151526663378
+  },
+  {
+   "host": "SH-class-2031100",
+   "draw": 1,
+   "arm": "W",
+   "edges": 260,
+   "weight": 2347.0,
+   "autapses": 2,
+   "reciprocal": 37,
+   "in_degree_range": [
+    4,
+    13
+   ],
+   "out_degree_range": [
+    4,
+    15
+   ],
+   "S1": 83.0433895092003,
+   "S2": 70.91120528936626,
+   "S3": 1.432744540259707
+  },
+  {
+   "host": "SH-class-2031100",
+   "draw": 1,
+   "arm": "K",
+   "edges": 260,
+   "weight": 2347.0,
+   "autapses": 2,
+   "reciprocal": 39,
+   "in_degree_range": [
+    4,
+    16
+   ],
+   "out_degree_range": [
+    1,
+    17
+   ],
+   "S1": 83.0433895092003,
+   "S2": 70.91120528936628,
+   "S3": 1.4798649801781527
+  },
+  {
+   "host": "SH-class-2031100",
+   "draw": 1,
+   "arm": "T",
+   "edges": 260,
+   "weight": 2347.0,
+   "autapses": 8,
+   "reciprocal": 75,
+   "in_degree_range": [
+    4,
+    16
+   ],
+   "out_degree_range": [
+    1,
+    17
+   ],
+   "S1": 83.0433895092003,
+   "S2": 70.91120528936626,
+   "S3": 1.7140019283515808
+  },
+  {
+   "host": "SH-class-2031101",
+   "draw": 0,
+   "arm": "I",
+   "edges": 119,
+   "weight": 771.0,
+   "autapses": 2,
+   "reciprocal": 13,
+   "in_degree_range": [
+    1,
+    8
+   ],
+   "out_degree_range": [
+    0,
+    8
+   ],
+   "S1": 27.280124972983995,
+   "S2": 16.033611803126952,
+   "S3": 0.8409349097161043
+  },
+  {
+   "host": "SH-class-2031101",
+   "draw": 0,
+   "arm": "U_LL",
+   "edges": 119,
+   "weight": 770.9999895095825,
+   "autapses": 2,
+   "reciprocal": 4,
+   "in_degree_range": [
+    1,
+    8
+   ],
+   "out_degree_range": [
+    0,
+    9
+   ],
+   "S1": 27.280124601803834,
+   "S2": 6.253825195713807,
+   "S3": 0.4583266352882184
+  },
+  {
+   "host": "SH-class-2031101",
+   "draw": 0,
+   "arm": "U_LH",
+   "edges": 119,
+   "weight": 2346.999952316284,
+   "autapses": 2,
+   "reciprocal": 4,
+   "in_degree_range": [
+    1,
+    8
+   ],
+   "out_degree_range": [
+    0,
+    9
+   ],
+   "S1": 83.04338782201776,
+   "S2": 57.95129631057185,
+   "S3": 1.3223264329604927
+  },
+  {
+   "host": "SH-class-2031101",
+   "draw": 0,
+   "arm": "U_HL",
+   "edges": 260,
+   "weight": 771.0000276565552,
+   "autapses": 2,
+   "reciprocal": 35,
+   "in_degree_range": [
+    4,
+    13
+   ],
+   "out_degree_range": [
+    4,
+    12
+   ],
+   "S1": 27.28012595154986,
+   "S2": 2.8623279689708614,
+   "S3": 0.42991772317681287
+  },
+  {
+   "host": "SH-class-2031101",
+   "draw": 0,
+   "arm": "U_HH",
+   "edges": 260,
+   "weight": 2347.000026702881,
+   "autapses": 2,
+   "reciprocal": 35,
+   "in_degree_range": [
+    4,
+    13
+   ],
+   "out_degree_range": [
+    4,
+    12
+   ],
+   "S1": 83.04339045402253,
+   "S2": 26.52386422345861,
+   "S3": 0.9468704865649928
+  },
+  {
+   "host": "SH-class-2031101",
+   "draw": 0,
+   "arm": "W",
+   "edges": 260,
+   "weight": 2347.0,
+   "autapses": 2,
+   "reciprocal": 35,
+   "in_degree_range": [
+    4,
+    13
+   ],
+   "out_degree_range": [
+    4,
+    12
+   ],
+   "S1": 83.0433895092003,
+   "S2": 70.91120528936626,
+   "S3": 1.458025287360848
+  },
+  {
+   "host": "SH-class-2031101",
+   "draw": 0,
+   "arm": "K",
+   "edges": 260,
+   "weight": 2347.0,
+   "autapses": 2,
+   "reciprocal": 37,
+   "in_degree_range": [
+    4,
+    16
+   ],
+   "out_degree_range": [
+    1,
+    17
+   ],
+   "S1": 83.0433895092003,
+   "S2": 70.91120528936626,
+   "S3": 1.589648024280835
+  },
+  {
+   "host": "SH-class-2031101",
+   "draw": 0,
+   "arm": "T",
+   "edges": 260,
+   "weight": 2347.0,
+   "autapses": 8,
+   "reciprocal": 75,
+   "in_degree_range": [
+    4,
+    16
+   ],
+   "out_degree_range": [
+    1,
+    17
+   ],
+   "S1": 83.0433895092003,
+   "S2": 70.91120528936626,
+   "S3": 1.7140019283515808
+  },
+  {
+   "host": "SH-class-2031101",
+   "draw": 1,
+   "arm": "I",
+   "edges": 119,
+   "weight": 771.0,
+   "autapses": 2,
+   "reciprocal": 13,
+   "in_degree_range": [
+    1,
+    8
+   ],
+   "out_degree_range": [
+    0,
+    8
+   ],
+   "S1": 27.280124972983995,
+   "S2": 16.033611803126952,
+   "S3": 0.8409349097161043
+  },
+  {
+   "host": "SH-class-2031101",
+   "draw": 1,
+   "arm": "U_LL",
+   "edges": 119,
+   "weight": 770.9999895095825,
+   "autapses": 2,
+   "reciprocal": 10,
+   "in_degree_range": [
+    1,
+    7
+   ],
+   "out_degree_range": [
+    0,
+    10
+   ],
+   "S1": 27.280124601803838,
+   "S2": 6.253825195713806,
+   "S3": 0.4574720626580749
+  },
+  {
+   "host": "SH-class-2031101",
+   "draw": 1,
+   "arm": "U_LH",
+   "edges": 119,
+   "weight": 2346.999952316284,
+   "autapses": 2,
+   "reciprocal": 10,
+   "in_degree_range": [
+    1,
+    7
+   ],
+   "out_degree_range": [
+    0,
+    10
+   ],
+   "S1": 83.04338782201776,
+   "S2": 57.95129631057185,
+   "S3": 1.3925164249453585
+  },
+  {
+   "host": "SH-class-2031101",
+   "draw": 1,
+   "arm": "U_HL",
+   "edges": 260,
+   "weight": 771.0000276565552,
+   "autapses": 2,
+   "reciprocal": 33,
+   "in_degree_range": [
+    5,
+    13
+   ],
+   "out_degree_range": [
+    3,
+    15
+   ],
+   "S1": 27.280125951549863,
+   "S2": 2.8623279689708614,
+   "S3": 0.4264233016758155
+  },
+  {
+   "host": "SH-class-2031101",
+   "draw": 1,
+   "arm": "U_HH",
+   "edges": 260,
+   "weight": 2347.000026702881,
+   "autapses": 2,
+   "reciprocal": 33,
+   "in_degree_range": [
+    5,
+    13
+   ],
+   "out_degree_range": [
+    3,
+    15
+   ],
+   "S1": 83.04339045402253,
+   "S2": 26.52386422345861,
+   "S3": 0.936607649713894
+  },
+  {
+   "host": "SH-class-2031101",
+   "draw": 1,
+   "arm": "W",
+   "edges": 260,
+   "weight": 2347.0,
+   "autapses": 2,
+   "reciprocal": 33,
+   "in_degree_range": [
+    5,
+    13
+   ],
+   "out_degree_range": [
+    3,
+    15
+   ],
+   "S1": 83.0433895092003,
+   "S2": 70.91120528936626,
+   "S3": 1.4324629730151281
+  },
+  {
+   "host": "SH-class-2031101",
+   "draw": 1,
+   "arm": "K",
+   "edges": 260,
+   "weight": 2347.0,
+   "autapses": 2,
+   "reciprocal": 35,
+   "in_degree_range": [
+    4,
+    16
+   ],
+   "out_degree_range": [
+    1,
+    17
+   ],
+   "S1": 83.0433895092003,
+   "S2": 70.91120528936626,
+   "S3": 1.4540197981878067
+  },
+  {
+   "host": "SH-class-2031101",
+   "draw": 1,
+   "arm": "T",
+   "edges": 260,
+   "weight": 2347.0,
+   "autapses": 8,
+   "reciprocal": 75,
+   "in_degree_range": [
+    4,
+    16
+   ],
+   "out_degree_range": [
+    1,
+    17
+   ],
+   "S1": 83.0433895092003,
+   "S2": 70.91120528936626,
+   "S3": 1.7140019283515808
+  },
+  {
+   "host": "SH-mirror-2041100",
+   "draw": 0,
+   "arm": "I",
+   "edges": 126,
+   "weight": 717.0,
+   "autapses": 3,
+   "reciprocal": 9,
+   "in_degree_range": [
+    0,
+    11
+   ],
+   "out_degree_range": [
+    0,
+    9
+   ],
+   "S1": 25.36945474141313,
+   "S2": 22.58376851070564,
+   "S3": 0.5638125056954767
+  },
+  {
+   "host": "SH-mirror-2041100",
+   "draw": 0,
+   "arm": "U_LL",
+   "edges": 126,
+   "weight": 717.0000286102295,
+   "autapses": 3,
+   "reciprocal": 11,
+   "in_degree_range": [
+    0,
+    10
+   ],
+   "out_degree_range": [
+    2,
+    7
+   ],
+   "S1": 25.369455753722647,
+   "S2": 5.108010200318183,
+   "S3": 0.41044921504777826
+  },
+  {
+   "host": "SH-mirror-2041100",
+   "draw": 0,
+   "arm": "U_LH",
+   "edges": 126,
+   "weight": 2346.9999389648438,
+   "autapses": 3,
+   "reciprocal": 11,
+   "in_degree_range": [
+    0,
+    10
+   ],
+   "out_degree_range": [
+    2,
+    7
+   ],
+   "S1": 83.04338734960666,
+   "S2": 54.73177922616518,
+   "S3": 1.3425540506238363
+  },
+  {
+   "host": "SH-mirror-2041100",
+   "draw": 0,
+   "arm": "U_HL",
+   "edges": 260,
+   "weight": 717.0000076293945,
+   "autapses": 3,
+   "reciprocal": 34,
+   "in_degree_range": [
+    3,
+    12
+   ],
+   "out_degree_range": [
+    5,
+    12
+   ],
+   "S1": 25.36945501136233,
+   "S2": 2.475420182975144,
+   "S3": 0.28831441894901466
+  },
+  {
+   "host": "SH-mirror-2041100",
+   "draw": 0,
+   "arm": "U_HH",
+   "edges": 260,
+   "weight": 2347.000026702881,
+   "autapses": 3,
+   "reciprocal": 34,
+   "in_degree_range": [
+    3,
+    12
+   ],
+   "out_degree_range": [
+    5,
+    12
+   ],
+   "S1": 83.04339045402253,
+   "S2": 26.52386422345861,
+   "S3": 0.9423661870965725
+  },
+  {
+   "host": "SH-mirror-2041100",
+   "draw": 0,
+   "arm": "W",
+   "edges": 260,
+   "weight": 2347.0,
+   "autapses": 3,
+   "reciprocal": 34,
+   "in_degree_range": [
+    3,
+    12
+   ],
+   "out_degree_range": [
+    5,
+    12
+   ],
+   "S1": 83.0433895092003,
+   "S2": 70.91120528936626,
+   "S3": 1.5543276130807167
+  },
+  {
+   "host": "SH-mirror-2041100",
+   "draw": 0,
+   "arm": "K",
+   "edges": 260,
+   "weight": 2347.0,
+   "autapses": 3,
+   "reciprocal": 36,
+   "in_degree_range": [
+    4,
+    16
+   ],
+   "out_degree_range": [
+    1,
+    17
+   ],
+   "S1": 83.0433895092003,
+   "S2": 70.91120528936626,
+   "S3": 1.463393565142279
+  },
+  {
+   "host": "SH-mirror-2041100",
+   "draw": 0,
+   "arm": "T",
+   "edges": 260,
+   "weight": 2347.0,
+   "autapses": 8,
+   "reciprocal": 75,
+   "in_degree_range": [
+    4,
+    16
+   ],
+   "out_degree_range": [
+    1,
+    17
+   ],
+   "S1": 83.0433895092003,
+   "S2": 70.91120528936626,
+   "S3": 1.7140019283515808
+  },
+  {
+   "host": "SH-mirror-2041100",
+   "draw": 1,
+   "arm": "I",
+   "edges": 126,
+   "weight": 717.0,
+   "autapses": 3,
+   "reciprocal": 9,
+   "in_degree_range": [
+    0,
+    11
+   ],
+   "out_degree_range": [
+    0,
+    9
+   ],
+   "S1": 25.36945474141313,
+   "S2": 22.58376851070564,
+   "S3": 0.5638125056954767
+  },
+  {
+   "host": "SH-mirror-2041100",
+   "draw": 1,
+   "arm": "U_LL",
+   "edges": 126,
+   "weight": 717.0000286102295,
+   "autapses": 3,
+   "reciprocal": 11,
+   "in_degree_range": [
+    1,
+    8
+   ],
+   "out_degree_range": [
+    1,
+    9
+   ],
+   "S1": 25.369455753722647,
+   "S2": 5.1080102003181835,
+   "S3": 0.40139116815350684
+  },
+  {
+   "host": "SH-mirror-2041100",
+   "draw": 1,
+   "arm": "U_LH",
+   "edges": 126,
+   "weight": 2346.9999389648438,
+   "autapses": 3,
+   "reciprocal": 11,
+   "in_degree_range": [
+    1,
+    8
+   ],
+   "out_degree_range": [
+    1,
+    9
+   ],
+   "S1": 83.04338734960666,
+   "S2": 54.73177922616519,
+   "S3": 1.31275643814005
+  },
+  {
+   "host": "SH-mirror-2041100",
+   "draw": 1,
+   "arm": "U_HL",
+   "edges": 260,
+   "weight": 717.0000076293945,
+   "autapses": 3,
+   "reciprocal": 42,
+   "in_degree_range": [
+    5,
+    13
+   ],
+   "out_degree_range": [
+    4,
+    15
+   ],
+   "S1": 25.369455011362334,
+   "S2": 2.475420182975144,
+   "S3": 0.28925294393004103
+  },
+  {
+   "host": "SH-mirror-2041100",
+   "draw": 1,
+   "arm": "U_HH",
+   "edges": 260,
+   "weight": 2347.000026702881,
+   "autapses": 3,
+   "reciprocal": 42,
+   "in_degree_range": [
+    5,
+    13
+   ],
+   "out_degree_range": [
+    4,
+    15
+   ],
+   "S1": 83.04339045402253,
+   "S2": 26.52386422345861,
+   "S3": 0.9454679489190146
+  },
+  {
+   "host": "SH-mirror-2041100",
+   "draw": 1,
+   "arm": "W",
+   "edges": 260,
+   "weight": 2347.0,
+   "autapses": 3,
+   "reciprocal": 42,
+   "in_degree_range": [
+    5,
+    13
+   ],
+   "out_degree_range": [
+    4,
+    15
+   ],
+   "S1": 83.0433895092003,
+   "S2": 70.91120528936626,
+   "S3": 1.435657061827707
+  },
+  {
+   "host": "SH-mirror-2041100",
+   "draw": 1,
+   "arm": "K",
+   "edges": 260,
+   "weight": 2347.0,
+   "autapses": 3,
+   "reciprocal": 42,
+   "in_degree_range": [
+    4,
+    16
+   ],
+   "out_degree_range": [
+    1,
+    17
+   ],
+   "S1": 83.0433895092003,
+   "S2": 70.91120528936628,
+   "S3": 1.4637315466673992
+  },
+  {
+   "host": "SH-mirror-2041100",
+   "draw": 1,
+   "arm": "T",
+   "edges": 260,
+   "weight": 2347.0,
+   "autapses": 8,
+   "reciprocal": 75,
+   "in_degree_range": [
+    4,
+    16
+   ],
+   "out_degree_range": [
+    1,
+    17
+   ],
+   "S1": 83.0433895092003,
+   "S2": 70.91120528936626,
+   "S3": 1.7140019283515808
+  },
+  {
+   "host": "SH-mirror-2041101",
+   "draw": 0,
+   "arm": "I",
+   "edges": 117,
+   "weight": 550.0,
+   "autapses": 3,
+   "reciprocal": 11,
+   "in_degree_range": [
+    1,
+    9
+   ],
+   "out_degree_range": [
+    0,
+    8
+   ],
+   "S1": 19.460530136369904,
+   "S2": 7.26376322961994,
+   "S3": 0.42528712251192785
+  },
+  {
+   "host": "SH-mirror-2041101",
+   "draw": 0,
+   "arm": "U_LL",
+   "edges": 117,
+   "weight": 550.000009059906,
+   "autapses": 3,
+   "reciprocal": 2,
+   "in_degree_range": [
+    0,
+    9
+   ],
+   "out_degree_range": [
+    0,
+    7
+   ],
+   "S1": 19.460530456934585,
+   "S2": 3.236856800557937,
+   "S3": 0.3199801645188136
+  },
+  {
+   "host": "SH-mirror-2041101",
+   "draw": 0,
+   "arm": "U_LH",
+   "edges": 117,
+   "weight": 2347.0000762939453,
+   "autapses": 3,
+   "reciprocal": 2,
+   "in_degree_range": [
+    0,
+    9
+   ],
+   "out_degree_range": [
+    0,
+    7
+   ],
+   "S1": 83.04339220869235,
+   "S2": 58.94192298740773,
+   "S3": 1.3622578001408607
+  },
+  {
+   "host": "SH-mirror-2041101",
+   "draw": 0,
+   "arm": "U_HL",
+   "edges": 260,
+   "weight": 549.9999904632568,
+   "autapses": 3,
+   "reciprocal": 32,
+   "in_degree_range": [
+    2,
+    16
+   ],
+   "out_degree_range": [
+    4,
+    14
+   ],
+   "S1": 19.4605297989334,
+   "S2": 1.4565854617506726,
+   "S3": 0.2185490229048101
+  },
+  {
+   "host": "SH-mirror-2041101",
+   "draw": 0,
+   "arm": "U_HH",
+   "edges": 260,
+   "weight": 2347.000026702881,
+   "autapses": 3,
+   "reciprocal": 32,
+   "in_degree_range": [
+    2,
+    16
+   ],
+   "out_degree_range": [
+    4,
+    14
+   ],
+   "S1": 83.04339045402253,
+   "S2": 26.523864223458606,
+   "S3": 0.9244197825090984
+  },
+  {
+   "host": "SH-mirror-2041101",
+   "draw": 0,
+   "arm": "W",
+   "edges": 260,
+   "weight": 2347.0,
+   "autapses": 3,
+   "reciprocal": 32,
+   "in_degree_range": [
+    2,
+    16
+   ],
+   "out_degree_range": [
+    4,
+    14
+   ],
+   "S1": 83.0433895092003,
+   "S2": 70.91120528936626,
+   "S3": 1.8356113402628251
+  },
+  {
+   "host": "SH-mirror-2041101",
+   "draw": 0,
+   "arm": "K",
+   "edges": 260,
+   "weight": 2347.0,
+   "autapses": 3,
+   "reciprocal": 34,
+   "in_degree_range": [
+    4,
+    16
+   ],
+   "out_degree_range": [
+    1,
+    17
+   ],
+   "S1": 83.0433895092003,
+   "S2": 70.91120528936626,
+   "S3": 1.538927895058233
+  },
+  {
+   "host": "SH-mirror-2041101",
+   "draw": 0,
+   "arm": "T",
+   "edges": 260,
+   "weight": 2347.0,
+   "autapses": 8,
+   "reciprocal": 75,
+   "in_degree_range": [
+    4,
+    16
+   ],
+   "out_degree_range": [
+    1,
+    17
+   ],
+   "S1": 83.0433895092003,
+   "S2": 70.91120528936626,
+   "S3": 1.7140019283515808
+  },
+  {
+   "host": "SH-mirror-2041101",
+   "draw": 1,
+   "arm": "I",
+   "edges": 117,
+   "weight": 550.0,
+   "autapses": 3,
+   "reciprocal": 11,
+   "in_degree_range": [
+    1,
+    9
+   ],
+   "out_degree_range": [
+    0,
+    8
+   ],
+   "S1": 19.460530136369904,
+   "S2": 7.26376322961994,
+   "S3": 0.42528712251192785
+  },
+  {
+   "host": "SH-mirror-2041101",
+   "draw": 1,
+   "arm": "U_LL",
+   "edges": 117,
+   "weight": 550.000009059906,
+   "autapses": 3,
+   "reciprocal": 4,
+   "in_degree_range": [
+    1,
+    8
+   ],
+   "out_degree_range": [
+    1,
+    8
+   ],
+   "S1": 19.460530456934585,
+   "S2": 3.236856800557937,
+   "S3": 0.3287228122103029
+  },
+  {
+   "host": "SH-mirror-2041101",
+   "draw": 1,
+   "arm": "U_LH",
+   "edges": 117,
+   "weight": 2347.0000762939453,
+   "autapses": 3,
+   "reciprocal": 4,
+   "in_degree_range": [
+    1,
+    8
+   ],
+   "out_degree_range": [
+    1,
+    8
+   ],
+   "S1": 83.04339220869235,
+   "S2": 58.941922987407736,
+   "S3": 1.3963445748081162
+  },
+  {
+   "host": "SH-mirror-2041101",
+   "draw": 1,
+   "arm": "U_HL",
+   "edges": 260,
+   "weight": 549.9999904632568,
+   "autapses": 3,
+   "reciprocal": 42,
+   "in_degree_range": [
+    5,
+    14
+   ],
+   "out_degree_range": [
+    4,
+    13
+   ],
+   "S1": 19.4605297989334,
+   "S2": 1.4565854617506726,
+   "S3": 0.22266156482098953
+  },
+  {
+   "host": "SH-mirror-2041101",
+   "draw": 1,
+   "arm": "U_HH",
+   "edges": 260,
+   "weight": 2347.000026702881,
+   "autapses": 3,
+   "reciprocal": 42,
+   "in_degree_range": [
+    5,
+    14
+   ],
+   "out_degree_range": [
+    4,
+    13
+   ],
+   "S1": 83.04339045402253,
+   "S2": 26.523864223458606,
+   "S3": 0.9401785298505905
+  },
+  {
+   "host": "SH-mirror-2041101",
+   "draw": 1,
+   "arm": "W",
+   "edges": 260,
+   "weight": 2347.0,
+   "autapses": 3,
+   "reciprocal": 42,
+   "in_degree_range": [
+    5,
+    14
+   ],
+   "out_degree_range": [
+    4,
+    13
+   ],
+   "S1": 83.0433895092003,
+   "S2": 70.91120528936626,
+   "S3": 1.2811514183963009
+  },
+  {
+   "host": "SH-mirror-2041101",
+   "draw": 1,
+   "arm": "K",
+   "edges": 260,
+   "weight": 2347.0,
+   "autapses": 3,
+   "reciprocal": 40,
+   "in_degree_range": [
+    4,
+    16
+   ],
+   "out_degree_range": [
+    1,
+    17
+   ],
+   "S1": 83.0433895092003,
+   "S2": 70.91120528936626,
+   "S3": 1.8087156570859717
+  },
+  {
+   "host": "SH-mirror-2041101",
+   "draw": 1,
+   "arm": "T",
+   "edges": 260,
+   "weight": 2347.0,
+   "autapses": 8,
+   "reciprocal": 75,
+   "in_degree_range": [
+    4,
+    16
+   ],
+   "out_degree_range": [
+    1,
+    17
+   ],
+   "S1": 83.0433895092003,
+   "S2": 70.91120528936626,
+   "S3": 1.7140019283515808
+  },
+  {
+   "host": "SH-recip-2051100",
+   "draw": 0,
+   "arm": "I",
+   "edges": 105,
+   "weight": 636.0,
+   "autapses": 2,
+   "reciprocal": 29,
+   "in_degree_range": [
+    1,
+    9
+   ],
+   "out_degree_range": [
+    0,
+    8
+   ],
+   "S1": 22.503449394056833,
+   "S2": 17.50965055661229,
+   "S3": 0.5248278835549094
+  },
+  {
+   "host": "SH-recip-2051100",
+   "draw": 0,
+   "arm": "U_LL",
+   "edges": 105,
+   "weight": 635.9999871253967,
+   "autapses": 2,
+   "reciprocal": 5,
+   "in_degree_range": [
+    0,
+    7
+   ],
+   "out_degree_range": [
+    0,
+    7
+   ],
+   "S1": 22.50344893851755,
+   "S2": 4.822906801223494,
+   "S3": 0.4222575534061988
+  },
+  {
+   "host": "SH-recip-2051100",
+   "draw": 0,
+   "arm": "U_LH",
+   "edges": 105,
+   "weight": 2346.999979019165,
+   "autapses": 2,
+   "reciprocal": 5,
+   "in_degree_range": [
+    0,
+    7
+   ],
+   "out_degree_range": [
+    0,
+    7
+   ],
+   "S1": 83.04338876683998,
+   "S2": 65.67813731314786,
+   "S3": 1.4264093295536062
+  },
+  {
+   "host": "SH-recip-2051100",
+   "draw": 0,
+   "arm": "U_HL",
+   "edges": 260,
+   "weight": 636.0000085830688,
+   "autapses": 2,
+   "reciprocal": 39,
+   "in_degree_range": [
+    3,
+    13
+   ],
+   "out_degree_range": [
+    2,
+    13
+   ],
+   "S1": 22.50344969774969,
+   "S2": 1.9477124934582715,
+   "S3": 0.3928310321107126
+  },
+  {
+   "host": "SH-recip-2051100",
+   "draw": 0,
+   "arm": "U_HH",
+   "edges": 260,
+   "weight": 2347.000026702881,
+   "autapses": 2,
+   "reciprocal": 39,
+   "in_degree_range": [
+    3,
+    13
+   ],
+   "out_degree_range": [
+    2,
+    13
+   ],
+   "S1": 83.04339045402253,
+   "S2": 26.523864223458606,
+   "S3": 0.9503437516598642
+  },
+  {
+   "host": "SH-recip-2051100",
+   "draw": 0,
+   "arm": "W",
+   "edges": 260,
+   "weight": 2347.0,
+   "autapses": 2,
+   "reciprocal": 39,
+   "in_degree_range": [
+    3,
+    13
+   ],
+   "out_degree_range": [
+    2,
+    13
+   ],
+   "S1": 83.0433895092003,
+   "S2": 70.91120528936626,
+   "S3": 1.2727758491375891
+  },
+  {
+   "host": "SH-recip-2051100",
+   "draw": 0,
+   "arm": "K",
+   "edges": 260,
+   "weight": 2347.0,
+   "autapses": 2,
+   "reciprocal": 41,
+   "in_degree_range": [
+    4,
+    16
+   ],
+   "out_degree_range": [
+    1,
+    17
+   ],
+   "S1": 83.0433895092003,
+   "S2": 70.91120528936628,
+   "S3": 1.4573845645303622
+  },
+  {
+   "host": "SH-recip-2051100",
+   "draw": 0,
+   "arm": "T",
+   "edges": 260,
+   "weight": 2347.0,
+   "autapses": 8,
+   "reciprocal": 75,
+   "in_degree_range": [
+    4,
+    16
+   ],
+   "out_degree_range": [
+    1,
+    17
+   ],
+   "S1": 83.0433895092003,
+   "S2": 70.91120528936626,
+   "S3": 1.7140019283515808
+  },
+  {
+   "host": "SH-recip-2051100",
+   "draw": 1,
+   "arm": "I",
+   "edges": 105,
+   "weight": 636.0,
+   "autapses": 2,
+   "reciprocal": 29,
+   "in_degree_range": [
+    1,
+    9
+   ],
+   "out_degree_range": [
+    0,
+    8
+   ],
+   "S1": 22.503449394056833,
+   "S2": 17.50965055661229,
+   "S3": 0.5248278835549094
+  },
+  {
+   "host": "SH-recip-2051100",
+   "draw": 1,
+   "arm": "U_LL",
+   "edges": 105,
+   "weight": 635.9999871253967,
+   "autapses": 2,
+   "reciprocal": 5,
+   "in_degree_range": [
+    0,
+    10
+   ],
+   "out_degree_range": [
+    0,
+    9
+   ],
+   "S1": 22.50344893851755,
+   "S2": 4.8229068012234935,
+   "S3": 0.4055695566356298
+  },
+  {
+   "host": "SH-recip-2051100",
+   "draw": 1,
+   "arm": "U_LH",
+   "edges": 105,
+   "weight": 2346.999979019165,
+   "autapses": 2,
+   "reciprocal": 5,
+   "in_degree_range": [
+    0,
+    10
+   ],
+   "out_degree_range": [
+    0,
+    9
+   ],
+   "S1": 83.04338876684,
+   "S2": 65.67813731314787,
+   "S3": 1.4944226596348968
+  },
+  {
+   "host": "SH-recip-2051100",
+   "draw": 1,
+   "arm": "U_HL",
+   "edges": 260,
+   "weight": 636.0000085830688,
+   "autapses": 2,
+   "reciprocal": 40,
+   "in_degree_range": [
+    4,
+    16
+   ],
+   "out_degree_range": [
+    4,
+    15
+   ],
+   "S1": 22.50344969774969,
+   "S2": 1.9477124934582715,
+   "S3": 0.39019805534059526
+  },
+  {
+   "host": "SH-recip-2051100",
+   "draw": 1,
+   "arm": "U_HH",
+   "edges": 260,
+   "weight": 2347.000026702881,
+   "autapses": 2,
+   "reciprocal": 40,
+   "in_degree_range": [
+    4,
+    16
+   ],
+   "out_degree_range": [
+    4,
+    15
+   ],
+   "S1": 83.04339045402253,
+   "S2": 26.523864223458606,
+   "S3": 0.9501260762607286
+  },
+  {
+   "host": "SH-recip-2051100",
+   "draw": 1,
+   "arm": "W",
+   "edges": 260,
+   "weight": 2347.0,
+   "autapses": 2,
+   "reciprocal": 40,
+   "in_degree_range": [
+    4,
+    16
+   ],
+   "out_degree_range": [
+    4,
+    15
+   ],
+   "S1": 83.0433895092003,
+   "S2": 70.91120528936626,
+   "S3": 1.541107310444566
+  },
+  {
+   "host": "SH-recip-2051100",
+   "draw": 1,
+   "arm": "K",
+   "edges": 260,
+   "weight": 2347.0,
+   "autapses": 2,
+   "reciprocal": 39,
+   "in_degree_range": [
+    4,
+    16
+   ],
+   "out_degree_range": [
+    1,
+    17
+   ],
+   "S1": 83.0433895092003,
+   "S2": 70.91120528936628,
+   "S3": 1.5792802661601801
+  },
+  {
+   "host": "SH-recip-2051100",
+   "draw": 1,
+   "arm": "T",
+   "edges": 260,
+   "weight": 2347.0,
+   "autapses": 8,
+   "reciprocal": 75,
+   "in_degree_range": [
+    4,
+    16
+   ],
+   "out_degree_range": [
+    1,
+    17
+   ],
+   "S1": 83.0433895092003,
+   "S2": 70.91120528936626,
+   "S3": 1.7140019283515808
+  },
+  {
+   "host": "SH-recip-2051101",
+   "draw": 0,
+   "arm": "I",
+   "edges": 97,
+   "weight": 535.0,
+   "autapses": 3,
+   "reciprocal": 25,
+   "in_degree_range": [
+    0,
+    6
+   ],
+   "out_degree_range": [
+    0,
+    8
+   ],
+   "S1": 18.929788405377998,
+   "S2": 11.38640582099162,
+   "S3": 0.5837332138362623
+  },
+  {
+   "host": "SH-recip-2051101",
+   "draw": 0,
+   "arm": "U_LL",
+   "edges": 97,
+   "weight": 534.9999914169312,
+   "autapses": 3,
+   "reciprocal": 7,
+   "in_degree_range": [
+    1,
+    7
+   ],
+   "out_degree_range": [
+    1,
+    6
+   ],
+   "S1": 18.92978810168514,
+   "S2": 3.69419461417217,
+   "S3": 0.35796669964817607
+  },
+  {
+   "host": "SH-recip-2051101",
+   "draw": 0,
+   "arm": "U_LH",
+   "edges": 97,
+   "weight": 2347.0000762939453,
+   "autapses": 3,
+   "reciprocal": 7,
+   "in_degree_range": [
+    1,
+    7
+   ],
+   "out_degree_range": [
+    1,
+    6
+   ],
+   "S1": 83.04339220869234,
+   "S2": 71.09489679924437,
+   "S3": 1.5694854594277154
+  },
+  {
+   "host": "SH-recip-2051101",
+   "draw": 0,
+   "arm": "U_HL",
+   "edges": 260,
+   "weight": 534.9999952316284,
+   "autapses": 3,
+   "reciprocal": 35,
+   "in_degree_range": [
+    5,
+    17
+   ],
+   "out_degree_range": [
+    4,
+    13
+   ],
+   "S1": 18.929788236659746,
+   "S2": 1.3782187795568523,
+   "S3": 0.21354222436136416
+  },
+  {
+   "host": "SH-recip-2051101",
+   "draw": 0,
+   "arm": "U_HH",
+   "edges": 260,
+   "weight": 2347.000026702881,
+   "autapses": 3,
+   "reciprocal": 35,
+   "in_degree_range": [
+    5,
+    17
+   ],
+   "out_degree_range": [
+    4,
+    13
+   ],
+   "S1": 83.04339045402251,
+   "S2": 26.523864223458606,
+   "S3": 0.9355919484076147
+  },
+  {
+   "host": "SH-recip-2051101",
+   "draw": 0,
+   "arm": "W",
+   "edges": 260,
+   "weight": 2347.0,
+   "autapses": 3,
+   "reciprocal": 35,
+   "in_degree_range": [
+    5,
+    17
+   ],
+   "out_degree_range": [
+    4,
+    13
+   ],
+   "S1": 83.0433895092003,
+   "S2": 70.91120528936626,
+   "S3": 1.591916551017708
+  },
+  {
+   "host": "SH-recip-2051101",
+   "draw": 0,
+   "arm": "K",
+   "edges": 260,
+   "weight": 2347.0,
+   "autapses": 3,
+   "reciprocal": 37,
+   "in_degree_range": [
+    4,
+    16
+   ],
+   "out_degree_range": [
+    1,
+    17
+   ],
+   "S1": 83.0433895092003,
+   "S2": 70.91120528936628,
+   "S3": 1.47735311864429
+  },
+  {
+   "host": "SH-recip-2051101",
+   "draw": 0,
+   "arm": "T",
+   "edges": 260,
+   "weight": 2347.0,
+   "autapses": 8,
+   "reciprocal": 75,
+   "in_degree_range": [
+    4,
+    16
+   ],
+   "out_degree_range": [
+    1,
+    17
+   ],
+   "S1": 83.0433895092003,
+   "S2": 70.91120528936626,
+   "S3": 1.7140019283515808
+  },
+  {
+   "host": "SH-recip-2051101",
+   "draw": 1,
+   "arm": "I",
+   "edges": 97,
+   "weight": 535.0,
+   "autapses": 3,
+   "reciprocal": 25,
+   "in_degree_range": [
+    0,
+    6
+   ],
+   "out_degree_range": [
+    0,
+    8
+   ],
+   "S1": 18.929788405377998,
+   "S2": 11.38640582099162,
+   "S3": 0.5837332138362623
+  },
+  {
+   "host": "SH-recip-2051101",
+   "draw": 1,
+   "arm": "U_LL",
+   "edges": 97,
+   "weight": 534.9999914169312,
+   "autapses": 3,
+   "reciprocal": 3,
+   "in_degree_range": [
+    1,
+    8
+   ],
+   "out_degree_range": [
+    1,
+    8
+   ],
+   "S1": 18.92978810168514,
+   "S2": 3.6941946141721695,
+   "S3": 0.3586565889553463
+  },
+  {
+   "host": "SH-recip-2051101",
+   "draw": 1,
+   "arm": "U_LH",
+   "edges": 97,
+   "weight": 2347.0000762939453,
+   "autapses": 3,
+   "reciprocal": 3,
+   "in_degree_range": [
+    1,
+    8
+   ],
+   "out_degree_range": [
+    1,
+    8
+   ],
+   "S1": 83.04339220869234,
+   "S2": 71.09489679924437,
+   "S3": 1.5725830108938312
+  },
+  {
+   "host": "SH-recip-2051101",
+   "draw": 1,
+   "arm": "U_HL",
+   "edges": 260,
+   "weight": 534.9999952316284,
+   "autapses": 3,
+   "reciprocal": 36,
+   "in_degree_range": [
+    5,
+    12
+   ],
+   "out_degree_range": [
+    3,
+    13
+   ],
+   "S1": 18.929788236659743,
+   "S2": 1.3782187795568523,
+   "S3": 0.21337933805660145
+  },
+  {
+   "host": "SH-recip-2051101",
+   "draw": 1,
+   "arm": "U_HH",
+   "edges": 260,
+   "weight": 2347.000026702881,
+   "autapses": 3,
+   "reciprocal": 36,
+   "in_degree_range": [
+    5,
+    12
+   ],
+   "out_degree_range": [
+    3,
+    13
+   ],
+   "S1": 83.04339045402253,
+   "S2": 26.52386422345861,
+   "S3": 0.934556043601661
+  },
+  {
+   "host": "SH-recip-2051101",
+   "draw": 1,
+   "arm": "W",
+   "edges": 260,
+   "weight": 2347.0,
+   "autapses": 3,
+   "reciprocal": 36,
+   "in_degree_range": [
+    5,
+    12
+   ],
+   "out_degree_range": [
+    3,
+    13
+   ],
+   "S1": 83.0433895092003,
+   "S2": 70.91120528936626,
+   "S3": 1.5187983304624781
+  },
+  {
+   "host": "SH-recip-2051101",
+   "draw": 1,
+   "arm": "K",
+   "edges": 260,
+   "weight": 2347.0,
+   "autapses": 3,
+   "reciprocal": 38,
+   "in_degree_range": [
+    4,
+    16
+   ],
+   "out_degree_range": [
+    1,
+    17
+   ],
+   "S1": 83.0433895092003,
+   "S2": 70.91120528936628,
+   "S3": 1.382935403348574
+  },
+  {
+   "host": "SH-recip-2051101",
+   "draw": 1,
+   "arm": "T",
+   "edges": 260,
+   "weight": 2347.0,
+   "autapses": 8,
+   "reciprocal": 75,
+   "in_degree_range": [
+    4,
+    16
+   ],
+   "out_degree_range": [
+    1,
+    17
+   ],
+   "S1": 83.0433895092003,
+   "S2": 70.91120528936626,
+   "S3": 1.7140019283515808
+  }
+ ]
+}
