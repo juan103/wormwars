@@ -11863,3 +11863,14 @@ need to detect a given effect"). `docs/memory/M5-PILOT-PLAN.md` (draft 3); `scri
   claim-versus-evidence wording; the reader's contrast never exercised (now a test on M4e's records). **Astra**: stage
   files trusted on their ids alone (identity, the record's copy and the replay now checked on resume and read); the
   composition file trusted unread; paired tables at 100,000; a sabotage failing by TypeError.
+
+## D370 — M5's pilot test: the batch-independence of the read-out is a Windows claim (2026-10-27)
+
+**CI on D369 (135f8e4) failed** on `test_a_first_pass_does_not_depend_on_its_batch`: on GitHub's Linux runner the
+2000-tick first pass in batches of 2 and 3 gave the same end state and tail as the chunk of 128, but a read-out that
+differed in its last bits. On Windows, where the pilot runs, all three are bit for bit, and the pilot's state check
+compares the hold with the original chunk on every continued genome at run time, so the pilot is unaffected.
+- Rule 6 claims CPU exactness on one platform only (D202, D218, D282). The test now asserts the read-out bit for bit
+  on Windows and within a float32 tolerance (rtol 1e-5, atol 1e-6) elsewhere; state and tail stay exact everywhere.
+  The plan gets a dated annotation beside its unchanged text.
+- Caught by the CI poll after the push (the check-CI rule); not seen locally because the suite runs on Windows.

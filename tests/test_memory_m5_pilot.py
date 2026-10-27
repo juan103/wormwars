@@ -137,7 +137,11 @@ def test_the_seed_families_do_not_meet_m4e(MP):
 # ------------------------------------------------------------------------------------------------------- the replay
 def test_a_first_pass_does_not_depend_on_its_batch(MP, host):
     """The full 2000-tick first pass of a T-arm panel in its production chunk of 128 equals the replay's batches of 2
-    and 3, state, tail and read-out (Astra, round 3); the replay never runs a batch of one (Fable, round 3)."""
+    and 3, state, tail and read-out (Astra, round 3); the replay never runs a batch of one (Fable, round 3).
+
+    Bit for bit on Windows, where the pilot runs and its state check repeats this on every genome. Rule 6 claims CPU
+    exactness on one platform only: on the CI's Linux the state and tail are equal but the read-out differed in its
+    last bits (D370), so elsewhere the read-out is held to a float32 tolerance."""
     g_host, cfg = MP.m4d.host_genomes(host, 128, 23)
     signs = MP.m4d.sign_matrix(g_host, 128, 24)
     con = MP.m4e.arm_graph(host, "T", {"T": MP.m4d.n2_block()})
@@ -146,7 +150,11 @@ def test_a_first_pass_does_not_depend_on_its_batch(MP, host):
     for ids in ([3, 99], [0, 40, 127]):
         part = MP.P.probe_states(g.select(ids), cfg)
         assert torch.equal(part["end"], full["end"][ids])
-        assert np.array_equal(part["tail"], full["tail"][ids]) and np.array_equal(part["y"], full["y"][ids])
+        assert np.array_equal(part["tail"], full["tail"][ids])
+        if sys.platform == "win32":
+            assert np.array_equal(part["y"], full["y"][ids])
+        else:
+            np.testing.assert_allclose(part["y"], full["y"][ids], rtol=1e-5, atol=1e-6)
 
 
 def test_extend_classifies_as_the_second_pass(MP, host, monkeypatch):

@@ -119,6 +119,10 @@ against M4e's records.
   The hold's equality is claimed for these compositions and checked by the state check; the classifier's outputs are
   compared by the registered rule, not claimed bit for bit across compositions (Astra, rounds 3 and 4). The timings
   are recorded by phase (replay, state check, to 22,000, to 100,000).
+  - *Annotation, 2026-10-27 (D370):* the equality holds on Windows, where the pilot runs and its state check
+    verifies it on every genome. On GitHub's Linux runners the test found the state and tail equal but the read-out
+    differing in its last bits across these compositions, so there the test holds the read-out to a float32 tolerance
+    (rule 6: CPU exactness is claimed on one platform only). The text above is unchanged.
 - **Stopping rule:** one pass, no extension.
 - **Cost:** about 100 genomes at about 4 minutes each (three classifications), plus about an hour of state checks,
   so about 8 CPU hours.
