@@ -1,0 +1,13 @@
+verify_run 97 s
+Rr chain {'first': {'accepted': 5200, 'attempted': 50904}, 'continued': {'accepted': 5200, 'attempted': 51860}} {'shared_edges': 104, 'shared_reciprocal_edges': 59, 'n2_reciprocal_edges': 150, 'shared_nonreciprocal_edges': 45, 'n2_nonreciprocal_edges': 110, 'same_magnitude_edges': 18, 'min_weight_overlap': 0.2432893067598343, 'n2_weight_share_on_shared_edges': 0.4482317864894867, 'own_weight_share_on_shared_edges': 0.46442267298698425}
+state chunks [[0, 127], [256, 383]]
+T: ids [118, 319] (run as [118, 319]) reproduce every recorded output at 2000 and 22,000 in 271 s
+state chunks [[384, 511]]
+T: ids [465] (run as [465, 0]) reproduce every recorded output at 2000 and 22,000 in 151 s
+T: 6 fading reproduce at 2000; at 22,000 ['fading', 'fading', 'fading', 'fading', 'fading', 'fading'] in 44 s
+state chunks [[0, 127]]
+K: ids [11, 30] (run as [11, 30]) reproduce every recorded output at 2000 and 22,000 in 202 s
+K: 6 fading reproduce at 2000; at 22,000 ['fading', 'fading', 'fading', 'fading', 'fading', 'fading'] in 44 s
+composition {'genome': 319, 'chunk': [256, 383], 'exact': True, 'states_equal': True, 'replay_batch': [319, 0]}
+smoke ok
+rc=0

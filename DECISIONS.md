@@ -11819,3 +11819,47 @@ reproducing the readings independently.
 
 **For M5** (the owner's third item): the power calculation comes first, after M5's treatment of unresolved genomes is
 fixed; T − K's host spread (SD 0.0055) and M4d's T − R (0.0035) are its starting inputs.
+
+## D369 — M5, first the hosts: the power calculation's design agreed, and a pilot on M4e's hosts before it (2026-10-27)
+
+**The owner's third item** (D365: "An M5 test of N2's exact wiring, after first working out how many hosts it would
+need to detect a given effect"). `docs/memory/M5-PILOT-PLAN.md` (draft 3); `scripts/memory_m5/m5_pilot.py`,
+`m5_pilot_read.py`, `sabotage_m5_pilot.py`, `m5_pilot_smoke.py`, `m5_pilot_diag.py`; `tests/test_memory_m5_pilot.py`.
+- **No host count yet** (both reviewers, round 1): the host component of the spread differs about tenfold between
+  M4e's T − K and M4d's T − R and T − Rr; M5's control has never run on M4e's protocol; the unresolved genomes bound
+  a T − control contrast between −0.0017 and +0.0052 whatever the hosts; the audit bounds a missed transition only at
+  about 0.0037. Rough orientation only: about 17 hosts for 0.004, 60 for 0.002, 240 for 0.001 at M4e's T − K spread.
+- **Agreed for M5** (rounds 1 and 2): two arms, T against M4d's Rr (N2's edges rewired at its labelled degrees and
+  outgoing anatomical magnitudes, the count of reciprocal pairs kept, N2's diagonal); the primary is the share of all
+  sampled genomes confirmed as separate states by the protocol (Astra: a resolved-only primary changes the estimand);
+  "raises" by a two-sided 95% interval; planning effect 0.002 at 80% power; a simulation of the whole reading
+  procedure, the cheapest and the fewest-host allocations both reported; M5 pre-registered.
+- **The pilot** (fixed before it runs; rounds 3 and 4): (a) Rr on M4e's 20 panels; (b) every genome still unresolved
+  at 22,000 ticks in T, K and Rr continued to 100,000; (c) 1500 further fading genomes per arm audited. Its rules for
+  M5 are written first: the horizon (s ≥ 0.5 resolved at 100,000 → M5 continues to 100,000), r and its bound as the
+  only input to the unresolved qualifier, the audit's transition rate at its pooled upper bound. 30-hour cap.
+- **Found before it ran:** the classifier's float64 root search depends on the batch's composition in its last bits
+  (3e-13 on a genome whose search fails); the float32 hold does not, and the original chunk reproduces M4e's record
+  bit for bit. So the replay compares those two fields within 1e-9 relative, the rest exactly, with one genome per arm
+  replayed bit for bit in its original chunk, the float32 hold compared with the original chunk on every (b)
+  genome, and a fixed remedy if the check fails (round 4).
+- **Checks:** 24 tests; 27 of 27 sabotages fail by their tests' own checks; the smoke on M4e's records passes.
+
+**The review** (`docs/reviews/20261027-m5-power-design/`, four rounds).
+- Round 1 both "revise". **Fable**: the variance sources' tenfold disagreement; Rr's lower base rate; minimum compute,
+  not hosts; the guard and the 2^H envelope do not scale; "not fading" as a secondary; the third pass against hosts.
+  **Astra**: the resolved-only primary changes the estimand (a selection bias as large as the target); the audit's
+  error budget and its global fallback; K's weight shuffle against Rr's kept magnitudes; ensembles as fixed strata;
+  Monte Carlo uncertainty; T has no block draw.
+- Round 2 Fable "revise, narrowly", Astra "revise": the pilot's seeds inside M4e's audit family (both); no stored
+  states, so a replay (both); the horizon rule fixed before (b) (Fable); the qualifier's asymmetry (Fable) and its
+  bounds (Astra); "keeps the reciprocal pairs" wrong (Fable); signs follow positions (Astra).
+- Round 3 both "revise, narrowly": the output folder unguarded (both); every recorded field compared, not classes
+  (Fable); never a batch of one (Fable, T1); saved records unvalidated, a record with no classes accepted, s = 1 from
+  empty columns (Astra); the paired genome variance (Astra); incomplete-stage reporting (both); phase timings.
+- Round 4 both "revise, narrowly", accepting the tolerance and declining the full original-composition replay.
+  **Fable**: the composition check must compare the float32 state across compositions (taken for every (b) genome,
+  about an hour); a pre-registered remedy when the check fails (M4e's own panel rerun, continue only if exact);
+  claim-versus-evidence wording; the reader's contrast never exercised (now a test on M4e's records). **Astra**: stage
+  files trusted on their ids alone (identity, the record's copy and the replay now checked on resume and read); the
+  composition file trusted unread; paired tables at 100,000; a sabotage failing by TypeError.

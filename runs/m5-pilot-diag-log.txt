@@ -1,0 +1,30 @@
+hold: {'end_equal': True, 'tail_equal': True, 'y_equal': True} 50 s
+{
+ "end_equal": true,
+ "tail_equal": true,
+ "y_equal": true,
+ "chunk_equals_record": true,
+ "pair_equals_record": false,
+ "record": {
+  "class": 4,
+  "reason": "Newton failure; no root located from the orbit; unconfirmed candidate; unstable or marginal root",
+  "a": 0.03483051061630249,
+  "root_distance": 1.952984554547665,
+  "readout_difference": 0.10977950278985057
+ },
+ "chunk": {
+  "class": 4,
+  "reason": "Newton failure; no root located from the orbit; unconfirmed candidate; unstable or marginal root",
+  "a": 0.03483051061630249,
+  "root_distance": 1.952984554547665,
+  "readout_difference": 0.10977950278985057
+ },
+ "pair": {
+  "class": 4,
+  "reason": "Newton failure; no root located from the orbit; unconfirmed candidate; unstable or marginal root",
+  "a": 0.03483051061630249,
+  "root_distance": 1.9529845545473936,
+  "readout_difference": 0.10977950278976745
+ }
+} 247 s
+rc=0
