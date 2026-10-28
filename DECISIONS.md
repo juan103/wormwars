@@ -11896,6 +11896,9 @@ composition check, the log, copies of the attempt and compute records). Descript
   script; the qualifier is the calibrated adjustment at r's bound as a protocol sensitivity, with Astra's bounds beside
   it as the logical bounds; M5 keeps M4e's classifier and composition, records batch membership and a hash of each
   genome's float32 hold. Still open before the power script: the rule that turns the host-variance range into one H.
+  *Annotated 2026-10-28 (D372): the power design replaced "with a second tranche" by a fixed-size audit of A ids per
+  panel, drawn before classification as M4e draws it, with no trigger (`docs/memory/M5-POWER-DESIGN.md`, section 3);
+  the host-count rule is A by default, C if it passes its tests.*
 - **The reader** gained the fallbacks' details, per-panel audit bounds, full class breakdowns, per-host totals and the
   untruncated host moment (five new tests, each seen failing first; one first failed on its own wrong expectation and
   was corrected); every value in the first report is unchanged (`docs/reviews/20261028-m5-pilot-results/report-draft1.json`).
@@ -11917,3 +11920,64 @@ composition check, the log, copies of the attempt and compute records). Descript
   chain's direction neither reassuring nor established; test the per-host totals. **Astra**: the qualifier can change
   an outcome near a boundary; the host upper limit is a plug-in calculation; the monotonicity argument; K 287's
   distance is between two roots; the weakest-margin stratum unjustified.
+
+## D372 — M5's power calculation: rule C at 110 to 160 hosts, the Welch t in the reading, and the identification limit for the owner (2026-10-28)
+
+**The design** (`docs/memory/M5-POWER-DESIGN.md`, draft 4; `docs/reviews/20261028-m5-power-sim/`, three rounds)
+settles what D371 left open: rule A (a fixed H, 80% unconditional power at the core host component 1.52e-5) by
+default, rule C (two stages, H1 = B's H, the interim's 75% variance limit through a lookup table, H_max confirmed)
+if it saves at least 20% of A's central cost and passes its own nulls; a fixed-size audit of A ids per panel drawn
+before classification, with no trigger and no second tranche (D371 annotated); success is "raises" in all six
+readings (raw, audit-adjusted, each one-arm unresolved sensitivity, each combined with the audit).
+
+**The results** (`docs/memory/M5-POWER-RESULTS.md`, draft 3; `scripts/memory_m5/m5_power.py`, `m5_reading.py`,
+`m5_power_timing.py`, `sabotage_m5_power.py`; `runs/memory-m5-power-welch/power.json`, the adopted reading, and
+`runs/memory-m5-power/power.json`, the reading as first written; about 45 CPU minutes each). Exploratory design work,
+conditional on the simulation's model; nothing here is a reading of M5.
+- **The counts** (adopted reading; smallest confirmed host counts tested, on a grid of 5):
+  - **C, recommended by the rule:** 1 draw of 512 genomes, an audit of 40 ids per panel, H1 = 110, H_max = 160;
+    72 mean CPU hours at the central scenario (power 0.84), 91 at the core (0.81), 96 above it (0.75); cap 145 h.
+  - **A:** 1 × 512, audit 80, 135 hosts, 92 hours (power 0.93 central, 0.83 core, 0.72 above); cap 139 h.
+  - **B:** 1 × 512, audit 40, 110 hosts, 67 hours (0.81 central, 0.69 core).
+  - C saves 22.1% at the central scenario (23.0% as first written), 1.9% at the core, and costs a few hours more
+    than A above it; the rule's resolution is one grid step (5 hosts, about 3.7% of A's cost). A's fewest-host
+    allocation is 70 hosts at 187 hours; at 90%, A needs 185 hosts (127 hours); at τ = 0, about 95.
+- **The reading gains the Welch t** in its balanced hull, beside the bootstrap and the plain t (both reviewers, round
+  2), a constant in `m5_reading.py`. As first written, the false "raises" gate failed in 6 of 32 null cells (A's
+  fewest-host and both of B's selections, 30 to 95 hosts; pooled raw rate 2.52% without the ensemble null), from
+  the plain t's slight lean toward "raises" and the per-cell rule's own noise (about 3 of 24 expected). With the
+  Welch t, 2.36%, and every cell of its own selections passes. At A's 135 hosts the two are nearly the same; the
+  choice no longer decides A against C. Decided after seeing simulated nulls, before any M5 data.
+- **For M5's plan:** the pre-registration states the chosen policy's simulated false "raises" rates (C: 2.44% raw,
+  1.06% six-reading, without the ensemble nulls) beside the nominal 2.5%; the unresolved share is reported
+  descriptively, with no flag (it fires in about 89% of runs, detecting the pilot's real Rr − T difference); a
+  continuation sample to 100,000 ticks gives a descriptive per-arm bound on later protocol confirmations, not a
+  success criterion.
+- **The identification limit, for the owner's choice (Astra):** M5 can show that N2's wiring raises the share of
+  genomes this protocol confirms as separate states, not the direction in underlying states. With 0.002 of Rr's
+  genomes as latent switches left unresolved, it would read a confirmed "raises" in about 80% of runs; more hosts do
+  not change that. The pilot's 0 of 47 Rr unresolved genomes resolving by 100,000 ticks speaks against the hazard
+  (Fable), but does not bound states the classifier cannot confirm at that horizon (Astra).
+- **Found and fixed on the way:** the calibration sampled 200,000 hosts and left +8e-6 (3.4 SE) of protocol contrast
+  at δ = 0, inflating the nulls (now exact by quadrature; the first run kept as `power-sampled-calibration.json`);
+  the envelope and the unresolved flag skipped unbalanced runs.
+- **Checks:** 50 tests, the simulation's written after its code (disclosed; rule 9), every one added in review seen
+  failing first; 17 of 17 sabotages fail by their tests. The outputs pass the graph-structure check with no
+  exemption.
+
+**The review** (`docs/reviews/20261028-m5-power-results/`, three rounds).
+- Round 1, both "revise". **Fable**: the Welch shift and the A/C flip are Monte Carlo threshold noise; repair the gate,
+  not the reading; the latent hazard is bounded by the pilot; replace the flag by a continuation sample; the nulls at
+  the core too. **Astra**: rule C counted invalid hosts and lacked the stage-1 audit bound; Rr's host SD counted the
+  draw twice (joint fit: 0.478 and 0.192); the host component sampled; Welch, keeping the tolerances; "pooled over
+  every null cell" was a restricted pool; the flag is descriptive, not a false-positive rate; the exclusion after an
+  invalid host; rescaled probabilities uncounted; the missing diagnostics; the verification cost; the envelope wording.
+- Round 2: **Fable** "agree", with wording; Welch made a constant; the gate's arithmetic over 24 cells; the stage-1
+  test; C's caps. **Astra** "revise, narrowly": an invalid host's audit still entered the pooled rate, the bound and
+  the hidden coverage (a counterexample, now a test); the continuation sample bounds protocol confirmations only;
+  "over 1.25 times the mean" is the fixed-H reference's, not C's own (143 and 62 of 10,000, reproduced); C's saving is
+  the central scenario's.
+- Round 3, Astra only, "revise, narrowly": the repair is complete and correct, and the recommendation stands; the
+  default output folder was still the first reading's, which stage C's cached search would mix with the Welch one (each
+  reading now has its own folder, with a test); "cannot fail" said of the ensemble nulls. Both fixed with no further
+  round: neither touches a saved number.

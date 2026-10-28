@@ -1,0 +1,475 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+________ test_the_stratified_bootstrap_resamples_within_each_ensemble _________
+
+    def test_the_stratified_bootstrap_resamples_within_each_ensemble():
+        W, idx = MR.resample_weights(BALANCED, 200, seed=1, stratified=True, return_idx=True)
+        for b in range(200):
+>           assert sorted(BALANCED[idx[b]].tolist()) == sorted(BALANCED.tolist())
+E           assert [0, 0, 1, 1, 1, 1, ...] == [0, 0, 0, 1, 1, 1, ...]
+E             
+E             At index 2 diff: 1 != 0
+E             Use -v to get more diff
+
+tests\test_memory_m5_power.py:30: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_memory_m5_power.py::test_the_stratified_bootstrap_resamples_within_each_ensemble
+### bootstrap across ensembles: fails, as it must
+F                                                                        [100%]
+================================== FAILURES ===================================
+_______________ test_the_estimate_weights_each_ensemble_a_fifth _______________
+
+    def test_the_estimate_weights_each_ensemble_a_fifth():
+        d = np.array([1.0, 1.0, 5.0, 5.0, 5.0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+>       assert MR.estimate(d, UNBALANCED) == pytest.approx((1.0 + 5.0) / 5)
+E       assert 1.2142857142857142 == 1.2 ± 1.2e-06
+E         
+E         comparison failed
+E         Obtained: 1.2142857142857142
+E         Expected: 1.2 ± 1.2e-06
+
+tests\test_memory_m5_power.py:39: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_memory_m5_power.py::test_the_estimate_weights_each_ensemble_a_fifth
+### estimate's weights not 1/5: fails, as it must
+F                                                                        [100%]
+================================== FAILURES ===================================
+______ test_the_unbalanced_t_is_welchs_and_catches_variance_in_the_pair _______
+
+    def test_the_unbalanced_t_is_welchs_and_catches_variance_in_the_pair():
+        d = np.zeros(len(UNBALANCED))
+        d[:2] = [-0.01, 0.01]  # all the variance in the stratum of two (Astra's round-2 example)
+        lo, hi = MR.t_interval(d, UNBALANCED)
+>       assert hi - lo == pytest.approx(2 * 0.025412, rel=1e-3)
+E       assert 0.004589357590935249 == 0.050824 ± 5.1e-05
+E         
+E         comparison failed
+E         Obtained: 0.004589357590935249
+E         Expected: 0.050824 ± 5.1e-05
+
+tests\test_memory_m5_power.py:65: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_memory_m5_power.py::test_the_unbalanced_t_is_welchs_and_catches_variance_in_the_pair
+### plain-s2 t after a deletion: fails, as it must
+F                                                                        [100%]
+================================== FAILURES ===================================
+_____________________ test_success_needs_all_six_readings _____________________
+
+    def test_success_needs_all_six_readings():
+        """Astra's round-2 example: the audit offsets the Rr-side unresolved sensitivity in their combination."""
+        ok = (0.0001, 0.004)
+        ivs = {k: ok for k in MR.READINGS}
+        assert MR.unqualified_raises(ivs) is True
+        for k in MR.READINGS[1:]:
+>           assert MR.unqualified_raises({**ivs, k: (-0.00005, 0.004)}) is False
+E           AssertionError: assert True is False
+E            +  where True = <function unqualified_raises at 0x00000180A6245940>({'audit': (0.0001, 0.004), 'audit_unres_Rr': (0.0001, 0.004), 'audit_unres_T': (0.0001, 0.004), 'raw': (0.0001, 0.004), ...})
+E            +    where <function unqualified_raises at 0x00000180A6245940> = MR.unqualified_raises
+
+tests\test_memory_m5_power.py:145: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_memory_m5_power.py::test_success_needs_all_six_readings - A...
+### Rr-side unresolved check dropped: fails, as it must
+FFF                                                                      [100%]
+================================== FAILURES ===================================
+________________ test_the_envelope_contains_every_corner[ens0] ________________
+
+ens = array([0, 0, 1, 1, 2, 2, 3, 3, 4, 4])
+
+    @pytest.mark.parametrize("ens", [np.repeat(np.arange(5), 2), np.array([0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 4, 4]),
+                                     np.array([0, 0, 1, 1, 1, 2, 2, 3, 3, 4, 4])])
+    def test_the_envelope_contains_every_corner(ens):
+        """The scalable envelope against the exhaustive enumeration of every assignment (H <= 12)."""
+        ens = np.sort(ens)
+        rng = np.random.default_rng(5)
+        W = MR.resample_weights(ens, 400, seed=6, stratified=True)
+        for _ in range(5):
+            lo = rng.normal(0, 0.004, len(ens))
+            hi = lo + rng.integers(0, 5, len(ens)) / 512
+            elo, ehi = MR.envelope(lo, hi, ens, W)
+            for corner in itertools.product(*zip(lo, hi)):
+                clo, chi = MR.interval(np.array(corner), ens, W)
+>               assert elo <= clo + 1e-15 and chi <= ehi + 1e-15
+E               assert (np.float64(-0.0020017824018816566) <= (-0.002576369241199828 + 1e-15))
+
+tests\test_memory_m5_power.py:97: AssertionError
+________________ test_the_envelope_contains_every_corner[ens1] ________________
+
+ens = array([0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 4, 4])
+
+    @pytest.mark.parametrize("ens", [np.repeat(np.arange(5), 2), np.array([0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 4, 4]),
+                                     np.array([0, 0, 1, 1, 1, 2, 2, 3, 3, 4, 4])])
+    def test_the_envelope_contains_every_corner(ens):
+        """The scalable envelope against the exhaustive enumeration of every assignment (H <= 12)."""
+        ens = np.sort(ens)
+        rng = np.random.default_rng(5)
+        W = MR.resample_weights(ens, 400, seed=6, stratified=True)
+        for _ in range(5):
+            lo = rng.normal(0, 0.004, len(ens))
+            hi = lo + rng.integers(0, 5, len(ens)) / 512
+            elo, ehi = MR.envelope(lo, hi, ens, W)
+            for corner in itertools.product(*zip(lo, hi)):
+                clo, chi = MR.interval(np.array(corner), ens, W)
+>               assert elo <= clo + 1e-15 and chi <= ehi + 1e-15
+E               assert (np.float64(-0.0019108372992928837) <= (-0.0028981725873702307 + 1e-15))
+
+tests\test_memory_m5_power.py:97: AssertionError
+________________ test_the_envelope_contains_every_corner[ens2] ________________
+
+ens = array([0, 0, 1, 1, 1, 2, 2, 3, 3, 4, 4])
+
+    @pytest.mark.parametrize("ens", [np.repeat(np.arange(5), 2), np.array([0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 4, 4]),
+                                     np.array([0, 0, 1, 1, 1, 2, 2, 3, 3, 4, 4])])
+    def test_the_envelope_contains_every_corner(ens):
+        """The scalable envelope against the exhaustive enumeration of every assignment (H <= 12)."""
+        ens = np.sort(ens)
+        rng = np.random.default_rng(5)
+        W = MR.resample_weights(ens, 400, seed=6, stratified=True)
+        for _ in range(5):
+            lo = rng.normal(0, 0.004, len(ens))
+            hi = lo + rng.integers(0, 5, len(ens)) / 512
+            elo, ehi = MR.envelope(lo, hi, ens, W)
+            for corner in itertools.product(*zip(lo, hi)):
+                clo, chi = MR.interval(np.array(corner), ens, W)
+>               assert elo <= clo + 1e-15 and chi <= ehi + 1e-15
+E               assert (np.float64(-0.0019173768860197117) <= (-0.0027954491140012375 + 1e-15))
+
+tests\test_memory_m5_power.py:97: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_memory_m5_power.py::test_the_envelope_contains_every_corner[ens0]
+FAILED tests/test_memory_m5_power.py::test_the_envelope_contains_every_corner[ens1]
+FAILED tests/test_memory_m5_power.py::test_the_envelope_contains_every_corner[ens2]
+### envelope bound with sum of min: fails, as it must
+F                                                                        [100%]
+================================== FAILURES ===================================
+________________ test_the_unbalanced_envelope_holds_astras_box ________________
+
+    def test_the_unbalanced_envelope_holds_astras_box():
+        """Astra's round-2 box: equal ends, the variance in the stratum of two; the pooled bound misses it, Welch's not."""
+        d = np.zeros(len(UNBALANCED))
+        d[:2] = [-0.01, 0.01]
+        W = MR.resample_weights(UNBALANCED, 400, seed=12)
+        lo, hi = MR.envelope(d, d, UNBALANCED, W)
+        ilo, ihi = MR.interval(d, UNBALANCED, W)
+>       assert lo <= ilo and ihi <= hi
+E       assert (np.float64(-0.0022946787954676246) <= -0.02541240947234939)
+
+tests\test_memory_m5_power.py:107: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_memory_m5_power.py::test_the_unbalanced_envelope_holds_astras_box
+### pooled envelope bound with Welch: fails, as it must
+F                                                                        [100%]
+================================== FAILURES ===================================
+___________________ test_the_arms_share_their_host_effects ____________________
+
+P = <module 'm5_power' from 'D:\\Claude\\random\\wormWars\\scripts\\memory_m5\\m5_power.py'>
+fitted = {'classes': {'O1': {'count_corr': 0.3026599633831909, 'count_var': {'Rr': 5.822222222222222, 'T': 3.3333333333333335},...erval': [-0.0008394965360030422, 0.003964496536003042], 'sd': 0.0033577596245384445}, 'sd_v': 0.19199052272568282, ...}
+
+    def test_the_arms_share_their_host_effects(P, fitted):
+        """The simulated host component of the contrast is the solved one: the core scenario's per-host contrast variance
+        exceeds the central one's by about 1.52e-5."""
+        var = {}
+        for tg in ("min", "core"):
+            m = P.make_model(fitted, P.replace(solved(P, fitted, target=tg), delta=0.0), (2, 512, 40))
+            sim = P.simulate(m, np.random.default_rng(10), 400, 50)
+            var[tg] = ((sim["T"]["S"] - sim["Rr"]["S"]) / 1024).var(1, ddof=1).mean()
+>       assert var["core"] - var["min"] == pytest.approx(1.52e-5, rel=0.2)
+E       assert np.float64(-3...692731644e-07) == 1.52e-05 ± 3.0e-06
+E         
+E         comparison failed
+E         Obtained: -3.642354692731644e-07
+E         Expected: 1.52e-05 ± 3.0e-06
+
+tests\test_memory_m5_power.py:226: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_memory_m5_power.py::test_the_arms_share_their_host_effects
+### arms unpaired: fails, as it must
+F                                                                        [100%]
+================================== FAILURES ===================================
+_______________ test_the_audit_adjustment_counts_nothing_twice ________________
+
+P = <module 'm5_power' from 'D:\\Claude\\random\\wormWars\\scripts\\memory_m5\\m5_power.py'>
+
+    def test_the_audit_adjustment_counts_nothing_twice(P):
+        z = np.zeros((1, 5), int)
+        arm = lambda S, aud, trans, fun: {"S": np.array([S]), "U": z + 0, "Fun": np.array([fun]), "aud": np.array([aud]),
+                                          "trans": np.array([trans])}  # noqa: E731
+        sim = {"T": arm([3, 1, 2, 0, 1], [40] * 5, [0] * 5, [470] * 5),
+               "Rr": arm([1, 1, 1, 1, 1], [40, 40, 40, 40, 40], [1, 0, 0, 0, 0], [470] * 5)}
+        num = P.contrasts(sim)
+        assert num["raw"].tolist() == [[2, 0, 1, -1, 0]]  # the observed transition is already in Rr's raw count
+>       assert num["audit"] == pytest.approx(num["raw"] - 470 / 200)  # the rate 1/200 on the unaudited fading only
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       assert array([[-1.35...3.35, -2.35]]) == approx([[-0.3...5 ± 2.3e-06]])
+E         
+E         comparison failed. Mismatched elements: 1 / 5:
+E         Max absolute difference: 1.0
+E         Max relative difference: 0.7407407407407407
+E         Index  | Obtained | Expected                     
+E         (0, 0) | -1.35    | -0.3500000000000001 ± 3.5e-07
+
+tests\test_memory_m5_power.py:276: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_memory_m5_power.py::test_the_audit_adjustment_counts_nothing_twice
+### transition counted twice: fails, as it must
+F                                                                        [100%]
+================================== FAILURES ===================================
+_______________ test_the_audit_adjustment_counts_nothing_twice ________________
+
+P = <module 'm5_power' from 'D:\\Claude\\random\\wormWars\\scripts\\memory_m5\\m5_power.py'>
+
+    def test_the_audit_adjustment_counts_nothing_twice(P):
+        z = np.zeros((1, 5), int)
+        arm = lambda S, aud, trans, fun: {"S": np.array([S]), "U": z + 0, "Fun": np.array([fun]), "aud": np.array([aud]),
+                                          "trans": np.array([trans])}  # noqa: E731
+        sim = {"T": arm([3, 1, 2, 0, 1], [40] * 5, [0] * 5, [470] * 5),
+               "Rr": arm([1, 1, 1, 1, 1], [40, 40, 40, 40, 40], [1, 0, 0, 0, 0], [470] * 5)}
+        num = P.contrasts(sim)
+        assert num["raw"].tolist() == [[2, 0, 1, -1, 0]]  # the observed transition is already in Rr's raw count
+>       assert num["audit"] == pytest.approx(num["raw"] - 470 / 200)  # the rate 1/200 on the unaudited fading only
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: assert array([[-0.55...3.55, -2.55]]) == approx([[-0.3...5 ± 2.3e-06]])
+E         
+E         comparison failed. Mismatched elements: 5 / 5:
+E         Max absolute difference: 0.20000000000000018
+E         Max relative difference: 0.36363636363636376
+E         Index  | Obtained            | Expected                     
+E         (0, 0) | -0.5500000000000003 | -0.3500000000000001 ± 3.5e-07
+E         (0, 1) | -2.5500000000000003 | -2.35 ± 2.3e-06              ...
+E         
+E         ...Full output truncated (3 lines hidden), use '-vv' to show
+
+tests\test_memory_m5_power.py:276: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_memory_m5_power.py::test_the_audit_adjustment_counts_nothing_twice
+### adjustment on audited genomes: fails, as it must
+F                                                                        [100%]
+================================== FAILURES ===================================
+__________________________ test_a_panel_is_coherent ___________________________
+
+P = <module 'm5_power' from 'D:\\Claude\\random\\wormWars\\scripts\\memory_m5\\m5_power.py'>
+fitted = {'classes': {'O1': {'count_corr': 0.3026599633831909, 'count_var': {'Rr': 5.822222222222222, 'T': 3.3333333333333335},...erval': [-0.0008394965360030422, 0.003964496536003042], 'sd': 0.0033577596245384445}, 'sd_v': 0.19199052272568282, ...}
+
+    def test_a_panel_is_coherent(P, fitted):
+        m = P.make_model(fitted, solved(P, fitted, target="core"), (2, 512, 40))
+        sim = P.simulate(m, np.random.default_rng(7), 200, 10)
+        for a in P.ARMS:
+            x = sim[a]
+            total = x["S"] + x["U"] + x["Fun"] + x["aud"] - x["trans"]  # an audited transition is in S and in aud
+            assert (total <= 2 * 512).all() and (x["S"] >= 0).all() and (x["trans"] <= x["aud"]).all()
+            assert (x["hidden"] <= x["Fun"]).all()
+            assert (x["aud"] <= 2 * 40).all()
+            # the audit's ids are drawn from the whole panel, so about 98.6% of them are first-pass fading (M4e's)
+>           assert x["aud"].mean() / 80 == pytest.approx(0.986, abs=0.006)
+E           assert np.float64(1.0) == 0.986 ± 0.006
+E             
+E             comparison failed
+E             Obtained: 1.0
+E             Expected: 0.986 ± 0.006
+
+tests\test_memory_m5_power.py:215: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_memory_m5_power.py::test_a_panel_is_coherent - assert np.fl...
+### audit ids from fading genomes only: fails, as it must
+F                                                                        [100%]
+================================== FAILURES ===================================
+__________________________ test_a_panel_is_coherent ___________________________
+
+P = <module 'm5_power' from 'D:\\Claude\\random\\wormWars\\scripts\\memory_m5\\m5_power.py'>
+fitted = {'classes': {'O1': {'count_corr': 0.3026599633831909, 'count_var': {'Rr': 5.822222222222222, 'T': 3.3333333333333335},...erval': [-0.0008394965360030422, 0.003964496536003042], 'sd': 0.0033577596245384445}, 'sd_v': 0.19199052272568282, ...}
+
+    def test_a_panel_is_coherent(P, fitted):
+        m = P.make_model(fitted, solved(P, fitted, target="core"), (2, 512, 40))
+        sim = P.simulate(m, np.random.default_rng(7), 200, 10)
+        for a in P.ARMS:
+            x = sim[a]
+            total = x["S"] + x["U"] + x["Fun"] + x["aud"] - x["trans"]  # an audited transition is in S and in aud
+>           assert (total <= 2 * 512).all() and (x["S"] >= 0).all() and (x["trans"] <= x["aud"]).all()
+E           assert (np.False_)
+E            +  where np.False_ = <built-in method all of numpy.ndarray object at 0x00000180A91C9A10>()
+E            +    where <built-in method all of numpy.ndarray object at 0x00000180A91C9A10> = array([[1019, 1014, 1015, ..., 1020, 1029, 1021],\n       [1020, 1013, 1023, ..., 1024, 1015, 1019],\n       [1012, 1018...,\n       [1025, 1020, 1019, ..., 1025, 1018, 1024],\n       [1020, 1014, 1021, ..., 1007, 1025, 1021]], shape=(200, 10)) <= (2 * 512).all
+
+tests\test_memory_m5_power.py:211: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_memory_m5_power.py::test_a_panel_is_coherent - assert (np.F...
+### independent class counts: fails, as it must
+.F.F.F                                                                   [100%]
+================================== FAILURES ===================================
+__________ test_the_effect_is_calibrated_on_the_whole_protocol[kw1] ___________
+
+P = <module 'm5_power' from 'D:\\Claude\\random\\wormWars\\scripts\\memory_m5\\m5_power.py'>
+fitted = {'classes': {'O1': {'count_corr': 0.3026599633831909, 'count_var': {'Rr': 5.822222222222222, 'T': 3.3333333333333335},...erval': [-0.0008394965360030422, 0.003964496536003042], 'sd': 0.0033577596245384445}, 'sd_v': 0.19199052272568282, ...}
+kw = {'spread': 'proportional'}
+
+    @pytest.mark.parametrize("kw", [{}, {"spread": "proportional"}, {"spread": "sparse"}, {"tau": "Rr"},
+                                    {"latent": "Rr"}, {"delta": -0.002}])
+    def test_the_effect_is_calibrated_on_the_whole_protocol(P, fitted, kw):
+        sc = P.replace(solved(P, fitted, target="core"), **kw)
+        m = P.make_model(fitted, sc, (2, 512, 40))
+        res = P.run_cell(m, 30, 8000, "test-calibration")
+        se = res["protocol"].std() / np.sqrt(len(res["protocol"]))
+>       assert abs(res["protocol"].mean() - sc.delta) < 4 * se
+E       AssertionError: assert np.float64(0.0019925944010416668) < (4 * np.float64(1.0669046144957085e-05))
+E        +  where np.float64(0.0019925944010416668) = abs((np.float64(7.405598958333328e-06) - 0.002))
+E        +    where np.float64(7.405598958333328e-06) = <built-in method mean of numpy.ndarray object at 0x00000180A92A4B10>()
+E        +      where <built-in method mean of numpy.ndarray object at 0x00000180A92A4B10> = array([ 0.00000000e+00, -1.13932292e-03,  7.81250000e-04, ...,\n        2.60416667e-04, -9.76562500e-05,  3.90625000e-04], shape=(8000,)).mean
+E        +    and   0.002 = Scenario(target='core', rate_rr=0.0058, rho=0.14698804967898388, scale=1.0, extra_w=0.0, draw='pilot', tau='symmetric'...='proportional', delta=0.002, latent='none', su_corr=0.0, invalid=0.0, times='coupled', ens_sd='equal', overhead=False).delta
+
+tests\test_memory_m5_power.py:287: AssertionError
+__________ test_the_effect_is_calibrated_on_the_whole_protocol[kw3] ___________
+
+P = <module 'm5_power' from 'D:\\Claude\\random\\wormWars\\scripts\\memory_m5\\m5_power.py'>
+fitted = {'classes': {'O1': {'count_corr': 0.3026599633831909, 'count_var': {'Rr': 5.822222222222222, 'T': 3.3333333333333335},...erval': [-0.0008394965360030422, 0.003964496536003042], 'sd': 0.0033577596245384445}, 'sd_v': 0.19199052272568282, ...}
+kw = {'tau': 'Rr'}
+
+    @pytest.mark.parametrize("kw", [{}, {"spread": "proportional"}, {"spread": "sparse"}, {"tau": "Rr"},
+                                    {"latent": "Rr"}, {"delta": -0.002}])
+    def test_the_effect_is_calibrated_on_the_whole_protocol(P, fitted, kw):
+        sc = P.replace(solved(P, fitted, target="core"), **kw)
+        m = P.make_model(fitted, sc, (2, 512, 40))
+        res = P.run_cell(m, 30, 8000, "test-calibration")
+        se = res["protocol"].std() / np.sqrt(len(res["protocol"]))
+>       assert abs(res["protocol"].mean() - sc.delta) < 4 * se
+E       AssertionError: assert np.float64(0.00010878092447916678) < (4 * np.float64(1.1273394954237179e-05))
+E        +  where np.float64(0.00010878092447916678) = abs((np.float64(0.0018912190755208333) - 0.002))
+E        +    where np.float64(0.0018912190755208333) = <built-in method mean of numpy.ndarray object at 0x00000180A92A6DF0>()
+E        +      where <built-in method mean of numpy.ndarray object at 0x00000180A92A6DF0> = array([ 0.00247396,  0.00152995,  0.00071615, ..., -0.00016276,\n        0.00325521,  0.00257161], shape=(8000,)).mean
+E        +    and   0.002 = Scenario(target='core', rate_rr=0.0058, rho=0.14698804967898388, scale=1.0, extra_w=0.0, draw='pilot', tau='Rr', spread='constant', delta=0.002, latent='none', su_corr=0.0, invalid=0.0, times='coupled', ens_sd='equal', overhead=False).delta
+
+tests\test_memory_m5_power.py:287: AssertionError
+__________ test_the_effect_is_calibrated_on_the_whole_protocol[kw5] ___________
+
+P = <module 'm5_power' from 'D:\\Claude\\random\\wormWars\\scripts\\memory_m5\\m5_power.py'>
+fitted = {'classes': {'O1': {'count_corr': 0.3026599633831909, 'count_var': {'Rr': 5.822222222222222, 'T': 3.3333333333333335},...erval': [-0.0008394965360030422, 0.003964496536003042], 'sd': 0.0033577596245384445}, 'sd_v': 0.19199052272568282, ...}
+kw = {'delta': -0.002}
+
+    @pytest.mark.parametrize("kw", [{}, {"spread": "proportional"}, {"spread": "sparse"}, {"tau": "Rr"},
+                                    {"latent": "Rr"}, {"delta": -0.002}])
+    def test_the_effect_is_calibrated_on_the_whole_protocol(P, fitted, kw):
+        sc = P.replace(solved(P, fitted, target="core"), **kw)
+        m = P.make_model(fitted, sc, (2, 512, 40))
+        res = P.run_cell(m, 30, 8000, "test-calibration")
+        se = res["protocol"].std() / np.sqrt(len(res["protocol"]))
+>       assert abs(res["protocol"].mean() - sc.delta) < 4 * se
+E       AssertionError: assert np.float64(0.003986385091145833) < (4 * np.float64(1.028509832437445e-05))
+E        +  where np.float64(0.003986385091145833) = abs((np.float64(0.0019863850911458333) - -0.002))
+E        +    where np.float64(0.0019863850911458333) = <built-in method mean of numpy.ndarray object at 0x00000180A92AB330>()
+E        +      where <built-in method mean of numpy.ndarray object at 0x00000180A92AB330> = array([-0.00032552,  0.00195312,  0.00169271, ...,  0.00198568,\n        0.00257161,  0.00250651], shape=(8000,)).mean
+E        +    and   -0.002 = Scenario(target='core', rate_rr=0.0058, rho=0.14698804967898388, scale=1.0, extra_w=0.0, draw='pilot', tau='symmetric'...ead='constant', delta=-0.002, latent='none', su_corr=0.0, invalid=0.0, times='coupled', ens_sd='equal', overhead=False).delta
+
+tests\test_memory_m5_power.py:287: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_memory_m5_power.py::test_the_effect_is_calibrated_on_the_whole_protocol[kw1]
+FAILED tests/test_memory_m5_power.py::test_the_effect_is_calibrated_on_the_whole_protocol[kw3]
+FAILED tests/test_memory_m5_power.py::test_the_effect_is_calibrated_on_the_whole_protocol[kw5]
+### effect uncalibrated: fails, as it must
+...F..                                                                   [100%]
+================================== FAILURES ===================================
+__________ test_the_effect_is_calibrated_on_the_whole_protocol[kw3] ___________
+
+P = <module 'm5_power' from 'D:\\Claude\\random\\wormWars\\scripts\\memory_m5\\m5_power.py'>
+fitted = {'classes': {'O1': {'count_corr': 0.3026599633831909, 'count_var': {'Rr': 5.822222222222222, 'T': 3.3333333333333335},...erval': [-0.0008394965360030422, 0.003964496536003042], 'sd': 0.0033577596245384445}, 'sd_v': 0.19199052272568282, ...}
+kw = {'tau': 'Rr'}
+
+    @pytest.mark.parametrize("kw", [{}, {"spread": "proportional"}, {"spread": "sparse"}, {"tau": "Rr"},
+                                    {"latent": "Rr"}, {"delta": -0.002}])
+    def test_the_effect_is_calibrated_on_the_whole_protocol(P, fitted, kw):
+        sc = P.replace(solved(P, fitted, target="core"), **kw)
+        m = P.make_model(fitted, sc, (2, 512, 40))
+        res = P.run_cell(m, 30, 8000, "test-calibration")
+        se = res["protocol"].std() / np.sqrt(len(res["protocol"]))
+>       assert abs(res["protocol"].mean() - sc.delta) < 4 * se
+E       AssertionError: assert np.float64(0.00010878092447916678) < (4 * np.float64(1.1273394954237179e-05))
+E        +  where np.float64(0.00010878092447916678) = abs((np.float64(0.0018912190755208333) - 0.002))
+E        +    where np.float64(0.0018912190755208333) = <built-in method mean of numpy.ndarray object at 0x00000180A92A6070>()
+E        +      where <built-in method mean of numpy.ndarray object at 0x00000180A92A6070> = array([ 0.00247396,  0.00152995,  0.00071615, ..., -0.00016276,\n        0.00325521,  0.00257161], shape=(8000,)).mean
+E        +    and   0.002 = Scenario(target='core', rate_rr=0.0058, rho=0.14698804967898388, scale=1.0, extra_w=0.0, draw='pilot', tau='Rr', spread='constant', delta=0.002, latent='none', su_corr=0.0, invalid=0.0, times='coupled', ens_sd='equal', overhead=False).delta
+
+tests\test_memory_m5_power.py:287: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_memory_m5_power.py::test_the_effect_is_calibrated_on_the_whole_protocol[kw3]
+### calibrated on the first pass only: fails, as it must
+F                                                                        [100%]
+================================== FAILURES ===================================
+_____________________ test_an_incomplete_run_is_a_failure _____________________
+
+P = <module 'm5_power' from 'D:\\Claude\\random\\wormWars\\scripts\\memory_m5\\m5_power.py'>
+fitted = {'classes': {'O1': {'count_corr': 0.3026599633831909, 'count_var': {'Rr': 5.822222222222222, 'T': 3.3333333333333335},...erval': [-0.0008394965360030422, 0.003964496536003042], 'sd': 0.0033577596245384445}, 'sd_v': 0.19199052272568282, ...}
+
+    def test_an_incomplete_run_is_a_failure(P, fitted):
+        m = P.make_model(fitted, solved(P, fitted, target="min"), (2, 512, 40))
+        res = P.run_cell(m, 30, 500, "test-cap", cap=1.0)
+>       assert res["success"].sum() == 0 and res["raw_raises"].sum() == 0 and not res["complete"].any()
+E       assert (np.int64(269) == 0)
+E        +  where np.int64(269) = <built-in method sum of numpy.ndarray object at 0x00000180A92A6730>()
+E        +    where <built-in method sum of numpy.ndarray object at 0x00000180A92A6730> = array([ True,  True, False, False, False,  True, False,  True,  True,\n       False,  True,  True, False,  True, False,...False,\n       False,  True,  True, False,  True, False,  True,  True,  True,\n        True, False, False, False,  True]).sum
+
+tests\test_memory_m5_power.py:232: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_memory_m5_power.py::test_an_incomplete_run_is_a_failure - a...
+### incomplete runs dropped: fails, as it must
+F                                                                        [100%]
+================================== FAILURES ===================================
+_______________ test_the_interim_reads_stage_one_contrasts_only _______________
+
+P = <module 'm5_power' from 'D:\\Claude\\random\\wormWars\\scripts\\memory_m5\\m5_power.py'>
+fitted = {'classes': {'O1': {'count_corr': 0.3026599633831909, 'count_var': {'Rr': 5.822222222222222, 'T': 3.3333333333333335},...erval': [-0.0008394965360030422, 0.003964496536003042], 'sd': 0.0033577596245384445}, 'sd_v': 0.19199052272568282, ...}
+
+    def test_the_interim_reads_stage_one_contrasts_only(P, fitted):
+        m = P.make_model(fitted, solved(P, fitted, target="min"), (2, 512, 40))
+        sim = P.simulate(m, np.random.default_rng(11), 20, 40)
+        d1 = P.stage1_contrasts(sim, 25, 1024)
+>       assert d1.shape == (20, 25)
+E       assert (20, 40) == (20, 25)
+E         
+E         At index 1 diff: 40 != 25
+E         Use -v to get more diff
+
+tests\test_memory_m5_power.py:239: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_memory_m5_power.py::test_the_interim_reads_stage_one_contrasts_only
+### interim reads stage 2: fails, as it must
+F                                                                        [100%]
+================================== FAILURES ===================================
+_______________ test_the_interim_reads_stage_one_contrasts_only _______________
+
+P = <module 'm5_power' from 'D:\\Claude\\random\\wormWars\\scripts\\memory_m5\\m5_power.py'>
+fitted = {'classes': {'O1': {'count_corr': 0.3026599633831909, 'count_var': {'Rr': 5.822222222222222, 'T': 3.3333333333333335},...erval': [-0.0008394965360030422, 0.003964496536003042], 'sd': 0.0033577596245384445}, 'sd_v': 0.19199052272568282, ...}
+
+    def test_the_interim_reads_stage_one_contrasts_only(P, fitted):
+        m = P.make_model(fitted, solved(P, fitted, target="min"), (2, 512, 40))
+        sim = P.simulate(m, np.random.default_rng(11), 20, 40)
+        d1 = P.stage1_contrasts(sim, 25, 1024)
+        assert d1.shape == (20, 25)
+>       assert np.array_equal(d1, (sim["T"]["S"][:, :25] - sim["Rr"]["S"][:, :25]) / 1024)
+E       assert False
+E        +  where False = <function array_equal at 0x00000180FFF24630>(array([[0.01171875, 0.01367188, 0.0078125 , 0.00390625, 0.00976562,\n        0.00390625, 0.00390625, 0.0078125 , 0.0117..., 0.00292969, 0.00488281, 0.00390625, 0.00292969,\n        0.00488281, 0.01464844, 0.00585938, 0.00195312, 0.01757812]]), ((array([[12, 14,  8,  4, 10,  4,  4,  8, 12,  6, 11,  7,  5,  9,  7,  7,\n         8,  5,  9,  5,  8,  6, 11,  7,  3],\n ...,\n       [ 9,  9, 10, 10,  8,  3,  5, 13,  5, 11,  4,  4, 17,  8,  8,  5,\n         3,  5,  4,  3,  5, 15,  6,  2, 18]]) - array([[ 7, 16, 12,  2,  4,  8,  7,  7,  6,  2, 15,  9,  0,  2,  3,  9,\n         6,  5,  3,  6,  7,  2,  5,  3,  1],\n ...,\n       [ 3, 23,  6,  2,  7,  5,  3, 13,  2,  9,  1,  8,  7,  2, 11,  1,\n         0,  2,  2,  4,  5,  5,  8,  1, 18]])) / 1024))
+E        +    where <function array_equal at 0x00000180FFF24630> = np.array_equal
+
+tests\test_memory_m5_power.py:240: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_memory_m5_power.py::test_the_interim_reads_stage_one_contrasts_only
+### interim reads arm rates: fails, as it must
+F                                                                        [100%]
+================================== FAILURES ===================================
+____________________ test_the_interim_writes_only_s2_and_h ____________________
+
+P = <module 'm5_power' from 'D:\\Claude\\random\\wormWars\\scripts\\memory_m5\\m5_power.py'>
+
+    def test_the_interim_writes_only_s2_and_h(P):
+        table = {"variance": [1e-5, 2e-5, 4e-5], "H": [25, 45, 90]}
+        rng = np.random.default_rng(9)
+        d = rng.normal(0.002, 0.004, (50, 25))
+        out = P.interim(d, table, 25, 70)
+>       assert set(out) == {"s2", "H"}
+E       AssertionError: assert {'H', 'mean', 's2'} == {'H', 's2'}
+E         
+E         Extra items in the left set:
+E         'mean'
+E         Use -v to get more diff
+
+tests\test_memory_m5_power.py:329: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_memory_m5_power.py::test_the_interim_writes_only_s2_and_h
+### interim writes the mean: fails, as it must
+17 of 17 sabotages fail by their tests

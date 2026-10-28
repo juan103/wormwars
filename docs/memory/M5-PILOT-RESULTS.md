@@ -222,6 +222,8 @@ CPU hours for T and Rr, so about 27 to 69 CPU hours before the unresolved qualif
 
 **1. The audit's branch.** The plan offers Fable's pre-specified adjustment with a second tranche, or Astra's
 completion of both arms' fading genomes. **Agreed by both: the sampled audit, not a completed one.**
+*Annotated 2026-10-28 (D372): the power design made the sampled audit a fixed size, A ids per panel drawn before
+classification, with no trigger and no second tranche ([`M5-POWER-DESIGN.md`](M5-POWER-DESIGN.md), section 3).*
 - *Why:* no audited fading genome changed class in any arm (per arm 0 of 2283 to 2286). Completing the audit means
   continuing about 91% of every panel to 22,000 ticks (98.6% are first-pass fading; 40 per panel are already
   audited). At about 3.5 s per genome for the continuation alone (the 4.1 to 4.3 s per genome in (c) include a

@@ -1,0 +1,49 @@
+{
+ "hosts": [
+  {
+   "ensemble": "SH",
+   "tries": 1,
+   "cpu_seconds": 0.8
+  },
+  {
+   "ensemble": "SH-route",
+   "tries": 1,
+   "cpu_seconds": 4.84
+  },
+  {
+   "ensemble": "SH-class",
+   "tries": 1,
+   "cpu_seconds": 7.03
+  },
+  {
+   "ensemble": "SH-mirror",
+   "tries": 1,
+   "cpu_seconds": 34.53
+  },
+  {
+   "ensemble": "SH-recip",
+   "tries": 1,
+   "cpu_seconds": 23.62
+  }
+ ],
+ "rr_blocks": [
+  {
+   "cpu_seconds": 0.62
+  },
+  {
+   "cpu_seconds": 0.58
+  },
+  {
+   "cpu_seconds": 0.61
+  },
+  {
+   "cpu_seconds": 0.59
+  },
+  {
+   "cpu_seconds": 0.59
+  }
+ ],
+ "m4e_verify_run_cpu_seconds": 149.44,
+ "per_host_seconds": 15.36,
+ "note": "process CPU seconds on the machine that runs M5; a host's fixed cost is one host build and two Rr blocks with their continued chains; M4e's verify_run covers ten hosts and is reported, not used"
+}
