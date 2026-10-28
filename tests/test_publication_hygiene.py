@@ -129,6 +129,23 @@ def is_per_maze_outcome_list(key: str, arr) -> bool:
             and bool(np.all((a == 0) | (a == 1))))
 
 
+M5_PANEL, M5_CHUNK = 512, 128  # M5's pilot replays genomes of M4e's 512-genome panels, run in chunks of 128
+
+
+def is_m5_pilot_batch_list(key: str, arr) -> bool:
+    """D371: M5's pilot records each panel's replay batches (lists of genome ids, at most 4 per panel) and the chunks
+    its state check reran ([s, s + 127], s a multiple of 128), under the top-level keys "batches" and "state_chunks".
+    A batch of two genomes, or a chunk, is one whole-number pair; genome ids, not neurons, and too few pairs to carry
+    a graph. Only those keys are exempt."""
+    a = np.asarray(arr, dtype=np.float64)
+    if not (a.ndim == 2 and a.shape[1] == 2 and 1 <= a.shape[0] <= M5_PANEL // M5_CHUNK and float(a.min()) >= 0
+            and float(a.max()) < M5_PANEL and bool(np.all(a == np.round(a)))):
+        return False
+    if key == ".state_chunks":
+        return bool(np.all(a[:, 0] % M5_CHUNK == 0) and np.all(a[:, 1] == a[:, 0] + M5_CHUNK - 1))
+    return key == ".batches"
+
+
 def test_no_np_load_enables_pickle():
     """Pickle in np.load is arbitrary code execution on any file a user downloads.
 
@@ -354,6 +371,8 @@ def test_no_committed_file_contains_graph_structure():
                     continue  # E4-D's trial start cells (D261)
                 if "edge list" in bad and is_per_maze_outcome_list(key, arr):
                     continue  # the evolutionary E4-D's per-maze trial outcomes (D279)
+                if "edge list" in bad and is_m5_pilot_batch_list(key, arr):
+                    continue  # M5's pilot's replay batches and state-check chunks (D371)
                 offenders.append(f"{rel} [{key}] {bad}")
     assert not offenders, (
         "committed files contain connectome or control-graph structure:\n  " + "\n  ".join(offenders)
@@ -459,6 +478,22 @@ def test_only_trial_start_lists_are_exempt():
     assert not is_trial_start_list(".start_readings.starts", [[1.5, 2], [3, 4]])  # not whole numbers
     edges = np.stack([np.arange(300), np.arange(1, 301)], axis=1)
     assert not is_trial_start_list(".start_readings.starts", edges)
+
+
+def test_only_the_m5_pilots_batch_records_are_exempt():
+    """D371: M5's pilot records, per panel, its replay batches (at most 4 lists of genome ids) and the 128-genome
+    chunks its state check reran ([s, s + 127], s a multiple of 128 below 512), under top-level keys "batches" and
+    "state_chunks". A batch of two genomes is one pair; nothing else is exempt."""
+    assert is_m5_pilot_batch_list(".batches", [[319, 0]])
+    assert is_m5_pilot_batch_list(".state_chunks", [[0, 127], [256, 383], [384, 511]])
+    assert not is_m5_pilot_batch_list(".state_chunks", [[0, 128]])  # not a chunk of 128
+    assert not is_m5_pilot_batch_list(".state_chunks", [[3, 130]])  # not on a chunk boundary
+    assert not is_m5_pilot_batch_list(".batches", [[1, 2]] * 5)  # more batches than a panel has
+    assert not is_m5_pilot_batch_list(".runs.batches", [[319, 0]])  # not the top-level key
+    assert not is_m5_pilot_batch_list(".edges", [[319, 0]])  # another key
+    edges = np.stack([np.arange(300), np.arange(1, 301)], axis=1)
+    assert not is_m5_pilot_batch_list(".batches", edges)
+    assert not is_m5_pilot_batch_list(".state_chunks", edges)
 
 
 def test_only_per_maze_outcome_lists_are_exempt():

@@ -1,0 +1,35 @@
+{
+ "experiment": "memory-M5-pilot",
+ "script": "m5_pilot.py",
+ "default_category": "probe",
+ "status": "completed",
+ "error": null,
+ "started_utc": "2026-10-27T13:56:01+00:00",
+ "ended_utc": "2026-10-28T13:21:27+00:00",
+ "pid": 39520,
+ "git_commit": "135f8e4a15906bc14571aa2cc8534f152d206997",
+ "code_dirty": false,
+ "git_commit_at_end": "b2baeefae8dd0b2f37f6bf00a0d7917372b3b6f2",
+ "cuda_devices": [
+  "NVIDIA GeForce RTX 5080"
+ ],
+ "time_unit": "synchronised wall-clock seconds per category (not GPU kernel time)",
+ "neural_update_unit": "strains x batch x substeps network updates (network size not included)",
+ "uncategorised": false,
+ "categories": {
+  "probe": {
+   "worlds_built": 0,
+   "world_ticks": 0,
+   "neural_updates": 13451623072,
+   "neural_padding": 0,
+   "seconds": 84325.98201839998
+  }
+ },
+ "totals": {
+  "worlds_built": 0,
+  "world_ticks": 0,
+  "neural_updates": 13451623072,
+  "neural_padding": 0,
+  "seconds_timed": 84325.98201839998
+ }
+}

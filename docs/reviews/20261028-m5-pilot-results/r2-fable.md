@@ -1,0 +1,29 @@
+**Verdict: fix then publish.** Every number I re-derived from the files agrees with draft 2, and the round-1 findings are in. Two sentences are still false and one figure does not follow from its own inputs. None changes a conclusion.
+
+## Ranked points
+
+1. **The audit table's header still says "Pooled with M4e's panel audits"** (`docs/memory/M5-PILOT-RESULTS.md:172`). Round-1 point 2 was taken in the summary (line 23) and the text below the table (line 178), but the header still labels Rr's 2286 as M4e's. Rr's 786 are stage (a)'s. "Pooled with the arm's own panel audits" fixes it.
+
+2. **"SH-recip is slowest in every arm" is false, and the wording was mine** (`:201-202`, from my round-1 Q5). From `counts.*.panel_seconds`: T's two slowest panels are SH-mirror-2041100 d0 and d1 (1511 s, 1462 s), ahead of SH-recip-2051100 (1352 s, 1215 s). In K, SH-recip-2051100 is slowest (1103 s, 1660 s) but SH-recip-2051101 is K's fastest host (554 s, 591 s). Only in Rr is SH-recip slowest (2024 s, 2195 s). Say the slow host differs by arm, SH-mirror-2041100 in T and SH-recip-2051100 in K and Rr, and have the simulation draw panel times by host and arm rather than by host family. Line 115 ("the slowest are SH-recip's") is about Rr and is right.
+
+3. **"About 29 minutes per panel" does not follow from the sentence's inputs** (`:220-223`). 91% of 512 is about 466 genomes. At 3.5 s (T) to 3.7 s (Rr, 4.31 less 0.65) that is 27 to 28 minutes. The 29 comes from using 98.6%, all first-pass fading, instead of the unaudited 91%. The multiplier holds either way: 2.7 for T, 2.5 for Rr, about 2.8 for K. The audit's phase timings support the split: `replay_2000` averages about 0.6 s per genome over 75 per panel and `to_22000` about 3.5 s. The production second pass costs 5 to 15 s per genome (`second_pass_seconds / second_pass_genomes`) because that population is the hard cases, so the audit's fading-genome cost is the right basis. Batch scaling at 466 per batch is unknown, which "rough replay-based" covers.
+
+4. **The chain paragraph should not read the direction as reassuring** (`:93-97`, refining my round-1 point 5). The t of 2.8 on reciprocal-edge overlap is a first-versus-continued difference at about p 0.01 on one of seven measures, about 7% familywise. If it is chance, fine. If it is real, the two blocks do not share a distribution on that coordinate, so the chain was not stationary by the first block, and the blocks actually run are less N2-like on reciprocal edges than the continuation. That is not the under-mixing direction, but an Rr block atypically far from N2 on a coordinate the estimand cares about would, if anything, inflate T − Rr. Suggested: "the difference is chance or a non-stationarity in the direction opposite to under-mixing; neither is established." The plan point is below.
+
+## What I checked
+
+- **Section (a)'s tables:** every cell of the overlap table from `rr-summary.json` (minimum, mean, maximum of all seven rows, both columns). The 20 paired differences: shared edges mean 3.15, SD 8.02, t 1.76; reciprocal mean 3.8, SD 6.07, t 2.80. Acceptance 10.0 to 10.3% on the first blocks, 9.8 to 10.4% over all 40 (50,104 to 52,860 attempts).
+- **The run:** the four compute subtotals sum to 84,326; Rr's 20 panel seconds sum to 22,579.3; neural updates 1.345e10; 13:56:01 to 13:21:27 UTC; commit 135f8e4 with `code_dirty` false and b2baeef at the end.
+- **The fallbacks:** seven in `report.json`, every reason containing "Newton failure", five first pass and two second. Their (host, draw, arm) keys are all distinct, and the rerun cache in `stage_longer` is keyed on those, so seven reruns is right. K 474's recorded 1.01585 and replayed 1.01691 give the normalized 1.0378e-3; the minimum is 5.70e-9; the non-fallback maxima are 1.40e-13, 6.72e-12 and 3.83e-10, and 0 in the audit.
+- **K 287:** root distance 2.2730917585 identical in all four records, batch [287, 0], reason "located root not reached" throughout.
+- **Per-host totals:** the T and K per-host counts match the panel counts pairwise; T and Rr correlate at 0.70, T and K at 0.06; T's per-host SD 4.7 against a binomial 2.7. The per-host contrasts, mean 0.0015625, SD 0.003358, hull interval, 6 of 10, 1 confirmed in both.
+- **The variance:** host-mean variance 1.127e-5, within-host over 2 of 1.335e-5, moment −2.08e-6; truncated 0.003654; the 9-df upper limit 9 × 1.127e-5 / 3.325 = 3.05e-5, less 1.34e-5 gives 1.7e-5. Orientation hosts 22.7, 26.2 and 59.4; the note's 27 is a ceiling of 26.2, fine as "about".
+- **The bounds:** r pooled 0.02528, per arm 0.0868, 0.0778, 0.0618; audit 0.001995 and 0.0013113, 0.0013096; envelope width 0.0078125, endpoints [−0.00303, +0.00479], calibrated +8.15e-5 and −1.16e-4. Unresolved per Rr panel 0 to 10, summing to 47; T 33, K 37.
+- **The composition check:** chunk [0, 127] for T 118 and K 11, [128, 255] for Rr 226, exact and states equal.
+- **The reader and tests:** the four additions do what the note says, and the four new tests exercise them. `per_host_totals` is inline in `main()` with no unit test; I verified its values by hand, but if the power script consumes it, test it. `m5_pilot_read.py:78` has a cosmetic missing space; hygiene is `test_publication_hygiene.py`, not a linter, so nothing blocks.
+- **Not verifiable by me:** that every earlier `report.json` value is unchanged, since no earlier report is archived beside draft 1; the "seen failing first" claim; Astra's 5451 distinct identities.
+
+## For M5's plan
+
+- **A reference chain for Rr.** The sampler costs about 52,000 attempts per block, seconds of CPU. M5 can run one long chain per host, record the overlap distribution along it, and report where the block it uses sits in that distribution. That replaces the two-point comparison at point 4 with a reference and costs nothing.
+- **Panel-time scenarios by host and arm,** not by host family, per point 2.

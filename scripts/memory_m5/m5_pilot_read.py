@@ -49,10 +49,12 @@ def variance_split(d, pa, pb, n, p11=None):
     within = float(d.var(axis=1, ddof=1).mean()) if D > 1 else float("nan")
     draw = max(within - genome, 0.0) if D > 1 else float("nan")
     host_means = d.mean(1)
-    host = max(float(host_means.var(ddof=1)) - (within if D > 1 else genome) / D, 0.0)
+    host_moment = float(host_means.var(ddof=1)) - (within if D > 1 else genome) / D
+    host = max(host_moment, 0.0)
     per_host = host + ((draw if D > 1 else 0.0) + genome) / D
     share = (lambda x: x / per_host) if per_host > 0 else (lambda x: None)  # noqa: E731
-    return {"host": host, "draw": draw, "genome": genome, "within_host": within, "paired": p11 is not None,
+    return {"host": host, "host_moment": host_moment, "draw": draw, "genome": genome, "within_host": within,
+            "paired": p11 is not None,
             "shares_of_host_contrast_variance": {"host": share(host), "draw": share(draw / D) if D > 1 else None,
                                                  "genome": share(genome / D)},
             "sd_of_host_contrasts": float(host_means.std(ddof=1))}
@@ -67,9 +69,27 @@ def classes(rec, longer=None):
     return m
 
 
+def class_table(cs):
+    return {name: sum(x == k for x in cs) for k, name in enumerate(MP.CODES)}
+
+
+def per_host_totals(have, recs, arms=MP.PILOT_ARMS):
+    """{arm: {host name: genomes and merged classes at 22,000 ticks, summed over the host's draws}} (Astra, Fable,
+    results rounds 1 and 2)."""
+    out = {a: {} for a in arms}
+    for a in arms:
+        for v, rec in zip(have, recs[a]):
+            tot = out[a].setdefault(v["rec"]["name"], {"genomes": 0, **class_table([])})
+            tot["genomes"] += len(rec["class"])
+            for k, x in class_table(m4e.merged_classes(rec)).items():
+                tot[k] += x
+    return out
+
+
 def counts(rec, longer=None):
     m = classes(rec, longer)
-    return {"separate": sum(x in MP.SEPARATE for x in m),
+    return {"first_pass_classes": class_table(rec["class"]), "merged_classes": class_table(m),
+            "separate": sum(x in MP.SEPARATE for x in m),
             "separate_first_pass": sum(x in MP.SEPARATE for x in rec["class"]),
             "unresolved": m.count(MP.UNRESOLVED), "not_classified_fading": sum(x != MP.FADING for x in m),
             "first_pass_fading": rec["class"].count(MP.FADING), "valid": rec.get("valid"),
@@ -118,13 +138,29 @@ def stage_files(verified, stage, cols, recs):
     return got, missing
 
 
+def deviation(rec, rep, k):
+    """The registered rule's normalized deviation, |replayed − recorded| / max(1, |recorded|)."""
+    return abs(rep[k] - rec[k]) / max(1.0, abs(rec[k]))
+
+
 def replay_summary(got):
-    """The registered check's record: the largest root-field deviation and the fallbacks, per arm."""
+    """The registered check's record per arm: the largest root-field deviation outside the fallbacks (the registered
+    check's), the largest with them, and every fallback with its deviations (Fable, Astra, results round 1)."""
     out = {}
-    for (_, _, a), o in got.items():
-        s = out.setdefault(a, {"max_root_deviation": 0.0, "fallbacks": 0})
+    for (h, dr, a), o in got.items():
+        s = out.setdefault(a, {"max_root_deviation": 0.0, "max_root_deviation_with_fallbacks": 0.0, "fallbacks": 0,
+                               "fallback_details": []})
         s["max_root_deviation"] = max(s["max_root_deviation"], o["max_root_deviation"])
+        s["max_root_deviation_with_fallbacks"] = max(s["max_root_deviation_with_fallbacks"], o["max_root_deviation"])
         s["fallbacks"] += len(o["fallbacks"])
+        for f in o["fallbacks"]:
+            dv = {k: deviation(f["recorded"], f["replayed"], k) for k in ("root_distance", "readout_difference")}
+            s["fallback_details"].append({"panel": f"{h} d{dr}", "genome": f["genome"], "pass": f["pass"],
+                                          "reason": f["recorded"]["reason"],
+                                          "root_distance_deviation": dv["root_distance"],
+                                          "readout_difference_deviation": dv["readout_difference"],
+                                          "panel_rerun_exact": f["panel_rerun_exact"]})
+            s["max_root_deviation_with_fallbacks"] = max(s["max_root_deviation_with_fallbacks"], *dv.values())
     return out
 
 
@@ -184,7 +220,9 @@ def audit_report(audit, missing, recs):
             for x in r["class_22000"]:
                 if x != MP.FADING:
                     changes[MP.CODES[x]] = changes.get(MP.CODES[x], 0) + 1
-            by_panel[f"{h} d{dr}"] = {"audited": len(r["ids"]), "fading_to_separate": t}
+            by_panel[f"{h} d{dr}"] = {"audited": len(r["ids"]), "fading_to_separate": t,
+                                      "any_change": sum(x != MP.FADING for x in r["class_22000"]),
+                                      "upper_95": cp_upper(t, len(r["ids"]))}
         n0 = t0 = 0  # the panels' own audits (M4e's for T and K, (a)'s for Rr)
         for rec in recs[a]:
             second = dict(zip(rec["second"]["ids"], rec["second"]["class"]))
@@ -247,6 +285,9 @@ def main():
         rep["audit_replay"] = replay_summary(audit)
         rep["seconds"] = {stage: {f"{h} d{d} {a}": o["seconds"] for (h, d, a), o in got.items()}
                           for stage, got in (("longer", longer), ("audit", audit))}
+        rep["seconds"]["note"] = ("recorded phase costs per panel; they exclude the composition check and the "
+                                  "fallbacks' panel reruns, so they are not complete stage costs")
+    rep["per_host_totals"] = per_host_totals(have, recs)
     (MP.OUT / "report.json").write_text(json.dumps(rep, indent=1) + "\n", encoding="utf-8", newline="\n")
     t = rep["at_22000"]["T_minus_Rr"]
     if t:

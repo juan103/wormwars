@@ -375,6 +375,60 @@ def test_the_variance_split_recovers_known_components(RP):
     assert abs(v["host"] - 1.5e-5) < 2.5e-6 and abs(v["draw"] - 5e-6) < 2e-6
 
 
+def test_the_report_lists_every_fallback_with_its_deviations(RP):
+    """The fallbacks' identities and deviations are in the report, and the overall maximum includes them; the
+    registered maximum stays the non-fallback one (Fable, Astra, results round 1)."""
+    fb = {"genome": 3, "pass": "first", "panel_rerun_exact": True,
+          "recorded": {"class": 4, "reason": "x", "root_distance": 2.0, "readout_difference": 0.1},
+          "replayed": {"class": 4, "reason": "x", "root_distance": 2.004, "readout_difference": 0.1}}
+    got = {("SH-1", 0, "T"): {"max_root_deviation": 1e-12, "fallbacks": [fb]},
+           ("SH-1", 1, "T"): {"max_root_deviation": 3e-12, "fallbacks": []}}
+    s = RP.replay_summary(got)["T"]
+    assert s["max_root_deviation"] == 3e-12 and s["fallbacks"] == 1
+    assert np.isclose(s["max_root_deviation_with_fallbacks"], 0.002)
+    (d,) = s["fallback_details"]
+    assert d["panel"] == "SH-1 d0" and d["genome"] == 3 and d["pass"] == "first" and d["panel_rerun_exact"]
+    assert np.isclose(d["root_distance_deviation"], 0.002) and d["readout_difference_deviation"] == 0.0
+
+
+def test_the_counts_give_every_class(RP):
+    """First-pass and merged class breakdowns per panel (Astra, results round 1)."""
+    rec = {"class": [0, 2, 2, 4, 3], "second": {"ids": [3, 4], "class": [2, 4], "seconds": 1.0}, "seconds": 2.0}
+    c = RP.counts(rec)
+    assert c["first_pass_classes"] == {"separate states": 1, "separate states, read-out silent": 0, "fading": 2,
+                                       "persistent oscillation": 1, "unresolved": 1}
+    assert c["merged_classes"] == {"separate states": 1, "separate states, read-out silent": 0, "fading": 3,
+                                   "persistent oscillation": 0, "unresolved": 1}
+
+
+def test_the_per_host_totals_sum_both_draws(RP):
+    """Merged classes summed over a host's two draws (Fable, results round 2: the power script will read them)."""
+    have = [{"rec": {"name": "SH-1"}, "draw": 0}, {"rec": {"name": "SH-1"}, "draw": 1}, {"rec": {"name": "SH-2"},
+                                                                                         "draw": 0}]
+    rec = lambda cs, sec: {"class": cs, "second": {"ids": [0], "class": [sec]}}  # noqa: E731
+    recs = {"T": [rec([4, 2], 0), rec([0, 2], 2), rec([2, 2], 2)]}
+    tot = RP.per_host_totals(have, recs, arms=("T",))["T"]
+    # draw 0: unresolved genome 0 resolved separate by the second pass; draw 1: separate genome 0 fading at the second
+    assert tot["SH-1"] == {"genomes": 4, "separate states": 1, "separate states, read-out silent": 0, "fading": 3,
+                           "persistent oscillation": 0, "unresolved": 0}
+    assert tot["SH-2"]["genomes"] == 2 and tot["SH-2"]["fading"] == 2
+
+
+def test_the_audit_report_bounds_every_panel(RP):
+    audit = {("SH-1", 0, a): {"ids": [1, 2, 3], "class_22000": [2, 2, 4]} for a in ("T", "K", "Rr")}
+    recs = {a: [] for a in ("T", "K", "Rr")}
+    p = RP.audit_report(audit, [], recs)["by_arm"]["T"]["by_panel"]["SH-1 d0"]
+    assert p["any_change"] == 1 and p["fading_to_separate"] == 0 and np.isclose(p["upper_95"], RP.cp_upper(0, 3))
+
+
+def test_the_variance_split_keeps_the_raw_host_moment(RP):
+    """The truncated host component and its untruncated moment estimate (Fable, Astra, results round 1)."""
+    d = np.array([[0.0, 0.01], [0.01, 0.0], [0.0, 0.01]])
+    v = RP.variance_split(d, 0.005, 0.005, 1024)
+    assert v["host"] == 0.0 and v["host_moment"] < 0
+    assert np.isclose(v["host_moment"], d.mean(1).var(ddof=1) - v["within_host"] / 2)
+
+
 def test_the_reader_reproduces_m4es_t_minus_k(MP, RP):
     """End to end on M4e's committed records (Fable, round 4): the reader's contrast gives M4e's published T − K mean
     and host spread, and the independent split Astra's decomposition (0.5085 / 0.0773 / 0.4142, within the genome

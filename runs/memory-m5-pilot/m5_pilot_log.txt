@@ -1,0 +1,144 @@
+SH-2011100 d0 Rr: separate 5 (first pass), 5 (merged); unresolved 4; second pass 51 genomes in 762.4 s; 1838.8 s
+SH-2011100 d1 Rr: separate 6 (first pass), 6 (merged); unresolved 2; second pass 48 genomes in 349.9 s; 1010.8 s
+SH-2011101 d0 Rr: separate 0 (first pass), 0 (merged); unresolved 1; second pass 41 genomes in 225.8 s; 773.8 s
+SH-2011101 d1 Rr: separate 0 (first pass), 0 (merged); unresolved 1; second pass 41 genomes in 243.0 s; 773.5 s
+SH-route-2021100 d0 Rr: separate 4 (first pass), 4 (merged); unresolved 0; second pass 49 genomes in 494.8 s; 1289.6 s
+SH-route-2021100 d1 Rr: separate 4 (first pass), 4 (merged); unresolved 4; second pass 52 genomes in 620.9 s; 1605.6 s
+SH-route-2021101 d0 Rr: separate 1 (first pass), 1 (merged); unresolved 2; second pass 43 genomes in 222.2 s; 807.7 s
+SH-route-2021101 d1 Rr: separate 3 (first pass), 3 (merged); unresolved 1; second pass 44 genomes in 281.0 s; 891.2 s
+SH-class-2031100 d0 Rr: separate 2 (first pass), 2 (merged); unresolved 0; second pass 42 genomes in 157.1 s; 604.3 s
+SH-class-2031100 d1 Rr: separate 10 (first pass), 10 (merged); unresolved 0; second pass 49 genomes in 178.8 s; 593.3 s
+SH-class-2031101 d0 Rr: separate 0 (first pass), 0 (merged); unresolved 0; second pass 40 genomes in 134.6 s; 537.4 s
+SH-class-2031101 d1 Rr: separate 4 (first pass), 4 (merged); unresolved 1; second pass 45 genomes in 216.4 s; 682.8 s
+SH-mirror-2041100 d0 Rr: separate 4 (first pass), 4 (merged); unresolved 5; second pass 49 genomes in 562.0 s; 1417.6 s
+SH-mirror-2041100 d1 Rr: separate 2 (first pass), 2 (merged); unresolved 1; second pass 44 genomes in 234.4 s; 773.8 s
+SH-mirror-2041101 d0 Rr: separate 1 (first pass), 1 (merged); unresolved 4; second pass 46 genomes in 466.2 s; 1194.3 s
+SH-mirror-2041101 d1 Rr: separate 7 (first pass), 7 (merged); unresolved 0; second pass 50 genomes in 527.2 s; 1175.5 s
+SH-recip-2051100 d0 Rr: separate 0 (first pass), 0 (merged); unresolved 5; second pass 48 genomes in 543.4 s; 2024.4 s
+SH-recip-2051100 d1 Rr: separate 5 (first pass), 5 (merged); unresolved 10; second pass 56 genomes in 884.3 s; 2195.0 s
+SH-recip-2051101 d0 Rr: separate 0 (first pass), 0 (merged); unresolved 4; second pass 47 genomes in 584.4 s; 1466.7 s
+SH-recip-2051101 d1 Rr: separate 1 (first pass), 1 (merged); unresolved 2; second pass 44 genomes in 335.1 s; 923.2 s
+composition check T: {'panel': 'SH-2011100 d0', 'genome': 118, 'chunk': [0, 127], 'exact': True, 'states_equal': True, 'replay_batch': [118, 0]}
+composition check K: {'panel': 'SH-2011100 d0', 'genome': 11, 'chunk': [0, 127], 'exact': True, 'states_equal': True, 'replay_batch': [11, 0]}
+composition check Rr: {'panel': 'SH-2011100 d0', 'genome': 226, 'chunk': [128, 255], 'exact': True, 'states_equal': True, 'replay_batch': [226, 0]}
+longer SH-2011100 d0 T: 3 genomes; at 100,000: ['unresolved', 'unresolved', 'unresolved']; fallbacks 0; {'replay_2000': 108.4, 'state_check': 134.3, 'to_22000': 131.9, 'to_100000': 233.7}
+longer SH-2011100 d0 K: 2 genomes; at 100,000: ['unresolved', 'unresolved']; fallbacks 0; {'replay_2000': 68.7, 'state_check': 44.6, 'to_22000': 93.4, 'to_100000': 182.4}
+longer SH-2011100 d0 Rr: 4 genomes; at 100,000: ['unresolved', 'unresolved', 'unresolved', 'unresolved']; fallbacks 1; {'replay_2000': 239.8, 'state_check': 133.5, 'to_22000': 264.4, 'to_100000': 376.6}
+longer SH-2011100 d1 T: 3 genomes; at 100,000: ['unresolved', 'unresolved', 'unresolved']; fallbacks 0; {'replay_2000': 218.5, 'state_check': 94.9, 'to_22000': 226.8, 'to_100000': 326.6}
+longer SH-2011100 d1 K: 3 genomes; at 100,000: ['unresolved', 'unresolved', 'unresolved']; fallbacks 1; {'replay_2000': 210.0, 'state_check': 95.5, 'to_22000': 251.9, 'to_100000': 346.6}
+longer SH-2011100 d1 Rr: 2 genomes; at 100,000: ['unresolved', 'unresolved']; fallbacks 0; {'replay_2000': 135.2, 'state_check': 51.8, 'to_22000': 156.3, 'to_100000': 242.9}
+longer SH-2011101 d0 T: 0 genomes; at 100,000: []; fallbacks 0; {'replay_2000': 0.0, 'state_check': 0.0, 'to_22000': 0.0, 'to_100000': 0.0}
+longer SH-2011101 d0 K: 2 genomes; at 100,000: ['unresolved', 'unresolved']; fallbacks 0; {'replay_2000': 136.9, 'state_check': 103.2, 'to_22000': 152.7, 'to_100000': 244.4}
+longer SH-2011101 d0 Rr: 1 genomes; at 100,000: ['unresolved']; fallbacks 0; {'replay_2000': 70.9, 'state_check': 51.6, 'to_22000': 93.2, 'to_100000': 185.2}
+longer SH-2011101 d1 T: 0 genomes; at 100,000: []; fallbacks 0; {'replay_2000': 0.0, 'state_check': 0.0, 'to_22000': 0.0, 'to_100000': 0.0}
+longer SH-2011101 d1 K: 0 genomes; at 100,000: []; fallbacks 0; {'replay_2000': 0.0, 'state_check': 0.0, 'to_22000': 0.0, 'to_100000': 0.0}
+longer SH-2011101 d1 Rr: 1 genomes; at 100,000: ['unresolved']; fallbacks 0; {'replay_2000': 70.5, 'state_check': 51.8, 'to_22000': 92.5, 'to_100000': 180.5}
+longer SH-route-2021100 d0 T: 1 genomes; at 100,000: ['unresolved']; fallbacks 0; {'replay_2000': 71.2, 'state_check': 51.9, 'to_22000': 92.3, 'to_100000': 180.5}
+longer SH-route-2021100 d0 K: 5 genomes; at 100,000: ['unresolved', 'unresolved', 'unresolved', 'unresolved', 'unresolved']; fallbacks 0; {'replay_2000': 321.8, 'state_check': 103.5, 'to_22000': 336.8, 'to_100000': 448.4}
+longer SH-route-2021100 d0 Rr: 0 genomes; at 100,000: []; fallbacks 0; {'replay_2000': 0.0, 'state_check': 0.0, 'to_22000': 0.0, 'to_100000': 0.0}
+longer SH-route-2021100 d1 T: 0 genomes; at 100,000: []; fallbacks 0; {'replay_2000': 0.0, 'state_check': 0.0, 'to_22000': 0.0, 'to_100000': 0.0}
+longer SH-route-2021100 d1 K: 0 genomes; at 100,000: []; fallbacks 0; {'replay_2000': 0.0, 'state_check': 0.0, 'to_22000': 0.0, 'to_100000': 0.0}
+longer SH-route-2021100 d1 Rr: 4 genomes; at 100,000: ['unresolved', 'unresolved', 'unresolved', 'unresolved']; fallbacks 0; {'replay_2000': 262.4, 'state_check': 103.4, 'to_22000': 277.2, 'to_100000': 397.5}
+longer SH-route-2021101 d0 T: 0 genomes; at 100,000: []; fallbacks 0; {'replay_2000': 0.0, 'state_check': 0.0, 'to_22000': 0.0, 'to_100000': 0.0}
+longer SH-route-2021101 d0 K: 2 genomes; at 100,000: ['unresolved', 'unresolved']; fallbacks 1; {'replay_2000': 129.2, 'state_check': 103.3, 'to_22000': 148.9, 'to_100000': 239.6}
+longer SH-route-2021101 d0 Rr: 2 genomes; at 100,000: ['unresolved', 'unresolved']; fallbacks 0; {'replay_2000': 130.8, 'state_check': 97.2, 'to_22000': 89.7, 'to_100000': 183.7}
+longer SH-route-2021101 d1 T: 1 genomes; at 100,000: ['unresolved']; fallbacks 0; {'replay_2000': 69.8, 'state_check': 48.7, 'to_22000': 91.7, 'to_100000': 181.0}
+longer SH-route-2021101 d1 K: 1 genomes; at 100,000: ['unresolved']; fallbacks 0; {'replay_2000': 67.4, 'state_check': 49.0, 'to_22000': 90.0, 'to_100000': 184.8}
+longer SH-route-2021101 d1 Rr: 1 genomes; at 100,000: ['unresolved']; fallbacks 0; {'replay_2000': 70.8, 'state_check': 48.5, 'to_22000': 93.0, 'to_100000': 181.2}
+longer SH-class-2031100 d0 T: 2 genomes; at 100,000: ['unresolved', 'unresolved']; fallbacks 0; {'replay_2000': 130.5, 'state_check': 97.2, 'to_22000': 150.4, 'to_100000': 239.0}
+longer SH-class-2031100 d0 K: 1 genomes; at 100,000: ['unresolved']; fallbacks 0; {'replay_2000': 68.7, 'state_check': 48.7, 'to_22000': 93.2, 'to_100000': 184.6}
+longer SH-class-2031100 d0 Rr: 0 genomes; at 100,000: []; fallbacks 0; {'replay_2000': 0.0, 'state_check': 0.0, 'to_22000': 0.0, 'to_100000': 0.0}
+longer SH-class-2031100 d1 T: 1 genomes; at 100,000: ['unresolved']; fallbacks 0; {'replay_2000': 68.1, 'state_check': 54.0, 'to_22000': 90.4, 'to_100000': 183.4}
+longer SH-class-2031100 d1 K: 0 genomes; at 100,000: []; fallbacks 0; {'replay_2000': 0.0, 'state_check': 0.0, 'to_22000': 0.0, 'to_100000': 0.0}
+longer SH-class-2031100 d1 Rr: 0 genomes; at 100,000: []; fallbacks 0; {'replay_2000': 0.0, 'state_check': 0.0, 'to_22000': 0.0, 'to_100000': 0.0}
+longer SH-class-2031101 d0 T: 1 genomes; at 100,000: ['unresolved']; fallbacks 0; {'replay_2000': 68.9, 'state_check': 48.4, 'to_22000': 94.9, 'to_100000': 184.4}
+longer SH-class-2031101 d0 K: 2 genomes; at 100,000: ['unresolved', 'unresolved']; fallbacks 0; {'replay_2000': 136.8, 'state_check': 97.1, 'to_22000': 157.6, 'to_100000': 252.3}
+longer SH-class-2031101 d0 Rr: 0 genomes; at 100,000: []; fallbacks 0; {'replay_2000': 0.0, 'state_check': 0.0, 'to_22000': 0.0, 'to_100000': 0.0}
+longer SH-class-2031101 d1 T: 1 genomes; at 100,000: ['unresolved']; fallbacks 0; {'replay_2000': 71.2, 'state_check': 48.5, 'to_22000': 94.3, 'to_100000': 184.8}
+longer SH-class-2031101 d1 K: 0 genomes; at 100,000: []; fallbacks 0; {'replay_2000': 0.0, 'state_check': 0.0, 'to_22000': 0.0, 'to_100000': 0.0}
+longer SH-class-2031101 d1 Rr: 1 genomes; at 100,000: ['unresolved']; fallbacks 0; {'replay_2000': 72.1, 'state_check': 49.8, 'to_22000': 90.0, 'to_100000': 181.9}
+longer SH-mirror-2041100 d0 T: 3 genomes; at 100,000: ['unresolved', 'unresolved', 'unresolved']; fallbacks 0; {'replay_2000': 200.4, 'state_check': 97.4, 'to_22000': 215.0, 'to_100000': 328.5}
+longer SH-mirror-2041100 d0 K: 3 genomes; at 100,000: ['unresolved', 'unresolved', 'unresolved']; fallbacks 0; {'replay_2000': 133.6, 'state_check': 147.0, 'to_22000': 156.1, 'to_100000': 265.9}
+longer SH-mirror-2041100 d0 Rr: 5 genomes; at 100,000: ['unresolved', 'unresolved', 'unresolved', 'unresolved', 'unresolved']; fallbacks 0; {'replay_2000': 345.6, 'state_check': 145.8, 'to_22000': 355.1, 'to_100000': 468.1}
+longer SH-mirror-2041100 d1 T: 6 genomes; at 100,000: ['unresolved', 'unresolved', 'unresolved', 'unresolved', 'unresolved', 'unresolved']; fallbacks 1; {'replay_2000': 402.5, 'state_check': 145.7, 'to_22000': 405.4, 'to_100000': 511.7}
+longer SH-mirror-2041100 d1 K: 4 genomes; at 100,000: ['unresolved', 'unresolved', 'unresolved', 'unresolved']; fallbacks 0; {'replay_2000': 275.0, 'state_check': 89.4, 'to_22000': 291.1, 'to_100000': 417.6}
+longer SH-mirror-2041100 d1 Rr: 1 genomes; at 100,000: ['unresolved']; fallbacks 0; {'replay_2000': 70.4, 'state_check': 44.5, 'to_22000': 93.9, 'to_100000': 184.6}
+longer SH-mirror-2041101 d0 T: 0 genomes; at 100,000: []; fallbacks 0; {'replay_2000': 0.0, 'state_check': 0.0, 'to_22000': 0.0, 'to_100000': 0.0}
+longer SH-mirror-2041101 d0 K: 1 genomes; at 100,000: ['unresolved']; fallbacks 0; {'replay_2000': 4.1, 'state_check': 45.0, 'to_22000': 31.9, 'to_100000': 121.3}
+longer SH-mirror-2041101 d0 Rr: 4 genomes; at 100,000: ['unresolved', 'unresolved', 'unresolved', 'unresolved']; fallbacks 0; {'replay_2000': 269.8, 'state_check': 134.0, 'to_22000': 288.4, 'to_100000': 405.2}
+longer SH-mirror-2041101 d1 T: 3 genomes; at 100,000: ['unresolved', 'unresolved', 'unresolved']; fallbacks 0; {'replay_2000': 143.1, 'state_check': 44.6, 'to_22000': 162.1, 'to_100000': 304.8}
+longer SH-mirror-2041101 d1 K: 2 genomes; at 100,000: ['unresolved', 'unresolved']; fallbacks 0; {'replay_2000': 136.2, 'state_check': 44.6, 'to_22000': 157.5, 'to_100000': 245.0}
+longer SH-mirror-2041101 d1 Rr: 0 genomes; at 100,000: []; fallbacks 0; {'replay_2000': 0.0, 'state_check': 0.0, 'to_22000': 0.0, 'to_100000': 0.0}
+longer SH-recip-2051100 d0 T: 5 genomes; at 100,000: ['unresolved', 'unresolved', 'unresolved', 'unresolved', 'unresolved']; fallbacks 1; {'replay_2000': 335.2, 'state_check': 133.5, 'to_22000': 347.3, 'to_100000': 462.5}
+longer SH-recip-2051100 d0 K: 2 genomes; at 100,000: ['unresolved', 'unresolved']; fallbacks 1; {'replay_2000': 135.1, 'state_check': 88.5, 'to_22000': 155.1, 'to_100000': 245.2}
+longer SH-recip-2051100 d0 Rr: 5 genomes; at 100,000: ['unresolved', 'unresolved', 'unresolved', 'unresolved', 'unresolved']; fallbacks 1; {'replay_2000': 335.7, 'state_check': 135.1, 'to_22000': 354.7, 'to_100000': 467.6}
+longer SH-recip-2051100 d1 T: 0 genomes; at 100,000: []; fallbacks 0; {'replay_2000': 0.0, 'state_check': 0.0, 'to_22000': 0.0, 'to_100000': 0.0}
+longer SH-recip-2051100 d1 K: 7 genomes; at 100,000: ['unresolved', 'unresolved', 'unresolved', 'unresolved', 'unresolved', 'unresolved', 'unresolved']; fallbacks 0; {'replay_2000': 441.5, 'state_check': 134.7, 'to_22000': 469.8, 'to_100000': 557.7}
+longer SH-recip-2051100 d1 Rr: 10 genomes; at 100,000: ['unresolved', 'unresolved', 'unresolved', 'unresolved', 'unresolved', 'unresolved', 'unresolved', 'unresolved', 'unresolved', 'unresolved']; fallbacks 0; {'replay_2000': 692.1, 'state_check': 134.7, 'to_22000': 676.6, 'to_100000': 837.6}
+longer SH-recip-2051101 d0 T: 2 genomes; at 100,000: ['unresolved', 'unresolved']; fallbacks 0; {'replay_2000': 137.6, 'state_check': 89.5, 'to_22000': 161.2, 'to_100000': 245.4}
+longer SH-recip-2051101 d0 K: 0 genomes; at 100,000: []; fallbacks 0; {'replay_2000': 0.0, 'state_check': 0.0, 'to_22000': 0.0, 'to_100000': 0.0}
+longer SH-recip-2051101 d0 Rr: 4 genomes; at 100,000: ['unresolved', 'unresolved', 'unresolved', 'unresolved']; fallbacks 0; {'replay_2000': 273.4, 'state_check': 134.8, 'to_22000': 290.1, 'to_100000': 405.5}
+longer SH-recip-2051101 d1 T: 1 genomes; at 100,000: ['unresolved']; fallbacks 0; {'replay_2000': 68.7, 'state_check': 44.9, 'to_22000': 93.1, 'to_100000': 183.4}
+longer SH-recip-2051101 d1 K: 0 genomes; at 100,000: []; fallbacks 0; {'replay_2000': 0.0, 'state_check': 0.0, 'to_22000': 0.0, 'to_100000': 0.0}
+longer SH-recip-2051101 d1 Rr: 2 genomes; at 100,000: ['unresolved', 'unresolved']; fallbacks 0; {'replay_2000': 134.3, 'state_check': 89.7, 'to_22000': 150.6, 'to_100000': 238.1}
+audit SH-2011100 d0 T: 64 genomes, 0 changed class; fallbacks 0; {'replay_2000': 35.4, 'to_22000': 210.2}
+audit SH-2011100 d1 T: 63 genomes, 0 changed class; fallbacks 0; {'replay_2000': 33.9, 'to_22000': 208.5}
+audit SH-2011101 d0 T: 92 genomes, 0 changed class; fallbacks 0; {'replay_2000': 61.9, 'to_22000': 327.1}
+audit SH-2011101 d1 T: 68 genomes, 0 changed class; fallbacks 0; {'replay_2000': 40.6, 'to_22000': 239.6}
+audit SH-route-2021100 d0 T: 73 genomes, 0 changed class; fallbacks 0; {'replay_2000': 44.8, 'to_22000': 264.0}
+audit SH-route-2021100 d1 T: 73 genomes, 0 changed class; fallbacks 0; {'replay_2000': 45.6, 'to_22000': 264.8}
+audit SH-route-2021101 d0 T: 88 genomes, 0 changed class; fallbacks 0; {'replay_2000': 56.2, 'to_22000': 299.3}
+audit SH-route-2021101 d1 T: 73 genomes, 0 changed class; fallbacks 0; {'replay_2000': 46.7, 'to_22000': 266.7}
+audit SH-class-2031100 d0 T: 83 genomes, 0 changed class; fallbacks 0; {'replay_2000': 51.9, 'to_22000': 293.0}
+audit SH-class-2031100 d1 T: 69 genomes, 0 changed class; fallbacks 0; {'replay_2000': 43.6, 'to_22000': 245.0}
+audit SH-class-2031101 d0 T: 75 genomes, 0 changed class; fallbacks 0; {'replay_2000': 47.3, 'to_22000': 268.3}
+audit SH-class-2031101 d1 T: 76 genomes, 0 changed class; fallbacks 0; {'replay_2000': 47.1, 'to_22000': 267.2}
+audit SH-mirror-2041100 d0 T: 70 genomes, 0 changed class; fallbacks 0; {'replay_2000': 41.3, 'to_22000': 241.5}
+audit SH-mirror-2041100 d1 T: 68 genomes, 0 changed class; fallbacks 0; {'replay_2000': 40.8, 'to_22000': 240.4}
+audit SH-mirror-2041101 d0 T: 76 genomes, 0 changed class; fallbacks 0; {'replay_2000': 46.8, 'to_22000': 267.8}
+audit SH-mirror-2041101 d1 T: 74 genomes, 0 changed class; fallbacks 0; {'replay_2000': 46.9, 'to_22000': 267.3}
+audit SH-recip-2051100 d0 T: 75 genomes, 0 changed class; fallbacks 0; {'replay_2000': 48.0, 'to_22000': 268.6}
+audit SH-recip-2051100 d1 T: 77 genomes, 0 changed class; fallbacks 0; {'replay_2000': 50.4, 'to_22000': 269.4}
+audit SH-recip-2051101 d0 T: 83 genomes, 0 changed class; fallbacks 0; {'replay_2000': 53.2, 'to_22000': 293.1}
+audit SH-recip-2051101 d1 T: 80 genomes, 0 changed class; fallbacks 0; {'replay_2000': 49.9, 'to_22000': 274.1}
+audit SH-2011100 d0 K: 73 genomes, 0 changed class; fallbacks 0; {'replay_2000': 48.8, 'to_22000': 271.2}
+audit SH-2011100 d1 K: 66 genomes, 0 changed class; fallbacks 0; {'replay_2000': 42.4, 'to_22000': 241.1}
+audit SH-2011101 d0 K: 76 genomes, 0 changed class; fallbacks 0; {'replay_2000': 47.4, 'to_22000': 267.7}
+audit SH-2011101 d1 K: 78 genomes, 0 changed class; fallbacks 0; {'replay_2000': 49.7, 'to_22000': 273.7}
+audit SH-route-2021100 d0 K: 86 genomes, 0 changed class; fallbacks 0; {'replay_2000': 56.2, 'to_22000': 297.6}
+audit SH-route-2021100 d1 K: 64 genomes, 0 changed class; fallbacks 0; {'replay_2000': 38.5, 'to_22000': 220.2}
+audit SH-route-2021101 d0 K: 82 genomes, 0 changed class; fallbacks 0; {'replay_2000': 54.3, 'to_22000': 292.8}
+audit SH-route-2021101 d1 K: 70 genomes, 0 changed class; fallbacks 0; {'replay_2000': 43.2, 'to_22000': 243.4}
+audit SH-class-2031100 d0 K: 77 genomes, 0 changed class; fallbacks 0; {'replay_2000': 51.4, 'to_22000': 272.1}
+audit SH-class-2031100 d1 K: 77 genomes, 0 changed class; fallbacks 0; {'replay_2000': 49.2, 'to_22000': 269.9}
+audit SH-class-2031101 d0 K: 85 genomes, 0 changed class; fallbacks 0; {'replay_2000': 54.5, 'to_22000': 295.7}
+audit SH-class-2031101 d1 K: 69 genomes, 0 changed class; fallbacks 0; {'replay_2000': 42.0, 'to_22000': 241.2}
+audit SH-mirror-2041100 d0 K: 80 genomes, 0 changed class; fallbacks 0; {'replay_2000': 50.5, 'to_22000': 273.5}
+audit SH-mirror-2041100 d1 K: 75 genomes, 0 changed class; fallbacks 0; {'replay_2000': 48.0, 'to_22000': 267.4}
+audit SH-mirror-2041101 d0 K: 71 genomes, 0 changed class; fallbacks 0; {'replay_2000': 43.7, 'to_22000': 244.8}
+audit SH-mirror-2041101 d1 K: 74 genomes, 0 changed class; fallbacks 0; {'replay_2000': 47.5, 'to_22000': 267.3}
+audit SH-recip-2051100 d0 K: 75 genomes, 0 changed class; fallbacks 0; {'replay_2000': 49.6, 'to_22000': 269.1}
+audit SH-recip-2051100 d1 K: 68 genomes, 0 changed class; fallbacks 0; {'replay_2000': 43.9, 'to_22000': 242.2}
+audit SH-recip-2051101 d0 K: 84 genomes, 0 changed class; fallbacks 0; {'replay_2000': 55.0, 'to_22000': 294.8}
+audit SH-recip-2051101 d1 K: 70 genomes, 0 changed class; fallbacks 0; {'replay_2000': 43.1, 'to_22000': 242.9}
+audit SH-2011100 d0 Rr: 60 genomes, 0 changed class; fallbacks 0; {'replay_2000': 37.1, 'to_22000': 212.6}
+audit SH-2011100 d1 Rr: 75 genomes, 0 changed class; fallbacks 0; {'replay_2000': 48.1, 'to_22000': 266.1}
+audit SH-2011101 d0 Rr: 81 genomes, 0 changed class; fallbacks 0; {'replay_2000': 52.4, 'to_22000': 288.2}
+audit SH-2011101 d1 Rr: 76 genomes, 0 changed class; fallbacks 0; {'replay_2000': 47.5, 'to_22000': 266.1}
+audit SH-route-2021100 d0 Rr: 68 genomes, 0 changed class; fallbacks 0; {'replay_2000': 45.1, 'to_22000': 241.2}
+audit SH-route-2021100 d1 Rr: 82 genomes, 0 changed class; fallbacks 0; {'replay_2000': 53.5, 'to_22000': 289.1}
+audit SH-route-2021101 d0 Rr: 83 genomes, 0 changed class; fallbacks 0; {'replay_2000': 53.0, 'to_22000': 288.8}
+audit SH-route-2021101 d1 Rr: 67 genomes, 0 changed class; fallbacks 0; {'replay_2000': 42.4, 'to_22000': 238.6}
+audit SH-class-2031100 d0 Rr: 74 genomes, 0 changed class; fallbacks 0; {'replay_2000': 47.5, 'to_22000': 263.7}
+audit SH-class-2031100 d1 Rr: 83 genomes, 0 changed class; fallbacks 0; {'replay_2000': 53.9, 'to_22000': 290.8}
+audit SH-class-2031101 d0 Rr: 76 genomes, 0 changed class; fallbacks 0; {'replay_2000': 47.4, 'to_22000': 267.5}
+audit SH-class-2031101 d1 Rr: 75 genomes, 0 changed class; fallbacks 0; {'replay_2000': 46.9, 'to_22000': 264.3}
+audit SH-mirror-2041100 d0 Rr: 77 genomes, 0 changed class; fallbacks 0; {'replay_2000': 48.2, 'to_22000': 265.4}
+audit SH-mirror-2041100 d1 Rr: 91 genomes, 0 changed class; fallbacks 0; {'replay_2000': 82.2, 'to_22000': 520.4}
+audit SH-mirror-2041101 d0 Rr: 77 genomes, 0 changed class; fallbacks 0; {'replay_2000': 46.9, 'to_22000': 268.0}
+audit SH-mirror-2041101 d1 Rr: 65 genomes, 0 changed class; fallbacks 0; {'replay_2000': 41.7, 'to_22000': 240.3}
+audit SH-recip-2051100 d0 Rr: 61 genomes, 0 changed class; fallbacks 0; {'replay_2000': 37.0, 'to_22000': 213.2}
+audit SH-recip-2051100 d1 Rr: 87 genomes, 0 changed class; fallbacks 0; {'replay_2000': 58.6, 'to_22000': 300.0}
+audit SH-recip-2051101 d0 Rr: 73 genomes, 0 changed class; fallbacks 0; {'replay_2000': 45.9, 'to_22000': 264.2}
+audit SH-recip-2051101 d1 Rr: 69 genomes, 0 changed class; fallbacks 0; {'replay_2000': 40.5, 'to_22000': 239.6}
+rc=0

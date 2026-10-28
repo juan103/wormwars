@@ -11874,3 +11874,46 @@ compares the hold with the original chunk on every continued genome at run time,
   on Windows and within a float32 tolerance (rtol 1e-5, atol 1e-6) elsewhere; state and tail stay exact everywhere.
   The plan gets a dated annotation beside its unchanged text.
 - Caught by the CI poll after the push (the check-CI rule); not seen locally because the suite runs on Windows.
+
+## D371 — M5's pilot: the results, and the two choices it fell due for (2026-10-28)
+
+**The pilot** (D369, `docs/memory/M5-PILOT-PLAN.md`) ran once, completed, from 13:56 UTC on 27 October to 13:21 UTC on
+28 October (23.4 CPU hours of a 30-hour cap) at 135f8e4. `docs/memory/M5-PILOT-RESULTS.md` (draft 3);
+`runs/memory-m5-pilot/` (`report.json`, `rr-summary.json`, 20 Rr panels, 60 longer and 60 audit files, the
+composition check, the log, copies of the attempt and compute records). Descriptive design inputs, not a reading.
+- **The horizon rule keeps 22,000 ticks:** none of the 117 genomes unresolved at 22,000 (T 33, K 37, Rr 47) resolved
+  at 100,000 (s = r = 0, r's upper bound 0.0253).
+- **The audit:** 0 of 1500 first-pass fading genomes per arm changed class; per arm, with the panels' own audits,
+  0 of 2283 to 2286 (bound 0.0013), which the power simulation carries.
+- **Rr on M4e's hosts:** 59 of 10,240 separate states (T 75, K 55). T − Rr +0.0016 [−0.0008, +0.0040], reported and
+  not used; per-host SD 0.0034, host component zero by the moment estimate (weakly determined on ten hosts), genomes
+  94%. T and Rr correlate across hosts at 0.70, T and K at 0.06, which is why T − K's host component was larger.
+- **Seven fallbacks** in (b), all "Newton failure" cases: class, reason and amplitude identical, the failing genome's
+  recorded fields reproduced bit for bit by M4e's own panel rerun, as the plan's remedy requires; normalized root-field
+  deviations up to 1.04e-3, larger than the smoke's 3e-13.
+- **Agreed for M5's plan** (both reviewers): the audit is a sampled one with a second tranche, not a completed one
+  (completion would cost about 2.5 to 3 times M5's panels), its estimator and decision rule specified before the power
+  script; the qualifier is the calibrated adjustment at r's bound as a protocol sensitivity, with Astra's bounds beside
+  it as the logical bounds; M5 keeps M4e's classifier and composition, records batch membership and a hash of each
+  genome's float32 hold. Still open before the power script: the rule that turns the host-variance range into one H.
+- **The reader** gained the fallbacks' details, per-panel audit bounds, full class breakdowns, per-host totals and the
+  untruncated host moment (five new tests, each seen failing first; one first failed on its own wrong expectation and
+  was corrected); every value in the first report is unchanged (`docs/reviews/20261028-m5-pilot-results/report-draft1.json`).
+
+- **A hygiene exemption** (caught by the gate before the first commit): the stage files' `batches` and `state_chunks`
+  are lists of genome ids and 128-genome chunk bounds; a batch of two is one whole-number pair, which the
+  edge-list guard flags. `is_m5_pilot_batch_list` exempts only those two top-level keys, at most 4 pairs below
+  512, chunks only on 128-genome boundaries (test seen failing first).
+
+**The review** (`docs/reviews/20261028-m5-pilot-results/`, two rounds, both "fix then publish" in each).
+- Round 1. **Fable**: the compute misattributed to stage (a); Rr's audit pooled with "M4e's"; Rr's rate gap is the
+  hosts, not the second pass; "held by the root search" overclaims; the chain's direction; the cross-arm bound's
+  assumption; the fallbacks as "Newton failure", unlisted in the report; the cost of completion; the variance as
+  components, its upper range, the T/Rr host correlation, the H rule, the cost by host. **Astra**: the qualifier only
+  as a sensitivity, and "every outcome undetermined" false; the audit's estimator to specify; the cross-arm bound's
+  dependence; cost and fading shares; M4d's combined residual, "the outlier"; the truncated SD; what the rerun
+  reproduced; the report's gaps; "tests the rest".
+- Round 2. **Both**: the audit table's header. **Fable**: the slow host differs by arm; 27 to 28 minutes, not 29; the
+  chain's direction neither reassuring nor established; test the per-host totals. **Astra**: the qualifier can change
+  an outcome near a boundary; the host upper limit is a plug-in calculation; the monotonicity argument; K 287's
+  distance is between two roots; the weakest-margin stratum unjustified.
