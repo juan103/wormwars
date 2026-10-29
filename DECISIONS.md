@@ -11981,3 +11981,20 @@ conditional on the simulation's model; nothing here is a reading of M5.
   default output folder was still the first reading's, which stage C's cached search would mix with the Welch one (each
   reading now has its own folder, with a test); "cannot fail" said of the ensemble nulls. Both fixed with no further
   round: neither touches a saved number.
+
+## D373 — M5 postponed for its cost against its benefit (the owner, 2026-10-29)
+
+**The owner's decision**, after D372's host counts: M5 is postponed, not cancelled. Claude had answered the owner's
+question ("are we getting important info out of these super long tests?") by recommending it.
+- **Why:** M5 powers for a T − Rr difference of 0.002 in the share of genomes confirmed as separate states, about two
+  genomes in 1000; the pilot's estimate is near it and its interval includes zero (+0.0016, hull [−0.0008, +0.0040],
+  `docs/memory/M5-PILOT-RESULTS.md`). The recommended rule costs about 72 to 91 CPU hours, plus a plan, a
+  pre-registration and a results review (D372). Even "raises" would be limited by the identification limit (D372) and
+  would say nothing about behaviour. Nothing else on the roadmap waits on M5's answer.
+- **What is kept:** the design, the pilot, the power calculation and their scripts and outputs (D369-D372), unchanged.
+  Resuming starts at the owner's choice of host count, then M5's plan and pre-registration. The counts are conditional
+  on the code at 7f04382: if the engine or the reading changes, the power script is rerun first (about 45 CPU minutes
+  per reading). A GPU run, which the memory roadmap allowed for M5's confirmatory run, would change the cost side.
+- **Next:** for the owner. Claude suggested adding M4e to the memory thread's write-up, then M6's behaviour question
+  (does a brain with these switches use them in a task that needs memory?), a change of direction that is the owner's
+  to make.

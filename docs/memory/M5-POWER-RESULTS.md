@@ -11,6 +11,9 @@ to 3 and the three rounds' reviews are in
 here is a reading of M5. Every number is conditional on the simulation's model. CPU only; each full run took about
 45 minutes.*
 
+*Annotated 2026-10-29 (D373): the owner postponed M5 for its cost against its benefit. This page stands as written;
+a later M5 starts from section 5's choice of host count, after rerunning the script if the code has changed.*
+
 ## In short
 
 - **After the first round's fixes, rule A and the A-or-C choice no longer depend on the reading.**
