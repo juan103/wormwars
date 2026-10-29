@@ -1,8 +1,12 @@
-# The memory thread, M1 to M4: what was found
+# The memory thread, M1 to M4e and M5's preparation: what was found
 
-*Draft 3, 2026-10-25, after two rounds of review (Astra 6 and Fable 5.1, both "fix then publish" in both rounds, the
-second on one-line slips taken without a further round; every finding taken; drafts 1 and 2 and the reviews are archived in [`docs/reviews/20261025-memory-synthesis/`](../reviews/20261025-memory-synthesis/)).
-A synthesis of the memory thread's first four steps (D349-D364), written at the owner's request after M4d. It
+*Draft 4, 2026-10-29. Drafts 1 to 3 (M1 to M4d, D349-D364) were reviewed in two rounds by Astra 6 and Fable 5.1, both
+"fix then publish" in both rounds, every finding taken; they and the reviews are archived in
+[`docs/reviews/20261025-memory-synthesis/`](../reviews/20261025-memory-synthesis/). Draft 4 adds M4e and M5's pilot,
+power calculation and postponement (D367-D373), at the owner's word after M5 was postponed; its review is in
+[`docs/reviews/20261029-memory-synthesis-m4e/`](../reviews/20261029-memory-synthesis-m4e/). The M1 to M4d text is
+draft 3's, except where M4e or M5 changes what it says next or what holds.
+A synthesis of the memory thread, first written at the owner's request after M4d. It
 reports no new run and changes no reading: every reading below is the one its own results file reached, and every
 number comes from those files or from [`summary.json`](summary.json), which
 [`scripts/memory_summary.py`](../../scripts/memory_summary.py) writes from the committed records (rule 5).
@@ -11,9 +15,9 @@ Exploratory throughout; nothing here is a pre-registration. Where this page inte
 ## In short
 
 - **The question** was why N2's unevolved random brains keep more of a recent food history than shuffled graphs do
-  (03mc's Q-D, registered over all genomes: 0.436 at tick 30 against null medians of 0.255 to 0.291). Four steps ran
-  on the CPU (56.35 recorded hours, no GPU), each with a plan reviewed and agreed by both models before its runs
-  (one disclosed exception, M4c's census, below) and its results reviewed after.
+  (03mc's Q-D, registered over all genomes: 0.436 at tick 30 against null medians of 0.255 to 0.291). Steps M1 to M4e
+  and M5's pilot ran on the CPU (112.43 recorded hours, no GPU), each with a plan reviewed and agreed by both models
+  before its runs (one disclosed exception, M4c's census, below) and its results reviewed after.
 - **The lead is real and sits in the upper tail.** It replicates on fresh genomes (N2 0.444 and 0.443 against a
   median of 0.275 over 30 random graphs, none at or above N2). N2's unweighted mean retention is beyond all 640 of
   03mc's graphs, which corrects the earlier claim that only the amplitude-weighted share was extreme; the median
@@ -33,10 +37,25 @@ Exploratory throughout; nothing here is a pre-registration. Where this page inte
   matter.** In ten fresh null hosts (a screen), N2's block lifts the share of switch genomes from 0.04% to 0.62%
   (pooled), in every host. Blocks rewired at the same degrees reach 0.51%. Whether N2's exact wiring adds 0.004 or
   more over them is "Unresolved (the unresolved genomes decide it)".
-- **What it adds up to** (interpretation): N2's head core is unusually dense, and placing a block with its edge count
-  and weights into other graphs makes history-dependent switches more common; within N2, the switches are fragile at
-  RIA's connections. Nothing so far shows that N2's specific wiring matters beyond its block's size and weights, why
-  N2's fading genomes retain more, or that any of this matters for behaviour.
+- **What a dense block carries (M4e): how its weight is concentrated matters.** With every edge of equal magnitude
+  and N2's total weight, spreading the weight over N2's 260 edges gives fewer switch genomes than putting it on the
+  host's 92 to 126 (4 against 31 of 10,240: "lowers", over every assignment of the unresolved genomes by about four
+  genomes). Raising the total weight at N2's count shows no effect of 0.004 or more, as a mean across these ten hosts.
+  The equal-magnitude block at N2's count and total weight does not reproduce N2's block's rate; the rise arrives in
+  three steps of similar size, described and not read: N2's uneven weights (+0.0026, holding over every assignment),
+  its labelled degrees (+0.0023) and its exact block (+0.0020), the last two unresolved. N2's block again gives more
+  switch genomes than the intact host in all ten fresh hosts.
+- **M5, the test of N2's exact wiring, was prepared and then postponed.** A pilot kept the 22,000-tick protocol and
+  put the exact wiring's advantage over a rewired control near the planned effect, its interval including zero
+  (+0.0016, −0.0008 to +0.0040). Powered for a true difference of 0.002 (about two genomes in 1000), the recommended
+  allocation uses 110 hosts first and up to 160, at a simulated mean of about 72 to 91 CPU hours; the owner postponed
+  M5 for its cost against its benefit (D373).
+- **What it adds up to** (interpretation): N2's head core is unusually dense, and placing its block into other
+  graphs makes history-dependent switches more common; on these 30 neurons, with equal magnitudes, spreading a fixed
+  weight over more edges lowered the rate, and N2's uneven weights raised it over equal ones (described); within N2,
+  the switches are fragile at RIA's connections. Nothing so far shows that N2's labelled degrees or its specific wiring
+  add beyond its block's uneven weights, why N2's fading genomes retain more, or that any of this matters for
+  behaviour.
 
 ## Terms
 
@@ -59,7 +78,7 @@ more than all but 0 to 2 of each null ensemble's 128 graphs. The owner asked why
 with Astra 6 and Fable 5.1, with a ChatGPT roadmap the owner supplied, which produced
 [`MEMORY-ROADMAP.md`](MEMORY-ROADMAP.md): accounting and quick checks that could kill a candidate cheaply (M1), a
 validated dynamical census (M2), a core defined from the anatomy alone (M3), interventions and a transplant screen
-(M4), and M5, a confirmatory transplant that would need a pre-registration and has not been planned.
+(M4), and M5, a confirmatory transplant needing a pre-registration, prepared and then postponed (section 6).
 
 The routine at every step:
 - a plan fixing the panels, the measures, the reading rules and their thresholds, reviewed by both models (2 to 9
@@ -84,9 +103,12 @@ The routine at every step:
 | M4b | Is the switch held where its two states differ? | "unresolved" | 0.69 | [`M4B-RESULTS.md`](M4B-RESULTS.md) |
 | M4c | Is RIA's part more than its weight? | positive | 5.72 | [`M4C-RESULTS.md`](M4C-RESULTS.md) |
 | M4d | Does N2's head-core block carry the switch into other graphs? | "Unresolved (the unresolved genomes decide it)" | 26.34 | [`M4D-RESULTS.md`](M4D-RESULTS.md) |
+| M4e | What does a dense block carry: its edge count, its total weight? | Δ_count "lowers" (size unresolved); Δ_weight direction unresolved, no effect of 0.004 or more as a mean across ten hosts | 32.66 | [`M4E-RESULTS.md`](M4E-RESULTS.md) |
+| M5 pilot | M5's protocol, audit and spread, on M4e's hosts | design inputs, not a reading | 23.42 | [`M5-PILOT-RESULTS.md`](M5-PILOT-RESULTS.md) |
 
-The hours are recorded wall-clock hours on the CPU, summed before rounding to 56.35. The brainstorm's own exploratory batches,
-before M1, are not included.
+The hours are recorded wall-clock hours on the CPU, summed before rounding to 112.43 (56.35 for M1 to M4d). The
+brainstorm's own exploratory batches, before M1, are not included, nor is M5's power calculation, a simulation outside
+the compute accounting with no neural updates (about 45 CPU minutes per reading; [`M5-POWER-RESULTS.md`](M5-POWER-RESULTS.md)).
 
 ## What was found, step by step
 
@@ -175,7 +197,7 @@ before M1, are not included.
 - **The design.** In ten fresh null hosts, two per ensemble, C3's block of chemical edges was replaced by one of six
   blocks, beside the intact host (I), on the same 1024 genomes per host: **D**, 260 off-diagonal edges with N2's block
   weights at random positions, plus N2's eight autapses at their original neurons; **R**, N2's block rewired at its in- and out-degrees and out-strengths; **Rr**,
-  R keeping N2's 75 reciprocal pairs; **P**, N2's edges with their weights shuffled; **T**, N2's block itself (260
+  R keeping the number of N2's reciprocal pairs (75), not the pairs themselves (corrected, below); **P**, N2's edges with their weights shuffled; **T**, N2's block itself (260
   off-diagonal edges of total weight 2347, plus 8 autapses); **T+G**, T with N2's gap junctions in the block. Every
   genome was classified, and hosts were the unit.
 - **Robust:** with N2's block, 64 of 10,240 genomes are switches, against 4 with the host's own block; T exceeds I in
@@ -190,6 +212,70 @@ before M1, are not included.
   (persistent oscillation or unresolved) gather in T and T+G (76 and 70, against 43 to 53 in the other block arms
   and none in the intact hosts). Moving N2's switch genomes' core parameters into fresh exteriors kept the switch in
   13 of 282 trials in N2 (6 for the control) and 25 of 1410 in the hosts (10).
+
+### 5. What a dense block carries (M4e)
+
+- **The design.** In ten more fresh null hosts, two block draws each, 1024 paired genomes per host and arm, C3's block
+  was replaced by equal-magnitude random blocks crossing the edge count (the host's 92 to 126, or N2's 260) with the
+  total weight (the host's 487 to 771, or N2's 2347): **U_LL**, **U_LH**, **U_HL** and **U_HH**, the first letter the
+  count and the second the weight. Beside them: **W**, U_HH's support with N2's uneven weights; **K**, N2's labelled
+  in- and out-degrees with its weights shuffled and reciprocity matched to W; **T**, N2's block; and **I**, the intact
+  host. Every genome that mattered (separate states, oscillating or unresolved) and 40 pre-drawn fading genomes per
+  panel were classified again at a hold of 22,000 ticks. Agreed with both reviewers in two design rounds (Astra's
+  factorial, Fable's question about a block summary) and three on the plan and code.
+- **Δ_count (U_HH − U_LH) "lowers".** At N2's total weight, spreading it over 260 edges gives 4 separate-states
+  genomes against 31 on the host's count: −0.0026 (95% interval −0.0041 to −0.0012), lower in 9 of the 10 hosts. Over
+  every assignment of the unresolved genomes the upper bound is −0.0004, about four genomes; on the first pass alone
+  the direction would have been unresolved. The size is unresolved.
+- **Δ_weight (U_HH − U_HL): direction unresolved.** Raising the total weight at N2's count gives 4 against 12:
+  −0.0008 (−0.0017 to +0.0001), and no effect of 0.004 or more, as a mean across these ten hosts (a response confined
+  to a minority of host graphs may be missed).
+- **The second pass was used.** No audited fading genome became separate states (783 to 800 audited per arm); it
+  settled 56 of 201 first-pass unresolved genomes. "Every assignment" here and below covers the genomes left
+  unresolved, given every other genome's class; it does not allow for transitions the audit could have missed among
+  unaudited fading genomes (Astra), which matters most for the thin margins of Δ_count and W − U_HH.
+- **Described, not read.** U_HH, the equal-magnitude block at N2's count and weight, is the lowest of the eight arms.
+  N2's block's rise over it arrives in three steps:
+
+  | Step | Mean | 95% interval | Over every assignment of the unresolved genomes |
+  |---|---|---|---|
+  | N2's uneven weights on the same support (W − U_HH) | +0.0026 | 0.0008 to 0.0044 | above zero, just (0.0005) |
+  | N2's labelled degrees (K − W) | +0.0023 | 0.0004 to 0.0043 | unresolved |
+  | N2's exact block against K (T − K) | +0.0020 | −0.0020 to +0.0059 | unresolved |
+
+  T − K is a package, not exact wiring alone: T also carries N2's 8 autapses and 75 reciprocal pairs (Astra). T − I is
+  +0.0062 (0.0028 to 0.0095), in all ten hosts, against M4d's +0.0059.
+- **After the data.** Every block whose spectral summary S3 (the square root of the spectral radius of the
+  block with each weight squared) is below 1 sits at a similar low rate, U_HH included, and the rate rises only in the four arms at 1.26 and
+  above; no arm lies between, so these arms cannot locate a threshold or tell a step from a steep continuous rise
+  (Fable). Arms with similar
+  summaries still differ: U_LH, W, K and T have 31, 31, 55 and 75 separate-states genomes.
+
+### 6. M5 prepared, then postponed
+
+- **The question** (the owner's third item): does N2's exact block (T) raise the share of genomes confirmed as
+  separate states by the protocol over M4d's rewired control Rr, which keeps the number of N2's reciprocal pairs?
+  Success is a lower confidence limit above zero; power was planned at a true difference of 0.002.
+- **The pilot** (on M4e's hosts; none of its data would enter M5). None of the 117 genomes unresolved at 22,000 ticks
+  (T 33, K 37, Rr 47) resolved by 100,000 ticks, so M5 keeps the 22,000-tick protocol and treats its unresolved genomes
+  as a class at that horizon, a protocol treatment: the pilot did not tell the classifier's limits from hard dynamics.
+  0 of 1500 audited fading genomes per arm changed class. T − Rr was +0.0016 (−0.0008 to +0.0040), above zero in 6 of
+  10 hosts, reported and not used. Its spread across hosts was SD 0.0034; genome sampling was 94% of the estimated
+  variance, with the host component's negative moment estimate set to zero and weakly determined by ten hosts, so the
+  power calculation also ran a wider host spread, up to M4e's T − K.
+- **The power calculation** simulated M5's whole reading, with success as "raises" in six readings (raw,
+  audit-adjusted, the two one-arm sensitivities to the unresolved genomes, and each of those combined with the audit).
+  Three design rounds with both reviewers, then three on the results (the third Astra only). For 80% power at 0.002 the
+  agreed rule recommends two stages: under the simulation model, 110 hosts first and up to 160, at a mean of about 72
+  CPU hours at the pilot's spread (power 0.84), 91 at the wider core spread (0.81) and 96 above it (0.75), capped at
+  145 hours; a fixed 135 hosts would take about 92. The reading gained a Welch t after the simulated nulls, before
+  any M5 data. **The identification limit** (Astra): M5 could show more genomes confirmed as separate states by this
+  protocol, not more underlying separate states.
+- **Postponed** by the owner on 2026-10-29 (D373), for its cost against its benefit, after Claude recommended it:
+  an effect near two genomes in 1000, near the pilot's estimate, whose interval includes zero, for 72 to 91 CPU hours
+  plus a pre-registration and a results review; nothing else waits on its answer. The design, pilot and power
+  calculation are kept, and resuming starts at the choice of host count. The counts hold for the code at 7f04382; if
+  the engine or the reading changes, the power script is rerun first. A GPU run would change the cost side.
 
 ## What holds, and what is open
 
@@ -208,8 +294,13 @@ before M1, are not included.
 | The targeted cut works across graphs | not demonstrated (two of ten selected graphs respond like N2) | M4b |
 | RIA's core edges erase more switches in N2 than edge sets matched on summed weight | holds (positive), in N2, for a 30-tick cut, under three control schemes | M4c |
 | RIA stores the switch | not shown; vulnerability only | M4c |
-| N2's head-core block makes switches more common in fresh null hosts | holds in a ten-host screen (every host, every assignment) | M4d |
+| N2's head-core block makes switches more common in fresh null hosts | holds in two ten-host screens (positive counted contrasts in every host; the aggregate contrast positive over every assignment) | M4d, M4e |
 | N2's exact wiring inside the block adds 0.004 or more over rewired copies | unresolved | M4d |
+| At N2's total weight, equal-magnitude weight spread over more edges gives fewer switches | holds in direction, by a thin margin over the unresolved genomes; size unresolved | M4e |
+| More total weight at N2's count (equal magnitudes) raises the rate by 0.004 or more | excluded as a mean over ten hosts; direction unresolved | M4e |
+| N2's uneven weights raise the rate over equal magnitudes on the same support | holds as a description, not a reading | M4e |
+| N2's labelled degrees, or its exact block, add over the step before | unresolved (described) | M4e |
+| N2's exact block raises the protocol-confirmed share over the rewired control Rr | untested; M5 postponed | M5 pilot |
 | The switches matter for behaviour | untested | none |
 
 **A reading across the steps** (interpretation, not a test). In M4d the contrasts against the intact host hold over
@@ -221,6 +312,12 @@ In N2, the switches are fragile at RIA's core connections, which erase more than
 weight. These are compatible: a dense, heavy block may make switches common, while where a particular switch is
 fragile may depend on the wiring. No step tested that account.
 
+M4e separates some of what M4d changed together. The equal-magnitude block at N2's count and total weight did not
+reproduce T's observed rate, and at N2's weight more edges lowered the rate: changing how concentrated the weight is
+changes how often genomes switch, on these 30 neurons. How much of the transplant benefit that explains is unresolved. The arm averages look more like a threshold in the block's
+coupling than a graded dose. Whether N2's degrees or exact wiring add beyond its weights is not resolved; the pilot's
+estimate of the exact wiring's advantage over Rr is small and includes zero.
+
 ## What it does not show, and the limits that apply throughout
 
 - **One probe:** every result is for the 10-tick ramp from 0.25 or 1.75 of the final food level. M1 and M2's split
@@ -231,10 +328,14 @@ fragile may depend on the wiring. No step tested that account.
 - **One connectome and its nulls:** N2 against shuffled and random graphs from the project's samplers; the
   interventions are on N2, and the cross-graph tests on selected or fresh null graphs.
 - **Exploratory:** each step fixed its readings before running, but none was pre-registered, and later steps were
-  chosen after earlier results (M4c's RIA after M4b's dissection, M4d after M4c).
+  chosen after earlier results (M4c's RIA after M4b's dissection, M4d after M4c, M4e after M4d). M5, the one
+  confirmatory step, is postponed.
 - **The classifier:** float32 trajectories stall near roots (M2 pilot), Newton's method is sensitive near sustained
   motion, and in M4d's hosts one horizon left 0.3% to 0.5% of genomes unresolved, as many as the effect (the
-  census left 33 of 47,084).
+  census left 33 of 47,084). M4e's second pass at 22,000 ticks settled 28% of its first-pass unresolved genomes, and in
+  M5's pilot none of 117 resolved by 100,000 ticks. M5 treats them as a class at its horizon: the unchanged classifier
+  could not resolve them, whether from its own limits or from hard dynamics, and they bound what any contrast between
+  arms can show.
 
 ## Corrections made along the way
 
@@ -246,12 +347,17 @@ fragile may depend on the wiring. No step tested that account.
   upper half of genomes generally", then "roughly the top quarter"); M1-RESULTS corrects all three. During the
   brainstorm, "2× or 4× finer" integration (really 16 substeps against the baseline 32) and "a latch, a flip-flop"
   (too strong) were corrected before publication (D346).
+- **Draft 3 of this page described M4d's Rr** as "R keeping N2's 75 reciprocal pairs". Rr keeps their number, 75,
+  not N2's particular pairs: a swap may break one pair and make another (M5-PILOT-PLAN). The pilot's 20 Rr blocks share
+  52 to 67 of N2's 150 reciprocal edges (mean 59). Caught by both reviewers of draft 4 (Fable had caught the same phrase
+  in D369's review); corrected in section 4, with a dated note in M4D-RESULTS.
 - Every results file lists, in its header and in DECISIONS.md, what each review caught.
 
 ## Lessons for what comes next
 
 - **Plan the unresolved genomes.** M4d's reading turned on 86 genomes the classifier could not resolve. A follow-up
-  should fix in advance a second, longer classification for every arm's unresolved genomes (Fable, Astra).
+  should fix in advance a second, longer classification for every arm's unresolved genomes (Fable, Astra). M4e did,
+  and its second pass decided Δ_count's direction.
 - **Set margins against observed base rates.** The intact hosts gave 0.04% switches, a third of the 0.12% the plan
   took from M2's reference graphs.
 - **Match the controls' weight, and check it.** M4b's outgoing controls carried only 0.39 of the own set's weight in
@@ -259,22 +365,33 @@ fragile may depend on the wiring. No step tested that account.
   affected genomes and were set aside.
 - **Count before claiming.** Results drafts were corrected for counts and wording in review; for example M4a's
   draft 1 said the switches hold "most" of the intact separation at tick 60, which was 33% and 34%.
+- **Scope cost against benefit early** (Claude, after the owner asked whether the long runs were giving important
+  information). M5's preparation took a 23-hour pilot and, for the power calculation alone, six review rounds before
+  its answer: 72 to 91 more CPU hours for an effect near two genomes in 1000. The reviewers' reference calculation in
+  M4e's results (about 60 hosts for 0.002 at a spread of 0.0055) already pointed to a cost of that order. It could not
+  have replaced the pilot and the full calculation, which settled the control's spread, the audit and the
+  identification limit (Astra). The owner's order did put the host count before the plan, so that safeguard worked;
+  what went further than the decision needed was the precision bought before it (Fable). A rough cost and the likely
+  size of the answer should go to the owner before a step's plan.
 
 ## What comes next
 
-The owner chose, on 2026-10-25, in this order (D365 quotes them):
-1. this write-up;
-2. "a study of what a dense block carries, its size, weights and degrees", which the M4d contrasts favour;
-3. an M5 test of N2's exact wiring, after working out how many hosts it would need for effects above the margin,
-   with the unresolved genomes and base rates planned in advance.
+The owner chose, on 2026-10-25, in this order (D365 quotes them): this write-up; "a study of what a dense block
+carries, its size, weights and degrees" (M4e); and an M5 test of N2's exact wiring, after working out how many hosts it
+would need. The first two were completed, in that order; M5's preparation reached its host-count recommendation,
+and the owner postponed M5 there (D373).
 
-All on the CPU unless the owner gives the GPU.
+On 2026-10-29 the owner agreed ("Sure", D374) to Claude's suggestion for what follows: this update, then a design for
+M6's behaviour question ([`MEMORY-ROADMAP.md`](MEMORY-ROADMAP.md)): does a brain with these switches use them in a task that needs
+memory? 03h's lessons apply: a path for the remembered signal that the read-out can see, and a power rule fixed in
+advance. All on the CPU unless the owner gives the GPU.
 
 ## Who did what
 
 - **The owner:** the question, the brainstorm's format and three of its ideas (a ring of states became M2's
   question; loops became M4's wiring question; transplanting became M4d and M5), the ChatGPT roadmap they supplied,
-  the go-ahead at each step, and the direction after M4d. Choices in between were delegated: M4a's direction was
+  the go-ahead at each step, the direction after M4d (M4e, then M5 after a power calculation), M5's postponement
+  and the turn to behaviour. Choices in between were delegated: M4a's direction was
   agreed with both reviewers (D357), M4b and M4c were Claude's proposals, and M4d was chosen by consensus under the
   owner's "As you prefer, but confirm with fable and astra" (D363).
 - **Astra 6:** the decomposition of the registered measure that produced M1's correction, and the amplitude scaling
@@ -283,19 +400,28 @@ All on the CPU unless the owner gives the GPU.
   total weight inside the core); M4d's corner envelope over the unresolved genomes, which produced its reading;
   independent reproductions of M1's summary and bootstrap, D1's replication, the M2 pilot's numbers (with Fable), and
   M4d's checks and reading; for M4a, that a null reads "not demonstrated", not "access" (D357); the
-  null-boundary correction to M4d's power argument.
+  null-boundary correction to M4d's power argument. M4e's factorial of edge count by total weight with W and K arms,
+  its larger audit, and T − K as a package; for M5, its target fixed before its power, the identification limit, the
+  Welch t in the reading (D372), rule C's invalid hosts and stage-1 audit bound, and an invalid host's audit leaking
+  into the reading.
 - **Fable 5.1:** the amplitude objection that became D1; the anatomy predictor and core defined without the result
   (M3); the core dissection that pointed at RIA; M4a reading the full state, since C3 holds the read-out's inputs;
   M4b's outgoing control; M4d's Rr arm, and the argument that M5 cannot be pre-registered without host base rates,
   which made M4d a screen; the withdrawal of M1's ‖δa(0)‖ reading; M4d's not-settled pattern and the argument that
-  resolving its unresolved genomes could not change the decision.
-- **Both:** the classifier's validation design in M2's nine plan rounds.
+  resolving its unresolved genomes could not change the decision. M4e's dose question on a block summary and its
+  stage 0, the threshold reading of its arms, and the S3-matched estimand; for M5, keeping the planning effect at
+  0.002, the continuation sample in place of a flag, and bringing the pilot's continuation evidence (none of 47 Rr
+  genomes resolved by 100,000 ticks) into the decision; and the Welch t's acceptance in round 2.
+- **Both:** the classifier's validation design in M2's nine plan rounds; independent reproductions of M4e's readings;
+  for M5, no host count before a pilot (D369).
 - **Claude:** ran the brainstorm, wrote every plan, the code and tests, ran every step, and wrote the results files
-  and this synthesis; DECISIONS.md records what each review caught in each.
+  and this synthesis; merged the two M4e designs; recommended postponing M5. DECISIONS.md records what each review
+  caught in each.
 
 ## Where the numbers come from
 
 [`summary.json`](summary.json) (written by [`scripts/memory_summary.py`](../../scripts/memory_summary.py) from
-`runs/memory-m1/`, `runs/memory-m2/`, `runs/memory-m2-census/`, `runs/memory-m4a/` to `runs/memory-m4d/`) holds the
+`runs/memory-m1/`, `runs/memory-m2/`, `runs/memory-m2-census/`, `runs/memory-m4a/` to `runs/memory-m4e/`,
+`runs/memory-m5-pilot/` and `runs/memory-m5-power-welch/`) holds the
 compute, the readings and the headline numbers above. Everything else, including "every check passed" for the census
 (the summary carries only C2, C3 and C5), is quoted from the step's results file named beside it.

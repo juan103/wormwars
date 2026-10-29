@@ -1,5 +1,5 @@
 """The memory thread's summary (docs/memory/SYNTHESIS.md): the numbers the synthesis quotes, read from the committed
-records of M1 to M4d, so each one is traceable to a file and a field (AGENTS.md rule 5).
+records of M1 to M4e and of M5's pilot and power calculation, so each one is traceable to a file and a field (AGENTS.md rule 5).
 
     python scripts/memory_summary.py        # writes docs/memory/summary.json
 
@@ -23,6 +23,8 @@ COMPUTE = {
     "M4b": ["memory-m4b/m4b-compute-record.json"],
     "M4c": ["memory-m4c/m4c-compute-record.json"],
     "M4d": ["memory-m4d/m4d-compute-record.json"],
+    "M4e": ["memory-m4e/m4e-compute-record.json"],
+    "M5 pilot": ["memory-m5-pilot/m5-pilot-compute-record.json"],
 }
 
 
@@ -162,6 +164,60 @@ def build() -> dict:
         "separate_states": {a: sum(v) for a, v in c["separate"].items()},
         "unresolved": {a: sum(v) for a, v in c["unresolved"].items()},
         "genomes_per_arm": genomes_per_arm(c["hosts"]),
+    }
+
+    m4e = rec(RUNS / "memory-m4e" / "readings.json")
+
+    def contrast(v):
+        return {"D": r(v["D"]), "interval": rl(v["interval"]), "envelope": rl(v["envelope"]),
+                "hosts_below_at_above": [sum(x < 0 for x in v["per_host"]), sum(x == 0 for x in v["per_host"]),
+                                         sum(x > 0 for x in v["per_host"])],
+                "direction": v["direction"], "size": v["size"]}
+
+    ce = m4e["counts"]
+    out["M4e"] = {
+        "primary": {k: contrast(v) for k, v in m4e["primary"].items()},
+        "first_pass_direction": {k: v["direction"] for k, v in m4e["first_pass_reading"].items()},
+        "descriptive": {k: contrast(v) for k, v in m4e["secondary"].items()},
+        "interaction": {"D": r(m4e["interaction"]["D"]), "interval": rl(m4e["interaction"]["interval"]),
+                        "envelope": rl(m4e["interaction"]["envelope"])},
+        "separate_states": {a: sum(v) for a, v in ce["separate"].items()},
+        "unresolved": {a: sum(v) for a, v in ce["unresolved"].items()},
+        "genomes_per_arm": ce["n"] * len(ce["hosts"]),
+        "second_pass_used": m4e["second_pass_used"],
+        "audited_fading_per_arm": m4e["audited_fading_per_arm"],
+        "audit_fading_to_separate": sum(v.get("fading -> separate states", 0) for v in m4e["transitions"].values()),
+    }
+
+    pil = rec(RUNS / "memory-m5-pilot" / "report.json")
+    tr = pil["at_22000"]["T_minus_Rr"]
+    pw = rec(RUNS / "memory-m5-power-welch" / "power.json")["answer"]
+
+    def policy(v, rows):
+        return {k: {"power": r(v[k]["success"]), "cpu_hours": r(v[k]["cpu_hours"]["mean"], 1)} for k in rows}
+
+    out["M5"] = {
+        "pilot": {
+            "T_minus_Rr": {"mean": r(tr["mean"]), "interval": rl(tr["interval"]), "hosts_above_zero": tr["hosts_above_zero"],
+                           "sd_of_host_contrasts": r(tr["variance"]["sd_of_host_contrasts"]),
+                           "genome_share": r(tr["variance"]["shares_of_host_contrast_variance"]["genome"], 2)},
+            "unresolved_at_22000_resolved_by_100000": {a: [v["genomes"], v["genomes"] - v["class_100000"]["unresolved"]]
+                                                       for a, v in pil["longer"]["by_arm"].items()},
+            "audit": {a: [v["audited"], v["fading_to_separate"]] for a, v in pil["audit"]["by_arm"].items()},
+        },
+        "power": {
+            "C": {"allocation": pw["C"]["allocation"], "h1": pw["C"]["h1"], "hmax": pw["C"]["hmax"],
+                  **policy(pw["C"], ("central", "core", "above"))},
+            "A": {"allocation": pw["A"]["cheapest"]["allocation"], "H": pw["A"]["cheapest"]["H"],
+                  "power_central": r(pw["A"]["cheapest"]["power, base, central"]),
+                  "power_core": r(pw["A"]["cheapest"]["power, base, core"]),
+                  "cpu_hours_central": r(pw["A"]["cheapest"]["cpu_hours, base, central"], 1)},
+            "B": {"allocation": pw["B"]["cheapest"]["allocation"], "H": pw["B"]["cheapest"]["H"],
+                  "power_central": r(pw["B"]["cheapest"]["power, base, central"]),
+                  "power_core": r(pw["B"]["cheapest"]["power, base, core"]),
+                  "cpu_hours_central": r(pw["B"]["cheapest"]["cpu_hours, base, central"], 1)},
+            "recommend": pw["choice"]["recommend"], "C_saving_central": r(pw["choice"]["saving"], 3),
+        },
     }
     return out
 

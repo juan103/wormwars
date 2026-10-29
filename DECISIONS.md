@@ -11998,3 +11998,42 @@ question ("are we getting important info out of these super long tests?") by rec
 - **Next:** for the owner. Claude suggested adding M4e to the memory thread's write-up, then M6's behaviour question
   (does a brain with these switches use them in a task that needs memory?), a change of direction that is the owner's
   to make.
+
+## D374 — The memory thread's write-up gains M4e and M5's preparation; M6's behaviour question next (the owner, 2026-10-29)
+
+**The owner's word.** After D373 Claude suggested adding M4e to the write-up, then designing M6's behaviour question,
+and asked "Do you want that, or something else from the list?". The owner answered "Sure".
+
+**The write-up** (`docs/memory/SYNTHESIS.md`, draft 4; draft 3 archived in `docs/reviews/20261029-memory-synthesis-m4e/`):
+M4e (section 5) and M5's pilot, power calculation and postponement (section 6) added, with their rows in the routine's
+table, in "What holds" and in "A reading across the steps"; the limits, lessons, what comes next and who did what
+updated. A new lesson: scope cost against benefit early, and bring a rough cost and the likely size of the answer to
+the owner before a step's plan. Compute for the thread is now 112.43 recorded CPU hours (M5's power simulation, outside
+the accounting, not included).
+- **Numbers:** `scripts/memory_summary.py` also reads M4e's `readings.json`, the pilot's `report.json` and the adopted
+  power reading; `docs/memory/summary.json` regenerated; `tests/test_memory_summary.py` gains a sabotage for the new
+  parts (5 pass; the equality test seen failing before the regeneration).
+- **README:** the memory row covers M4e and M5's postponement; "Next on the roadmap" annotated.
+- **A correction:** draft 3 described M4d's Rr as "R keeping N2's 75 reciprocal pairs"; Rr keeps their number, not
+  N2's pairs (a swap may break one pair and make another; M5's pilot: 52 to 67 of N2's 150 reciprocal edges shared).
+  Corrected in the synthesis with an entry under its corrections, and annotated in `M4D-RESULTS.md`.
+
+**The review** (`docs/reviews/20261029-memory-synthesis-m4e/`, one round; both "fix then publish"; both checked every
+new number against the records and found none wrong; every finding taken, no further round).
+- **Both** caught: M5's question framed as a 0.002 threshold (success is a lower limit above zero; 0.002 is the planning
+  effect); Rr described as keeping N2's reciprocal pairs (above); Fable credited with a bound on latent switches the
+  pilot does not give; round 3 of the power results review, which was Astra's only; the README still saying M5's power
+  calculation was next.
+- **Astra** caught: "more than its size" ranking contributions M4e did not estimate; the envelope's scope (it does not
+  cover missed transitions among unaudited fading genomes); "every host, every assignment" read as positive in every
+  host; the unresolved genomes as "a class, not a backlog" (a protocol treatment); the power costs as simulated means
+  under scenarios, with the cap; the lesson needing to say the rough calculation could not replace the pilot; "all
+  three ran".
+- **Fable** caught: the owner's agreement to the M6 turn recorded nowhere (now this entry); Δ_weight's ten-host
+  restriction dropped twice; "94% genome sampling" stated without its hedges; "beyond its weights and degrees" implying
+  the degrees' step is shown; the Welch t credited to both (Astra proposed it, Fable accepted it in round 2); the six
+  readings' description; the postponement's resume conditions; and that the owner's order already put the host count
+  first, so the lesson is about precision bought beyond the decision's need.
+
+**Next:** M6's behaviour question, first as a short options note with rough costs and the likely size of each answer
+for the owner, before any plan (the new lesson). CPU unless the owner gives the GPU.

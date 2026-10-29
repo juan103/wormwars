@@ -74,3 +74,22 @@ def test_a_pilot_check_without_its_verdict_stops_the_summary(monkeypatch):
     except SystemExit:
         return
     raise AssertionError("a missing verdict did not stop the summary")
+
+
+def test_a_changed_m4e_or_m5_record_changes_the_summary(monkeypatch):
+    """Sabotage for the M4e and M5 parts added with the synthesis's draft 4."""
+    M = _module()
+    real = M.rec
+    committed = json.loads(M.OUT.read_text(encoding="utf-8"))
+    for folder, name, change in (
+            ("memory-m4e", "readings.json", lambda d: d["counts"]["separate"]["T"].__setitem__(0, 99)),
+            ("memory-m5-pilot", "report.json", lambda d: d["audit"]["by_arm"]["Rr"].__setitem__("fading_to_separate", 1)),
+            ("memory-m5-power-welch", "power.json", lambda d: d["answer"]["choice"].__setitem__("recommend", "A"))):
+        def changed(path, folder=folder, name=name, change=change):
+            d = real(path)
+            if path.parent.name == folder and path.name == name:
+                change(d)
+            return d
+
+        monkeypatch.setattr(M, "rec", changed)
+        assert json.loads(json.dumps(M.build())) != committed, folder

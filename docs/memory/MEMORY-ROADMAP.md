@@ -191,7 +191,7 @@ Jacobians; exploratory).
 - **Cost:** benchmark first.
 - **A failure** rejects portability under the tested embedding and assay. Whether the state was not written, not observed, or not kept is for the controls to say.
 
-**M6. Then behaviour and biology** (not scheduled).
+**M6. Then behaviour and biology** (not scheduled). *Annotated 2026-10-29 (D374): with M5 postponed (D373), the owner agreed to design M6's behaviour question next, first as an options note with rough costs and the likely size of each answer.*
 - **Behaviour:** does a multistable brain use its states on the memory-task track? 03h's lessons apply: a relief through a channel the read-out can see, and a power rule fixed in advance.
 - **Biology:** whether the real worm's RMD and SMD neurons show anything comparable is a literature question. It has to meet the project's literature standard before anything is designed on it.
 

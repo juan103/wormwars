@@ -175,7 +175,9 @@ from 5 (SH) to 14 (SH-route), P from 3 (SH-route) to 22 (SH).
 - **The ladder.** R reaches most of T's rise over I, D less than half of it; T − R's interval includes zero. The
   ladder is not a chain of single additions (the plan), and the ratios of these noisy means are not robust over the
   unresolved assignments, so they describe these arms, not separable causes (Fable, Astra).
-- **Rr below R.** Keeping N2's 75 reciprocal pairs while rewiring gave fewer separate-states genomes than rewiring
+- **Rr below R.** *Annotated 2026-10-29 (D374): "Keeping N2's 75 reciprocal pairs" means keeping their number; Rr's
+  swaps keep 75 reciprocal pairs but may break one of N2's pairs and make another (M5's pilot: 52 to 67 of N2's 150
+  reciprocal edges shared).* Keeping N2's 75 reciprocal pairs while rewiring gave fewer separate-states genomes than rewiring
   without them (32 against 52; Rr − R −0.0020, −0.0049 to 0.0010), so T − Rr is larger than T − R. Each host has one R
   and one Rr draw; 15 of Rr's 32 are in one host (SH-recip-2051000), and Rr exceeds R in two hosts. This does not
   show that keeping reciprocity lowers switching in general, nor separate the rewiring's effect from the particular

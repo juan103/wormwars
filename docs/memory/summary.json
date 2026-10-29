@@ -29,9 +29,17 @@
       "cpu_hours": 26.34,
       "neural_updates": 12462791040
     },
+    "M4e": {
+      "cpu_hours": 32.66,
+      "neural_updates": 22482937920
+    },
+    "M5 pilot": {
+      "cpu_hours": 23.42,
+      "neural_updates": 13451623072
+    },
     "total": {
-      "cpu_hours": 56.35,
-      "neural_updates": 27853691776
+      "cpu_hours": 112.43,
+      "neural_updates": 63788252768
     },
     "note": "recorded wall-clock hours on the CPU (T0's accounting, category probe); the total is summed before rounding; no GPU"
   },
@@ -397,6 +405,317 @@
       "P": 10240,
       "T": 10240,
       "T+G": 10240
+    }
+  },
+  "M4e": {
+    "primary": {
+      "weight": {
+        "D": -0.0008,
+        "interval": [
+          -0.0017,
+          0.0001
+        ],
+        "envelope": [
+          -0.0019,
+          0.0004
+        ],
+        "hosts_below_at_above": [
+          4,
+          6,
+          0
+        ],
+        "direction": "direction unresolved",
+        "size": [
+          "no effect of 0.004 or more, as a mean across these ten hosts (a response confined to a minority of host graphs may be missed)"
+        ]
+      },
+      "count": {
+        "D": -0.0026,
+        "interval": [
+          -0.0041,
+          -0.0012
+        ],
+        "envelope": [
+          -0.0094,
+          -0.0004
+        ],
+        "hosts_below_at_above": [
+          9,
+          0,
+          1
+        ],
+        "direction": "lowers",
+        "size": [
+          "unresolved (the unresolved genomes decide it)"
+        ]
+      }
+    },
+    "first_pass_direction": {
+      "weight": "direction unresolved",
+      "count": "unresolved (the unresolved genomes decide it)"
+    },
+    "descriptive": {
+      "U_LH - U_LL": {
+        "D": 0.0015,
+        "interval": [
+          -0.0004,
+          0.0033
+        ],
+        "envelope": [
+          -0.0007,
+          0.0086
+        ],
+        "hosts_below_at_above": [
+          2,
+          0,
+          8
+        ],
+        "direction": "direction unresolved",
+        "size": [
+          "unresolved (the unresolved genomes decide it)"
+        ]
+      },
+      "U_HL - U_LL": {
+        "D": -0.0004,
+        "interval": [
+          -0.0012,
+          0.0004
+        ],
+        "envelope": [
+          -0.0012,
+          0.0006
+        ],
+        "hosts_below_at_above": [
+          2,
+          7,
+          1
+        ],
+        "direction": "direction unresolved",
+        "size": [
+          "no effect of 0.004 or more, as a mean across these ten hosts (a response confined to a minority of host graphs may be missed)"
+        ]
+      },
+      "U_LL - I": {
+        "D": 0.0004,
+        "interval": [
+          -0.0015,
+          0.0023
+        ],
+        "envelope": [
+          -0.0018,
+          0.0024
+        ],
+        "hosts_below_at_above": [
+          1,
+          7,
+          2
+        ],
+        "direction": "direction unresolved",
+        "size": [
+          "no effect of 0.004 or more, as a mean across these ten hosts (a response confined to a minority of host graphs may be missed)"
+        ]
+      },
+      "W - U_HH": {
+        "D": 0.0026,
+        "interval": [
+          0.0008,
+          0.0044
+        ],
+        "envelope": [
+          0.0005,
+          0.0078
+        ],
+        "hosts_below_at_above": [
+          1,
+          1,
+          8
+        ],
+        "direction": "raises",
+        "size": [
+          "size unresolved"
+        ]
+      },
+      "K - W": {
+        "D": 0.0023,
+        "interval": [
+          0.0004,
+          0.0043
+        ],
+        "envelope": [
+          -0.0036,
+          0.0095
+        ],
+        "hosts_below_at_above": [
+          2,
+          1,
+          7
+        ],
+        "direction": "unresolved (the unresolved genomes decide it)",
+        "size": [
+          "size unresolved"
+        ]
+      },
+      "T - K": {
+        "D": 0.002,
+        "interval": [
+          -0.002,
+          0.0059
+        ],
+        "envelope": [
+          -0.007,
+          0.0096
+        ],
+        "hosts_below_at_above": [
+          4,
+          0,
+          6
+        ],
+        "direction": "direction unresolved",
+        "size": [
+          "size unresolved"
+        ]
+      },
+      "T - I": {
+        "D": 0.0062,
+        "interval": [
+          0.0028,
+          0.0095
+        ],
+        "envelope": [
+          0.0023,
+          0.0131
+        ],
+        "hosts_below_at_above": [
+          0,
+          0,
+          10
+        ],
+        "direction": "raises",
+        "size": [
+          "at least 0.001"
+        ]
+      }
+    },
+    "interaction": {
+      "D": -0.0022,
+      "interval": [
+        -0.0038,
+        -0.0007
+      ],
+      "envelope": [
+        -0.0093,
+        0.0001
+      ]
+    },
+    "separate_states": {
+      "I": 12,
+      "U_LL": 16,
+      "U_LH": 31,
+      "U_HL": 12,
+      "U_HH": 4,
+      "W": 31,
+      "K": 55,
+      "T": 75
+    },
+    "unresolved": {
+      "I": 1,
+      "U_LL": 0,
+      "U_LH": 39,
+      "U_HL": 1,
+      "U_HH": 3,
+      "W": 31,
+      "K": 37,
+      "T": 33
+    },
+    "genomes_per_arm": 10240,
+    "second_pass_used": true,
+    "audited_fading_per_arm": {
+      "I": 800,
+      "U_LL": 800,
+      "U_LH": 794,
+      "U_HL": 797,
+      "U_HH": 799,
+      "W": 795,
+      "K": 786,
+      "T": 783
+    },
+    "audit_fading_to_separate": 0
+  },
+  "M5": {
+    "pilot": {
+      "T_minus_Rr": {
+        "mean": 0.0016,
+        "interval": [
+          -0.0008,
+          0.004
+        ],
+        "hosts_above_zero": 6,
+        "sd_of_host_contrasts": 0.0034,
+        "genome_share": 0.94
+      },
+      "unresolved_at_22000_resolved_by_100000": {
+        "T": [
+          33,
+          0
+        ],
+        "K": [
+          37,
+          0
+        ],
+        "Rr": [
+          47,
+          0
+        ]
+      },
+      "audit": {
+        "T": [
+          1500,
+          0
+        ],
+        "K": [
+          1500,
+          0
+        ],
+        "Rr": [
+          1500,
+          0
+        ]
+      }
+    },
+    "power": {
+      "C": {
+        "allocation": "(1, 512, 40)",
+        "h1": 110,
+        "hmax": 160,
+        "central": {
+          "power": 0.8409,
+          "cpu_hours": 72.0
+        },
+        "core": {
+          "power": 0.8084,
+          "cpu_hours": 90.7
+        },
+        "above": {
+          "power": 0.7467,
+          "cpu_hours": 96.1
+        }
+      },
+      "A": {
+        "allocation": "(1, 512, 80)",
+        "H": 135,
+        "power_central": 0.9293,
+        "power_core": 0.8273,
+        "cpu_hours_central": 92.5
+      },
+      "B": {
+        "allocation": "(1, 512, 40)",
+        "H": 110,
+        "power_central": 0.8063,
+        "power_core": 0.6923,
+        "cpu_hours_central": 66.7
+      },
+      "recommend": "C",
+      "C_saving_central": 0.221
     }
   }
 }
