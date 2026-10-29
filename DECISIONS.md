@@ -12037,3 +12037,28 @@ new number against the records and found none wrong; every finding taken, no fur
 
 **Next:** M6's behaviour question, first as a short options note with rough costs and the likely size of each answer
 for the owner, before any plan (the new lesson). CPU unless the owner gives the GPU.
+
+## D375 — M6's options note for the owner: classify 02's evolved T1 champions first (2026-10-29)
+
+**The note** (`docs/memory/M6-OPTIONS.md`, draft 2; draft 1 and the review in `docs/reviews/20261029-m6-options/`):
+six options for M6's behaviour question with rough costs and the likely size of each answer, before any plan (D374's
+lesson). Nothing has run but a throwaway CPU timing of T1 (about 0.14 s per genome-world, not in any file).
+
+**The review** (one round). **Both** recommend option 0, classifying 02's 102 generation-39 T1 champions, their
+generation-0 champions and four generation-79 snapshots with M2's classifier, after fixes: a mutation-only drift
+control, comparisons within mapping and graph, the food mapping's interface threaded through the classifier (the probe
+hard-codes M0), the unresolved genomes planned, and no root-start test in T1 (it tests the initial state, not use).
+- **Fable** caught: draft 1's "switches may be rare" from D038's jitter ablation, which cannot detect an integrating
+  controller (D039); 02b already showed on the same probe that selection built a persistent memory of food level into
+  every group of champions, so option 0 asks whether that memory is a switch or slow fading; T1 is 400 ticks; four T1
+  generation-79 snapshots, not two; the long pass's cost if applied to every champion; option 1 oversized about
+  five-fold (the classes already exist); option 2's unit is the run, and its relief does not exist yet; what option 0
+  can resolve (about 10% against 1.5% for N2's 38 champions).
+- **Astra** caught: the generation-0 genomes are best-of-32, not random or ancestors; the scripted gain shows memory
+  pays within those controllers, not that T1 requires it; option 1's "probably small" rested on a different measure;
+  option 2 tests prevalence, not use; a new option 5, a small causal study within classified switch genomes (whether
+  T1's histories set the switch, and whether erasing or swapping it during the task changes performance); a negative
+  count closes this probe's switch route only.
+
+**For the owner:** option 0 first (about 1 CPU hour, up to about 5), then option 5 or 2 if champions are switches
+clearly more often than drift, or option 3 or 4 if not. The owner chooses.
