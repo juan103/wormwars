@@ -12327,3 +12327,63 @@ previous script. The recorded total is 113.59 CPU hours. Dated annotations in `R
 `docs/memory/MEMORY-ROADMAP.md` and `docs/memory/SYNTHESIS.md`.
 
 **Next, by the owner's order (D379):** the champions' foraging test, designed and costed first; then stop.
+
+## D382 — M6 step 2's design, plan and code: does the champions' foraging depend on their neural time scale? (2026-10-31)
+
+**The owner's second step** (D379): a test of whether the evolved champions' fading history effect matters for their
+foraging, designed and costed first.
+
+**The design note** (`docs/memory/M6-STEP2-DESIGN.md`; review `docs/reviews/20261030-m6-step2-design/`). Both said
+"proceed to a plan, with fixes". The point that matters most to the owner: **both reviewers agree that no
+intervention at this cost isolates the history effect.** Making every neuron faster shortens the history effect but
+also speeds the responses to input. So the step is reframed as a test of the champions' dependence on neural time
+scale, and every wording says so.
+- **Astra** caught:
+  - the discrete update is not a time rescaling unless the substeps change too;
+  - no clamping after scaling;
+  - the controls do not estimate a universal generic cost, and should be read separately;
+  - the primary should be the champions' own change, since a control that improves could fake a negative interaction;
+  - the validation needs written states held fixed and population-level criteria;
+  - the association is not a dose-response;
+  - the power claim is unsupported.
+- **Fable** caught:
+  - the exact rescaling (substeps times 1/k);
+  - the prior that single-nose T1 makes a drop expected;
+  - T0's champions as the control for temporal comparison;
+  - the interior-only arm;
+  - k = 4 for symmetry;
+  - the tau profile;
+  - the controls' floor effect;
+  - numeric validation criteria.
+
+**The plan** (`docs/memory/M6-STEP2-PLAN.md`, draft 2; review `docs/reviews/20261031-m6-step2-plan/`). Both said
+"agree with fixes"; every fix taken.
+- **Astra** caught:
+  - T1 minus T0 must be matched by mapping (T1's MS runs have no T0 pair);
+  - Spearman needs average ranks for ties, and 10,000 resamples;
+  - missing arms passed silently, and a failed check left affirmative sentences, so completeness now gates the whole
+    reading and every interpretive sentence;
+  - the one-strain arms need a one-strain k = 1 baseline;
+  - the forecast must be weighted by load;
+  - partial work must be saved and resumable;
+  - absolute changes and baselines, weighted by block;
+  - individual validation failures, and a sensitivity reading without the switch champion;
+  - three softened claims.
+- **Fable** caught:
+  - the same forecast and save defects;
+  - the stale test log;
+  - a missing third control wording ("smaller than");
+  - the k > 1 warm-up hazard;
+  - the archived timing record;
+  - the controls' probes, which are cut.
+
+**Code:** `scripts/memory_m6/step2.py`, `step2_read.py` and `sabotage_step2.py`. 15 tests, each seen failing under a
+sabotage of the code it checks (19 of 19). The substeps must be set on the genome's own configuration, because `Brain`
+reads `genome.cfg.substeps`; a timing run that set them on the experiment configuration changed nothing, and is
+archived.
+
+**Seen before the plan,** disclosed and archived: timing runs on one T1 champion and one T0 champion, and a 2-world
+smoke run of the driver on one T1 run.
+
+**Cost:** about 4 to 4.3 CPU hours, capped at 5 (the owner was told 1 to 5). The forecast is weighted by load and
+leaves 30 minutes for the probe.
