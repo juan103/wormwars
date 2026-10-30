@@ -1,0 +1,10 @@
+{
+ "F0": {
+  "held": "54 of 169 switches held two states during a 2000-tick removal of the food input",
+  "recovered": "53 of 169 switches returned to their original states after a 2000-tick removal of the food input"
+ },
+ "Z": {
+  "held": "55 of 169 switches held two states during a 2000-tick removal of all sensory input (1 unresolved)",
+  "recovered": "54 of 169 switches returned to their original states after a 2000-tick removal of all sensory input"
+ }
+}

@@ -1,0 +1,278 @@
+{
+ "genomes": 169,
+ "consistent": 169,
+ "inconsistent": 0,
+ "excluded": [],
+ "census_roots_compared": 169,
+ "census_roots_within_1e-6": 169,
+ "census_root_diff_max": 0.0,
+ "F0": {
+  "held": {
+   "n": 169,
+   "held": 54,
+   "unresolved": 0,
+   "share_bounds": [
+    0.31952662721893493,
+    0.31952662721893493
+   ],
+   "interval_low": [
+    0.2539063317620511,
+    0.39316908396166467
+   ],
+   "interval_high": [
+    0.2539063317620511,
+    0.39316908396166467
+   ]
+  },
+  "recovered": {
+   "n": 169,
+   "recovered": 53,
+   "unresolved": 0,
+   "share_bounds": [
+    0.3136094674556213,
+    0.3136094674556213
+   ],
+   "interval_low": [
+    0.24846025384519704,
+    0.3870438640333946
+   ],
+   "interval_high": [
+    0.24846025384519704,
+    0.3870438640333946
+   ]
+  },
+  "words": {
+   "held": "54 of 169 switches held two states during a 2000-tick removal of the food input",
+   "recovered": "53 of 169 switches returned to their original states after a 2000-tick removal of the food input"
+  },
+  "outcomes": {
+   "merged": 115,
+   "recovered": 53,
+   "other": 1
+  },
+  "match": {
+   "both at 0": 114,
+   "same": 53,
+   "new": 1,
+   "both at 1": 1
+  },
+  "B_classes": {
+   "fading": 114,
+   "separate states": 53,
+   "persistent oscillation": 1,
+   "separate states, read-out silent": 1
+  },
+  "C_classes": {
+   "fading": 115,
+   "separate states": 53,
+   "separate states, read-out silent": 1
+  },
+  "separation_B_median": {
+   "0": 4.319718360900879,
+   "10": 4.254569053649902,
+   "30": 3.3048758506774902,
+   "100": 0.1996380090713501,
+   "300": 0.00010892661521211267,
+   "2000": 8.440017700195312e-05
+  },
+  "separation_B_max": {
+   "0": 8.5712251663208,
+   "10": 8.556012153625488,
+   "30": 8.647613525390625,
+   "100": 8.67597770690918,
+   "300": 8.675759315490723,
+   "2000": 8.675759315490723
+  },
+  "by_panel": {
+   "7600": {
+    "merged": 10,
+    "recovered": 5
+   },
+   "7700": {
+    "merged": 10,
+    "recovered": 3
+   },
+   "7801": {
+    "merged": 14,
+    "recovered": 5
+   },
+   "7802": {
+    "merged": 12,
+    "recovered": 7
+   },
+   "7803": {
+    "recovered": 8,
+    "merged": 9
+   },
+   "7804": {
+    "recovered": 8,
+    "merged": 18
+   },
+   "7805": {
+    "merged": 11,
+    "recovered": 3
+   },
+   "7806": {
+    "merged": 16,
+    "recovered": 4,
+    "other": 1
+   },
+   "7807": {
+    "merged": 9,
+    "recovered": 3
+   },
+   "7808": {
+    "merged": 6,
+    "recovered": 7
+   }
+  },
+  "by_subclass": {
+   "separate states": {
+    "merged": 111,
+    "recovered": 53,
+    "other": 1
+   },
+   "separate states, read-out silent": {
+    "merged": 4
+   }
+  },
+  "seen_before_plan": {
+   "merged": 4
+  }
+ },
+ "Z": {
+  "held": {
+   "n": 169,
+   "held": 55,
+   "unresolved": 1,
+   "share_bounds": [
+    0.3254437869822485,
+    0.33136094674556216
+   ],
+   "interval_low": [
+    0.25936493291138857,
+    0.3992817806574512
+   ],
+   "interval_high": [
+    0.26483588244540707,
+    0.4053821289685568
+   ]
+  },
+  "recovered": {
+   "n": 169,
+   "recovered": 54,
+   "unresolved": 0,
+   "share_bounds": [
+    0.31952662721893493,
+    0.31952662721893493
+   ],
+   "interval_low": [
+    0.2539063317620511,
+    0.39316908396166467
+   ],
+   "interval_high": [
+    0.2539063317620511,
+    0.39316908396166467
+   ]
+  },
+  "words": {
+   "held": "55 of 169 switches held two states during a 2000-tick removal of all sensory input (1 unresolved)",
+   "recovered": "54 of 169 switches returned to their original states after a 2000-tick removal of all sensory input"
+  },
+  "outcomes": {
+   "merged": 114,
+   "recovered": 54,
+   "other": 1
+  },
+  "match": {
+   "both at 0": 112,
+   "same": 54,
+   "new": 1,
+   "both at 1": 2
+  },
+  "B_classes": {
+   "fading": 112,
+   "separate states": 54,
+   "persistent oscillation": 1,
+   "unresolved": 1,
+   "separate states, read-out silent": 1
+  },
+  "C_classes": {
+   "fading": 114,
+   "separate states": 54,
+   "separate states, read-out silent": 1
+  },
+  "separation_B_median": {
+   "0": 4.319718360900879,
+   "10": 4.251455307006836,
+   "30": 3.353747844696045,
+   "100": 0.19673407077789307,
+   "300": 9.179115295410156e-05,
+   "2000": 8.0108642578125e-05
+  },
+  "separation_B_max": {
+   "0": 8.5712251663208,
+   "10": 8.548177719116211,
+   "30": 8.647651672363281,
+   "100": 8.672272682189941,
+   "300": 8.671852111816406,
+   "2000": 8.671852111816406
+  },
+  "by_panel": {
+   "7600": {
+    "merged": 10,
+    "recovered": 5
+   },
+   "7700": {
+    "merged": 9,
+    "recovered": 4
+   },
+   "7801": {
+    "merged": 14,
+    "recovered": 5
+   },
+   "7802": {
+    "merged": 11,
+    "recovered": 8
+   },
+   "7803": {
+    "merged": 10,
+    "recovered": 7
+   },
+   "7804": {
+    "recovered": 8,
+    "merged": 18
+   },
+   "7805": {
+    "merged": 9,
+    "recovered": 5
+   },
+   "7806": {
+    "merged": 16,
+    "recovered": 4,
+    "other": 1
+   },
+   "7807": {
+    "merged": 9,
+    "recovered": 3
+   },
+   "7808": {
+    "merged": 8,
+    "recovered": 5
+   }
+  },
+  "by_subclass": {
+   "separate states": {
+    "merged": 110,
+    "recovered": 54,
+    "other": 1
+   },
+   "separate states, read-out silent": {
+    "merged": 4
+   }
+  },
+  "seen_before_plan": {
+   "merged": 4
+  }
+ }
+}

@@ -41,9 +41,13 @@
       "cpu_hours": 0.96,
       "neural_updates": 312298240
     },
+    "M6 outlast": {
+      "cpu_hours": 0.2,
+      "neural_updates": 127704416
+    },
     "total": {
-      "cpu_hours": 113.39,
-      "neural_updates": 64100551008
+      "cpu_hours": 113.59,
+      "neural_updates": 64228255424
     },
     "note": "recorded wall-clock hours on the CPU (T0's accounting, category probe); the total is summed before rounding; no GPU"
   },
@@ -978,6 +982,55 @@
     "words": {
       "switches": "We did not detect enrichment of probe-defined switches in g39 champions relative to the mutation-only control; 1 were found",
       "persistence": "selection shortened the history effect's persistence against drift"
+    }
+  },
+  "M6 outlast": {
+    "genomes": 169,
+    "consistent": 169,
+    "census_roots_within_1e-6": 169,
+    "F0": {
+      "held": [
+        54,
+        0,
+        169
+      ],
+      "recovered": [
+        53,
+        0,
+        169
+      ],
+      "match": {
+        "both at 0": 114,
+        "same": 53,
+        "new": 1,
+        "both at 1": 1
+      },
+      "words": {
+        "held": "54 of 169 switches held two states during a 2000-tick removal of the food input",
+        "recovered": "53 of 169 switches returned to their original states after a 2000-tick removal of the food input"
+      }
+    },
+    "Z": {
+      "held": [
+        55,
+        1,
+        169
+      ],
+      "recovered": [
+        54,
+        0,
+        169
+      ],
+      "match": {
+        "both at 0": 112,
+        "same": 54,
+        "new": 1,
+        "both at 1": 2
+      },
+      "words": {
+        "held": "55 of 169 switches held two states during a 2000-tick removal of all sensory input (1 unresolved)",
+        "recovered": "54 of 169 switches returned to their original states after a 2000-tick removal of all sensory input"
+      }
     }
   }
 }

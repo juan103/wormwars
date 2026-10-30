@@ -1,5 +1,5 @@
 """The memory thread's summary (docs/memory/SYNTHESIS.md): the numbers the synthesis quotes, read from the committed
-records of M1 to M4e, of M5's pilot and power calculation and of M6's option 0, so each one is traceable to a file and a field (AGENTS.md rule 5).
+records of M1 to M4e, of M5's pilot and power calculation and of M6's option 0 and step 1, so each one is traceable to a file and a field (AGENTS.md rule 5).
 
     python scripts/memory_summary.py        # writes docs/memory/summary.json
 
@@ -26,6 +26,7 @@ COMPUTE = {
     "M4e": ["memory-m4e/m4e-compute-record.json"],
     "M5 pilot": ["memory-m5-pilot/m5-pilot-compute-record.json"],
     "M6-0": ["memory-m6-0/m6-0-compute-record.json"],
+    "M6 outlast": ["memory-m6-outlast/outlast-compute-record.json"],
 }
 
 
@@ -247,6 +248,16 @@ def build() -> dict:
         "switches_unresolved_n": {b: m6_switches(b) for b in ("own", "03mc")},
         "median_tau_stay": {b: {k: v["median"] for k, v in t.items()} for b, t in m6["persistence_medians"].items()},
         "words": m6["words"],
+    }
+
+    ol = rec(RUNS / "memory-m6-outlast" / "reading.json")
+    out["M6 outlast"] = {
+        "genomes": ol["genomes"], "consistent": ol["consistent"],
+        "census_roots_within_1e-6": ol["census_roots_within_1e-6"],
+        **{arm: {"held": [ol[arm]["held"]["held"], ol[arm]["held"]["unresolved"], ol[arm]["held"]["n"]],
+                 "recovered": [ol[arm]["recovered"]["recovered"], ol[arm]["recovered"]["unresolved"],
+                               ol[arm]["recovered"]["n"]],
+                 "match": ol[arm]["match"], "words": ol[arm]["words"]} for arm in ("F0", "Z")},
     }
     return out
 

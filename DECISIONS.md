@@ -12282,3 +12282,48 @@ the rising-start root. It is disclosed, and the 4 stay in the run, labelled.
 
 **Tests:** 11, each seen failing under a sabotage of the code it checks (`scripts/memory_m6/sabotage_outlast.py`: 23 of
 23 caught).
+
+## D381 — M6 step 1's results: a third of the switches keep two states without sensory input (2026-10-30)
+
+**The run** (`scripts/memory_m6/outlast.py` at 7e3e5e7, the plan's commit; CPU; 0.20 recorded hours; one attempt,
+completed).
+- All 169 switches reproduced their census class.
+- All 169 rebuilt roots equal the census's stored roots.
+
+**The fixed wordings:**
+- **F0:** "54 of 169 switches held two states during a 2000-tick removal of the food input", and "53 of 169 ...
+  returned to their original states".
+- **Z:** "55 of 169 switches held two states during a 2000-tick removal of all sensory input (1 unresolved)", and "54
+  of 169 ... returned to their original states".
+
+Under Z, 112 faded to one state, 1 oscillated and 1 was unresolved. Of the 112, 111 ended at the rising-start
+history's state after restoration.
+
+**After the data:** the switches sort into the two known kinds M6-3 listed, roughly one to two:
+- multistable without sensory input (Liu J et al. 2022's kind);
+- needing the food input (Kunert-Graf et al. 2017's kind).
+
+**The review** (one round; `docs/reviews/20261030-m6-outlast-results/`). **Both** "fix then publish"; every fix taken.
+Astra recomputed the reading exactly and checked every match and outcome against the root arrays; Fable re-derived the
+counts.
+- **Astra** caught:
+  - "the other 113 merged" conflated not-held with fading (one oscillated, one was unresolved);
+  - the arms agree on 163 for held but 162 for the outcome;
+  - the panel range should be stated as rates;
+  - the comparison group for the post-data medians was mislabelled;
+  - the reproduce command needs a fresh output folder;
+  - merging does not establish the absence of other input-free attractors;
+  - the held third are still a known kind (Liu J 2022).
+- **Fable** caught:
+  - the same "known kind" point, with the quote's true source (SYNTHESIS's D378 annotation);
+  - the same agreement count;
+  - the oscillating genome and the "other" genome's real C state;
+  - the input-free states are not A's states, and nothing is shown about basin size in a noiseless model;
+  - "without sensory input", not "without any input";
+  - the exact root match shows that the same roots were located, not identical trajectories.
+
+**Also:** `scripts/memory_summary.py` reads step 1's reading and compute record, with a test seen failing against the
+previous script. The recorded total is 113.59 CPU hours. Dated annotations in `ROADMAP.md`, `README.md`,
+`docs/memory/MEMORY-ROADMAP.md` and `docs/memory/SYNTHESIS.md`.
+
+**Next, by the owner's order (D379):** the champions' foraging test, designed and costed first; then stop.

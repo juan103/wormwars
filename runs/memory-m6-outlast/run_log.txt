@@ -1,0 +1,12 @@
+genomes: 169
+seed 7600: 15 genomes, A consistent 15, F0 held 5 recovered 5, Z held 5 recovered 5, 170 s
+seed 7700: 13 genomes, A consistent 13, F0 held 3 recovered 3, Z held 3 recovered 4, 246 s
+seed 7801: 19 genomes, A consistent 19, F0 held 5 recovered 5, Z held 5 recovered 5, 309 s
+seed 7802: 19 genomes, A consistent 19, F0 held 7 recovered 7, Z held 8 recovered 8, 373 s
+seed 7803: 17 genomes, A consistent 17, F0 held 8 recovered 8, Z held 7 recovered 7, 436 s
+seed 7804: 26 genomes, A consistent 26, F0 held 8 recovered 8, Z held 8 recovered 8, 524 s
+seed 7805: 14 genomes, A consistent 14, F0 held 3 recovered 3, Z held 5 recovered 5, 572 s
+seed 7806: 21 genomes, A consistent 21, F0 held 5 recovered 4, Z held 5 recovered 4, 641 s
+seed 7807: 12 genomes, A consistent 12, F0 held 3 recovered 3, Z held 3 recovered 3, 687 s
+seed 7808: 13 genomes, A consistent 13, F0 held 7 recovered 7, Z held 6 recovered 5, 731 s
+rc=0

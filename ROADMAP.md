@@ -27,7 +27,10 @@ Astra and Fable before its run and its results after; none is a pre-registration
 - **Next (the owner, 2026-10-30, D379), in this order:** a quick check of whether the switches' states outlast the
   input (the food returned to baseline after the ramp; CPU minutes); a test of whether the evolved champions' fading
   history effect matters for their foraging (a design first, costed there); then the thread stops, with the
-  results folded into the write-up.
+  results folded into the write-up. *Annotated 2026-10-30 (D381): the quick check has run
+  ([`docs/memory/M6-OUTLAST-RESULTS.md`](docs/memory/M6-OUTLAST-RESULTS.md)): 55 of the 169 switches held two stable
+  states during a 2000-tick removal of all sensory input, and 54 returned to their original states; 112 faded to
+  one state. Next: the champions' foraging test, designed first.*
 
 **25 October 2026** (D349-D365): **the memory thread's M1 to M4 have run** (exploratory, on the CPU; results in
 [`docs/memory/`](docs/memory/), each stage annotated in [`MEMORY-ROADMAP.md`](docs/memory/MEMORY-ROADMAP.md)). Every

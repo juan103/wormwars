@@ -1,0 +1,1230 @@
+{
+ "genomes": [
+  {
+   "source": "M2",
+   "seed": 7600,
+   "genome": 174,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M2",
+   "seed": 7600,
+   "genome": 227,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M2",
+   "seed": 7600,
+   "genome": 513,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M2",
+   "seed": 7600,
+   "genome": 618,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M2",
+   "seed": 7600,
+   "genome": 666,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M2",
+   "seed": 7600,
+   "genome": 713,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M2",
+   "seed": 7600,
+   "genome": 767,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M2",
+   "seed": 7600,
+   "genome": 810,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M2",
+   "seed": 7600,
+   "genome": 818,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M2",
+   "seed": 7600,
+   "genome": 869,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M2",
+   "seed": 7600,
+   "genome": 871,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M2",
+   "seed": 7600,
+   "genome": 965,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M2",
+   "seed": 7600,
+   "genome": 996,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M2",
+   "seed": 7600,
+   "genome": 1019,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M2",
+   "seed": 7600,
+   "genome": 1022,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M2",
+   "seed": 7700,
+   "genome": 83,
+   "census_class": "separate states",
+   "seen_before_plan": true
+  },
+  {
+   "source": "M2",
+   "seed": 7700,
+   "genome": 158,
+   "census_class": "separate states",
+   "seen_before_plan": true
+  },
+  {
+   "source": "M2",
+   "seed": 7700,
+   "genome": 236,
+   "census_class": "separate states",
+   "seen_before_plan": true
+  },
+  {
+   "source": "M2",
+   "seed": 7700,
+   "genome": 266,
+   "census_class": "separate states",
+   "seen_before_plan": true
+  },
+  {
+   "source": "M2",
+   "seed": 7700,
+   "genome": 302,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M2",
+   "seed": 7700,
+   "genome": 423,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M2",
+   "seed": 7700,
+   "genome": 464,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M2",
+   "seed": 7700,
+   "genome": 775,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M2",
+   "seed": 7700,
+   "genome": 790,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M2",
+   "seed": 7700,
+   "genome": 848,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M2",
+   "seed": 7700,
+   "genome": 930,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M2",
+   "seed": 7700,
+   "genome": 938,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M2",
+   "seed": 7700,
+   "genome": 972,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7801,
+   "genome": 3,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7801,
+   "genome": 201,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7801,
+   "genome": 220,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7801,
+   "genome": 250,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7801,
+   "genome": 284,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7801,
+   "genome": 351,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7801,
+   "genome": 462,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7801,
+   "genome": 492,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7801,
+   "genome": 513,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7801,
+   "genome": 578,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7801,
+   "genome": 617,
+   "census_class": "separate states, read-out silent",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7801,
+   "genome": 699,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7801,
+   "genome": 711,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7801,
+   "genome": 736,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7801,
+   "genome": 814,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7801,
+   "genome": 830,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7801,
+   "genome": 847,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7801,
+   "genome": 880,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7801,
+   "genome": 914,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7802,
+   "genome": 5,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7802,
+   "genome": 67,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7802,
+   "genome": 106,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7802,
+   "genome": 134,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7802,
+   "genome": 214,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7802,
+   "genome": 234,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7802,
+   "genome": 286,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7802,
+   "genome": 306,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7802,
+   "genome": 337,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7802,
+   "genome": 469,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7802,
+   "genome": 493,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7802,
+   "genome": 495,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7802,
+   "genome": 504,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7802,
+   "genome": 590,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7802,
+   "genome": 601,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7802,
+   "genome": 666,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7802,
+   "genome": 901,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7802,
+   "genome": 903,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7802,
+   "genome": 1014,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7803,
+   "genome": 0,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7803,
+   "genome": 120,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7803,
+   "genome": 149,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7803,
+   "genome": 230,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7803,
+   "genome": 274,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7803,
+   "genome": 316,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7803,
+   "genome": 344,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7803,
+   "genome": 418,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7803,
+   "genome": 470,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7803,
+   "genome": 508,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7803,
+   "genome": 522,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7803,
+   "genome": 539,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7803,
+   "genome": 542,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7803,
+   "genome": 569,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7803,
+   "genome": 570,
+   "census_class": "separate states, read-out silent",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7803,
+   "genome": 854,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7803,
+   "genome": 941,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7804,
+   "genome": 26,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7804,
+   "genome": 128,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7804,
+   "genome": 239,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7804,
+   "genome": 244,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7804,
+   "genome": 256,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7804,
+   "genome": 275,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7804,
+   "genome": 317,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7804,
+   "genome": 355,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7804,
+   "genome": 395,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7804,
+   "genome": 406,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7804,
+   "genome": 418,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7804,
+   "genome": 465,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7804,
+   "genome": 486,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7804,
+   "genome": 499,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7804,
+   "genome": 564,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7804,
+   "genome": 569,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7804,
+   "genome": 575,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7804,
+   "genome": 606,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7804,
+   "genome": 621,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7804,
+   "genome": 657,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7804,
+   "genome": 840,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7804,
+   "genome": 848,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7804,
+   "genome": 872,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7804,
+   "genome": 885,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7804,
+   "genome": 937,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7804,
+   "genome": 944,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7805,
+   "genome": 0,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7805,
+   "genome": 36,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7805,
+   "genome": 41,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7805,
+   "genome": 96,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7805,
+   "genome": 148,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7805,
+   "genome": 297,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7805,
+   "genome": 355,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7805,
+   "genome": 405,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7805,
+   "genome": 428,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7805,
+   "genome": 609,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7805,
+   "genome": 736,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7805,
+   "genome": 860,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7805,
+   "genome": 967,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7805,
+   "genome": 972,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7806,
+   "genome": 118,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7806,
+   "genome": 385,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7806,
+   "genome": 427,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7806,
+   "genome": 488,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7806,
+   "genome": 540,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7806,
+   "genome": 559,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7806,
+   "genome": 566,
+   "census_class": "separate states, read-out silent",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7806,
+   "genome": 620,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7806,
+   "genome": 681,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7806,
+   "genome": 690,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7806,
+   "genome": 707,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7806,
+   "genome": 714,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7806,
+   "genome": 737,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7806,
+   "genome": 784,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7806,
+   "genome": 830,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7806,
+   "genome": 835,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7806,
+   "genome": 907,
+   "census_class": "separate states, read-out silent",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7806,
+   "genome": 931,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7806,
+   "genome": 938,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7806,
+   "genome": 985,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7806,
+   "genome": 986,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7807,
+   "genome": 35,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7807,
+   "genome": 73,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7807,
+   "genome": 126,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7807,
+   "genome": 155,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7807,
+   "genome": 215,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7807,
+   "genome": 231,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7807,
+   "genome": 550,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7807,
+   "genome": 661,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7807,
+   "genome": 684,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7807,
+   "genome": 836,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7807,
+   "genome": 949,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7807,
+   "genome": 1008,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7808,
+   "genome": 42,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7808,
+   "genome": 77,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7808,
+   "genome": 98,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7808,
+   "genome": 164,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7808,
+   "genome": 180,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7808,
+   "genome": 215,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7808,
+   "genome": 270,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7808,
+   "genome": 669,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7808,
+   "genome": 766,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7808,
+   "genome": 770,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7808,
+   "genome": 795,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7808,
+   "genome": 955,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  },
+  {
+   "source": "M4c",
+   "seed": 7808,
+   "genome": 984,
+   "census_class": "separate states",
+   "seen_before_plan": false
+  }
+ ],
+ "n": 169,
+ "panels": [
+  [
+   7600,
+   "runs\\memory-m2-census\\N2__7600.json"
+  ],
+  [
+   7700,
+   "runs\\memory-m2-census\\N2__7700.json"
+  ],
+  [
+   7801,
+   "runs\\memory-m4c\\census\\N2__7801.json"
+  ],
+  [
+   7802,
+   "runs\\memory-m4c\\census\\N2__7802.json"
+  ],
+  [
+   7803,
+   "runs\\memory-m4c\\census\\N2__7803.json"
+  ],
+  [
+   7804,
+   "runs\\memory-m4c\\census\\N2__7804.json"
+  ],
+  [
+   7805,
+   "runs\\memory-m4c\\census\\N2__7805.json"
+  ],
+  [
+   7806,
+   "runs\\memory-m4c\\census\\N2__7806.json"
+  ],
+  [
+   7807,
+   "runs\\memory-m4c\\census\\N2__7807.json"
+  ],
+  [
+   7808,
+   "runs\\memory-m4c\\census\\N2__7808.json"
+  ]
+ ]
+}
