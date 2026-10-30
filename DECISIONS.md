@@ -12245,3 +12245,40 @@ As in D365, no second round, since the edits use the reviewers' own wordings.
 1. `main` fast-forwards to `roadmap`;
 2. one commit on `main` removes the working-branch banner;
 3. `roadmap` fast-forwards to `main` and puts the banner back.
+
+## D380 — M6 step 1's plan and code: do the switches' states outlast the input? (2026-10-30)
+
+**The owner's first step after M6-3** (D379). The plan is `docs/memory/M6-OUTLAST-PLAN.md`, draft 2; draft 1, the
+prompt and the review are in `docs/reviews/20261030-m6-outlast-plan/`. It covers all 169 switches of the two M2 and
+eight M4c N2 census panels (M0, 03mc's bank), each rebuilt by the census's route and run in three phases:
+- **A,** the standard probe, which must reproduce the census class;
+- **B,** 2000 ticks under F0 (food off) or Z (all sensory input off), classified under that input;
+- **C,** 03mc's bank restored for 2000 ticks, classified, with each history's root matched to A's at the
+  classifier's 1e-6.
+
+**Seen before the plan:** a 4-genome smoke run (seed 7700) in which all 4 merged under both arms and stayed merged at
+the rising-start root. It is disclosed, and the 4 stay in the run, labelled.
+
+**The review** (one round). **Both** "agree with fixes"; every fix taken.
+- **Astra** caught:
+  - the readings must separate holding during the removal from returning after it, and only Z can show that the
+    network alone holds two states;
+  - the majority rule is cut, in favour of counts with bounds that name the gap;
+  - the held share needs its own unresolved bounds;
+  - the reader must validate its rows against the manifest and recompute consistency;
+  - the run must stop at the ninth consistency failure, and the cap is checked at every phase;
+  - the wrapper itself needs tests (context, `initial`, C restarting from A, the rebuild's panel);
+  - the genome scope is narrower than "every N2 switch classified so far";
+  - "read-out silent" is relative to each phase's start.
+- **Fable** caught:
+  - 1e-4 is not the classifier's distinctness level (1e-6 is), and close A roots need an "ambiguous" label;
+  - the sign clause was unimplementable, and both reviewers dropped it;
+  - recovery should depend on C alone;
+  - the step changes of input, and the "merged at one root" expectation, are stated before the run;
+  - B's separations are now recorded at fixed ticks;
+  - the rebuild is compared with the census's stored roots where they exist;
+  - the cost line now comes from the smoke run.
+- **Both:** no duration or partial-input sweep.
+
+**Tests:** 11, each seen failing under a sabotage of the code it checks (`scripts/memory_m6/sabotage_outlast.py`: 23 of
+23 caught).
