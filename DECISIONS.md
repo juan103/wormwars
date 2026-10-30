@@ -12202,3 +12202,46 @@ known in earlier models.
 - **stop**, folding the check into the synthesis (Fable);
 - **a causal test of the champions' fading effects** (Astra);
 - **a CPU-minutes description** of the switches with the food returned to baseline after the ramp (Fable).
+
+## D379 — `main` brought up to date with D366-D378; the owner orders the memory thread's last steps (2026-10-30)
+
+**The owner.**
+- Asked whether this sequence made sense: test whether the champions' fading history effect matters, then the quick
+  check, then stop. Their message named the champions test twice.
+- Claude suggested the order "the quick check first, then the champions test, then stop". The owner: "Regarding your
+  suggested order, go ahead".
+- On the report: "fix then publish the report, as astra and fable recommended". The report's fixes were already in
+  (D378, draft 2). Publishing is read as bringing `main` up to date.
+
+**The order:**
+1. a quick check of whether the switches' states outlast the input, with the food returned to baseline after the
+   ramp (Fable's suggestion in M6-3's review);
+2. a test of whether the evolved champions' fading history effect matters for their foraging (Astra's), designed and
+   costed first;
+3. stop, with the results folded into the write-up.
+
+**What changed before the merge.**
+- **`ROADMAP.md`:** a dated 30 October status entry (the write-up, M4e, M5, M6-0, M6-3 and the order), the status
+  header now "1-30 October", and a note under "The thread worth following".
+- **`README.md`:** the banner, the memory row (M1-M6), and a dated note with the order.
+
+**The review** (`docs/reviews/20261030-main-sync/`, one round). Both "fix first", wording only; every number checked
+out, and nothing on `roadmap` should stay off `main`. All taken:
+- **Both:**
+  - "did not make switches more common" overstated the fixed reading "We did not detect enrichment" (its intervals
+    include enrichment). Fixed in the new text, with dated corrections to the committed README and SYNTHESIS notes
+    that said it;
+  - the fading transient holds for 101 of the 102 champions on each run's own input bank;
+  - M4e's "no effect of 0.004 or more" needs "as a mean across these ten hosts";
+  - the untraceable "about 1 to 5 CPU hours" for the champions test is dropped, to be costed in its design;
+  - the README's "Next is the owner's choice" was stale;
+  - D379 had to exist.
+- **Astra:** "exact wiring" is "exact block" for M4e's T − K.
+- **Fable:** "verified" is now "its quotes checked against the sources"; the RIA note keeps "and none excludes it".
+
+As in D365, no second round, since the edits use the reviewers' own wordings.
+
+**The merge** follows D342/D348/D365's pattern, with no history rewritten:
+1. `main` fast-forwards to `roadmap`;
+2. one commit on `main` removes the working-branch banner;
+3. `roadmap` fast-forwards to `main` and puts the banner back.

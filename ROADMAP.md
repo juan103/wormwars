@@ -2,7 +2,32 @@
 
 *27 September 2026. Replaces v2. Written from roadmap v2, Astra 6's review of v2, and Claude Code's status report of the same day. A local v2.2 exists on the `roadmap` branch and was not seen when this version was written, so merge anything it adds. (Merged: see "Carried over from v2.2" below. Four factual corrections were made on installation; they are listed in D062.) This is a living document, not a pre-registration. When a result changes it, the change is recorded here with the reason.*
 
-## Status, 1-25 October 2026 (updates the section below; that section's later edits are recorded in DECISIONS.md)
+## Status, 1-30 October 2026 (updates the section below; that section's later edits are recorded in DECISIONS.md)
+
+**30 October 2026** (D366-D379): **the memory thread's later steps** (exploratory, on the CPU; each plan reviewed by
+Astra and Fable before its run and its results after; none is a pre-registration).
+- **The write-up,** [`docs/memory/SYNTHESIS.md`](docs/memory/SYNTHESIS.md) (D366, updated in D374), puts M1 to M4e
+  and M5's preparation on one page.
+- **M4e** (D367-D368): with equal magnitudes and N2's total weight, spreading the weight over N2's 260 head-core
+  edges gives fewer switch genomes than over the host's count ("lowers", by a thin margin); more weight at N2's count
+  shows no effect of 0.004 or more, as a mean across these ten hosts; N2's block's rise arrives with its uneven
+  weights (described), labelled degrees and exact block (both unresolved).
+- **M5** (D369-D373): its pilot and power calculation put a test of N2's exact wiring at 110 to 160 hosts (simulated
+  means of 72 to 91 CPU hours) for a difference near two switch genomes in 1000; the owner postponed it for its cost
+  against its benefit.
+- **M6's option 0** (D375-D377, [`docs/memory/M6-0-RESULTS.md`](docs/memory/M6-0-RESULTS.md)): no enrichment of
+  switches by selection on T1 was detected: "We did not detect enrichment of probe-defined switches in g39 champions
+  relative to the mutation-only control" (1 of 102 champions, against 5 of 408 drift genomes). On each run's own input
+  bank, for 101 of the 102 the history effect is a transient of a few tens of ticks, about six times drift's at the start, and shorter relative to
+  its own size ("shortened").
+- **M6's option 3** (D378, [`docs/memory/M6-3-LITERATURE.md`](docs/memory/M6-3-LITERATURE.md)): a bounded
+  literature check, its quotes checked against the sources, does not show the model's switch in the worm. The nearest evidence is RMD's two stable
+  membrane potentials (one report, mechanism open) and a turn memory its authors place in the phase of head-swing
+  oscillations, which the model's probe does not assay. Multistability on the connectome is known in earlier models.
+- **Next (the owner, 2026-10-30, D379), in this order:** a quick check of whether the switches' states outlast the
+  input (the food returned to baseline after the ramp; CPU minutes); a test of whether the evolved champions' fading
+  history effect matters for their foraging (a design first, costed there); then the thread stops, with the
+  results folded into the write-up.
 
 **25 October 2026** (D349-D365): **the memory thread's M1 to M4 have run** (exploratory, on the CPU; results in
 [`docs/memory/`](docs/memory/), each stage annotated in [`MEMORY-ROADMAP.md`](docs/memory/MEMORY-ROADMAP.md)). Every
@@ -423,7 +448,11 @@ Several results point the same way:
 [`docs/memory/MEMORY-ROADMAP.md`](docs/memory/MEMORY-ROADMAP.md). Its first checks point at a head circuit around the
 turn read-out, which bears on the third prediction.* *25 October 2026 (D365): M1 to M4 have run (status, above). In
 N2, RIA's head-core edges are a place where the history held in two stable states is vulnerable; whether N2's exact
-head-core wiring carries it into other graphs is unresolved.*
+head-core wiring carries it into other graphs is unresolved.* *30 October 2026 (D376-D378): the slow memory selection
+builds into 02's champions (second bullet) is, on the memory thread's probe and each run's own input bank, a fading
+transient of a few tens of ticks for 101 of the 102 champions, not a switch (M6-0). On the third bullet, a bounded
+literature check finds RIA described as an integrator of sensory and motor signals; no source checked shows it holding
+a state, and none excludes it (M6-3).*
 
 ## Two tracks, one priority
 
