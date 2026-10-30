@@ -1,0 +1,115 @@
+kunertgraf2017|26|gap junctions and synapses are both given individual conductances of g = 100pS; the synaptic sigmoid width parameter is set to β = 0.25 mV−1; cell membranes are set to a conductance of Gc = 10pS and given a leakage potential of Ecell = −35 mV; and membrane capacitances are set to 1pF.
+kunertgraf2017|26|All neurons are modeled as identical except for their connectivity and the assignment of them as excitatory or inhibitory (where Ej is set as 0mV for excitatory neurons and −45mV for inhibitory neurons).
+kunertgraf2017|52|We generated these diagrams for all 279 of the single-neuron inputs into the system.
+kunertgraf2017|20|it is a reasonable approximation to model neurons as single compartments with membrane voltage as a state variable for the neurons
+kunertgraf2017|22|Gap junctions are taken as ohmic resistances connecting each neuron
+kunertgraf2017|48|The two trajectories plotted are in response to the same constant input amplitudes into PLM and ASK, and differ only by their initial conditions.
+kunertgraf2017|60|We keep a constant input of 2 × 104 into the PLM pair and use as our bifurcation parameter the input into the ASK pair.
+kunertgraf2017|60|at about 1.7 × 104 the system becomes bistable with the addition of a new fixed point
+kunertgraf2017|16|simulated transient dynamics are seen to be much slower (on the order of seconds to tens of seconds) than any intrinsic neuronal timescales (which in our model do not exceed a few 100 ms)
+kunertgraf2017|69|comparing, for example, the three orders of magnitude between the ~100 ms neural timescales in Section 2.4 to the ~10 s transient lengths in Figure 4
+kunertgraf2017|54|32.6% of sensory neurons and 26.7% of interneurons give rise to oscillatory dynamics, whereas only 8.4% of motorneurons result in oscillation when stimulated
+kunertgraf2017|54|The majority of sensory neurons are seen to drive bifurcations in the system at lower input levels than for most interneurons, which in turn require lower inputs than most motorneurons.
+kunertgraf2017|30|in combination with the simple neuron model and parameter assumptions, mean that specific responses to given inputs seen within the model can be encoded only within the network's connectivity.
+kunertgraf2017|30|compare how our model, lacking this, does not sustain oscillation in the absence of explicit external input
+kunertgraf2017|51|there is no theoretical guarantee that we find all possible states of the system, such that others could exist
+kunertgraf2017|66|Displacing the system in the full-dimensional space then projecting the higher-dimensional basins of attraction onto this plane fails to show any clear structure
+kunertgraf2017|32|τfree=C/Gc=100ms
+kunertgraf2017|63|comparing, for example, the model's free neuron decay constant of 10 ms
+kunertgraf2017|70|the multistability of attractors and long-time transients are not engineered in the model to fit the data and observations, rather they naturally arise from the dynamics associated with the connectome
+izquierdo2013|24|We therefore only considered the 10 head and neck motor neuron classes: RIV, RIM, RMG, RMF, RMH, RMD, RME, SMB, SMD, and URA [80].
+izquierdo2013|29|from studies of locomotion [81], we know SMB motor neurons set the amplitude of sinusoidal movement.
+izquierdo2013|30|When we constrained the network to paths with 2 or more contacts, we obtained a network that contained only two interneuron classes: AIY and AIZ (Figure 2).
+izquierdo2013|114|Interneurons were modeled as passive, isopotential nodes according to:
+izquierdo2013|116|The model assumed chemical synapses release neurotransmitter tonically and that steady-state postsynaptic voltage is a sigmoidal function of presynaptic voltage [56]:
+izquierdo2013|120|Neck motor neurons were modeled similar to the interneurons, except with self-connections.
+izquierdo2013|121|we did not explicitly model this mechanism; instead, we represented its effect as a sine wave
+izquierdo2013|111|using an instantaneous function of a derivative operator applied to the recent history of attractant concentration [94]
+izquierdo2013|133|The optimization algorithm was run for populations of 60 individuals.
+izquierdo2013|133|The algorithm was run 100 times (using different random seeds), yielding 100 distinct networks.
+izquierdo2013|133|Network parameters were symmetrical across the dorsal/ventral midline.
+izquierdo2013|35|Out of the 100 evolutionary runs, 17 failed to produce networks capable of efficient chemotaxis (chemotaxis index lower than 0.5, see Methods).
+izquierdo2013|74|(1) The two motor neurons are biased such that when one motor neuron is sensitive to sensory input, the other is not.
+izquierdo2013|74|(3) The dynamics of sensory responses are adjusted so that changes in curvature are transient, lasting for approximately the duration of a head sweep.
+izquierdo2013|72|turning angle is decreased for approximately the duration of a head sweep (2.1 secs, cf. Fig. 6)
+izquierdo2013|59|The AIZ gap junction plays a crucial role in redistributing and broadening the sensitivities to the changes in concentration between the left and right cells.
+izquierdo2013|92|Third, the SSIO curve of the majority of motor neurons was unistable (self-connection <4). Crucially, all solutions had at least one unistable pair of motor neurons.
+izquierdo2013|92|In the few cases where the bistable motor neurons were found, the abrupt change was in reaction to large decreases in concentration.
+izquierdo2013|94|the particular parameter sets found by different runs of the evolutionary algorithm varied widely even when producing very similar chemotaxis behavior
+izquierdo2013|101|For example, a recent study shows that RIA encodes head movement [83]. A subsequent model could explore the paths between ASE and the neck motor neurons, through RIA.
+izquierdo2013|19|it exhibits state-dependence: the reactions to sensory input depend on the worm's internal state at the time of the stimulus.
+izquierdo2013|63|It is the asymmetry in the location of the sensitive area in the SSIO curves of the motor neurons that allows for state-dependence in the network (Figure 7).
+randi2023|16|Animals were immobilized but awake, and pharyngeal pumping was visible during recordings.
+randi2023|29|We imaged activity in response to stimulation for 23,433 pairs of neurons (66% of all possible pairs in the head).
+randi2023|43|A total of 1,310 of the 23,433 measured neuron pairs, or 6%, pass our stringent criteria to be deemed functionally connected at q < 0.05 (Fig. 2c).
+randi2023|52|a large fraction of neuron pairs with monosynaptic (single-hop) wired connections are deemed functionally non-connected in our measurements (Fig. 2g).
+randi2023|52|using synaptic weights from the connectome1,6, polarities estimated from gene expression37 and common assumptions about timescales and dynamics47
+randi2023|57|Overall, however, there was fairly poor agreement between anatomy-based model predictions and our measurements.
+randi2023|57|There was also poor agreement between anatomy-based prediction and measurement when considering the response amplitudes of all neuron pairs (Fig. 3d, R2 < 0, where an R2 of 1 would be perfect agreement).
+randi2023|58|Fitting the weights and signs, given simplifying assumptions, but forbidding new connections that do not appear in the wiring diagram, improved the agreement between the anatomical prediction and the functional measurements, although overall agreement remained poor (Fig. 3d).
+randi2023|58|Although agreement was still poor, signal propagation in these animals showed better agreement with anatomy than it did in WT animals (Fig. 3d).
+randi2023|46|Functionally connected (q < 0.05) neurons were on average connected by a minimal anatomical path length of 2.1 hops (Fig. 2f)
+randi2023|45|Our measurements indicate that 11% of q < 0.05 functional connections are inhibitory (Fig. 2d)
+randi2023|47|Kernels for many neuron pairs varied across trials and animals, presumably because of state- and history-dependent effects45
+randi2023|73|Fifty-three pairs of neurons met our criteria (Extended Data Fig. 9), and were therefore putative candidates for purely extrasynaptic signalling.
+randi2023|75|the candidate extrasynaptic pairs AVER–RMDDR (c), AVDR–ASHR (d) and RMDDR–RMDDL (e)
+randi2023|89|By directly evoking calcium activity on a timescale of seconds, extrasynaptic signalling serves a functional role similar to that of classical neurotransmitters and contributes to neural dynamics.
+randi2023|83|Predictions based on our functional measurements of signal propagation kernels (right bars, Fig. 6) performed best of all at predicting spontaneous activity correlations.
+randi2023|91|A future direction will be to search for latent connections that might become functional only during certain internal states.
+randi2023|92|we generated a strain that is not behaviourally wild type; its signal propagation might therefore also differ from the wild type.
+witvliet2021|56|we analysed eight isogenic C. elegans beginning with the earliest larva stage and ending with the adult.
+witvliet2021|45|About 43% of all cell-cell connections – accounting for 16% of all chemical synapses – are not conserved between isogenic animals.
+witvliet2021|23|In the adult connectome, stable and variable connections each represented ~43% of total connections. Developmentally dynamic connections represented ~14% (Fig. 2b).
+witvliet2021|24|Stable connections contained more synapses than variable ones (6.6±5.8 versus 1.4±1.0 synapses per connection, in adults), and constituted a large proportion (~72%) of total synapses (Fig. 2c).
+witvliet2021|92|When using these adult datasets to quantify variability, variable connections still made up ~50% of all connections (Extended Data - Figure 9a,b).
+witvliet2021|25|Modulatory neurons exhibited higher variability in their output connections, whereas motor neurons exhibited the least variability.
+witvliet2021|27|Connections between interneurons and from interneurons to motor neurons had disproportionately more stable connections than developmentally dynamic connections
+witvliet2021|28|However, the layout of interneuron circuits, the core decision-making architecture, is largely stable from birth to adulthood.
+witvliet2021|85|or if they had been reported to use serotonin (AIM, HSN), dopamine (ADE, CEP), or octopamine (RIC) [19, 20].
+witvliet2021|89|1647 connections (averaging 323 per dataset) had no more than two synapses in two or more datasets and were left-right asymmetric. These connections were classified as variable.
+witvliet2021|65|Gap junctions were partially annotated and excluded from analyses.
+witvliet2021|131|This allowed us to compare stable, variable, and developmentally dynamic synaptic networks across development but not to assess animal-to-animal variability at each age.
+witvliet2021|18|Thus, maturation progressively focuses the flow of information onto the most highly-connected neurons at birth.
+bhattacharya2019|11|every one of the 118 neuron classes of the C. elegans hermaphrodite makes electrical synapses to an average number of 9.7 synaptic partners (range: 1 to 30)
+bhattacharya2019|20|The expression pattern of most innexins is stable throughout larval and adult stages under non-crowded, well-fed conditions
+bhattacharya2019|22|We found that 11 of the 14 innexin genes expressed in the nervous system in larval and adult stages show striking neuron-specific expression plasticity
+bhattacharya2019|22|Overall, 86 of the 118 neuron classes show expression change in the dauer stage (Fig.1,2,S1,S2).
+bhattacharya2019|50|In the dauer nervous system, the expression of 12 out of 14 neuronal innexins is altered in 86 out of 118 neuron classes.
+bhattacharya2019|26|We found that during the dauer molt, the inx-6 reporter allele, ot804, was additionally turned on in a single pair of interneurons, AIB (Fig.3B).
+bhattacharya2019|26|inx-6 expression was also turned on in AIB during L1-diapause (L1d), which was reversible and disappeared upon feeding (Fed-L1) (Fig.3B).
+bhattacharya2019|32|These results together suggest that the regulation of inx-6 expression in AIB is both necessary and sufficient for the induction of potential BAG-AIB electrical synapses.
+bhattacharya2019|43|We found that unc-7 expression was specifically downregulated in AVA in dauer (Fig.1B,6M), suggesting a remodeling of the many electrical synapses that AVA normally makes (White et al., 1986).
+bhattacharya2019|202|Expression of the unc-7 fosmid reporter (otEx7106) is lost in AVA in dauer, while continue to be expressed in RMD and AVE.
+bhattacharya2019|46|These results demonstrate that the environmentally controlled insulin/IGF-1 signaling pathway leads to altered DAF-16 activity in AIB, where it cell-autonomously induces inx-6 expression in dauer.
+bhattacharya2019|35|To assess the impact of starvation alone, we also analyzed L3 animals after a 4h-8h interval with no food (starved-L3).
+bhattacharya2019|39|inx-6 mutations did not affect the pausing or forward locomotion in fed or starved non-dauers
+bhattacharya2019|49|Whereas ASK and RIM neuron classes express the maximum of 11 innexins, the I6 neuron class expresses only one innexin.
+bhattacharya2019|50|It will require the EM reconstruction of the entire nervous system of dauer stage animals to assess the extent of altered synaptic partner choice.
+nicoletti2019|14|we use available experimental data [11, 12, 15, 25, 26, 28–44] to build 14 detailed ion channel models (Table 1)
+nicoletti2019|98|The RMD model is developed based on experimental data of current clamp [13] (Fig 7A).
+nicoletti2019|81|fine-tuning the conductance values (see Table 2) to reproduce the available experimental data, i.e. membrane potential and current wave forms.
+nicoletti2019|101|After stimulus removal, the membrane potential stabilizes at a depolarized state (−46.6 mV), in agreement with experimental data [13].
+nicoletti2019|126|We could asses the existence of two stable equilibrium states of the neuron dynamics (at about -70 mV and -47 mV), which exist in the absence of applied stimuli.
+nicoletti2019|113|At g¯CCA1>1.14nS the system exhibits three fixed points: two stable (Vr and Vs) and one unstable (Vu).
+nicoletti2019|109|Strikingly, CCA1 current suppression leads to the disappearance of the post-stimulus depolarized potential induced by current injection, with the repolarization process recovering the original resting value of membrane potential (Fig 9D).
+nicoletti2019|111|These observations all together suggest that CCA-1 channels are strictly connected to the presence of multiple steady-states in RMD neurons.
+nicoletti2019|114|Remarkably, the unstable state Vu acts as a threshold, which regulates the switching of neuronal dynamics between the two stable states.
+nicoletti2019|116|This suggests that modulations of g¯LEAK can give rise to two different bistable regimes
+nicoletti2019|126|Notably, the RMD post-stimulus depolarized state is stable, while other C. elegans neurons classified as bistable (among which AFD) show full repolarization at the pre-stimulus resting state [10].
+nicoletti2019|127|in the RMD motor neuron we observe a bistable potential, existing in either up and down states, and switched by the overall activity of upstream neurons.
+nicoletti2019|127|Therefore, the plateau potential and the bistability ensure robustness and resilience to noise by storing the sign of the most recent input [58].
+nicoletti2019|128|we adopted a single compartment model.
+nicoletti2019|129|we cannot exclude that other parameter sets could be identified, reproducing experimental data with a similarly good degree of accuracy.
+nicoletti2019|100|The cell capacitance is set to 1.2 μF to match membrane time constant as observed from experimental current clamp data [13]
+nicoletti2019|21|RMD neurons can exhibit regenerative plateau potentials, triggered by the sequential activation of calcium channels, with a bistable resting potential [13].
+ABS:uzel2022|0|we found that few local connectivity motifs and mostly other non-local features such as triplet motifs and input similarities can predict functional relationships between neurons.
+ABS:uzel2022|0|inhibition of multiple hub neurons specifically disrupts brain-wide correlations
+ABS:towlson2013|0|We identified a small number of highly connected neurons as a rich club (N = 11) interconnected with high efficiency and high connection distance.
+ABS:goodman1998|0|We find that ASER is nearly isopotential and fails to generate classical Na+ action potentials.
+ABS:liu2018awa|0|AWA fires calcium spikes, which are initiated by EGL-19 voltage-gated CaV1 calcium channels and terminated by SHK-1 Shaker-type potassium channels
+ABS:gray2005|0|SMD motor neurons help encode the steep amplitude of omega turns, RIV motor neurons specify the ventral bias of turns that follow a reversal, and SMB motor neurons set the amplitude of sinusoidal movement.
+ABS:alkema2005|0|tyramine plays a specific role in the inhibition of egg laying, the modulation of reversal behavior, and the suppression of head oscillations in response to anterior touch
+ABS:levy2020|0|the cGMP-dependent protein kinase EGL-4 determines the timescale of threshold adaptation
+ABS:kato2015|0|This brain state evolves on a cycle, each segment of which recruits the activities of different neuronal sub-populations and can be explicitly mapped, on a single trial basis, to the animals' major motor commands.
+ABS:gordus2015|0|The interneuron response to odor depends on the collective activity of multiple neurons-AIB, RIM, and AVA-when the odor stimulus arrives.
+ABS:mellem2008|0|These neurons resembled Schmitt triggers, as their potential state appears to be bistable.

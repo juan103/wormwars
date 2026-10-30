@@ -1,0 +1,137 @@
+kaplan2020@@22@@At the lowest hierarchical level, SMD motor neurons drive ∼1-Hz head-casts, which are further nested within specific phases of the mid-level oscillation.
+kaplan2020@@22@@by comparing neuronal activity in moving versus immobilized animals, we show that these nested dynamics persist in the absence of behavioral execution.
+kaplan2020@@56@@we observed a ∼10-fold reduction of frequency upon immobilization
+kaplan2020@@81@@These results suggest that AIB is crucial for switching SMD neurons between high-activity and low-activity states (Figure 6C).
+kaplan2020@@81@@In summary, we found a major (AIB) and minor (tyramine, likely from RIM) role for two SMD inputs in switching SMD activity states at the uppermost hierarchy level.
+kaplan2020@@55@@(1) SMDD and GABAergic ventral-projecting RMED head motor neurons oscillate in synchrony; (2) SMDV, dorsal-projecting RMEV, and the VB01 B-MN oscillate in synchrony and antagonistically with the SMDD oscillator
+kaplan2020@@111@@We tested animals expressing tetanus toxin in RIA (Hendricks et al., 2012, Liu et al., 2018), thus blocking synaptic release, as well as RIA::hisCl animals (validated via imaging experiments, data not shown), and found no effect on the relationship between SMD activity and head bending
+kaplan2020@@111@@unc-25 mutants lacking GABA synthesis showed no defect in the relationship between SMD activity and head bending (Figure S7I).
+kaplan2020@@80@@SMD::hisCl animals showed increased reverse command state durations (Figure 5K), confirming that this SMD function persists in the absence of behavior.
+kaplan2020@@121@@Persistent phases of neuronal activity driving higher-level behaviors gate the occurrence of faster neuronal activity fluctuations driving lower-level behaviors.
+kaplan2020@@22@@an ∼0.05-Hz nervous-system-wide neuronal activity cycle drives switches between forward and reverse crawling states
+kaplan2020@@79@@SMDs therefore switch function depending on the long-timescale forward/reverse switch
+kaplan2020@@7@@it remains unclear how different timescale dynamics interact to give rise to such higher-order behavioral organization.
+kaplan2020@@56@@For other neurons, we cannot exclude the possibility of faster dynamics not captured by our 1–3 Hz volumetric recordings.
+kaplan2020@@113@@Upon O2 downshift, slowed propagated-bend cycles were coupled with increased head casting
+kaplan2020@@105@@head-cast frequency (K) 30 s pre- and post-O2 downshift
+kaplan2020@@144@@NGM buffer with 1 mM tetramisole and 20 mM histamine
+liu2018steer@@6@@We show that cholinergic neurotransmission encodes the oscillatory sensory response and the motor state of head undulations by acting through an acetylcholine-gated channel and a muscarinic acetylcholine receptor, respectively.
+liu2018steer@@23@@only acc-2 is expressed in RIA (Pereira et al., 2015). Previous studies show that ACC-2 functions as an acetylcholine-gated chloride channel
+liu2018steer@@22@@Thus, the muscarinic cholinergic neurotransmission mediates the motor-encoding activity of RIA axonal domains and that the two activity patterns in RIA are encoded by different signaling mechanisms.
+liu2018steer@@25@@These results indicate that the sensory-evoked axonal activity of RIA suppresses the motor-encoding activity of the same axonal domains.
+liu2018steer@@30@@transforms the spatial information of the odorant into the asymmetry between the activities of the nrV and the nrD domains.
+liu2018steer@@32@@selectively blocking the synaptic release of nrV produced head undulations that were biased towards the ventral side of the operated worms and generated trajectories that curved towards the ventral direction
+liu2018steer@@36@@the animals that were trained with PA14 for 6 hours during the adult stage
+liu2018steer@@37@@the sensorimotor integration in the RIA axonal domains is a dynamic process that can be modulated by experience or context to generate specific changes in the steering movements.
+liu2018steer@@44@@We propose that the change occurs upstream of RIA, because the sensory response of RIA to the benign bacteria is not similarly altered in the trained animals.
+liu2018steer@@19@@We used the IAA pulses at 0.5 Hz, because the frequency of the head undulations during the steering was about 0.5 Hz under the experimental conditions
+liu2018steer@@19@@Both nrV and nrD domains responded to the onset and the removal of IAA with decreased and increased GCaMP signals, respectively
+liu2018steer@@27@@animals that first freely moved on a standard agar plate for 1-2 minutes and then, after a drop of IAA was added to the plate, performed steering towards IAA
+liu2018steer@@44@@the finding that animals without RIA synaptic outputs are still able to reach the odorant is consistent with the presence of an independent sensorimotor circuit
+liu2018steer@@44@@How the developed and hard-wired neural network simultaneously encodes different behavioral outputs is not fully understood.
+liu2018steer@@10@@how the oscillatory sensory input integrates with the motor state of the head undulations to modulate steering is not understood.
+yeon2018@@5@@Both channels are expressed in the SMDD neurons, which are required and sufficient for head bending, and mediate coordinated head steering by sensing mechanical stretches due to the contraction of head muscle and orchestrating dorsal head muscle contractions.
+yeon2018@@28@@although we did not see any changes in the calcium activity of the SMDV neurons, the Ca2+ transients of SMDD in trp-1 trp-2 double mutants were reverse-correlated with dorsal head bending and positively correlated to ventral head bending.
+yeon2018@@40@@When we tested unc-54 (e1092) myosin heavy chain mutants, which are paralyzed because of severe defects in muscle contractions [56], we found a complete absence of SMD calcium transients (Fig 4F).
+yeon2018@@29@@Upon termination of the light stimulation, the animals immediately reverted to normal forward movement.
+yeon2018@@37@@Furthermore, ablation of the SMDV neurons induces dorsal circling locomotion (Fig 4B and 4C).
+yeon2018@@40@@the correlation between head bending and the activity of their SMD neurons was quantitatively unaltered compared to wild type (Fig 4E).
+yeon2018@@20@@The ventral circling locomotion of trp-1 trp-2 double mutants persists in the absence of bacterial food (S5 Fig).
+yeon2018@@46@@These Ca2+ influxes may arise from a yet unidentified proprioceptor in the SMD processes that run along the body.
+yeon2018@@45@@Although we could not completely rule out the possibility of an indirect and modulatory role of TRP-1/TRP-2 in stretch sensation
+yeon2018@@40@@The worms were placed into the 4% agar pad to be immobilized.
+huo2024@@8@@Here, we show that Sublateral Anterior A (SAA), a class of interneurons that enable cross-communication between dorsal and ventral head motor neurons, play a dual role in shaping behavioral dynamics on different timescales.
+huo2024@@8@@the same neurons suppress spontaneous reversals and facilitate reversal termination by inhibiting Ring Interneuron M (RIM), an integrating neuron that helps maintain a behavioral state.
+huo2024@@21@@each of the four SMB motor neurons sends synapses to SAA, and SAA, in turn, makes gap junctions with the SMB neurons that innervate muscles on the opposite side (Fig. 2A).
+huo2024@@27@@the power spectrum density (PSD) of SAAD Ca2+activity revealed a noticeable local peak close to 0.1 Hz that matched the highest power density of head bending activity (Fig. 2I).
+huo2024@@27@@we did not observe robust state-dependent Ca2+activity in the SAAV neuron (Fig. 2H), suggesting a functional asymmetry that cannot be inferred directly from the anatomical connectome.
+huo2024@@51@@However, despite influencing the direction of head movements, RIA appears to be not directly involved in action selection or the control of movement kinematics (SI Appendix, Fig. S11) and (24).
+huo2024@@14@@persistent activities in different groups of interneurons represent distinct motor states (29, 33, 34).
+huo2024@@54@@Ongoing synaptic inhibition from SAA would hyperpolarize RIM, thus helping maintain a global dispersion state (Fig. 4).
+huo2024@@31@@the SAAD activity showed a gradual decline prior to the transition (Fig. 4I)
+huo2024@@48@@RIM, an integrating neuron that modulates the frequency and duration of a reversal (36, 47, 48, 60).
+huo2024@@47@@How SAA interneurons mediate activities in these motor neurons remains to be identified.
+huo2024@@29@@after the animal was removed from food for approximately 15 min, which corresponds to the global dispersion state.
+huo2024@@47@@This bilateral cross-coupled motif could be essential for stabilizing rhythmic motion by setting the correct phase difference between dorsal and ventral motor activities.
+shen2016@@9@@The undulatory activity of RME is regulated by a pair of cholinergic head motor neurons SMD, which facilitate head bending, and inhibits SMD to limit head bending.
+shen2016@@9@@The extrasynaptic neurotransmission between SMD and RME provides a gain control system to set head bending amplitude to a value correlated with optimal efficiency of forward movement.
+shen2016@@45@@Therefore, the undulatory calcium activity of the RME GABAergic neurons does not require head movement.
+shen2016@@68@@the extrasynaptic cholinergic neurotransmission of SMD facilitates the oscillatory activity of RME via the muscarinic acetylcholine receptor GAR-2 to regulate the amplitude of head bending.
+shen2016@@89@@Consistently, we found that ablating SMD neurons significantly reduced the amplitude of head bending, indicating that SMD promote the amplitude of head bending (Figure 5K and Video 7).
+shen2016@@105@@RME neurons negatively regulate the amplitude of head bending through the GABAB receptor GBB-1/GBB-2 in SMD (Figure 6D).
+shen2016@@95@@The head bending amplitude returned to normal upon the removal of green light (Video 8).
+shen2016@@117@@When SMD activity is high and the head bending amplitude is large, RME inhibition is strong; when SMD activity is low and the head bending amplitude is small, RME inhibition is weak.
+shen2016@@89@@there is only one synapse identified from RMED and RMEV to the four SMD neurons [RMEV→SMDDR(Right)]
+shen2016@@118@@We speculate that the slow kinetics of the metabotropic GABAB receptor and the downstream signaling match the temporal dynamics of head undulation, which operates at around 1 Hz
+shen2016@@117@@the underlying rhythmogenic circuit or neurons have not been identified.
+shen2016@@121@@A complete profile of the neurotransmitters and peptides expressed in the four RME neurons is not available yet
+shen2016@@45@@in animals immobilized with microbeads (Kim et al., 2013) RMED and REMV neurons generated oscillatory and anti-correlated calcium signals
+chen2024@@9@@CKR-1, a homolog of the cholecystokinin receptor, modulates robust escape steering and undulation body bending in C. elegans.
+chen2024@@9@@This regulation involves two neuropeptides: NLP-12 from DVA enhances undulation body curvature, while NLP-18 from ASI amplifies Ω-turn head curvature.
+chen2024@@33@@These findings provide strong evidence for the involvement of CKR-1 in the modulation of two distinct motor states: escape head steering and undulation body bending.
+chen2024@@89@@Moreover, whether the release of neuropeptides by different neurons is persistent or state dependent is yet to be determined.
+chen2024@@89@@Interestingly, these two motor states operate on different time scales, leading to an essential question about the mechanisms of spatiotemporal physiological processes.
+chen2024@@78@@NLP-12 peptides (mixed NLP-12a and NLP-12b, 1 μM each) evoked substantial Ca2+ transients in SMD neurons (Figure 5C).
+chen2024@@59@@expressing CKR-1 in SMD neurons (Pflp-22) fully rescued the observed defects
+chen2024@@70@@the EC50 achieved with the same concentration of NLP-12a was 26.5 nM, which is approximately twice that of NLP-18a, which had an EC50 of approximately 13.6 nM
+chen2024@@26@@we conducted a detailed examination of the body curvature in the well-fed free-moving nematode C. elegans during forward and backward locomotion
+larsch2015@@6@@Diacetyl responses in AWA olfactory neurons are concentration- and history-dependent; AWA integrates over time at low odor concentrations, but as concentrations rise it desensitizes rapidly through a process requiring cilia transport.
+larsch2015@@17@@at 1 µM diacetyl, AWA calcium fell in one minute to a low steady-state level that was maintained for at least five minutes (Figure 2d).
+larsch2015@@19@@rapid concentration-dependent desensitization that begins within a few seconds of odor onset, and at least two forms of habituation with different kinetics.
+larsch2015@@18@@the magnitude of AWA calcium responses fell rapidly during the first seven odor pulses, then slowly over the next ~300 pulses (Figure 2g).
+larsch2015@@28@@suggesting that diacetyl detection, desensitization and habituation are largely independent of fast synaptic input (Figure S2).
+larsch2015@@44@@In wild-type animals each odor fold-change upstep caused a transient suppression of turning, with a minimum at 22 ± 5.5 seconds and a return to baseline over the next 40 s (Figure 7b,c).
+larsch2015@@40@@In contrast with AWA, AIA responses to fold-change increases were stereotyped in magnitude and dynamics, regardless of the absolute diacetyl concentration (Figure 6d).
+larsch2015@@55@@The AIA interneurons compressed the richness of AWA dynamics across diacetyl concentration and history into calcium signals with stereotyped magnitudes and dynamics.
+larsch2015@@44@@direct depolarization of AWA with Chrimson suppressed spontaneous turning within 5 seconds, and turning off the light after 20 seconds elicited ~10 s of rebound turning (Figure 7a).
+larsch2015@@42@@Thus AWA and AIA are elements of a circuit module that preferentially detects small increases over decreases in odor concentrations.
+larsch2015@@50@@More precise temporal information awaits electrophysiological studies of AWA odor responses.
+larsch2015@@6@@After desensitization, AWA retains sensitivity to small odor increases.
+larsch2015@@44@@Animals were first pre-adapted to 115 nM diacetyl, then exposed to 58% upsteps at 2 minute intervals to a final concentration of 1–2 µM.
+kato2014@@5@@Each neuron’s response to fluctuating stimuli is largely linear, and can be described by a biphasic temporal filter and dynamical model.
+kato2014@@19@@The trial-averaged filter for AWC has an initial component that peaks at 0.9 s and decays with a t1/2 of 1.5 s
+kato2014@@19@@each is biphasic, and switches its sign after lags greater than 10-12 s for AWC and greater than ∼15 s for ASH.
+kato2014@@14@@Removing the attractive odor isoamyl alcohol after a five-minute exposure results in a calcium increase in AWC that peaks within 5 s and decays over 30-60 s (Figure 1A).
+kato2014@@14@@and stopped immediately when stimulus oscillations ceased.
+kato2014@@20@@exposing AWC to an m-sequence without the initial 5-minute odor pre-exposure yielded a temporal filter indistinguishable from that obtained with the standard odor protocol (Figure 2C).
+kato2014@@32@@This discrepancy suggests the existence of additional sensory adaptation mechanisms that are not accounted for by the LN-ODE model (Figure S4)
+kato2014@@41@@In the “pirouette” strategy, animals integrate odor history over 20-90 seconds to regulate a biased random walk
+kato2014@@43@@These results support the possibility that rapid AWC responses contribute to rapid steering behavior in chemotaxis.
+kato2014@@59@@the RIA neuron is a plausible target for detecting rapid AWC signals for steering, since it responds to AWC odors with calcium transients that are time-locked to sinusoidal head swings (Hendricks et al., 2011).
+kato2014@@52@@our results suggest that ASH-specific and AWC-specific temporal information can be propagated through the nervous system without loss
+kato2014@@63@@Movement artifacts were minimized by adding a cholinergic agonist, 1 mM tetramisole, to the worm-loading channel.
+kato2014@@9@@but beyond that, the nature of temporal encoding is a mystery.
+luo2014@@5@@Both salt gradients and setpoint memory are encoded in ASER temporal activity patterns.
+luo2014@@17@@After several hours' retraining, worms crawled down gradients with nearly the same index as worms grown overnight at 50 mM NaCl (Figure 1D).
+luo2014@@17@@The learning curves for raising or lowering the setpoint exhibit similar exponential time courses (Figure 1D).
+luo2014@@29@@Thus, the temporal profiles of the ASER calcium transients that reflect both gradient perception and setpoint memory are largely cell-autonomous.
+luo2014@@28@@When animals were exposed to a linear decrease in salt concentration below the setpoint, ASER exhibited large, sustained calcium waves that persisted for as long as the gradient was applied (Figure 3A).
+luo2014@@26@@optogenetic activation of the ASER neuron triggered a transient increase in reorientation rate for animals below the setpoint but a transient decrease when above the setpoint (Figure S2E).
+luo2014@@49@@the neuronal dynamics of major downstream interneurons – AIB, AIY, and AVA – are directly correlated with chemotactic movement but not with perception or memory (Figure 5).
+luo2014@@40@@Klinotaxis is mediated by separate downstream pathways from ASER that are not directly represented in the wiring diagram.
+luo2014@@57@@Animals were placed in the chip and exposed to either 25 mM or 75 mM NaCl for about one minute, then exposed to either an increasing or decreasing gradient (83 ± 5 µM/s).
+luo2014@@46@@While it is challenging to mimic the complex ASER activity patterns by manipulating neuronal activities, further investigation on causality will reveal behavioral consequence of these temporal activity patterns.
+hendricks2012@@6@@Thus, the single RIA axon is partitioned into distinct domains, and calcium dynamics within these domains spatially represent, or encode, head movement.
+hendricks2012@@7@@Robust compartmentalized dynamics in RIA and oscillatory dynamics in SMDs persisted in completely paralyzed animals (Fig. 2d, Supplementary Movies 3 and 4). Thus, RIA axonal activity is independent of movement.
+hendricks2012@@12@@Thus, global RIA axonal activity is transiently suppressed by IAA presentation and activated by its removal.
+hendricks2012@@13@@demonstrating that the calcium signals measured in each RIA axonal compartment represent the combined signals of sensory-evoked and motor inputs.
+hendricks2012@@11@@gar-3(gk305) mutants generated deeper head bending, leading to a larger amplitude body wave (Fig. 3g).
+hendricks2012@@14@@RIA compartmentalized dynamics exhibit key features of CD: they originate from the motor system, represent spatial attributes of the behavior, and modulate the encoded behavior.
+hendricks2012@@5@@We did not detect any prominent calcium response in the RIA cell body (Supplementary Fig. 1a).
+hendricks2012@@8@@Animals expressing either glr-1::TeTx or lad-2::TeTx transgene were severely impaired in both nrV and nrD correlations with head movement without losing calcium dynamics, producing synchronized calcium dynamics throughout the RIA neuronal process
+hendricks2012@@14@@Network models for these behaviors have been proposed, however, the potential underlying circuit mechanisms have not been observed in vivo27.
+hendricks2012@@13@@we challenged RIA with high-frequency alternating stimuli (0.25 Hz)
+ouellette2018@@10@@We found that sensory encoding in RIA is gated according to head orientation.
+ouellette2018@@10@@the first is a gate that filters sensory representations in RIA, and the second is a switch that routes RIA synaptic output to dorsal or ventral head motor neurons.
+ouellette2018@@52@@the magnitude of these responses was large when the animal’s head was bent, in either direction, and small or absent when it was not (Fig. 4C,D).
+ouellette2018@@54@@gar-3 mutants exhibited normal sensory gating (Fig. 4E). This suggests that an independent gating mechanism exists at the level of the RIA loop or upstream interneurons.
+ouellette2018@@41@@These results are consistent with the hypothesis that RIA is involved in responses to asymmetrically presented stimuli but not the temporal integration that underlies the biased random walk strategy.
+ouellette2018@@17@@steering requires constant, ongoing integration of sensory and motor information on a short time scale
+ouellette2018@@46@@only odor removal elicits a characteristic, transient, rapid head movement and only when the head is bent (Fig. 3C,D).
+ouellette2018@@20@@The basis of this model is that RIA mediates negative feedback onto head motor neurons, limiting the extent of head bending and setting gait amplitude.
+ouellette2018@@49@@Because mCa2+ levels are only partially correlated with head movements and frequently do not show dorsal-ventral differences (Hendricks et al., 2012)
+ouellette2018@@39@@Ablating RIA does not grossly affect random walk dynamics in isotropic environments or in response to olfactory stimuli
+ouellette2018@@66@@Exploration of this will require identification of postsynaptic receptors and direct measurement of RIA’s effects on its target neurons.
+ouellette2018@@21@@Finally, we identify explanatory shortcomings of the model that require further study.
+ouellette2018@@45@@Head displacement in the 2 s immediately following odor removal
+ouellette2018@@30@@their movements were recorded for 2 min, with a switch between buffer and IAA at the 1-min mark

@@ -1,0 +1,134 @@
+dunn2025|||we find that this memory is held in the relative phase of the distributed oscillations of two groups of many neurons
+dunn2025|||worms integrate olfactory sensory dynamics with instantaneous body posture to execute directed turns, after a variable intervening period of tens of seconds, suggesting the existence of a simple memory system
+dunn2025|||We evaluated the direction of the TURN produced after the intervening REV state, about 30 to 90 seconds in the future (Figure 3G), and found that our stimulations could bias the DOR/VEN ratio in both directions, depending on the value of the estimated headswing phase at the time of last stimulation before a reversal
+dunn2025|||we conclude that the phase of the headswing complex is clustered to one of two intervals [0, π] or [π, 2π] when internalized, thereby storing sensory information that guides the intent of future turns
+dunn2025|||we found no correlation between phase from FWD to the subsequent REV, suggesting a change of phase (Figure 4D)
+dunn2025|||suggesting that the internalized headswing oscillation can be somewhat stable over the course of a REV epoch (Figure 4F–H)
+dunn2025|||Surprisingly, selective optogenetic stimulation, though demonstrably depolarizing the neurons (SMDV shown in Figure 5B,L), did not bias the subsequent TURN direction (Figure 5L, Figure S6A).
+dunn2025|||This suggests that the activity of SMDD/SMDV neurons, while clearly signaling TURN identity at the time of the turn, are not the locus of the causal memory trace.
+dunn2025|||We found that spatially localized optogenetic stimulations of ventral or dorsal subcompartments of RIA nerve ring neurite (nrV, nrD), as well as RIV, also often immediately terminated reversals (Figure 5E–G).
+dunn2025|||The RIA nuclear calcium signal did not emerge as a strong correlate to either complex
+dunn2025|||The command state complex is dominated by two core bistable groups; neurons which correlate with forward locomotion counterposed with neurons which correlate with reverse locomotion (Figure 2G).
+dunn2025|||the time constant of command state projection ramping is correlated with reversal duration, the timescale over which the memory must be maintained
+dunn2025|||It is possible that there are other intermediate carriers of the memory trace– e.g. the activity of single premotor neurons, or secondary molecular carriers such as neuropeptides not observable using our current system.
+dunn2025|||Which neurons in the two complexes are necessary, and which are dispensable, for maintaining the memory?
+dunn2025|||The ability to predict deferred fictive turn decisions from prior neural activity in an immobilized, paralyzed setup demonstrates the existence of an internal short-term memory.
+dunn2025|||the one-bit short-term memory of the worm
+dunn2025|||After posture-timed optogenetic stimulation during bouts of forward crawling, individuals showed a strong preference for finishing the following reversal bout with a turn in the stimulation-biased direction before resuming forward locomotion (Figure 1B).
+dunn2025|||Several neuron classes multiplex, i.e. participate in both complexes, such as RME, RMDD, RMDV, AVE and AIB.
+dunn2025|||Olfactory activation was repeatedly timed within spontaneous head-swing oscillations during fictive forward crawling. Upon reversal initiation, stimulation was then withheld.
+kramer2026|||Distinct neurons in this sequence respond to the spatial distribution of attractive and aversive olfactory cues, anticipate upcoming turn directions and drive movement, linking key features of this sensorimotor behavior across time.
+kramer2026|||By contrast, SAAV activity was higher during reversals that ended in ventral (compared to dorsal) turns, displaying this activity difference before the turns were actually executed (Fig. 2b and Extended Data Fig. 2c).
+kramer2026|||This suggests that RMDV, SMDV and RIV are active during turns and encode the turn properties, or ‘kinematics’.
+kramer2026|||RMDD (but not RMDV) neurons invert the phase of their oscillations relative to head bending in forward versus reverse movement (Fig. 2a).
+kramer2026|||We also found that individual reorientations tend to begin 10–20 s after animals have veered in a less favorable direction (Fig. 1d).
+kramer2026|||Together, these data favor the hypothesis that the sensory gradient is integrated on very short timescales, on the order of just a couple head swings, potentially during both forward and reverse movement
+kramer2026|||we found no such difference (Extended Data Fig. 1g), suggesting that gradient sensing does not occur exclusively over long timescales during forward runs
+kramer2026|||Overall, these results establish a causal role for SAA and SMD neurons in controlling odor-guided turning.
+kramer2026|||RIM is a well-established reversal-active neuron41, with high activity throughout reversals regardless of postreversal turn direction (Fig. 6a–e).
+kramer2026|||Together, these experiments suggest that tyramine release from RIM is critical for olfactory navigation.
+kramer2026|||As reversals begin, RIM tyramine signals to the head-steering circuit to allow SAA and RMD to ramp up activity and compute turn sign and amplitude, based on existing SAA and SMB activity.
+kramer2026|||However, the activity of the neural sequence during reorientations was impaired in multiple neuron classes in tdc-1 mutants, including SMBV, SAAV, RMDV and RMDD
+kramer2026|||The roles of SMB and RIV during navigation remain less clear.
+kramer2026|||A concurrent study found that asymmetric optogenetic activation of sensory neurons during forward movement can generate D/V-directed reorientations after a time delay59, which is more consistent with the former model.
+kramer2026|||This suggests that, while SAAV shows odor-modulated activity, its activity is not related to reversal outcomes.
+sordillo2021|||we show that RIM lengthens reversals when depolarized through glutamate and tyramine neurotransmitters and lengthens forward runs when hyperpolarized through its gap junctions
+sordillo2021|||RIM is not merely silent upon hyperpolarization: RIM gap junctions actively reinforce a hyperpolarized state of the reversal circuit.
+sordillo2021|||Our results indicate that multiple classes of RIM synapses create behavioral inertia during spontaneous locomotion.
+sordillo2021|||RIM stabilizes reversals through its chemical synapses while depolarized and stabilizes forward runs through its gap junctions while hyperpolarized.
+sordillo2021|||The opposite effects of RIM ablation and acute silencing suggest that RIM has active functions when hyperpolarized that stabilize and extend forward runs.
+sordillo2021|||These results suggest that forward states are stabilized in part, but not entirely, through unc-9-containing gap junctions.
+sordillo2021|||Acute RIM silencing decreased the fraction of time that AVA activity was high and reduced spontaneous AVA transitions from the low- to the high-activity state
+sordillo2021|||All of these synaptic outputs inhibit reversal initiation, even though RIM glutamate and tyramine stabilize the reversal once it has begun.
+sordillo2021|||We speculate that inhibitory electrical synapses resembling those of RIM gap junctions may emerge as stabilizing elements of other motor circuits with long-lasting, mutually exclusive states.
+sordillo2021|||Reversal frequencies during local search are regulated by prior experience on bacterial food, including its density and distribution (Calhoun et al., 2014; López-Cruz et al., 2019); tyramine is a candidate to mediate this longer-term behavioral effect.
+sordillo2021|||How innexins and their splice forms contribute to RIM-to-AVA communication, other than requiring unc-9 function in RIM, remains to be determined.
+sordillo2021|||Over about 15 min, animals spontaneously transition into global search, a state with infrequent reversals and long forward runs that promotes dispersal (Figure 1C).
+sordillo2021|||RIM controls specific locomotor features: it increases spontaneous reversal speed and duration (Gray et al., 2005, this work), suppresses head oscillations during reversals
+ji2019|||Ablation of RIM eliminates the motor representation in AIY, allows thermosensory representations to reach downstream premotor interneurons, and reduces the animal’s ability to sustain forward movements during thermotaxis.
+ji2019|||Moreover, AIY exhibited persistent activation, the duration of which coincided reliably with that of the forward run state
+ji2019|||C. elegans movement is not required for AIY activity to reflect motor state, arguing against proprioception.
+ji2019|||This difference was particularly notable for persistent periods of cooling lasting from 7 to 30 s (Figure 6E).
+ji2019|||When exposed to oscillating inputs, the positive feedback model exhibited stable high and low states in both the interneuron and the motor neuron.
+ji2019|||while their ability to gradually modify heading angle during a forward run remained intact
+ji2019|||The head motor neurons RME, SMDD, and SMDV were selectively active during forward runs.
+ji2019|||We do not fully understand the synaptic mechanism by which CD reaches AIY.
+ji2019|||Since perturbation of chemical synaptic transmission did not fully abolish motor-related activity in AIY, neuronal communication that is independent of classic chemical synaptic transmission is likely involved in relaying CD to AIY.
+ji2019|||Forward runs play a crucial role in C. elegans navigation, but the neural circuit basis for run persistence remains poorly understood
+ji2019|||At constant temperature, run durations are similar between wild-type and RIM-ablated animals
+ji2021|||we find that mutual inhibition between two antagonistic neuromodulatory systems underlies the persistence and mutual exclusivity of the neural activity patterns observed in each state
+ji2021|||Across wild-type animals, the durations of individual dwelling states were positively correlated with the durations of co-occurring bouts of NSM activity, which both typically lasted many minutes (Figure 2D).
+ji2021|||Together, these results indicate that the serotonergic NSM neuron promotes its own activity via mutual inhibition with neurons expressing the inhibitory 5-HT receptor MOD-1 (Figure 3G).
+ji2021|||Thus, although NSM and AVB display mutually exclusive high activity states and produce opposing neuromodulators, they do not have direct connections with one another, as is typical in a flip-flop switch.
+ji2021|||We did not identify a neuron that is persistently active throughout roaming in a manner analogous to NSM activation during dwelling.
+ji2021|||Each state can last up to tens of minutes and the transitions between states are abrupt.
+ji2021|||optogenetic activation of AIA can affect state transitions on two different time scales: triggering the roaming-to-dwelling transition within a few seconds and promoting entry into the roaming state upon tens of seconds of continued activation
+ji2021|||pdfr-1 functions in multiple pdfr-1-expressing neurons, including RIM, AIY, RIA, and RIB, to promote roaming (Rhoades et al., 2019)
+ji2021|||These weights suggest that NSM activation is most likely to occur following increased activity in AIA and decreased activity in RIB and AVA.
+ji2021|||Animals preferentially switched from roaming to dwelling when their direction of motion (measured as heading bias; Figure 7C) began to deviate away from the dense food patch (Figure 7D).
+ji2021|||It is unclear whether this variable time lag involves the perdurance of 5-HT in extracellular space or other effects.
+ji2021|||fast timescale behavioral changes involve stochastic switching of flip-flop circuits
+lopezcruz2019|||A transition from local search to global search over several minutes after food removal is associated with two changes in circuit function. First, the spontaneous activity of sensory neurons falls. Second, the motor pattern generator for local search becomes less responsive to sensory input.
+lopezcruz2019|||This multimodal, distributed short-term food memory provides robust control of an innate behavior.
+lopezcruz2019|||we varied the food concentration that animals experienced for 45 minutes prior to food removal. Animals that had been in dilute food performed fewer reorientations during local search than animals that had been in concentrated food (Fig. 1D).
+lopezcruz2019|||Forward locomotion speed and reorientations during global search were unchanged by prior food concentrations (Fig. 1D, Fig. S1F).
+lopezcruz2019|||executing many random, undirected reversals and turns for about fifteen minutes
+lopezcruz2019|||reorientations resulting from turning during forward movement occurred at similar frequencies during local and global search (time-independent, Fig. S1D-E)
+lopezcruz2019|||we suggest that MGL-1 suppresses AIA and ADE neurotransmitter release for the 10 to 20-minute period corresponding to local search
+lopezcruz2019|||Silencing the neurons for 30 sec with light led to a nearly two-fold decrease in reorientation probability, indicating that sensory activity is necessary to maintain a high reorientation state during local search (Fig. 4G).
+lopezcruz2019|||RIM activation led to equally strong reorientation responses during local search and global search
+lopezcruz2019|||These results indicate that the glutamatergic memory is not essential, and that additional clocks can represent food history over time.
+lopezcruz2019|||Although the nature of the additional clock is unknown
+lopezcruz2019|||the neuronal circuits that represent the external sensory environment and the sites that hold the short-term food memory are not fully understood
+lopezcruz2019|||activating mgl-1 in AIA and ADE or both neurons (Fig. 3C), but not in RMD, ASI, NSM, or IL1 (Fig. S4C), was sufficient for rescue
+flavell2013|||the model yielded a distribution of dwelling state durations that fit a single exponential (τ =482 sec)
+flavell2013|||Roaming state durations fit a double-exponential distribution, indicating that there might be two populations of roaming states that differ in their durations (τ =75 sec and 520 sec)
+flavell2013|||NSM calcium transients last about one minute, but predict dwelling states for several minutes thereafter.
+flavell2013|||a persistent circuit state for dwelling may be induced by transient neuronal inhibition
+flavell2013|||Two minutes of light exposure caused existing dwelling states to extend eight minutes longer than control dwelling states (Fig. 5E)
+flavell2013|||One minute of blue light illumination caused 77% of dwelling pdfr-1::BlaC animals to switch to roaming states (vs 11% of controls) (Fig. 7D), which lasted at least as long as endogenous roaming states (Fig. S7B).
+flavell2013|||These experiments suggest that pdfr-1 expression in AIY, RIM, RIA, and other neurons promotes roaming behavior.
+flavell2013|||The circuits that drive short roaming and dwelling states in the absence of serotonin and PDF remain to be defined, as do the neurons required for the individual motor patterns of roaming and dwelling.
+flavell2013|||The origin of the endogenous NSM calcium signals is unknown.
+flavell2013|||the slow time course of neuromodulatory G-protein signaling is well-suited to convert short-lasting electrical signals into longer-lasting biochemical and behavioral states
+flavell2013|||could be tonically active in the presence of bacteria, providing permissive input onto a bistable circuit for roaming and dwelling, or dynamic changes in neurons that produce and detect serotonin might directly underlie bistability
+roberts2016|||random search in C. elegans can be understood in terms of a neuronal flip-flop circuit involving reciprocal inhibition between two populations of stochastic neurons
+roberts2016|||This assumption was based on voltage recordings from command neurons in which we regularly observed two stable membrane potentials with rapid transitions between them (Figure 2B; also see Kato et al., 2015).
+roberts2016|||In this neuron, quasi-stable membrane potentials are seen at -17 and -32 mV.
+roberts2016|||Thus, the model predicts reciprocal inhibition (Qi et al., 2012) between AVA and AVB under this assumption.
+roberts2016|||We found that the reversal potential of optically induced synaptic currents in AVA and AVB was more negative than the zero-current potential in these neurons (Figure 6B,C,D), indicating synaptic inhibition as predicted by the model.
+roberts2016|||The self-connections Wℱℱ and Wℛℛ are also mainly positive, indicating that the ON states may be stabilized by intrinsic or extrinsic positive feedback.
+roberts2016|||It is also supported by the observation of a bimodal distribution of calcium activity in AVA neurons and their upstream partners AIB and RIM (Gordus et al., 2015)
+roberts2016|||(iv) The model does not take into account temporal correlations in velocity, but instead uses only the present velocity, along with the present state, to compute transition probabilities.
+roberts2016|||it would be premature to conclude that the biological system functions as assumed
+roberts2016|||five pairs of premotor 'command' interneurons organized into two functional groups that promote forward and reverse locomotion
+wang2020|||We report that a feedforward excitation between neurons encoding distinct motor states underlies robust motor sequence generation, while mutual inhibition between these neurons controls the flexibility of timing in a motor sequence.
+wang2020|||Together, our data suggest that the feedforward inhibition (Figure 4) and feedback inhibition (Figure 6) between the backward module and the turning module implement a winner-take-all computation for action selection.
+wang2020|||Taken together, our data suggest that the feedforward excitation between the backward module and the turning module takes the form of electrical synapses, likely between AIB and RIV.
+wang2020|||Consistent with a glutamate mediated feedforward inhibition, RIB calcium activity (Psto-3::GCaMP6) significantly reduced upon optogenetic activation of AIB in immobilized animals
+wang2020|||Notably, the reversal duration became much longer and approached 30 s in some trials, which had not been observed in wild-type animals
+wang2020|||We view omega turn, a motor state encoded by transient activity in RIV, as a special manifold connecting two attractors represented by persistent activity in the forward or backward module (Figure 7D).
+wang2020|||Previously, a tyraminergic feedforward inhibition (Alkema et al., 2005; Pirri et al., 2009) from the RIM interneurons in the backward module to the SMD motor neurons in the turning module was shown to suppress head movement during reversals.
+wang2020|||RIB form gap junctions with SMDV (Figure 2A), motor neurons that have also been implicated in ventral biased omega turns
+wang2020|||The cellular and molecular mechanisms for inhibitory feedback remain to be identified.
+wang2020|||The impact of functional heterogeneity on the attractor dynamics and motor state transitions remains to be understood.
+wang2020|||r1(t) rapidly plateaued in about one second, while r2(t) increased and gradually became the dominant mode (Figure 1C right).
+wang2020|||RIM (Figure 2A) also promoted reversals (Figure 2—figure supplement 1B and E–G), but were less important in modulating the type-II transition
+wang2020|||we incorporated a plasticity mechanism analogous to short-term synaptic depression (STD): the feedforward inhibition from the backward module to the turning module becomes weaker as the reversal lasts longer (Figure 7D)
+atanas2023|||Moreover, while many neurons encode current motor actions, others integrate recent actions.
+atanas2023|||The decays of the exponentials, which determine how much a given neuron’s activity weighs past versus present velocity, varied widely across neurons (range of half-decay: 0.9 – 31.7 sec; GCaMP7f half-decay is <1 sec42,43).
+atanas2023|||Long timescale encoding was especially prominent among forward-active velocity neurons (Fig. S2I–J).
+atanas2023|||we were able to train a linear decoder to predict past velocity up to at least 20 sec prior based on current neural activity
+atanas2023|||A similar decoder could predict past head bending behavior, albeit less robustly (Fig. S2K).
+atanas2023|||For example, RIC, ADA, AVK, AIM, and AIY integrated the animal’s recent velocity over tens of seconds.
+atanas2023|||AVB, RIB, AIY, and RID encoded forward movement; AVA, RIM, and AIB encoded reverse movement; and SMDD and SMDV encoded dorsal and ventral head curvature, respectively24–30.
+atanas2023|||In addition, RMDD was more active during dorsal head bending during forwards motion, but preferred ventral head bending during reverse movement.
+atanas2023|||Our data now show that this entire network shifts its functional properties depending on movement direction.
+atanas2023|||The median fraction (across animals) of forward neurons with long timescales (half-decay τ1/2 > 20𝑠) was 0.12, compared with only 0.03 for reversal neurons
+atanas2023|||In addition, corollary discharge signals from RIM and RIA propagate information about motor state to other neurons32–34.
+atanas2023|||Recording nuclear-localized GCaMP makes it feasible to record brain-wide activity, though this approach misses local calcium signals in neurites34.
+atanas2023|||Animals continued to exhibit reduced feeding and increased reversals for minutes after the stimulus, revealing a persistent behavioral state change (Fig. 7B).
+atanas2023|||~31% of neurons that encoded behavior changed that encoding over the course of our continuous recordings
+atanas2023|||Neurons with long timescale information were located at middle sensorimotor layers, primarily in interneurons that innervated premotor and motor neurons (Fig. 5F).
+atanas2023|||We did not distinguish whether a given neuron’s encoding of behavior reflected the neuron causally driving behavior versus receiving a corollary discharge or proprioceptive signal related to behavior32–37.
+atanas2023|||However, we were not able to predict future velocity or head bending from current neural activity (Fig. 2D, S2K).

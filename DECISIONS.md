@@ -12137,3 +12137,68 @@ checked by hand: green.
 
 **Next, by the plan's branch:** option 3 (biology, a literature review to the project's standard) or option 4 (stop
 the thread here). The choice is the owner's, as a change of direction.
+
+## D378 — M6 option 3: a bounded literature check on the worm's head-steering circuit, with Fable and Astra (2026-10-30)
+
+**The owner chose option 3** ("option 3, but + consultation with fable and astra"). No compute.
+
+**Scope** (`docs/memory/M6-3-SCOPE.md`, draft 2). Draft 1 went to Astra and Fable blind (round 1, each without the
+other's answer; `docs/reviews/20261030-m6-3-scope/`). Every point was taken:
+- **Astra:** reframe the question around history-dependent sensorimotor dynamics, with fading effects equal to
+  switches; keep four evidential claims apart; admit sensory adaptation; keep distributed oscillatory dynamics;
+  correct the definition of C3 (top 30 by internal degree within K, the read-out and its one-step chemical inputs);
+  add an evidence table.
+- **Fable:** split the question into multistability, history selecting the state, and structure; keep global states
+  where C3 neurons carry them; add model precedents and the sensory layer; add the "not found" level; record search
+  strings.
+- **Claude checked C3's members** against `runs/memory-m1/anatomy.json`.
+
+**The check.**
+- 44 sources were fetched through public interfaces only (Europe PMC, NCBI E-utilities), with no bot check worked
+  around; 30 full texts were retrieved.
+- Claude read the load-bearing passages itself. Three reading agents extracted 386 verbatim quotes, all matched
+  exactly against the local texts.
+- `check_report.py` matches every quoted passage of the report (50 of 50) and catches a sabotaged quote.
+- The full texts are not committed. The source list, quote lists, scripts and log are in `reading/`.
+
+**The report** (`docs/memory/M6-3-LITERATURE.md`, draft 2). Round 2: **both** "fix then publish". Every fix was
+checked against the sources and taken; two did not hold.
+- **Astra** caught:
+  - "intrinsic" was firmer than the evidence; the plateau is modelled as intrinsic by Nicoletti and as circuit-based
+    by Liu J 2022, which Astra added;
+  - "no single neuron carries it" overread Dunn 2025, and the RIA sentence had lost its context (the authors expect
+    RIA's compartments to correlate, and RIA features improve decoding);
+  - draft 1's "outlasts its input" distinction from Kunert-Graf was wrong, because the probe holds the final food
+    level;
+  - Randi's 6% is a detection threshold, and Creamer 2024 is the counterweight;
+  - Witvliet's "swamp" inference was unsupported;
+  - López-Cruz's individual transitions are often abrupt; Sordillo's 15 minutes is the local-search period;
+  - the levels' wording and the search record needed repair.
+- **Fable** caught:
+  - the same Kunert-Graf error, independently;
+  - three Dunn details lacked quotes;
+  - Claude's own quotes were not in the checked set (now checked);
+  - the Na⁺ statement (now quoted with its "suggest");
+  - "dissected" was an inference (now "in situ");
+  - López-Cruz does not test forward turns against food history;
+  - Ouellette's hedge;
+  - Atanas, Gordus and Cecere were missing, and so were two guards;
+  - the RMD plateau rests on one report.
+- **Did not hold on checking:** Fable's doubt about "tetramisole-paralysed" (Dunn's methods use 5 mM tetramisole),
+  and about Larsch's "hours" (a five-hour experiment).
+- **The scope's RMD guard** gets a dated correction.
+
+**What it finds.** The model's switch is not found in the worm. Nearby:
+- RMD's two stable membrane potentials (one report, mechanism open);
+- persistent command and modulatory states;
+- neurons integrating recent motor history;
+- a turn memory that Dunn et al. place in the phase of distributed head-swing oscillations, which the model's probe
+  does not assay.
+
+RIA appears as an integrator; no source checked shows or tests a stored state. Multistability on the connectome is
+known in earlier models.
+
+**Next: the owner's choice.** The report recommends none. Options raised in review:
+- **stop**, folding the check into the synthesis (Fable);
+- **a causal test of the champions' fading effects** (Astra);
+- **a CPU-minutes description** of the switches with the food returned to baseline after the ramp (Fable).

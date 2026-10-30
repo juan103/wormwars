@@ -388,6 +388,7 @@ M6's behaviour question ([`MEMORY-ROADMAP.md`](MEMORY-ROADMAP.md)): does a brain
 memory? 03h's lessons apply: a path for the remembered signal that the read-out can see, and a power rule fixed in
 advance. All on the CPU unless the owner gives the GPU.
 *Annotated 2026-10-30 (D375-D377): the design began with an options note ([`M6-OPTIONS.md`](M6-OPTIONS.md)), and the owner chose its option 0, classifying 02's evolved T1 champions first ([`M6-0-RESULTS.md`](M6-0-RESULTS.md)). Selection did not make switches more common than a mutation-only drift control (1 of 102 champions). The history effect it built is, for 101 of the 102, a transient of a few tens of ticks, larger than drift's at the start. Next, by the plan's branch and at the owner's word: biology (option 3) or stopping the thread (option 4).*
+*Annotated 2026-10-30 (D378): the owner chose option 3. A bounded literature check ([`M6-3-LITERATURE.md`](M6-3-LITERATURE.md)) does not show the model's switch in the worm; it records a two-state membrane property in RMD (one report, mechanism open), persistent command and modulatory states, and a turn memory placed by its authors in oscillation phase, which the probe does not assay. Multistability on the connectome is known in earlier models, so the thread's switches are attractors of a known kind, selected by a specified history.*
 
 ## Who did what
 
