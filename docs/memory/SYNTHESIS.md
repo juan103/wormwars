@@ -105,10 +105,12 @@ The routine at every step:
 | M4d | Does N2's head-core block carry the switch into other graphs? | "Unresolved (the unresolved genomes decide it)" | 26.34 | [`M4D-RESULTS.md`](M4D-RESULTS.md) |
 | M4e | What does a dense block carry: its edge count, its total weight? | Δ_count "lowers" (size unresolved); Δ_weight direction unresolved, no effect of 0.004 or more as a mean across ten hosts | 32.66 | [`M4E-RESULTS.md`](M4E-RESULTS.md) |
 | M5 pilot | M5's protocol, audit and spread, on M4e's hosts | design inputs, not a reading | 23.42 | [`M5-PILOT-RESULTS.md`](M5-PILOT-RESULTS.md) |
+| M6 option 0 (added 2026-10-30) | Is the history effect selection built in 02's champions a switch or fading? | no enrichment detected (1 of 102 champions a switch); persistence "shortened" against drift, relative to each genome's own start | 0.96 | [`M6-0-RESULTS.md`](M6-0-RESULTS.md) |
 
 The hours are recorded wall-clock hours on the CPU, summed before rounding to 112.43 (56.35 for M1 to M4d). The
 brainstorm's own exploratory batches, before M1, are not included, nor is M5's power calculation, a simulation outside
 the compute accounting with no neural updates (about 45 CPU minutes per reading; [`M5-POWER-RESULTS.md`](M5-POWER-RESULTS.md)).
+*Annotated 2026-10-30 (D377): with M6's option 0 the recorded total is 113.39 hours (`summary.json`, `compute`); the 112.43 above is M1 to M5's pilot.*
 
 ## What was found, step by step
 
@@ -385,6 +387,7 @@ On 2026-10-29 the owner agreed ("Sure", D374) to Claude's suggestion for what fo
 M6's behaviour question ([`MEMORY-ROADMAP.md`](MEMORY-ROADMAP.md)): does a brain with these switches use them in a task that needs
 memory? 03h's lessons apply: a path for the remembered signal that the read-out can see, and a power rule fixed in
 advance. All on the CPU unless the owner gives the GPU.
+*Annotated 2026-10-30 (D375-D377): the design began with an options note ([`M6-OPTIONS.md`](M6-OPTIONS.md)), and the owner chose its option 0, classifying 02's evolved T1 champions first ([`M6-0-RESULTS.md`](M6-0-RESULTS.md)). Selection did not make switches more common than a mutation-only drift control (1 of 102 champions). The history effect it built is, for 101 of the 102, a transient of a few tens of ticks, larger than drift's at the start. Next, by the plan's branch and at the owner's word: biology (option 3) or stopping the thread (option 4).*
 
 ## Who did what
 

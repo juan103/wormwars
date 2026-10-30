@@ -171,6 +171,27 @@ def restricted_medians(rows, cap=2000):
     return out
 
 
+def fading_profile(rows):
+    """After the data (results review, Astra and Fable): per tag, over the genomes above the start floor, the medians
+    of a, d(t)/a and the absolute d(t) = a * d(t)/a, and how many return above 0.1 a after first crossing it."""
+    out = {}
+    for tag in ("g00", "g39", "g79", "drift"):
+        el = [x for x in rows if x["tag"] == tag and x["eligible"]]
+        med = lambda v: float(np.median(v)) if v else None  # noqa: E731
+        out[tag] = {"eligible": len(el), "a": med([x["a"] for x in el]),
+                    **{f"r{t}": med([x[f"r{t}"] for x in el]) for t in (5, 30, 100)},
+                    **{f"d{t}": med([x["a"] * x[f"r{t}"] for x in el]) for t in (30, 100)},
+                    "returns": sum(1 for x in el if x["returns"])}
+    return out
+
+
+def fading_only(rows):
+    """After the data (Fable): the persistence comparison with every genome not fading set below the floor, so a
+    censored switch or unresolved drift replicate no longer ranks above every fading champion."""
+    return {against: compare_persistence([{**x, "eligible": x["eligible"] and x["class"] == FADING} for x in rows],
+                                         against) for against in ("drift", "g00")}
+
+
 def bank_reading(rows):
     """The enrichment criterion at both unresolved bounds, and the persistence comparison, for one bank."""
     g39 = [x for x in rows if x["tag"] == "g39"]
@@ -279,6 +300,8 @@ def read(out=None):
                "g39_tau_stay": next(y.get("tau_stay") for y in own if y["key"] == x["key"] and y["tag"] == "g39")}
                for x in own if x["tag"] == "g79"],
            "beside_02b": beside_02b(own, history),
+           "after_the_data": {b: {"fading_profile": fading_profile(r), "persistence_fading_only": fading_only(r)}
+                              for b, r in per_bank.items()},
            "seen_before_plan": sorted(SEEN)}
     res["words"] = words(primary, secondary, incomplete, cons["passes"], any(audits.values()))
     return res

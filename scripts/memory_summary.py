@@ -1,5 +1,5 @@
 """The memory thread's summary (docs/memory/SYNTHESIS.md): the numbers the synthesis quotes, read from the committed
-records of M1 to M4e and of M5's pilot and power calculation, so each one is traceable to a file and a field (AGENTS.md rule 5).
+records of M1 to M4e, of M5's pilot and power calculation and of M6's option 0, so each one is traceable to a file and a field (AGENTS.md rule 5).
 
     python scripts/memory_summary.py        # writes docs/memory/summary.json
 
@@ -25,6 +25,7 @@ COMPUTE = {
     "M4d": ["memory-m4d/m4d-compute-record.json"],
     "M4e": ["memory-m4e/m4e-compute-record.json"],
     "M5 pilot": ["memory-m5-pilot/m5-pilot-compute-record.json"],
+    "M6-0": ["memory-m6-0/m6-0-compute-record.json"],
 }
 
 
@@ -218,6 +219,34 @@ def build() -> dict:
                   "cpu_hours_central": r(pw["B"]["cheapest"]["cpu_hours, base, central"], 1)},
             "recommend": pw["choice"]["recommend"], "C_saving_central": r(pw["choice"]["saving"], 3),
         },
+    }
+
+    m6 = rec(RUNS / "memory-m6-0" / "reading.json")
+
+    def m6_bank(v):
+        def cmp(c):
+            return {"mean": r(c["mean"]), "interval": rl(c["interval"]), "blocks": c["blocks"],
+                    **({"runs_skipped": c["runs_skipped"]} if "runs_skipped" in c else {})}
+        return {"g39_switches": v["g39_switches"], "g39_unresolved": v["g39_unresolved"],
+                "switch_vs_drift": {k: cmp(c) for k, c in v["switch_vs_drift"].items()},
+                "enrichment_at_bounds": v["enrichment_at_bounds"],
+                "persistence_vs_drift": cmp(v["persistence_vs_drift"]),
+                "persistence_vs_g00": cmp(v["persistence_vs_g00"]), "persistence": v["persistence"]}
+
+    def m6_switches(bank):
+        by = m6["classes"][bank]["by tag, family"]
+        return {k: [v["switch"], v.get("unresolved", 0), v["n"]] for k, v in by.items()}
+
+    out["M6-0"] = {
+        "incomplete": m6["incomplete"], "consistency_passes": m6["consistency"]["passes"],
+        "consistency_checks": m6["consistency"]["checks"], "consistency_max_rel": r(m6["consistency"]["max_rel"], 6),
+        "audit_failures": {k: len(v) for k, v in m6["audit_failures"].items()},
+        "genomes": m6["genomes"]["counts"], "blocks": m6["genomes"]["blocks"],
+        "distinct_g00": m6["genomes"]["distinct_g00"],
+        "primary": m6_bank(m6["primary"]), "secondary": m6_bank(m6["secondary"]),
+        "switches_unresolved_n": {b: m6_switches(b) for b in ("own", "03mc")},
+        "median_tau_stay": {b: {k: v["median"] for k, v in t.items()} for b, t in m6["persistence_medians"].items()},
+        "words": m6["words"],
     }
     return out
 

@@ -266,7 +266,9 @@ def _world(tmp, g39_class="fading", drift_class="fading", n_blocks=6, runs_per_b
                 genomes.append({"key": key, "label": label, "tag": tag, "block": f"SH{b}-run00",
                                 "mapping": f"M{r}", "family": "SH", "graph": f"SH{b}"})
                 rows.append({"key": key, "label": label, "tag": tag, "class": cls, "reason": None, "a": a,
-                             "d5": 0.09, "eligible": a >= 1e-3, **({"tau_stay": tau} if a >= 1e-3 else {})})
+                             "d5": 0.09, "eligible": a >= 1e-3,
+                             **({"tau_stay": tau, "r5": 0.9, "r30": 0.2, "r100": 0.01, "returns": False}
+                                if a >= 1e-3 else {})})
             if k < 2:
                 off = 2.0 if history_off else 1.0
                 history[key] = {"typical_food": 0.4,
@@ -348,3 +350,31 @@ def test_reader_skips_a_run_without_an_eligible_drift_replicate(RD, tmp_path, mo
 def test_reader_secondary_only_positive_is_a_dependence_on_input(RD, tmp_path, monkeypatch):
     res = _read(RD, tmp_path, monkeypatch, secondary="separate states")
     assert res["words"]["switches"].startswith("We did not detect") and "dependence on input" in res["words"]["input"]
+
+
+def _row(key, label, a=0.1, r=0.5, eligible=True, returns=False, cls="fading", tau=50, block=0):
+    return {"key": key, "label": label, "tag": label.rstrip("0123456789") if label.startswith("drift") else label,
+            "a": a, "r5": r, "r30": r, "r100": r, "eligible": eligible, "returns": returns, "class": cls,
+            "tau_stay": tau, "block": block}
+
+
+def test_the_fading_profile_is_over_eligible_genomes_with_absolute_differences(RD):
+    rows = [_row("k", "g39", a=0.2, r=0.5, returns=True), _row("k", "g39", a=0.4, r=0.25),
+            _row("k", "g39", a=9.0, r=9.0, eligible=False, returns=True)]
+    p = RD.fading_profile(rows)["g39"]
+    assert p["eligible"] == 2 and p["a"] == pytest.approx(0.3) and p["r30"] == pytest.approx(0.375)
+    assert p["d30"] == pytest.approx(0.1) and p["returns"] == 1  # medians of a * r, not median a times median r
+    assert RD.fading_profile(rows)["g00"]["eligible"] == 0
+
+
+def test_fading_only_drops_a_censored_switch_replicate(RD):
+    rows = []
+    for b in range(4):
+        k = f"run{b}"
+        rows += [_row(k, "g39", tau=40, block=b), _row(k, "g00", tau=40, block=b),
+                 _row(k, "drift0", tau=None, cls="separate states", block=b), _row(k, "drift1", tau=40, block=b)]
+    assert RD.compare_persistence(rows, "drift")["mean"] == pytest.approx(-0.25)
+    fo = RD.fading_only(rows)
+    assert fo["drift"]["mean"] == pytest.approx(0.0) and fo["drift"]["runs_skipped"] == 0
+    rows[0]["class"] = "separate states"  # a non-fading g39 skips its run
+    assert RD.fading_only(rows)["drift"]["runs_skipped"] == 1

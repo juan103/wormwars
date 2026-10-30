@@ -1,0 +1,204 @@
+{
+ "bank": "03mc",
+ "audit": [
+  33,
+  142,
+  194,
+  205,
+  286,
+  318,
+  341,
+  389,
+  391,
+  407,
+  413,
+  437,
+  457,
+  487,
+  521,
+  539,
+  559,
+  569,
+  599,
+  604
+ ],
+ "ids": [
+  33,
+  72,
+  142,
+  192,
+  194,
+  205,
+  211,
+  286,
+  290,
+  318,
+  341,
+  355,
+  389,
+  391,
+  407,
+  413,
+  437,
+  457,
+  487,
+  521,
+  539,
+  559,
+  569,
+  599,
+  604
+ ],
+ "records": {
+  "33": {
+   "class": "fading",
+   "reason": null,
+   "root_distance": 1.9984014443252818e-15,
+   "readout_difference": 2.6020852139652106e-16
+  },
+  "72": {
+   "class": "unresolved",
+   "reason": "Newton failure; no root located from the orbit; unconfirmed candidate; unstable or marginal root",
+   "root_distance": 2.3254656472944,
+   "readout_difference": 0.2510221535323317
+  },
+  "142": {
+   "class": "fading",
+   "reason": null,
+   "root_distance": 6.661338147750939e-16,
+   "readout_difference": 6.938893903907228e-18
+  },
+  "192": {
+   "class": "persistent oscillation",
+   "reason": null,
+   "root_distance": 7.771561172376096e-16,
+   "readout_difference": 2.0296264668928643e-16
+  },
+  "194": {
+   "class": "fading",
+   "reason": null,
+   "root_distance": 1.1102230246251565e-15,
+   "readout_difference": 1.5959455978986625e-16
+  },
+  "205": {
+   "class": "fading",
+   "reason": null,
+   "root_distance": 1.9567680809018384e-15,
+   "readout_difference": 1.3877787807814457e-16
+  },
+  "211": {
+   "class": "unresolved",
+   "reason": "unconfirmed candidate; unstable or marginal root",
+   "root_distance": 1.1102230246251565e-15,
+   "readout_difference": 7.806255641895632e-18
+  },
+  "286": {
+   "class": "fading",
+   "reason": null,
+   "root_distance": 1.1102230246251565e-15,
+   "readout_difference": 7.979727989493313e-17
+  },
+  "290": {
+   "class": "separate states",
+   "reason": null,
+   "root_distance": 2.903375929798146,
+   "readout_difference": 0.1464064974694173
+  },
+  "318": {
+   "class": "fading",
+   "reason": null,
+   "root_distance": 8.881784197001252e-16,
+   "readout_difference": 1.0676680893551005e-16
+  },
+  "341": {
+   "class": "fading",
+   "reason": null,
+   "root_distance": 1.3877787807814457e-15,
+   "readout_difference": 5.828670879282072e-16
+  },
+  "355": {
+   "class": "separate states",
+   "reason": null,
+   "root_distance": 2.305709069820595,
+   "readout_difference": 0.03973094952206957
+  },
+  "389": {
+   "class": "fading",
+   "reason": null,
+   "root_distance": 1.4432899320127035e-15,
+   "readout_difference": 1.1796119636642288e-16
+  },
+  "391": {
+   "class": "fading",
+   "reason": null,
+   "root_distance": 6.106226635438361e-16,
+   "readout_difference": 1.942890293094024e-16
+  },
+  "407": {
+   "class": "fading",
+   "reason": null,
+   "root_distance": 6.800116025829084e-16,
+   "readout_difference": 1.8041124150158794e-16
+  },
+  "413": {
+   "class": "fading",
+   "reason": null,
+   "root_distance": 1.1102230246251565e-15,
+   "readout_difference": 7.068998164605489e-17
+  },
+  "437": {
+   "class": "fading",
+   "reason": null,
+   "root_distance": 5.551115123125783e-16,
+   "readout_difference": 9.8879238130678e-17
+  },
+  "457": {
+   "class": "fading",
+   "reason": null,
+   "root_distance": 1.5543122344752192e-15,
+   "readout_difference": 1.1102230246251565e-16
+  },
+  "487": {
+   "class": "fading",
+   "reason": null,
+   "root_distance": 1.3322676295501878e-15,
+   "readout_difference": 5.134781488891349e-16
+  },
+  "521": {
+   "class": "fading",
+   "reason": null,
+   "root_distance": 6.661338147750939e-16,
+   "readout_difference": 5.551115123125783e-17
+  },
+  "539": {
+   "class": "fading",
+   "reason": null,
+   "root_distance": 6.661338147750939e-16,
+   "readout_difference": 5.898059818321144e-17
+  },
+  "559": {
+   "class": "fading",
+   "reason": null,
+   "root_distance": 8.881784197001252e-16,
+   "readout_difference": 2.949029909160572e-17
+  },
+  "569": {
+   "class": "fading",
+   "reason": null,
+   "root_distance": 1.1102230246251565e-15,
+   "readout_difference": 1.3877787807814457e-16
+  },
+  "599": {
+   "class": "fading",
+   "reason": null,
+   "root_distance": 6.661338147750939e-16,
+   "readout_difference": 1.734723475976807e-17
+  },
+  "604": {
+   "class": "fading",
+   "reason": null,
+   "root_distance": 8.881784197001252e-16,
+   "readout_difference": 4.5102810375396984e-17
+  }
+ }
+}

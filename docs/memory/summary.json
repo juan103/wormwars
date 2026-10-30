@@ -37,9 +37,13 @@
       "cpu_hours": 23.42,
       "neural_updates": 13451623072
     },
+    "M6-0": {
+      "cpu_hours": 0.96,
+      "neural_updates": 312298240
+    },
     "total": {
-      "cpu_hours": 112.43,
-      "neural_updates": 63788252768
+      "cpu_hours": 113.39,
+      "neural_updates": 64100551008
     },
     "note": "recorded wall-clock hours on the CPU (T0's accounting, category probe); the total is summed before rounding; no GPU"
   },
@@ -716,6 +720,264 @@
       },
       "recommend": "C",
       "C_saving_central": 0.221
+    }
+  },
+  "M6-0": {
+    "incomplete": false,
+    "consistency_passes": true,
+    "consistency_checks": 120,
+    "consistency_max_rel": 0.000178,
+    "audit_failures": {
+      "own": 0,
+      "03mc": 0
+    },
+    "genomes": {
+      "g00": 102,
+      "g39": 102,
+      "g79": 4,
+      "drift": 408
+    },
+    "blocks": 30,
+    "distinct_g00": 49,
+    "primary": {
+      "g39_switches": 1,
+      "g39_unresolved": 0,
+      "switch_vs_drift": {
+        "lower": {
+          "mean": -0.0146,
+          "interval": [
+            -0.0437,
+            0.0125
+          ],
+          "blocks": 30
+        },
+        "upper": {
+          "mean": -0.0271,
+          "interval": [
+            -0.0604,
+            0.0042
+          ],
+          "blocks": 30
+        }
+      },
+      "enrichment_at_bounds": [
+        false,
+        false
+      ],
+      "persistence_vs_drift": {
+        "mean": -0.0948,
+        "interval": [
+          -0.1701,
+          -0.0128
+        ],
+        "blocks": 30,
+        "runs_skipped": 0
+      },
+      "persistence_vs_g00": {
+        "mean": -0.075,
+        "interval": [
+          -0.1861,
+          0.0417
+        ],
+        "blocks": 30,
+        "runs_skipped": 3
+      },
+      "persistence": "shortened"
+    },
+    "secondary": {
+      "g39_switches": 0,
+      "g39_unresolved": 0,
+      "switch_vs_drift": {
+        "lower": {
+          "mean": -0.0042,
+          "interval": [
+            -0.0104,
+            0.0
+          ],
+          "blocks": 30
+        },
+        "upper": {
+          "mean": -0.0146,
+          "interval": [
+            -0.0354,
+            0.0
+          ],
+          "blocks": 30
+        }
+      },
+      "enrichment_at_bounds": [
+        false,
+        false
+      ],
+      "persistence_vs_drift": {
+        "mean": -0.1156,
+        "interval": [
+          -0.1816,
+          -0.0503
+        ],
+        "blocks": 30,
+        "runs_skipped": 0
+      },
+      "persistence_vs_g00": {
+        "mean": -0.1944,
+        "interval": [
+          -0.2848,
+          -0.0986
+        ],
+        "blocks": 30,
+        "runs_skipped": 4
+      },
+      "persistence": "shortened"
+    },
+    "switches_unresolved_n": {
+      "own": {
+        "drift / N2": [
+          2,
+          1,
+          128
+        ],
+        "drift / N2perm": [
+          2,
+          1,
+          24
+        ],
+        "drift / SH": [
+          1,
+          1,
+          256
+        ],
+        "g00 / N2": [
+          0,
+          1,
+          32
+        ],
+        "g00 / N2perm": [
+          0,
+          0,
+          6
+        ],
+        "g00 / SH": [
+          0,
+          0,
+          64
+        ],
+        "g39 / N2": [
+          1,
+          0,
+          32
+        ],
+        "g39 / N2perm": [
+          0,
+          0,
+          6
+        ],
+        "g39 / SH": [
+          0,
+          0,
+          64
+        ],
+        "g79 / N2": [
+          0,
+          0,
+          2
+        ],
+        "g79 / SH": [
+          0,
+          0,
+          2
+        ]
+      },
+      "03mc": {
+        "drift / N2": [
+          1,
+          1,
+          128
+        ],
+        "drift / N2perm": [
+          0,
+          1,
+          24
+        ],
+        "drift / SH": [
+          1,
+          0,
+          256
+        ],
+        "g00 / N2": [
+          0,
+          0,
+          32
+        ],
+        "g00 / N2perm": [
+          0,
+          0,
+          6
+        ],
+        "g00 / SH": [
+          0,
+          0,
+          64
+        ],
+        "g39 / N2": [
+          0,
+          0,
+          32
+        ],
+        "g39 / N2perm": [
+          0,
+          0,
+          6
+        ],
+        "g39 / SH": [
+          0,
+          0,
+          64
+        ],
+        "g79 / N2": [
+          0,
+          0,
+          2
+        ],
+        "g79 / SH": [
+          0,
+          0,
+          2
+        ]
+      }
+    },
+    "median_tau_stay": {
+      "own": {
+        "g00 / N2": 49.0,
+        "g00 / N2perm": 50.0,
+        "g00 / SH": 47.0,
+        "g39 / N2": 46.5,
+        "g39 / N2perm": 41.5,
+        "g39 / SH": 39.0,
+        "g79 / N2": 69.5,
+        "g79 / N2perm": null,
+        "g79 / SH": 50.5,
+        "drift / N2": 59.0,
+        "drift / N2perm": 51.5,
+        "drift / SH": 47.0
+      },
+      "03mc": {
+        "g00 / N2": 52.0,
+        "g00 / N2perm": 54.5,
+        "g00 / SH": 43.0,
+        "g39 / N2": 47.0,
+        "g39 / N2perm": 30.5,
+        "g39 / SH": 39.0,
+        "g79 / N2": 59.0,
+        "g79 / N2perm": null,
+        "g79 / SH": 48.0,
+        "drift / N2": 55.0,
+        "drift / N2perm": 41.0,
+        "drift / SH": 46.0
+      }
+    },
+    "words": {
+      "switches": "We did not detect enrichment of probe-defined switches in g39 champions relative to the mutation-only control; 1 were found",
+      "persistence": "selection shortened the history effect's persistence against drift"
     }
   }
 }

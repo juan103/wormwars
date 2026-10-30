@@ -12100,3 +12100,40 @@ route). `scripts/memory_m6/m6_0.py` (genomes, banks, first, second) and `m6_0_re
 context tests seen failing before the change; the driver's and reader's tests each seen failing under a sabotage of
 the code they check (drift count, τ_stay, the rebound flag, the configuration and count checks, the hold; the
 switch threshold, each inconclusive cause, censoring, the skip rule, the input note, the enrichment branch).
+
+## D377 — M6 option 0's results: no enrichment of switches; the evolved history effect is a short transient (2026-10-30)
+
+**The run** (`scripts/memory_m6/m6_0.py` at e469ad1, the plan's commit; CPU; 0.96 recorded hours; one attempt,
+completed). 616 genomes (102 g39, 102 g00, 4 g79, 408 new drift) on each run's own bank (primary) and 03mc's
+(secondary). Every check passed: complete, 120 of 120 consistency checks against 02b (largest relative difference
+1.8e-4), no audit failure among 40 audited fading genomes, no unresolved g39 champion.
+
+**The readings, as fixed:** "We did not detect enrichment of probe-defined switches in g39 champions relative to the
+mutation-only control; 1 were found" (1 of 102 g39 champions, against 5 of 408 drift; g39 minus drift −0.015,
+−0.044 to +0.013, and −0.027, −0.060 to +0.004, at the two unresolved bounds). Persistence: "selection shortened the
+history effect's persistence against drift" (−0.095, −0.170 to −0.013). After the data: for 101 of the 102 champions
+the effect is a transient (median τ_stay 39 to 46.5 ticks by family), about six times larger at the start than drift's
+and larger in absolute terms at ticks 30 and 100; "shortened" is relative to each genome's own start.
+
+**The review** (one round; `docs/reviews/20261030-m6-0-results/`). **Both** "fix then publish"; every fix taken. Both
+re-derived the reading; Astra reproduced `reading.json` and `summary.json` exactly.
+- **Astra** caught: draft 1's "larger, not longer-lived" and "not a second stable state" were too categorical (now
+  relative to each genome's own start, no absolute-threshold persistence, one switch champion named); the
+  g39-conditioned inputs of the primary bank restated; "for good" now "through tick 2000"; the 41% now a
+  block-averaged win share of 40.5% with ties counted as a half; the secondary drift switch share given with its
+  unresolved bounds (2 to 4 of 408); the second-pass timing was from file timestamps, not records.
+- **Fable** caught: the "how it fades" table was not traceable to a committed file, and two cells were off by one in
+  the last digit (both caught by Astra too). It is now written by the reader (`after_the_data`), with tests seen
+  failing under sabotage. Also: the returns flag is confounded by the relative threshold (the sentence now says so);
+  the censored drift replicates count against the champions under the fixed rule (a fading-only comparison, after
+  the data, still reads below zero: −0.089, −0.162 to −0.010); a slow absolute component would by itself read
+  "shorter" for large-a genomes.
+
+**Also:** `scripts/memory_summary.py` reads the reading and the compute record (`summary.json` → `M6-0`; the memory
+thread's recorded total is now 113.39 CPU hours), with a test seen failing against the previous script. Dated
+annotations in `ROADMAP.md`, `README.md`, `docs/memory/MEMORY-ROADMAP.md` and `docs/memory/SYNTHESIS.md`; a README for
+`scripts/memory_m6/`. D376's CI poller passed a short hash to `gh run list --commit` and found nothing. D376's CI was
+checked by hand: green.
+
+**Next, by the plan's branch:** option 3 (biology, a literature review to the project's standard) or option 4 (stop
+the thread here). The choice is the owner's, as a change of direction.

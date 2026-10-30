@@ -93,3 +93,23 @@ def test_a_changed_m4e_or_m5_record_changes_the_summary(monkeypatch):
 
         monkeypatch.setattr(M, "rec", changed)
         assert json.loads(json.dumps(M.build())) != committed, folder
+
+
+def test_a_changed_m6_0_record_changes_the_summary(monkeypatch):
+    """Sabotage for M6's option 0 (D377): its reading and its compute record reach the summary (against a fresh
+    build, not the committed file, so a script that ignores them fails)."""
+    M = _module()
+    real = M.rec
+    unchanged = json.loads(json.dumps(M.build()))
+    for name, change in (
+            ("reading.json", lambda d: d["primary"].__setitem__("g39_switches", 5)),
+            ("reading.json", lambda d: d["secondary"].__setitem__("persistence", "lengthened")),
+            ("m6-0-compute-record.json", lambda d: d["totals"].__setitem__("seconds_timed", 1.0))):
+        def changed(path, name=name, change=change):
+            d = real(path)
+            if path.parent.name == "memory-m6-0" and path.name == name:
+                change(d)
+            return d
+
+        monkeypatch.setattr(M, "rec", changed)
+        assert json.loads(json.dumps(M.build())) != unchanged, name

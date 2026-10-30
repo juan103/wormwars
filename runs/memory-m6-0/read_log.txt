@@ -1,0 +1,4 @@
+{
+ "switches": "We did not detect enrichment of probe-defined switches in g39 champions relative to the mutation-only control; 1 were found",
+ "persistence": "selection shortened the history effect's persistence against drift"
+}
