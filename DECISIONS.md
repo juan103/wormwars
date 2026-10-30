@@ -12062,3 +12062,41 @@ hard-codes M0), the unresolved genomes planned, and no root-start test in T1 (it
 
 **For the owner:** option 0 first (about 1 CPU hour, up to about 5), then option 5 or 2 if champions are switches
 clearly more often than drift, or option 3 or 4 if not. The owner chooses.
+
+## D376 — M6 option 0's plan, the probe's input context, and the driver, before the run (2026-10-30)
+
+**The owner chose option 0** ("Sure, option 0"). **The plan** (`docs/memory/M6-0-PLAN.md`, draft 2; draft 1, the
+prompt, the review and the disclosed spike in `docs/reviews/20261030-m6-0-plan/`): every T1 genome 02 saved (102 g39,
+102 g00, 4 g79) and a new CPU draw of 02b's mutation-only drift control (408), classified by M2's frozen classifier
+with M4e's second pass, under each run's food mapping, on each run's own bank (02b's typical input, primary) and on
+03mc's bank (secondary, context only); persistence of the history difference (τ_stay); comparisons by cluster
+bootstrap over the 30 graph-and-run blocks; fixed readings with an inconclusive branch. Exploratory and descriptive.
+About 1 CPU hour expected; stops at 5.
+
+**Seen before the plan:** a throwaway timing spike ran the first pass on the 16 T1-M0-N2 g00 and g39 champions on
+03mc's bank; all 16 were fading. Disclosed in the plan and labelled in the reading.
+
+**The review** (one round). **Both** "agree with fixes"; every fix taken.
+- **Astra** caught: the sign test of an indicator against a share of four drift replicates does not test equal rates
+  (24.4% of non-zero differences positive at equal 10% rates), replaced by a run-level rate difference with a cluster
+  bootstrap; the "otherwise" wording over-read a failed criterion, now "we did not detect enrichment ...; N were
+  found", with an inconclusive branch (incomplete run, failed consistency check, audit failure, straddling unresolved
+  bounds); unresolved genomes never counted as non-switches; τ10 as a first crossing misses rebounds, now τ_stay with
+  a rebound flag, censoring and paired eligibility defined; new CPU drift genomes cannot be paired with 02b's GPU drift
+  values; the consistency check extended to d(5) against 02b's "after"; the state-visits stage cut; the bank saved
+  whole; legacy-equivalence and reader-wording tests.
+- **Fable** caught: the runs are not independent across mappings (02 seeds a run from graph and run index only), so
+  the unit is the 30 blocks and distinct g00 genomes are counted; the persistence comparison's mean was undefined
+  under censoring, now the share of drift replicates g39 exceeds; the loaded genomes' stored configuration was never
+  checked (now it must equal the constructed one); M4e's second pass averaged about 5 s a genome, not draft 1's 75 s;
+  drift seeds keyed to the run key; importing M4e creates run folders, so its two functions are copied with a bitwise
+  test; 02b's module picks CUDA when available, so the driver hides the GPU; the test against the library's history
+  measure and a direct test of the oscillation rerun inside the context.
+
+**The code.** `scripts/memory_m1/common.py` gains `probe_input(iface, bank)` and `final_food()`, read by `at`, `raw`,
+`ramp`, `pilot.probe_states`, `pilot.follow_from` and M4e's `continue_hold`; outside the context everything is as
+before (the earlier memory tests pass unchanged, and the default probe equals `measures.history` by an independent
+route). `scripts/memory_m6/m6_0.py` (genomes, banks, first, second) and `m6_0_read.py`. `tests/test_memory_m6.py`: the
+context tests seen failing before the change; the driver's and reader's tests each seen failing under a sabotage of
+the code they check (drift count, τ_stay, the rebound flag, the configuration and count checks, the hold; the
+switch threshold, each inconclusive cause, censoring, the skip rule, the input note, the enrichment branch).

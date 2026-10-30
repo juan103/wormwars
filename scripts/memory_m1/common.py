@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import os
 import sys
+from contextlib import contextmanager
 from pathlib import Path
 
 import numpy as np
@@ -121,13 +122,43 @@ def finite(v, where):
     return v
 
 
+_INPUT = {"iface": S.IFACE, "bank": S.BANK}  # the probe's input: M0's interface and 03mc's bank unless probe_input
+
+
+@contextmanager
+def probe_input(iface, bank):
+    """M6 option 0 (M6-0-PLAN.md): the probe's input built through another food mapping's interface and another
+    stimulus bank, for every path that builds it (at, final_food: the probe, the follow-ups, the oscillation check's
+    rerun and M4e's second pass). It does not nest. The read-out must be M0's, since the classifier's c' (C) is.
+    Restored on exit."""
+    for k in ("turn_plus", "turn_minus", "forward_plus", "forward_minus"):
+        if list(getattr(iface, k)) != list(getattr(S.IFACE, k)):
+            raise ValueError(f"the interface's {k} is not M0's: the classifier's read-out would be wrong")
+    if _INPUT.get("active"):
+        raise RuntimeError("probe_input does not nest")
+    saved = dict(_INPUT)
+    _INPUT.update(iface=iface, bank=bank, active=True)
+    try:
+        yield
+    finally:
+        _INPUT.clear()
+        _INPUT.update(saved)
+
+
+def final_food():
+    """The probe's final food level: the bank's mean food."""
+    b = _INPUT["bank"]
+    return (b["food_left"] + b["food_right"]) / 2
+
+
 def at(cfg, n, s, levels):
-    return torch.cat([S._current(S.IFACE, cfg, dict(S.BANK, food_left=lv, food_right=lv), n, s, "cpu")
+    b = _INPUT["bank"]
+    return torch.cat([S._current(_INPUT["iface"], cfg, dict(b, food_left=lv, food_right=lv), n, s, "cpu")
                       for lv in levels], 1)
 
 
 def raw(cfg, v):  # [S, rows]: 03's raw turn, row by row
-    return torch.stack([S._readout(S.IFACE, cfg, v[:, r:r + 1])[:, 1] for r in range(v.shape[1])], 1)
+    return torch.stack([S._readout(_INPUT["iface"], cfg, v[:, r:r + 1])[:, 1] for r in range(v.shape[1])], 1)
 
 
 def ramp(g, cfg, warm=100, span=10, with_steady=False):
@@ -135,7 +166,7 @@ def ramp(g, cfg, warm=100, span=10, with_steady=False):
     with_steady also the steady contrast (falling-start minus rising-start raw turn at the warm-up's end, [S])."""
     brain = Brain(g)
     s, n = g.n_strains, g.spec.n
-    food = (S.BANK["food_left"] + S.BANK["food_right"]) / 2
+    food = final_food()
     starts = (0.25 * food, 1.75 * food)
     v = brain.initial_state(2)
     cur = at(cfg, n, s, starts)

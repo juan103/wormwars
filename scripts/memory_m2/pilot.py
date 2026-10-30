@@ -51,7 +51,7 @@ def probe_states(g, cfg, starts=(0.25, 1.75), substeps=None, dtype=torch.float32
     the float64 brain."""
     brain = Brain(g) if dtype == torch.float32 else E.brain64(g)
     s, n = g.n_strains, g.spec.n
-    food = (c.S.BANK["food_left"] + c.S.BANK["food_right"]) / 2
+    food = c.final_food()
     lv0 = [x * food for x in starts]
     cur = lambda levels: c.at(cfg, n, s, levels).to(dtype)  # noqa: E731
     v = brain.initial_state(len(starts)).to(dtype)
@@ -405,7 +405,7 @@ def follow_from(g, cfg, initial, substeps=None, dtype=torch.float32, ticks=FOLLO
     recorded as probe_states() records it."""
     brain = Brain(g) if dtype == torch.float32 else E.brain64(g)
     s, n = g.n_strains, g.spec.n
-    food = (c.S.BANK["food_left"] + c.S.BANK["food_right"]) / 2
+    food = c.final_food()
     cf = c.at(cfg, n, s, [food] * initial.shape[1]).to(dtype)
     v = initial.to(dtype).clone()
     C = c.C.to(dtype)

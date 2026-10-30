@@ -363,7 +363,7 @@ def continue_hold(gs, cfg, end, ticks, tail=TAIL):
     ("pre_tail"), from which the oscillation check's rerun records the same ticks without repeating the rest."""
     brain = Brain(gs)
     s, n = gs.n_strains, gs.spec.n
-    food = (c.S.BANK["food_left"] + c.S.BANK["food_right"]) / 2
+    food = c.final_food()  # 03mc's bank unless M6's probe_input
     cf = c.at(cfg, n, s, [food, food]).to(torch.float32)
     v = end.to(torch.float32).clone()
     rec, pre = [], v.clone()
