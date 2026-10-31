@@ -33,7 +33,8 @@ Astra and Fable before its run and its results after; none is a pre-registration
   one state. Next: the champions' foraging test, designed first.* *Annotated 2026-10-31 (D383): the champions'
   test has run ([`docs/memory/M6-STEP2-RESULTS.md`](docs/memory/M6-STEP2-RESULTS.md), exploratory, 3.64 CPU
   hours): the champions' foraging depends on their neural time scale: making every neuron four times faster cut the T1 champions' score by 24.5% (95% interval 22.5% to 26.4%), and making them four times slower cut it by 35.1%. T0's stereo champions lost about as much (matched difference at four times faster: -2.8 points, -6.1 to +0.4; no difference detected, equivalence not established). Leaving the 39 sensory and motor neurons at their own time constants cut the cost to 6.0%. The tested interventions do not establish whether the fading history effect benefits foraging. Next, by the owner's order: the thread stops and its results are folded into the
-  write-up.*
+  write-up.* *Annotated 2026-10-31 (D384): the thread has stopped; the write-up,
+  [`docs/memory/SYNTHESIS.md`](docs/memory/SYNTHESIS.md) draft 5, takes in all of M6.*
 
 **25 October 2026** (D349-D365): **the memory thread's M1 to M4 have run** (exploratory, on the CPU; results in
 [`docs/memory/`](docs/memory/), each stage annotated in [`MEMORY-ROADMAP.md`](docs/memory/MEMORY-ROADMAP.md)). Every

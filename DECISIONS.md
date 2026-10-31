@@ -12435,3 +12435,34 @@ record is committed as `runs/memory-m6-step2/step2-compute-record.json`, since `
 annotations in `ROADMAP.md`, `README.md`, `docs/memory/MEMORY-ROADMAP.md` and `docs/memory/SYNTHESIS.md`.
 
 **Next, by the owner's order (D379):** the thread stops, and steps 1 and 2 and M6-3 are folded into the synthesis.
+
+## D384 — The memory thread stops; its synthesis, draft 5, takes in M6 (2026-10-31)
+
+**By the owner's order** (D379: the quick check, the champions' test, then stop). `docs/memory/SYNTHESIS.md` is now
+draft 5. It reports no new run. It adds a section on M6 (option 0, option 3, steps 1 and 2), M6's rows in the steps
+table and in "What holds, and what is open", M6's part of "In short", two lessons (ask whether a question can be
+answered before costing it; check where a setting is read), a paragraph on the stop and what is kept (M5 prepared and
+postponed; the open questions), and M6's credits. The recorded total is 117.23 CPU hours, with no GPU.
+
+**The review** (`docs/reviews/20261031-memory-synthesis-m6/`, one round). Both "fix then publish"; every fix taken.
+Both checked every M6 number against the results files and `summary.json`, and found the "must not say" list avoided
+except as below.
+- **Both** caught:
+  - "the T0 champions were what showed it was not specific to the single-nose task" revived the claim cut from step
+    2's results; now that the losses also occurred in the stereo task, with no matched difference detected and
+    equivalence not established;
+  - "the worm's best-described turn memory" ranked the literature; now M6-3's "the most directly relevant study
+    checked";
+  - the genome definition ("generation 0, never evolved") and the limits said to apply throughout no longer cover
+    M6; dated scope notes added, the earlier text kept;
+  - the reset alternative's "about 100 times" was a rough, unverified guess, and Astra's design review had objected
+    that it would not preserve latency.
+- **Astra** caught: step 1's second kind tied to the tested histories ("whose two tested histories merged"), since
+  other input-free attractors are not ruled out; M6-0's −0.015 is a block average with unresolved drift genomes counted
+  as non-switches; step 1's 54 returns are 53 that held plus the unresolved one.
+- **Fable** caught: the order of the last steps was Claude's, accepted by the owner, not the owner's; Astra's part in
+  the rescaling (scaling tau alone is not a time rescaling); "among them" for the open questions; M6's branch in the
+  list of steps chosen after earlier results; 03mc's bank as M6-0's secondary.
+
+**Also:** dated annotations in `ROADMAP.md`, `README.md` and `docs/memory/MEMORY-ROADMAP.md`. Nothing on the memory
+thread is scheduled.

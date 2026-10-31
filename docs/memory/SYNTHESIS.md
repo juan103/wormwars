@@ -1,4 +1,11 @@
-# The memory thread, M1 to M4e and M5's preparation: what was found
+# The memory thread, M1 to M6: what was found
+
+*Draft 5, 2026-10-31, after one round of review (Astra 6 and Fable 5.1: both "fix then publish"; every fix
+taken; [`docs/reviews/20261031-memory-synthesis-m6/`](../reviews/20261031-memory-synthesis-m6/)). It adds M6
+(D374-D383): the evolved champions classified (option 0), a bounded literature check (option 3), whether the switches' states outlast the input (step 1) and whether the champions'
+foraging depends on their neural time scale (step 2). By the owner's order (D379) the thread stops here, and this page
+takes in its last steps. Draft 4's text is kept except where M6 changes what holds, what is open or what comes next;
+the dated annotations under "What comes next" stay as written.*
 
 *Draft 4, 2026-10-29. Drafts 1 to 3 (M1 to M4d, D349-D364) were reviewed in two rounds by Astra 6 and Fable 5.1, both
 "fix then publish" in both rounds, every finding taken; they and the reviews are archived in
@@ -50,18 +57,33 @@ Exploratory throughout; nothing here is a pre-registration. Where this page inte
   (+0.0016, −0.0008 to +0.0040). Powered for a true difference of 0.002 (about two genomes in 1000), the recommended
   allocation uses 110 hosts first and up to 160, at a simulated mean of about 72 to 91 CPU hours; the owner postponed
   M5 for its cost against its benefit (D373).
+- **M6 turned to behaviour and biology, then the thread stopped** (section 7; 4.80 more CPU hours, 117.23 in all).
+  - **Evolution did not detectably favour switches.** Among 02's evolved T1 foraging champions, 1 of 102 is a
+    switch, against 5 of 408 mutation-only drift genomes ("We did not detect enrichment"; the intervals include
+    enrichment). For 101 of the 102, the history effect selection built is a transient of a few tens of ticks, about
+    six times drift's at the start.
+  - **The model's switch is not found in the worm's literature.** A bounded, quote-checked check of 44 sources finds
+    nearby phenomena (RMD's two stable potentials in one report, persistent command states, a turn memory placed by its
+    authors in oscillation phase), and multistability on the connectome is known from earlier models.
+  - **About a third of the switches keep two states with no sensory input.** In a 2000-tick removal of all sensory
+    input, "55 of 169 switches held two states" and 54 returned to their original states; 112 faded to one state.
+  - **The champions' foraging depends on their neural time scale, in both directions.** Making every neuron four times
+    faster cut their score by 24.5%, four times slower by 35.1%, with T0's stereo champions descriptively similar.
+    Whether the fading history effect itself helps them forage was not answerable at this cost.
 - **What it adds up to** (interpretation): N2's head core is unusually dense, and placing its block into other
   graphs makes history-dependent switches more common; on these 30 neurons, with equal magnitudes, spreading a fixed
   weight over more edges lowered the rate, and N2's uneven weights raised it over equal ones (described); within N2,
-  the switches are fragile at RIA's connections. Nothing so far shows that N2's labelled degrees or its specific wiring
-  add beyond its block's uneven weights, why N2's fading genomes retain more, or that any of this matters for
-  behaviour.
+  the switches are fragile at RIA's connections, and a third of them hold without sensory input. Nothing so far shows
+  that N2's labelled degrees or its specific wiring add beyond its block's uneven weights, why N2's fading genomes
+  retain more, or that the switches, or the champions' fading history effect, matter for behaviour.
 
 ## Terms
 
 - **N2** is the *C. elegans* connectome used as the brain's wiring; the **null graphs** are shuffled versions from
   five ensembles (SH, SH-route, SH-class, SH-mirror, SH-recip), each keeping different properties of N2.
 - A **genome** is one random set of weights, time constants and biases on a graph (generation 0, never evolved).
+  *Draft 5: except in section 7, where M6-0 and M6's step 2 also study 02's evolved T1 champions and drift genomes
+  (Fable, Astra).*
 - **The probe:** each genome is given two histories, a 10-tick food ramp from 0.25 or from 1.75 of the final level,
   then held at the same level. The **history difference** is how far the two runs stay apart; time is in **ticks**.
 - **The turn read-out** is the eight head motor neurons whose output turns the worm; **a** = |δy(0)| is the
@@ -106,11 +128,16 @@ The routine at every step:
 | M4e | What does a dense block carry: its edge count, its total weight? | Δ_count "lowers" (size unresolved); Δ_weight direction unresolved, no effect of 0.004 or more as a mean across ten hosts | 32.66 | [`M4E-RESULTS.md`](M4E-RESULTS.md) |
 | M5 pilot | M5's protocol, audit and spread, on M4e's hosts | design inputs, not a reading | 23.42 | [`M5-PILOT-RESULTS.md`](M5-PILOT-RESULTS.md) |
 | M6 option 0 (added 2026-10-30) | Is the history effect selection built in 02's champions a switch or fading? | no enrichment detected (1 of 102 champions a switch); persistence "shortened" against drift, relative to each genome's own start | 0.96 | [`M6-0-RESULTS.md`](M6-0-RESULTS.md) |
+| M6 option 3 | Does the worm's literature show the model's switch? | not found; nearby phenomena recorded | none | [`M6-3-LITERATURE.md`](M6-3-LITERATURE.md) |
+| M6 step 1 | Do the switches' states outlast the input? | "55 of 169 switches held two states" without sensory input; 54 returned | 0.20 | [`M6-OUTLAST-RESULTS.md`](M6-OUTLAST-RESULTS.md) |
+| M6 step 2 | Does the champions' foraging depend on their neural time scale? | four times faster "reduced" their score (−24.5%); both controls' reductions exceeded (floor caveat) | 3.64 | [`M6-STEP2-RESULTS.md`](M6-STEP2-RESULTS.md) |
 
 The hours are recorded wall-clock hours on the CPU, summed before rounding to 112.43 (56.35 for M1 to M4d). The
 brainstorm's own exploratory batches, before M1, are not included, nor is M5's power calculation, a simulation outside
 the compute accounting with no neural updates (about 45 CPU minutes per reading; [`M5-POWER-RESULTS.md`](M5-POWER-RESULTS.md)).
 *Annotated 2026-10-30 (D377): with M6's option 0 the recorded total is 113.39 hours (`summary.json`, `compute`); the 112.43 above is M1 to M5's pilot.*
+With all of M6 the recorded total is 117.23 CPU hours (`summary.json`, `compute`, `total`), still with no GPU. M6's
+steps followed the same routine: each was reviewed by both models before its run and after it, in one or two rounds.
 
 ## What was found, step by step
 
@@ -279,6 +306,73 @@ the compute accounting with no neural updates (about 45 CPU minutes per reading;
   calculation are kept, and resuming starts at the choice of host count. The counts hold for the code at 7f04382; if
   the engine or the reading changes, the power script is rerun first. A GPU run would change the cost side.
 
+### 7. M6: the evolved champions, the literature, and the thread's last two checks
+
+*Added in draft 5. Every step here is exploratory: plans fixed the measures and wordings before the runs, none was
+pre-registered.*
+
+**Option 0, the evolved champions** (D376-D377; [`M6-0-RESULTS.md`](M6-0-RESULTS.md)). M6 began with an options note
+([`M6-OPTIONS.md`](M6-OPTIONS.md)), and the owner chose to classify 02's evolved T1 foraging champions first. Every
+saved T1 genome (102 generation-39 champions, 102 generation-0, 4 generation-79) and 408 new mutation-only drift
+genomes were classified by M2's frozen classifier, under each run's food mapping, on each run's own input bank
+(primary; 03mc's bank was the secondary).
+- **Switches:** "We did not detect enrichment of probe-defined switches in g39 champions relative to the
+  mutation-only control; 1 were found" (1 of 102, against 5 of 408 drift; g39 minus drift −0.015, −0.044 to +0.013, averaged over the 30 blocks with
+  unresolved drift genomes counted as non-switches).
+  The intervals include enrichment.
+- **The fading effect:** for 101 of the 102 champions, the history effect is a transient (median τ_stay 39 to 46.5
+  ticks by family), about six times drift's at the start. The fixed reading, "shortened" against drift, is relative
+  to each genome's own start.
+
+**Option 3, the literature** (D378; [`M6-3-LITERATURE.md`](M6-3-LITERATURE.md)). At the owner's choice, with both
+reviewers consulted, a bounded check of 44 sources (30 full texts, every quoted passage matched against the sources)
+asked whether the worm shows what the model found. **It does not show the model's switch.** Nearby:
+- RMD's two stable membrane potentials (one report; its mechanism is open);
+- persistent command and modulatory states, and neurons integrating recent motor history;
+- a turn memory that Dunn et al. 2025 place in the phase of distributed head-swing oscillations, which the model's
+  probe does not assay;
+- RIA as an integrator, with no source checked showing or testing a stored state.
+
+Multistability on the connectome is known from earlier models (Kunert-Graf et al. 2017; Liu J et al. 2022), so the
+thread's switches are attractors of a known kind, selected by a specified history. This is not biological validation
+of the model, in either direction.
+
+**Step 1, do the states outlast the input?** (D380-D381; [`M6-OUTLAST-RESULTS.md`](M6-OUTLAST-RESULTS.md); Fable's
+suggestion.) The 169 N2 census switches of M2 and M4c were probed, then held for 2000 ticks with the food input off
+(F0) or all sensory input off (Z), then given their input back.
+- **Under Z:** "55 of 169 switches held two states during a 2000-tick removal of all sensory input (1 unresolved)"
+  (two located, linearly stable fixed points, each reached by its history), and "54 of 169 switches returned to their
+  original states after" it: 53 that held and the unresolved one. 112 faded to one state; 111 of those ended in
+  the rising-start history's state.
+- **F0 agrees** with Z on whether a switch held for 163 of the 169.
+- **After the data:** the switches sort into the two known kinds, roughly one to two: multistable without sensory
+  input (as in Liu J et al. 2022), or whose two tested histories merged when the food input was removed (as in
+  Kunert-Graf et al. 2017's coexisting states under constant input). Merging does not rule out other input-free
+  attractors.
+- **Not shown:** that the input-free states are the original ones (the roots move; "returned" is the test), basin
+  sizes in a noiseless model, or anything about behaviour.
+
+**Step 2, does the champions' foraging depend on their neural time scale?** (D382-D383;
+[`M6-STEP2-PLAN.md`](M6-STEP2-PLAN.md), [`M6-STEP2-RESULTS.md`](M6-STEP2-RESULTS.md); Astra's suggestion.) The owner
+asked whether the champions' fading history effect matters for their foraging. Both reviewers agreed in the design
+round that no intervention at this cost isolates it, so the step asked the nearest answerable question. Every neuron's
+time constant was multiplied by k, with the substeps divided by k, an exact time rescaling that keeps the fixed-point
+equations and changes every transient; foraging was scored on 02b's 32 criticality worlds.
+- **The fixed readings:** "Making every neuron four times faster reduced the champions' T1 foraging score (mean
+  within-champion change -24.5%, 95% interval -26.4% to -22.5%)", with the fixed caveat that faster neurons also
+  respond faster. The reduction exceeded that of the generation-0 champions and of the drift genomes, under the plan's
+  caveat: those controls score lower (1.77 and 0.93, against 2.73) and have less to lose.
+- **Both directions cost:** −7.5% at twice as fast, −12.7% at twice as slow, −35.1% at four times as slow. Mean score
+  was highest at the intact time scale among the five tested; that does not establish a tuned optimum, the generation-0
+  champions also lose in both directions, and the slow arms carry a warm-up hazard in a 200-tick episode.
+- **T0's stereo champions** gave descriptively similar losses; the matched difference at four times as fast is −2.8
+  points (−6.1 to +0.4). No difference was detected; equivalence is not established.
+- **Leaving the 39 sensory and motor neurons at their own time constants** cut the cost of speeding the rest to 6.0%.
+  The complementary arm was not run, so the cost is not placed in those neurons, and the arm does not separate
+  response speed from memory.
+- **The validation** passed: on the probe, the continued history difference shrank to a median 0.23 of intact at four
+  times as fast, and grew at four times as slow.
+
 ## What holds, and what is open
 
 *Interpretation across steps, after the data.*
@@ -303,7 +397,14 @@ the compute accounting with no neural updates (about 45 CPU minutes per reading;
 | N2's uneven weights raise the rate over equal magnitudes on the same support | holds as a description, not a reading | M4e |
 | N2's labelled degrees, or its exact block, add over the step before | unresolved (described) | M4e |
 | N2's exact block raises the protocol-confirmed share over the rewired control Rr | untested; M5 postponed | M5 pilot |
-| The switches matter for behaviour | untested | none |
+| Selection on T1 foraging made switches more common than drift | not detected (1 of 102 champions; the intervals include enrichment) | M6-0 |
+| The champions' history effect is a transient of a few tens of ticks | holds for 101 of 102, on each run's own bank | M6-0 |
+| The model's switch is shown in the worm | not found in a bounded check; nearby phenomena recorded | M6-3 |
+| About a third of N2's census switches keep two states without sensory input | holds (55 of 169 under Z, 54 returned) | M6 step 1 |
+| The champions' foraging depends on their neural time scale | holds, in both directions | M6 step 2 |
+| That dependence is larger for T1's single-nose task than T0's stereo task | not detected; equivalence not established | M6 step 2 |
+| The champions' fading history effect matters for their foraging | open; not separable from response speed at this cost | M6 step 2 |
+| The switches matter for behaviour | untested (one evolved champion has one) | none |
 
 **A reading across the steps** (interpretation, not a test). In M4d the contrasts against the intact host hold over
 every assignment of the unresolved genomes: T, R and D all beat I, the last by less (its envelope's floor 0.0009, under
@@ -324,14 +425,19 @@ estimate of the exact wiring's advantage over Rr is small and includes zero.
 
 - **One probe:** every result is for the 10-tick ramp from 0.25 or 1.75 of the final food level. M1 and M2's split
   read the turn read-out; M4a read the full-state separation; the classifier and M4d count separate states whether
-  or not the read-out differs. Pulses, other durations and other inputs are untested.
+  or not the read-out differs. Pulses, other durations and other inputs are untested. *Draft 5 (Astra, Fable):
+  this and the next two limits describe M1 to M5. M6 went beyond them: step 1 removed the input for 2000 ticks,
+  M6-0 and step 2 used each run's own input bank and evolved champions on N2 and its null graph families, and step
+  2 scored foraging. The text above is kept as written for M1 to M5.*
 - **Unevolved brains:** all genomes are random draws (generation 0). Whether evolved brains use these switches, and
-  whether they matter for foraging, is untested.
+  whether they matter for foraging, is untested. *Draft 5: M6-0 and M6's step 2 studied 02's evolved T1 champions;
+  only 1 of 102 is a switch, so whether switches matter for foraging stays untested, and step 2 tested the champions'
+  time scale, not their history effect alone.*
 - **One connectome and its nulls:** N2 against shuffled and random graphs from the project's samplers; the
   interventions are on N2, and the cross-graph tests on selected or fresh null graphs.
 - **Exploratory:** each step fixed its readings before running, but none was pre-registered, and later steps were
-  chosen after earlier results (M4c's RIA after M4b's dissection, M4d after M4c, M4e after M4d). M5, the one
-  confirmatory step, is postponed.
+  chosen after earlier results (M4c's RIA after M4b's dissection, M4d after M4c, M4e after M4d, and M6's steps after
+  M6-0 and M6-3). M5, the one confirmatory step, is postponed.
 - **The classifier:** float32 trajectories stall near roots (M2 pilot), Newton's method is sensitive near sustained
   motion, and in M4d's hosts one horizon left 0.3% to 0.5% of genomes unresolved, as many as the effect (the
   census left 33 of 47,084). M4e's second pass at 22,000 ticks settled 28% of its first-pass unresolved genomes, and in
@@ -375,6 +481,14 @@ estimate of the exact wiring's advantage over Rr is small and includes zero.
   identification limit (Astra). The owner's order did put the host count before the plan, so that safeguard worked;
   what went further than the decision needed was the precision bought before it (Fable). A rough cost and the likely
   size of the answer should go to the owner before a step's plan.
+- **Ask whether the question can be answered before costing it** (M6's step 2). The owner's question, whether the
+  champions' fading history effect matters, met an intervention that could not isolate it; the design review said so
+  and the step was reframed, with the owner told. A test that also slows the dynamics was what showed the loss was
+  two-sided, and the T0 champions showed that the losses also occurred in the stereo task, so a T1 drop could not
+  be read as specific to single-nose foraging; no matched difference was detected, and equivalence is not
+  established.
+- **Check where a setting is read.** In M6's step 2 a substeps setting on the experiment's configuration never
+  reached the brain, which reads the genome's own; a timing run showed identical scores and caught it before the plan.
 
 ## What comes next
 
@@ -391,12 +505,24 @@ advance. All on the CPU unless the owner gives the GPU.
 *Annotated 2026-10-30 (D378): the owner chose option 3. A bounded literature check ([`M6-3-LITERATURE.md`](M6-3-LITERATURE.md)) does not show the model's switch in the worm; it records a two-state membrane property in RMD (one report, mechanism open), persistent command and modulatory states, and a turn memory placed by its authors in oscillation phase, which the probe does not assay. Multistability on the connectome is known in earlier models, so the thread's switches are attractors of a known kind, selected by a specified history.*
 *Annotated 2026-10-30 (D379): the owner's order for what follows: a quick check of whether the switches' states outlast the input, then a test of whether the evolved champions' fading history effect matters for their foraging, then the thread stops, its results folded into this write-up.* *The quick check has run (D380-D381, [`M6-OUTLAST-RESULTS.md`](M6-OUTLAST-RESULTS.md)): "55 of 169 switches held two states during a 2000-tick removal of all sensory input (1 unresolved)", 54 returned to their original states after it, and 112 faded to one state. The switches sort into M6-3's two known kinds, roughly one to two: multistable without sensory input, or needing the food input. The recorded total is now 113.59 CPU hours (`summary.json`).* *Annotated 2026-10-31 (D382-D383, [`M6-STEP2-RESULTS.md`](M6-STEP2-RESULTS.md)): the champions' test has run, reframed in review as whether their foraging depends on neural time scale. The champions' foraging depends on their neural time scale: making every neuron four times faster cut the T1 champions' score by 24.5% (95% interval 22.5% to 26.4%), and making them four times slower cut it by 35.1%. T0's stereo champions lost about as much (matched difference at four times faster: -2.8 points, -6.1 to +0.4; no difference detected, equivalence not established). Leaving the 39 sensory and motor neurons at their own time constants cut the cost to 6.0%. The tested interventions do not establish whether the fading history effect benefits foraging. The recorded total is now 117.23 CPU hours (`summary.json`). The thread now stops, by the owner's order, and this write-up takes in its last steps.*
 
+**The thread stops here** (draft 5, 2026-10-31), by the owner's order of 2026-10-30 (D379): the quick check, the
+champions' test, then stop. Nothing is scheduled. What is kept for anyone who picks it up:
+- **M5,** the test of N2's exact wiring, prepared and postponed (section 6); resuming starts at the host count.
+- **Open questions** from the table above, among them: why N2's fading genomes retain more; whether the switches, or
+  the champions' fading history effect, matter for behaviour. The second needs an intervention that changes the
+  history effect without changing response speed, and step 2's review found no cheap one. The design note's
+  alternative, resetting each brain towards its steady state, was a rough, unverified guess of about 100 times the
+  cost, and Astra objected that it would not preserve latency either.
+- **The literature check's pointer:** in the most directly relevant study checked, Dunn et al. 2025 place the turn
+  memory in distributed oscillation phase, which this probe does not assay.
+
 ## Who did what
 
 - **The owner:** the question, the brainstorm's format and three of its ideas (a ring of states became M2's
   question; loops became M4's wiring question; transplanting became M4d and M5), the ChatGPT roadmap they supplied,
   the go-ahead at each step, the direction after M4d (M4e, then M5 after a power calculation), M5's postponement
-  and the turn to behaviour. Choices in between were delegated: M4a's direction was
+  and the turn to behaviour; in M6, option 0, option 3 with both reviewers consulted, and the last steps (the quick
+  check and the champions' test) and the stop, in the order Claude proposed. Choices in between were delegated: M4a's direction was
   agreed with both reviewers (D357), M4b and M4c were Claude's proposals, and M4d was chosen by consensus under the
   owner's "As you prefer, but confirm with fable and astra" (D363).
 - **Astra 6:** the decomposition of the registered measure that produced M1's correction, and the amplitude scaling
@@ -408,7 +534,10 @@ advance. All on the CPU unless the owner gives the GPU.
   null-boundary correction to M4d's power argument. M4e's factorial of edge count by total weight with W and K arms,
   its larger audit, and T − K as a package; for M5, its target fixed before its power, the identification limit, the
   Welch t in the reading (D372), rule C's invalid hosts and stage-1 audit bound, and an invalid host's audit leaking
-  into the reading.
+  into the reading. In M6: the run-level enrichment test and τ_stay (M6-0); the literature check's reframing around
+  history-dependent dynamics, and Liu J 2022 (M6-3); separating holding from returning, and Z as the test of the
+  network alone (step 1); the champions' test itself, that scaling tau alone is not a time rescaling of the update,
+  the validation with written states held fixed, the matched T1 − T0 contrast, and the step-2 results' corrections ("tuned optimum", T0 equivalence, the interior arm).
 - **Fable 5.1:** the amplitude objection that became D1; the anatomy predictor and core defined without the result
   (M3); the core dissection that pointed at RIA; M4a reading the full state, since C3 holds the read-out's inputs;
   M4b's outgoing control; M4d's Rr arm, and the argument that M5 cannot be pre-registered without host base rates,
@@ -416,17 +545,26 @@ advance. All on the CPU unless the owner gives the GPU.
   resolving its unresolved genomes could not change the decision. M4e's dose question on a block summary and its
   stage 0, the threshold reading of its arms, and the S3-matched estimand; for M5, keeping the planning effect at
   0.002, the continuation sample in place of a flag, and bringing the pilot's continuation evidence (none of 47 Rr
-  genomes resolved by 100,000 ticks) into the decision; and the Welch t's acceptance in round 2.
+  genomes resolved by 100,000 ticks) into the decision; and the Welch t's acceptance in round 2. In M6: the 30
+  graph-and-run blocks as the unit (M6-0); the RMD guard and the model precedents (M6-3); the outlast check itself and
+  the classifier's distinctness level (step 1); the exact rescaling (substeps divided by k), T0's champions as the
+  temporal control, the interior arm, the warm-up hazard, and, in the results, that the interior arm cannot place the
+  cost in the boundary neurons.
 - **Both:** the classifier's validation design in M2's nine plan rounds; independent reproductions of M4e's readings;
-  for M5, no host count before a pilot (D369).
+  for M5, no host count before a pilot (D369); in M6, the Kunert-Graf correction (the probe holds the final input, so
+  "outlasts its input" was wrong), and that no cheap intervention isolates the champions' history effect, which
+  reframed step 2.
 - **Claude:** ran the brainstorm, wrote every plan, the code and tests, ran every step, and wrote the results files
-  and this synthesis; merged the two M4e designs; recommended postponing M5. DECISIONS.md records what each review
-  caught in each.
+  and this synthesis; merged the two M4e designs; recommended postponing M5; in M6, the options note, the order of
+  the last steps the owner accepted, and the literature check's retrieval and reading. DECISIONS.md records what each
+  review caught in each.
 
 ## Where the numbers come from
 
 [`summary.json`](summary.json) (written by [`scripts/memory_summary.py`](../../scripts/memory_summary.py) from
 `runs/memory-m1/`, `runs/memory-m2/`, `runs/memory-m2-census/`, `runs/memory-m4a/` to `runs/memory-m4e/`,
-`runs/memory-m5-pilot/` and `runs/memory-m5-power-welch/`) holds the
-compute, the readings and the headline numbers above. Everything else, including "every check passed" for the census
+`runs/memory-m5-pilot/` and `runs/memory-m5-power-welch/`, and since draft 5 `runs/memory-m6-0/`,
+`runs/memory-m6-outlast/` and `runs/memory-m6-step2/`) holds the compute, the readings and the headline numbers above.
+M6-3's sources, quotes and checking scripts are in
+[`docs/reviews/20261030-m6-3-scope/reading/`](../reviews/20261030-m6-3-scope/reading/). Everything else, including "every check passed" for the census
 (the summary carries only C2, C3 and C5), is quoted from the step's results file named beside it.
