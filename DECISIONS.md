@@ -12387,3 +12387,51 @@ smoke run of the driver on one T1 run.
 
 **Cost:** about 4 to 4.3 CPU hours, capped at 5 (the owner was told 1 to 5). The forecast is weighted by load and
 leaves 30 minutes for the probe.
+
+## D383 — M6 step 2's results: the champions' foraging depends on neural time scale in both directions (2026-10-31)
+
+**The run** (`scripts/memory_m6/step2.py`, at the plan's commit 0d841d1, which Fable checked was pushed about 20 s
+before the run's attempt file). One attempt, completed, 3.64 CPU hours (13,092 s, category measure; the cap was 5).
+All 102 T1 runs and 72 T0 runs on 02b's 32 criticality worlds. Every check passed: the 24 T1-M0 champions matched
+02b's intact scores within 0.05% (tolerance 2%); "k = 1 alone" equalled k = 1 exactly; the probe validation passed
+(median continued ratio 0.233 at 0.25 with all 102 below 1, 3.16 at 4); no genome below the floor.
+
+**The fixed readings** (`runs/memory-m6-step2/reading.json`): "Making every neuron four times faster reduced the
+champions' T1 foraging score (mean within-champion change -24.5%, 95% interval -26.4% to -22.5%)", with the fixed
+caveat; the same without the switch champion; "The reduction exceeded that of the generation-0 champions" and "... of
+the drift genomes", under the plan's floor caveat (their intact scores are 1.77 and 0.93, against 2.73).
+
+**Beside them:** the champions lost 7.5% at 0.5, 12.7% at 2 and 35.1% at 4; T0's stereo champions lost about as much
+at every k (matched T1 minus T0 at 0.25: -2.8 points, -6.1 to +0.4); scaling only the interior, with the 39 sensory
+and motor neurons left at their own tau, cost 6.0%. Rho -0.39 between the drop and M6-0's a, but a tracks the intact
+score (rho 0.64).
+
+**The results** (`docs/memory/M6-STEP2-RESULTS.md`, draft 2; review `docs/reviews/20261031-m6-step2-results/`). Both
+said "fix then publish"; every fix taken. Astra reproduced `reading.json` exactly, re-derived 31 statistics with their
+bootstraps and forced each gate to fail; Fable re-derived the figures from the records.
+- **Astra** caught:
+  - "tuned optimum" contradicts the plan, which says a loss in both directions "neither establishes a tuned optimum
+    nor counts against memory"; now "highest at the intact time scale among the five tested";
+  - "as large in T0" and "nothing singles out T1" overstate a non-significant contrast;
+  - the interior arm does not favour a response-speed account over memory;
+  - the drift genomes' mean barely moves, but 28 and 42 of 102 change individually by over 10% at 0.25 and 4;
+  - two wording slips (the blocks for T0; "inside" the forecast for "below").
+- **Fable** caught:
+  - the interior result cannot place the cost in the boundary neurons, because the complementary arm was not run;
+  - the probe reads the turn neurons, which the interior arm leaves unscaled;
+  - the warm-up hazard needs its scale (an 80-tick time constant at the ceiling at k = 4, in a 200-tick episode);
+  - the generation-0 champions also lose in both directions, so a two-sided loss is not evidence of selection's
+    tuning;
+  - a list of what the synthesis must not say, kept for step 3.
+
+**Descriptive figures** the plan did not fix come from `docs/reviews/20261031-m6-step2-results/check_step2.py`
+(output `check_step2.txt`): the controls' own changes at 4, the counts lower than intact, the best of five k per
+champion (91 of 102 T1 champions best at k = 1), the drift genomes' individual changes, and the correlations with the
+intact score.
+
+**The summary:** `scripts/memory_summary.py` reads step 2's reading and compute record into `docs/memory/summary.json`
+(`M6 step 2`), with a test seen failing before the entry existed (`runs/memory-m6-step2/summary_test_seen_failing.txt`). The recorded total is 117.23 CPU hours. The compute
+record is committed as `runs/memory-m6-step2/step2-compute-record.json`, since `compute.json` is ignored. Dated
+annotations in `ROADMAP.md`, `README.md`, `docs/memory/MEMORY-ROADMAP.md` and `docs/memory/SYNTHESIS.md`.
+
+**Next, by the owner's order (D379):** the thread stops, and steps 1 and 2 and M6-3 are folded into the synthesis.

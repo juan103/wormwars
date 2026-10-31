@@ -45,9 +45,13 @@
       "cpu_hours": 0.2,
       "neural_updates": 127704416
     },
+    "M6 step 2": {
+      "cpu_hours": 3.64,
+      "neural_updates": 12023728320
+    },
     "total": {
-      "cpu_hours": 113.59,
-      "neural_updates": 64228255424
+      "cpu_hours": 117.23,
+      "neural_updates": 76251983744
     },
     "note": "recorded wall-clock hours on the CPU (T0's accounting, category probe); the total is summed before rounding; no GPU"
   },
@@ -1031,6 +1035,101 @@
         "held": "55 of 169 switches held two states during a 2000-tick removal of all sensory input (1 unresolved)",
         "recovered": "54 of 169 switches returned to their original states after a 2000-tick removal of all sensory input"
       }
+    }
+  },
+  "M6 step 2": {
+    "consistency_passes": true,
+    "validation_passes": true,
+    "below_floor": 0,
+    "primary_relative_0.25": {
+      "mean": -0.2448,
+      "interval": [
+        -0.2644,
+        -0.2253
+      ],
+      "blocks": 30
+    },
+    "primary_without_switch_champion": {
+      "mean": -0.2448,
+      "interval": [
+        -0.2644,
+        -0.2253
+      ],
+      "blocks": 30
+    },
+    "T1_relative": {
+      "0.5": {
+        "mean": -0.0749,
+        "interval": [
+          -0.0834,
+          -0.0664
+        ],
+        "blocks": 30
+      },
+      "2": {
+        "mean": -0.1273,
+        "interval": [
+          -0.1434,
+          -0.1114
+        ],
+        "blocks": 30
+      },
+      "4": {
+        "mean": -0.3513,
+        "interval": [
+          -0.3719,
+          -0.3322
+        ],
+        "blocks": 30
+      }
+    },
+    "interior_relative": {
+      "mean": -0.0599,
+      "interval": [
+        -0.07,
+        -0.0503
+      ],
+      "blocks": 30
+    },
+    "controls_difference_0.25": {
+      "g00": {
+        "mean": -0.1901,
+        "interval": [
+          -0.2169,
+          -0.1624
+        ],
+        "blocks": 30
+      },
+      "drift0": {
+        "mean": -0.2371,
+        "interval": [
+          -0.2581,
+          -0.2148
+        ],
+        "blocks": 30
+      }
+    },
+    "T0_relative_0.25": {
+      "mean": -0.2326,
+      "interval": [
+        -0.2619,
+        -0.2044
+      ],
+      "blocks": 24
+    },
+    "T1_minus_T0_0.25_matched": {
+      "mean": -0.0284,
+      "interval": [
+        -0.0606,
+        0.0037
+      ],
+      "blocks": 24
+    },
+    "words": {
+      "primary": "Making every neuron four times faster reduced the champions' T1 foraging score (mean within-champion change -24.5%, 95% interval -26.4% to -22.5%).",
+      "caveat": "This tests the champions' dependence on neural time scale; it does not establish that the probe-defined fading history effect mediates any benefit, because faster neurons also respond faster.",
+      "g00": "The reduction exceeded that of the generation-0 champions.",
+      "drift0": "The reduction exceeded that of the drift genomes."
     }
   }
 }

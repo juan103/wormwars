@@ -1,0 +1,29 @@
+keys 174 blocks 30
+T1 g39 0.25 (np.float64(-0.24481277772024834), 30)
+T1 g39 0.5 (np.float64(-0.0748643150819697), 30)
+T1 g39 2 (np.float64(-0.1272981269788628), 30)
+T1 g39 4 (np.float64(-0.3513061694329303), 30)
+T1 g39 interior 0.25 (np.float64(-0.05988213971780129), 30)
+T1 g39 intact (np.float64(2.729160455862681), 30)
+T1 g00 0.25 (np.float64(-0.085525853297784), 30)
+T1 g00 4 (np.float64(-0.14221468562912323), 30)
+T1 g00 intact (np.float64(1.774326436718305), 30)
+T1 drift0 0.25 (np.float64(-0.01803926489020512), 30)
+T1 drift0 4 (np.float64(0.025087426175974908), 30)
+T1 drift0 intact (np.float64(0.9301259398460389), 30)
+T0 g39 0.25 (np.float64(-0.232623552908527), 24)
+T0 g39 0.5 (np.float64(-0.07655758994536734), 24)
+T0 g39 2 (np.float64(-0.12447123015499033), 24)
+T0 g39 4 (np.float64(-0.34770778689321075), 24)
+T1 champions lower at 0.25 100 of 102
+T1 champions lower at 0.5 97 of 102
+T1 champions lower at 2 96 of 102
+T1 champions lower at 4 102 of 102
+1 alone == 1: True
+spearman change@0.25 vs intact SignificanceResult(statistic=np.float64(-0.2770863608348271), pvalue=np.float64(0.00481178107001082))
+spearman a vs intact SignificanceResult(statistic=np.float64(0.6394931326370786), pvalue=np.float64(4.679741599596322e-13))
+spearman change@0.25 vs a SignificanceResult(statistic=np.float64(-0.3858785078964778), pvalue=np.float64(6.190386009926509e-05))
+drift0 |relative change| > 10% at 0.25 28 of 102
+drift0 |relative change| > 10% at 4 42 of 102
+T1 champions by best of five k: {'0.25': 0, '0.5': 5, '1': 91, '2': 6, '4': 0}
+T0 champions by best of five k: {'0.25': 0, '0.5': 4, '1': 61, '2': 7, '4': 0}

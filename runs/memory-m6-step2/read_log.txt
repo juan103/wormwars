@@ -1,0 +1,6 @@
+{
+ "primary": "Making every neuron four times faster reduced the champions' T1 foraging score (mean within-champion change -24.5%, 95% interval -26.4% to -22.5%).",
+ "caveat": "This tests the champions' dependence on neural time scale; it does not establish that the probe-defined fading history effect mediates any benefit, because faster neurons also respond faster.",
+ "g00": "The reduction exceeded that of the generation-0 champions.",
+ "drift0": "The reduction exceeded that of the drift genomes."
+}

@@ -27,6 +27,7 @@ COMPUTE = {
     "M5 pilot": ["memory-m5-pilot/m5-pilot-compute-record.json"],
     "M6-0": ["memory-m6-0/m6-0-compute-record.json"],
     "M6 outlast": ["memory-m6-outlast/outlast-compute-record.json"],
+    "M6 step 2": ["memory-m6-step2/step2-compute-record.json"],
 }
 
 
@@ -258,6 +259,23 @@ def build() -> dict:
                  "recovered": [ol[arm]["recovered"]["recovered"], ol[arm]["recovered"]["unresolved"],
                                ol[arm]["recovered"]["n"]],
                  "match": ol[arm]["match"], "words": ol[arm]["words"]} for arm in ("F0", "Z")},
+    }
+
+    s2 = rec(RUNS / "memory-m6-step2" / "reading.json")
+
+    def ci(c):
+        return {"mean": r(c["mean"]), "interval": rl(c["interval"]), "blocks": c["blocks"]}
+    out["M6 step 2"] = {
+        "consistency_passes": s2["consistency"]["passes"], "validation_passes": s2["validation"]["passes"],
+        "below_floor": len(s2["below_floor"]), "primary_relative_0.25": ci(s2["primary"]),
+        "primary_without_switch_champion": ci(s2["primary"]["without_switch_champion"]),
+        "T1_relative": {k: ci(v["relative"]) for k, v in s2["k"].items()},
+        "interior_relative": ci(s2["interior"]["relative"]),
+        "controls_difference_0.25": {lb: ci(c["difference_over_champion_intact"]["0.25"])
+                                     for lb, c in s2["controls"].items()},
+        "T0_relative_0.25": ci(s2["T0"]["relative_0.25"]),
+        "T1_minus_T0_0.25_matched": ci(s2["T0"]["T1_minus_T0_0.25_matched"]),
+        "words": s2["words"],
     }
     return out
 

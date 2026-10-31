@@ -1,0 +1,35 @@
+.......F                                                                 [100%]
+================================== FAILURES ===================================
+_____________ test_a_changed_m6_step2_record_changes_the_summary ______________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000002439D1E6050>
+
+    def test_a_changed_m6_step2_record_changes_the_summary(monkeypatch):
+        """Sabotage for M6's step 2 (D383): its reading and compute record reach the summary (against a fresh build)."""
+        M = _module()
+        real = M.rec
+        unchanged = json.loads(json.dumps(M.build()))
+        for name, change in (
+                ("reading.json", lambda d: d["primary"].__setitem__("mean", 0.0)),
+                ("reading.json", lambda d: d["T0"]["T1_minus_T0_0.25_matched"].__setitem__("mean", 0.0)),
+                ("step2-compute-record.json", lambda d: d["totals"].__setitem__("seconds_timed", 1.0))):
+            def changed(path, name=name, change=change):
+                d = real(path)
+                if path.parent.name == "memory-m6-step2" and path.name == name:
+                    change(d)
+                return d
+    
+            monkeypatch.setattr(M, "rec", changed)
+>           assert json.loads(json.dumps(M.build())) != unchanged, name
+E           AssertionError: reading.json
+E           assert {'M1': {'D1_reading': 'inconclusive (conditions)', 'D1_replication': {'f': {'seed7600': [1.01, [0.96, 1.05]], 'seed770....027, 0.437]], 'D_out': [0.205, [-0.019, 0.444]], 'E_ext': 0.112, 'E_out': 0.108, ...}}, 'reading': 'unresolved'}, ...} != {'M1': {'D1_reading': 'inconclusive (conditions)', 'D1_replication': {'f': {'seed7600': [1.01, [0.96, 1.05]], 'seed770....027, 0.437]], 'D_out': [0.205, [-0.019, 0.444]], 'E_ext': 0.112, 'E_out': 0.108, ...}}, 'reading': 'unresolved'}, ...}
+E            +  where {'M1': {'D1_reading': 'inconclusive (conditions)', 'D1_replication': {'f': {'seed7600': [1.01, [0.96, 1.05]], 'seed770....027, 0.437]], 'D_out': [0.205, [-0.019, 0.444]], 'E_ext': 0.112, 'E_out': 0.108, ...}}, 'reading': 'unresolved'}, ...} = <function loads at 0x0000024399BD25C0>('{"source": "runs/memory-*/ committed records, read by scripts/memory_summary.py", "compute": {"M1": {"cpu_hours": 3.8..."recovered": "54 of 169 switches returned to their original states after a 2000-tick removal of all sensory input"}}}}')
+E            +    where <function loads at 0x0000024399BD25C0> = json.loads
+E            +    and   '{"source": "runs/memory-*/ committed records, read by scripts/memory_summary.py", "compute": {"M1": {"cpu_hours": 3.8..."recovered": "54 of 169 switches returned to their original states after a 2000-tick removal of all sensory input"}}}}' = <function dumps at 0x0000024399BD1F80>({'M1': {'D1_reading': 'inconclusive (conditions)', 'D1_replication': {'f': {'seed7600': [1.01, [0.96, 1.05]], 'seed770....027, 0.437]], 'D_out': [0.205, [-0.019, 0.444]], 'E_ext': 0.112, 'E_out': 0.108, ...}}, 'reading': 'unresolved'}, ...})
+E            +      where <function dumps at 0x0000024399BD1F80> = json.dumps
+E            +      and   {'M1': {'D1_reading': 'inconclusive (conditions)', 'D1_replication': {'f': {'seed7600': [1.01, [0.96, 1.05]], 'seed770....027, 0.437]], 'D_out': [0.205, [-0.019, 0.444]], 'E_ext': 0.112, 'E_out': 0.108, ...}}, 'reading': 'unresolved'}, ...} = <function build at 0x000002439D125F80>()
+E            +        where <function build at 0x000002439D125F80> = <module 'memory_summary_test' from 'D:\\Claude\\random\\wormWars\\scripts\\memory_summary.py'>.build
+
+tests\test_memory_summary.py:152: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_memory_summary.py::test_a_changed_m6_step2_record_changes_the_summary

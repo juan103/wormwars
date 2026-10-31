@@ -131,3 +131,22 @@ def test_a_changed_m6_outlast_record_changes_the_summary(monkeypatch):
 
         monkeypatch.setattr(M, "rec", changed)
         assert json.loads(json.dumps(M.build())) != unchanged, name
+
+
+def test_a_changed_m6_step2_record_changes_the_summary(monkeypatch):
+    """Sabotage for M6's step 2 (D383): its reading and compute record reach the summary (against a fresh build)."""
+    M = _module()
+    real = M.rec
+    unchanged = json.loads(json.dumps(M.build()))
+    for name, change in (
+            ("reading.json", lambda d: d["primary"].__setitem__("mean", 0.0)),
+            ("reading.json", lambda d: d["T0"]["T1_minus_T0_0.25_matched"].__setitem__("mean", 0.0)),
+            ("step2-compute-record.json", lambda d: d["totals"].__setitem__("seconds_timed", 1.0))):
+        def changed(path, name=name, change=change):
+            d = real(path)
+            if path.parent.name == "memory-m6-step2" and path.name == name:
+                change(d)
+            return d
+
+        monkeypatch.setattr(M, "rec", changed)
+        assert json.loads(json.dumps(M.build())) != unchanged, name

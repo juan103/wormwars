@@ -1,0 +1,32 @@
+{
+ "time_unit": "synchronised wall-clock seconds per category (not GPU kernel time)",
+ "neural_update_unit": "strains x batch x substeps network updates (network size not included)",
+ "attempts": [
+  {
+   "file": "20261030T231700Z-a088d7ec.json",
+   "status": "completed",
+   "experiment": "memory-M6-step2",
+   "script": "step2.py",
+   "default_category": "measure",
+   "git_commit": "0d841d1fc889085ed1542f5c942225badd296cf7"
+  }
+ ],
+ "failed_attempts": 0,
+ "uncategorised": false,
+ "categories": {
+  "measure": {
+   "worlds_built": 53952,
+   "world_ticks": 10790400,
+   "neural_updates": 12023728320,
+   "neural_padding": 0,
+   "seconds": 13091.988267499954
+  }
+ },
+ "totals": {
+  "worlds_built": 53952,
+  "world_ticks": 10790400,
+  "neural_updates": 12023728320,
+  "neural_padding": 0,
+  "seconds_timed": 13091.988267499954
+ }
+}
