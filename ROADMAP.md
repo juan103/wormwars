@@ -4,6 +4,13 @@
 
 ## Status, 1-30 October 2026 (updates the section below; that section's later edits are recorded in DECISIONS.md)
 
+**4 November 2026** (D385): **stage 05, the hunter, starts with a scope note** ([`docs/E5/SCOPE.md`](docs/E5/SCOPE.md), draft 2; nothing has run). The owner chose 05 and its prey ladder: a
+static prey, then one on a defined route, then frozen organisms from earlier experiments, reusing what was built
+before; and, asked, a null-graph arm, so 05 also tests whether N2's wiring helps a hunter. The task, Task H, is
+Task N with a living target. Its first step, E5-0, is a CPU feasibility check with scripted and frozen controllers
+and no evolution; its decision rules are fixed in its own plan before it runs. Evolution (E5-1) needs the GPU and
+the owner's word.
+
 **30 October 2026** (D366-D379): **the memory thread's later steps** (exploratory, on the CPU; each plan reviewed by
 Astra and Fable before its run and its results after; none is a pre-registration).
 - **The write-up,** [`docs/memory/SYNTHESIS.md`](docs/memory/SYNTHESIS.md) (D366, updated in D374), puts M1 to M4e
@@ -653,6 +660,10 @@ Three separate questions, from easiest to hardest:
   - the claim limited to "the smallest circuit found under this procedure".
 
 ### Direction after E4 (not scheduled)
+
+*Annotated 2026-11-04 (D385): stage 05 has started, as E5; see [`docs/E5/SCOPE.md`](docs/E5/SCOPE.md). The
+owner's prey ladder (static, a defined route, earlier organisms) prepares the gate below; the gate itself needs
+held-out maps with obstacles. A null-graph arm is added at the owner's choice.*
 
 | Stage | Build | Gate |
 |---|---|---|

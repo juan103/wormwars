@@ -12466,3 +12466,49 @@ except as below.
 
 **Also:** dated annotations in `ROADMAP.md`, `README.md` and `docs/memory/MEMORY-ROADMAP.md`. Nothing on the memory
 thread is scheduled.
+
+## D385 — Stage 05, the hunter, begins: the owner's prey ladder, a null-graph arm, and a scope note (2026-11-04)
+
+**The owner's choice.** Asked what was open on the roadmap and whether stages 05 to 09 were covered, the owner chose
+05: "For the hunter let's start with a static prey, and then let the prey increase in complexity. Like one that has
+a defined route. Then we use the ones we develop in the previous experiments. Maybe we can use some of the things we
+built before?" Claude had answered that 05 and part of 06 have a good base and 07 to 09 do not, and asked whether 05
+was for the game or for the scientific question. Asked whether to add a null-graph arm (the same hunters on null
+graphs, roughly doubling evolution's cost), the owner said "Sure". So 05 is a build and a connectome test.
+
+**The note.** `docs/E5/SCOPE.md`, draft 2. Task H is Task N with a living target: one hunter and one prey per world,
+built from E1's gate configuration (σ = 6, A = 1, R = 1.5, D = 8, 300 ticks), the prey's scent on the hunter's food
+channels only, and captures as the score. The prey ladder is the owner's (H1 static, H2 a route with a swept speed,
+H2b other scripted movers, H3 a qualified suite of earlier organisms), with H4 (held-out maps with obstacles) for the
+roadmap's gate. The first step, E5-0, is a CPU feasibility check, with no evolution: an observation-limited positive
+control, a privileged pursuit controller, E4s-0's comparator, stationary and blind hunters, an attack-disabled check,
+hunter-only scent probes, and the reused hunters zero-shot (E4s-1's whole M-arm brains, E2's and 04a's champions,
+generation 0). Its decision rules are fixed in numbers in its own plan, reviewed, before it runs.
+
+**The review** (`docs/reviews/20261104-E5-scope/`, one round, with draft 1). Both "fix then proceed"; every fix
+taken. Claude checked the factual corrections against the repository before taking them.
+- **Both** caught:
+  - draft 1 did not see what the world does to a one-against-one hunt: bodies feed the collision inputs, crowding
+    resists and pushes, a kill leaves a sensed pellet and `done()` ends the world, and 02's champions sense no food in
+    Task H and ran other sensing settings and motor gains (Astra added the last); each is now a code item;
+  - the inert graft does not behave "exactly as before": E4s's tolerances and score check apply, on each prey's own
+    graph;
+  - `coevolve.py`'s frozen suite is random-weight strains with an energy-difference score, not competent prey; only
+    its hall of fame and schedule are reused;
+  - the scent should be the Gaussian on the food channels first, at E1's σ = 6, the pheromone trail a later condition;
+  - E5-0's decision rules must be fixed in numbers before it runs; the two proposals are recorded in the note.
+- **Astra** caught: E4s-1's 16.61 GPU hours covered 80 runs, not 16, so the 5-to-20-hour forecast is withdrawn; the
+  CPU estimate rested on a GPU rate and waits for a benchmark; E1's navigator need not catch every slower prey, so
+  solvability needs an observation-limited positive control and a privileged pursuit controller; a stationary
+  hunter, an attack-disabled check and hunter-only probes; the wall-follower is not blind to bodies; Task N separates
+  consecutive centres, not the respawn from the hunter; fresh world ids are not unseen maps, so the gate needs H4;
+  "food other than prey limited" is deferred, not met; D026's fuller lesson (with non-biting prey, unanswered damage
+  is 1 by construction); E4s-1's 7.14 is the M arm's mean and its brains are reused whole; E2's range; M-avg/K and
+  E4s-0's comparator as reusable controls; E3's MazeWorld allows one swarm; mutation tests around the seed before E5-1.
+- **Fable** caught: D103's progress term is training shaping, not a tie-break, so the score is captures alone; the
+  biting share's source is `docs/RESULTS.md`, not D026; a ghost prey (no body) makes H1 an equivalence test against
+  E1's gate; the pellet must be removed and booked at capture; the speed ladder should be swept, not fixed; E1's
+  scent probes and the registration hash are reusable; 02's champions without food are movers, not competent prey;
+  no bite-back at H3; the graft's mutation pinned or scaled in E5-1.
+
+**Next:** E5-0's plan and code, which need no GPU. Claude reports the scope to the owner first.
