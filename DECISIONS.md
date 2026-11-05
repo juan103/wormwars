@@ -12512,3 +12512,50 @@ taken. Claude checked the factual corrections against the repository before taki
   no bite-back at H3; the graft's mutation pinned or scaled in E5-1.
 
 **Next:** E5-0's plan and code, which need no GPU. Claude reports the scope to the owner first.
+
+## D386 — E5-0's plan, draft 2, and its code: Task H built, checked in smoke, before review of the code (2026-11-06)
+
+**The owner said "go ahead"** with E5-0 (2026-11-05), the CPU feasibility check of stage 05 that `docs/E5/SCOPE.md`
+describes (D385).
+
+**The plan** (`docs/E5/E5-0-PLAN.md`, draft 2). Exploratory, but its decision rules are fixed before it runs, as D262
+did. Task H on E1's own Task N configuration; three capture rules (ghost, reach, bite) and a body probe; E_prey from a
+held contact; a route follower checked for speed, laps and wall refusals; H2's ten speeds and H2b's two movers;
+tuning per setting at all 19 settings; 10 scripted evaluations and 80 frozen neural hunters (E4s-1's 16 M-arm
+champions, L1 on its carrier, E2d's 47, 16 generation-0 genomes); the equivalence checks (old engine against new,
+bit for bit; H1-ghost against Task N, bit for bit; the CUDA gap reported); reliability, margin, cue dependence and
+too-easy rules with the best baseline recomputed in each bootstrap resample; a cap of 8 recorded hours with cuts in a
+fixed order.
+
+**The review** (`docs/reviews/20261105-E5-0-plan/`, one round, with draft 1). Both "fix then proceed"; every fix
+taken.
+- **Both** caught: the reused hunters' reliability condition had been dropped (restored); E_prey from a driven
+  approach can be zero, since the oracle drives through a prey it cannot stop (now a held contact, with the engine's
+  predicted values and a floor); the tuning covered three settings while the rules assumed all (now tuned per
+  setting); the respawn at D - R was an unlabelled change from the scope (labelled); the route check did not show
+  laps or ordered visits, and its stall rule would fire falsely at low speed (now path per tick, laps and wall
+  refusals over 3 000 ticks, with fallbacks and a stop); the CUDA comparison is a reported gap, not a gate; the drop
+  order (generation 0 first, never filtering hunters by an earlier result).
+- **Fable** caught: crowding cannot act in a one-on-one world (two bodies reach a density of 2/3, under the 0.8
+  threshold), and bodies never block movement; his own scope sentence is corrected, dated, in SCOPE.md §2. Also: ghost
+  and reach run without combat; the scent's peak on the armoured head, with the approach bearing logged; the
+  collision-masked probe asked another question (replaced by a body probe: bites with the prey kept out of the body
+  field); the bit-exact check on E5-0's own worlds, with the constant and mirrored probes; the random walk's key.
+- **Astra** caught: the ledger's bookings by rule; an independent pre-change engine reference (T1's contract),
+  including a two-swarm fight; the pursuit oracle is a reference, not a ceiling; the bootstrap's definitions (the best
+  baseline per resample, the percentiles, zero denominators, failure per criterion, the first failed speed with later
+  recoveries shown); solvable and too easy can both hold; 80 neural hunters, not 81; the 991 million id range (04a had
+  abandoned 997 million after a smoke run).
+
+**The code** (`wormwars/e5/`, three hooks in `wormwars/world.py`, `scripts/e5_0.py`, `scripts/e5_0_reference.py`).
+It came before its tests: `tests/test_e5_hunt.py` (11 tests) was then seen failing under a sabotage of each behaviour
+it checks (`scripts/e5_0_sabotage.py`, 11 sabotages, all caught; `runs/e5-0/sabotage_log.txt`). The sabotage runs
+caught three tests that could not fail, each strengthened: the attack hook's no-op (in a fight where random brains
+never met; now two swarms are placed in contact), the route follower's loop (a prey stuck on its start still counted
+laps; now every waypoint must be reached), and the body probe (its reference world was sabotaged too; now the
+expected body field is computed from the hunter's body points alone).
+
+**Smoke runs** (small sizes, `runs/e5-0-smoke/`, nothing claimed): the old and new engines agree bit for bit on all
+64 compared arrays; H1-ghost equals Task N for all nine hunters under three probes; E_prey 1.25 on 8 worlds.
+
+**Next:** the code goes to both reviewers before any formal stage runs.

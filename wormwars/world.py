@@ -53,7 +53,7 @@ FOOD_SENSING = ("stereo", "mono")
 FOOD_FELL = ("level", "relief", "sham")  # 03h's food_fell channel (WorldConfig.food_fell); None means no channel
 FOOD_FELL_STREAM = 0x03F  # the sham's keyed stream (the jitter probe uses streams 0 and 1)
 FOOD_PROBES = ("real", "constant", "mirrored", "jitter", "hold", "mean", "swapped")
-TASKS = ("forage", "navigate", "shuttle", "maze_shuttle")  # the maze: MazeWorld only (E3b)
+TASKS = ("forage", "navigate", "shuttle", "maze_shuttle", "hunt")  # the maze: MazeWorld only (E3b); the hunt: HuntWorld only (E5)
 _TARGET_STREAM = 0x5CE27  # the target sequence's own random stream, apart from the map's
 _SHUTTLE_STREAM = 0x5E3A  # E3a's sources' own stream (wormwars.e3.task.SHUTTLE_SOURCES_STREAM)
 _SHUTTLE_LEGS = 128  # legs tracked per world; running out is an error
@@ -213,6 +213,9 @@ def _mix32(x: int) -> int:
 
 class World:
     _maze_task = False  # E3b's MazeWorld sets it
+    _hunt_task = False  # E5's HuntWorld sets it
+    # E5: per-swarm multipliers of the attack deposit, [swarms]; None leaves the deposit untouched (no multiplication)
+    attack_scale: Tensor | None = None
 
     def __init__(
         self,
@@ -266,6 +269,8 @@ class World:
                                  "for redesign on a zero denominator, DESIGN.md §3)")
         if wcfg.task == "maze_shuttle" and not self._maze_task:
             raise ValueError("the maze_shuttle task is played by wormwars.e3.maze_world.MazeWorld")
+        if wcfg.task == "hunt" and not self._hunt_task:
+            raise ValueError("the hunt task is played by wormwars.e5.hunt.HuntWorld")
 
         strain_of = strain_of.to(self.device)
         self.n_worlds, self.n_swarms = int(strain_of.shape[0]), int(strain_of.shape[1])
@@ -464,8 +469,9 @@ class World:
             half = mcfg.spawn_spread * W / 2
             radius = (W / 2 - mcfg.spawn_margin) * 0.82
             sides = []
-            for side in range(self.n_swarms):
-                if self.n_swarms == 1:
+            n_sides = self._spawn_swarms()
+            for side in range(n_sides):
+                if n_sides == 1:
                     ang = rng.uniform(0, 2 * np.pi)
                 else:
                     ang = np.pi * side + rng.uniform(-0.35, 0.35)
@@ -480,8 +486,8 @@ class World:
                 )
             spawn_centres = [(bx, by) for bx, by, *_ in sides]
             swap = bool(self.swap_sides[w])
-            for s in range(self.n_swarms):
-                bx, by, jx, jy, jh = sides[(s + 1) % self.n_swarms if swap else s]
+            for s in range(n_sides):
+                bx, by, jx, jy, jh = sides[(s + 1) % n_sides if swap else s]
                 pos[w, s, :, 0] = np.clip(bx + jx, 1.2, W - 1.2)
                 pos[w, s, :, 1] = np.clip(by + jy, 1.2, H - 1.2)
                 head[w, s] = jh
@@ -979,9 +985,7 @@ class World:
                 self._held_food = self._sensed_food(pts)
             self._food_sample = self._held_food
         else:
-            needs_field = wcfg.food_probe in ("mirrored", "jitter") or (
-                (wcfg.food_odour_sigma > 0 or self.navigate) and wcfg.food_probe != "constant")
-            self._food_sample = self._sensed_food(pts) if needs_field else None
+            self._food_sample = self._sensed_food(pts) if self._wants_food_field() else None
         signals = self._sensor_signals(sampled)
         if self.shuttle:
             signals.update(self._shuttle_signals(pts))
@@ -1097,6 +1101,17 @@ class World:
     def _extra_signals(self, pts: Tensor) -> dict:
         return {}
 
+    def _spawn_swarms(self) -> int:
+        """How many swarms the map's spawn step places (E5's HuntWorld places its prey itself)."""
+        return self.n_swarms
+
+    def _wants_food_field(self) -> bool:
+        """Whether sensing samples the food field through `_sensed_food` (odour, the navigate task's scent, or a probe
+        that moves the sample points) rather than reading the sampled channels directly."""
+        wcfg = self.cfg.world
+        return wcfg.food_probe in ("mirrored", "jitter") or (
+            (wcfg.food_odour_sigma > 0 or self.navigate) and wcfg.food_probe != "constant")
+
     def _post_move(self, moved: Tensor) -> None:
         return None
 
@@ -1154,6 +1169,8 @@ class World:
         # 1. deposit, one cell ahead of each head, on the attacker's own attack channel
         deposit = torch.zeros(Wd, n_sw, self.H, self.W, device=self.device, dtype=self.dtype)
         strength = ccfg.attack_strength * alive_f
+        if self.attack_scale is not None:  # E5: the prey deposits nothing
+            strength = strength * self.attack_scale.to(strength).view(1, -1, 1)
         if self.combat_stage >= 2:
             strength = strength * self.pump
         bite = self.bite_points()

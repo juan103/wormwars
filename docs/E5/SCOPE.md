@@ -49,7 +49,11 @@ code item in §5:
   alone, and may turn away at the last cell. The wall-follower is therefore not blind to the prey.
 - **Crowding resists and pushes.** Above a body density of 0.8, movement is slowed by up to 60% and pushed 0.10 cells
   per tick down the density gradient (`world.py:1021-1037`), against a top speed of 0.35. It was tuned for melees of
-  hundreds, and it opposes holding contact. It can also move a `Stationary` prey.
+  hundreds, and it opposes holding contact. It can also move a `Stationary` prey. *Corrected 2026-11-05 (D386):
+  this is wrong for one hunter and one prey. Each body point splats 1.0 into its nearest cell under a normalised 3 × 3
+  blur, so two bodies reach a density of 2/3, below the threshold of 0.8 (Fable's arithmetic, measured: 0.667), and
+  crowding never acts; bodies also never block movement (`_resolve_move` checks walls only). The pin stays as a
+  guard. The sentences above are kept as written; they hold for the melees crowding was tuned for.*
 - **A kill leaves a sensed corpse and can end the episode.** The prey's pellet (6.0, in one cell) is sensed on the
   food channels (food plus pellet, `world.py:836`) and, with Task N's eat rate of zero, stays all episode: a strong
   trap beside a prey scent of peak 1. And `done()` ends a two-swarm world once either swarm is empty (`world.py:1349`).
