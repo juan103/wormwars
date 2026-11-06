@@ -1,0 +1,3099 @@
+{
+ "stages_commit": "7d254607ea09c22a466b3eb3ef75433ae1eb3dec",
+ "compute": {
+  "attempts": 6,
+  "failed_attempts": 0,
+  "hours": {
+   "measure": 0.207,
+   "calibration": 0.048,
+   "tuning": 1.602,
+   "final": 3.737,
+   "probe": 2.343
+  },
+  "hours_total": 7.937,
+  "cap_hours": 8.0,
+  "bench_projected_hours": {
+   "equivalence": 0.102,
+   "calibration: route check": 0.042,
+   "calibration: E_prey": 0.001,
+   "calibration: tuning": 2.162,
+   "evaluation": 3.799,
+   "fixed probes": 1.125,
+   "total": 7.318
+  },
+  "bench_seconds_per_episode": {
+   "scripted episode": 0.007905,
+   "tuning chunk": 40.969649,
+   "neural episode e4s1": 0.016484,
+   "neural episode e2d": 0.016432
+  },
+  "cuts": [],
+  "untested_under_the_cap": []
+ },
+ "equivalence": {
+  "old_against_new": {
+   "arrays": 68,
+   "differ": [],
+   "identical": true
+  },
+  "ghost_against_task_n": {
+   "worlds": 512,
+   "identical": true
+  },
+  "cuda_gap": {
+   "worlds": 1024,
+   "cpu_mean": 8.68457,
+   "cuda_mean": 8.679688,
+   "mean_difference": 0.004883,
+   "share_identical": 0.926758,
+   "note": "a second use of E1's gate worlds, for an engine comparison only"
+  }
+ },
+ "calibration": {
+  "e_prey": 1.375,
+  "held_damage_per_tick": {
+   "median": 0.1375,
+   "min": 0.076389,
+   "max": 0.1375
+  },
+  "held_start_clamped": 0,
+  "largest_single_tick_damage": 0.1375,
+  "approaches": {
+   "head": {
+    "aim": "position",
+    "worlds": 64,
+    "start_clamped": 1,
+    "captured_first_life": 64,
+    "kill_ticks_median": 26.0,
+    "kill_ticks_min": 23,
+    "kill_ticks_max": 46
+   },
+   "side": {
+    "aim": "mid",
+    "worlds": 64,
+    "start_clamped": 0,
+    "captured_first_life": 64,
+    "kill_ticks_median": 18.0,
+    "kill_ticks_min": 7,
+    "kill_ticks_max": 24
+   },
+   "rear": {
+    "aim": "tail",
+    "worlds": 64,
+    "start_clamped": 12,
+    "captured_first_life": 64,
+    "kill_ticks_median": 22.0,
+    "kill_ticks_min": 8,
+    "kill_ticks_max": 25
+   }
+  },
+  "route": {
+   "gain": 2.0,
+   "spacing": 6.0
+  },
+  "route_checks": 1,
+  "route_rows": [
+   {
+    "speed": 0.1,
+    "share_joint": 1.0,
+    "share_speed": 1.0,
+    "share_lap": 1.0,
+    "share_limited": 1.0,
+    "path_per_tick_median": 0.035,
+    "laps_median": 2.0,
+    "captures": 0,
+    "passed": true
+   },
+   {
+    "speed": 0.2,
+    "share_joint": 1.0,
+    "share_speed": 1.0,
+    "share_lap": 1.0,
+    "share_limited": 1.0,
+    "path_per_tick_median": 0.07,
+    "laps_median": 5.0,
+    "captures": 0,
+    "passed": true
+   },
+   {
+    "speed": 0.3,
+    "share_joint": 1.0,
+    "share_speed": 1.0,
+    "share_lap": 1.0,
+    "share_limited": 1.0,
+    "path_per_tick_median": 0.105,
+    "laps_median": 8.0,
+    "captures": 0,
+    "passed": true
+   },
+   {
+    "speed": 0.4,
+    "share_joint": 1.0,
+    "share_speed": 1.0,
+    "share_lap": 1.0,
+    "share_limited": 1.0,
+    "path_per_tick_median": 0.14,
+    "laps_median": 10.0,
+    "captures": 0,
+    "passed": true
+   },
+   {
+    "speed": 0.5,
+    "share_joint": 1.0,
+    "share_speed": 1.0,
+    "share_lap": 1.0,
+    "share_limited": 1.0,
+    "path_per_tick_median": 0.175,
+    "laps_median": 13.0,
+    "captures": 0,
+    "passed": true
+   },
+   {
+    "speed": 0.6,
+    "share_joint": 1.0,
+    "share_speed": 1.0,
+    "share_lap": 1.0,
+    "share_limited": 1.0,
+    "path_per_tick_median": 0.21,
+    "laps_median": 15.0,
+    "captures": 0,
+    "passed": true
+   },
+   {
+    "speed": 0.7,
+    "share_joint": 1.0,
+    "share_speed": 1.0,
+    "share_lap": 1.0,
+    "share_limited": 1.0,
+    "path_per_tick_median": 0.245,
+    "laps_median": 17.0,
+    "captures": 0,
+    "passed": true
+   },
+   {
+    "speed": 0.8,
+    "share_joint": 1.0,
+    "share_speed": 1.0,
+    "share_lap": 1.0,
+    "share_limited": 1.0,
+    "path_per_tick_median": 0.28,
+    "laps_median": 19.5,
+    "captures": 0,
+    "passed": true
+   },
+   {
+    "speed": 0.9,
+    "share_joint": 1.0,
+    "share_speed": 1.0,
+    "share_lap": 1.0,
+    "share_limited": 1.0,
+    "path_per_tick_median": 0.315,
+    "laps_median": 22.0,
+    "captures": 0,
+    "passed": true
+   },
+   {
+    "speed": 1.0,
+    "share_joint": 1.0,
+    "share_speed": 1.0,
+    "share_lap": 1.0,
+    "share_limited": 1.0,
+    "path_per_tick_median": 0.35,
+    "laps_median": 23.5,
+    "captures": 0,
+    "passed": true
+   }
+  ],
+  "tuned": {
+   "H1-ghost": {
+    "S-const": {
+     "params": {
+      "k": 8192.0,
+      "speed": 1.0,
+      "turn": -0.1
+     },
+     "tuned_mean": 8.765625
+    },
+    "constant": {
+     "params": {
+      "speed": 0.8,
+      "turn": -0.1
+     },
+     "tuned_mean": 0.46875
+    },
+    "random-walk": {
+     "params": {
+      "speed": 1.0,
+      "rate": 0.8,
+      "persistence": 0.95
+     },
+     "tuned_mean": 0.375
+    },
+    "wall-follower": {
+     "params": {
+      "speed": 1.0,
+      "seek_turn": -0.1,
+      "avoid_turn": 1.0,
+      "threshold": 0.502332
+     },
+     "tuned_mean": 0.796875
+    }
+   },
+   "H1-reach": {
+    "S-const": {
+     "params": {
+      "k": 8192.0,
+      "speed": 1.0,
+      "turn": -0.1
+     },
+     "tuned_mean": 8.765625
+    },
+    "constant": {
+     "params": {
+      "speed": 0.8,
+      "turn": -0.1
+     },
+     "tuned_mean": 0.46875
+    },
+    "random-walk": {
+     "params": {
+      "speed": 1.0,
+      "rate": 0.8,
+      "persistence": 0.95
+     },
+     "tuned_mean": 0.375
+    },
+    "wall-follower": {
+     "params": {
+      "speed": 1.0,
+      "seek_turn": -0.1,
+      "avoid_turn": 1.0,
+      "threshold": 0.552332
+     },
+     "tuned_mean": 0.640625
+    }
+   },
+   "H1-bite": {
+    "S-const": {
+     "params": {
+      "k": 1024.0,
+      "speed": 1.0,
+      "turn": -0.1
+     },
+     "tuned_mean": 4.640625
+    },
+    "constant": {
+     "params": {
+      "speed": 0.6,
+      "turn": -0.1
+     },
+     "tuned_mean": 0.40625
+    },
+    "random-walk": {
+     "params": {
+      "speed": 1.0,
+      "rate": 0.8,
+      "persistence": 0.95
+     },
+     "tuned_mean": 0.1875
+    },
+    "wall-follower": {
+     "params": {
+      "speed": 0.7,
+      "seek_turn": -0.1,
+      "avoid_turn": 0.4,
+      "threshold": 0.502332
+     },
+     "tuned_mean": 0.125
+    }
+   },
+   "H2-0.1": {
+    "S-const": {
+     "params": {
+      "k": 8192.0,
+      "speed": 1.0,
+      "turn": 0.0
+     },
+     "tuned_mean": 4.65625
+    },
+    "constant": {
+     "params": {
+      "speed": 0.6,
+      "turn": -0.1
+     },
+     "tuned_mean": 0.4375
+    },
+    "random-walk": {
+     "params": {
+      "speed": 0.7,
+      "rate": 1.0,
+      "persistence": 0.8
+     },
+     "tuned_mean": 0.21875
+    },
+    "wall-follower": {
+     "params": {
+      "speed": 0.4,
+      "seek_turn": -0.1,
+      "avoid_turn": 0.4,
+      "threshold": 1.252332
+     },
+     "tuned_mean": 0.171875
+    }
+   },
+   "H2-0.2": {
+    "S-const": {
+     "params": {
+      "k": 8192.0,
+      "speed": 1.0,
+      "turn": 0.1
+     },
+     "tuned_mean": 4.96875
+    },
+    "constant": {
+     "params": {
+      "speed": 0.8,
+      "turn": -0.3
+     },
+     "tuned_mean": 0.359375
+    },
+    "random-walk": {
+     "params": {
+      "speed": 0.7,
+      "rate": 0.8,
+      "persistence": 0.9
+     },
+     "tuned_mean": 0.265625
+    },
+    "wall-follower": {
+     "params": {
+      "speed": 1.0,
+      "seek_turn": -0.4,
+      "avoid_turn": 0.4,
+      "threshold": 2.052332
+     },
+     "tuned_mean": 0.265625
+    }
+   },
+   "H2-0.3": {
+    "S-const": {
+     "params": {
+      "k": 1024.0,
+      "speed": 1.0,
+      "turn": 0.2
+     },
+     "tuned_mean": 5.0
+    },
+    "constant": {
+     "params": {
+      "speed": 0.8,
+      "turn": -0.2
+     },
+     "tuned_mean": 0.40625
+    },
+    "random-walk": {
+     "params": {
+      "speed": 0.4,
+      "rate": 0.8,
+      "persistence": 0.95
+     },
+     "tuned_mean": 0.296875
+    },
+    "wall-follower": {
+     "params": {
+      "speed": 0.7,
+      "seek_turn": -0.2,
+      "avoid_turn": 0.4,
+      "threshold": 2.052332
+     },
+     "tuned_mean": 0.28125
+    }
+   },
+   "H2-0.4": {
+    "S-const": {
+     "params": {
+      "k": 64.0,
+      "speed": 0.6,
+      "turn": 0.0
+     },
+     "tuned_mean": 5.296875
+    },
+    "constant": {
+     "params": {
+      "speed": 1.0,
+      "turn": -0.2
+     },
+     "tuned_mean": 0.453125
+    },
+    "random-walk": {
+     "params": {
+      "speed": 0.4,
+      "rate": 0.8,
+      "persistence": 0.8
+     },
+     "tuned_mean": 0.296875
+    },
+    "wall-follower": {
+     "params": {
+      "speed": 1.0,
+      "seek_turn": -0.4,
+      "avoid_turn": 0.8,
+      "threshold": 0.852332
+     },
+     "tuned_mean": 0.3125
+    }
+   },
+   "H2-0.5": {
+    "S-const": {
+     "params": {
+      "k": 64.0,
+      "speed": 0.6,
+      "turn": -0.1
+     },
+     "tuned_mean": 5.828125
+    },
+    "constant": {
+     "params": {
+      "speed": 0.6,
+      "turn": -0.2
+     },
+     "tuned_mean": 0.40625
+    },
+    "random-walk": {
+     "params": {
+      "speed": 0.4,
+      "rate": 0.8,
+      "persistence": 0.95
+     },
+     "tuned_mean": 0.28125
+    },
+    "wall-follower": {
+     "params": {
+      "speed": 0.4,
+      "seek_turn": -0.2,
+      "avoid_turn": 0.4,
+      "threshold": 2.052332
+     },
+     "tuned_mean": 0.265625
+    }
+   },
+   "H2-0.6": {
+    "S-const": {
+     "params": {
+      "k": 64.0,
+      "speed": 0.8,
+      "turn": -0.1
+     },
+     "tuned_mean": 6.359375
+    },
+    "constant": {
+     "params": {
+      "speed": 0.6,
+      "turn": 0.2
+     },
+     "tuned_mean": 0.40625
+    },
+    "random-walk": {
+     "params": {
+      "speed": 0.4,
+      "rate": 0.8,
+      "persistence": 0.95
+     },
+     "tuned_mean": 0.359375
+    },
+    "wall-follower": {
+     "params": {
+      "speed": 0.7,
+      "seek_turn": -0.4,
+      "avoid_turn": 0.4,
+      "threshold": 0.652332
+     },
+     "tuned_mean": 0.265625
+    }
+   },
+   "H2-0.7": {
+    "S-const": {
+     "params": {
+      "k": 64.0,
+      "speed": 0.8,
+      "turn": 0.0
+     },
+     "tuned_mean": 6.546875
+    },
+    "constant": {
+     "params": {
+      "speed": 0.4,
+      "turn": 0.2
+     },
+     "tuned_mean": 0.390625
+    },
+    "random-walk": {
+     "params": {
+      "speed": 0.4,
+      "rate": 0.8,
+      "persistence": 0.95
+     },
+     "tuned_mean": 0.328125
+    },
+    "wall-follower": {
+     "params": {
+      "speed": 1.0,
+      "seek_turn": -0.4,
+      "avoid_turn": 0.4,
+      "threshold": 0.852332
+     },
+     "tuned_mean": 0.3125
+    }
+   },
+   "H2-0.8": {
+    "S-const": {
+     "params": {
+      "k": 8192.0,
+      "speed": 0.8,
+      "turn": 0.2
+     },
+     "tuned_mean": 7.171875
+    },
+    "constant": {
+     "params": {
+      "speed": 0.6,
+      "turn": 0.4
+     },
+     "tuned_mean": 0.375
+    },
+    "random-walk": {
+     "params": {
+      "speed": 0.4,
+      "rate": 1.0,
+      "persistence": 0.9
+     },
+     "tuned_mean": 0.296875
+    },
+    "wall-follower": {
+     "params": {
+      "speed": 0.4,
+      "seek_turn": -0.2,
+      "avoid_turn": 0.8,
+      "threshold": 0.552332
+     },
+     "tuned_mean": 0.3125
+    }
+   },
+   "H2-0.9": {
+    "S-const": {
+     "params": {
+      "k": 8192.0,
+      "speed": 0.8,
+      "turn": 0.0
+     },
+     "tuned_mean": 7.4375
+    },
+    "constant": {
+     "params": {
+      "speed": 0.2,
+      "turn": -0.1
+     },
+     "tuned_mean": 0.375
+    },
+    "random-walk": {
+     "params": {
+      "speed": 0.4,
+      "rate": 1.0,
+      "persistence": 0.8
+     },
+     "tuned_mean": 0.28125
+    },
+    "wall-follower": {
+     "params": {
+      "speed": 0.4,
+      "seek_turn": -0.4,
+      "avoid_turn": 0.4,
+      "threshold": 1.252332
+     },
+     "tuned_mean": 0.296875
+    }
+   },
+   "H2-1": {
+    "S-const": {
+     "params": {
+      "k": 8192.0,
+      "speed": 1.0,
+      "turn": 0.1
+     },
+     "tuned_mean": 7.6875
+    },
+    "constant": {
+     "params": {
+      "speed": 0.6,
+      "turn": 0.3
+     },
+     "tuned_mean": 0.421875
+    },
+    "random-walk": {
+     "params": {
+      "speed": 0.4,
+      "rate": 0.8,
+      "persistence": 0.8
+     },
+     "tuned_mean": 0.328125
+    },
+    "wall-follower": {
+     "params": {
+      "speed": 0.4,
+      "seek_turn": -0.2,
+      "avoid_turn": 0.8,
+      "threshold": 0.502332
+     },
+     "tuned_mean": 0.328125
+    }
+   },
+   "H2b-walk-0.25": {
+    "S-const": {
+     "params": {
+      "k": 1024.0,
+      "speed": 1.0,
+      "turn": -0.1
+     },
+     "tuned_mean": 4.640625
+    },
+    "constant": {
+     "params": {
+      "speed": 0.6,
+      "turn": -0.1
+     },
+     "tuned_mean": 0.203125
+    },
+    "random-walk": {
+     "params": {
+      "speed": 0.7,
+      "rate": 1.0,
+      "persistence": 0.5
+     },
+     "tuned_mean": 0.15625
+    },
+    "wall-follower": {
+     "params": {
+      "speed": 0.7,
+      "seek_turn": -0.1,
+      "avoid_turn": 0.4,
+      "threshold": 0.502332
+     },
+     "tuned_mean": 0.203125
+    }
+   },
+   "H2b-walk-0.5": {
+    "S-const": {
+     "params": {
+      "k": 8192.0,
+      "speed": 1.0,
+      "turn": 0.1
+     },
+     "tuned_mean": 4.40625
+    },
+    "constant": {
+     "params": {
+      "speed": 0.2,
+      "turn": -0.3
+     },
+     "tuned_mean": 0.171875
+    },
+    "random-walk": {
+     "params": {
+      "speed": 0.4,
+      "rate": 0.4,
+      "persistence": 0.5
+     },
+     "tuned_mean": 0.140625
+    },
+    "wall-follower": {
+     "params": {
+      "speed": 0.7,
+      "seek_turn": -0.1,
+      "avoid_turn": 0.4,
+      "threshold": 0.552332
+     },
+     "tuned_mean": 0.203125
+    }
+   },
+   "H2b-walk-0.75": {
+    "S-const": {
+     "params": {
+      "k": 8192.0,
+      "speed": 1.0,
+      "turn": 0.1
+     },
+     "tuned_mean": 4.453125
+    },
+    "constant": {
+     "params": {
+      "speed": 0.4,
+      "turn": -0.2
+     },
+     "tuned_mean": 0.203125
+    },
+    "random-walk": {
+     "params": {
+      "speed": 0.7,
+      "rate": 0.4,
+      "persistence": 0.9
+     },
+     "tuned_mean": 0.203125
+    },
+    "wall-follower": {
+     "params": {
+      "speed": 1.0,
+      "seek_turn": -0.2,
+      "avoid_turn": 1.0,
+      "threshold": 1.252332
+     },
+     "tuned_mean": 0.234375
+    }
+   },
+   "H2b-wall-0.25": {
+    "S-const": {
+     "params": {
+      "k": 1024.0,
+      "speed": 1.0,
+      "turn": 0.1
+     },
+     "tuned_mean": 4.5625
+    },
+    "constant": {
+     "params": {
+      "speed": 0.4,
+      "turn": -0.1
+     },
+     "tuned_mean": 0.171875
+    },
+    "random-walk": {
+     "params": {
+      "speed": 0.7,
+      "rate": 0.8,
+      "persistence": 0.9
+     },
+     "tuned_mean": 0.171875
+    },
+    "wall-follower": {
+     "params": {
+      "speed": 1.0,
+      "seek_turn": -0.2,
+      "avoid_turn": 0.4,
+      "threshold": 1.252332
+     },
+     "tuned_mean": 0.234375
+    }
+   },
+   "H2b-wall-0.5": {
+    "S-const": {
+     "params": {
+      "k": 8192.0,
+      "speed": 1.0,
+      "turn": -0.2
+     },
+     "tuned_mean": 4.328125
+    },
+    "constant": {
+     "params": {
+      "speed": 0.2,
+      "turn": -0.2
+     },
+     "tuned_mean": 0.328125
+    },
+    "random-walk": {
+     "params": {
+      "speed": 0.4,
+      "rate": 0.2,
+      "persistence": 0.95
+     },
+     "tuned_mean": 0.25
+    },
+    "wall-follower": {
+     "params": {
+      "speed": 1.0,
+      "seek_turn": -0.1,
+      "avoid_turn": 0.8,
+      "threshold": 1.252332
+     },
+     "tuned_mean": 0.421875
+    }
+   },
+   "H2b-wall-0.75": {
+    "S-const": {
+     "params": {
+      "k": 8192.0,
+      "speed": 1.0,
+      "turn": -0.1
+     },
+     "tuned_mean": 4.640625
+    },
+    "constant": {
+     "params": {
+      "speed": 1.0,
+      "turn": 0.3
+     },
+     "tuned_mean": 0.34375
+    },
+    "random-walk": {
+     "params": {
+      "speed": 0.7,
+      "rate": 0.8,
+      "persistence": 0.9
+     },
+     "tuned_mean": 0.21875
+    },
+    "wall-follower": {
+     "params": {
+      "speed": 0.4,
+      "seek_turn": -0.4,
+      "avoid_turn": 0.8,
+      "threshold": 2.052332
+     },
+     "tuned_mean": 0.234375
+    }
+   }
+  }
+ },
+ "rules": {
+  "reliability": 0.8,
+  "margin": 0.5,
+  "too_easy": 0.5,
+  "flag": 0.25
+ },
+ "bootstrap": {
+  "resamples": 10000,
+  "seed": 0,
+  "lower": 5,
+  "upper": 95
+ },
+ "settings": {
+  "H1-ghost": {
+   "setting": {
+    "name": "H1-ghost",
+    "rule": "ghost",
+    "prey": "stationary",
+    "speed": 0.0,
+    "pinned": true
+   },
+   "bridge": true,
+   "prey": {
+    "pin_push_total": 0.0,
+    "wall_limited_share_all_evaluations": 0.0,
+    "speed_with_stationary_hunter": {
+     "median": 0.0,
+     "min": 0.0
+    },
+    "ledger_rel_error_max": 1.2919233350330974e-08
+   },
+   "means": {
+    "S-const tuned": 8.650391,
+    "constant tuned": 0.451172,
+    "random-walk tuned": 0.228516,
+    "wall-follower tuned": 0.695312,
+    "S-const E1-frozen": 8.671875,
+    "constant E1-frozen": 0.460938,
+    "random-walk E1-frozen": 0.283203,
+    "wall-follower E1-frozen": 0.695312,
+    "pursuit": 8.75,
+    "stationary": 0.0,
+    "e4s1 M run00": 7.455078,
+    "e4s1 M run01": 7.363281,
+    "e4s1 M run02": 7.341797,
+    "e4s1 M run03": 7.576172,
+    "e4s1 M run04": 7.535156,
+    "e4s1 M run05": 7.474609,
+    "e4s1 M run06": 7.167969,
+    "e4s1 M run07": 7.376953,
+    "e4s1 M run08": 7.375,
+    "e4s1 M run09": 7.451172,
+    "e4s1 M run10": 7.619141,
+    "e4s1 M run11": 7.208984,
+    "e4s1 M run12": 7.535156,
+    "e4s1 M run13": 7.306641,
+    "e4s1 M run14": 7.279297,
+    "e4s1 M run15": 7.451172,
+    "L1 carrier": 5.148438,
+    "e2 ga run00": 2.279297,
+    "e2 ga run01": 2.142578,
+    "e2 ga run02": 0.798828,
+    "e2 ga run03": 2.083984,
+    "e2 ga run04": 2.097656,
+    "e2 ga run05": 2.175781,
+    "e2 ga run06": 1.992188,
+    "e2 ga run07": 2.267578,
+    "e2 es run00": 1.978516,
+    "e2 es run01": 2.238281,
+    "e2 es run02": 1.941406,
+    "e2 es run03": 2.212891,
+    "e2 es run04": 2.183594,
+    "e2 es run05": 2.111328,
+    "e2 es run06": 2.167969,
+    "e2 es run07": 1.978516,
+    "e2 random run00": 1.490234,
+    "e2 random run01": 1.611328,
+    "e2 random run02": 1.316406,
+    "e2 random run03": 1.755859,
+    "e2 random run04": 1.740234,
+    "e2 random run05": 1.908203,
+    "e2 random run06": 1.425781,
+    "e2 random run07": 1.634766,
+    "e2 extension run00": 2.337891,
+    "e2 extension run01": 2.330078,
+    "e2 extension run02": 1.992188,
+    "e2 extension run03": 2.929688,
+    "e2 extension run04": 2.445312,
+    "e2 extension run05": 2.226562,
+    "e2 extension run07": 2.384766,
+    "04a run00": 2.142578,
+    "04a run01": 2.080078,
+    "04a run02": 2.574219,
+    "04a run03": 2.228516,
+    "04a run04": 2.291016,
+    "04a run05": 2.072266,
+    "04a run06": 2.279297,
+    "04a run07": 2.318359,
+    "04a run08": 2.068359,
+    "04a run09": 2.273438,
+    "04a run10": 2.324219,
+    "04a run11": 2.177734,
+    "04a run12": 2.808594,
+    "04a run13": 2.251953,
+    "04a run14": 2.210938,
+    "04a run15": 2.171875,
+    "generation0 #00": 0.0,
+    "generation0 #01": 0.601562,
+    "generation0 #02": 0.003906,
+    "generation0 #03": 0.060547,
+    "generation0 #04": 0.0,
+    "generation0 #05": 0.0,
+    "generation0 #06": 0.0,
+    "generation0 #07": 0.0,
+    "generation0 #08": 0.003906,
+    "generation0 #09": 0.0,
+    "generation0 #10": 0.0,
+    "generation0 #11": 0.0,
+    "generation0 #12": 0.0,
+    "generation0 #13": 0.234375,
+    "generation0 #14": 0.0,
+    "generation0 #15": 0.042969
+   }
+  },
+  "H1-reach": {
+   "setting": {
+    "name": "H1-reach",
+    "rule": "reach",
+    "prey": "stationary",
+    "speed": 0.0,
+    "pinned": true
+   },
+   "solvable": true,
+   "positive_control": {
+    "mean": 8.650391,
+    "share_at_least_1": 1.0,
+    "reliability_bounds": [
+     1.0,
+     1.0
+    ],
+    "advantage_bounds": [
+     8.056641,
+     8.21875
+    ]
+   },
+   "pursuit_mean": 8.75,
+   "best_baseline": {
+    "name": "wall-follower",
+    "mean": 0.511719
+   },
+   "baseline_means": {
+    "stationary": 0.0,
+    "constant": 0.451172,
+    "random-walk": 0.228516,
+    "wall-follower": 0.511719
+   },
+   "e1_frozen_means": {
+    "S-const": 8.671875,
+    "constant": 0.460938,
+    "random-walk": 0.283203,
+    "wall-follower": 0.507812
+   },
+   "too_easy": {
+    "ratio": 0.059156,
+    "bounds": [
+     0.053763,
+     0.065183
+    ],
+    "flag": false,
+    "reading": "not too easy"
+   },
+   "families": {
+    "e4s1": {
+     "n": 16,
+     "mean": 7.334595,
+     "min": 6.53125,
+     "max": 7.619141,
+     "readings": {
+      "qualifies": 16
+     }
+    },
+    "L1 carrier": {
+     "n": 1,
+     "mean": 5.148438,
+     "min": 5.148438,
+     "max": 5.148438,
+     "readings": {
+      "qualifies": 1
+     }
+    },
+    "e2d": {
+     "n": 47,
+     "mean": 2.090841,
+     "min": 0.814453,
+     "max": 2.931641,
+     "readings": {
+      "demonstrated failure: reliability, advantage": 1,
+      "qualifies": 45,
+      "uncertain": 1
+     }
+    },
+    "generation0": {
+     "n": 16,
+     "mean": 0.059204,
+     "min": 0.0,
+     "max": 0.601562,
+     "readings": {
+      "demonstrated failure: reliability, advantage": 16
+     }
+    }
+   },
+   "prey": {
+    "pin_push_total": 0.0,
+    "wall_limited_share_all_evaluations": 0.0,
+    "speed_with_stationary_hunter": {
+     "median": 0.0,
+     "min": 0.0
+    },
+    "ledger_rel_error_max": 1.2919233350330974e-08
+   }
+  },
+  "H1-bite": {
+   "setting": {
+    "name": "H1-bite",
+    "rule": "bite",
+    "prey": "stationary",
+    "speed": 0.0,
+    "pinned": true
+   },
+   "solvable": true,
+   "positive_control": {
+    "mean": 4.595703,
+    "share_at_least_1": 1.0,
+    "reliability_bounds": [
+     1.0,
+     1.0
+    ],
+    "advantage_bounds": [
+     4.257812,
+     4.377051
+    ]
+   },
+   "pursuit_mean": 4.476562,
+   "best_baseline": {
+    "name": "constant",
+    "mean": 0.277344
+   },
+   "baseline_means": {
+    "stationary": 0.0,
+    "constant": 0.277344,
+    "random-walk": 0.125,
+    "wall-follower": 0.115234
+   },
+   "e1_frozen_means": {
+    "S-const": 4.519531,
+    "constant": 0.179688,
+    "random-walk": 0.074219,
+    "wall-follower": 0.095703
+   },
+   "too_easy": {
+    "ratio": 0.060348,
+    "bounds": [
+     0.052365,
+     0.068715
+    ],
+    "flag": false,
+    "reading": "not too easy"
+   },
+   "families": {
+    "e4s1": {
+     "n": 16,
+     "mean": 2.753784,
+     "min": 2.416016,
+     "max": 3.054688,
+     "readings": {
+      "qualifies": 16
+     }
+    },
+    "L1 carrier": {
+     "n": 1,
+     "mean": 2.130859,
+     "min": 2.130859,
+     "max": 2.130859,
+     "readings": {
+      "qualifies": 1
+     }
+    },
+    "e2d": {
+     "n": 47,
+     "mean": 1.016207,
+     "min": 0.150391,
+     "max": 1.6875,
+     "readings": {
+      "demonstrated failure: reliability": 3,
+      "demonstrated failure: reliability, advantage": 6,
+      "qualifies": 34,
+      "uncertain": 4
+     }
+    },
+    "generation0": {
+     "n": 16,
+     "mean": 0.026855,
+     "min": 0.0,
+     "max": 0.166016,
+     "readings": {
+      "demonstrated failure: reliability, advantage": 16
+     }
+    }
+   },
+   "prey": {
+    "pin_push_total": 0.0,
+    "wall_limited_share_all_evaluations": 0.0,
+    "speed_with_stationary_hunter": {
+     "median": 0.0,
+     "min": 0.0
+    },
+    "ledger_rel_error_max": 1.586215149683564e-07
+   },
+   "attack_disabled": {
+    "captures": 0
+   }
+  },
+  "H2-0.1": {
+   "setting": {
+    "name": "H2-0.1",
+    "rule": "bite",
+    "prey": "route",
+    "speed": 0.1,
+    "pinned": false
+   },
+   "solvable": true,
+   "positive_control": {
+    "mean": 4.568359,
+    "share_at_least_1": 1.0,
+    "reliability_bounds": [
+     1.0,
+     1.0
+    ],
+    "advantage_bounds": [
+     4.173828,
+     4.287109
+    ]
+   },
+   "pursuit_mean": 4.337891,
+   "best_baseline": {
+    "name": "constant",
+    "mean": 0.337891
+   },
+   "baseline_means": {
+    "stationary": 0.041016,
+    "constant": 0.337891,
+    "random-walk": 0.119141,
+    "wall-follower": 0.148438
+   },
+   "e1_frozen_means": {
+    "S-const": 4.568359,
+    "constant": 0.035156,
+    "random-walk": 0.060547,
+    "wall-follower": 0.03125
+   },
+   "too_easy": {
+    "ratio": 0.073963,
+    "bounds": [
+     0.065236,
+     0.082835
+    ],
+    "flag": false,
+    "reading": "not too easy"
+   },
+   "families": {
+    "e4s1": {
+     "n": 16,
+     "mean": 3.064941,
+     "min": 2.746094,
+     "max": 3.408203,
+     "readings": {
+      "qualifies": 16
+     }
+    },
+    "L1 carrier": {
+     "n": 1,
+     "mean": 2.837891,
+     "min": 2.837891,
+     "max": 2.837891,
+     "readings": {
+      "qualifies": 1
+     }
+    },
+    "e2d": {
+     "n": 47,
+     "mean": 1.313747,
+     "min": 0.097656,
+     "max": 2.015625,
+     "readings": {
+      "demonstrated failure: reliability, advantage": 5,
+      "qualifies": 41,
+      "uncertain": 1
+     }
+    },
+    "generation0": {
+     "n": 16,
+     "mean": 0.103516,
+     "min": 0.044922,
+     "max": 0.275391,
+     "readings": {
+      "demonstrated failure: reliability, advantage": 16
+     }
+    }
+   },
+   "prey": {
+    "pin_push_total": 0.0,
+    "wall_limited_share_all_evaluations": 0.0,
+    "speed_with_stationary_hunter": {
+     "median": 0.035,
+     "min": 0.035
+    },
+    "ledger_rel_error_max": 1.7502135598065452e-07
+   }
+  },
+  "H2-0.2": {
+   "setting": {
+    "name": "H2-0.2",
+    "rule": "bite",
+    "prey": "route",
+    "speed": 0.2,
+    "pinned": false
+   },
+   "solvable": true,
+   "positive_control": {
+    "mean": 4.861328,
+    "share_at_least_1": 1.0,
+    "reliability_bounds": [
+     1.0,
+     1.0
+    ],
+    "advantage_bounds": [
+     4.539062,
+     4.636719
+    ]
+   },
+   "pursuit_mean": 4.871094,
+   "best_baseline": {
+    "name": "constant",
+    "mean": 0.273438
+   },
+   "baseline_means": {
+    "stationary": 0.121094,
+    "constant": 0.273438,
+    "random-walk": 0.173828,
+    "wall-follower": 0.224609
+   },
+   "e1_frozen_means": {
+    "S-const": 4.900391,
+    "constant": 0.056641,
+    "random-walk": 0.056641,
+    "wall-follower": 0.039062
+   },
+   "too_easy": {
+    "ratio": 0.056247,
+    "bounds": [
+     0.048633,
+     0.063762
+    ],
+    "flag": false,
+    "reading": "not too easy"
+   },
+   "families": {
+    "e4s1": {
+     "n": 16,
+     "mean": 3.520996,
+     "min": 3.107422,
+     "max": 4.068359,
+     "readings": {
+      "qualifies": 16
+     }
+    },
+    "L1 carrier": {
+     "n": 1,
+     "mean": 3.240234,
+     "min": 3.240234,
+     "max": 3.240234,
+     "readings": {
+      "qualifies": 1
+     }
+    },
+    "e2d": {
+     "n": 47,
+     "mean": 1.301654,
+     "min": 0.111328,
+     "max": 2.148438,
+     "readings": {
+      "demonstrated failure: reliability": 2,
+      "demonstrated failure: reliability, advantage": 4,
+      "qualifies": 40,
+      "uncertain": 1
+     }
+    },
+    "generation0": {
+     "n": 16,
+     "mean": 0.190552,
+     "min": 0.121094,
+     "max": 0.291016,
+     "readings": {
+      "demonstrated failure: reliability, advantage": 16
+     }
+    }
+   },
+   "prey": {
+    "pin_push_total": 0.0,
+    "wall_limited_share_all_evaluations": 0.0,
+    "speed_with_stationary_hunter": {
+     "median": 0.07,
+     "min": 0.07
+    },
+    "ledger_rel_error_max": 1.7778218987165878e-07
+   }
+  },
+  "H2-0.3": {
+   "setting": {
+    "name": "H2-0.3",
+    "rule": "bite",
+    "prey": "route",
+    "speed": 0.3,
+    "pinned": false
+   },
+   "solvable": true,
+   "positive_control": {
+    "mean": 5.005859,
+    "share_at_least_1": 1.0,
+    "reliability_bounds": [
+     1.0,
+     1.0
+    ],
+    "advantage_bounds": [
+     4.662109,
+     4.759766
+    ]
+   },
+   "pursuit_mean": 5.019531,
+   "best_baseline": {
+    "name": "constant",
+    "mean": 0.294922
+   },
+   "baseline_means": {
+    "stationary": 0.175781,
+    "constant": 0.294922,
+    "random-walk": 0.193359,
+    "wall-follower": 0.236328
+   },
+   "e1_frozen_means": {
+    "S-const": 5.048828,
+    "constant": 0.056641,
+    "random-walk": 0.070312,
+    "wall-follower": 0.037109
+   },
+   "too_easy": {
+    "ratio": 0.058915,
+    "bounds": [
+     0.051382,
+     0.066562
+    ],
+    "flag": false,
+    "reading": "not too easy"
+   },
+   "families": {
+    "e4s1": {
+     "n": 16,
+     "mean": 3.56311,
+     "min": 3.210938,
+     "max": 4.242188,
+     "readings": {
+      "qualifies": 16
+     }
+    },
+    "L1 carrier": {
+     "n": 1,
+     "mean": 3.443359,
+     "min": 3.443359,
+     "max": 3.443359,
+     "readings": {
+      "qualifies": 1
+     }
+    },
+    "e2d": {
+     "n": 47,
+     "mean": 1.16427,
+     "min": 0.134766,
+     "max": 2.207031,
+     "readings": {
+      "demonstrated failure: reliability": 5,
+      "demonstrated failure: reliability, advantage": 7,
+      "qualifies": 30,
+      "uncertain": 5
+     }
+    },
+    "generation0": {
+     "n": 16,
+     "mean": 0.221436,
+     "min": 0.117188,
+     "max": 0.316406,
+     "readings": {
+      "demonstrated failure: reliability, advantage": 16
+     }
+    }
+   },
+   "prey": {
+    "pin_push_total": 0.0,
+    "wall_limited_share_all_evaluations": 0.0,
+    "speed_with_stationary_hunter": {
+     "median": 0.105,
+     "min": 0.105
+    },
+    "ledger_rel_error_max": 1.551082826841737e-07
+   }
+  },
+  "H2-0.4": {
+   "setting": {
+    "name": "H2-0.4",
+    "rule": "bite",
+    "prey": "route",
+    "speed": 0.4,
+    "pinned": false
+   },
+   "solvable": true,
+   "positive_control": {
+    "mean": 5.316406,
+    "share_at_least_1": 1.0,
+    "reliability_bounds": [
+     1.0,
+     1.0
+    ],
+    "advantage_bounds": [
+     4.994141,
+     5.121094
+    ]
+   },
+   "pursuit_mean": 4.990234,
+   "best_baseline": {
+    "name": "constant",
+    "mean": 0.257812
+   },
+   "baseline_means": {
+    "stationary": 0.212891,
+    "constant": 0.257812,
+    "random-walk": 0.201172,
+    "wall-follower": 0.173828
+   },
+   "e1_frozen_means": {
+    "S-const": 5.017578,
+    "constant": 0.039062,
+    "random-walk": 0.074219,
+    "wall-follower": 0.058594
+   },
+   "too_easy": {
+    "ratio": 0.048494,
+    "bounds": [
+     0.042884,
+     0.054754
+    ],
+    "flag": false,
+    "reading": "not too easy"
+   },
+   "families": {
+    "e4s1": {
+     "n": 16,
+     "mean": 3.554932,
+     "min": 3.230469,
+     "max": 4.021484,
+     "readings": {
+      "qualifies": 16
+     }
+    },
+    "L1 carrier": {
+     "n": 1,
+     "mean": 3.611328,
+     "min": 3.611328,
+     "max": 3.611328,
+     "readings": {
+      "qualifies": 1
+     }
+    },
+    "e2d": {
+     "n": 47,
+     "mean": 0.924784,
+     "min": 0.136719,
+     "max": 1.753906,
+     "readings": {
+      "demonstrated failure: reliability": 18,
+      "demonstrated failure: reliability, advantage": 11,
+      "qualifies": 12,
+      "uncertain": 6
+     }
+    },
+    "generation0": {
+     "n": 16,
+     "mean": 0.221191,
+     "min": 0.095703,
+     "max": 0.300781,
+     "readings": {
+      "demonstrated failure: reliability, advantage": 16
+     }
+    }
+   },
+   "prey": {
+    "pin_push_total": 0.0,
+    "wall_limited_share_all_evaluations": 0.0,
+    "speed_with_stationary_hunter": {
+     "median": 0.14,
+     "min": 0.14
+    },
+    "ledger_rel_error_max": 1.8575068177848026e-07
+   }
+  },
+  "H2-0.5": {
+   "setting": {
+    "name": "H2-0.5",
+    "rule": "bite",
+    "prey": "route",
+    "speed": 0.5,
+    "pinned": false
+   },
+   "solvable": true,
+   "positive_control": {
+    "mean": 5.701172,
+    "share_at_least_1": 1.0,
+    "reliability_bounds": [
+     1.0,
+     1.0
+    ],
+    "advantage_bounds": [
+     5.386719,
+     5.515625
+    ]
+   },
+   "pursuit_mean": 4.898438,
+   "best_baseline": {
+    "name": "constant",
+    "mean": 0.240234
+   },
+   "baseline_means": {
+    "stationary": 0.236328,
+    "constant": 0.240234,
+    "random-walk": 0.199219,
+    "wall-follower": 0.203125
+   },
+   "e1_frozen_means": {
+    "S-const": 4.970703,
+    "constant": 0.060547,
+    "random-walk": 0.085938,
+    "wall-follower": 0.052734
+   },
+   "too_easy": {
+    "ratio": 0.042138,
+    "bounds": [
+     0.038643,
+     0.049437
+    ],
+    "flag": false,
+    "reading": "not too easy"
+   },
+   "families": {
+    "e4s1": {
+     "n": 16,
+     "mean": 3.594482,
+     "min": 3.166016,
+     "max": 4.494141,
+     "readings": {
+      "qualifies": 16
+     }
+    },
+    "L1 carrier": {
+     "n": 1,
+     "mean": 3.746094,
+     "min": 3.746094,
+     "max": 3.746094,
+     "readings": {
+      "qualifies": 1
+     }
+    },
+    "e2d": {
+     "n": 47,
+     "mean": 0.688539,
+     "min": 0.119141,
+     "max": 1.144531,
+     "readings": {
+      "demonstrated failure: reliability": 18,
+      "demonstrated failure: reliability, advantage": 25,
+      "qualifies": 1,
+      "uncertain": 3
+     }
+    },
+    "generation0": {
+     "n": 16,
+     "mean": 0.220947,
+     "min": 0.146484,
+     "max": 0.324219,
+     "readings": {
+      "demonstrated failure: reliability, advantage": 16
+     }
+    }
+   },
+   "prey": {
+    "pin_push_total": 0.0,
+    "wall_limited_share_all_evaluations": 0.0,
+    "speed_with_stationary_hunter": {
+     "median": 0.175,
+     "min": 0.175
+    },
+    "ledger_rel_error_max": 2.0346161316661765e-07
+   }
+  },
+  "H2-0.6": {
+   "setting": {
+    "name": "H2-0.6",
+    "rule": "bite",
+    "prey": "route",
+    "speed": 0.6,
+    "pinned": false
+   },
+   "solvable": true,
+   "positive_control": {
+    "mean": 6.220703,
+    "share_at_least_1": 1.0,
+    "reliability_bounds": [
+     1.0,
+     1.0
+    ],
+    "advantage_bounds": [
+     5.882812,
+     6.023438
+    ]
+   },
+   "pursuit_mean": 4.853516,
+   "best_baseline": {
+    "name": "constant",
+    "mean": 0.261719
+   },
+   "baseline_means": {
+    "stationary": 0.242188,
+    "constant": 0.261719,
+    "random-walk": 0.177734,
+    "wall-follower": 0.212891
+   },
+   "e1_frozen_means": {
+    "S-const": 4.878906,
+    "constant": 0.044922,
+    "random-walk": 0.087891,
+    "wall-follower": 0.052734
+   },
+   "too_easy": {
+    "ratio": 0.042072,
+    "bounds": [
+     0.037915,
+     0.048143
+    ],
+    "flag": false,
+    "reading": "not too easy"
+   },
+   "families": {
+    "e4s1": {
+     "n": 16,
+     "mean": 3.540161,
+     "min": 3.078125,
+     "max": 4.724609,
+     "readings": {
+      "qualifies": 16
+     }
+    },
+    "L1 carrier": {
+     "n": 1,
+     "mean": 4.041016,
+     "min": 4.041016,
+     "max": 4.041016,
+     "readings": {
+      "qualifies": 1
+     }
+    },
+    "e2d": {
+     "n": 47,
+     "mean": 0.558469,
+     "min": 0.087891,
+     "max": 0.792969,
+     "readings": {
+      "demonstrated failure: reliability": 4,
+      "demonstrated failure: reliability, advantage": 43
+     }
+    },
+    "generation0": {
+     "n": 16,
+     "mean": 0.222656,
+     "min": 0.105469,
+     "max": 0.300781,
+     "readings": {
+      "demonstrated failure: reliability, advantage": 16
+     }
+    }
+   },
+   "prey": {
+    "pin_push_total": 0.0,
+    "wall_limited_share_all_evaluations": 0.0,
+    "speed_with_stationary_hunter": {
+     "median": 0.21,
+     "min": 0.21
+    },
+    "ledger_rel_error_max": 2.0696057201232108e-07
+   }
+  },
+  "H2-0.7": {
+   "setting": {
+    "name": "H2-0.7",
+    "rule": "bite",
+    "prey": "route",
+    "speed": 0.7,
+    "pinned": false
+   },
+   "solvable": true,
+   "positive_control": {
+    "mean": 6.458984,
+    "share_at_least_1": 1.0,
+    "reliability_bounds": [
+     1.0,
+     1.0
+    ],
+    "advantage_bounds": [
+     6.130859,
+     6.291016
+    ]
+   },
+   "pursuit_mean": 5.253906,
+   "best_baseline": {
+    "name": "stationary",
+    "mean": 0.246094
+   },
+   "baseline_means": {
+    "stationary": 0.246094,
+    "constant": 0.216797,
+    "random-walk": 0.203125,
+    "wall-follower": 0.203125
+   },
+   "e1_frozen_means": {
+    "S-const": 5.291016,
+    "constant": 0.03125,
+    "random-walk": 0.076172,
+    "wall-follower": 0.044922
+   },
+   "too_easy": {
+    "ratio": 0.038101,
+    "bounds": [
+     0.033424,
+     0.044095
+    ],
+    "flag": false,
+    "reading": "not too easy"
+   },
+   "families": {
+    "e4s1": {
+     "n": 16,
+     "mean": 3.292725,
+     "min": 2.755859,
+     "max": 4.505859,
+     "readings": {
+      "qualifies": 16
+     }
+    },
+    "L1 carrier": {
+     "n": 1,
+     "mean": 4.380859,
+     "min": 4.380859,
+     "max": 4.380859,
+     "readings": {
+      "qualifies": 1
+     }
+    },
+    "e2d": {
+     "n": 47,
+     "mean": 0.480136,
+     "min": 0.101562,
+     "max": 0.644531,
+     "readings": {
+      "demonstrated failure: reliability, advantage": 47
+     }
+    },
+    "generation0": {
+     "n": 16,
+     "mean": 0.231079,
+     "min": 0.113281,
+     "max": 0.292969,
+     "readings": {
+      "demonstrated failure: reliability, advantage": 16
+     }
+    }
+   },
+   "prey": {
+    "pin_push_total": 0.0,
+    "wall_limited_share_all_evaluations": 0.0,
+    "speed_with_stationary_hunter": {
+     "median": 0.245,
+     "min": 0.245
+    },
+    "ledger_rel_error_max": 2.0819214040529197e-07
+   }
+  },
+  "H2-0.8": {
+   "setting": {
+    "name": "H2-0.8",
+    "rule": "bite",
+    "prey": "route",
+    "speed": 0.8,
+    "pinned": false
+   },
+   "solvable": true,
+   "positive_control": {
+    "mean": 7.121094,
+    "share_at_least_1": 1.0,
+    "reliability_bounds": [
+     1.0,
+     1.0
+    ],
+    "advantage_bounds": [
+     6.800781,
+     6.919922
+    ]
+   },
+   "pursuit_mean": 6.466797,
+   "best_baseline": {
+    "name": "stationary",
+    "mean": 0.253906
+   },
+   "baseline_means": {
+    "stationary": 0.253906,
+    "constant": 0.238281,
+    "random-walk": 0.236328,
+    "wall-follower": 0.150391
+   },
+   "e1_frozen_means": {
+    "S-const": 6.230469,
+    "constant": 0.056641,
+    "random-walk": 0.080078,
+    "wall-follower": 0.068359
+   },
+   "too_easy": {
+    "ratio": 0.035656,
+    "bounds": [
+     0.032285,
+     0.041274
+    ],
+    "flag": false,
+    "reading": "not too easy"
+   },
+   "families": {
+    "e4s1": {
+     "n": 16,
+     "mean": 2.93457,
+     "min": 2.384766,
+     "max": 4.162109,
+     "readings": {
+      "qualifies": 16
+     }
+    },
+    "L1 carrier": {
+     "n": 1,
+     "mean": 4.507812,
+     "min": 4.507812,
+     "max": 4.507812,
+     "readings": {
+      "qualifies": 1
+     }
+    },
+    "e2d": {
+     "n": 47,
+     "mean": 0.428275,
+     "min": 0.142578,
+     "max": 0.574219,
+     "readings": {
+      "demonstrated failure: reliability, advantage": 47
+     }
+    },
+    "generation0": {
+     "n": 16,
+     "mean": 0.233521,
+     "min": 0.121094,
+     "max": 0.302734,
+     "readings": {
+      "demonstrated failure: reliability, advantage": 16
+     }
+    }
+   },
+   "prey": {
+    "pin_push_total": 0.0,
+    "wall_limited_share_all_evaluations": 0.0,
+    "speed_with_stationary_hunter": {
+     "median": 0.28,
+     "min": 0.28
+    },
+    "ledger_rel_error_max": 2.023116055591394e-07
+   }
+  },
+  "H2-0.9": {
+   "setting": {
+    "name": "H2-0.9",
+    "rule": "bite",
+    "prey": "route",
+    "speed": 0.9,
+    "pinned": false
+   },
+   "solvable": true,
+   "positive_control": {
+    "mean": 7.402344,
+    "share_at_least_1": 1.0,
+    "reliability_bounds": [
+     1.0,
+     1.0
+    ],
+    "advantage_bounds": [
+     7.074219,
+     7.199219
+    ]
+   },
+   "pursuit_mean": 7.658203,
+   "best_baseline": {
+    "name": "stationary",
+    "mean": 0.255859
+   },
+   "baseline_means": {
+    "stationary": 0.255859,
+    "constant": 0.255859,
+    "random-walk": 0.210938,
+    "wall-follower": 0.220703
+   },
+   "e1_frozen_means": {
+    "S-const": 7.259766,
+    "constant": 0.046875,
+    "random-walk": 0.068359,
+    "wall-follower": 0.054688
+   },
+   "too_easy": {
+    "ratio": 0.034565,
+    "bounds": [
+     0.031565,
+     0.04038
+    ],
+    "flag": false,
+    "reading": "not too easy"
+   },
+   "families": {
+    "e4s1": {
+     "n": 16,
+     "mean": 2.469604,
+     "min": 1.808594,
+     "max": 3.652344,
+     "readings": {
+      "qualifies": 16
+     }
+    },
+    "L1 carrier": {
+     "n": 1,
+     "mean": 4.400391,
+     "min": 4.400391,
+     "max": 4.400391,
+     "readings": {
+      "qualifies": 1
+     }
+    },
+    "e2d": {
+     "n": 47,
+     "mean": 0.381815,
+     "min": 0.119141,
+     "max": 0.498047,
+     "readings": {
+      "demonstrated failure: reliability, advantage": 47
+     }
+    },
+    "generation0": {
+     "n": 16,
+     "mean": 0.240112,
+     "min": 0.125,
+     "max": 0.306641,
+     "readings": {
+      "demonstrated failure: reliability, advantage": 16
+     }
+    }
+   },
+   "prey": {
+    "pin_push_total": 0.0,
+    "wall_limited_share_all_evaluations": 0.0,
+    "speed_with_stationary_hunter": {
+     "median": 0.315,
+     "min": 0.315
+    },
+    "ledger_rel_error_max": 2.1918653854595615e-07
+   }
+  },
+  "H2-1": {
+   "setting": {
+    "name": "H2-1",
+    "rule": "bite",
+    "prey": "route",
+    "speed": 1.0,
+    "pinned": false
+   },
+   "solvable": true,
+   "positive_control": {
+    "mean": 7.724609,
+    "share_at_least_1": 1.0,
+    "reliability_bounds": [
+     1.0,
+     1.0
+    ],
+    "advantage_bounds": [
+     7.400293,
+     7.527344
+    ]
+   },
+   "pursuit_mean": 8.107422,
+   "best_baseline": {
+    "name": "stationary",
+    "mean": 0.259766
+   },
+   "baseline_means": {
+    "stationary": 0.259766,
+    "constant": 0.232422,
+    "random-walk": 0.205078,
+    "wall-follower": 0.15625
+   },
+   "e1_frozen_means": {
+    "S-const": 7.720703,
+    "constant": 0.050781,
+    "random-walk": 0.060547,
+    "wall-follower": 0.080078
+   },
+   "too_easy": {
+    "ratio": 0.033628,
+    "bounds": [
+     0.029559,
+     0.038374
+    ],
+    "flag": false,
+    "reading": "not too easy"
+   },
+   "families": {
+    "e4s1": {
+     "n": 16,
+     "mean": 2.03894,
+     "min": 1.388672,
+     "max": 3.136719,
+     "readings": {
+      "qualifies": 16
+     }
+    },
+    "L1 carrier": {
+     "n": 1,
+     "mean": 4.123047,
+     "min": 4.123047,
+     "max": 4.123047,
+     "readings": {
+      "qualifies": 1
+     }
+    },
+    "e2d": {
+     "n": 47,
+     "mean": 0.351895,
+     "min": 0.132812,
+     "max": 0.464844,
+     "readings": {
+      "demonstrated failure: reliability, advantage": 47
+     }
+    },
+    "generation0": {
+     "n": 16,
+     "mean": 0.24353,
+     "min": 0.121094,
+     "max": 0.298828,
+     "readings": {
+      "demonstrated failure: reliability, advantage": 16
+     }
+    }
+   },
+   "prey": {
+    "pin_push_total": 0.0,
+    "wall_limited_share_all_evaluations": 0.0,
+    "speed_with_stationary_hunter": {
+     "median": 0.35,
+     "min": 0.35
+    },
+    "ledger_rel_error_max": 2.2522203891254643e-07
+   }
+  },
+  "H2b-walk-0.25": {
+   "setting": {
+    "name": "H2b-walk-0.25",
+    "rule": "bite",
+    "prey": "random_walk",
+    "speed": 0.25,
+    "pinned": false
+   },
+   "solvable": true,
+   "positive_control": {
+    "mean": 4.585938,
+    "share_at_least_1": 1.0,
+    "reliability_bounds": [
+     1.0,
+     1.0
+    ],
+    "advantage_bounds": [
+     4.371094,
+     4.478613
+    ]
+   },
+   "pursuit_mean": 4.650391,
+   "best_baseline": {
+    "name": "constant",
+    "mean": 0.160156
+   },
+   "baseline_means": {
+    "stationary": 0.021484,
+    "constant": 0.160156,
+    "random-walk": 0.101562,
+    "wall-follower": 0.111328
+   },
+   "e1_frozen_means": {
+    "S-const": 4.601562,
+    "constant": 0.117188,
+    "random-walk": 0.087891,
+    "wall-follower": 0.048828
+   },
+   "too_easy": {
+    "ratio": 0.034923,
+    "bounds": [
+     0.028571,
+     0.041738
+    ],
+    "flag": false,
+    "reading": "not too easy"
+   },
+   "families": {
+    "e4s1": {
+     "n": 16,
+     "mean": 3.062988,
+     "min": 2.789062,
+     "max": 3.449219,
+     "readings": {
+      "qualifies": 16
+     }
+    },
+    "L1 carrier": {
+     "n": 1,
+     "mean": 2.892578,
+     "min": 2.892578,
+     "max": 2.892578,
+     "readings": {
+      "qualifies": 1
+     }
+    },
+    "e2d": {
+     "n": 47,
+     "mean": 0.927236,
+     "min": 0.130859,
+     "max": 1.568359,
+     "readings": {
+      "demonstrated failure: reliability": 11,
+      "demonstrated failure: reliability, advantage": 6,
+      "qualifies": 23,
+      "uncertain": 7
+     }
+    },
+    "generation0": {
+     "n": 16,
+     "mean": 0.053711,
+     "min": 0.017578,
+     "max": 0.136719,
+     "readings": {
+      "demonstrated failure: reliability, advantage": 16
+     }
+    }
+   },
+   "prey": {
+    "pin_push_total": 0.0,
+    "wall_limited_share_all_evaluations": 0.046504,
+    "speed_with_stationary_hunter": {
+     "median": 0.0875,
+     "min": 0.064493
+    },
+    "ledger_rel_error_max": 1.4607542254067406e-07
+   }
+  },
+  "H2b-walk-0.5": {
+   "setting": {
+    "name": "H2b-walk-0.5",
+    "rule": "bite",
+    "prey": "random_walk",
+    "speed": 0.5,
+    "pinned": false
+   },
+   "solvable": true,
+   "positive_control": {
+    "mean": 4.376953,
+    "share_at_least_1": 1.0,
+    "reliability_bounds": [
+     1.0,
+     1.0
+    ],
+    "advantage_bounds": [
+     4.193359,
+     4.306641
+    ]
+   },
+   "pursuit_mean": 4.457031,
+   "best_baseline": {
+    "name": "random-walk",
+    "mean": 0.121094
+   },
+   "baseline_means": {
+    "stationary": 0.099609,
+    "constant": 0.099609,
+    "random-walk": 0.121094,
+    "wall-follower": 0.115234
+   },
+   "e1_frozen_means": {
+    "S-const": 4.357422,
+    "constant": 0.123047,
+    "random-walk": 0.097656,
+    "wall-follower": 0.058594
+   },
+   "too_easy": {
+    "ratio": 0.027666,
+    "bounds": [
+     0.024922,
+     0.033815
+    ],
+    "flag": false,
+    "reading": "not too easy"
+   },
+   "families": {
+    "e4s1": {
+     "n": 16,
+     "mean": 2.772949,
+     "min": 2.498047,
+     "max": 3.34375,
+     "readings": {
+      "qualifies": 16
+     }
+    },
+    "L1 carrier": {
+     "n": 1,
+     "mean": 2.886719,
+     "min": 2.886719,
+     "max": 2.886719,
+     "readings": {
+      "qualifies": 1
+     }
+    },
+    "e2d": {
+     "n": 47,
+     "mean": 0.540891,
+     "min": 0.123047,
+     "max": 0.996094,
+     "readings": {
+      "demonstrated failure: reliability": 10,
+      "demonstrated failure: reliability, advantage": 33,
+      "qualifies": 1,
+      "uncertain": 3
+     }
+    },
+    "generation0": {
+     "n": 16,
+     "mean": 0.103394,
+     "min": 0.076172,
+     "max": 0.138672,
+     "readings": {
+      "demonstrated failure: reliability, advantage": 16
+     }
+    }
+   },
+   "prey": {
+    "pin_push_total": 0.0,
+    "wall_limited_share_all_evaluations": 0.168107,
+    "speed_with_stationary_hunter": {
+     "median": 0.163001,
+     "min": 0.106649
+    },
+    "ledger_rel_error_max": 1.5299993549713582e-07
+   }
+  },
+  "H2b-walk-0.75": {
+   "setting": {
+    "name": "H2b-walk-0.75",
+    "rule": "bite",
+    "prey": "random_walk",
+    "speed": 0.75,
+    "pinned": false
+   },
+   "solvable": true,
+   "positive_control": {
+    "mean": 4.367188,
+    "share_at_least_1": 1.0,
+    "reliability_bounds": [
+     1.0,
+     1.0
+    ],
+    "advantage_bounds": [
+     4.160156,
+     4.287109
+    ]
+   },
+   "pursuit_mean": 4.554688,
+   "best_baseline": {
+    "name": "wall-follower",
+    "mean": 0.138672
+   },
+   "baseline_means": {
+    "stationary": 0.126953,
+    "constant": 0.109375,
+    "random-walk": 0.109375,
+    "wall-follower": 0.138672
+   },
+   "e1_frozen_means": {
+    "S-const": 4.371094,
+    "constant": 0.123047,
+    "random-walk": 0.103516,
+    "wall-follower": 0.056641
+   },
+   "too_easy": {
+    "ratio": 0.031753,
+    "bounds": [
+     0.028508,
+     0.037862
+    ],
+    "flag": false,
+    "reading": "not too easy"
+   },
+   "families": {
+    "e4s1": {
+     "n": 16,
+     "mean": 2.436035,
+     "min": 2.078125,
+     "max": 3.234375,
+     "readings": {
+      "qualifies": 16
+     }
+    },
+    "L1 carrier": {
+     "n": 1,
+     "mean": 3.109375,
+     "min": 3.109375,
+     "max": 3.109375,
+     "readings": {
+      "qualifies": 1
+     }
+    },
+    "e2d": {
+     "n": 47,
+     "mean": 0.315617,
+     "min": 0.097656,
+     "max": 0.613281,
+     "readings": {
+      "demonstrated failure: reliability": 1,
+      "demonstrated failure: reliability, advantage": 46
+     }
+    },
+    "generation0": {
+     "n": 16,
+     "mean": 0.11731,
+     "min": 0.091797,
+     "max": 0.134766,
+     "readings": {
+      "demonstrated failure: reliability, advantage": 16
+     }
+    }
+   },
+   "prey": {
+    "pin_push_total": 0.0,
+    "wall_limited_share_all_evaluations": 0.274182,
+    "speed_with_stationary_hunter": {
+     "median": 0.229536,
+     "min": 0.147793
+    },
+    "ledger_rel_error_max": 1.5025949243254262e-07
+   }
+  },
+  "H2b-wall-0.25": {
+   "setting": {
+    "name": "H2b-wall-0.25",
+    "rule": "bite",
+    "prey": "wall_follower",
+    "speed": 0.25,
+    "pinned": false
+   },
+   "solvable": true,
+   "positive_control": {
+    "mean": 4.371094,
+    "share_at_least_1": 1.0,
+    "reliability_bounds": [
+     1.0,
+     1.0
+    ],
+    "advantage_bounds": [
+     4.064453,
+     4.201172
+    ]
+   },
+   "pursuit_mean": 4.238281,
+   "best_baseline": {
+    "name": "wall-follower",
+    "mean": 0.240234
+   },
+   "baseline_means": {
+    "stationary": 0.013672,
+    "constant": 0.113281,
+    "random-walk": 0.095703,
+    "wall-follower": 0.240234
+   },
+   "e1_frozen_means": {
+    "S-const": 4.271484,
+    "constant": 0.082031,
+    "random-walk": 0.085938,
+    "wall-follower": 0.074219
+   },
+   "too_easy": {
+    "ratio": 0.05496,
+    "bounds": [
+     0.047178,
+     0.062696
+    ],
+    "flag": false,
+    "reading": "not too easy"
+   },
+   "families": {
+    "e4s1": {
+     "n": 16,
+     "mean": 2.987427,
+     "min": 2.349609,
+     "max": 3.351562,
+     "readings": {
+      "qualifies": 16
+     }
+    },
+    "L1 carrier": {
+     "n": 1,
+     "mean": 3.009766,
+     "min": 3.009766,
+     "max": 3.009766,
+     "readings": {
+      "qualifies": 1
+     }
+    },
+    "e2d": {
+     "n": 47,
+     "mean": 0.814162,
+     "min": 0.113281,
+     "max": 1.560547,
+     "readings": {
+      "demonstrated failure: reliability": 12,
+      "demonstrated failure: reliability, advantage": 16,
+      "qualifies": 10,
+      "uncertain": 9
+     }
+    },
+    "generation0": {
+     "n": 16,
+     "mean": 0.05835,
+     "min": 0.023438,
+     "max": 0.191406,
+     "readings": {
+      "demonstrated failure: reliability, advantage": 16
+     }
+    }
+   },
+   "prey": {
+    "pin_push_total": 0.0,
+    "wall_limited_share_all_evaluations": 8.7e-05,
+    "speed_with_stationary_hunter": {
+     "median": 0.0875,
+     "min": 0.087323
+    },
+    "ledger_rel_error_max": 1.561318712281476e-07
+   }
+  },
+  "H2b-wall-0.5": {
+   "setting": {
+    "name": "H2b-wall-0.5",
+    "rule": "bite",
+    "prey": "wall_follower",
+    "speed": 0.5,
+    "pinned": false
+   },
+   "solvable": true,
+   "positive_control": {
+    "mean": 4.136719,
+    "share_at_least_1": 1.0,
+    "reliability_bounds": [
+     1.0,
+     1.0
+    ],
+    "advantage_bounds": [
+     3.605469,
+     3.740234
+    ]
+   },
+   "pursuit_mean": 4.175781,
+   "best_baseline": {
+    "name": "wall-follower",
+    "mean": 0.462891
+   },
+   "baseline_means": {
+    "stationary": 0.134766,
+    "constant": 0.185547,
+    "random-walk": 0.128906,
+    "wall-follower": 0.462891
+   },
+   "e1_frozen_means": {
+    "S-const": 4.123047,
+    "constant": 0.154297,
+    "random-walk": 0.074219,
+    "wall-follower": 0.064453
+   },
+   "too_easy": {
+    "ratio": 0.111898,
+    "bounds": [
+     0.101134,
+     0.122508
+    ],
+    "flag": false,
+    "reading": "not too easy"
+   },
+   "families": {
+    "e4s1": {
+     "n": 16,
+     "mean": 2.547974,
+     "min": 2.111328,
+     "max": 3.302734,
+     "readings": {
+      "qualifies": 16
+     }
+    },
+    "L1 carrier": {
+     "n": 1,
+     "mean": 3.138672,
+     "min": 3.138672,
+     "max": 3.138672,
+     "readings": {
+      "qualifies": 1
+     }
+    },
+    "e2d": {
+     "n": 47,
+     "mean": 0.233585,
+     "min": 0.091797,
+     "max": 0.582031,
+     "readings": {
+      "demonstrated failure: reliability, advantage": 47
+     }
+    },
+    "generation0": {
+     "n": 16,
+     "mean": 0.124878,
+     "min": 0.074219,
+     "max": 0.177734,
+     "readings": {
+      "demonstrated failure: reliability, advantage": 16
+     }
+    }
+   },
+   "prey": {
+    "pin_push_total": 0.0,
+    "wall_limited_share_all_evaluations": 0.004338,
+    "speed_with_stationary_hunter": {
+     "median": 0.175,
+     "min": 0.173443
+    },
+    "ledger_rel_error_max": 1.4918288984002628e-07
+   }
+  },
+  "H2b-wall-0.75": {
+   "setting": {
+    "name": "H2b-wall-0.75",
+    "rule": "bite",
+    "prey": "wall_follower",
+    "speed": 0.75,
+    "pinned": false
+   },
+   "solvable": true,
+   "positive_control": {
+    "mean": 4.679688,
+    "share_at_least_1": 1.0,
+    "reliability_bounds": [
+     1.0,
+     1.0
+    ],
+    "advantage_bounds": [
+     4.390625,
+     4.519531
+    ]
+   },
+   "pursuit_mean": 4.679688,
+   "best_baseline": {
+    "name": "constant",
+    "mean": 0.222656
+   },
+   "baseline_means": {
+    "stationary": 0.171875,
+    "constant": 0.222656,
+    "random-walk": 0.142578,
+    "wall-follower": 0.179688
+   },
+   "e1_frozen_means": {
+    "S-const": 4.599609,
+    "constant": 0.222656,
+    "random-walk": 0.070312,
+    "wall-follower": 0.078125
+   },
+   "too_easy": {
+    "ratio": 0.047579,
+    "bounds": [
+     0.041284,
+     0.054789
+    ],
+    "flag": false,
+    "reading": "not too easy"
+   },
+   "families": {
+    "e4s1": {
+     "n": 16,
+     "mean": 2.045776,
+     "min": 1.630859,
+     "max": 3.160156,
+     "readings": {
+      "qualifies": 16
+     }
+    },
+    "L1 carrier": {
+     "n": 1,
+     "mean": 3.302734,
+     "min": 3.302734,
+     "max": 3.302734,
+     "readings": {
+      "qualifies": 1
+     }
+    },
+    "e2d": {
+     "n": 47,
+     "mean": 0.118891,
+     "min": 0.03125,
+     "max": 0.201172,
+     "readings": {
+      "demonstrated failure: reliability, advantage": 47
+     }
+    },
+    "generation0": {
+     "n": 16,
+     "mean": 0.118164,
+     "min": 0.080078,
+     "max": 0.169922,
+     "readings": {
+      "demonstrated failure: reliability, advantage": 16
+     }
+    }
+   },
+   "prey": {
+    "pin_push_total": 0.0,
+    "wall_limited_share_all_evaluations": 0.020445,
+    "speed_with_stationary_hunter": {
+     "median": 0.26192,
+     "min": 0.25741
+    },
+    "ledger_rel_error_max": 1.6068296479474149e-07
+   }
+  }
+ },
+ "falls_off": {
+  "e4s1": {
+   "H2": {
+    "None": 16
+   },
+   "H2b walk": {
+    "None": 16
+   },
+   "H2b wall": {
+    "None": 16
+   }
+  },
+  "L1 carrier": {
+   "H2": {
+    "None": 1
+   },
+   "H2b walk": {
+    "None": 1
+   },
+   "H2b wall": {
+    "None": 1
+   }
+  },
+  "e2d": {
+   "H2": {
+    "H2-0.1": 6,
+    "H2-0.2": 2,
+    "H2-0.3": 9,
+    "H2-0.4": 18,
+    "H2-0.5": 11,
+    "H2-0.6": 1
+   },
+   "H2b walk": {
+    "H2b-walk-0.25": 24,
+    "H2b-walk-0.5": 22,
+    "H2b-walk-0.75": 1
+   },
+   "H2b wall": {
+    "H2b-wall-0.25": 37,
+    "H2b-wall-0.5": 10
+   }
+  },
+  "generation0": {
+   "H2": {
+    "H2-0.1": 16
+   },
+   "H2b walk": {
+    "H2b-walk-0.25": 16
+   },
+   "H2b wall": {
+    "H2b-wall-0.25": 16
+   }
+  }
+ },
+ "recoveries_after_falling_off": {
+  "04a run04": {
+   "H2": [
+    "H2-0.2"
+   ]
+  }
+ },
+ "ghost_minus_reach": {
+  "scripted": {
+   "S-const tuned": {
+    "mean": 0.0,
+    "bounds": [
+     0.0,
+     0.0
+    ]
+   },
+   "constant tuned": {
+    "mean": 0.0,
+    "bounds": [
+     0.0,
+     0.0
+    ]
+   },
+   "random-walk tuned": {
+    "mean": 0.0,
+    "bounds": [
+     0.0,
+     0.0
+    ]
+   },
+   "wall-follower tuned": {
+    "mean": 0.183594,
+    "bounds": [
+     0.123047,
+     0.246094
+    ]
+   },
+   "S-const E1-frozen": {
+    "mean": 0.0,
+    "bounds": [
+     0.0,
+     0.0
+    ]
+   },
+   "constant E1-frozen": {
+    "mean": 0.0,
+    "bounds": [
+     0.0,
+     0.0
+    ]
+   },
+   "random-walk E1-frozen": {
+    "mean": 0.0,
+    "bounds": [
+     0.0,
+     0.0
+    ]
+   },
+   "wall-follower E1-frozen": {
+    "mean": 0.1875,
+    "bounds": [
+     0.128906,
+     0.248047
+    ]
+   },
+   "pursuit": {
+    "mean": 0.0,
+    "bounds": [
+     0.0,
+     0.0
+    ]
+   },
+   "stationary": {
+    "mean": 0.0,
+    "bounds": [
+     0.0,
+     0.0
+    ]
+   }
+  },
+  "families": {
+   "e4s1": {
+    "n": 16,
+    "mean": 0.072754,
+    "min": -0.056641,
+    "max": 0.943359,
+    "lower_above_0": 6,
+    "upper_below_0": 5
+   },
+   "L1 carrier": {
+    "n": 1,
+    "mean": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "lower_above_0": 0,
+    "upper_below_0": 0
+   },
+   "e2d": {
+    "n": 47,
+    "mean": 0.003906,
+    "min": -0.025391,
+    "max": 0.025391,
+    "lower_above_0": 6,
+    "upper_below_0": 3
+   },
+   "generation0": {
+    "n": 16,
+    "mean": 0.0,
+    "min": -0.003906,
+    "max": 0.003906,
+    "lower_above_0": 0,
+    "upper_below_0": 0
+   }
+  }
+ },
+ "intact_minus_probe": {
+  "H1-bite|body": {
+   "e4s1": {
+    "n": 16,
+    "mean": -0.046753,
+    "min": -0.154297,
+    "max": 0.060547,
+    "lower_above_0": 1,
+    "upper_below_0": 8
+   },
+   "L1 carrier": {
+    "n": 1,
+    "mean": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "lower_above_0": 0,
+    "upper_below_0": 0
+   },
+   "e2d": {
+    "n": 47,
+    "mean": -0.004737,
+    "min": -0.054688,
+    "max": 0.039062,
+    "lower_above_0": 4,
+    "upper_below_0": 8
+   },
+   "generation0": {
+    "n": 16,
+    "mean": -0.000977,
+    "min": -0.009766,
+    "max": 0.003906,
+    "lower_above_0": 0,
+    "upper_below_0": 2
+   }
+  },
+  "H1-bite|mean": {
+   "e4s1": {
+    "n": 16,
+    "mean": 1.130249,
+    "min": 0.097656,
+    "max": 2.966797,
+    "lower_above_0": 16,
+    "upper_below_0": 0
+   },
+   "L1 carrier": {
+    "n": 1,
+    "mean": 1.908203,
+    "min": 1.908203,
+    "max": 1.908203,
+    "lower_above_0": 1,
+    "upper_below_0": 0
+   },
+   "e2d": {
+    "n": 47,
+    "mean": 0.006316,
+    "min": -0.142578,
+    "max": 0.095703,
+    "lower_above_0": 11,
+    "upper_below_0": 3
+   },
+   "generation0": {
+    "n": 16,
+    "mean": -0.00061,
+    "min": -0.005859,
+    "max": 0.001953,
+    "lower_above_0": 0,
+    "upper_below_0": 1
+   }
+  },
+  "H1-bite|mirrored": {
+   "e4s1": {
+    "n": 16,
+    "mean": 2.703125,
+    "min": 2.357422,
+    "max": 3.011719,
+    "lower_above_0": 16,
+    "upper_below_0": 0
+   },
+   "L1 carrier": {
+    "n": 1,
+    "mean": 2.054688,
+    "min": 2.054688,
+    "max": 2.054688,
+    "lower_above_0": 1,
+    "upper_below_0": 0
+   },
+   "e2d": {
+    "n": 47,
+    "mean": 0.950341,
+    "min": 0.001953,
+    "max": 1.632812,
+    "lower_above_0": 46,
+    "upper_below_0": 0
+   },
+   "generation0": {
+    "n": 16,
+    "mean": -0.000122,
+    "min": -0.042969,
+    "max": 0.037109,
+    "lower_above_0": 1,
+    "upper_below_0": 0
+   }
+  },
+  "H2-0.5|body": {
+   "e4s1": {
+    "n": 16,
+    "mean": -0.076904,
+    "min": -0.240234,
+    "max": 0.060547,
+    "lower_above_0": 1,
+    "upper_below_0": 10
+   },
+   "L1 carrier": {
+    "n": 1,
+    "mean": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "lower_above_0": 0,
+    "upper_below_0": 0
+   },
+   "e2d": {
+    "n": 47,
+    "mean": 0.004696,
+    "min": -0.035156,
+    "max": 0.048828,
+    "lower_above_0": 6,
+    "upper_below_0": 3
+   },
+   "generation0": {
+    "n": 16,
+    "mean": -0.000122,
+    "min": -0.023438,
+    "max": 0.015625,
+    "lower_above_0": 4,
+    "upper_below_0": 1
+   }
+  },
+  "H2-0.5|mean": {
+   "e4s1": {
+    "n": 16,
+    "mean": 1.95752,
+    "min": 0.892578,
+    "max": 3.830078,
+    "lower_above_0": 16,
+    "upper_below_0": 0
+   },
+   "L1 carrier": {
+    "n": 1,
+    "mean": 3.507812,
+    "min": 3.507812,
+    "max": 3.507812,
+    "lower_above_0": 1,
+    "upper_below_0": 0
+   },
+   "e2d": {
+    "n": 47,
+    "mean": 0.00108,
+    "min": -0.039062,
+    "max": 0.035156,
+    "lower_above_0": 4,
+    "upper_below_0": 3
+   },
+   "generation0": {
+    "n": 16,
+    "mean": 0.001343,
+    "min": -0.009766,
+    "max": 0.021484,
+    "lower_above_0": 1,
+    "upper_below_0": 0
+   }
+  },
+  "H2-0.5|mirrored": {
+   "e4s1": {
+    "n": 16,
+    "mean": 3.368774,
+    "min": 2.960938,
+    "max": 4.308594,
+    "lower_above_0": 16,
+    "upper_below_0": 0
+   },
+   "L1 carrier": {
+    "n": 1,
+    "mean": 3.591797,
+    "min": 3.591797,
+    "max": 3.591797,
+    "lower_above_0": 1,
+    "upper_below_0": 0
+   },
+   "e2d": {
+    "n": 47,
+    "mean": 0.287566,
+    "min": 0.009766,
+    "max": 0.716797,
+    "lower_above_0": 44,
+    "upper_below_0": 0
+   },
+   "generation0": {
+    "n": 16,
+    "mean": 0.000977,
+    "min": -0.058594,
+    "max": 0.052734,
+    "lower_above_0": 2,
+    "upper_below_0": 2
+   }
+  }
+ }
+}

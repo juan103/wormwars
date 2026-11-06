@@ -4,6 +4,14 @@
 
 ## Status, 1-30 October 2026 (updates the section below; that section's later edits are recorded in DECISIONS.md)
 
+**6 November 2026** (D386-D388): **E5-0 has run** (exploratory, CPU only, 7.94 of 8 hours;
+[`experiments/E5-hunter/E5-0/RESULTS.md`](experiments/E5-hunter/E5-0/RESULTS.md), reviewed by both). Task H passed
+its equivalence checks, and every rung tested (a static prey, a route prey at ten speeds, two other movers) is
+solvable and not too easy. Zero-shot, E4s-1's champions and L1 on its carrier qualify everywhere; E2d's N2-only
+champions stop qualifying once the prey moves, and generation 0 never qualifies. Faster route prey are easier for
+the scripted hunters, so E5-1's ladder needs a rule other than the one SCOPE.md proposed. E5-1 is not designed; it
+needs the GPU and the owner's word.
+
 **4 November 2026** (D385): **stage 05, the hunter, starts with a scope note** ([`docs/E5/SCOPE.md`](docs/E5/SCOPE.md), draft 2; nothing has run). The owner chose 05 and its prey ladder: a
 static prey, then one on a defined route, then frozen organisms from earlier experiments, reusing what was built
 before; and, asked, a null-graph arm, so 05 also tests whether N2's wiring helps a hunter. The task, Task H, is

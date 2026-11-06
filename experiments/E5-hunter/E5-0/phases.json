@@ -1,0 +1,357 @@
+{
+ "note": "exploratory, written after the reading; medians over captured lives with a logged first contact, on the 512 evaluation worlds",
+ "settings": {
+  "H1-bite": {
+   "S-const tuned": {
+    "captures_mean": 4.595703125,
+    "captured_lives": 2353,
+    "captured_without_contact": 0,
+    "approach_median": 29.0,
+    "kill_median": 25.0,
+    "contact_ticks_median": 17.0
+   },
+   "S-const E1-frozen": {
+    "captures_mean": 4.51953125,
+    "captured_lives": 2314,
+    "captured_without_contact": 0,
+    "approach_median": 29.0,
+    "kill_median": 25.0,
+    "contact_ticks_median": 17.0
+   },
+   "pursuit": {
+    "captures_mean": 4.4765625,
+    "captured_lives": 2292,
+    "captured_without_contact": 0,
+    "approach_median": 29.0,
+    "kill_median": 25.0,
+    "contact_ticks_median": 17.0
+   },
+   "L1 carrier": {
+    "captures_mean": 2.130859375,
+    "captured_lives": 1091,
+    "captured_without_contact": 0,
+    "approach_median": 33.0,
+    "kill_median": 57.0,
+    "contact_ticks_median": 16.0
+   },
+   "e4s1 M run00": {
+    "captures_mean": 2.865234375,
+    "captured_lives": 1467,
+    "captured_without_contact": 0,
+    "approach_median": 40.0,
+    "kill_median": 33.0,
+    "contact_ticks_median": 15.0
+   },
+   "e4s1 M run03": {
+    "captures_mean": 3.0546875,
+    "captured_lives": 1564,
+    "captured_without_contact": 0,
+    "approach_median": 39.0,
+    "kill_median": 28.0,
+    "contact_ticks_median": 16.0
+   },
+   "e2 ga run00": {
+    "captures_mean": 0.9921875,
+    "captured_lives": 508,
+    "captured_without_contact": 0,
+    "approach_median": 112.0,
+    "kill_median": 62.0,
+    "contact_ticks_median": 16.0
+   }
+  },
+  "H2-0.1": {
+   "S-const tuned": {
+    "captures_mean": 4.568359375,
+    "captured_lives": 2339,
+    "captured_without_contact": 0,
+    "approach_median": 28.0,
+    "kill_median": 26.0,
+    "contact_ticks_median": 19.0
+   },
+   "S-const E1-frozen": {
+    "captures_mean": 4.568359375,
+    "captured_lives": 2339,
+    "captured_without_contact": 0,
+    "approach_median": 28.0,
+    "kill_median": 26.0,
+    "contact_ticks_median": 19.0
+   },
+   "pursuit": {
+    "captures_mean": 4.337890625,
+    "captured_lives": 2221,
+    "captured_without_contact": 0,
+    "approach_median": 28.0,
+    "kill_median": 28.0,
+    "contact_ticks_median": 19.0
+   },
+   "L1 carrier": {
+    "captures_mean": 2.837890625,
+    "captured_lives": 1453,
+    "captured_without_contact": 0,
+    "approach_median": 30.0,
+    "kill_median": 46.0,
+    "contact_ticks_median": 15.0
+   },
+   "e4s1 M run00": {
+    "captures_mean": 2.998046875,
+    "captured_lives": 1535,
+    "captured_without_contact": 0,
+    "approach_median": 36.0,
+    "kill_median": 51.0,
+    "contact_ticks_median": 18.0
+   },
+   "e4s1 M run03": {
+    "captures_mean": 3.408203125,
+    "captured_lives": 1745,
+    "captured_without_contact": 0,
+    "approach_median": 35.0,
+    "kill_median": 42.0,
+    "contact_ticks_median": 19.0
+   },
+   "e2 ga run00": {
+    "captures_mean": 1.328125,
+    "captured_lives": 680,
+    "captured_without_contact": 0,
+    "approach_median": 97.5,
+    "kill_median": 55.0,
+    "contact_ticks_median": 15.0
+   }
+  },
+  "H2-0.3": {
+   "S-const tuned": {
+    "captures_mean": 5.005859375,
+    "captured_lives": 2563,
+    "captured_without_contact": 0,
+    "approach_median": 24.0,
+    "kill_median": 27.0,
+    "contact_ticks_median": 24.0
+   },
+   "S-const E1-frozen": {
+    "captures_mean": 5.048828125,
+    "captured_lives": 2585,
+    "captured_without_contact": 0,
+    "approach_median": 24.0,
+    "kill_median": 27.0,
+    "contact_ticks_median": 24.0
+   },
+   "pursuit": {
+    "captures_mean": 5.01953125,
+    "captured_lives": 2570,
+    "captured_without_contact": 0,
+    "approach_median": 24.0,
+    "kill_median": 27.0,
+    "contact_ticks_median": 24.0
+   },
+   "L1 carrier": {
+    "captures_mean": 3.443359375,
+    "captured_lives": 1763,
+    "captured_without_contact": 0,
+    "approach_median": 25.0,
+    "kill_median": 39.0,
+    "contact_ticks_median": 14.0
+   },
+   "e4s1 M run00": {
+    "captures_mean": 3.62109375,
+    "captured_lives": 1854,
+    "captured_without_contact": 1,
+    "approach_median": 34.0,
+    "kill_median": 34.0,
+    "contact_ticks_median": 17.0
+   },
+   "e4s1 M run03": {
+    "captures_mean": 4.2421875,
+    "captured_lives": 2172,
+    "captured_without_contact": 0,
+    "approach_median": 32.0,
+    "kill_median": 27.0,
+    "contact_ticks_median": 17.0
+   },
+   "e2 ga run00": {
+    "captures_mean": 1.19140625,
+    "captured_lives": 610,
+    "captured_without_contact": 0,
+    "approach_median": 95.0,
+    "kill_median": 62.0,
+    "contact_ticks_median": 14.0
+   }
+  },
+  "H2-0.5": {
+   "S-const tuned": {
+    "captures_mean": 5.701171875,
+    "captured_lives": 2919,
+    "captured_without_contact": 3,
+    "approach_median": 29.0,
+    "kill_median": 14.0,
+    "contact_ticks_median": 14.0
+   },
+   "S-const E1-frozen": {
+    "captures_mean": 4.970703125,
+    "captured_lives": 2545,
+    "captured_without_contact": 0,
+    "approach_median": 21.0,
+    "kill_median": 32.0,
+    "contact_ticks_median": 24.0
+   },
+   "pursuit": {
+    "captures_mean": 4.8984375,
+    "captured_lives": 2508,
+    "captured_without_contact": 0,
+    "approach_median": 20.0,
+    "kill_median": 33.0,
+    "contact_ticks_median": 24.0
+   },
+   "L1 carrier": {
+    "captures_mean": 3.74609375,
+    "captured_lives": 1918,
+    "captured_without_contact": 0,
+    "approach_median": 25.0,
+    "kill_median": 32.0,
+    "contact_ticks_median": 13.0
+   },
+   "e4s1 M run00": {
+    "captures_mean": 3.33984375,
+    "captured_lives": 1710,
+    "captured_without_contact": 0,
+    "approach_median": 33.0,
+    "kill_median": 36.0,
+    "contact_ticks_median": 14.0
+   },
+   "e4s1 M run03": {
+    "captures_mean": 3.64453125,
+    "captured_lives": 1866,
+    "captured_without_contact": 1,
+    "approach_median": 33.0,
+    "kill_median": 31.0,
+    "contact_ticks_median": 14.0
+   },
+   "e2 ga run00": {
+    "captures_mean": 0.681640625,
+    "captured_lives": 349,
+    "captured_without_contact": 0,
+    "approach_median": 86.0,
+    "kill_median": 72.0,
+    "contact_ticks_median": 13.0
+   }
+  },
+  "H2-0.7": {
+   "S-const tuned": {
+    "captures_mean": 6.458984375,
+    "captured_lives": 3307,
+    "captured_without_contact": 2,
+    "approach_median": 22.0,
+    "kill_median": 14.0,
+    "contact_ticks_median": 13.0
+   },
+   "S-const E1-frozen": {
+    "captures_mean": 5.291015625,
+    "captured_lives": 2709,
+    "captured_without_contact": 0,
+    "approach_median": 20.0,
+    "kill_median": 26.0,
+    "contact_ticks_median": 25.0
+   },
+   "pursuit": {
+    "captures_mean": 5.25390625,
+    "captured_lives": 2690,
+    "captured_without_contact": 0,
+    "approach_median": 20.0,
+    "kill_median": 27.0,
+    "contact_ticks_median": 25.0
+   },
+   "L1 carrier": {
+    "captures_mean": 4.380859375,
+    "captured_lives": 2243,
+    "captured_without_contact": 0,
+    "approach_median": 24.0,
+    "kill_median": 23.0,
+    "contact_ticks_median": 12.0
+   },
+   "e4s1 M run00": {
+    "captures_mean": 3.068359375,
+    "captured_lives": 1571,
+    "captured_without_contact": 1,
+    "approach_median": 32.0,
+    "kill_median": 27.0,
+    "contact_ticks_median": 12.0
+   },
+   "e4s1 M run03": {
+    "captures_mean": 3.34375,
+    "captured_lives": 1712,
+    "captured_without_contact": 2,
+    "approach_median": 32.0,
+    "kill_median": 36.0,
+    "contact_ticks_median": 12.0
+   },
+   "e2 ga run00": {
+    "captures_mean": 0.5625,
+    "captured_lives": 288,
+    "captured_without_contact": 0,
+    "approach_median": 81.0,
+    "kill_median": 87.5,
+    "contact_ticks_median": 13.0
+   }
+  },
+  "H2-1": {
+   "S-const tuned": {
+    "captures_mean": 7.724609375,
+    "captured_lives": 3955,
+    "captured_without_contact": 6,
+    "approach_median": 18.0,
+    "kill_median": 15.0,
+    "contact_ticks_median": 14.0
+   },
+   "S-const E1-frozen": {
+    "captures_mean": 7.720703125,
+    "captured_lives": 3953,
+    "captured_without_contact": 5,
+    "approach_median": 18.0,
+    "kill_median": 15.0,
+    "contact_ticks_median": 14.0
+   },
+   "pursuit": {
+    "captures_mean": 8.107421875,
+    "captured_lives": 4151,
+    "captured_without_contact": 2,
+    "approach_median": 17.0,
+    "kill_median": 15.0,
+    "contact_ticks_median": 13.0
+   },
+   "L1 carrier": {
+    "captures_mean": 4.123046875,
+    "captured_lives": 2111,
+    "captured_without_contact": 23,
+    "approach_median": 24.0,
+    "kill_median": 21.0,
+    "contact_ticks_median": 10.0
+   },
+   "e4s1 M run00": {
+    "captures_mean": 1.90625,
+    "captured_lives": 976,
+    "captured_without_contact": 1,
+    "approach_median": 36.0,
+    "kill_median": 59.0,
+    "contact_ticks_median": 12.0
+   },
+   "e4s1 M run03": {
+    "captures_mean": 1.904296875,
+    "captured_lives": 975,
+    "captured_without_contact": 4,
+    "approach_median": 35.0,
+    "kill_median": 61.0,
+    "contact_ticks_median": 12.0
+   },
+   "e2 ga run00": {
+    "captures_mean": 0.345703125,
+    "captured_lives": 177,
+    "captured_without_contact": 0,
+    "approach_median": 87.0,
+    "kill_median": 90.0,
+    "contact_ticks_median": 13.0
+   }
+  }
+ },
+ "attack_disabled": {
+  "captures": 0,
+  "damage": 0.0
+ }
+}

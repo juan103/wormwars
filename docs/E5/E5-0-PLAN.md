@@ -262,3 +262,11 @@ counts the running stage; every stage after bench refuses to run unless the code
 builds on, and a resumed stage checks its own start marker's commit; the reference worktree's head and cleanliness
 are checked; the traces cover every hunter of §4.2, and the oracle in §4.1; the `constant` probe replaces the
 hunter's food channels only.
+
+**A note after the run (2026-11-06, D388).** Two places in the text above are inexact, and are recorded here instead
+of being edited (the results review: Astra):
+- **§8's "E1's four grids, 379 points"** should read 487 points (S-const 200, `constant` 65, `random-walk` 60,
+  `wall-follower` 162), which gives the 592 192 tuning episodes that ran. Bench and the calibration used the grids
+  as registered in the code; only the plan's count was wrong.
+- **§4.2's per-tick traces** ran under the real scent only; the per-world counts, capture ticks and path lengths were
+  compared under all three probes.

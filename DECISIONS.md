@@ -12593,3 +12593,45 @@ prediction; the order of the stages; the committed records). No decision rule or
 every hunter under three probes and in every trace; E_prey 1.375.
 
 **Next:** the formal stages, in order, on the CPU.
+
+## D388 — E5-0's results: every rung solvable and not too easy; E4s-1 and L1 qualify everywhere, E2d stops once the prey moves (2026-11-06)
+
+**The run.** All six stages ran on `7d25460` (D387), on the CPU, 2026-11-06 01:07-09:04 UTC, one attempt each, rc 0,
+no cuts, nothing untested: 7.94 of the 8 recorded hours (228 seconds to spare; the qualification probes are staged,
+not projected, plan §8). Records committed at `f2199d9`. Nothing ran on the GPU.
+
+**What came out** (`experiments/E5-hunter/E5-0/RESULTS.md`, draft 2; `summary.json` by `scripts/e5_0_summary.py`):
+- Equivalence: old engine against new identical on 68 arrays; H1-ghost against Task N identical for the nine
+  hunters under three probes (traces under the real scent only).
+- Calibration: E_prey 1.375; the route follower passed at its first settings.
+- All 18 read settings "solvable" and "not too easy" (the best baseline 2.8% to 11.2% of the positive control).
+- E4s-1's 16 champions and L1 on its carrier qualify at all 18, zero-shot; at route speed 1.0 L1 (4.12) beats every
+  E4s-1 champion (at most 3.14). E2d's 47 stop qualifying on the route at 0.1 to 0.6 (most at 0.4) and on the movers
+  at 0.25 to 0.75; none qualifies at 0.6 or more. Generation 0 never qualifies.
+- The `mean` probe costs E4s-1 1.13 captures at H1-bite and E2d 0.01; it explains part of the families' gap, not all.
+- Faster route prey are easier for the scripted hunters (E1's frozen S-const 4.57 to 7.72): SCOPE.md §4's rule
+  "set the ladder where the positive control falls off" cannot be applied; E5-1 needs another.
+
+**The review** (`docs/reviews/20261106-E5-0-results/`, one round; both "fix then publish"; every fix taken). Both
+found the readings applied as the plan fixed them (Astra recomputed all 1 440 classifications from the counts).
+- **Both** caught: the movers' fall-off left out E2 extension run 4 at 0.75; "the tuned constant turn matters" (gain
+  and speed changed too); "contact was not measured directly" (it was); the stereo reading was causal and too
+  categorical (E4s-1 keeps 1.62 under `mean`, above E2d's intact 1.02); 04a run 4 is uncertain at 0.3, not failed;
+  the exploratory phases script counted captured lives with no logged contact (its -1 sentinel), now kept apart and
+  tested (sabotage seen failing, `runs/e5-0/phases-sabotage.txt`).
+- **Astra** caught: "generation 0 catches nothing" (it never qualifies); traces were compared under the real scent
+  only; three display roundings (0.048, 0.123, 2.09; `summary.json` now keeps six digits); "each champion declines
+  after its peak" (runs 4, 10, 14 rise again); the reproduction steps (start markers refuse a rerun); §8's grid count
+  (379 for 487; a dated note in the plan).
+- **Fable** caught: the 10-tick minimum next to 7-tick kill times (bites land before contact is logged); the
+  attack-disabled damage was in no committed record (now in `phases.json`, 0.0); L1's peak is 4.51 at 0.8; run 12's
+  `mean` cost is only 0.10; the fixed-parameter references are the cleaner evidence for fast prey being easier;
+  tuning noise at H1-ghost (8.65 against 8.67); and, for E5-1, L1's faster kill of fast prey (the carrier's gait).
+- **Not taken from Fable:** that the `mirrored` cost points to lateralised noses. `mirrored` reads the scent at the
+  point reflection of each sample point through the arena's centre (`world.py`, `_sensed_food`), not a swap of the
+  noses (`swapped`); Astra's reading (dependence on where the scent is, computation unidentified) is used.
+
+**Before review**, re-deriving every claim from the records corrected four slips in my draft (the tuned S-const's
+parameters, E2d's H1-ghost mean, E2d's H2-0.5 cells, a D-number).
+
+**Next:** report to the owner. E5-1 is a design round, then GPU work; both need the owner's word.
