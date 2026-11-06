@@ -1,0 +1,4 @@
+wrote D:\Claude\random\wormWars\runs\e5-0\reference-old.npz: 68 arrays
+wrote D:\Claude\random\wormWars\runs\e5-0\reference-new.npz: 68 arrays
+old against new: True | ghost against Task N: True | CUDA gap: 0.0048828125 0.9267578125
+rc=0

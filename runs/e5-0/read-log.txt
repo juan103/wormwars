@@ -1,0 +1,2 @@
+solvable: {'H1-ghost': None, 'H1-reach': True, 'H1-bite': True, 'H2-0.1': True, 'H2-0.2': True, 'H2-0.3': True, 'H2-0.4': True, 'H2-0.5': True, 'H2-0.6': True, 'H2-0.7': True, 'H2-0.8': True, 'H2-0.9': True, 'H2-1': True, 'H2b-walk-0.25': True, 'H2b-walk-0.5': True, 'H2b-walk-0.75': True, 'H2b-wall-0.25': True, 'H2b-wall-0.5': True, 'H2b-wall-0.75': True}
+rc=0

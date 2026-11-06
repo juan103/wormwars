@@ -1,0 +1,20 @@
+{
+ "seconds": {
+  "scripted episode": 0.00790541718743043,
+  "tuning chunk": 40.96964929997921,
+  "neural episode e4s1": 0.01648440512693128,
+  "neural episode e2d": 0.01643176538087232
+ },
+ "projected_hours": {
+  "equivalence": 0.10162299641626306,
+  "calibration: route check": 0.04216222499962896,
+  "calibration: E_prey": 0.0005621629999950529,
+  "calibration: tuning": 2.1622870463877915,
+  "evaluation": 3.7985462023265426,
+  "fixed probes": 1.1253353899985086,
+  "total": 7.318285279239822
+ },
+ "cuts": [],
+ "fits": true
+}
+rc=0

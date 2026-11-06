@@ -1,0 +1,240 @@
+{
+ "provenance_at_start": {
+  "git_commit": "7d254607ea09c22a466b3eb3ef75433ae1eb3dec",
+  "branch": "roadmap",
+  "dirty": false,
+  "python": "3.13.3",
+  "numpy": "2.4.4",
+  "torch": "2.12.0+cu130",
+  "cuda": "13.0",
+  "gpu": "NVIDIA GeForce RTX 5080",
+  "connectome_cache_sha256": "43b87aa172a0042b9dce734b15bdf1c87efe3a33ac1cc0d9cd03255a60c96d4a",
+  "connectome_source_sha256": "1f4fdbf84746b69b49a8da0816f52787860ce349b638dce37924ba80f90c70c9"
+ },
+ "reference_commit": "ab749bb5b1f4870899d047bec07cb2ddb1c20ea1",
+ "reference_worktree": {
+  "path": "D:\\Claude\\random\\wormWars-e5ref",
+  "head": "ab749bb5b1f4870899d047bec07cb2ddb1c20ea1",
+  "clean": true
+ },
+ "old_against_new": {
+  "arrays": 68,
+  "differ": [],
+  "identical": true
+ },
+ "ghost_against_task_n": {
+  "worlds": 512,
+  "rows": {
+   "real|S-const": {
+    "count": true,
+    "capture_tick": true,
+    "path": true,
+    "mean": 8.66015625
+   },
+   "real|oracle": {
+    "count": true,
+    "capture_tick": true,
+    "path": true,
+    "mean": 8.767578125
+   },
+   "real|constant": {
+    "count": true,
+    "capture_tick": true,
+    "path": true,
+    "mean": 0.44921875
+   },
+   "real|random-walk": {
+    "count": true,
+    "capture_tick": true,
+    "path": true,
+    "mean": 0.25390625
+   },
+   "real|wall-follower": {
+    "count": true,
+    "capture_tick": true,
+    "path": true,
+    "mean": 0.697265625
+   },
+   "real|e4s1 M run00": {
+    "count": true,
+    "capture_tick": true,
+    "path": true,
+    "mean": 7.44921875
+   },
+   "real|L1 carrier": {
+    "count": true,
+    "capture_tick": true,
+    "path": true,
+    "mean": 5.18359375
+   },
+   "real|e2 ga run00": {
+    "count": true,
+    "capture_tick": true,
+    "path": true,
+    "mean": 2.27734375
+   },
+   "real|generation0 #00": {
+    "count": true,
+    "capture_tick": true,
+    "path": true,
+    "mean": 0.0
+   },
+   "constant|S-const": {
+    "count": true,
+    "capture_tick": true,
+    "path": true,
+    "mean": 0.0390625
+   },
+   "constant|oracle": {
+    "count": true,
+    "capture_tick": true,
+    "path": true,
+    "mean": 8.767578125
+   },
+   "constant|constant": {
+    "count": true,
+    "capture_tick": true,
+    "path": true,
+    "mean": 0.44921875
+   },
+   "constant|random-walk": {
+    "count": true,
+    "capture_tick": true,
+    "path": true,
+    "mean": 0.25390625
+   },
+   "constant|wall-follower": {
+    "count": true,
+    "capture_tick": true,
+    "path": true,
+    "mean": 0.697265625
+   },
+   "constant|e4s1 M run00": {
+    "count": true,
+    "capture_tick": true,
+    "path": true,
+    "mean": 0.00390625
+   },
+   "constant|L1 carrier": {
+    "count": true,
+    "capture_tick": true,
+    "path": true,
+    "mean": 0.326171875
+   },
+   "constant|e2 ga run00": {
+    "count": true,
+    "capture_tick": true,
+    "path": true,
+    "mean": 0.408203125
+   },
+   "constant|generation0 #00": {
+    "count": true,
+    "capture_tick": true,
+    "path": true,
+    "mean": 0.0
+   },
+   "mirrored|S-const": {
+    "count": true,
+    "capture_tick": true,
+    "path": true,
+    "mean": 0.029296875
+   },
+   "mirrored|oracle": {
+    "count": true,
+    "capture_tick": true,
+    "path": true,
+    "mean": 8.767578125
+   },
+   "mirrored|constant": {
+    "count": true,
+    "capture_tick": true,
+    "path": true,
+    "mean": 0.44921875
+   },
+   "mirrored|random-walk": {
+    "count": true,
+    "capture_tick": true,
+    "path": true,
+    "mean": 0.25390625
+   },
+   "mirrored|wall-follower": {
+    "count": true,
+    "capture_tick": true,
+    "path": true,
+    "mean": 0.697265625
+   },
+   "mirrored|e4s1 M run00": {
+    "count": true,
+    "capture_tick": true,
+    "path": true,
+    "mean": 0.05078125
+   },
+   "mirrored|L1 carrier": {
+    "count": true,
+    "capture_tick": true,
+    "path": true,
+    "mean": 0.177734375
+   },
+   "mirrored|e2 ga run00": {
+    "count": true,
+    "capture_tick": true,
+    "path": true,
+    "mean": 0.158203125
+   },
+   "mirrored|generation0 #00": {
+    "count": true,
+    "capture_tick": true,
+    "path": true,
+    "mean": 0.0
+   },
+   "trace|S-const": {
+    "identical": true,
+    "differ": []
+   },
+   "trace|oracle": {
+    "identical": true,
+    "differ": []
+   },
+   "trace|constant": {
+    "identical": true,
+    "differ": []
+   },
+   "trace|random-walk": {
+    "identical": true,
+    "differ": []
+   },
+   "trace|wall-follower": {
+    "identical": true,
+    "differ": []
+   },
+   "trace|e4s1 M run00": {
+    "identical": true,
+    "differ": []
+   },
+   "trace|L1 carrier": {
+    "identical": true,
+    "differ": []
+   },
+   "trace|e2 ga run00": {
+    "identical": true,
+    "differ": []
+   },
+   "trace|generation0 #00": {
+    "identical": true,
+    "differ": []
+   }
+  },
+  "differ": [],
+  "identical": true
+ },
+ "cuda_gap": {
+  "worlds": 1024,
+  "cpu_mean": 8.6845703125,
+  "cuda_mean": 8.6796875,
+  "mean_difference": 0.0048828125,
+  "share_identical": 0.9267578125,
+  "note": "a second use of E1's gate worlds, for an engine comparison only"
+ },
+ "seconds": 364.9548902998213,
+ "passed": true
+}

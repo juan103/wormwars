@@ -1,0 +1,21 @@
+H1-ghost {'S-const': 8.766, 'constant': 0.469, 'random-walk': 0.375, 'wall-follower': 0.797}
+H1-reach {'S-const': 8.766, 'constant': 0.469, 'random-walk': 0.375, 'wall-follower': 0.641}
+H1-bite {'S-const': 4.641, 'constant': 0.406, 'random-walk': 0.188, 'wall-follower': 0.125}
+H2-0.1 {'S-const': 4.656, 'constant': 0.438, 'random-walk': 0.219, 'wall-follower': 0.172}
+H2-0.2 {'S-const': 4.969, 'constant': 0.359, 'random-walk': 0.266, 'wall-follower': 0.266}
+H2-0.3 {'S-const': 5.0, 'constant': 0.406, 'random-walk': 0.297, 'wall-follower': 0.281}
+H2-0.4 {'S-const': 5.297, 'constant': 0.453, 'random-walk': 0.297, 'wall-follower': 0.312}
+H2-0.5 {'S-const': 5.828, 'constant': 0.406, 'random-walk': 0.281, 'wall-follower': 0.266}
+H2-0.6 {'S-const': 6.359, 'constant': 0.406, 'random-walk': 0.359, 'wall-follower': 0.266}
+H2-0.7 {'S-const': 6.547, 'constant': 0.391, 'random-walk': 0.328, 'wall-follower': 0.312}
+H2-0.8 {'S-const': 7.172, 'constant': 0.375, 'random-walk': 0.297, 'wall-follower': 0.312}
+H2-0.9 {'S-const': 7.438, 'constant': 0.375, 'random-walk': 0.281, 'wall-follower': 0.297}
+H2-1 {'S-const': 7.688, 'constant': 0.422, 'random-walk': 0.328, 'wall-follower': 0.328}
+H2b-walk-0.25 {'S-const': 4.641, 'constant': 0.203, 'random-walk': 0.156, 'wall-follower': 0.203}
+H2b-walk-0.5 {'S-const': 4.406, 'constant': 0.172, 'random-walk': 0.141, 'wall-follower': 0.203}
+H2b-walk-0.75 {'S-const': 4.453, 'constant': 0.203, 'random-walk': 0.203, 'wall-follower': 0.234}
+H2b-wall-0.25 {'S-const': 4.562, 'constant': 0.172, 'random-walk': 0.172, 'wall-follower': 0.234}
+H2b-wall-0.5 {'S-const': 4.328, 'constant': 0.328, 'random-walk': 0.25, 'wall-follower': 0.422}
+H2b-wall-0.75 {'S-const': 4.641, 'constant': 0.344, 'random-walk': 0.219, 'wall-follower': 0.234}
+E_prey 1.375 route {'gain': 2.0, 'spacing': 6.0}
+rc=0
