@@ -69,6 +69,15 @@ elif name == "body_probe_keeps_the_body":
     def __init__(self, *a, **k):
         orig(self, *a, **k); self.prey_body = True
     H.HuntWorld.__init__ = __init__
+elif name == "constant_on_both":
+    H.HuntWorld._sensor_signals = WD.World._sensor_signals
+elif name == "damage_by_energy_difference":
+    def _combat(self):
+        ar = torch.arange(self.n_worlds)
+        before = self.energy[:, 1, 0].double()
+        WD.World._combat(self)
+        self.ev_damage[ar, self.life] += before - self.energy[:, 1, 0].double()
+    H.HuntWorld._combat = _combat
 elif name == "stops_early":
     H.HuntWorld.done = lambda self: self.tick_count >= 30
 elif name == "no_task_guard":
@@ -91,6 +100,8 @@ CASES = [
     ("route_ignores_speed", "test_the_route_follower_moves_along_its_loop"),
     ("route_skips_waypoints", "test_the_route_follower_moves_along_its_loop"),
     ("body_probe_keeps_the_body", "test_the_body_probe_keeps_the_bites_and_removes_the_prey_from_the_body_field"),
+    ("constant_on_both", "test_the_constant_probe_replaces_the_hunters_food_channels_only"),
+    ("damage_by_energy_difference", "test_damage_is_booked_from_combat_without_rounding"),
     ("stops_early", "test_the_episode_runs_to_the_horizon"),
     ("no_task_guard", "test_the_hunt_task_needs_its_world_and_the_world_needs_its_task"),
     ("attack_scale_not_exact", "test_an_attack_scale_of_one_changes_nothing_in_an_existing_fight"),

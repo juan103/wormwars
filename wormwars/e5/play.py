@@ -22,7 +22,7 @@ class HuntResult:
     events: dict  # each [strains, worlds, sequence index]
     bite_energy: np.ndarray  # the hunter's energy gained from bites, [strains, worlds] (logged, never scored)
     pin_push: np.ndarray  # [strains, worlds]
-    prey_wall_refused: np.ndarray  # [strains, worlds]
+    prey_wall_limited: np.ndarray  # [strains, worlds]
     ledger_rel_error: float
     ticks: int
 
@@ -46,5 +46,5 @@ def play(cfg, iface, hunter, prey, world_ids, run_seed, *, rule: str, prey_energ
     return HuntResult(captures=w.captures.reshape(shape).cpu().numpy(), events=ev,
                       bite_energy=w.energy_from_biting[:, 0].reshape(shape).cpu().numpy(),
                       pin_push=w.pin_push.reshape(shape).cpu().numpy(),
-                      prey_wall_refused=w.prey_wall_refused.reshape(shape).cpu().numpy(), ledger_rel_error=float(rel),
+                      prey_wall_limited=w.prey_wall_limited.reshape(shape).cpu().numpy(), ledger_rel_error=float(rel),
                       ticks=w.tick_count)

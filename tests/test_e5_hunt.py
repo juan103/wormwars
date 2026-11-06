@@ -143,7 +143,7 @@ def test_the_route_follower_moves_along_its_loop(iface):
     assert bool((prey.laps_done[~caught] >= 1).all())
     assert bool((prey.visits[~caught] >= 4).all())
     assert bool(prey.seen[~caught].all())  # every waypoint, not the start over and over
-    assert int(w.prey_wall_refused.sum()) <= 0.05 * 600 * len(IDS)
+    assert int(w.prey_wall_limited.sum()) <= 0.05 * 600 * len(IDS)
     first = prey.waypoints[:, 0]
     assert torch.equal(first[~caught], w.target_centres[~caught, 0])  # the loop starts at the life's centre
 
@@ -163,6 +163,33 @@ def test_the_body_probe_keeps_the_bites_and_removes_the_prey_from_the_body_field
         assert torch.equal(w.fields[:, w.ch.BODY], blur(dens, ch.world.crowd_blur))
     with pytest.raises(ValueError, match="ghost"):
         _world(iface, ch, _pursuit(iface, ch), _prey(iface, ch), rule="ghost", prey_body=True)
+
+
+def test_the_constant_probe_replaces_the_hunters_food_channels_only(iface):
+    """Under `constant`, the hunter's food channels carry the tick-0 mean scent; the prey keeps its own food reading
+    (zero here: no food on the map)."""
+    _, ch = _cfgs(3)
+    ch.world.food_probe = "constant"
+    w = _world(iface, ch, _pursuit(iface, ch), _prey(iface, ch), rule="reach")
+    w.tick()
+    sig = w.last_signals
+    for k in ("food_left", "food_right"):
+        assert torch.equal(sig[k][:, 0, 0], w._food_constant * ch.world.sense_scale_food)
+        assert float(sig[k][:, 0, 0].abs().min()) > 0
+        assert float(sig[k][:, 1].abs().sum()) == 0.0
+
+
+def test_damage_is_booked_from_combat_without_rounding(iface):
+    """The event table's damage is combat's capped damage summed in float64, not a float32 energy difference: with a
+    measuring energy of 1e6, a difference would round to multiples of 0.0625."""
+    _, ch = _cfgs(30)
+    w = _world(iface, ch, _pursuit(iface, ch), _prey(iface, ch), rule="bite", prey_energy=1e6)
+    total = torch.zeros(len(IDS), dtype=torch.float64)
+    while not w.done():
+        w.tick()
+        total += w.last_damage_taken[:, 1, 0].double()
+    assert float(total.sum()) > 0
+    assert torch.equal(w.ev_damage.sum(dim=1), total)
 
 
 def test_the_episode_runs_to_the_horizon(iface):

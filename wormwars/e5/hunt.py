@@ -30,7 +30,7 @@ import torch
 from torch import Tensor
 
 from ..world import BODY_POINTS, Ledger, World, sample_bilinear, splat, blur, gaussian_blur, world_seed
-from ..world import N_POINTS
+from ..world import N_POINTS, P_FRONT_C, P_FRONT_L, P_FRONT_R
 
 RULES = ("ghost", "reach", "bite")
 HUNTER, PREY = 0, 1
@@ -144,7 +144,9 @@ class HuntWorld(World):
         self.ev_contact = torch.zeros(Wn, K, dtype=torch.long, device=dev)
         self.ev_damage = torch.zeros(Wn, K, dtype=torch.float64, device=dev)
         self.pin_push = torch.zeros(Wn, dtype=torch.float64, device=dev)  # the displacement a pinned prey refused
-        self.prey_wall_refused = torch.zeros(Wn, dtype=torch.long, device=dev)
+        # the prey's moves the arena limited: clamped at the wall ring or refused by a wall cell (the route check's
+        # stall count; with the boundary ring alone, a refusal cannot happen, so this is the clamp)
+        self.prey_wall_limited = torch.zeros(Wn, dtype=torch.long, device=dev)
         # the first contact of each life: its tick (-1: none) and the hunter's bearing from the prey's mid point,
         # relative to the prey's heading (0: in front of its head, +-pi: behind its tail; logged, never scored)
         self.ev_first_contact = torch.full((Wn, K), -1, dtype=torch.long, device=dev)
@@ -162,6 +164,22 @@ class HuntWorld(World):
         inside = (dx.abs() <= reach) & (dy.abs() <= reach) & self.alive[:, PREY, 0].view(-1, 1, 1)
         g = wcfg.target_amplitude * torch.exp(-(dx * dx + dy * dy) / (2 * wcfg.target_sigma ** 2))
         return torch.where(inside, g, torch.zeros_like(g))
+
+    def _sensor_signals(self, sampled: Tensor) -> dict[str, Tensor]:
+        """The `constant` probe replaces the hunter's food channels only: the prey keeps its own food reading."""
+        sig = super()._sensor_signals(sampled)
+        wcfg = self.cfg.world
+        if wcfg.food_probe == "constant":
+            if wcfg.food_odour_sigma > 0:
+                raise ValueError("the hunt's constant probe assumes no food odour blur")
+            food = (sampled[:, self.ch.FOOD] + sampled[:, self.ch.PELLET])[:, PREY]
+            pts = {"food_left": P_FRONT_C, "food_right": P_FRONT_C} if wcfg.food_sensing == "mono" else \
+                {"food_left": P_FRONT_L, "food_right": P_FRONT_R}
+            for k, p in pts.items():
+                v = sig[k].clone()
+                v[:, PREY] = food[..., p] * wcfg.sense_scale_food
+                sig[k] = v
+        return sig
 
     def _wants_food_field(self) -> bool:
         return self.cfg.world.food_probe != "constant"  # the hunter's scent is never in the sampled channels
@@ -197,10 +215,7 @@ class HuntWorld(World):
 
     def _resolve_move(self, proposed: Tensor) -> Tensor:
         new = super()._resolve_move(proposed)
-        clamped = proposed.clamp(1.02, self.side - 1.02)
-        refused = ((new[:, PREY, 0] == self.pos[:, PREY, 0]).all(-1)
-                   & (clamped[:, PREY, 0] != self.pos[:, PREY, 0]).any(-1))
-        self.prey_wall_refused += refused.long()  # the prey's moves a wall refused (the route check's stall count)
+        self.prey_wall_limited += (new[:, PREY, 0] != proposed[:, PREY, 0]).any(-1).long()
         if self.pinned:
             self.pin_push += (new[:, PREY, 0] - self.pos[:, PREY, 0]).norm(dim=-1).double()
             new = new.clone()
@@ -230,10 +245,10 @@ class HuntWorld(World):
             self._capture(reached)
 
     def _combat(self) -> None:
-        before = self.energy[:, PREY, 0].double()
         super()._combat()
         ar = torch.arange(self.n_worlds, device=self.device)
-        self.ev_damage[ar, self.life] += before - self.energy[:, PREY, 0].double()
+        # combat's own capped damage, not an energy difference: near a large measuring energy, float32 would round it
+        self.ev_damage[ar, self.life] += self.last_damage_taken[:, PREY, 0].double()
 
     def _reap(self) -> None:
         if self.rule == "bite":

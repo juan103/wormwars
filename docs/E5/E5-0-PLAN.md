@@ -236,3 +236,29 @@ dependence untested".
 counts per hunter and setting), `probes.json`, `reading.json`, `compute-record.json`, start markers, and `RESULTS.md`
 after review; the event tables in `runs/e5-0/` (local if large). Reviewed by both models: this plan, then the code,
 then the results.
+
+## 10. Amendments after the code review (2026-11-06, D387)
+
+The code review (`docs/reviews/20261106-E5-0-code/`; Astra and Fable, both "fix then run") changed no decision rule
+and no number. Four places in the text above now read differently in the code, and are recorded here instead of
+being edited:
+- **§3.2 (iii):** "walls refuse at most 1% of its moves" cannot fail in an arena with only the boundary ring, where
+  no move is ever refused (Fable). The check counts **the moves the arena limits, clamped at the wall ring or refused**,
+  at most 1% of the prey's moves; the 95% applies to (i), (ii) and (iii) **jointly** in each world (Astra), with each
+  share also reported.
+- **§3.1:** the prediction of 0.6 to 1.2 for E_prey was indicative, not a rule: the held fixture can also catch the
+  head's damage, and on the smoke worlds the per-tick rates were 0.1375 and 0.0764 (Astra). The smoke's 1.25 was
+  wrong: the damage was taken as a float32 energy difference near the measuring energy of 10⁶, which rounds to
+  multiples of 0.0625. Damage is now combat's own capped damage, summed in float64.
+- **§4 and §8, the order of the stages:** bench, equivalence, calibrate, evaluate, probe, read. Bench comes first, as
+  §8 says, with a provisional E_prey of 1.0, and projects the equivalence checks and the calibration as well as the
+  evaluation and the fixed probes; the cuts then apply to the calibration's tuning too.
+- **§9:** `evaluation.json` and `probes.json` hold the per-world counts (rule 5); the full event tables, the hunter's
+  bite energy and the prey's movement are kept in `runs/e5-0/`.
+
+The code also now enforces what the plan already said: the ledger is checked at every tick and a residual above
+1e-5, or a non-finite one, stops E5-0; a capture or any damage in the attack-disabled check stops it; the cap's clock
+counts the running stage; every stage after bench refuses to run unless the code is unchanged since the stages it
+builds on, and a resumed stage checks its own start marker's commit; the reference worktree's head and cleanliness
+are checked; the traces cover every hunter of §4.2, and the oracle in §4.1; the `constant` probe replaces the
+hunter's food channels only.

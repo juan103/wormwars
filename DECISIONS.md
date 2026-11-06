@@ -12559,3 +12559,37 @@ expected body field is computed from the hunter's body points alone).
 64 compared arrays; H1-ghost equals Task N for all nine hunters under three probes; E_prey 1.25 on 8 worlds.
 
 **Next:** the code goes to both reviewers before any formal stage runs.
+
+## D387 — E5-0's code review: the cap's clock, E_prey's rounding and the unenforced stops fixed (2026-11-06)
+
+**The review** (`docs/reviews/20261106-E5-0-code/`, one round). Both "fix then run"; every fix taken. Both found the
+task's mechanics as the plan says, the hooks no-ops for every existing task (Fable compared them with the pre-hook
+source line by line), and the bootstrap as written. They found the runner weaker than the plan:
+- **Both** caught: **the 8-hour cap never counted the running process** (`cap()` built a new clock at every call, so
+  only earlier attempts counted); the attack-disabled check and the ledger's 1e-5 were recorded, not enforced; a
+  resumed stage skipped the code guard; the reference worktree was trusted without checking its head; the route
+  check applied its 95% to each condition separately, not jointly; the committed record lacked the per-world counts
+  and most of the event table (activation, paths, damage, first contact, bite energy).
+- **Astra** caught: **E_prey was measured as a float32 energy difference** near the measuring energy of 10⁶, which
+  rounds to multiples of 0.0625; on the smoke worlds the true value is 1.375, not the 1.25 reported in D386 (now
+  combat's own capped damage, summed in float64); bench ran after the calibration it should budget (now first, with a
+  provisional E_prey, projecting every later stage); the reference subprocesses' counts were not merged (now through
+  `run_counted_child`); the readings were applied at H1-ghost, the bridge; the threshold-free contrasts had no
+  intervals; the `constant` probe also changed the prey's food channels (now the hunter's only); the traces covered
+  three hunters of nine, and not the oracle in the old-against-new check.
+- **Fable** caught: **the route check's third condition could not fail** (in an arena with only the boundary ring a
+  wall never refuses a move; now the moves the arena limits, clamped or refused, are counted); the full-suite log of
+  D386 ended at 44% with no summary (rerun to completion, `runs/e5-0/full-suite.txt`); the calibration's placements
+  could start outside the arena (now clamped and counted); E2d's count of 47 and E1's grids are now asserted.
+
+**Corrected:** D386 said "E_prey 1.25 on 8 worlds"; it was 1.375 (the rounding above).
+
+**Tests:** two new (the `constant` probe on the hunter only; damage booked without rounding), 13 in all, each seen
+failing under a sabotage (13 sabotages, all caught; `runs/e5-0/sabotage_log.txt`). The plan has a dated §10 for the
+four places where the code now reads differently (the route check's third condition and joint share; E_prey's
+prediction; the order of the stages; the committed records). No decision rule or number changed.
+
+**Smoke** (all six stages, `runs/e5-0-smoke/`): old against new identical on 68 arrays; H1-ghost equals Task N for
+every hunter under three probes and in every trace; E_prey 1.375.
+
+**Next:** the formal stages, in order, on the CPU.

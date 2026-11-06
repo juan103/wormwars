@@ -101,6 +101,7 @@ def main():
 
     # per-tick traces on the first worlds
     for label, (brain, fc) in {"S-const": (C.scripted(iface, C.s_const(**NAV), cfg), iface),
+                               "oracle": (C.OracleBrain(iface, 302, cfg.world.forward_gain, cfg.world.turn_gain), iface),
                                "e4s1 run00": (Brain(g4), gi), "e2 ga run00": (Brain(g2), iface)}.items():
         tap = Tap(brain)
         w = World(cfg, fc, tap, torch.zeros(TRACE_WORLDS, 1, dtype=torch.long), run_seed=RUN_SEED,
@@ -146,4 +147,10 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    # the counts go back to the parent (scripts/e5_0.py runs this through accounting.run_counted_child); the engine's
+    # own accounting module, from --root, is the one the World counts into
+    _root = Path(sys.argv[sys.argv.index("--root") + 1]).resolve()
+    sys.path.insert(0, str(_root))
+    from wormwars import accounting as acct
+    with acct.child_ledger(), acct.category("measure"):
+        main()
