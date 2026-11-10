@@ -44,6 +44,49 @@ def test_bootstrap_resamples_graph_means_not_runs():
     assert (d, lo, hi) == (0.0, 0.0, 0.0)
 
 
+@pytest.mark.parametrize("args", [
+    (np.nan, -0.1, 0.1, D), (0.0, np.nan, 0.1, D), (0.0, -0.1, np.inf, D), (0.0, -0.1, 0.1, 0.0),
+])
+def test_label_refuses_invalid_input(args):
+    """Invalid data is an error, not a scientific outcome (Astra, Fable, r2)."""
+    with pytest.raises(ValueError):
+        S.label(*args)
+
+
+def test_welch_matches_its_formula():
+    """O1's registered interval (draft 3): Welch's t over N2's runs and the graph means."""
+    from scipy import stats as sps
+    n2 = np.array([3.1, 2.9, 3.4, 3.0, 2.7, 3.3])
+    runs = np.array([[2.0, 2.2], [2.9, 3.1], [2.4, 2.8], [2.6, 2.6]])
+    gm = runs.mean(1)
+    d, lo, hi = S.welch_interval(n2, runs)
+    v1, v2 = n2.var(ddof=1) / 6, gm.var(ddof=1) / 4
+    nu = (v1 + v2) ** 2 / (v1 ** 2 / 5 + v2 ** 2 / 3)
+    h = sps.t.ppf(0.95, nu) * np.sqrt(v1 + v2)
+    assert d == pytest.approx(n2.mean() - gm.mean())
+    assert (lo, hi) == pytest.approx((d - h, d + h))
+
+
+def test_welch_uses_graph_means_not_runs():
+    n2 = np.array([3.0, 3.2, 2.8, 3.0])
+    a = np.array([[1.0, 5.0], [2.0, 4.0], [0.0, 6.0]])  # graph means 3, 3, 3: no between-graph spread
+    b = np.full((3, 2), 3.0)
+    assert S.welch_interval(n2, a) == S.welch_interval(n2, b)
+
+
+def test_welch_refuses_non_finite_scores():
+    with pytest.raises(ValueError):
+        S.welch_interval(np.array([1.0, np.nan, 2.0]), np.ones((3, 2)))
+
+
+def test_latent_graph_sd():
+    """Between-graph SD: the graph means' variance less the within-graph sampling variance, floored at 0."""
+    runs = np.array([[1.0, 3.0], [4.0, 6.0], [7.0, 9.0]])  # means 2, 5, 8 (var 9); within var 2, /2 runs = 1
+    assert S.latent_graph_sd(runs) == pytest.approx(np.sqrt(9.0 - 1.0))
+    flat = np.array([[1.0, 5.0], [2.0, 4.0], [0.0, 6.0]])  # equal means: truncated at zero
+    assert S.latent_graph_sd(flat) == 0.0
+
+
 def test_bootstrap_is_seeded():
     rng = np.random.default_rng(5)
     n2, runs = rng.normal(3, 0.3, 16), rng.normal(2.8, 0.3, (16, 2))

@@ -1,0 +1,110 @@
+............FFFFFFFF.                                                    [100%]
+================================== FAILURES ===================================
+___________________ test_label_refuses_invalid_input[args0] ___________________
+
+args = (nan, -0.1, 0.1, 0.25)
+
+    @pytest.mark.parametrize("args", [
+        (np.nan, -0.1, 0.1, D), (0.0, np.nan, 0.1, D), (0.0, -0.1, np.inf, D), (0.0, -0.1, 0.1, 0.0),
+    ])
+    def test_label_refuses_invalid_input(args):
+        """Invalid data is an error, not a scientific outcome (Astra, Fable, r2)."""
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'ValueError'>
+
+tests\test_e5_stats.py:52: Failed
+___________________ test_label_refuses_invalid_input[args1] ___________________
+
+args = (0.0, nan, 0.1, 0.25)
+
+    @pytest.mark.parametrize("args", [
+        (np.nan, -0.1, 0.1, D), (0.0, np.nan, 0.1, D), (0.0, -0.1, np.inf, D), (0.0, -0.1, 0.1, 0.0),
+    ])
+    def test_label_refuses_invalid_input(args):
+        """Invalid data is an error, not a scientific outcome (Astra, Fable, r2)."""
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'ValueError'>
+
+tests\test_e5_stats.py:52: Failed
+___________________ test_label_refuses_invalid_input[args2] ___________________
+
+args = (0.0, -0.1, inf, 0.25)
+
+    @pytest.mark.parametrize("args", [
+        (np.nan, -0.1, 0.1, D), (0.0, np.nan, 0.1, D), (0.0, -0.1, np.inf, D), (0.0, -0.1, 0.1, 0.0),
+    ])
+    def test_label_refuses_invalid_input(args):
+        """Invalid data is an error, not a scientific outcome (Astra, Fable, r2)."""
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'ValueError'>
+
+tests\test_e5_stats.py:52: Failed
+___________________ test_label_refuses_invalid_input[args3] ___________________
+
+args = (0.0, -0.1, 0.1, 0.0)
+
+    @pytest.mark.parametrize("args", [
+        (np.nan, -0.1, 0.1, D), (0.0, np.nan, 0.1, D), (0.0, -0.1, np.inf, D), (0.0, -0.1, 0.1, 0.0),
+    ])
+    def test_label_refuses_invalid_input(args):
+        """Invalid data is an error, not a scientific outcome (Astra, Fable, r2)."""
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'ValueError'>
+
+tests\test_e5_stats.py:52: Failed
+_______________________ test_welch_matches_its_formula ________________________
+
+    def test_welch_matches_its_formula():
+        """O1's registered interval (draft 3): Welch's t over N2's runs and the graph means."""
+        from scipy import stats as sps
+        n2 = np.array([3.1, 2.9, 3.4, 3.0, 2.7, 3.3])
+        runs = np.array([[2.0, 2.2], [2.9, 3.1], [2.4, 2.8], [2.6, 2.6]])
+        gm = runs.mean(1)
+>       d, lo, hi = S.welch_interval(n2, runs)
+                    ^^^^^^^^^^^^^^^^
+E       AttributeError: module 'wormwars.e5.stats' has no attribute 'welch_interval'. Did you mean: 'delta_interval'?
+
+tests\test_e5_stats.py:62: AttributeError
+____________________ test_welch_uses_graph_means_not_runs _____________________
+
+    def test_welch_uses_graph_means_not_runs():
+        n2 = np.array([3.0, 3.2, 2.8, 3.0])
+        a = np.array([[1.0, 5.0], [2.0, 4.0], [0.0, 6.0]])  # graph means 3, 3, 3: no between-graph spread
+        b = np.full((3, 2), 3.0)
+>       assert S.welch_interval(n2, a) == S.welch_interval(n2, b)
+               ^^^^^^^^^^^^^^^^
+E       AttributeError: module 'wormwars.e5.stats' has no attribute 'welch_interval'. Did you mean: 'delta_interval'?
+
+tests\test_e5_stats.py:74: AttributeError
+____________________ test_welch_refuses_non_finite_scores _____________________
+
+    def test_welch_refuses_non_finite_scores():
+        with pytest.raises(ValueError):
+>           S.welch_interval(np.array([1.0, np.nan, 2.0]), np.ones((3, 2)))
+            ^^^^^^^^^^^^^^^^
+E           AttributeError: module 'wormwars.e5.stats' has no attribute 'welch_interval'. Did you mean: 'delta_interval'?
+
+tests\test_e5_stats.py:79: AttributeError
+____________________________ test_latent_graph_sd _____________________________
+
+    def test_latent_graph_sd():
+        """Between-graph SD: the graph means' variance less the within-graph sampling variance, floored at 0."""
+        runs = np.array([[1.0, 3.0], [4.0, 6.0], [7.0, 9.0]])  # means 2, 5, 8 (var 9); within var 2, /2 runs = 1
+>       assert S.latent_graph_sd(runs) == pytest.approx(np.sqrt(9.0 - 1.0))
+               ^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'wormwars.e5.stats' has no attribute 'latent_graph_sd'
+
+tests\test_e5_stats.py:85: AttributeError
+=========================== short test summary info ===========================
+FAILED tests/test_e5_stats.py::test_label_refuses_invalid_input[args0] - Fail...
+FAILED tests/test_e5_stats.py::test_label_refuses_invalid_input[args1] - Fail...
+FAILED tests/test_e5_stats.py::test_label_refuses_invalid_input[args2] - Fail...
+FAILED tests/test_e5_stats.py::test_label_refuses_invalid_input[args3] - Fail...
+FAILED tests/test_e5_stats.py::test_welch_matches_its_formula - AttributeErro...
+FAILED tests/test_e5_stats.py::test_welch_uses_graph_means_not_runs - Attribu...
+FAILED tests/test_e5_stats.py::test_welch_refuses_non_finite_scores - Attribu...
+FAILED tests/test_e5_stats.py::test_latent_graph_sd - AttributeError: module ...

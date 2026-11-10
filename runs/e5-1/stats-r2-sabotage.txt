@@ -1,0 +1,45 @@
+................FF...                                                    [100%]
+================================== FAILURES ===================================
+_______________________ test_welch_matches_its_formula ________________________
+
+    def test_welch_matches_its_formula():
+        """O1's registered interval (draft 3): Welch's t over N2's runs and the graph means."""
+        from scipy import stats as sps
+        n2 = np.array([3.1, 2.9, 3.4, 3.0, 2.7, 3.3])
+        runs = np.array([[2.0, 2.2], [2.9, 3.1], [2.4, 2.8], [2.6, 2.6]])
+        gm = runs.mean(1)
+        d, lo, hi = S.welch_interval(n2, runs)
+        v1, v2 = n2.var(ddof=1) / 6, gm.var(ddof=1) / 4
+        nu = (v1 + v2) ** 2 / (v1 ** 2 / 5 + v2 ** 2 / 3)
+        h = sps.t.ppf(0.95, nu) * np.sqrt(v1 + v2)
+        assert d == pytest.approx(n2.mean() - gm.mean())
+>       assert (lo, hi) == pytest.approx((d - h, d + h))
+E       assert (0.1944298741...9034591860286) == approx((0.063...16 ± 9.2e-07))
+E         
+E         comparison failed. Mismatched elements: 2 / 2:
+E         Max absolute difference: 0.13120834687956306
+E         Max relative difference: 0.6748363514351493
+E         Index | Obtained            | Expected                     
+E         0     | 0.19442987414730573 | 0.06322152726774266 ± 6.3e-08
+E         1     | 0.7889034591860286  | 0.9201118060655916 ± 9.2e-07
+
+tests\test_e5_stats.py:67: AssertionError
+____________________ test_welch_uses_graph_means_not_runs _____________________
+
+    def test_welch_uses_graph_means_not_runs():
+        n2 = np.array([3.0, 3.2, 2.8, 3.0])
+        a = np.array([[1.0, 5.0], [2.0, 4.0], [0.0, 6.0]])  # graph means 3, 3, 3: no between-graph spread
+        b = np.full((3, 2), 3.0)
+>       assert S.welch_interval(n2, a) == S.welch_interval(n2, b)
+E       assert (0.0, -1.9476...6146453635876) == (0.0, -0.1921...2151319819602)
+E         
+E         At index 1 diff: -1.9476146453635876 != -0.192151319819602
+E         Use -v to get more diff
+
+tests\test_e5_stats.py:74: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_e5_stats.py::test_welch_matches_its_formula - assert (0.194...
+FAILED tests/test_e5_stats.py::test_welch_uses_graph_means_not_runs - assert ...
+sabotaged rc=1
+.....................                                                    [100%]
+restored rc=0

@@ -12635,3 +12635,58 @@ found the readings applied as the plan fixed them (Astra recomputed all 1 440 cl
 parameters, E2d's H1-ghost mean, E2d's H2-0.5 cells, a D-number).
 
 **Next:** report to the owner. E5-1 is a design round, then GPU work; both need the owner's word.
+
+## D389 — E5-1's design, draft 3, after two review rounds: N2 against SH-route as hosts for L1, with anchors, a build arm and Welch's interval (2026-11-11)
+
+**The owner** said "sure" (2026-11-10) to an E5-1 design round, after the E5-0 report; the GPU still needs their word.
+They also asked that consultations use Fable 5.2 instead of 5.1 (the consult skill was switched and checked with a
+smoke run). From this round on the Anthropic reviewer is Fable 5.2; `AGENTS.md` rule 10 has a dated note.
+
+**The design** (`docs/E5/E5-1-DESIGN.md`; draft 1 `ae959a8`, draft 2 `c645dc5`, draft 3 with this entry):
+- **The test (to be pre-registered):** L1 grafted onto random brains of N2 (32 runs) and of 20 of 03r's SH-route graphs
+  (4 runs each), evolved 500 generations on a fixed 8-setting training mixture of Task H, with selection weighted to a
+  three-strata suite score; the validation champions compared on 17 held-out settings (8 704 worlds). O1: six symmetric
+  labels at δ = 0.25 captures per episode, Welch's 90% interval over N2's runs and the graph means.
+- **Descriptive arms:** A0r (G-N2's own starts with the host's wiring zeroed) and A0 (L1's designed carrier) as anchors;
+  P (N2's initial weight magnitudes permuted); B (E4s-1's 16 C champions evolved on Task H), after the test.
+- **E5-1a** first, on the GPU: Task H against itself after the changes (a mixed world, a route cache), CUDA checks sized
+  by a measured SD, the bench (where the owner sets the cap), a selection-signal stop on N2's construction, a null-only
+  pilot evolution, composition checks, mutational sensitivity. No N2 evolution before the formal run.
+- **Cost:** about 41 to 60 GPU-hours with a 15% reserve (34 to 50 for the confirmatory part), rough until the bench.
+
+**Round 1** (`docs/reviews/20261111-E5-1-design/r1-*.md`; both "fix then proceed"; every must-fix taken):
+- **Both** caught: B's start named F, while E5-0 tested C (they differ in 13 of 16 runs); the gains' engineering reason
+  was wrong (the prey inverts through whatever gains it is given); raw capture sums weighted the strata unlike the
+  score; the cost basis (1.38 h per batch, not 1.35; a rollout-only null rate against N2's full rate).
+- **Astra** caught: the evolutionary pilot ran an exploratory version of the confirmatory comparison; no outcome for a
+  small detected difference (E4s-1's pre-registration had added one); the nested bootstrap counted within-graph noise
+  twice; the batch composition differed by arm; the Task H changes needed equivalence checks of their own, the route
+  cache keyed by sequence index; the publication guard misses null-graph labels; no failure handling.
+- **Fable** caught: the training mixture could not run in one world as coded (eight rollouts per generation would
+  roughly quadruple the cost); 03r's calibrations point to weight placement, not edges, for N2's larger turn drive;
+  the host may add little to L1 (a wiring-free anchor and a lesion); asymmetric labels; power at exactly δ is at most
+  one half; the counts were too few for a clean null.
+
+**Round 2** (`r2-*.md`; both "fix then proceed"; every must-fix taken; Fable judged a third full round unnecessary, the
+fixes to be checked at the pre-registration's review):
+- **Both** caught: the anchor's "the host adds nothing … interferes" did not follow (now A0r, a like-for-like anchor,
+  fixed sentences, and wiring claims resting on the lesion); dropping units after a second failure selects by
+  behaviour, and target-sequence exhaustion is caused by good hunters (now O1 is withheld pending an amendment, with
+  an overflow check and a headroom rule); the selection-signal stop passed under noise (about 0.83), since it took the
+  best of 32 (now the preselected training winner); the interval choice was left open; `label` returned
+  "inconclusive" on NaN.
+- **Astra** caught: no N2perm graph files exist (P is 02's `permuted` initialisation on the ungrafted host); the world
+  seed, not only the ids, decides a world, and pilot and formal training schedules shared five ids; the 16-graph cut
+  contradicted the completeness rule; the evaluation omitted the lesion's cost and the reserve; the C provenance
+  sentence also covered E4s-1's F numbers.
+- **Fable** caught: the CUDA tolerance at fixed world counts had unknown power (now sized by a measured SD); the
+  composition check used non-scoring genomes; N2's batches give a free placebo; the cap should be set before the
+  generation-0 comparisons are read; the weighting's noise cost; a statistic for whether the gap is still closing.
+
+**Code and checks** (CPU): `wormwars/e5/stats.py` (labels, Welch, the bootstrap, the latent graph SD) with
+`tests/test_e5_stats.py`, seen failing before the code existed and under two sabotages (`runs/e5-1/`);
+`scripts/e5_1_power.py` → `experiments/E5-hunter/E5-1/design-power.json`. Welch's coverage over the simulated grid is
+85.6 to 91.5%, the bootstrap's 83.1 to 90.2%. With some graphs failing to host L1, "no difference" becomes nearly
+unreachable, and the design says so.
+
+**Next:** the owner's word on E5-1a (the GPU) and on whether B stays in E5-1. `main` still lacks D385 onwards.

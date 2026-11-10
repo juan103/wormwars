@@ -101,6 +101,8 @@ named. A change that breaks one should say so openly.
     reviews from 25 September on are archived verbatim under `docs/reviews/` and the experiment
     folders. Earlier ones (01's, Astra's 24 September roadmap review, and 01b's, D033) are
     summarised in `DECISIONS.md` and `docs/REVIEW_TRAIL.md` but not archived.
+    *Added 2026-11-11 (D389): from E5-1's design review on, the Anthropic reviewer is Claude Fable 5.2,
+    at the owner's request. Every review before it was Fable 5.1's.*
 
 ## Where to start
 
