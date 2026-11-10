@@ -1,0 +1,2793 @@
+{
+ "note": "E5-1's design numbers (docs/E5/E5-1-DESIGN.md §2, §5): the effect scale from E5-0, and O1's simulated labels.\n\n1. The suite score (three strata, equally weighted: H1-bite; the mean of the 10 route speeds; the mean of the 6\n   H2b settings) of every reused hunter in E5-0's `reading.json`, summarised by family. Exploratory: the score was\n   defined after E5-0's reading.\n2. O1's rules (`wormwars.e5.stats`) simulated under normal scores: N2's runs have run SD σr; SH-route's graphs\n   have a graph effect of SD σg and runs within them σr. For each design (N2 runs; graphs × runs) and true Δ, the\n   share of each label, and the interval's coverage of Δ. No E5-1 data exists; the scenarios are assumptions.\n\n    python scripts/e5_1_power.py      # writes experiments/E5-hunter/E5-1/design-power.json (CPU, a few minutes)\n",
+ "delta": 0.25,
+ "sims": 2000,
+ "boot": 2000,
+ "seed": 0,
+ "suite_score_e5_0": {
+  "e4s1": {
+   "n": 16,
+   "mean": 2.8511,
+   "sd": 0.2296,
+   "min": 2.6024,
+   "max": 3.409
+  },
+  "L1 carrier": {
+   "n": 1,
+   "mean": 3.0069,
+   "sd": null,
+   "min": 3.0069,
+   "max": 3.0069
+  },
+  "e2d": {
+   "n": 47,
+   "mean": 0.7558,
+   "sd": 0.2189,
+   "min": 0.1233,
+   "max": 1.2429
+  },
+  "generation0": {
+   "n": 16,
+   "mean": 0.1119,
+   "sd": 0.0259,
+   "min": 0.0878,
+   "max": 0.1722
+  }
+ },
+ "rows": [
+  {
+   "n2_runs": 16,
+   "graphs": 16,
+   "runs_per_graph": 2,
+   "run_sd": 0.2,
+   "graph_sd": 0.15,
+   "true_delta": 0.0,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.0,
+    "N2 ahead, estimate below δ": 0.0625,
+    "SH-route ahead, estimate at least δ": 0.001,
+    "SH-route ahead, estimate below δ": 0.061,
+    "no difference of δ either way": 0.8635,
+    "inconclusive": 0.012
+   },
+   "coverage": 0.8755
+  },
+  {
+   "n2_runs": 16,
+   "graphs": 16,
+   "runs_per_graph": 2,
+   "run_sd": 0.2,
+   "graph_sd": 0.15,
+   "true_delta": 0.25,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.5095,
+    "N2 ahead, estimate below δ": 0.4615,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.0245,
+    "inconclusive": 0.0045
+   },
+   "coverage": 0.8735
+  },
+  {
+   "n2_runs": 16,
+   "graphs": 16,
+   "runs_per_graph": 2,
+   "run_sd": 0.2,
+   "graph_sd": 0.15,
+   "true_delta": 0.5,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.999,
+    "N2 ahead, estimate below δ": 0.001,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.0,
+    "inconclusive": 0.0
+   },
+   "coverage": 0.877
+  },
+  {
+   "n2_runs": 16,
+   "graphs": 16,
+   "runs_per_graph": 2,
+   "run_sd": 0.2,
+   "graph_sd": 0.3,
+   "true_delta": 0.0,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.006,
+    "N2 ahead, estimate below δ": 0.0625,
+    "SH-route ahead, estimate at least δ": 0.007,
+    "SH-route ahead, estimate below δ": 0.0605,
+    "no difference of δ either way": 0.6575,
+    "inconclusive": 0.2065
+   },
+   "coverage": 0.864
+  },
+  {
+   "n2_runs": 16,
+   "graphs": 16,
+   "runs_per_graph": 2,
+   "run_sd": 0.2,
+   "graph_sd": 0.3,
+   "true_delta": 0.25,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.5135,
+    "N2 ahead, estimate below δ": 0.3295,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.055,
+    "inconclusive": 0.102
+   },
+   "coverage": 0.8775
+  },
+  {
+   "n2_runs": 16,
+   "graphs": 16,
+   "runs_per_graph": 2,
+   "run_sd": 0.2,
+   "graph_sd": 0.3,
+   "true_delta": 0.5,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.9955,
+    "N2 ahead, estimate below δ": 0.0045,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.0,
+    "inconclusive": 0.0
+   },
+   "coverage": 0.881
+  },
+  {
+   "n2_runs": 16,
+   "graphs": 16,
+   "runs_per_graph": 2,
+   "run_sd": 0.2,
+   "graph_sd": 0.45,
+   "true_delta": 0.0,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.024,
+    "N2 ahead, estimate below δ": 0.0415,
+    "SH-route ahead, estimate at least δ": 0.028,
+    "SH-route ahead, estimate below δ": 0.0425,
+    "no difference of δ either way": 0.2715,
+    "inconclusive": 0.5925
+   },
+   "coverage": 0.864
+  },
+  {
+   "n2_runs": 16,
+   "graphs": 16,
+   "runs_per_graph": 2,
+   "run_sd": 0.2,
+   "graph_sd": 0.45,
+   "true_delta": 0.25,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.4975,
+    "N2 ahead, estimate below δ": 0.146,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.0545,
+    "inconclusive": 0.302
+   },
+   "coverage": 0.868
+  },
+  {
+   "n2_runs": 16,
+   "graphs": 16,
+   "runs_per_graph": 2,
+   "run_sd": 0.2,
+   "graph_sd": 0.45,
+   "true_delta": 0.5,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.9705,
+    "N2 ahead, estimate below δ": 0.013,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.0005,
+    "inconclusive": 0.016
+   },
+   "coverage": 0.8675
+  },
+  {
+   "n2_runs": 16,
+   "graphs": 16,
+   "runs_per_graph": 2,
+   "run_sd": 0.3,
+   "graph_sd": 0.15,
+   "true_delta": 0.0,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.0045,
+    "N2 ahead, estimate below δ": 0.061,
+    "SH-route ahead, estimate at least δ": 0.0055,
+    "SH-route ahead, estimate below δ": 0.0475,
+    "no difference of δ either way": 0.6275,
+    "inconclusive": 0.254
+   },
+   "coverage": 0.8815
+  },
+  {
+   "n2_runs": 16,
+   "graphs": 16,
+   "runs_per_graph": 2,
+   "run_sd": 0.3,
+   "graph_sd": 0.15,
+   "true_delta": 0.25,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.4855,
+    "N2 ahead, estimate below δ": 0.3285,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.0615,
+    "inconclusive": 0.1245
+   },
+   "coverage": 0.862
+  },
+  {
+   "n2_runs": 16,
+   "graphs": 16,
+   "runs_per_graph": 2,
+   "run_sd": 0.3,
+   "graph_sd": 0.15,
+   "true_delta": 0.5,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.9945,
+    "N2 ahead, estimate below δ": 0.0055,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.0,
+    "inconclusive": 0.0
+   },
+   "coverage": 0.864
+  },
+  {
+   "n2_runs": 16,
+   "graphs": 16,
+   "runs_per_graph": 2,
+   "run_sd": 0.3,
+   "graph_sd": 0.3,
+   "true_delta": 0.0,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.0125,
+    "N2 ahead, estimate below δ": 0.0525,
+    "SH-route ahead, estimate at least δ": 0.0215,
+    "SH-route ahead, estimate below δ": 0.05,
+    "no difference of δ either way": 0.381,
+    "inconclusive": 0.4825
+   },
+   "coverage": 0.8635
+  },
+  {
+   "n2_runs": 16,
+   "graphs": 16,
+   "runs_per_graph": 2,
+   "run_sd": 0.3,
+   "graph_sd": 0.3,
+   "true_delta": 0.25,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.5045,
+    "N2 ahead, estimate below δ": 0.207,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.0575,
+    "inconclusive": 0.231
+   },
+   "coverage": 0.8705
+  },
+  {
+   "n2_runs": 16,
+   "graphs": 16,
+   "runs_per_graph": 2,
+   "run_sd": 0.3,
+   "graph_sd": 0.3,
+   "true_delta": 0.5,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.9825,
+    "N2 ahead, estimate below δ": 0.015,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.0,
+    "inconclusive": 0.0025
+   },
+   "coverage": 0.873
+  },
+  {
+   "n2_runs": 16,
+   "graphs": 16,
+   "runs_per_graph": 2,
+   "run_sd": 0.3,
+   "graph_sd": 0.45,
+   "true_delta": 0.0,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.0375,
+    "N2 ahead, estimate below δ": 0.027,
+    "SH-route ahead, estimate at least δ": 0.0335,
+    "SH-route ahead, estimate below δ": 0.022,
+    "no difference of δ either way": 0.1395,
+    "inconclusive": 0.7405
+   },
+   "coverage": 0.88
+  },
+  {
+   "n2_runs": 16,
+   "graphs": 16,
+   "runs_per_graph": 2,
+   "run_sd": 0.3,
+   "graph_sd": 0.45,
+   "true_delta": 0.25,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.495,
+    "N2 ahead, estimate below δ": 0.0715,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.0285,
+    "inconclusive": 0.405
+   },
+   "coverage": 0.8755
+  },
+  {
+   "n2_runs": 16,
+   "graphs": 16,
+   "runs_per_graph": 2,
+   "run_sd": 0.3,
+   "graph_sd": 0.45,
+   "true_delta": 0.5,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.9355,
+    "N2 ahead, estimate below δ": 0.0205,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.001,
+    "inconclusive": 0.043
+   },
+   "coverage": 0.8655
+  },
+  {
+   "n2_runs": 16,
+   "graphs": 16,
+   "runs_per_graph": 2,
+   "run_sd": 0.45,
+   "graph_sd": 0.15,
+   "true_delta": 0.0,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.0365,
+    "N2 ahead, estimate below δ": 0.0215,
+    "SH-route ahead, estimate at least δ": 0.042,
+    "SH-route ahead, estimate below δ": 0.0235,
+    "no difference of δ either way": 0.159,
+    "inconclusive": 0.7175
+   },
+   "coverage": 0.8765
+  },
+  {
+   "n2_runs": 16,
+   "graphs": 16,
+   "runs_per_graph": 2,
+   "run_sd": 0.45,
+   "graph_sd": 0.15,
+   "true_delta": 0.25,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.4825,
+    "N2 ahead, estimate below δ": 0.079,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0005,
+    "no difference of δ either way": 0.046,
+    "inconclusive": 0.392
+   },
+   "coverage": 0.877
+  },
+  {
+   "n2_runs": 16,
+   "graphs": 16,
+   "runs_per_graph": 2,
+   "run_sd": 0.45,
+   "graph_sd": 0.15,
+   "true_delta": 0.5,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.966,
+    "N2 ahead, estimate below δ": 0.0105,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.0,
+    "inconclusive": 0.0235
+   },
+   "coverage": 0.886
+  },
+  {
+   "n2_runs": 16,
+   "graphs": 16,
+   "runs_per_graph": 2,
+   "run_sd": 0.45,
+   "graph_sd": 0.3,
+   "true_delta": 0.0,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.05,
+    "N2 ahead, estimate below δ": 0.0115,
+    "SH-route ahead, estimate at least δ": 0.0585,
+    "SH-route ahead, estimate below δ": 0.0145,
+    "no difference of δ either way": 0.0745,
+    "inconclusive": 0.791
+   },
+   "coverage": 0.8655
+  },
+  {
+   "n2_runs": 16,
+   "graphs": 16,
+   "runs_per_graph": 2,
+   "run_sd": 0.45,
+   "graph_sd": 0.3,
+   "true_delta": 0.25,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.4695,
+    "N2 ahead, estimate below δ": 0.032,
+    "SH-route ahead, estimate at least δ": 0.001,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.017,
+    "inconclusive": 0.4805
+   },
+   "coverage": 0.875
+  },
+  {
+   "n2_runs": 16,
+   "graphs": 16,
+   "runs_per_graph": 2,
+   "run_sd": 0.45,
+   "graph_sd": 0.3,
+   "true_delta": 0.5,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.934,
+    "N2 ahead, estimate below δ": 0.008,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.0005,
+    "inconclusive": 0.0575
+   },
+   "coverage": 0.88
+  },
+  {
+   "n2_runs": 16,
+   "graphs": 16,
+   "runs_per_graph": 2,
+   "run_sd": 0.45,
+   "graph_sd": 0.45,
+   "true_delta": 0.0,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.0625,
+    "N2 ahead, estimate below δ": 0.003,
+    "SH-route ahead, estimate at least δ": 0.0595,
+    "SH-route ahead, estimate below δ": 0.0035,
+    "no difference of δ either way": 0.0235,
+    "inconclusive": 0.848
+   },
+   "coverage": 0.8715
+  },
+  {
+   "n2_runs": 16,
+   "graphs": 16,
+   "runs_per_graph": 2,
+   "run_sd": 0.45,
+   "graph_sd": 0.45,
+   "true_delta": 0.25,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.446,
+    "N2 ahead, estimate below δ": 0.0075,
+    "SH-route ahead, estimate at least δ": 0.0005,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.007,
+    "inconclusive": 0.539
+   },
+   "coverage": 0.875
+  },
+  {
+   "n2_runs": 16,
+   "graphs": 16,
+   "runs_per_graph": 2,
+   "run_sd": 0.45,
+   "graph_sd": 0.45,
+   "true_delta": 0.5,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.8885,
+    "N2 ahead, estimate below δ": 0.0025,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.001,
+    "inconclusive": 0.108
+   },
+   "coverage": 0.88
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 16,
+   "runs_per_graph": 4,
+   "run_sd": 0.2,
+   "graph_sd": 0.15,
+   "true_delta": 0.0,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.0,
+    "N2 ahead, estimate below δ": 0.0525,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.057,
+    "no difference of δ either way": 0.8905,
+    "inconclusive": 0.0
+   },
+   "coverage": 0.8905
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 16,
+   "runs_per_graph": 4,
+   "run_sd": 0.2,
+   "graph_sd": 0.15,
+   "true_delta": 0.25,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.5035,
+    "N2 ahead, estimate below δ": 0.491,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.0055,
+    "inconclusive": 0.0
+   },
+   "coverage": 0.883
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 16,
+   "runs_per_graph": 4,
+   "run_sd": 0.2,
+   "graph_sd": 0.15,
+   "true_delta": 0.5,
+   "labels": {
+    "N2 ahead, estimate at least δ": 1.0,
+    "N2 ahead, estimate below δ": 0.0,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.0,
+    "inconclusive": 0.0
+   },
+   "coverage": 0.8755
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 16,
+   "runs_per_graph": 4,
+   "run_sd": 0.2,
+   "graph_sd": 0.3,
+   "true_delta": 0.0,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.002,
+    "N2 ahead, estimate below δ": 0.0535,
+    "SH-route ahead, estimate at least δ": 0.003,
+    "SH-route ahead, estimate below δ": 0.058,
+    "no difference of δ either way": 0.786,
+    "inconclusive": 0.0975
+   },
+   "coverage": 0.8835
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 16,
+   "runs_per_graph": 4,
+   "run_sd": 0.2,
+   "graph_sd": 0.3,
+   "true_delta": 0.25,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.5025,
+    "N2 ahead, estimate below δ": 0.392,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.0465,
+    "inconclusive": 0.059
+   },
+   "coverage": 0.8745
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 16,
+   "runs_per_graph": 4,
+   "run_sd": 0.2,
+   "graph_sd": 0.3,
+   "true_delta": 0.5,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.9975,
+    "N2 ahead, estimate below δ": 0.0025,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.0,
+    "inconclusive": 0.0
+   },
+   "coverage": 0.894
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 16,
+   "runs_per_graph": 4,
+   "run_sd": 0.2,
+   "graph_sd": 0.45,
+   "true_delta": 0.0,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.0195,
+    "N2 ahead, estimate below δ": 0.0485,
+    "SH-route ahead, estimate at least δ": 0.0245,
+    "SH-route ahead, estimate below δ": 0.037,
+    "no difference of δ either way": 0.381,
+    "inconclusive": 0.4895
+   },
+   "coverage": 0.8705
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 16,
+   "runs_per_graph": 4,
+   "run_sd": 0.2,
+   "graph_sd": 0.45,
+   "true_delta": 0.25,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.497,
+    "N2 ahead, estimate below δ": 0.1885,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.057,
+    "inconclusive": 0.2575
+   },
+   "coverage": 0.871
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 16,
+   "runs_per_graph": 4,
+   "run_sd": 0.2,
+   "graph_sd": 0.45,
+   "true_delta": 0.5,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.975,
+    "N2 ahead, estimate below δ": 0.0155,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.0,
+    "inconclusive": 0.0095
+   },
+   "coverage": 0.878
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 16,
+   "runs_per_graph": 4,
+   "run_sd": 0.3,
+   "graph_sd": 0.15,
+   "true_delta": 0.0,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.0005,
+    "N2 ahead, estimate below δ": 0.0555,
+    "SH-route ahead, estimate at least δ": 0.0005,
+    "SH-route ahead, estimate below δ": 0.062,
+    "no difference of δ either way": 0.8655,
+    "inconclusive": 0.016
+   },
+   "coverage": 0.8815
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 16,
+   "runs_per_graph": 4,
+   "run_sd": 0.3,
+   "graph_sd": 0.15,
+   "true_delta": 0.25,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.506,
+    "N2 ahead, estimate below δ": 0.453,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.0315,
+    "inconclusive": 0.0095
+   },
+   "coverage": 0.8825
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 16,
+   "runs_per_graph": 4,
+   "run_sd": 0.3,
+   "graph_sd": 0.15,
+   "true_delta": 0.5,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.9995,
+    "N2 ahead, estimate below δ": 0.0005,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.0,
+    "inconclusive": 0.0
+   },
+   "coverage": 0.886
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 16,
+   "runs_per_graph": 4,
+   "run_sd": 0.3,
+   "graph_sd": 0.3,
+   "true_delta": 0.0,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.0075,
+    "N2 ahead, estimate below δ": 0.0595,
+    "SH-route ahead, estimate at least δ": 0.005,
+    "SH-route ahead, estimate below δ": 0.055,
+    "no difference of δ either way": 0.642,
+    "inconclusive": 0.231
+   },
+   "coverage": 0.873
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 16,
+   "runs_per_graph": 4,
+   "run_sd": 0.3,
+   "graph_sd": 0.3,
+   "true_delta": 0.25,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.513,
+    "N2 ahead, estimate below δ": 0.3055,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.0655,
+    "inconclusive": 0.116
+   },
+   "coverage": 0.8805
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 16,
+   "runs_per_graph": 4,
+   "run_sd": 0.3,
+   "graph_sd": 0.3,
+   "true_delta": 0.5,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.9965,
+    "N2 ahead, estimate below δ": 0.0035,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.0,
+    "inconclusive": 0.0
+   },
+   "coverage": 0.8835
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 16,
+   "runs_per_graph": 4,
+   "run_sd": 0.3,
+   "graph_sd": 0.45,
+   "true_delta": 0.0,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.0295,
+    "N2 ahead, estimate below δ": 0.0355,
+    "SH-route ahead, estimate at least δ": 0.0305,
+    "SH-route ahead, estimate below δ": 0.042,
+    "no difference of δ either way": 0.277,
+    "inconclusive": 0.5855
+   },
+   "coverage": 0.8625
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 16,
+   "runs_per_graph": 4,
+   "run_sd": 0.3,
+   "graph_sd": 0.45,
+   "true_delta": 0.25,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.504,
+    "N2 ahead, estimate below δ": 0.129,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0005,
+    "no difference of δ either way": 0.048,
+    "inconclusive": 0.3185
+   },
+   "coverage": 0.875
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 16,
+   "runs_per_graph": 4,
+   "run_sd": 0.3,
+   "graph_sd": 0.45,
+   "true_delta": 0.5,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.971,
+    "N2 ahead, estimate below δ": 0.0175,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.0005,
+    "inconclusive": 0.011
+   },
+   "coverage": 0.873
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 16,
+   "runs_per_graph": 4,
+   "run_sd": 0.45,
+   "graph_sd": 0.15,
+   "true_delta": 0.0,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.009,
+    "N2 ahead, estimate below δ": 0.042,
+    "SH-route ahead, estimate at least δ": 0.009,
+    "SH-route ahead, estimate below δ": 0.049,
+    "no difference of δ either way": 0.569,
+    "inconclusive": 0.322
+   },
+   "coverage": 0.891
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 16,
+   "runs_per_graph": 4,
+   "run_sd": 0.45,
+   "graph_sd": 0.15,
+   "true_delta": 0.25,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.4955,
+    "N2 ahead, estimate below δ": 0.294,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.0615,
+    "inconclusive": 0.149
+   },
+   "coverage": 0.8875
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 16,
+   "runs_per_graph": 4,
+   "run_sd": 0.45,
+   "graph_sd": 0.15,
+   "true_delta": 0.5,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.9905,
+    "N2 ahead, estimate below δ": 0.0075,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.0005,
+    "inconclusive": 0.0015
+   },
+   "coverage": 0.887
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 16,
+   "runs_per_graph": 4,
+   "run_sd": 0.45,
+   "graph_sd": 0.3,
+   "true_delta": 0.0,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.0175,
+    "N2 ahead, estimate below δ": 0.0405,
+    "SH-route ahead, estimate at least δ": 0.017,
+    "SH-route ahead, estimate below δ": 0.039,
+    "no difference of δ either way": 0.3425,
+    "inconclusive": 0.5435
+   },
+   "coverage": 0.886
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 16,
+   "runs_per_graph": 4,
+   "run_sd": 0.45,
+   "graph_sd": 0.3,
+   "true_delta": 0.25,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.486,
+    "N2 ahead, estimate below δ": 0.1595,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.001,
+    "no difference of δ either way": 0.057,
+    "inconclusive": 0.2965
+   },
+   "coverage": 0.869
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 16,
+   "runs_per_graph": 4,
+   "run_sd": 0.45,
+   "graph_sd": 0.3,
+   "true_delta": 0.5,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.9785,
+    "N2 ahead, estimate below δ": 0.0165,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.0005,
+    "inconclusive": 0.0045
+   },
+   "coverage": 0.883
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 16,
+   "runs_per_graph": 4,
+   "run_sd": 0.45,
+   "graph_sd": 0.45,
+   "true_delta": 0.0,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.0495,
+    "N2 ahead, estimate below δ": 0.0165,
+    "SH-route ahead, estimate at least δ": 0.0355,
+    "SH-route ahead, estimate below δ": 0.016,
+    "no difference of δ either way": 0.1125,
+    "inconclusive": 0.77
+   },
+   "coverage": 0.8825
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 16,
+   "runs_per_graph": 4,
+   "run_sd": 0.45,
+   "graph_sd": 0.45,
+   "true_delta": 0.25,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.464,
+    "N2 ahead, estimate below δ": 0.0585,
+    "SH-route ahead, estimate at least δ": 0.0005,
+    "SH-route ahead, estimate below δ": 0.0005,
+    "no difference of δ either way": 0.032,
+    "inconclusive": 0.4445
+   },
+   "coverage": 0.8715
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 16,
+   "runs_per_graph": 4,
+   "run_sd": 0.45,
+   "graph_sd": 0.45,
+   "true_delta": 0.5,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.9395,
+    "N2 ahead, estimate below δ": 0.0095,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.0,
+    "inconclusive": 0.051
+   },
+   "coverage": 0.881
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 20,
+   "runs_per_graph": 4,
+   "run_sd": 0.2,
+   "graph_sd": 0.15,
+   "true_delta": 0.0,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.0,
+    "N2 ahead, estimate below δ": 0.059,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.049,
+    "no difference of δ either way": 0.892,
+    "inconclusive": 0.0
+   },
+   "coverage": 0.892
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 20,
+   "runs_per_graph": 4,
+   "run_sd": 0.2,
+   "graph_sd": 0.15,
+   "true_delta": 0.25,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.491,
+    "N2 ahead, estimate below δ": 0.5075,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.0015,
+    "inconclusive": 0.0
+   },
+   "coverage": 0.8785
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 20,
+   "runs_per_graph": 4,
+   "run_sd": 0.2,
+   "graph_sd": 0.15,
+   "true_delta": 0.5,
+   "labels": {
+    "N2 ahead, estimate at least δ": 1.0,
+    "N2 ahead, estimate below δ": 0.0,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.0,
+    "inconclusive": 0.0
+   },
+   "coverage": 0.886
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 20,
+   "runs_per_graph": 4,
+   "run_sd": 0.2,
+   "graph_sd": 0.3,
+   "true_delta": 0.0,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.0,
+    "N2 ahead, estimate below δ": 0.0715,
+    "SH-route ahead, estimate at least δ": 0.0005,
+    "SH-route ahead, estimate below δ": 0.0555,
+    "no difference of δ either way": 0.825,
+    "inconclusive": 0.0475
+   },
+   "coverage": 0.8725
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 20,
+   "runs_per_graph": 4,
+   "run_sd": 0.2,
+   "graph_sd": 0.3,
+   "true_delta": 0.25,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.5045,
+    "N2 ahead, estimate below δ": 0.432,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.039,
+    "inconclusive": 0.0245
+   },
+   "coverage": 0.883
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 20,
+   "runs_per_graph": 4,
+   "run_sd": 0.2,
+   "graph_sd": 0.3,
+   "true_delta": 0.5,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.9995,
+    "N2 ahead, estimate below δ": 0.0005,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.0,
+    "inconclusive": 0.0
+   },
+   "coverage": 0.883
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 20,
+   "runs_per_graph": 4,
+   "run_sd": 0.2,
+   "graph_sd": 0.45,
+   "true_delta": 0.0,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.009,
+    "N2 ahead, estimate below δ": 0.0495,
+    "SH-route ahead, estimate at least δ": 0.01,
+    "SH-route ahead, estimate below δ": 0.047,
+    "no difference of δ either way": 0.5195,
+    "inconclusive": 0.365
+   },
+   "coverage": 0.8845
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 20,
+   "runs_per_graph": 4,
+   "run_sd": 0.2,
+   "graph_sd": 0.45,
+   "true_delta": 0.25,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.486,
+    "N2 ahead, estimate below δ": 0.2595,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.0645,
+    "inconclusive": 0.19
+   },
+   "coverage": 0.868
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 20,
+   "runs_per_graph": 4,
+   "run_sd": 0.2,
+   "graph_sd": 0.45,
+   "true_delta": 0.5,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.9885,
+    "N2 ahead, estimate below δ": 0.01,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.0,
+    "inconclusive": 0.0015
+   },
+   "coverage": 0.8745
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 20,
+   "runs_per_graph": 4,
+   "run_sd": 0.3,
+   "graph_sd": 0.15,
+   "true_delta": 0.0,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.0,
+    "N2 ahead, estimate below δ": 0.0665,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0535,
+    "no difference of δ either way": 0.8745,
+    "inconclusive": 0.0055
+   },
+   "coverage": 0.88
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 20,
+   "runs_per_graph": 4,
+   "run_sd": 0.3,
+   "graph_sd": 0.15,
+   "true_delta": 0.25,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.5085,
+    "N2 ahead, estimate below δ": 0.463,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.0245,
+    "inconclusive": 0.004
+   },
+   "coverage": 0.8795
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 20,
+   "runs_per_graph": 4,
+   "run_sd": 0.3,
+   "graph_sd": 0.15,
+   "true_delta": 0.5,
+   "labels": {
+    "N2 ahead, estimate at least δ": 1.0,
+    "N2 ahead, estimate below δ": 0.0,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.0,
+    "inconclusive": 0.0
+   },
+   "coverage": 0.881
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 20,
+   "runs_per_graph": 4,
+   "run_sd": 0.3,
+   "graph_sd": 0.3,
+   "true_delta": 0.0,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.0025,
+    "N2 ahead, estimate below δ": 0.0565,
+    "SH-route ahead, estimate at least δ": 0.001,
+    "SH-route ahead, estimate below δ": 0.053,
+    "no difference of δ either way": 0.721,
+    "inconclusive": 0.166
+   },
+   "coverage": 0.887
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 20,
+   "runs_per_graph": 4,
+   "run_sd": 0.3,
+   "graph_sd": 0.3,
+   "true_delta": 0.25,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.499,
+    "N2 ahead, estimate below δ": 0.3635,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.0585,
+    "inconclusive": 0.079
+   },
+   "coverage": 0.8855
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 20,
+   "runs_per_graph": 4,
+   "run_sd": 0.3,
+   "graph_sd": 0.3,
+   "true_delta": 0.5,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.999,
+    "N2 ahead, estimate below δ": 0.001,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.0,
+    "inconclusive": 0.0
+   },
+   "coverage": 0.8685
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 20,
+   "runs_per_graph": 4,
+   "run_sd": 0.3,
+   "graph_sd": 0.45,
+   "true_delta": 0.0,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.0195,
+    "N2 ahead, estimate below δ": 0.0405,
+    "SH-route ahead, estimate at least δ": 0.0155,
+    "SH-route ahead, estimate below δ": 0.04,
+    "no difference of δ either way": 0.4,
+    "inconclusive": 0.4845
+   },
+   "coverage": 0.8845
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 20,
+   "runs_per_graph": 4,
+   "run_sd": 0.3,
+   "graph_sd": 0.45,
+   "true_delta": 0.25,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.5005,
+    "N2 ahead, estimate below δ": 0.1855,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.067,
+    "inconclusive": 0.247
+   },
+   "coverage": 0.866
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 20,
+   "runs_per_graph": 4,
+   "run_sd": 0.3,
+   "graph_sd": 0.45,
+   "true_delta": 0.5,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.983,
+    "N2 ahead, estimate below δ": 0.0105,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.001,
+    "inconclusive": 0.0055
+   },
+   "coverage": 0.8795
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 20,
+   "runs_per_graph": 4,
+   "run_sd": 0.45,
+   "graph_sd": 0.15,
+   "true_delta": 0.0,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.008,
+    "N2 ahead, estimate below δ": 0.0505,
+    "SH-route ahead, estimate at least δ": 0.004,
+    "SH-route ahead, estimate below δ": 0.0495,
+    "no difference of δ either way": 0.631,
+    "inconclusive": 0.257
+   },
+   "coverage": 0.888
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 20,
+   "runs_per_graph": 4,
+   "run_sd": 0.45,
+   "graph_sd": 0.15,
+   "true_delta": 0.25,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.502,
+    "N2 ahead, estimate below δ": 0.306,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.0585,
+    "inconclusive": 0.1335
+   },
+   "coverage": 0.8905
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 20,
+   "runs_per_graph": 4,
+   "run_sd": 0.45,
+   "graph_sd": 0.15,
+   "true_delta": 0.5,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.992,
+    "N2 ahead, estimate below δ": 0.0075,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.0,
+    "inconclusive": 0.0005
+   },
+   "coverage": 0.889
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 20,
+   "runs_per_graph": 4,
+   "run_sd": 0.45,
+   "graph_sd": 0.3,
+   "true_delta": 0.0,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.011,
+    "N2 ahead, estimate below δ": 0.043,
+    "SH-route ahead, estimate at least δ": 0.0165,
+    "SH-route ahead, estimate below δ": 0.0385,
+    "no difference of δ either way": 0.43,
+    "inconclusive": 0.461
+   },
+   "coverage": 0.891
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 20,
+   "runs_per_graph": 4,
+   "run_sd": 0.45,
+   "graph_sd": 0.3,
+   "true_delta": 0.25,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.4805,
+    "N2 ahead, estimate below δ": 0.22,
+    "SH-route ahead, estimate at least δ": 0.0005,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.0535,
+    "inconclusive": 0.2455
+   },
+   "coverage": 0.896
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 20,
+   "runs_per_graph": 4,
+   "run_sd": 0.45,
+   "graph_sd": 0.3,
+   "true_delta": 0.5,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.991,
+    "N2 ahead, estimate below δ": 0.0085,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.0,
+    "inconclusive": 0.0005
+   },
+   "coverage": 0.8885
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 20,
+   "runs_per_graph": 4,
+   "run_sd": 0.45,
+   "graph_sd": 0.45,
+   "true_delta": 0.0,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.031,
+    "N2 ahead, estimate below δ": 0.019,
+    "SH-route ahead, estimate at least δ": 0.0365,
+    "SH-route ahead, estimate below δ": 0.029,
+    "no difference of δ either way": 0.192,
+    "inconclusive": 0.6925
+   },
+   "coverage": 0.8845
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 20,
+   "runs_per_graph": 4,
+   "run_sd": 0.45,
+   "graph_sd": 0.45,
+   "true_delta": 0.25,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.4955,
+    "N2 ahead, estimate below δ": 0.0845,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0005,
+    "no difference of δ either way": 0.0445,
+    "inconclusive": 0.375
+   },
+   "coverage": 0.8755
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 20,
+   "runs_per_graph": 4,
+   "run_sd": 0.45,
+   "graph_sd": 0.45,
+   "true_delta": 0.5,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.9625,
+    "N2 ahead, estimate below δ": 0.013,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.0,
+    "inconclusive": 0.0245
+   },
+   "coverage": 0.874
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 24,
+   "runs_per_graph": 2,
+   "run_sd": 0.2,
+   "graph_sd": 0.15,
+   "true_delta": 0.0,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.0,
+    "N2 ahead, estimate below δ": 0.054,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0535,
+    "no difference of δ either way": 0.8925,
+    "inconclusive": 0.0
+   },
+   "coverage": 0.8925
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 24,
+   "runs_per_graph": 2,
+   "run_sd": 0.2,
+   "graph_sd": 0.15,
+   "true_delta": 0.25,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.5115,
+    "N2 ahead, estimate below δ": 0.4875,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.001,
+    "inconclusive": 0.0
+   },
+   "coverage": 0.869
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 24,
+   "runs_per_graph": 2,
+   "run_sd": 0.2,
+   "graph_sd": 0.15,
+   "true_delta": 0.5,
+   "labels": {
+    "N2 ahead, estimate at least δ": 1.0,
+    "N2 ahead, estimate below δ": 0.0,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.0,
+    "inconclusive": 0.0
+   },
+   "coverage": 0.8825
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 24,
+   "runs_per_graph": 2,
+   "run_sd": 0.2,
+   "graph_sd": 0.3,
+   "true_delta": 0.0,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.0,
+    "N2 ahead, estimate below δ": 0.0415,
+    "SH-route ahead, estimate at least δ": 0.0015,
+    "SH-route ahead, estimate below δ": 0.0585,
+    "no difference of δ either way": 0.875,
+    "inconclusive": 0.0235
+   },
+   "coverage": 0.8985
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 24,
+   "runs_per_graph": 2,
+   "run_sd": 0.2,
+   "graph_sd": 0.3,
+   "true_delta": 0.25,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.513,
+    "N2 ahead, estimate below δ": 0.439,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.033,
+    "inconclusive": 0.015
+   },
+   "coverage": 0.8885
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 24,
+   "runs_per_graph": 2,
+   "run_sd": 0.2,
+   "graph_sd": 0.3,
+   "true_delta": 0.5,
+   "labels": {
+    "N2 ahead, estimate at least δ": 1.0,
+    "N2 ahead, estimate below δ": 0.0,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.0,
+    "inconclusive": 0.0
+   },
+   "coverage": 0.8755
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 24,
+   "runs_per_graph": 2,
+   "run_sd": 0.2,
+   "graph_sd": 0.45,
+   "true_delta": 0.0,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.0115,
+    "N2 ahead, estimate below δ": 0.0515,
+    "SH-route ahead, estimate at least δ": 0.008,
+    "SH-route ahead, estimate below δ": 0.06,
+    "no difference of δ either way": 0.5845,
+    "inconclusive": 0.2845
+   },
+   "coverage": 0.869
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 24,
+   "runs_per_graph": 2,
+   "run_sd": 0.2,
+   "graph_sd": 0.45,
+   "true_delta": 0.25,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.4965,
+    "N2 ahead, estimate below δ": 0.2945,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.0555,
+    "inconclusive": 0.1535
+   },
+   "coverage": 0.8855
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 24,
+   "runs_per_graph": 2,
+   "run_sd": 0.2,
+   "graph_sd": 0.45,
+   "true_delta": 0.5,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.9915,
+    "N2 ahead, estimate below δ": 0.0075,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.0,
+    "inconclusive": 0.001
+   },
+   "coverage": 0.877
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 24,
+   "runs_per_graph": 2,
+   "run_sd": 0.3,
+   "graph_sd": 0.15,
+   "true_delta": 0.0,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.001,
+    "N2 ahead, estimate below δ": 0.052,
+    "SH-route ahead, estimate at least δ": 0.0005,
+    "SH-route ahead, estimate below δ": 0.059,
+    "no difference of δ either way": 0.8745,
+    "inconclusive": 0.013
+   },
+   "coverage": 0.8875
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 24,
+   "runs_per_graph": 2,
+   "run_sd": 0.3,
+   "graph_sd": 0.15,
+   "true_delta": 0.25,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.5035,
+    "N2 ahead, estimate below δ": 0.4445,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.044,
+    "inconclusive": 0.008
+   },
+   "coverage": 0.8755
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 24,
+   "runs_per_graph": 2,
+   "run_sd": 0.3,
+   "graph_sd": 0.15,
+   "true_delta": 0.5,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.9995,
+    "N2 ahead, estimate below δ": 0.0005,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.0,
+    "inconclusive": 0.0
+   },
+   "coverage": 0.8805
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 24,
+   "runs_per_graph": 2,
+   "run_sd": 0.3,
+   "graph_sd": 0.3,
+   "true_delta": 0.0,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.002,
+    "N2 ahead, estimate below δ": 0.046,
+    "SH-route ahead, estimate at least δ": 0.0045,
+    "SH-route ahead, estimate below δ": 0.0595,
+    "no difference of δ either way": 0.732,
+    "inconclusive": 0.156
+   },
+   "coverage": 0.888
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 24,
+   "runs_per_graph": 2,
+   "run_sd": 0.3,
+   "graph_sd": 0.3,
+   "true_delta": 0.25,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.4925,
+    "N2 ahead, estimate below δ": 0.3735,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.056,
+    "inconclusive": 0.078
+   },
+   "coverage": 0.8855
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 24,
+   "runs_per_graph": 2,
+   "run_sd": 0.3,
+   "graph_sd": 0.3,
+   "true_delta": 0.5,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.998,
+    "N2 ahead, estimate below δ": 0.002,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.0,
+    "inconclusive": 0.0
+   },
+   "coverage": 0.891
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 24,
+   "runs_per_graph": 2,
+   "run_sd": 0.3,
+   "graph_sd": 0.45,
+   "true_delta": 0.0,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.011,
+    "N2 ahead, estimate below δ": 0.0405,
+    "SH-route ahead, estimate at least δ": 0.0115,
+    "SH-route ahead, estimate below δ": 0.052,
+    "no difference of δ either way": 0.442,
+    "inconclusive": 0.443
+   },
+   "coverage": 0.885
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 24,
+   "runs_per_graph": 2,
+   "run_sd": 0.3,
+   "graph_sd": 0.45,
+   "true_delta": 0.25,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.491,
+    "N2 ahead, estimate below δ": 0.225,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.048,
+    "inconclusive": 0.236
+   },
+   "coverage": 0.894
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 24,
+   "runs_per_graph": 2,
+   "run_sd": 0.3,
+   "graph_sd": 0.45,
+   "true_delta": 0.5,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.983,
+    "N2 ahead, estimate below δ": 0.012,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.0005,
+    "inconclusive": 0.0045
+   },
+   "coverage": 0.884
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 24,
+   "runs_per_graph": 2,
+   "run_sd": 0.45,
+   "graph_sd": 0.15,
+   "true_delta": 0.0,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.011,
+    "N2 ahead, estimate below δ": 0.0485,
+    "SH-route ahead, estimate at least δ": 0.012,
+    "SH-route ahead, estimate below δ": 0.0475,
+    "no difference of δ either way": 0.525,
+    "inconclusive": 0.356
+   },
+   "coverage": 0.881
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 24,
+   "runs_per_graph": 2,
+   "run_sd": 0.45,
+   "graph_sd": 0.15,
+   "true_delta": 0.25,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.517,
+    "N2 ahead, estimate below δ": 0.254,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.0525,
+    "inconclusive": 0.1765
+   },
+   "coverage": 0.8905
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 24,
+   "runs_per_graph": 2,
+   "run_sd": 0.45,
+   "graph_sd": 0.15,
+   "true_delta": 0.5,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.9925,
+    "N2 ahead, estimate below δ": 0.0065,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.0,
+    "inconclusive": 0.001
+   },
+   "coverage": 0.89
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 24,
+   "runs_per_graph": 2,
+   "run_sd": 0.45,
+   "graph_sd": 0.3,
+   "true_delta": 0.0,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.0195,
+    "N2 ahead, estimate below δ": 0.047,
+    "SH-route ahead, estimate at least δ": 0.0175,
+    "SH-route ahead, estimate below δ": 0.044,
+    "no difference of δ either way": 0.357,
+    "inconclusive": 0.515
+   },
+   "coverage": 0.872
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 24,
+   "runs_per_graph": 2,
+   "run_sd": 0.45,
+   "graph_sd": 0.3,
+   "true_delta": 0.25,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.492,
+    "N2 ahead, estimate below δ": 0.193,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.045,
+    "inconclusive": 0.27
+   },
+   "coverage": 0.892
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 24,
+   "runs_per_graph": 2,
+   "run_sd": 0.45,
+   "graph_sd": 0.3,
+   "true_delta": 0.5,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.9805,
+    "N2 ahead, estimate below δ": 0.0155,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.0,
+    "inconclusive": 0.004
+   },
+   "coverage": 0.8805
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 24,
+   "runs_per_graph": 2,
+   "run_sd": 0.45,
+   "graph_sd": 0.45,
+   "true_delta": 0.0,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.0335,
+    "N2 ahead, estimate below δ": 0.0255,
+    "SH-route ahead, estimate at least δ": 0.0315,
+    "SH-route ahead, estimate below δ": 0.023,
+    "no difference of δ either way": 0.1705,
+    "inconclusive": 0.716
+   },
+   "coverage": 0.8865
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 24,
+   "runs_per_graph": 2,
+   "run_sd": 0.45,
+   "graph_sd": 0.45,
+   "true_delta": 0.25,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.497,
+    "N2 ahead, estimate below δ": 0.0785,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.0375,
+    "inconclusive": 0.387
+   },
+   "coverage": 0.882
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 24,
+   "runs_per_graph": 2,
+   "run_sd": 0.45,
+   "graph_sd": 0.45,
+   "true_delta": 0.5,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.966,
+    "N2 ahead, estimate below δ": 0.014,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.0,
+    "inconclusive": 0.02
+   },
+   "coverage": 0.882
+  },
+  {
+   "n2_runs": 24,
+   "graphs": 16,
+   "runs_per_graph": 4,
+   "run_sd": 0.2,
+   "graph_sd": 0.15,
+   "true_delta": 0.0,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.0,
+    "N2 ahead, estimate below δ": 0.057,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0615,
+    "no difference of δ either way": 0.8815,
+    "inconclusive": 0.0
+   },
+   "coverage": 0.8815
+  },
+  {
+   "n2_runs": 24,
+   "graphs": 16,
+   "runs_per_graph": 4,
+   "run_sd": 0.2,
+   "graph_sd": 0.15,
+   "true_delta": 0.25,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.5,
+    "N2 ahead, estimate below δ": 0.489,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.011,
+    "inconclusive": 0.0
+   },
+   "coverage": 0.8825
+  },
+  {
+   "n2_runs": 24,
+   "graphs": 16,
+   "runs_per_graph": 4,
+   "run_sd": 0.2,
+   "graph_sd": 0.15,
+   "true_delta": 0.5,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.9995,
+    "N2 ahead, estimate below δ": 0.0005,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.0,
+    "inconclusive": 0.0
+   },
+   "coverage": 0.8755
+  },
+  {
+   "n2_runs": 24,
+   "graphs": 16,
+   "runs_per_graph": 4,
+   "run_sd": 0.2,
+   "graph_sd": 0.3,
+   "true_delta": 0.0,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.0025,
+    "N2 ahead, estimate below δ": 0.0555,
+    "SH-route ahead, estimate at least δ": 0.0025,
+    "SH-route ahead, estimate below δ": 0.0545,
+    "no difference of δ either way": 0.7695,
+    "inconclusive": 0.1155
+   },
+   "coverage": 0.885
+  },
+  {
+   "n2_runs": 24,
+   "graphs": 16,
+   "runs_per_graph": 4,
+   "run_sd": 0.2,
+   "graph_sd": 0.3,
+   "true_delta": 0.25,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.501,
+    "N2 ahead, estimate below δ": 0.392,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.0495,
+    "inconclusive": 0.0575
+   },
+   "coverage": 0.8665
+  },
+  {
+   "n2_runs": 24,
+   "graphs": 16,
+   "runs_per_graph": 4,
+   "run_sd": 0.2,
+   "graph_sd": 0.3,
+   "true_delta": 0.5,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.9965,
+    "N2 ahead, estimate below δ": 0.0035,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.0,
+    "inconclusive": 0.0
+   },
+   "coverage": 0.8775
+  },
+  {
+   "n2_runs": 24,
+   "graphs": 16,
+   "runs_per_graph": 4,
+   "run_sd": 0.2,
+   "graph_sd": 0.45,
+   "true_delta": 0.0,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.023,
+    "N2 ahead, estimate below δ": 0.0365,
+    "SH-route ahead, estimate at least δ": 0.0195,
+    "SH-route ahead, estimate below δ": 0.04,
+    "no difference of δ either way": 0.3385,
+    "inconclusive": 0.5425
+   },
+   "coverage": 0.881
+  },
+  {
+   "n2_runs": 24,
+   "graphs": 16,
+   "runs_per_graph": 4,
+   "run_sd": 0.2,
+   "graph_sd": 0.45,
+   "true_delta": 0.25,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.4865,
+    "N2 ahead, estimate below δ": 0.183,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.0595,
+    "inconclusive": 0.271
+   },
+   "coverage": 0.8665
+  },
+  {
+   "n2_runs": 24,
+   "graphs": 16,
+   "runs_per_graph": 4,
+   "run_sd": 0.2,
+   "graph_sd": 0.45,
+   "true_delta": 0.5,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.976,
+    "N2 ahead, estimate below δ": 0.012,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.0005,
+    "inconclusive": 0.0115
+   },
+   "coverage": 0.872
+  },
+  {
+   "n2_runs": 24,
+   "graphs": 16,
+   "runs_per_graph": 4,
+   "run_sd": 0.3,
+   "graph_sd": 0.15,
+   "true_delta": 0.0,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.001,
+    "N2 ahead, estimate below δ": 0.057,
+    "SH-route ahead, estimate at least δ": 0.001,
+    "SH-route ahead, estimate below δ": 0.061,
+    "no difference of δ either way": 0.8345,
+    "inconclusive": 0.0455
+   },
+   "coverage": 0.88
+  },
+  {
+   "n2_runs": 24,
+   "graphs": 16,
+   "runs_per_graph": 4,
+   "run_sd": 0.3,
+   "graph_sd": 0.15,
+   "true_delta": 0.25,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.497,
+    "N2 ahead, estimate below δ": 0.4405,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.0455,
+    "inconclusive": 0.017
+   },
+   "coverage": 0.878
+  },
+  {
+   "n2_runs": 24,
+   "graphs": 16,
+   "runs_per_graph": 4,
+   "run_sd": 0.3,
+   "graph_sd": 0.15,
+   "true_delta": 0.5,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.9975,
+    "N2 ahead, estimate below δ": 0.0025,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.0,
+    "inconclusive": 0.0
+   },
+   "coverage": 0.883
+  },
+  {
+   "n2_runs": 24,
+   "graphs": 16,
+   "runs_per_graph": 4,
+   "run_sd": 0.3,
+   "graph_sd": 0.3,
+   "true_delta": 0.0,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.005,
+    "N2 ahead, estimate below δ": 0.053,
+    "SH-route ahead, estimate at least δ": 0.0055,
+    "SH-route ahead, estimate below δ": 0.042,
+    "no difference of δ either way": 0.5925,
+    "inconclusive": 0.302
+   },
+   "coverage": 0.8945
+  },
+  {
+   "n2_runs": 24,
+   "graphs": 16,
+   "runs_per_graph": 4,
+   "run_sd": 0.3,
+   "graph_sd": 0.3,
+   "true_delta": 0.25,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.4785,
+    "N2 ahead, estimate below δ": 0.3055,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.055,
+    "inconclusive": 0.161
+   },
+   "coverage": 0.896
+  },
+  {
+   "n2_runs": 24,
+   "graphs": 16,
+   "runs_per_graph": 4,
+   "run_sd": 0.3,
+   "graph_sd": 0.3,
+   "true_delta": 0.5,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.9945,
+    "N2 ahead, estimate below δ": 0.0045,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.0,
+    "inconclusive": 0.001
+   },
+   "coverage": 0.8765
+  },
+  {
+   "n2_runs": 24,
+   "graphs": 16,
+   "runs_per_graph": 4,
+   "run_sd": 0.3,
+   "graph_sd": 0.45,
+   "true_delta": 0.0,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.0335,
+    "N2 ahead, estimate below δ": 0.0315,
+    "SH-route ahead, estimate at least δ": 0.025,
+    "SH-route ahead, estimate below δ": 0.029,
+    "no difference of δ either way": 0.2555,
+    "inconclusive": 0.6255
+   },
+   "coverage": 0.881
+  },
+  {
+   "n2_runs": 24,
+   "graphs": 16,
+   "runs_per_graph": 4,
+   "run_sd": 0.3,
+   "graph_sd": 0.45,
+   "true_delta": 0.25,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.4905,
+    "N2 ahead, estimate below δ": 0.12,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.0415,
+    "inconclusive": 0.348
+   },
+   "coverage": 0.8745
+  },
+  {
+   "n2_runs": 24,
+   "graphs": 16,
+   "runs_per_graph": 4,
+   "run_sd": 0.3,
+   "graph_sd": 0.45,
+   "true_delta": 0.5,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.9725,
+    "N2 ahead, estimate below δ": 0.011,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.0,
+    "inconclusive": 0.0165
+   },
+   "coverage": 0.869
+  },
+  {
+   "n2_runs": 24,
+   "graphs": 16,
+   "runs_per_graph": 4,
+   "run_sd": 0.45,
+   "graph_sd": 0.15,
+   "true_delta": 0.0,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.0145,
+    "N2 ahead, estimate below δ": 0.041,
+    "SH-route ahead, estimate at least δ": 0.019,
+    "SH-route ahead, estimate below δ": 0.059,
+    "no difference of δ either way": 0.4405,
+    "inconclusive": 0.426
+   },
+   "coverage": 0.8665
+  },
+  {
+   "n2_runs": 24,
+   "graphs": 16,
+   "runs_per_graph": 4,
+   "run_sd": 0.45,
+   "graph_sd": 0.15,
+   "true_delta": 0.25,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.5045,
+    "N2 ahead, estimate below δ": 0.235,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.0505,
+    "inconclusive": 0.21
+   },
+   "coverage": 0.8875
+  },
+  {
+   "n2_runs": 24,
+   "graphs": 16,
+   "runs_per_graph": 4,
+   "run_sd": 0.45,
+   "graph_sd": 0.15,
+   "true_delta": 0.5,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.9895,
+    "N2 ahead, estimate below δ": 0.009,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.0,
+    "inconclusive": 0.0015
+   },
+   "coverage": 0.8865
+  },
+  {
+   "n2_runs": 24,
+   "graphs": 16,
+   "runs_per_graph": 4,
+   "run_sd": 0.45,
+   "graph_sd": 0.3,
+   "true_delta": 0.0,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.0295,
+    "N2 ahead, estimate below δ": 0.0285,
+    "SH-route ahead, estimate at least δ": 0.0245,
+    "SH-route ahead, estimate below δ": 0.0395,
+    "no difference of δ either way": 0.233,
+    "inconclusive": 0.645
+   },
+   "coverage": 0.878
+  },
+  {
+   "n2_runs": 24,
+   "graphs": 16,
+   "runs_per_graph": 4,
+   "run_sd": 0.45,
+   "graph_sd": 0.3,
+   "true_delta": 0.25,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.4885,
+    "N2 ahead, estimate below δ": 0.1365,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.04,
+    "inconclusive": 0.335
+   },
+   "coverage": 0.875
+  },
+  {
+   "n2_runs": 24,
+   "graphs": 16,
+   "runs_per_graph": 4,
+   "run_sd": 0.45,
+   "graph_sd": 0.3,
+   "true_delta": 0.5,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.976,
+    "N2 ahead, estimate below δ": 0.0125,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.0,
+    "inconclusive": 0.0115
+   },
+   "coverage": 0.878
+  },
+  {
+   "n2_runs": 24,
+   "graphs": 16,
+   "runs_per_graph": 4,
+   "run_sd": 0.45,
+   "graph_sd": 0.45,
+   "true_delta": 0.0,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.039,
+    "N2 ahead, estimate below δ": 0.013,
+    "SH-route ahead, estimate at least δ": 0.0465,
+    "SH-route ahead, estimate below δ": 0.007,
+    "no difference of δ either way": 0.075,
+    "inconclusive": 0.8195
+   },
+   "coverage": 0.8945
+  },
+  {
+   "n2_runs": 24,
+   "graphs": 16,
+   "runs_per_graph": 4,
+   "run_sd": 0.45,
+   "graph_sd": 0.45,
+   "true_delta": 0.25,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.456,
+    "N2 ahead, estimate below δ": 0.039,
+    "SH-route ahead, estimate at least δ": 0.0005,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.023,
+    "inconclusive": 0.4815
+   },
+   "coverage": 0.8675
+  },
+  {
+   "n2_runs": 24,
+   "graphs": 16,
+   "runs_per_graph": 4,
+   "run_sd": 0.45,
+   "graph_sd": 0.45,
+   "true_delta": 0.5,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.933,
+    "N2 ahead, estimate below δ": 0.0085,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.0,
+    "inconclusive": 0.0585
+   },
+   "coverage": 0.8605
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 24,
+   "runs_per_graph": 4,
+   "run_sd": 0.2,
+   "graph_sd": 0.15,
+   "true_delta": 0.0,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.0,
+    "N2 ahead, estimate below δ": 0.0635,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.05,
+    "no difference of δ either way": 0.8865,
+    "inconclusive": 0.0
+   },
+   "coverage": 0.8865
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 24,
+   "runs_per_graph": 4,
+   "run_sd": 0.2,
+   "graph_sd": 0.15,
+   "true_delta": 0.25,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.489,
+    "N2 ahead, estimate below δ": 0.511,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.0,
+    "inconclusive": 0.0
+   },
+   "coverage": 0.887
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 24,
+   "runs_per_graph": 4,
+   "run_sd": 0.2,
+   "graph_sd": 0.15,
+   "true_delta": 0.5,
+   "labels": {
+    "N2 ahead, estimate at least δ": 1.0,
+    "N2 ahead, estimate below δ": 0.0,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.0,
+    "inconclusive": 0.0
+   },
+   "coverage": 0.8925
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 24,
+   "runs_per_graph": 4,
+   "run_sd": 0.2,
+   "graph_sd": 0.3,
+   "true_delta": 0.0,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.001,
+    "N2 ahead, estimate below δ": 0.0655,
+    "SH-route ahead, estimate at least δ": 0.0005,
+    "SH-route ahead, estimate below δ": 0.0535,
+    "no difference of δ either way": 0.869,
+    "inconclusive": 0.0105
+   },
+   "coverage": 0.8795
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 24,
+   "runs_per_graph": 4,
+   "run_sd": 0.2,
+   "graph_sd": 0.3,
+   "true_delta": 0.25,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.5175,
+    "N2 ahead, estimate below δ": 0.4405,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.0365,
+    "inconclusive": 0.0055
+   },
+   "coverage": 0.8675
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 24,
+   "runs_per_graph": 4,
+   "run_sd": 0.2,
+   "graph_sd": 0.3,
+   "true_delta": 0.5,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.9995,
+    "N2 ahead, estimate below δ": 0.0005,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.0,
+    "inconclusive": 0.0
+   },
+   "coverage": 0.887
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 24,
+   "runs_per_graph": 4,
+   "run_sd": 0.2,
+   "graph_sd": 0.45,
+   "true_delta": 0.0,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.007,
+    "N2 ahead, estimate below δ": 0.0535,
+    "SH-route ahead, estimate at least δ": 0.005,
+    "SH-route ahead, estimate below δ": 0.0555,
+    "no difference of δ either way": 0.6365,
+    "inconclusive": 0.2425
+   },
+   "coverage": 0.879
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 24,
+   "runs_per_graph": 4,
+   "run_sd": 0.2,
+   "graph_sd": 0.45,
+   "true_delta": 0.25,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.49,
+    "N2 ahead, estimate below δ": 0.304,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0005,
+    "no difference of δ either way": 0.0635,
+    "inconclusive": 0.142
+   },
+   "coverage": 0.876
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 24,
+   "runs_per_graph": 4,
+   "run_sd": 0.2,
+   "graph_sd": 0.45,
+   "true_delta": 0.5,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.994,
+    "N2 ahead, estimate below δ": 0.0055,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.0,
+    "inconclusive": 0.0005
+   },
+   "coverage": 0.876
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 24,
+   "runs_per_graph": 4,
+   "run_sd": 0.3,
+   "graph_sd": 0.15,
+   "true_delta": 0.0,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.0,
+    "N2 ahead, estimate below δ": 0.0645,
+    "SH-route ahead, estimate at least δ": 0.0005,
+    "SH-route ahead, estimate below δ": 0.0545,
+    "no difference of δ either way": 0.8765,
+    "inconclusive": 0.004
+   },
+   "coverage": 0.8805
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 24,
+   "runs_per_graph": 4,
+   "run_sd": 0.3,
+   "graph_sd": 0.15,
+   "true_delta": 0.25,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.4865,
+    "N2 ahead, estimate below δ": 0.4925,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.019,
+    "inconclusive": 0.002
+   },
+   "coverage": 0.889
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 24,
+   "runs_per_graph": 4,
+   "run_sd": 0.3,
+   "graph_sd": 0.15,
+   "true_delta": 0.5,
+   "labels": {
+    "N2 ahead, estimate at least δ": 1.0,
+    "N2 ahead, estimate below δ": 0.0,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.0,
+    "inconclusive": 0.0
+   },
+   "coverage": 0.8885
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 24,
+   "runs_per_graph": 4,
+   "run_sd": 0.3,
+   "graph_sd": 0.3,
+   "true_delta": 0.0,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.0015,
+    "N2 ahead, estimate below δ": 0.052,
+    "SH-route ahead, estimate at least δ": 0.003,
+    "SH-route ahead, estimate below δ": 0.061,
+    "no difference of δ either way": 0.7805,
+    "inconclusive": 0.102
+   },
+   "coverage": 0.8825
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 24,
+   "runs_per_graph": 4,
+   "run_sd": 0.3,
+   "graph_sd": 0.3,
+   "true_delta": 0.25,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.492,
+    "N2 ahead, estimate below δ": 0.3935,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.064,
+    "inconclusive": 0.0505
+   },
+   "coverage": 0.8725
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 24,
+   "runs_per_graph": 4,
+   "run_sd": 0.3,
+   "graph_sd": 0.3,
+   "true_delta": 0.5,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.9985,
+    "N2 ahead, estimate below δ": 0.0015,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.0,
+    "inconclusive": 0.0
+   },
+   "coverage": 0.888
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 24,
+   "runs_per_graph": 4,
+   "run_sd": 0.3,
+   "graph_sd": 0.45,
+   "true_delta": 0.0,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.01,
+    "N2 ahead, estimate below δ": 0.0495,
+    "SH-route ahead, estimate at least δ": 0.009,
+    "SH-route ahead, estimate below δ": 0.039,
+    "no difference of δ either way": 0.503,
+    "inconclusive": 0.3895
+   },
+   "coverage": 0.8925
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 24,
+   "runs_per_graph": 4,
+   "run_sd": 0.3,
+   "graph_sd": 0.45,
+   "true_delta": 0.25,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.494,
+    "N2 ahead, estimate below δ": 0.2355,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.066,
+    "inconclusive": 0.2045
+   },
+   "coverage": 0.8785
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 24,
+   "runs_per_graph": 4,
+   "run_sd": 0.3,
+   "graph_sd": 0.45,
+   "true_delta": 0.5,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.9885,
+    "N2 ahead, estimate below δ": 0.009,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.0,
+    "inconclusive": 0.0025
+   },
+   "coverage": 0.885
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 24,
+   "runs_per_graph": 4,
+   "run_sd": 0.45,
+   "graph_sd": 0.15,
+   "true_delta": 0.0,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.0025,
+    "N2 ahead, estimate below δ": 0.0585,
+    "SH-route ahead, estimate at least δ": 0.004,
+    "SH-route ahead, estimate below δ": 0.0535,
+    "no difference of δ either way": 0.6645,
+    "inconclusive": 0.217
+   },
+   "coverage": 0.8815
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 24,
+   "runs_per_graph": 4,
+   "run_sd": 0.45,
+   "graph_sd": 0.15,
+   "true_delta": 0.25,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.507,
+    "N2 ahead, estimate below δ": 0.3135,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.058,
+    "inconclusive": 0.1215
+   },
+   "coverage": 0.8895
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 24,
+   "runs_per_graph": 4,
+   "run_sd": 0.45,
+   "graph_sd": 0.15,
+   "true_delta": 0.5,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.994,
+    "N2 ahead, estimate below δ": 0.006,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.0,
+    "inconclusive": 0.0
+   },
+   "coverage": 0.885
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 24,
+   "runs_per_graph": 4,
+   "run_sd": 0.45,
+   "graph_sd": 0.3,
+   "true_delta": 0.0,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.012,
+    "N2 ahead, estimate below δ": 0.047,
+    "SH-route ahead, estimate at least δ": 0.0105,
+    "SH-route ahead, estimate below δ": 0.0465,
+    "no difference of δ either way": 0.4665,
+    "inconclusive": 0.4175
+   },
+   "coverage": 0.884
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 24,
+   "runs_per_graph": 4,
+   "run_sd": 0.45,
+   "graph_sd": 0.3,
+   "true_delta": 0.25,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.506,
+    "N2 ahead, estimate below δ": 0.2285,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.0575,
+    "inconclusive": 0.208
+   },
+   "coverage": 0.8855
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 24,
+   "runs_per_graph": 4,
+   "run_sd": 0.45,
+   "graph_sd": 0.3,
+   "true_delta": 0.5,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.988,
+    "N2 ahead, estimate below δ": 0.0095,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.001,
+    "inconclusive": 0.0015
+   },
+   "coverage": 0.881
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 24,
+   "runs_per_graph": 4,
+   "run_sd": 0.45,
+   "graph_sd": 0.45,
+   "true_delta": 0.0,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.028,
+    "N2 ahead, estimate below δ": 0.027,
+    "SH-route ahead, estimate at least δ": 0.03,
+    "SH-route ahead, estimate below δ": 0.027,
+    "no difference of δ either way": 0.2505,
+    "inconclusive": 0.6375
+   },
+   "coverage": 0.888
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 24,
+   "runs_per_graph": 4,
+   "run_sd": 0.45,
+   "graph_sd": 0.45,
+   "true_delta": 0.25,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.5005,
+    "N2 ahead, estimate below δ": 0.122,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.049,
+    "inconclusive": 0.3285
+   },
+   "coverage": 0.8745
+  },
+  {
+   "n2_runs": 32,
+   "graphs": 24,
+   "runs_per_graph": 4,
+   "run_sd": 0.45,
+   "graph_sd": 0.45,
+   "true_delta": 0.5,
+   "labels": {
+    "N2 ahead, estimate at least δ": 0.978,
+    "N2 ahead, estimate below δ": 0.0125,
+    "SH-route ahead, estimate at least δ": 0.0,
+    "SH-route ahead, estimate below δ": 0.0,
+    "no difference of δ either way": 0.0,
+    "inconclusive": 0.0095
+   },
+   "coverage": 0.892
+  }
+ ]
+}

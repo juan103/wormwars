@@ -1,0 +1,21 @@
+...........F.                                                            [100%]
+================================== FAILURES ===================================
+________________ test_bootstrap_resamples_graph_means_not_runs ________________
+
+    def test_bootstrap_resamples_graph_means_not_runs():
+        """Within-graph spread with identical graph means gives no null-side width (single level, Astra)."""
+        n2 = np.full(8, 3.0)
+        runs = np.array([[1.0, 5.0], [2.0, 4.0], [0.0, 6.0], [3.0, 3.0]])  # every graph mean is 3.0
+        d, lo, hi = S.delta_interval(n2, runs, n_boot=2000, seed=0)
+>       assert (d, lo, hi) == (0.0, 0.0, 0.0)
+E       assert (0.0, -1.0, 1.125) == (0.0, 0.0, 0.0)
+E         
+E         At index 1 diff: -1.0 != 0.0
+E         Use -v to get more diff
+
+tests\test_e5_stats.py:44: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_e5_stats.py::test_bootstrap_resamples_graph_means_not_runs
+sabotaged rc=1
+.............                                                            [100%]
+restored rc=0

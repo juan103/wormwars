@@ -1,0 +1,163 @@
+16 16 2 0.2 0.15 0.0 0.8755 {'N2 ahead, estimate bel': 0.062, 'SH-route ahead, estima': 0.061, 'no difference of δ eit': 0.864, 'inconclusive': 0.012}
+16 16 2 0.2 0.15 0.25 0.8735 {'N2 ahead, estimate at ': 0.509, 'N2 ahead, estimate bel': 0.462, 'no difference of δ eit': 0.025, 'inconclusive': 0.004}
+16 16 2 0.2 0.15 0.5 0.877 {'N2 ahead, estimate at ': 0.999, 'N2 ahead, estimate bel': 0.001}
+16 16 2 0.2 0.3 0.0 0.864 {'N2 ahead, estimate at ': 0.006, 'N2 ahead, estimate bel': 0.062, 'SH-route ahead, estima': 0.06, 'no difference of δ eit': 0.657, 'inconclusive': 0.206}
+16 16 2 0.2 0.3 0.25 0.8775 {'N2 ahead, estimate at ': 0.513, 'N2 ahead, estimate bel': 0.33, 'no difference of δ eit': 0.055, 'inconclusive': 0.102}
+16 16 2 0.2 0.3 0.5 0.881 {'N2 ahead, estimate at ': 0.996, 'N2 ahead, estimate bel': 0.004}
+16 16 2 0.2 0.45 0.0 0.864 {'N2 ahead, estimate at ': 0.024, 'N2 ahead, estimate bel': 0.042, 'SH-route ahead, estima': 0.043, 'no difference of δ eit': 0.272, 'inconclusive': 0.593}
+16 16 2 0.2 0.45 0.25 0.868 {'N2 ahead, estimate at ': 0.497, 'N2 ahead, estimate bel': 0.146, 'no difference of δ eit': 0.054, 'inconclusive': 0.302}
+16 16 2 0.2 0.45 0.5 0.8675 {'N2 ahead, estimate at ': 0.971, 'N2 ahead, estimate bel': 0.013, 'no difference of δ eit': 0.001, 'inconclusive': 0.016}
+16 16 2 0.3 0.15 0.0 0.8815 {'N2 ahead, estimate at ': 0.004, 'N2 ahead, estimate bel': 0.061, 'SH-route ahead, estima': 0.048, 'no difference of δ eit': 0.627, 'inconclusive': 0.254}
+16 16 2 0.3 0.15 0.25 0.862 {'N2 ahead, estimate at ': 0.485, 'N2 ahead, estimate bel': 0.329, 'no difference of δ eit': 0.061, 'inconclusive': 0.124}
+16 16 2 0.3 0.15 0.5 0.864 {'N2 ahead, estimate at ': 0.995, 'N2 ahead, estimate bel': 0.005}
+16 16 2 0.3 0.3 0.0 0.8635 {'N2 ahead, estimate at ': 0.013, 'N2 ahead, estimate bel': 0.052, 'SH-route ahead, estima': 0.05, 'no difference of δ eit': 0.381, 'inconclusive': 0.482}
+16 16 2 0.3 0.3 0.25 0.8705 {'N2 ahead, estimate at ': 0.504, 'N2 ahead, estimate bel': 0.207, 'no difference of δ eit': 0.058, 'inconclusive': 0.231}
+16 16 2 0.3 0.3 0.5 0.873 {'N2 ahead, estimate at ': 0.983, 'N2 ahead, estimate bel': 0.015, 'inconclusive': 0.003}
+16 16 2 0.3 0.45 0.0 0.88 {'N2 ahead, estimate at ': 0.037, 'N2 ahead, estimate bel': 0.027, 'SH-route ahead, estima': 0.022, 'no difference of δ eit': 0.14, 'inconclusive': 0.741}
+16 16 2 0.3 0.45 0.25 0.8755 {'N2 ahead, estimate at ': 0.495, 'N2 ahead, estimate bel': 0.071, 'no difference of δ eit': 0.029, 'inconclusive': 0.405}
+16 16 2 0.3 0.45 0.5 0.8655 {'N2 ahead, estimate at ': 0.935, 'N2 ahead, estimate bel': 0.021, 'no difference of δ eit': 0.001, 'inconclusive': 0.043}
+16 16 2 0.45 0.15 0.0 0.8765 {'N2 ahead, estimate at ': 0.036, 'N2 ahead, estimate bel': 0.021, 'SH-route ahead, estima': 0.024, 'no difference of δ eit': 0.159, 'inconclusive': 0.718}
+16 16 2 0.45 0.15 0.25 0.877 {'N2 ahead, estimate at ': 0.482, 'N2 ahead, estimate bel': 0.079, 'SH-route ahead, estima': 0.001, 'no difference of δ eit': 0.046, 'inconclusive': 0.392}
+16 16 2 0.45 0.15 0.5 0.886 {'N2 ahead, estimate at ': 0.966, 'N2 ahead, estimate bel': 0.011, 'inconclusive': 0.024}
+16 16 2 0.45 0.3 0.0 0.8655 {'N2 ahead, estimate at ': 0.05, 'N2 ahead, estimate bel': 0.011, 'SH-route ahead, estima': 0.015, 'no difference of δ eit': 0.074, 'inconclusive': 0.791}
+16 16 2 0.45 0.3 0.25 0.875 {'N2 ahead, estimate at ': 0.469, 'N2 ahead, estimate bel': 0.032, 'SH-route ahead, estima': 0.001, 'no difference of δ eit': 0.017, 'inconclusive': 0.48}
+16 16 2 0.45 0.3 0.5 0.88 {'N2 ahead, estimate at ': 0.934, 'N2 ahead, estimate bel': 0.008, 'no difference of δ eit': 0.001, 'inconclusive': 0.058}
+16 16 2 0.45 0.45 0.0 0.8715 {'N2 ahead, estimate at ': 0.062, 'N2 ahead, estimate bel': 0.003, 'SH-route ahead, estima': 0.004, 'no difference of δ eit': 0.024, 'inconclusive': 0.848}
+16 16 2 0.45 0.45 0.25 0.875 {'N2 ahead, estimate at ': 0.446, 'N2 ahead, estimate bel': 0.007, 'SH-route ahead, estima': 0.001, 'no difference of δ eit': 0.007, 'inconclusive': 0.539}
+16 16 2 0.45 0.45 0.5 0.88 {'N2 ahead, estimate at ': 0.888, 'N2 ahead, estimate bel': 0.003, 'no difference of δ eit': 0.001, 'inconclusive': 0.108}
+32 16 4 0.2 0.15 0.0 0.8905 {'N2 ahead, estimate bel': 0.052, 'SH-route ahead, estima': 0.057, 'no difference of δ eit': 0.89}
+32 16 4 0.2 0.15 0.25 0.883 {'N2 ahead, estimate at ': 0.503, 'N2 ahead, estimate bel': 0.491, 'no difference of δ eit': 0.005}
+32 16 4 0.2 0.15 0.5 0.8755 {'N2 ahead, estimate at ': 1.0}
+32 16 4 0.2 0.3 0.0 0.8835 {'N2 ahead, estimate at ': 0.002, 'N2 ahead, estimate bel': 0.053, 'SH-route ahead, estima': 0.058, 'no difference of δ eit': 0.786, 'inconclusive': 0.098}
+32 16 4 0.2 0.3 0.25 0.8745 {'N2 ahead, estimate at ': 0.502, 'N2 ahead, estimate bel': 0.392, 'no difference of δ eit': 0.046, 'inconclusive': 0.059}
+32 16 4 0.2 0.3 0.5 0.894 {'N2 ahead, estimate at ': 0.998, 'N2 ahead, estimate bel': 0.003}
+32 16 4 0.2 0.45 0.0 0.8705 {'N2 ahead, estimate at ': 0.019, 'N2 ahead, estimate bel': 0.049, 'SH-route ahead, estima': 0.037, 'no difference of δ eit': 0.381, 'inconclusive': 0.489}
+32 16 4 0.2 0.45 0.25 0.871 {'N2 ahead, estimate at ': 0.497, 'N2 ahead, estimate bel': 0.189, 'no difference of δ eit': 0.057, 'inconclusive': 0.258}
+32 16 4 0.2 0.45 0.5 0.878 {'N2 ahead, estimate at ': 0.975, 'N2 ahead, estimate bel': 0.015, 'inconclusive': 0.009}
+32 16 4 0.3 0.15 0.0 0.8815 {'N2 ahead, estimate at ': 0.001, 'N2 ahead, estimate bel': 0.056, 'SH-route ahead, estima': 0.062, 'no difference of δ eit': 0.866, 'inconclusive': 0.016}
+32 16 4 0.3 0.15 0.25 0.8825 {'N2 ahead, estimate at ': 0.506, 'N2 ahead, estimate bel': 0.453, 'no difference of δ eit': 0.032, 'inconclusive': 0.009}
+32 16 4 0.3 0.15 0.5 0.886 {'N2 ahead, estimate at ': 1.0, 'N2 ahead, estimate bel': 0.001}
+32 16 4 0.3 0.3 0.0 0.873 {'N2 ahead, estimate at ': 0.007, 'N2 ahead, estimate bel': 0.059, 'SH-route ahead, estima': 0.055, 'no difference of δ eit': 0.642, 'inconclusive': 0.231}
+32 16 4 0.3 0.3 0.25 0.8805 {'N2 ahead, estimate at ': 0.513, 'N2 ahead, estimate bel': 0.305, 'no difference of δ eit': 0.066, 'inconclusive': 0.116}
+32 16 4 0.3 0.3 0.5 0.8835 {'N2 ahead, estimate at ': 0.997, 'N2 ahead, estimate bel': 0.004}
+32 16 4 0.3 0.45 0.0 0.8625 {'N2 ahead, estimate at ': 0.029, 'N2 ahead, estimate bel': 0.035, 'SH-route ahead, estima': 0.042, 'no difference of δ eit': 0.277, 'inconclusive': 0.586}
+32 16 4 0.3 0.45 0.25 0.875 {'N2 ahead, estimate at ': 0.504, 'N2 ahead, estimate bel': 0.129, 'SH-route ahead, estima': 0.001, 'no difference of δ eit': 0.048, 'inconclusive': 0.319}
+32 16 4 0.3 0.45 0.5 0.873 {'N2 ahead, estimate at ': 0.971, 'N2 ahead, estimate bel': 0.018, 'no difference of δ eit': 0.001, 'inconclusive': 0.011}
+32 16 4 0.45 0.15 0.0 0.891 {'N2 ahead, estimate at ': 0.009, 'N2 ahead, estimate bel': 0.042, 'SH-route ahead, estima': 0.049, 'no difference of δ eit': 0.569, 'inconclusive': 0.322}
+32 16 4 0.45 0.15 0.25 0.8875 {'N2 ahead, estimate at ': 0.495, 'N2 ahead, estimate bel': 0.294, 'no difference of δ eit': 0.061, 'inconclusive': 0.149}
+32 16 4 0.45 0.15 0.5 0.887 {'N2 ahead, estimate at ': 0.991, 'N2 ahead, estimate bel': 0.007, 'no difference of δ eit': 0.001, 'inconclusive': 0.002}
+32 16 4 0.45 0.3 0.0 0.886 {'N2 ahead, estimate at ': 0.018, 'N2 ahead, estimate bel': 0.041, 'SH-route ahead, estima': 0.039, 'no difference of δ eit': 0.343, 'inconclusive': 0.543}
+32 16 4 0.45 0.3 0.25 0.869 {'N2 ahead, estimate at ': 0.486, 'N2 ahead, estimate bel': 0.16, 'SH-route ahead, estima': 0.001, 'no difference of δ eit': 0.057, 'inconclusive': 0.296}
+32 16 4 0.45 0.3 0.5 0.883 {'N2 ahead, estimate at ': 0.979, 'N2 ahead, estimate bel': 0.017, 'no difference of δ eit': 0.001, 'inconclusive': 0.004}
+32 16 4 0.45 0.45 0.0 0.8825 {'N2 ahead, estimate at ': 0.05, 'N2 ahead, estimate bel': 0.017, 'SH-route ahead, estima': 0.016, 'no difference of δ eit': 0.113, 'inconclusive': 0.77}
+32 16 4 0.45 0.45 0.25 0.8715 {'N2 ahead, estimate at ': 0.464, 'N2 ahead, estimate bel': 0.059, 'SH-route ahead, estima': 0.001, 'no difference of δ eit': 0.032, 'inconclusive': 0.445}
+32 16 4 0.45 0.45 0.5 0.881 {'N2 ahead, estimate at ': 0.94, 'N2 ahead, estimate bel': 0.009, 'inconclusive': 0.051}
+32 20 4 0.2 0.15 0.0 0.892 {'N2 ahead, estimate bel': 0.059, 'SH-route ahead, estima': 0.049, 'no difference of δ eit': 0.892}
+32 20 4 0.2 0.15 0.25 0.8785 {'N2 ahead, estimate at ': 0.491, 'N2 ahead, estimate bel': 0.507, 'no difference of δ eit': 0.002}
+32 20 4 0.2 0.15 0.5 0.886 {'N2 ahead, estimate at ': 1.0}
+32 20 4 0.2 0.3 0.0 0.8725 {'N2 ahead, estimate bel': 0.071, 'SH-route ahead, estima': 0.056, 'no difference of δ eit': 0.825, 'inconclusive': 0.048}
+32 20 4 0.2 0.3 0.25 0.883 {'N2 ahead, estimate at ': 0.504, 'N2 ahead, estimate bel': 0.432, 'no difference of δ eit': 0.039, 'inconclusive': 0.025}
+32 20 4 0.2 0.3 0.5 0.883 {'N2 ahead, estimate at ': 1.0, 'N2 ahead, estimate bel': 0.001}
+32 20 4 0.2 0.45 0.0 0.8845 {'N2 ahead, estimate at ': 0.009, 'N2 ahead, estimate bel': 0.05, 'SH-route ahead, estima': 0.047, 'no difference of δ eit': 0.519, 'inconclusive': 0.365}
+32 20 4 0.2 0.45 0.25 0.868 {'N2 ahead, estimate at ': 0.486, 'N2 ahead, estimate bel': 0.26, 'no difference of δ eit': 0.065, 'inconclusive': 0.19}
+32 20 4 0.2 0.45 0.5 0.8745 {'N2 ahead, estimate at ': 0.989, 'N2 ahead, estimate bel': 0.01, 'inconclusive': 0.002}
+32 20 4 0.3 0.15 0.0 0.88 {'N2 ahead, estimate bel': 0.067, 'SH-route ahead, estima': 0.053, 'no difference of δ eit': 0.875, 'inconclusive': 0.005}
+32 20 4 0.3 0.15 0.25 0.8795 {'N2 ahead, estimate at ': 0.508, 'N2 ahead, estimate bel': 0.463, 'no difference of δ eit': 0.025, 'inconclusive': 0.004}
+32 20 4 0.3 0.15 0.5 0.881 {'N2 ahead, estimate at ': 1.0}
+32 20 4 0.3 0.3 0.0 0.887 {'N2 ahead, estimate at ': 0.003, 'N2 ahead, estimate bel': 0.057, 'SH-route ahead, estima': 0.053, 'no difference of δ eit': 0.721, 'inconclusive': 0.166}
+32 20 4 0.3 0.3 0.25 0.8855 {'N2 ahead, estimate at ': 0.499, 'N2 ahead, estimate bel': 0.363, 'no difference of δ eit': 0.059, 'inconclusive': 0.079}
+32 20 4 0.3 0.3 0.5 0.8685 {'N2 ahead, estimate at ': 0.999, 'N2 ahead, estimate bel': 0.001}
+32 20 4 0.3 0.45 0.0 0.8845 {'N2 ahead, estimate at ': 0.019, 'N2 ahead, estimate bel': 0.041, 'SH-route ahead, estima': 0.04, 'no difference of δ eit': 0.4, 'inconclusive': 0.484}
+32 20 4 0.3 0.45 0.25 0.866 {'N2 ahead, estimate at ': 0.5, 'N2 ahead, estimate bel': 0.185, 'no difference of δ eit': 0.067, 'inconclusive': 0.247}
+32 20 4 0.3 0.45 0.5 0.8795 {'N2 ahead, estimate at ': 0.983, 'N2 ahead, estimate bel': 0.011, 'no difference of δ eit': 0.001, 'inconclusive': 0.005}
+32 20 4 0.45 0.15 0.0 0.888 {'N2 ahead, estimate at ': 0.008, 'N2 ahead, estimate bel': 0.051, 'SH-route ahead, estima': 0.05, 'no difference of δ eit': 0.631, 'inconclusive': 0.257}
+32 20 4 0.45 0.15 0.25 0.8905 {'N2 ahead, estimate at ': 0.502, 'N2 ahead, estimate bel': 0.306, 'no difference of δ eit': 0.059, 'inconclusive': 0.134}
+32 20 4 0.45 0.15 0.5 0.889 {'N2 ahead, estimate at ': 0.992, 'N2 ahead, estimate bel': 0.007, 'inconclusive': 0.001}
+32 20 4 0.45 0.3 0.0 0.891 {'N2 ahead, estimate at ': 0.011, 'N2 ahead, estimate bel': 0.043, 'SH-route ahead, estima': 0.038, 'no difference of δ eit': 0.43, 'inconclusive': 0.461}
+32 20 4 0.45 0.3 0.25 0.896 {'N2 ahead, estimate at ': 0.48, 'N2 ahead, estimate bel': 0.22, 'SH-route ahead, estima': 0.001, 'no difference of δ eit': 0.053, 'inconclusive': 0.245}
+32 20 4 0.45 0.3 0.5 0.8885 {'N2 ahead, estimate at ': 0.991, 'N2 ahead, estimate bel': 0.009, 'inconclusive': 0.001}
+32 20 4 0.45 0.45 0.0 0.8845 {'N2 ahead, estimate at ': 0.031, 'N2 ahead, estimate bel': 0.019, 'SH-route ahead, estima': 0.029, 'no difference of δ eit': 0.192, 'inconclusive': 0.693}
+32 20 4 0.45 0.45 0.25 0.8755 {'N2 ahead, estimate at ': 0.495, 'N2 ahead, estimate bel': 0.085, 'SH-route ahead, estima': 0.001, 'no difference of δ eit': 0.044, 'inconclusive': 0.375}
+32 20 4 0.45 0.45 0.5 0.874 {'N2 ahead, estimate at ': 0.963, 'N2 ahead, estimate bel': 0.013, 'inconclusive': 0.025}
+32 24 2 0.2 0.15 0.0 0.8925 {'N2 ahead, estimate bel': 0.054, 'SH-route ahead, estima': 0.053, 'no difference of δ eit': 0.892}
+32 24 2 0.2 0.15 0.25 0.869 {'N2 ahead, estimate at ': 0.511, 'N2 ahead, estimate bel': 0.487, 'no difference of δ eit': 0.001}
+32 24 2 0.2 0.15 0.5 0.8825 {'N2 ahead, estimate at ': 1.0}
+32 24 2 0.2 0.3 0.0 0.8985 {'N2 ahead, estimate bel': 0.042, 'SH-route ahead, estima': 0.059, 'no difference of δ eit': 0.875, 'inconclusive': 0.024}
+32 24 2 0.2 0.3 0.25 0.8885 {'N2 ahead, estimate at ': 0.513, 'N2 ahead, estimate bel': 0.439, 'no difference of δ eit': 0.033, 'inconclusive': 0.015}
+32 24 2 0.2 0.3 0.5 0.8755 {'N2 ahead, estimate at ': 1.0}
+32 24 2 0.2 0.45 0.0 0.869 {'N2 ahead, estimate at ': 0.011, 'N2 ahead, estimate bel': 0.051, 'SH-route ahead, estima': 0.06, 'no difference of δ eit': 0.585, 'inconclusive': 0.284}
+32 24 2 0.2 0.45 0.25 0.8855 {'N2 ahead, estimate at ': 0.496, 'N2 ahead, estimate bel': 0.294, 'no difference of δ eit': 0.056, 'inconclusive': 0.153}
+32 24 2 0.2 0.45 0.5 0.877 {'N2 ahead, estimate at ': 0.992, 'N2 ahead, estimate bel': 0.007, 'inconclusive': 0.001}
+32 24 2 0.3 0.15 0.0 0.8875 {'N2 ahead, estimate at ': 0.001, 'N2 ahead, estimate bel': 0.052, 'SH-route ahead, estima': 0.059, 'no difference of δ eit': 0.875, 'inconclusive': 0.013}
+32 24 2 0.3 0.15 0.25 0.8755 {'N2 ahead, estimate at ': 0.503, 'N2 ahead, estimate bel': 0.445, 'no difference of δ eit': 0.044, 'inconclusive': 0.008}
+32 24 2 0.3 0.15 0.5 0.8805 {'N2 ahead, estimate at ': 1.0, 'N2 ahead, estimate bel': 0.001}
+32 24 2 0.3 0.3 0.0 0.888 {'N2 ahead, estimate at ': 0.002, 'N2 ahead, estimate bel': 0.046, 'SH-route ahead, estima': 0.059, 'no difference of δ eit': 0.732, 'inconclusive': 0.156}
+32 24 2 0.3 0.3 0.25 0.8855 {'N2 ahead, estimate at ': 0.492, 'N2 ahead, estimate bel': 0.373, 'no difference of δ eit': 0.056, 'inconclusive': 0.078}
+32 24 2 0.3 0.3 0.5 0.891 {'N2 ahead, estimate at ': 0.998, 'N2 ahead, estimate bel': 0.002}
+32 24 2 0.3 0.45 0.0 0.885 {'N2 ahead, estimate at ': 0.011, 'N2 ahead, estimate bel': 0.041, 'SH-route ahead, estima': 0.052, 'no difference of δ eit': 0.442, 'inconclusive': 0.443}
+32 24 2 0.3 0.45 0.25 0.894 {'N2 ahead, estimate at ': 0.491, 'N2 ahead, estimate bel': 0.225, 'no difference of δ eit': 0.048, 'inconclusive': 0.236}
+32 24 2 0.3 0.45 0.5 0.884 {'N2 ahead, estimate at ': 0.983, 'N2 ahead, estimate bel': 0.012, 'no difference of δ eit': 0.001, 'inconclusive': 0.004}
+32 24 2 0.45 0.15 0.0 0.881 {'N2 ahead, estimate at ': 0.011, 'N2 ahead, estimate bel': 0.049, 'SH-route ahead, estima': 0.048, 'no difference of δ eit': 0.525, 'inconclusive': 0.356}
+32 24 2 0.45 0.15 0.25 0.8905 {'N2 ahead, estimate at ': 0.517, 'N2 ahead, estimate bel': 0.254, 'no difference of δ eit': 0.052, 'inconclusive': 0.176}
+32 24 2 0.45 0.15 0.5 0.89 {'N2 ahead, estimate at ': 0.993, 'N2 ahead, estimate bel': 0.006, 'inconclusive': 0.001}
+32 24 2 0.45 0.3 0.0 0.872 {'N2 ahead, estimate at ': 0.019, 'N2 ahead, estimate bel': 0.047, 'SH-route ahead, estima': 0.044, 'no difference of δ eit': 0.357, 'inconclusive': 0.515}
+32 24 2 0.45 0.3 0.25 0.892 {'N2 ahead, estimate at ': 0.492, 'N2 ahead, estimate bel': 0.193, 'no difference of δ eit': 0.045, 'inconclusive': 0.27}
+32 24 2 0.45 0.3 0.5 0.8805 {'N2 ahead, estimate at ': 0.981, 'N2 ahead, estimate bel': 0.015, 'inconclusive': 0.004}
+32 24 2 0.45 0.45 0.0 0.8865 {'N2 ahead, estimate at ': 0.034, 'N2 ahead, estimate bel': 0.025, 'SH-route ahead, estima': 0.023, 'no difference of δ eit': 0.171, 'inconclusive': 0.716}
+32 24 2 0.45 0.45 0.25 0.882 {'N2 ahead, estimate at ': 0.497, 'N2 ahead, estimate bel': 0.079, 'no difference of δ eit': 0.037, 'inconclusive': 0.387}
+32 24 2 0.45 0.45 0.5 0.882 {'N2 ahead, estimate at ': 0.966, 'N2 ahead, estimate bel': 0.014, 'inconclusive': 0.02}
+24 16 4 0.2 0.15 0.0 0.8815 {'N2 ahead, estimate bel': 0.057, 'SH-route ahead, estima': 0.061, 'no difference of δ eit': 0.881}
+24 16 4 0.2 0.15 0.25 0.8825 {'N2 ahead, estimate at ': 0.5, 'N2 ahead, estimate bel': 0.489, 'no difference of δ eit': 0.011}
+24 16 4 0.2 0.15 0.5 0.8755 {'N2 ahead, estimate at ': 1.0, 'N2 ahead, estimate bel': 0.001}
+24 16 4 0.2 0.3 0.0 0.885 {'N2 ahead, estimate at ': 0.003, 'N2 ahead, estimate bel': 0.056, 'SH-route ahead, estima': 0.054, 'no difference of δ eit': 0.769, 'inconclusive': 0.116}
+24 16 4 0.2 0.3 0.25 0.8665 {'N2 ahead, estimate at ': 0.501, 'N2 ahead, estimate bel': 0.392, 'no difference of δ eit': 0.05, 'inconclusive': 0.058}
+24 16 4 0.2 0.3 0.5 0.8775 {'N2 ahead, estimate at ': 0.997, 'N2 ahead, estimate bel': 0.004}
+24 16 4 0.2 0.45 0.0 0.881 {'N2 ahead, estimate at ': 0.023, 'N2 ahead, estimate bel': 0.036, 'SH-route ahead, estima': 0.04, 'no difference of δ eit': 0.339, 'inconclusive': 0.542}
+24 16 4 0.2 0.45 0.25 0.8665 {'N2 ahead, estimate at ': 0.486, 'N2 ahead, estimate bel': 0.183, 'no difference of δ eit': 0.059, 'inconclusive': 0.271}
+24 16 4 0.2 0.45 0.5 0.872 {'N2 ahead, estimate at ': 0.976, 'N2 ahead, estimate bel': 0.012, 'no difference of δ eit': 0.001, 'inconclusive': 0.011}
+24 16 4 0.3 0.15 0.0 0.88 {'N2 ahead, estimate at ': 0.001, 'N2 ahead, estimate bel': 0.057, 'SH-route ahead, estima': 0.061, 'no difference of δ eit': 0.835, 'inconclusive': 0.045}
+24 16 4 0.3 0.15 0.25 0.878 {'N2 ahead, estimate at ': 0.497, 'N2 ahead, estimate bel': 0.441, 'no difference of δ eit': 0.045, 'inconclusive': 0.017}
+24 16 4 0.3 0.15 0.5 0.883 {'N2 ahead, estimate at ': 0.998, 'N2 ahead, estimate bel': 0.003}
+24 16 4 0.3 0.3 0.0 0.8945 {'N2 ahead, estimate at ': 0.005, 'N2 ahead, estimate bel': 0.053, 'SH-route ahead, estima': 0.042, 'no difference of δ eit': 0.593, 'inconclusive': 0.302}
+24 16 4 0.3 0.3 0.25 0.896 {'N2 ahead, estimate at ': 0.478, 'N2 ahead, estimate bel': 0.305, 'no difference of δ eit': 0.055, 'inconclusive': 0.161}
+24 16 4 0.3 0.3 0.5 0.8765 {'N2 ahead, estimate at ': 0.995, 'N2 ahead, estimate bel': 0.004, 'inconclusive': 0.001}
+24 16 4 0.3 0.45 0.0 0.881 {'N2 ahead, estimate at ': 0.034, 'N2 ahead, estimate bel': 0.032, 'SH-route ahead, estima': 0.029, 'no difference of δ eit': 0.256, 'inconclusive': 0.625}
+24 16 4 0.3 0.45 0.25 0.8745 {'N2 ahead, estimate at ': 0.49, 'N2 ahead, estimate bel': 0.12, 'no difference of δ eit': 0.042, 'inconclusive': 0.348}
+24 16 4 0.3 0.45 0.5 0.869 {'N2 ahead, estimate at ': 0.973, 'N2 ahead, estimate bel': 0.011, 'inconclusive': 0.017}
+24 16 4 0.45 0.15 0.0 0.8665 {'N2 ahead, estimate at ': 0.015, 'N2 ahead, estimate bel': 0.041, 'SH-route ahead, estima': 0.059, 'no difference of δ eit': 0.441, 'inconclusive': 0.426}
+24 16 4 0.45 0.15 0.25 0.8875 {'N2 ahead, estimate at ': 0.504, 'N2 ahead, estimate bel': 0.235, 'no difference of δ eit': 0.051, 'inconclusive': 0.21}
+24 16 4 0.45 0.15 0.5 0.8865 {'N2 ahead, estimate at ': 0.99, 'N2 ahead, estimate bel': 0.009, 'inconclusive': 0.002}
+24 16 4 0.45 0.3 0.0 0.878 {'N2 ahead, estimate at ': 0.029, 'N2 ahead, estimate bel': 0.029, 'SH-route ahead, estima': 0.04, 'no difference of δ eit': 0.233, 'inconclusive': 0.645}
+24 16 4 0.45 0.3 0.25 0.875 {'N2 ahead, estimate at ': 0.488, 'N2 ahead, estimate bel': 0.137, 'no difference of δ eit': 0.04, 'inconclusive': 0.335}
+24 16 4 0.45 0.3 0.5 0.878 {'N2 ahead, estimate at ': 0.976, 'N2 ahead, estimate bel': 0.013, 'inconclusive': 0.011}
+24 16 4 0.45 0.45 0.0 0.8945 {'N2 ahead, estimate at ': 0.039, 'N2 ahead, estimate bel': 0.013, 'SH-route ahead, estima': 0.007, 'no difference of δ eit': 0.075, 'inconclusive': 0.82}
+24 16 4 0.45 0.45 0.25 0.8675 {'N2 ahead, estimate at ': 0.456, 'N2 ahead, estimate bel': 0.039, 'SH-route ahead, estima': 0.001, 'no difference of δ eit': 0.023, 'inconclusive': 0.481}
+24 16 4 0.45 0.45 0.5 0.8605 {'N2 ahead, estimate at ': 0.933, 'N2 ahead, estimate bel': 0.009, 'inconclusive': 0.059}
+32 24 4 0.2 0.15 0.0 0.8865 {'N2 ahead, estimate bel': 0.064, 'SH-route ahead, estima': 0.05, 'no difference of δ eit': 0.886}
+32 24 4 0.2 0.15 0.25 0.887 {'N2 ahead, estimate at ': 0.489, 'N2 ahead, estimate bel': 0.511}
+32 24 4 0.2 0.15 0.5 0.8925 {'N2 ahead, estimate at ': 1.0}
+32 24 4 0.2 0.3 0.0 0.8795 {'N2 ahead, estimate at ': 0.001, 'N2 ahead, estimate bel': 0.066, 'SH-route ahead, estima': 0.053, 'no difference of δ eit': 0.869, 'inconclusive': 0.011}
+32 24 4 0.2 0.3 0.25 0.8675 {'N2 ahead, estimate at ': 0.517, 'N2 ahead, estimate bel': 0.441, 'no difference of δ eit': 0.036, 'inconclusive': 0.005}
+32 24 4 0.2 0.3 0.5 0.887 {'N2 ahead, estimate at ': 1.0, 'N2 ahead, estimate bel': 0.001}
+32 24 4 0.2 0.45 0.0 0.879 {'N2 ahead, estimate at ': 0.007, 'N2 ahead, estimate bel': 0.053, 'SH-route ahead, estima': 0.056, 'no difference of δ eit': 0.636, 'inconclusive': 0.242}
+32 24 4 0.2 0.45 0.25 0.876 {'N2 ahead, estimate at ': 0.49, 'N2 ahead, estimate bel': 0.304, 'SH-route ahead, estima': 0.001, 'no difference of δ eit': 0.064, 'inconclusive': 0.142}
+32 24 4 0.2 0.45 0.5 0.876 {'N2 ahead, estimate at ': 0.994, 'N2 ahead, estimate bel': 0.005, 'inconclusive': 0.001}
+32 24 4 0.3 0.15 0.0 0.8805 {'N2 ahead, estimate bel': 0.065, 'SH-route ahead, estima': 0.054, 'no difference of δ eit': 0.876, 'inconclusive': 0.004}
+32 24 4 0.3 0.15 0.25 0.889 {'N2 ahead, estimate at ': 0.486, 'N2 ahead, estimate bel': 0.492, 'no difference of δ eit': 0.019, 'inconclusive': 0.002}
+32 24 4 0.3 0.15 0.5 0.8885 {'N2 ahead, estimate at ': 1.0}
+32 24 4 0.3 0.3 0.0 0.8825 {'N2 ahead, estimate at ': 0.002, 'N2 ahead, estimate bel': 0.052, 'SH-route ahead, estima': 0.061, 'no difference of δ eit': 0.78, 'inconclusive': 0.102}
+32 24 4 0.3 0.3 0.25 0.8725 {'N2 ahead, estimate at ': 0.492, 'N2 ahead, estimate bel': 0.394, 'no difference of δ eit': 0.064, 'inconclusive': 0.051}
+32 24 4 0.3 0.3 0.5 0.888 {'N2 ahead, estimate at ': 0.999, 'N2 ahead, estimate bel': 0.002}
+32 24 4 0.3 0.45 0.0 0.8925 {'N2 ahead, estimate at ': 0.01, 'N2 ahead, estimate bel': 0.05, 'SH-route ahead, estima': 0.039, 'no difference of δ eit': 0.503, 'inconclusive': 0.39}
+32 24 4 0.3 0.45 0.25 0.8785 {'N2 ahead, estimate at ': 0.494, 'N2 ahead, estimate bel': 0.235, 'no difference of δ eit': 0.066, 'inconclusive': 0.204}
+32 24 4 0.3 0.45 0.5 0.885 {'N2 ahead, estimate at ': 0.989, 'N2 ahead, estimate bel': 0.009, 'inconclusive': 0.003}
+32 24 4 0.45 0.15 0.0 0.8815 {'N2 ahead, estimate at ': 0.003, 'N2 ahead, estimate bel': 0.059, 'SH-route ahead, estima': 0.053, 'no difference of δ eit': 0.664, 'inconclusive': 0.217}
+32 24 4 0.45 0.15 0.25 0.8895 {'N2 ahead, estimate at ': 0.507, 'N2 ahead, estimate bel': 0.314, 'no difference of δ eit': 0.058, 'inconclusive': 0.121}
+32 24 4 0.45 0.15 0.5 0.885 {'N2 ahead, estimate at ': 0.994, 'N2 ahead, estimate bel': 0.006}
+32 24 4 0.45 0.3 0.0 0.884 {'N2 ahead, estimate at ': 0.012, 'N2 ahead, estimate bel': 0.047, 'SH-route ahead, estima': 0.046, 'no difference of δ eit': 0.467, 'inconclusive': 0.417}
+32 24 4 0.45 0.3 0.25 0.8855 {'N2 ahead, estimate at ': 0.506, 'N2 ahead, estimate bel': 0.229, 'no difference of δ eit': 0.058, 'inconclusive': 0.208}
+32 24 4 0.45 0.3 0.5 0.881 {'N2 ahead, estimate at ': 0.988, 'N2 ahead, estimate bel': 0.009, 'no difference of δ eit': 0.001, 'inconclusive': 0.002}
+32 24 4 0.45 0.45 0.0 0.888 {'N2 ahead, estimate at ': 0.028, 'N2 ahead, estimate bel': 0.027, 'SH-route ahead, estima': 0.027, 'no difference of δ eit': 0.251, 'inconclusive': 0.637}
+32 24 4 0.45 0.45 0.25 0.8745 {'N2 ahead, estimate at ': 0.5, 'N2 ahead, estimate bel': 0.122, 'no difference of δ eit': 0.049, 'inconclusive': 0.329}
+32 24 4 0.45 0.45 0.5 0.892 {'N2 ahead, estimate at ': 0.978, 'N2 ahead, estimate bel': 0.013, 'inconclusive': 0.009}
+wrote D:\Claude\random\wormWars\experiments\E5-hunter\E5-1\design-power.json
