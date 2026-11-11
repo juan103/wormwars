@@ -1,0 +1,27 @@
+wrote D:\Claude\random\wormWars\runs\e5-1a\reference-old.npz: 1045 arrays
+wrote D:\Claude\random\wormWars\runs\e5-1a\reference-new.npz: 1045 arrays
+wrote D:\Claude\random\wormWars\runs\e5-1a\e5_0-reference-new.npz: 68 arrays
+old against new: True 1045 arrays
+{
+ "reference_commit": "7d254607ea09c22a466b3eb3ef75433ae1eb3dec",
+ "reference_worktree": {},
+ "old_against_new": {
+  "differ": [],
+  "identical": true
+ },
+ "weighted_evolution": {
+  "max_abs_against_formula": 2.220446049250313e-16
+ },
+ "e5_0_arrays": {
+  "differ": [],
+  "identical": true
+ },
+ "ghost_against_task_n": {
+  "differ": [],
+  "identical": true
+ },
+ "seconds": 1070.2510520000942,
+ "scoring_rows_captured": true,
+ "passed": true
+}
+rc=0

@@ -1,0 +1,602 @@
+{
+ "ticks": 300,
+ "rows": 8,
+ "genomes": [
+  "e4s1 M run00",
+  "e4s1 M run01",
+  "e4s1 M run02",
+  "e4s1 M run03",
+  "e4s1 M run04",
+  "e4s1 M run05",
+  "e4s1 M run06",
+  "e4s1 M run07",
+  "e4s1 M run08",
+  "e4s1 M run09",
+  "e4s1 M run10",
+  "e4s1 M run11",
+  "e4s1 M run12",
+  "e4s1 M run13",
+  "e4s1 M run14",
+  "e4s1 M run15"
+ ],
+ "by_genome": {
+  "e4s1 M run00": {
+   "cpu32 - cuda32": {
+    "max": 6.67572021484375e-06,
+    "at_tick_50": 4.291534423828125e-06,
+    "at_tick_100": 4.678964614868164e-06,
+    "at_tick_300": 5.424022674560547e-06,
+    "first_tick_above_1e-4": null
+   },
+   "cpu32 - cpu64": {
+    "max": 0.00017252517580512716,
+    "at_tick_50": 8.63275070472902e-05,
+    "at_tick_100": 7.784832529544872e-05,
+    "at_tick_300": 9.882986258524795e-05,
+    "first_tick_above_1e-4": 12
+   },
+   "cuda32 - cpu64": {
+    "max": 0.00017437291979316427,
+    "at_tick_50": 9.01422043129152e-05,
+    "at_tick_100": 7.975567392826122e-05,
+    "at_tick_300": 0.00010264455985087295,
+    "first_tick_above_1e-4": 12
+   },
+   "cpu32 batch - cpu32 alone": {
+    "max": 0.0,
+    "at_tick_50": 0.0,
+    "at_tick_100": 0.0,
+    "at_tick_300": 0.0,
+    "first_tick_above_1e-4": null
+   },
+   "neuron_of_largest_cpu_cuda_difference": "RICL",
+   "motor_command_max_abs_difference": {
+    "forward": 1.2190424290015045e-06,
+    "turn": 2.1248947441598887e-06
+   }
+  },
+  "e4s1 M run01": {
+   "cpu32 - cuda32": {
+    "max": 0.00032067298889160156,
+    "at_tick_50": 1.1920928955078125e-06,
+    "at_tick_100": 3.0994415283203125e-06,
+    "at_tick_300": 0.00032067298889160156,
+    "first_tick_above_1e-4": 184
+   },
+   "cpu32 - cpu64": {
+    "max": 0.03283612707272754,
+    "at_tick_50": 4.468336869623002e-05,
+    "at_tick_100": 0.0001701991333847852,
+    "at_tick_300": 0.03283612707272754,
+    "first_tick_above_1e-4": 72
+   },
+   "cuda32 - cpu64": {
+    "max": 0.03315680006161914,
+    "at_tick_50": 4.468336869623002e-05,
+    "at_tick_100": 0.00016972229622658208,
+    "at_tick_300": 0.03315680006161914,
+    "first_tick_above_1e-4": 72
+   },
+   "cpu32 batch - cpu32 alone": {
+    "max": 0.0,
+    "at_tick_50": 0.0,
+    "at_tick_100": 0.0,
+    "at_tick_300": 0.0,
+    "first_tick_above_1e-4": null
+   },
+   "neuron_of_largest_cpu_cuda_difference": "MCL",
+   "motor_command_max_abs_difference": {
+    "forward": 4.4374869323515753e-07,
+    "turn": 1.1728327535820426e-06
+   }
+  },
+  "e4s1 M run02": {
+   "cpu32 - cuda32": {
+    "max": 5.125999450683594e-06,
+    "at_tick_50": 4.470348358154297e-06,
+    "at_tick_100": 4.291534423828125e-06,
+    "at_tick_300": 4.589557647705078e-06,
+    "first_tick_above_1e-4": null
+   },
+   "cpu32 - cpu64": {
+    "max": 5.173106884281964e-05,
+    "at_tick_50": 4.1770580673894386e-05,
+    "at_tick_100": 4.804393742174895e-05,
+    "at_tick_300": 5.050224968172756e-05,
+    "first_tick_above_1e-4": null
+   },
+   "cuda32 - cpu64": {
+    "max": 5.077739452641339e-05,
+    "at_tick_50": 4.129374351569126e-05,
+    "at_tick_100": 4.720947239489348e-05,
+    "at_tick_300": 4.9786993944422875e-05,
+    "first_tick_above_1e-4": null
+   },
+   "cpu32 batch - cpu32 alone": {
+    "max": 0.0,
+    "at_tick_50": 0.0,
+    "at_tick_100": 0.0,
+    "at_tick_300": 0.0,
+    "first_tick_above_1e-4": null
+   },
+   "neuron_of_largest_cpu_cuda_difference": "VD06",
+   "motor_command_max_abs_difference": {
+    "forward": 3.4473100440912674e-07,
+    "turn": 1.0426583099132358e-06
+   }
+  },
+  "e4s1 M run03": {
+   "cpu32 - cuda32": {
+    "max": 2.6166439056396484e-05,
+    "at_tick_50": 2.0265579223632812e-06,
+    "at_tick_100": 1.4841556549072266e-05,
+    "at_tick_300": 2.1457672119140625e-06,
+    "first_tick_above_1e-4": null
+   },
+   "cpu32 - cpu64": {
+    "max": 0.0003228892727205057,
+    "at_tick_50": 3.716442392365238e-05,
+    "at_tick_100": 0.00018402353944485528,
+    "at_tick_300": 3.253995153063016e-05,
+    "first_tick_above_1e-4": 89
+   },
+   "cuda32 - cpu64": {
+    "max": 0.00029672283366410923,
+    "at_tick_50": 3.597356946416497e-05,
+    "at_tick_100": 0.000169181982895783,
+    "at_tick_300": 3.253995153063016e-05,
+    "first_tick_above_1e-4": 92
+   },
+   "cpu32 batch - cpu32 alone": {
+    "max": 0.0,
+    "at_tick_50": 0.0,
+    "at_tick_100": 0.0,
+    "at_tick_300": 0.0,
+    "first_tick_above_1e-4": null
+   },
+   "neuron_of_largest_cpu_cuda_difference": "VB02",
+   "motor_command_max_abs_difference": {
+    "forward": 9.01757381877033e-07,
+    "turn": 2.0182700803395015e-06
+   }
+  },
+  "e4s1 M run04": {
+   "cpu32 - cuda32": {
+    "max": 1.6450881958007812e-05,
+    "at_tick_50": 1.537799835205078e-05,
+    "at_tick_100": 1.5616416931152344e-05,
+    "at_tick_300": 1.4781951904296875e-05,
+    "first_tick_above_1e-4": null
+   },
+   "cpu32 - cpu64": {
+    "max": 4.424374467726366e-05,
+    "at_tick_50": 4.357112638908589e-05,
+    "at_tick_100": 3.751107363170192e-05,
+    "at_tick_300": 4.034959541510119e-05,
+    "first_tick_above_1e-4": null
+   },
+   "cuda32 - cpu64": {
+    "max": 4.567425615187304e-05,
+    "at_tick_50": 4.47632192845937e-05,
+    "at_tick_100": 3.774949221080348e-05,
+    "at_tick_300": 4.1780106889710567e-05,
+    "first_tick_above_1e-4": null
+   },
+   "cpu32 batch - cpu32 alone": {
+    "max": 0.0,
+    "at_tick_50": 0.0,
+    "at_tick_100": 0.0,
+    "at_tick_300": 0.0,
+    "first_tick_above_1e-4": null
+   },
+   "neuron_of_largest_cpu_cuda_difference": "ADAR",
+   "motor_command_max_abs_difference": {
+    "forward": 1.3483593817031903e-06,
+    "turn": 3.1338102142730584e-06
+   }
+  },
+  "e4s1 M run05": {
+   "cpu32 - cuda32": {
+    "max": 4.291534423828125e-06,
+    "at_tick_50": 3.6954879760742188e-06,
+    "at_tick_100": 3.4570693969726562e-06,
+    "at_tick_300": 3.814697265625e-06,
+    "first_tick_above_1e-4": null
+   },
+   "cpu32 - cpu64": {
+    "max": 3.9829838143212726e-05,
+    "at_tick_50": 3.5169760192133026e-05,
+    "at_tick_100": 3.675943345005095e-05,
+    "at_tick_300": 3.737219640065348e-05,
+    "first_tick_above_1e-4": null
+   },
+   "cuda32 - cpu64": {
+    "max": 4.0423753292273545e-05,
+    "at_tick_50": 3.5169760192133026e-05,
+    "at_tick_100": 3.703882698546934e-05,
+    "at_tick_300": 3.737219640065348e-05,
+    "first_tick_above_1e-4": null
+   },
+   "cpu32 batch - cpu32 alone": {
+    "max": 0.0,
+    "at_tick_50": 0.0,
+    "at_tick_100": 0.0,
+    "at_tick_300": 0.0,
+    "first_tick_above_1e-4": null
+   },
+   "neuron_of_largest_cpu_cuda_difference": "DB02",
+   "motor_command_max_abs_difference": {
+    "forward": 4.081448838899604e-07,
+    "turn": 1.24764298448099e-06
+   }
+  },
+  "e4s1 M run06": {
+   "cpu32 - cuda32": {
+    "max": 7.748603820800781e-06,
+    "at_tick_50": 6.854534149169922e-06,
+    "at_tick_100": 6.9141387939453125e-06,
+    "at_tick_300": 7.033348083496094e-06,
+    "first_tick_above_1e-4": null
+   },
+   "cpu32 - cpu64": {
+    "max": 9.6745594141745e-05,
+    "at_tick_50": 4.2825709314686655e-05,
+    "at_tick_100": 4.4755708813459805e-05,
+    "at_tick_300": 8.087607134421582e-05,
+    "first_tick_above_1e-4": null
+   },
+   "cuda32 - cpu64": {
+    "max": 9.793768703725281e-05,
+    "at_tick_50": 4.2706500025135874e-05,
+    "at_tick_100": 4.503883087614291e-05,
+    "at_tick_300": 8.010121096213574e-05,
+    "first_tick_above_1e-4": null
+   },
+   "cpu32 batch - cpu32 alone": {
+    "max": 0.0,
+    "at_tick_50": 0.0,
+    "at_tick_100": 0.0,
+    "at_tick_300": 0.0,
+    "first_tick_above_1e-4": null
+   },
+   "neuron_of_largest_cpu_cuda_difference": "VB06",
+   "motor_command_max_abs_difference": {
+    "forward": 4.797244463894401e-07,
+    "turn": 1.8180247332022503e-06
+   }
+  },
+  "e4s1 M run07": {
+   "cpu32 - cuda32": {
+    "max": 2.6226043701171875e-06,
+    "at_tick_50": 1.430511474609375e-06,
+    "at_tick_100": 1.9073486328125e-06,
+    "at_tick_300": 1.9073486328125e-06,
+    "first_tick_above_1e-4": null
+   },
+   "cpu32 - cpu64": {
+    "max": 4.6085265962503286e-05,
+    "at_tick_50": 3.543049353282868e-05,
+    "at_tick_100": 3.622558594607028e-05,
+    "at_tick_300": 3.572715688715533e-05,
+    "first_tick_above_1e-4": null
+   },
+   "cuda32 - cpu64": {
+    "max": 4.6085265962503286e-05,
+    "at_tick_50": 3.495365637462555e-05,
+    "at_tick_100": 3.622558594607028e-05,
+    "at_tick_300": 3.572715688715533e-05,
+    "first_tick_above_1e-4": null
+   },
+   "cpu32 batch - cpu32 alone": {
+    "max": 0.0,
+    "at_tick_50": 0.0,
+    "at_tick_100": 0.0,
+    "at_tick_300": 0.0,
+    "first_tick_above_1e-4": null
+   },
+   "neuron_of_largest_cpu_cuda_difference": "RIAR",
+   "motor_command_max_abs_difference": {
+    "forward": 1.9510908932929283e-07,
+    "turn": 1.2661085844190012e-06
+   }
+  },
+  "e4s1 M run08": {
+   "cpu32 - cuda32": {
+    "max": 3.2186508178710938e-06,
+    "at_tick_50": 1.6093254089355469e-06,
+    "at_tick_100": 1.7285346984863281e-06,
+    "at_tick_300": 2.0265579223632812e-06,
+    "first_tick_above_1e-4": null
+   },
+   "cpu32 - cpu64": {
+    "max": 5.088136889286332e-05,
+    "at_tick_50": 4.186288568597263e-05,
+    "at_tick_100": 4.838503622472956e-05,
+    "at_tick_300": 4.76634232216e-05,
+    "first_tick_above_1e-4": null
+   },
+   "cuda32 - cpu64": {
+    "max": 5.052374102421098e-05,
+    "at_tick_50": 4.1519375613807696e-05,
+    "at_tick_100": 4.7788989776975654e-05,
+    "at_tick_300": 4.7186586063396874e-05,
+    "first_tick_above_1e-4": null
+   },
+   "cpu32 batch - cpu32 alone": {
+    "max": 0.0,
+    "at_tick_50": 0.0,
+    "at_tick_100": 0.0,
+    "at_tick_300": 0.0,
+    "first_tick_above_1e-4": null
+   },
+   "neuron_of_largest_cpu_cuda_difference": "VD04",
+   "motor_command_max_abs_difference": {
+    "forward": 2.695776952776896e-07,
+    "turn": 8.124439145884566e-07
+   }
+  },
+  "e4s1 M run09": {
+   "cpu32 - cuda32": {
+    "max": 2.1457672119140625e-06,
+    "at_tick_50": 1.3113021850585938e-06,
+    "at_tick_100": 1.3113021850585938e-06,
+    "at_tick_300": 1.2516975402832031e-06,
+    "first_tick_above_1e-4": null
+   },
+   "cpu32 - cpu64": {
+    "max": 9.596349614993116e-05,
+    "at_tick_50": 3.549817448267323e-05,
+    "at_tick_100": 6.414828165257624e-05,
+    "at_tick_300": 4.996669064816217e-05,
+    "first_tick_above_1e-4": null
+   },
+   "cuda32 - cpu64": {
+    "max": 9.453298467532179e-05,
+    "at_tick_50": 3.5259755903571666e-05,
+    "at_tick_100": 6.414828165257624e-05,
+    "at_tick_300": 5.034125420966262e-05,
+    "first_tick_above_1e-4": null
+   },
+   "cpu32 batch - cpu32 alone": {
+    "max": 0.0,
+    "at_tick_50": 0.0,
+    "at_tick_100": 0.0,
+    "at_tick_300": 0.0,
+    "first_tick_above_1e-4": null
+   },
+   "neuron_of_largest_cpu_cuda_difference": "CEPDL",
+   "motor_command_max_abs_difference": {
+    "forward": 2.661247725521676e-07,
+    "turn": 9.229475922412078e-07
+   }
+  },
+  "e4s1 M run10": {
+   "cpu32 - cuda32": {
+    "max": 1.9073486328125e-06,
+    "at_tick_50": 1.430511474609375e-06,
+    "at_tick_100": 9.5367431640625e-07,
+    "at_tick_300": 9.5367431640625e-07,
+    "first_tick_above_1e-4": null
+   },
+   "cpu32 - cpu64": {
+    "max": 0.0001276070709113064,
+    "at_tick_50": 4.412066699766015e-05,
+    "at_tick_100": 4.745844210329864e-05,
+    "at_tick_300": 7.503035987566076e-05,
+    "first_tick_above_1e-4": 41
+   },
+   "cuda32 - cpu64": {
+    "max": 0.0001276666755560818,
+    "at_tick_50": 4.412066699766015e-05,
+    "at_tick_100": 4.7220023524197074e-05,
+    "at_tick_300": 7.41362902040299e-05,
+    "first_tick_above_1e-4": 41
+   },
+   "cpu32 batch - cpu32 alone": {
+    "max": 0.0,
+    "at_tick_50": 0.0,
+    "at_tick_100": 0.0,
+    "at_tick_300": 0.0,
+    "first_tick_above_1e-4": null
+   },
+   "neuron_of_largest_cpu_cuda_difference": "URXL",
+   "motor_command_max_abs_difference": {
+    "forward": 2.1192624588550757e-07,
+    "turn": 1.0806853531497573e-06
+   }
+  },
+  "e4s1 M run11": {
+   "cpu32 - cuda32": {
+    "max": 4.231929779052734e-06,
+    "at_tick_50": 3.6954879760742188e-06,
+    "at_tick_100": 3.6954879760742188e-06,
+    "at_tick_300": 3.814697265625e-06,
+    "first_tick_above_1e-4": null
+   },
+   "cpu32 - cpu64": {
+    "max": 5.154064712464823e-05,
+    "at_tick_50": 4.568685001959949e-05,
+    "at_tick_100": 4.12925897337324e-05,
+    "at_tick_300": 4.630232420943514e-05,
+    "first_tick_above_1e-4": null
+   },
+   "cuda32 - cpu64": {
+    "max": 5.292645511567606e-05,
+    "at_tick_50": 4.5579717278254606e-05,
+    "at_tick_100": 4.1054171154630836e-05,
+    "at_tick_300": 4.606390563033358e-05,
+    "first_tick_above_1e-4": null
+   },
+   "cpu32 batch - cpu32 alone": {
+    "max": 0.0,
+    "at_tick_50": 0.0,
+    "at_tick_100": 0.0,
+    "at_tick_300": 0.0,
+    "first_tick_above_1e-4": null
+   },
+   "neuron_of_largest_cpu_cuda_difference": "PVM",
+   "motor_command_max_abs_difference": {
+    "forward": 5.551743005316467e-07,
+    "turn": 1.1170084046052686e-06
+   }
+  },
+  "e4s1 M run12": {
+   "cpu32 - cuda32": {
+    "max": 2.384185791015625e-06,
+    "at_tick_50": 9.5367431640625e-07,
+    "at_tick_100": 1.1920928955078125e-06,
+    "at_tick_300": 1.1920928955078125e-06,
+    "first_tick_above_1e-4": null
+   },
+   "cpu32 - cpu64": {
+    "max": 0.0001505234210337214,
+    "at_tick_50": 6.774051026551837e-05,
+    "at_tick_100": 4.292424958812768e-05,
+    "at_tick_300": 5.382875500270501e-05,
+    "first_tick_above_1e-4": 28
+   },
+   "cuda32 - cpu64": {
+    "max": 0.00014825844453225656,
+    "at_tick_50": 6.801245645730609e-05,
+    "at_tick_100": 4.2775237976189207e-05,
+    "at_tick_300": 5.406717358180657e-05,
+    "first_tick_above_1e-4": 28
+   },
+   "cpu32 batch - cpu32 alone": {
+    "max": 0.0,
+    "at_tick_50": 0.0,
+    "at_tick_100": 0.0,
+    "at_tick_300": 0.0,
+    "first_tick_above_1e-4": null
+   },
+   "neuron_of_largest_cpu_cuda_difference": "RMHL",
+   "motor_command_max_abs_difference": {
+    "forward": 2.3485355193919588e-07,
+    "turn": 1.1450701649096118e-06
+   }
+  },
+  "e4s1 M run13": {
+   "cpu32 - cuda32": {
+    "max": 1.6689300537109375e-06,
+    "at_tick_50": 9.5367431640625e-07,
+    "at_tick_100": 7.152557373046875e-07,
+    "at_tick_300": 1.1026859283447266e-06,
+    "first_tick_above_1e-4": null
+   },
+   "cpu32 - cpu64": {
+    "max": 8.786415999573194e-05,
+    "at_tick_50": 5.342841586153391e-05,
+    "at_tick_100": 6.755542107272916e-05,
+    "at_tick_300": 7.58710572088539e-05,
+    "first_tick_above_1e-4": null
+   },
+   "cuda32 - cpu64": {
+    "max": 8.786415999573194e-05,
+    "at_tick_50": 5.342841586153391e-05,
+    "at_tick_100": 6.779383965183072e-05,
+    "at_tick_300": 7.58710572088539e-05,
+    "first_tick_above_1e-4": null
+   },
+   "cpu32 batch - cpu32 alone": {
+    "max": 0.0,
+    "at_tick_50": 0.0,
+    "at_tick_100": 0.0,
+    "at_tick_300": 0.0,
+    "first_tick_above_1e-4": null
+   },
+   "neuron_of_largest_cpu_cuda_difference": "RICL",
+   "motor_command_max_abs_difference": {
+    "forward": 2.474384193096313e-07,
+    "turn": 1.004579710972564e-06
+   }
+  },
+  "e4s1 M run14": {
+   "cpu32 - cuda32": {
+    "max": 4.5299530029296875e-05,
+    "at_tick_50": 1.1444091796875e-05,
+    "at_tick_100": 4.649162292480469e-06,
+    "at_tick_300": 4.410743713378906e-06,
+    "first_tick_above_1e-4": null
+   },
+   "cpu32 - cpu64": {
+    "max": 0.0008429120946917834,
+    "at_tick_50": 5.599519591747981e-05,
+    "at_tick_100": 9.102476409705851e-05,
+    "at_tick_300": 5.597451073738324e-05,
+    "first_tick_above_1e-4": 101
+   },
+   "cuda32 - cpu64": {
+    "max": 0.0008553098608050647,
+    "at_tick_50": 5.653163772045833e-05,
+    "at_tick_100": 9.567392638953898e-05,
+    "at_tick_300": 5.59298072538017e-05,
+    "first_tick_above_1e-4": 101
+   },
+   "cpu32 batch - cpu32 alone": {
+    "max": 0.0,
+    "at_tick_50": 0.0,
+    "at_tick_100": 0.0,
+    "at_tick_300": 0.0,
+    "first_tick_above_1e-4": null
+   },
+   "neuron_of_largest_cpu_cuda_difference": "RMFR",
+   "motor_command_max_abs_difference": {
+    "forward": 4.186129213046286e-06,
+    "turn": 1.7779909893711476e-05
+   }
+  },
+  "e4s1 M run15": {
+   "cpu32 - cuda32": {
+    "max": 1.6689300537109375e-05,
+    "at_tick_50": 1.4901161193847656e-06,
+    "at_tick_100": 1.2248754501342773e-05,
+    "at_tick_300": 7.152557373046875e-07,
+    "first_tick_above_1e-4": null
+   },
+   "cpu32 - cpu64": {
+    "max": 0.003623153026685255,
+    "at_tick_50": 0.00015734903526243293,
+    "at_tick_100": 0.0004464737292992349,
+    "at_tick_300": 4.175443796183842e-05,
+    "first_tick_above_1e-4": 23
+   },
+   "cuda32 - cpu64": {
+    "max": 0.003607894237622755,
+    "at_tick_50": 0.0001575278491967591,
+    "at_tick_100": 0.0004342249747978921,
+    "at_tick_300": 4.163522867228764e-05,
+    "first_tick_above_1e-4": 23
+   },
+   "cpu32 batch - cpu32 alone": {
+    "max": 0.0,
+    "at_tick_50": 0.0,
+    "at_tick_100": 0.0,
+    "at_tick_300": 0.0,
+    "first_tick_above_1e-4": null
+   },
+   "neuron_of_largest_cpu_cuda_difference": "BDUL",
+   "motor_command_max_abs_difference": {
+    "forward": 5.498212380938838e-07,
+    "turn": 2.459645217167683e-06
+   }
+  }
+ },
+ "summary": {
+  "cpu32 - cuda32": {
+   "median_max": 4.291534423828125e-06,
+   "worst": 0.00032067298889160156
+  },
+  "cpu32 - cpu64": {
+   "median_max": 9.596349614993116e-05,
+   "worst": 0.03283612707272754
+  },
+  "cuda32 - cpu64": {
+   "median_max": 9.453298467532179e-05,
+   "worst": 0.03315680006161914
+  },
+  "cpu32 batch - cpu32 alone": {
+   "median_max": 0.0,
+   "worst": 0.0
+  }
+ }
+}

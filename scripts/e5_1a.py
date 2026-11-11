@@ -94,7 +94,7 @@ REGISTERED = {
              # check passes if 99% of its worlds agree (256 worlds, so at most 2 may differ)
              "path_tol": 1e-3, "path_share": 0.99, "path_worlds": 256, "trace_ticks": 30, "trace_worlds": 256,
              "respawn_worlds": 64, "attack_worlds": 256,
-             "state_tol": 1e-4, "state_ticks": 300, "ghost_ids": [991_200_000, 512],
+             "state_tol": 1e-4, "state_factor": 1.5, "state_ticks": 300, "ghost_ids": [991_200_000, 512],
              "settings": ["H1-bite", "H2-0.5", "H2-1", "H2b-walk-0.5", "H2b-wall-0.5"]},
     "bench": {"generations": 6, "checkpoint_every": 5, "suite_settings": ["H1-bite", "H2-0.5", "H2b-walk-0.5"],
               "rerun_reserve": 0.15},
@@ -735,43 +735,86 @@ def respawn_distances(env, cfg, device, names) -> dict:
     return out
 
 
-def state_level(env, device) -> dict:
-    """Open loop: CPU against CUDA under one imposed input history, the largest |v| difference over the ticks, at the
-    training (128 x 8), validation (4 x 256) and suite (8 x 512) shapes, every genome at every shape (in groups of the
-    shape's strains). Inputs: uniform on [0, 1] times each sensor's gain at every sensor neuron, drawn on the CPU. A
-    non-finite state fails."""
+def _as64(g: Genome) -> Genome:
+    return g.with_params(**{k: v.double() for k, v in g.params().items() if v is not None})
+
+
+def state_level(env, device, perturb=None, shapes=None, families=None) -> dict:
+    """Open loop under one imposed input history, at the training (128 x 8), validation (4 x 256) and suite (8 x 512)
+    shapes, every genome at every shape (in groups of the shape's strains). Inputs: uniform on [0, 1] times each
+    sensor's gain at every sensor neuron, drawn on the CPU. A non-finite state fails.
+
+    Amendment 1 (§14.3), judged per strain (each genome's largest difference over ticks, rows and neurons):
+    - one step, resynchronised: every tick CUDA steps from the CPU's float32 state, and its result must lie within
+      1e-4 of the CPU's step (the registered tolerance; local error is not amplified);
+    - free running: CUDA float32 may be at most 1.5 times as far from a higher-precision reference (the same genome on
+      the CPU in float64) as CPU float32 is, plus 1e-4;
+    - generation-0 genomes keep the original rule: CPU against CUDA, free running, within 1e-4.
+    `perturb(genome) -> genome`, if given, alters the CUDA copy only; `shapes` and `families` restrict the run (both for
+    the sabotage, `scripts/e5_1a_state_sabotage.py`)."""
     c = REGISTERED["cuda"]
     ticks = c["state_ticks"] if not SMOKE else 10
-    gens = {"E4s-1 C": Genome.cat([g for _, g in c_champions(env)])}
+    gens = {"E4s-1 C": (Genome.cat([g for _, g in c_champions(env)]), [lab for lab, _ in c_champions(env)])}
     for j, name in enumerate(PL.SH_ROUTE_PILOT if not SMOKE else PL.SH_ROUTE_PILOT[:1]):
         g, _ = GR.sh_route(env.con, name)
         ext = GR.grafted(g, env.l1)[0]
-        gens[f"generation 0 on {name}"] = gen0(env, g, ext, PL.run_seed("pilot_null", 0, j), 4)
-    shapes = {"training": (128, 8), "validation": (4, 256), "suite": (8, 512)} if not SMOKE else {"small": (2, 4)}
+        gens[f"generation 0 on {name}"] = (gen0(env, g, ext, PL.run_seed("pilot_null", 0, j), 4),
+                                           [f"{name} #{i}" for i in range(4)])
+    if shapes is None:
+        shapes = {"training": (128, 8), "validation": (4, 256), "suite": (8, 512)} if not SMOKE else {"small": (2, 4)}
+    if families is not None:
+        gens = {k: v for k, v in gens.items() if k in families}
     idx = torch.as_tensor(np.asarray(env.gface.sensor_neuron), dtype=torch.long)
     gain = torch.as_tensor(np.asarray(env.gface.sensor_gain), dtype=torch.float32)
-    out, worst, finite = {}, 0.0, True
-    for label, gen in gens.items():
+    rows, finite, failed = {}, True, []
+    per = lambda t: t.abs().nan_to_num(nan=float("inf")).amax(dim=(1, 2)).double().cpu()  # noqa: E731  [S]
+    for family, (gen, labels) in gens.items():
+        champion = family == "E4s-1 C"
         for shape, (S, B) in shapes.items():
-            m = 0.0
             for lo in range(0, gen.n_strains, S):  # every genome, S at a time (the last group padded)
                 cap().check()
-                g = gen.select([(lo + i) % gen.n_strains for i in range(S)])
+                pick = [(lo + i) % gen.n_strains for i in range(S)]
+                g = gen.select(pick)
+                gd = moved(g, device) if perturb is None else perturb(moved(g, device))
                 rng = torch.Generator().manual_seed(7)
-                bc, bg = Brain(g), Brain(moved(g, device))
-                vc, vg = bc.initial_state(B), bg.initial_state(B)
+                b32, b64, bg = Brain(g), Brain(_as64(g)), Brain(gd)
+                v32, v64, vg = b32.initial_state(B), b64.initial_state(B).double(), bg.initial_state(B)
+                m = {k: torch.zeros(S, dtype=torch.float64) for k in ("one step", "cpu32 - cuda32", "cpu32 - cpu64",
+                                                                        "cuda32 - cpu64")}
                 for _ in range(ticks):
                     cur = torch.zeros(S, B, g.spec.n)
                     cur[:, :, idx] = torch.rand(S, B, len(idx), generator=rng) * gain
-                    vc = bc.step(vc, cur)
-                    vg = bg.step(vg, cur.to(device))
-                    if not (bool(torch.isfinite(vc).all()) and bool(torch.isfinite(vg).all())):
+                    cd = cur.to(device)
+                    one = bg.step(v32.to(device), cd)  # CUDA from the CPU's state
+                    v32n, v64, vg = b32.step(v32, cur), b64.step(v64, cur.double()), bg.step(vg, cd)
+                    if not all(bool(torch.isfinite(t).all()) for t in (v32n, v64, vg, one)):
                         finite = False
-                    m = max(m, float((vc - vg.cpu()).abs().nan_to_num(nan=float("inf")).max()))
-            out[f"{label} | {shape}"] = m
-            worst = max(worst, m)
-    return {"max_abs": out, "worst": worst, "finite": finite, "tolerance": c["state_tol"],
-            "passed": bool(finite and worst <= c["state_tol"])}
+                    gc = vg.cpu().double()
+                    m["one step"] = torch.maximum(m["one step"], per(one.cpu() - v32n))
+                    m["cpu32 - cuda32"] = torch.maximum(m["cpu32 - cuda32"], per(v32n.double() - gc))
+                    m["cpu32 - cpu64"] = torch.maximum(m["cpu32 - cpu64"], per(v32n.double() - v64))
+                    m["cuda32 - cpu64"] = torch.maximum(m["cuda32 - cpu64"], per(gc - v64))
+                    v32 = v32n
+                seen = set()
+                for k, gi in enumerate(pick):
+                    if gi in seen:  # the padding repeats a genome: its first strain is the record
+                        continue
+                    seen.add(gi)
+                    r = {key: float(v[k]) for key, v in m.items()}
+                    r["bound"] = c["state_factor"] * r["cpu32 - cpu64"] + c["state_tol"]
+                    checks = {"one step": r["one step"] <= c["state_tol"]}
+                    if champion:
+                        checks["free running, against float64"] = r["cuda32 - cpu64"] <= r["bound"]
+                    else:
+                        checks["free running, CPU against CUDA"] = r["cpu32 - cuda32"] <= c["state_tol"]
+                    r["checks"], r["passed"] = checks, all(checks.values())
+                    key = f"{labels[gi]} | {shape}"
+                    rows[key] = r
+                    if not r["passed"]:
+                        failed.append(key)
+    return {"strains": rows, "finite": finite, "failed": failed, "factor": c["state_factor"],
+            "floor": c["state_tol"], "worst_cpu_cuda": max(v["cpu32 - cuda32"] for v in rows.values()),
+            "worst_one_step": max(v["one step"] for v in rows.values()), "passed": bool(finite and not failed)}
 
 
 def stage_cuda(args):

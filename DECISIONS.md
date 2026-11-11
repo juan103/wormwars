@@ -12746,3 +12746,40 @@ lists (Fable: no third round). Every fix taken.
 
 **Next:** commit, push and CI; then E5-1a's equivalence, graphs, cuda and bench stages; then the bench goes to the
 owner, who sets the cap before the selection signal, the null pilot, the composition check and mutational sensitivity.
+
+## D391 — E5-1a stopped at the state-level check; Amendment 1, reviewed, and the rerun of steps 1 to 3 (2026-11-11)
+
+**What ran** on `aa36440`:
+- **Step 1, equivalence:** passed. E5-0's engine (`7d25460`) and the working tree are identical on 1 045 arrays.
+- **Step 2, graphs:** passed. All 24 SH-route graphs match 03r's manifests.
+- **Step 3, CUDA:** stopped by its rule on one check. Over 300 ticks, the 16 E4s-1 C champions' open-loop states
+  differed between CPU and CUDA by up to 0.011, against 1e-4. Every score-level, path, ghost, respawn and
+  attack-disabled check passed.
+
+**Diagnosis** (`experiments/E5-hunter/E5-1/E5-1a/diagnosis/`): at the stage's shapes, float32 on either device is 0.15
+to 0.46 from a float64 reference, and CUDA is as close to it as the CPU is. A tail of the evolved champions amplifies
+float32 rounding. The 1e-4 came from E4s-1's gate 2, which met it with unevolved and Task N genomes under weaker
+inputs.
+
+**Amendment 1** (design §14.3; review `docs/reviews/20261111-E5-1a-code/a1-*.md`, both "amend and rerun" after
+tightening). The criterion was chosen after the failure, and says so:
+- per genome, a resynchronised one-step CPU–CUDA check at the registered 1e-4;
+- for the champions, free running, CUDA's distance from float64 at most 1.5 times CPU float32's, plus 1e-4;
+- for generation-0 genomes, the original 1e-4.
+
+A sabotage at the formal shape fails a stable genome's row alone at +1e-3 bias and passes at +1e-5, the check's
+resolution (`scripts/e5_1a_state_sabotage.py`).
+
+**Caught in review:**
+- **Both:** the first proposal pooled genomes per batch, so one sensitive champion loosened every other genome's
+  bound, and its sabotage was smoke-sized.
+- **Fable:** the free-running bound alone had almost no power without a one-step check.
+- **Astra:** keep the generation-0 rule.
+- **Both:** wording.
+- **Mine, corrected:** I had written 255 of 256 worlds for the H1-bite pursuit trace; it was 254 of 256.
+
+**Noted:** CUDA is not bit-reproducible between runs outside `replay_mode` (the same check gave 0.0025, then 0.0010).
+The champions' capture counts agree between CPU and CUDA in 99.0 to 100% of worlds.
+
+**Next:** steps 1 to 3 rerun on the amended code as attempt 2, which is the record. Attempt 1's 0.69 hours count
+against E5-1a's 6. Then the bench, and the owner's cap.

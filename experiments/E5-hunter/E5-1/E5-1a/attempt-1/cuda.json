@@ -1,0 +1,880 @@
+{
+ "provenance_at_start": {
+  "git_commit": "aa36440fe00bd16b7264bdda1594876e2cf6b24f",
+  "branch": "roadmap",
+  "dirty": false,
+  "python": "3.13.3",
+  "numpy": "2.4.4",
+  "torch": "2.12.0+cu130",
+  "cuda": "13.0",
+  "gpu": "NVIDIA GeForce RTX 5080",
+  "connectome_cache_sha256": "43b87aa172a0042b9dce734b15bdf1c87efe3a33ac1cc0d9cd03255a60c96d4a",
+  "connectome_source_sha256": "1f4fdbf84746b69b49a8da0816f52787860ce349b638dce37924ba80f90c70c9"
+ },
+ "registered": {
+  "sd_worlds": 512,
+  "z": 54.8,
+  "unit": 512,
+  "max_worlds": 8192,
+  "margin": 0.1,
+  "precision": 0.03,
+  "path_tol": 0.001,
+  "path_share": 0.99,
+  "path_worlds": 256,
+  "trace_ticks": 30,
+  "trace_worlds": 256,
+  "respawn_worlds": 64,
+  "attack_worlds": 256,
+  "state_tol": 0.0001,
+  "state_ticks": 300,
+  "ghost_ids": [
+   991200000,
+   512
+  ],
+  "settings": [
+   "H1-bite",
+   "H2-0.5",
+   "H2-1",
+   "H2b-walk-0.5",
+   "H2b-wall-0.5"
+  ]
+ },
+ "score_level": {
+  "S-const | H1-bite | 1 x 512": {
+   "worlds": 1536,
+   "sd": 0.5901454211892904,
+   "worlds_required": 1536,
+   "worlds_required_uncapped": 1536,
+   "estimate": 0.008463541666666666,
+   "interval": [
+    -0.017503231537040767,
+    0.034430314870374096
+   ],
+   "half_width": 0.02596677320370743,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 0.6627604166666666,
+   "passed": true
+  },
+  "S-const | H2-0.5 | 1 x 512": {
+   "worlds": 512,
+   "sd": 0.4099424808108883,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": -0.009765625,
+   "interval": [
+    -0.038390866969948756,
+    0.01885961696994876
+   ],
+   "half_width": 0.028625241969948756,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 0.845703125,
+   "passed": true
+  },
+  "S-const | H2-1 | 1 x 512": {
+   "worlds": 1024,
+   "sd": 0.42423812221961227,
+   "worlds_required": 1024,
+   "worlds_required_uncapped": 1024,
+   "estimate": 0.0146484375,
+   "interval": [
+    -0.006249035068003169,
+    0.03554591006800317
+   ],
+   "half_width": 0.020897472568003173,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 0.849609375,
+   "passed": true
+  },
+  "S-const | H2b-walk-0.5 | 1 x 512": {
+   "worlds": 1024,
+   "sd": 0.4796773456395092,
+   "worlds_required": 1024,
+   "worlds_required_uncapped": 1024,
+   "estimate": 0.0146484375,
+   "interval": [
+    -0.010207614186408233,
+    0.03950448918640823
+   ],
+   "half_width": 0.024856051686408233,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 0.7978515625,
+   "passed": true
+  },
+  "S-const | H2b-wall-0.5 | 1 x 512": {
+   "worlds": 1024,
+   "sd": 0.5215475370614578,
+   "worlds_required": 1024,
+   "worlds_required_uncapped": 1024,
+   "estimate": 0.009765625,
+   "interval": [
+    -0.016365285614933136,
+    0.03589653561493314
+   ],
+   "half_width": 0.02613091061493314,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 0.759765625,
+   "passed": true
+  },
+  "S-const | mixed | 1 x 512": {
+   "worlds": 1536,
+   "sd": 0.6657599654302329,
+   "worlds_required": 1536,
+   "worlds_required_uncapped": 1536,
+   "estimate": 0.0027777777777777783,
+   "interval": [
+    -0.026527677368940888,
+    0.03208323292449644
+   ],
+   "half_width": 0.029305455146718666,
+   "precision_reached": true,
+   "weighted": true,
+   "share_identical": 0.7825520833333334,
+   "passed": true
+  },
+  "pursuit | H1-bite | 1 x 512": {
+   "worlds": 1536,
+   "sd": 0.617367163865693,
+   "worlds_required": 1536,
+   "worlds_required_uncapped": 1536,
+   "estimate": 0.026041666666666668,
+   "interval": [
+    -0.00023448866283623873,
+    0.05231782199616958
+   ],
+   "half_width": 0.026276155329502907,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 0.673828125,
+   "passed": true
+  },
+  "pursuit | H2-0.5 | 1 x 512": {
+   "worlds": 512,
+   "sd": 0.0,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.0,
+   "interval": [
+    0.0,
+    0.0
+   ],
+   "half_width": 0.0,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 1.0,
+   "passed": true
+  },
+  "pursuit | H2-1 | 1 x 512": {
+   "worlds": 512,
+   "sd": 0.0,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.0,
+   "interval": [
+    0.0,
+    0.0
+   ],
+   "half_width": 0.0,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 1.0,
+   "passed": true
+  },
+  "pursuit | H2b-walk-0.5 | 1 x 512": {
+   "worlds": 512,
+   "sd": 0.0,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.0,
+   "interval": [
+    0.0,
+    0.0
+   ],
+   "half_width": 0.0,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 1.0,
+   "passed": true
+  },
+  "pursuit | H2b-wall-0.5 | 1 x 512": {
+   "worlds": 512,
+   "sd": 0.06256112470898544,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.0,
+   "interval": [
+    0.0,
+    0.0
+   ],
+   "half_width": 0.0,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 1.0,
+   "passed": true
+  },
+  "pursuit | mixed | 1 x 512": {
+   "worlds": 1024,
+   "sd": 0.5694686406009254,
+   "worlds_required": 1024,
+   "worlds_required_uncapped": 1024,
+   "estimate": 0.0078125,
+   "interval": [
+    -0.022489060399836516,
+    0.038114060399836516
+   ],
+   "half_width": 0.030301560399836516,
+   "precision_reached": false,
+   "weighted": true,
+   "share_identical": 0.9580078125,
+   "passed": true
+  },
+  "L1 carrier | H1-bite | 1 x 512": {
+   "worlds": 512,
+   "sd": 0.09889850175663156,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.001953125,
+   "interval": [
+    -0.0012653144705149669,
+    0.005171564470514967
+   ],
+   "half_width": 0.0032184394705149673,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 0.998046875,
+   "passed": true
+  },
+  "L1 carrier | H2-0.5 | 1 x 512": {
+   "worlds": 512,
+   "sd": 0.062438815452783625,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": -0.001953125,
+   "interval": [
+    -0.005171564470514967,
+    0.0012653144705149669
+   ],
+   "half_width": 0.0032184394705149673,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 0.998046875,
+   "passed": true
+  },
+  "L1 carrier | H2-1 | 1 x 512": {
+   "worlds": 512,
+   "sd": 0.0,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.001953125,
+   "interval": [
+    -0.0012653144705149669,
+    0.005171564470514967
+   ],
+   "half_width": 0.0032184394705149673,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 0.998046875,
+   "passed": true
+  },
+  "L1 carrier | H2b-walk-0.5 | 1 x 512": {
+   "worlds": 512,
+   "sd": 0.04419417382415922,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.001953125,
+   "interval": [
+    -0.0012653144705149669,
+    0.005171564470514967
+   ],
+   "half_width": 0.0032184394705149673,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 0.998046875,
+   "passed": true
+  },
+  "L1 carrier | H2b-wall-0.5 | 1 x 512": {
+   "worlds": 512,
+   "sd": 0.04419417382415922,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.0,
+   "interval": [
+    -0.004556012154098425,
+    0.004556012154098425
+   ],
+   "half_width": 0.004556012154098425,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 0.99609375,
+   "passed": true
+  },
+  "L1 carrier | mixed | 1 x 512": {
+   "worlds": 512,
+   "sd": 0.023570226039551584,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.0010416666666666667,
+   "interval": [
+    -0.0006972939809445969,
+    0.00278062731427793
+   ],
+   "half_width": 0.0017389606476112636,
+   "precision_reached": true,
+   "weighted": true,
+   "share_identical": 0.998046875,
+   "passed": true
+  },
+  "e4s1 M run00 | H1-bite | 4 x 512": {
+   "worlds": 512,
+   "sd": 0.0,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.0,
+   "interval": [
+    0.0,
+    0.0
+   ],
+   "half_width": 0.0,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 1.0,
+   "passed": true
+  },
+  "e4s1 M run01 | H1-bite | 4 x 512": {
+   "worlds": 512,
+   "sd": 0.04419417382415922,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.0,
+   "interval": [
+    0.0,
+    0.0
+   ],
+   "half_width": 0.0,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 1.0,
+   "passed": true
+  },
+  "e4s1 M run02 | H1-bite | 4 x 512": {
+   "worlds": 512,
+   "sd": 0.0,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.0,
+   "interval": [
+    0.0,
+    0.0
+   ],
+   "half_width": 0.0,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 1.0,
+   "passed": true
+  },
+  "e4s1 M run03 | H1-bite | 4 x 512": {
+   "worlds": 512,
+   "sd": 0.0,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.0,
+   "interval": [
+    0.0,
+    0.0
+   ],
+   "half_width": 0.0,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 1.0,
+   "passed": true
+  },
+  "e4s1 M run00 | H2-0.5 | 4 x 512": {
+   "worlds": 512,
+   "sd": 0.0,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.0,
+   "interval": [
+    -0.004556012154098425,
+    0.004556012154098425
+   ],
+   "half_width": 0.004556012154098425,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 0.99609375,
+   "passed": true
+  },
+  "e4s1 M run01 | H2-0.5 | 4 x 512": {
+   "worlds": 512,
+   "sd": 0.0,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": -0.001953125,
+   "interval": [
+    -0.005171564470514967,
+    0.0012653144705149669
+   ],
+   "half_width": 0.0032184394705149673,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 0.998046875,
+   "passed": true
+  },
+  "e4s1 M run02 | H2-0.5 | 4 x 512": {
+   "worlds": 512,
+   "sd": 0.04419417382415922,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": -0.001953125,
+   "interval": [
+    -0.005171564470514967,
+    0.0012653144705149669
+   ],
+   "half_width": 0.0032184394705149673,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 0.998046875,
+   "passed": true
+  },
+  "e4s1 M run03 | H2-0.5 | 4 x 512": {
+   "worlds": 512,
+   "sd": 0.0,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.001953125,
+   "interval": [
+    -0.0012653144705149669,
+    0.005171564470514967
+   ],
+   "half_width": 0.0032184394705149673,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 0.998046875,
+   "passed": true
+  },
+  "e4s1 M run00 | H2-1 | 4 x 512": {
+   "worlds": 512,
+   "sd": 0.0,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": -0.00390625,
+   "interval": [
+    -0.00845335498594238,
+    0.0006408549859423804
+   ],
+   "half_width": 0.0045471049859423796,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 0.99609375,
+   "passed": true
+  },
+  "e4s1 M run01 | H2-1 | 4 x 512": {
+   "worlds": 512,
+   "sd": 0.07639661003892982,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.0,
+   "interval": [
+    0.0,
+    0.0
+   ],
+   "half_width": 0.0,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 1.0,
+   "passed": true
+  },
+  "e4s1 M run02 | H2-1 | 4 x 512": {
+   "worlds": 512,
+   "sd": 0.0,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.0,
+   "interval": [
+    0.0,
+    0.0
+   ],
+   "half_width": 0.0,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 1.0,
+   "passed": true
+  },
+  "e4s1 M run03 | H2-1 | 4 x 512": {
+   "worlds": 512,
+   "sd": 0.09889850175663156,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": -0.001953125,
+   "interval": [
+    -0.009155405619495037,
+    0.005249155619495036
+   ],
+   "half_width": 0.007202280619495037,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 0.990234375,
+   "passed": true
+  },
+  "e4s1 M run00 | H2b-walk-0.5 | 4 x 512": {
+   "worlds": 512,
+   "sd": 0.04419417382415922,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": -0.001953125,
+   "interval": [
+    -0.005171564470514967,
+    0.0012653144705149669
+   ],
+   "half_width": 0.0032184394705149673,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 0.998046875,
+   "passed": true
+  },
+  "e4s1 M run01 | H2b-walk-0.5 | 4 x 512": {
+   "worlds": 512,
+   "sd": 0.0,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": -0.001953125,
+   "interval": [
+    -0.005171564470514967,
+    0.0012653144705149669
+   ],
+   "half_width": 0.0032184394705149673,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 0.998046875,
+   "passed": true
+  },
+  "e4s1 M run02 | H2b-walk-0.5 | 4 x 512": {
+   "worlds": 512,
+   "sd": 0.0,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.0,
+   "interval": [
+    0.0,
+    0.0
+   ],
+   "half_width": 0.0,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 1.0,
+   "passed": true
+  },
+  "e4s1 M run03 | H2b-walk-0.5 | 4 x 512": {
+   "worlds": 512,
+   "sd": 0.04419417382415922,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.0,
+   "interval": [
+    0.0,
+    0.0
+   ],
+   "half_width": 0.0,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 1.0,
+   "passed": true
+  },
+  "e4s1 M run00 | H2b-wall-0.5 | 4 x 512": {
+   "worlds": 512,
+   "sd": 0.062438815452783625,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.0,
+   "interval": [
+    -0.004556012154098425,
+    0.004556012154098425
+   ],
+   "half_width": 0.004556012154098425,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 0.99609375,
+   "passed": true
+  },
+  "e4s1 M run01 | H2b-wall-0.5 | 4 x 512": {
+   "worlds": 512,
+   "sd": 0.0,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": -0.001953125,
+   "interval": [
+    -0.007531260833202813,
+    0.003625010833202813
+   ],
+   "half_width": 0.005578135833202813,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 0.994140625,
+   "passed": true
+  },
+  "e4s1 M run02 | H2b-wall-0.5 | 4 x 512": {
+   "worlds": 512,
+   "sd": 0.0,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.0,
+   "interval": [
+    0.0,
+    0.0
+   ],
+   "half_width": 0.0,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 1.0,
+   "passed": true
+  },
+  "e4s1 M run03 | H2b-wall-0.5 | 4 x 512": {
+   "worlds": 512,
+   "sd": 0.0,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.0,
+   "interval": [
+    0.0,
+    0.0
+   ],
+   "half_width": 0.0,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 1.0,
+   "passed": true
+  },
+  "e4s1 M run00 | mixed | 128 x 8": {
+   "worlds": 512,
+   "sd": 0.0,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.0010416666666666667,
+   "interval": [
+    -0.0006972939809445969,
+    0.00278062731427793
+   ],
+   "half_width": 0.0017389606476112636,
+   "precision_reached": true,
+   "weighted": true,
+   "share_identical": 0.998046875,
+   "passed": true
+  },
+  "e4s1 M run01 | mixed | 128 x 8": {
+   "worlds": 512,
+   "sd": 0.0,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.0,
+   "interval": [
+    0.0,
+    0.0
+   ],
+   "half_width": 0.0,
+   "precision_reached": true,
+   "weighted": true,
+   "share_identical": 1.0,
+   "passed": true
+  },
+  "e4s1 M run02 | mixed | 128 x 8": {
+   "worlds": 512,
+   "sd": 0.05892556509887896,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.0,
+   "interval": [
+    0.0,
+    0.0
+   ],
+   "half_width": 0.0,
+   "precision_reached": true,
+   "weighted": true,
+   "share_identical": 1.0,
+   "passed": true
+  },
+  "e4s1 M run03 | mixed | 128 x 8": {
+   "worlds": 512,
+   "sd": 0.08660254037844387,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.0020833333333333333,
+   "interval": [
+    -0.0003577126805052581,
+    0.004524379347171925
+   ],
+   "half_width": 0.0024410460138385914,
+   "precision_reached": true,
+   "weighted": true,
+   "share_identical": 0.99609375,
+   "passed": true
+  }
+ },
+ "paths": {
+  "prey H2-0.5": {
+   "worlds": 256,
+   "share_agreeing": 1.0,
+   "max_abs": 7.43865966796875e-05,
+   "passed": true
+  },
+  "prey H2b-walk-0.5": {
+   "worlds": 256,
+   "share_agreeing": 1.0,
+   "max_abs": 4.1961669921875e-05,
+   "passed": true
+  },
+  "prey H2b-wall-0.5": {
+   "worlds": 256,
+   "share_agreeing": 1.0,
+   "max_abs": 4.9591064453125e-05,
+   "passed": true
+  },
+  "pursuit trace H1-bite": {
+   "worlds": 256,
+   "ticks": 30,
+   "share_agreeing": 0.9921875,
+   "max_abs": 0.18871593475341797,
+   "passed": true
+  },
+  "pursuit trace H2-0.5": {
+   "worlds": 256,
+   "ticks": 30,
+   "share_agreeing": 1.0,
+   "max_abs": 1.430511474609375e-05,
+   "passed": true
+  }
+ },
+ "ghost_against_task_n": {
+  "S-const": {
+   "worlds": 512,
+   "sd": 0.0,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.0,
+   "interval": [
+    0.0,
+    0.0
+   ],
+   "half_width": 0.0,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 1.0,
+   "passed": true
+  },
+  "oracle": {
+   "worlds": 512,
+   "sd": 0.0,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.0,
+   "interval": [
+    0.0,
+    0.0
+   ],
+   "half_width": 0.0,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 1.0,
+   "passed": true
+  },
+  "e4s1 C run00": {
+   "worlds": 512,
+   "sd": 0.0,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.0,
+   "interval": [
+    0.0,
+    0.0
+   ],
+   "half_width": 0.0,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 1.0,
+   "passed": true
+  },
+  "L1 carrier": {
+   "worlds": 512,
+   "sd": 0.0,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.0,
+   "interval": [
+    0.0,
+    0.0
+   ],
+   "half_width": 0.0,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 1.0,
+   "passed": true
+  }
+ },
+ "attack_disabled": {
+  "H1-bite": {
+   "captures": 0,
+   "damage": 0.0,
+   "passed": true
+  },
+  "H2-0.5": {
+   "captures": 0,
+   "damage": 0.0,
+   "passed": true
+  }
+ },
+ "respawns": {
+  "H1-bite": {
+   "respawns": 289,
+   "min_distance": 6.75669002532959,
+   "required": 6.5,
+   "passed": true
+  },
+  "H2-0.5": {
+   "respawns": 311,
+   "min_distance": 6.500888824462891,
+   "required": 6.5,
+   "passed": true
+  },
+  "H2b-walk-0.5": {
+   "respawns": 286,
+   "min_distance": 6.556885242462158,
+   "required": 6.5,
+   "passed": true
+  }
+ },
+ "state_level": {
+  "max_abs": {
+   "E4s-1 C | training": 0.002537637948989868,
+   "E4s-1 C | validation": 0.004408150911331177,
+   "E4s-1 C | suite": 0.010923027992248535,
+   "generation 0 on SH-route-1020020 | training": 2.86102294921875e-06,
+   "generation 0 on SH-route-1020020 | validation": 2.384185791015625e-06,
+   "generation 0 on SH-route-1020020 | suite": 2.86102294921875e-06,
+   "generation 0 on SH-route-1020021 | training": 4.410743713378906e-06,
+   "generation 0 on SH-route-1020021 | validation": 4.291534423828125e-06,
+   "generation 0 on SH-route-1020021 | suite": 9.745359420776367e-06,
+   "generation 0 on SH-route-1020022 | training": 2.4437904357910156e-06,
+   "generation 0 on SH-route-1020022 | validation": 2.518296241760254e-06,
+   "generation 0 on SH-route-1020022 | suite": 2.9373914003372192e-06,
+   "generation 0 on SH-route-1020023 | training": 5.364418029785156e-06,
+   "generation 0 on SH-route-1020023 | validation": 5.4836273193359375e-06,
+   "generation 0 on SH-route-1020023 | suite": 5.602836608886719e-06
+  },
+  "worst": 0.010923027992248535,
+  "finite": true,
+  "tolerance": 0.0001,
+  "passed": false
+ },
+ "seconds": 1307.2007872001268,
+ "failed": [
+  "state level"
+ ],
+ "passed": false,
+ "imprecise": [
+  "pursuit | mixed | 1 x 512"
+ ],
+ "ledger": "every play checked every tick at 1e-05 (a failure stops the stage)"
+}

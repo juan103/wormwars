@@ -1,0 +1,1 @@
+24 graphs rebuilt and checked; raw bytes equal for 24; P checks: {'N2perm4': True, 'N2perm5': True, 'N2perm6': True}

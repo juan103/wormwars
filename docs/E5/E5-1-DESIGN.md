@@ -637,3 +637,80 @@ Every fix taken. What changes from §14 above (kept as written; this replaces it
 - The reference worktree is checked before the equivalence stage's start marker (Fable). The pilot's record says that
   its null signal plays one population's shapes, not N2's four (Fable).
 
+
+### 14.3 Amendment 1: E5-1a's state-level check (2026-11-11, after its stop; for review)
+
+**What happened.** E5-1a's steps 1 and 2 passed on `aa36440`:
+- **Step 1:** E5-0's engine and the working tree are identical on 1 045 arrays, covering 15 185 captures across 19
+  settings and 3 hunters on 64 worlds at 300 ticks. The mixed world equals each slot alone, and the weighted fitness
+  equals the formula to 4e-16.
+- **Step 2:** all 24 graphs match 03r's content and raw-byte manifests, and P's checks pass.
+
+Step 3 stopped on one check, the state level. Over 300 ticks, CPU against CUDA differed by up to 0.0025, 0.0044 and
+0.011 at the training, validation and suite shapes for the 16 E4s-1 C genomes, against the 1e-4 tolerance.
+Generation-0 genomes on the 4 pilot graphs stayed at 2e-6 to 1e-5. Every other check passed:
+- 42 score-level checks, with estimates between −0.010 and +0.026 captures and intervals within ±0.06;
+- H1-ghost against Task N on CUDA, identical in every world;
+- prey paths, within 7.4e-5 cells;
+- the pursuit traces, 254 of 256 worlds within 1e-3 cells at H1-bite (the check's limit; the largest difference 0.19 cells) and 256 of 256 at route 0.5;
+- attack disabled, with 0 captures and 0 damage;
+- 886 respawns, all at least D − R from the hunter.
+
+The records are kept in `experiments/E5-hunter/E5-1/E5-1a/attempt-1/`.
+
+**Diagnosis** (exploratory; `experiments/E5-hunter/E5-1/E5-1a/diagnosis/`). The same genomes were run under the same
+inputs, in float64 on the CPU, as a higher-precision reference. At the stage's shapes, CPU float32 is 0.15, 0.46 and 0.35
+from float64, and CUDA float32 is 0.15, 0.45 and 0.34. **The evolved champions amplify float32 rounding on any device:**
+CUDA is as close to the reference as the CPU is, and the two float32 runs are 30 to 100 times closer to each other
+than either is to float64. At 16 strains × 8 rows, batch composition on the CPU adds nothing (identical), and the
+motor commands differ by at most 2e-5. The 1e-4 came from E4s-1's gate 2. That gate met it at 2.7e-6, but with
+random N2 genomes and 04a champions, under inputs up to 0.35. Here the genomes are grafted and evolved, and the
+inputs are stronger (uniform on [0, 1] times each sensor's gain).
+
+**The amendment.** The state-level criterion becomes relative to float32's own error: per genome group and shape,
+max|CUDA float32 − CPU float64| ≤ 1.5 × max|CPU float32 − CPU float64| + 10⁻⁴. CPU against CUDA is recorded beside it.
+Generation-0 genomes are still held to about 10⁻⁴, since their float32 error is about 10⁻⁵. A sabotage (the GPU's
+biases moved by 10⁻³) fails it (`runs/e5-1/amend1-sabotage.txt`). **This criterion was chosen after the failure was
+seen;** the score-level checks fixed beforehand are the operative evidence that CUDA plays Task H as the CPU does.
+
+**What reruns:** steps 1, 2 and 3 on the amended code. The design's guard requires every later stage on the same
+code. Then the bench, then the owner's cap.
+
+**Corrections and changes after the amendment's review** (2026-11-11, `docs/reviews/20261111-E5-1a-code/a1-*.md`;
+both "amend and rerun", after tightening; Fable: no further round if taken as written):
+
+- **Corrections of the text above:**
+  - The H1-bite pursuit trace agreed in 254 of 256 worlds, not 255.
+  - "The evolved champions amplify float32 rounding" is too broad. At 16 strains × 8 rows only run 1 exceeds 10⁻⁴
+    between CPU and CUDA, and 13 of the 16 stay within 4.5e-5. The amplification is a tail over genomes and input
+    histories, and it grows with the rows played.
+  - The 2e-5 motor difference was measured at 16 × 8, not at the stage's shapes.
+  - "Generation-0 genomes' float32 error is about 10⁻⁵" had no record; the rerun records it per genome.
+  - "No further from the reference" overstated the rule: it allows 50% more error plus the floor. Both numbers are
+    engineering choices made after the failure, not demonstrated accuracy bounds (Astra).
+  - The pursuit's mixed score check reached a half-width of 0.0303, just above the 0.03 aim; it passes ±0.10.
+- **Better evidence that the amplification does not reach the task:** the champions' per-world capture counts were
+  identical between CPU and CUDA in 99.0 to 100% of worlds at every score check (24 rows, `attempt-1/cuda.json`;
+  the review's "99.6" was rechecked). The scripted S-const and pursuit agree in fewer worlds (66 to 96%), with their
+  means still within ±0.03 captures per episode.
+- **The check as amended** (`scripts/e5_1a.py`, `state_level`), judged per genome, not per batch (Astra, Fable):
+  - **one step, resynchronised,** at the registered 10⁻⁴: every tick CUDA steps from the CPU's float32 state, and
+    its result must lie within 10⁻⁴ of the CPU's step (Fable). Local error is not amplified;
+  - **free running,** for the champions: max|CUDA float32 − CPU float64| ≤ 1.5 × max|CPU float32 − CPU float64| +
+    10⁻⁴;
+  - **free running, for the generation-0 genomes:** the original CPU against CUDA ≤ 10⁻⁴ (Astra).
+- **The sabotage, at the formal shape** (`scripts/e5_1a_state_sabotage.py` → `runs/e5-1/amend1-sabotage-formal.txt`;
+  128 × 8, 300 ticks, the 16 champions):
+  - E4s-1 run 2's CUDA copy, a stable genome sharing the batch with run 1, the most sensitive, gets its biases moved.
+  - At +10⁻³ both checks fail for run 2 alone (one step 0.0026, free running 0.0076 against a bound of 0.00018).
+  - At +10⁻⁵ both pass: that is below what the check resolves.
+  - The clean run passes, with one step at most 5.5e-6.
+- **CUDA is not bit-reproducible between runs here.** The clean run's largest free-running CPU–CUDA difference at
+  128 × 8 was 0.0010, where attempt 1 had 0.0025 for the same genomes and inputs. These runs are outside
+  `replay_mode`, where no exactness is claimed (rule 6), and the evolved champions amplify any difference. Not
+  investigated further: the score checks are the evidence for the task.
+- **The rerun:**
+  - **The record:** attempt 2 is the record. A check that passed in attempt 1 and fails in attempt 2 is a stop.
+  - **The cap clock:** attempt 1's 0.69 hours stay in E5-1a's cap; the diagnosis and the sabotage ran outside it
+    (`runs/e5-1a-sabotage/` has its own clock).
+

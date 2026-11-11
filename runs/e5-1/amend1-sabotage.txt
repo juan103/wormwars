@@ -1,0 +1,2 @@
+sabotaged (GPU biases + 1e-3): passed = False failed groups: ['E4s-1 C | small | strains 0-1', 'E4s-1 C | small | strains 2-3', 'generation 0 on SH-route-1020020 | small | strains 0-1', 'generation 0 on SH-route-1020020 | small | strains 2-3']
+clean: passed = True

@@ -1,0 +1,45 @@
+S-const H1-bite 0.008 [-0.018, 0.034] True
+S-const H2-0.5 -0.01 [-0.038, 0.019] True
+S-const H2-1 0.015 [-0.006, 0.036] True
+S-const H2b-walk-0.5 0.015 [-0.01, 0.04] True
+S-const H2b-wall-0.5 0.01 [-0.016, 0.036] True
+S-const mixed 0.003 [-0.027, 0.032] True
+pursuit H1-bite 0.026 [-0.0, 0.052] True
+pursuit H2-0.5 0.0 [0.0, 0.0] True
+pursuit H2-1 0.0 [0.0, 0.0] True
+pursuit H2b-walk-0.5 0.0 [0.0, 0.0] True
+pursuit H2b-wall-0.5 0.0 [0.0, 0.0] True
+pursuit mixed 0.008 [-0.022, 0.038] True
+L1 carrier H1-bite 0.002 [-0.001, 0.005] True
+L1 carrier H2-0.5 -0.002 [-0.005, 0.001] True
+L1 carrier H2-1 0.002 [-0.001, 0.005] True
+L1 carrier H2b-walk-0.5 0.002 [-0.001, 0.005] True
+L1 carrier H2b-wall-0.5 0.0 [-0.005, 0.005] True
+L1 carrier mixed 0.001 [-0.001, 0.003] True
+e4s1 M run00 H1-bite 0.0 [0.0, 0.0] True
+e4s1 M run01 H1-bite 0.0 [0.0, 0.0] True
+e4s1 M run02 H1-bite 0.0 [0.0, 0.0] True
+e4s1 M run03 H1-bite 0.0 [0.0, 0.0] True
+e4s1 M run00 H2-0.5 0.0 [-0.005, 0.005] True
+e4s1 M run01 H2-0.5 -0.002 [-0.005, 0.001] True
+e4s1 M run02 H2-0.5 -0.002 [-0.005, 0.001] True
+e4s1 M run03 H2-0.5 0.002 [-0.001, 0.005] True
+e4s1 M run00 H2-1 -0.004 [-0.008, 0.001] True
+e4s1 M run01 H2-1 0.0 [0.0, 0.0] True
+e4s1 M run02 H2-1 0.0 [0.0, 0.0] True
+e4s1 M run03 H2-1 -0.002 [-0.009, 0.005] True
+e4s1 M run00 H2b-walk-0.5 -0.002 [-0.005, 0.001] True
+e4s1 M run01 H2b-walk-0.5 -0.002 [-0.005, 0.001] True
+e4s1 M run02 H2b-walk-0.5 0.0 [0.0, 0.0] True
+e4s1 M run03 H2b-walk-0.5 0.0 [0.0, 0.0] True
+e4s1 M run00 H2b-wall-0.5 0.0 [-0.005, 0.005] True
+e4s1 M run01 H2b-wall-0.5 -0.002 [-0.008, 0.004] True
+e4s1 M run02 H2b-wall-0.5 0.0 [0.0, 0.0] True
+e4s1 M run03 H2b-wall-0.5 0.0 [0.0, 0.0] True
+e4s1 M run00 mixed 0.001 [-0.001, 0.003] True
+e4s1 M run01 mixed 0.0 [0.0, 0.0] True
+e4s1 M run02 mixed 0.0 [0.0, 0.0] True
+e4s1 M run03 mixed 0.002 [-0.0, 0.005] True
+CUDA checks: FAILED ['state level'] | imprecise: ['pursuit | mixed | 1 x 512']
+a CUDA check failed: E5-1a stops; diagnosis is a dated, reviewed amendment
+rc=1
