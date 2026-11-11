@@ -1,0 +1,303 @@
+{
+ "provenance_at_start": {
+  "git_commit": "db73795df4b95bcabd10a3e44f181abfe09ec549",
+  "branch": "roadmap",
+  "dirty": false,
+  "python": "3.13.3",
+  "numpy": "2.4.4",
+  "torch": "2.12.0+cu130",
+  "cuda": "13.0",
+  "gpu": "NVIDIA GeForce RTX 5080",
+  "connectome_cache_sha256": "43b87aa172a0042b9dce734b15bdf1c87efe3a33ac1cc0d9cd03255a60c96d4a",
+  "connectome_source_sha256": "1f4fdbf84746b69b49a8da0816f52787860ce349b638dce37924ba80f90c70c9"
+ },
+ "registered": {
+  "generations": 6,
+  "checkpoint_every": 5,
+  "suite_settings": [
+   "H1-bite",
+   "H2-0.5",
+   "H2b-walk-0.5"
+  ],
+  "rerun_reserve": 0.15
+ },
+ "n2_batch": {
+  "graph": "N2",
+  "seconds_per_generation": 7.006777699920349,
+  "seconds_per_checkpoint": 5.898745900136419,
+  "generation_seconds": [
+   15.14939479995519,
+   6.775533899664879,
+   6.796022400259972,
+   7.282095599919558,
+   7.173458899836987,
+   12.905523600056767
+  ],
+  "max_index": 14,
+  "total_seconds": 56.140592199750245,
+  "mean_fitness_by_generation": [
+   0.25286458333333334,
+   0.7411458333333334,
+   0.80625,
+   0.75390625,
+   0.9856770833333334,
+   0.8184895833333334
+  ],
+  "hours_per_batch": 1.0075729205175108,
+  "checkpoints": 21
+ },
+ "b_batch": {
+  "graph": "N2",
+  "seconds_per_generation": 6.978101299959235,
+  "seconds_per_checkpoint": 6.3236954003805295,
+  "generation_seconds": [
+   13.757229299750179,
+   6.876432199962437,
+   6.889481700025499,
+   6.756454899907112,
+   7.390036399941891,
+   13.301796700339764
+  ],
+  "max_index": 20,
+  "total_seconds": 54.9766514999792,
+  "mean_fitness_by_generation": [
+   3.0166666666666666,
+   1.8958333333333333,
+   1.8088541666666667,
+   1.5184895833333334,
+   1.6182291666666666,
+   1.8536458333333334
+  ],
+  "hours_per_batch": 1.0060689592743357,
+  "checkpoints": 21
+ },
+ "null_batch": {
+  "graph": "SH-route-1020022",
+  "seconds_per_generation": 6.834213949972764,
+  "seconds_per_checkpoint": 6.63792515010573,
+  "generation_seconds": [
+   14.236264599952847,
+   6.944345900323242,
+   6.741790899541229,
+   6.794702799990773,
+   6.8560162000358105,
+   13.472139100078493
+  ],
+  "max_index": 16,
+  "total_seconds": 55.07347479974851,
+  "mean_fitness_by_generation": [
+   0.5531250000000001,
+   1.1096354166666667,
+   1.2109375,
+   1.0174479166666668,
+   1.2127604166666668,
+   1.2046875
+  ],
+  "hours_per_batch": 0.987917611982945,
+  "checkpoints": 21
+ },
+ "suite_chunk": {
+  "settings": {
+   "H1-bite": {
+    "episodes": 4096,
+    "seconds": 6.899865200277418,
+    "per_second": 593.6347857687589
+   },
+   "H2-0.5": {
+    "episodes": 4096,
+    "seconds": 7.53465920034796,
+    "per_second": 543.6211368141032
+   },
+   "H2b-walk-0.5": {
+    "episodes": 4096,
+    "seconds": 8.255224599968642,
+    "per_second": 496.1706311437679
+   }
+  },
+  "episodes_per_second": 544.4755179088767,
+  "one_strain_per_second": 101.86871391031552
+ },
+ "task_h_overhead": {
+  "task_h_seconds": 6.607548899948597,
+  "task_n_seconds": 3.366700300015509,
+  "f": 1.962618680349468
+ },
+ "projection_gpu_hours": {
+  "formal": {
+   "low (generation-0 rates)": {
+    "none": {
+     "training": {
+      "G-N2": 8.060583364140086,
+      "G-SHr": 19.7583522396589,
+      "A0r + A0": 4.030291682070043,
+      "P": 3.0227187615525324,
+      "B": 4.024275837097343
+     },
+     "evaluation_episodes": 7085568,
+     "evaluation": 3.614879399706514,
+     "rerun_reserve": 6.376665192633814,
+     "total": 48.887766476859234
+    },
+    "(1) B moves to a later stage": {
+     "training": {
+      "G-N2": 8.060583364140086,
+      "G-SHr": 19.7583522396589,
+      "A0r + A0": 4.030291682070043,
+      "P": 3.0227187615525324,
+      "B": 0.0
+     },
+     "evaluation_episodes": 6397440,
+     "evaluation": 3.2638137220415415,
+     "rerun_reserve": 5.720363965419465,
+     "total": 43.85612373488256
+    },
+    "(2) P is dropped": {
+     "training": {
+      "G-N2": 8.060583364140086,
+      "G-SHr": 19.7583522396589,
+      "A0r + A0": 4.030291682070043,
+      "P": 0.0,
+      "B": 0.0
+     },
+     "evaluation_episodes": 5893632,
+     "evaluation": 3.006783493751115,
+     "rerun_reserve": 5.228401616943022,
+     "total": 40.08441239656317
+    },
+    "(3) the probes shrink to H1-bite and route 0.5": {
+     "training": {
+      "G-N2": 8.060583364140086,
+      "G-SHr": 19.7583522396589,
+      "A0r + A0": 4.030291682070043,
+      "P": 0.0,
+      "B": 0.0
+     },
+     "evaluation_episodes": 4582912,
+     "evaluation": 2.338086964865453,
+     "rerun_reserve": 5.128097137610172,
+     "total": 39.31541138834465
+    },
+    "(4) 16 SH-route graphs": {
+     "training": {
+      "G-N2": 8.060583364140086,
+      "G-SHr": 15.80668179172712,
+      "A0r + A0": 4.030291682070043,
+      "P": 0.0,
+      "B": 0.0
+     },
+     "evaluation_episodes": 4009472,
+     "evaluation": 2.045532233477976,
+     "rerun_reserve": 4.4914633607122845,
+     "total": 34.43455243212751
+    }
+   },
+   "high (scoring rates)": {
+    "none": {
+     "training": {
+      "G-N2": 8.060583364140086,
+      "G-SHr": 19.7583522396589,
+      "A0r + A0": 4.030291682070043,
+      "P": 3.0227187615525324,
+      "B": 4.024275837097343
+     },
+     "evaluation_episodes": 7085568,
+     "evaluation": 3.614879399706514,
+     "rerun_reserve": 6.376665192633814,
+     "total": 48.887766476859234
+    },
+    "(1) B moves to a later stage": {
+     "training": {
+      "G-N2": 8.060583364140086,
+      "G-SHr": 19.7583522396589,
+      "A0r + A0": 4.030291682070043,
+      "P": 3.0227187615525324,
+      "B": 0.0
+     },
+     "evaluation_episodes": 6397440,
+     "evaluation": 3.2638137220415415,
+     "rerun_reserve": 5.720363965419465,
+     "total": 43.85612373488256
+    },
+    "(2) P is dropped": {
+     "training": {
+      "G-N2": 8.060583364140086,
+      "G-SHr": 19.7583522396589,
+      "A0r + A0": 4.030291682070043,
+      "P": 0.0,
+      "B": 0.0
+     },
+     "evaluation_episodes": 5893632,
+     "evaluation": 3.006783493751115,
+     "rerun_reserve": 5.228401616943022,
+     "total": 40.08441239656317
+    },
+    "(3) the probes shrink to H1-bite and route 0.5": {
+     "training": {
+      "G-N2": 8.060583364140086,
+      "G-SHr": 19.7583522396589,
+      "A0r + A0": 4.030291682070043,
+      "P": 0.0,
+      "B": 0.0
+     },
+     "evaluation_episodes": 4582912,
+     "evaluation": 2.338086964865453,
+     "rerun_reserve": 5.128097137610172,
+     "total": 39.31541138834465
+    },
+    "(4) 16 SH-route graphs": {
+     "training": {
+      "G-N2": 8.060583364140086,
+      "G-SHr": 15.80668179172712,
+      "A0r + A0": 4.030291682070043,
+      "P": 0.0,
+      "B": 0.0
+     },
+     "evaluation_episodes": 4009472,
+     "evaluation": 2.045532233477976,
+     "rerun_reserve": 4.4914633607122845,
+     "total": 34.43455243212751
+    }
+   }
+  },
+  "e5_1a_remainder_upper": {
+   "signal": 0.001959071861969713,
+   "null pilot (2 batches x 100 generations)": 0.39516704479317805,
+   "composition (24 genomes, 6 shapes, 512 + 8 192 worlds, batch and one-strain reference)": 4.057173415718766,
+   "sensitivity (24 parents x 65 x 256)": 0.20374347364485013,
+   "composition's CPU sides (8 null champions x 6 checks x (512 + 8 192), at E5-0's 0.0165 s per episode)": 1.9148800000000001
+  },
+  "e5_1a_spent_so_far": 2.5680856768054783,
+  "e5_1a_fits_its_cap": false,
+  "note": "the owner's cap covers the formal run (training, evaluation, the 15% rerun reserve); E5-1a runs under its own 6-hour cap"
+ },
+ "capture_rates": {
+  "note": "mean weighted fitness per generation of each benched batch; E5-0's pursuit reference is in experiments/E5-hunter/E5-0/evaluation.json",
+  "n2_batch": [
+   0.25286458333333334,
+   0.7411458333333334,
+   0.80625,
+   0.75390625,
+   0.9856770833333334,
+   0.8184895833333334
+  ],
+  "b_batch": [
+   3.0166666666666666,
+   1.8958333333333333,
+   1.8088541666666667,
+   1.5184895833333334,
+   1.6182291666666666,
+   1.8536458333333334
+  ],
+  "null_batch": [
+   0.5531250000000001,
+   1.1096354166666667,
+   1.2109375,
+   1.0174479166666668,
+   1.2127604166666668,
+   1.2046875
+  ]
+ },
+ "seconds": 208.65198990004137,
+ "complete": true,
+ "next": "the owner sets the cap (python scripts/e5_1a.py cap --hours H --note ...) before any later stage"
+}
