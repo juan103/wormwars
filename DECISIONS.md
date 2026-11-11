@@ -12783,3 +12783,19 @@ The champions' capture counts agree between CPU and CUDA in 99.0 to 100% of worl
 
 **Next:** steps 1 to 3 rerun on the amended code as attempt 2, which is the record. Attempt 1's 0.69 hours count
 against E5-1a's 6. Then the bench, and the owner's cap.
+
+## D392 — Amendment 1's state check judged only first copies; fixed, and D391's reproducibility note withdrawn (2026-11-11)
+
+Attempt 2 of E5-1a's steps 1 to 3 (on `4e68da8`) passed. Its records are in `E5-1a/attempt-2/`.
+
+**The bug.** A comparison with the sabotage run showed that `state_level` judged only the first copy of each genome.
+At the training shape the genomes are tiled (champions 8 times, generation-0 genomes 32 times), each copy with its
+own inputs, so most copies were measured but never judged. Fixed: every strain is judged, and each genome's record is
+its worst copy. The formal-shape sabotage, rerun, fails all 8 copies at +1e-3 and none at +1e-5.
+
+**Correction.** D391 said "CUDA is not bit-reproducible between runs outside `replay_mode` (0.0025, then 0.0010)".
+That is withdrawn: the two numbers were different reductions of the same results. Over every strain the clean run
+gives 0.00254, as attempt 1 did. Found by me, after the reviews.
+
+**Next:** attempt 3 of steps 1 to 3 on the fixed code (the record); then the bench and the owner's cap. E5-1a has
+spent 1.59 of its 6 hours.

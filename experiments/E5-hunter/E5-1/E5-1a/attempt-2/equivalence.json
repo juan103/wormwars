@@ -1,0 +1,190 @@
+{
+ "provenance_at_start": {
+  "git_commit": "4e68da8fc6ab3cb96f6c71b451d7e694eb304799",
+  "branch": "roadmap",
+  "dirty": false,
+  "python": "3.13.3",
+  "numpy": "2.4.4",
+  "torch": "2.12.0+cu130",
+  "cuda": "13.0",
+  "gpu": "NVIDIA GeForce RTX 5080",
+  "connectome_cache_sha256": "43b87aa172a0042b9dce734b15bdf1c87efe3a33ac1cc0d9cd03255a60c96d4a",
+  "connectome_source_sha256": "1f4fdbf84746b69b49a8da0816f52787860ce349b638dce37924ba80f90c70c9"
+ },
+ "reference_commit": "7d254607ea09c22a466b3eb3ef75433ae1eb3dec",
+ "reference_worktree": {
+  "path": "D:\\Claude\\random\\wormWars-e5-1ref",
+  "head": "7d254607ea09c22a466b3eb3ef75433ae1eb3dec",
+  "clean": true
+ },
+ "old_against_new": {
+  "engines": {
+   "old": "7d254607ea09c22a466b3eb3ef75433ae1eb3dec",
+   "new": "4e68da8fc6ab3cb96f6c71b451d7e694eb304799"
+  },
+  "worlds": {
+   "first": 985800000,
+   "count": 64
+  },
+  "arrays": 1045,
+  "differ": [],
+  "identical": true,
+  "captures_by_setting_and_hunter": {
+   "H1-ghost|pursuit|captures": 564,
+   "H1-ghost|e4s1 M run00 C|captures": 489,
+   "H1-ghost|L1 carrier|captures": 335,
+   "H1-reach|pursuit|captures": 564,
+   "H1-reach|e4s1 M run00 C|captures": 483,
+   "H1-reach|L1 carrier|captures": 335,
+   "H1-bite|pursuit|captures": 287,
+   "H1-bite|e4s1 M run00 C|captures": 186,
+   "H1-bite|L1 carrier|captures": 136,
+   "H2-0.1|pursuit|captures": 284,
+   "H2-0.1|e4s1 M run00 C|captures": 198,
+   "H2-0.1|L1 carrier|captures": 179,
+   "H2-0.2|pursuit|captures": 313,
+   "H2-0.2|e4s1 M run00 C|captures": 238,
+   "H2-0.2|L1 carrier|captures": 207,
+   "H2-0.3|pursuit|captures": 320,
+   "H2-0.3|e4s1 M run00 C|captures": 230,
+   "H2-0.3|L1 carrier|captures": 205,
+   "H2-0.4|pursuit|captures": 318,
+   "H2-0.4|e4s1 M run00 C|captures": 227,
+   "H2-0.4|L1 carrier|captures": 231,
+   "H2-0.5|pursuit|captures": 311,
+   "H2-0.5|e4s1 M run00 C|captures": 209,
+   "H2-0.5|L1 carrier|captures": 251,
+   "H2-0.6|pursuit|captures": 312,
+   "H2-0.6|e4s1 M run00 C|captures": 211,
+   "H2-0.6|L1 carrier|captures": 245,
+   "H2-0.7|pursuit|captures": 339,
+   "H2-0.7|e4s1 M run00 C|captures": 212,
+   "H2-0.7|L1 carrier|captures": 275,
+   "H2-0.8|pursuit|captures": 420,
+   "H2-0.8|e4s1 M run00 C|captures": 186,
+   "H2-0.8|L1 carrier|captures": 284,
+   "H2-0.9|pursuit|captures": 492,
+   "H2-0.9|e4s1 M run00 C|captures": 136,
+   "H2-0.9|L1 carrier|captures": 264,
+   "H2-1|pursuit|captures": 518,
+   "H2-1|e4s1 M run00 C|captures": 124,
+   "H2-1|L1 carrier|captures": 244,
+   "H2b-walk-0.25|pursuit|captures": 301,
+   "H2b-walk-0.25|e4s1 M run00 C|captures": 196,
+   "H2b-walk-0.25|L1 carrier|captures": 178,
+   "H2b-walk-0.5|pursuit|captures": 286,
+   "H2b-walk-0.5|e4s1 M run00 C|captures": 160,
+   "H2b-walk-0.5|L1 carrier|captures": 175,
+   "H2b-walk-0.75|pursuit|captures": 297,
+   "H2b-walk-0.75|e4s1 M run00 C|captures": 137,
+   "H2b-walk-0.75|L1 carrier|captures": 196,
+   "H2b-wall-0.25|pursuit|captures": 279,
+   "H2b-wall-0.25|e4s1 M run00 C|captures": 179,
+   "H2b-wall-0.25|L1 carrier|captures": 196,
+   "H2b-wall-0.5|pursuit|captures": 267,
+   "H2b-wall-0.5|e4s1 M run00 C|captures": 147,
+   "H2b-wall-0.5|L1 carrier|captures": 198,
+   "H2b-wall-0.75|pursuit|captures": 308,
+   "H2b-wall-0.75|e4s1 M run00 C|captures": 113,
+   "H2b-wall-0.75|L1 carrier|captures": 210
+  },
+  "max_life_in_traces": {
+   "trace H1-ghost|life": 10,
+   "trace H1-reach|life": 10,
+   "trace H1-bite|life": 6,
+   "trace H2-0.1|life": 5,
+   "trace H2-0.2|life": 8,
+   "trace H2-0.3|life": 8,
+   "trace H2-0.4|life": 10,
+   "trace H2-0.5|life": 10,
+   "trace H2-0.6|life": 12,
+   "trace H2-0.7|life": 12,
+   "trace H2-0.8|life": 15,
+   "trace H2-0.9|life": 20,
+   "trace H2-1|life": 19,
+   "trace H2b-walk-0.25|life": 5,
+   "trace H2b-walk-0.5|life": 6,
+   "trace H2b-walk-0.75|life": 8,
+   "trace H2b-wall-0.25|life": 5,
+   "trace H2b-wall-0.5|life": 8,
+   "trace H2b-wall-0.75|life": 8
+  }
+ },
+ "mixed_against_alone": {
+  "training shape, generation 0 of 4 G-N2-construction runs": {
+   "captures_mean": 0.3408203125,
+   "max_index": 12,
+   "differ": [],
+   "rollout_equals_serial_counts": true,
+   "weighted_against_formula_max_abs": 2.220446049250313e-16,
+   "equal_numerators_equal_fitness": true
+  },
+  "training shape, the E4s-1 C champions tiled (scoring)": {
+   "captures_mean": 2.951171875,
+   "max_index": 11,
+   "differ": [],
+   "rollout_equals_serial_counts": true,
+   "weighted_against_formula_max_abs": 4.440892098500626e-16,
+   "equal_numerators_equal_fitness": true
+  },
+  "validation shape, 4 E4s-1 C champions": {
+   "captures_mean": 3.1259765625,
+   "max_index": 12,
+   "differ": [],
+   "rollout_equals_serial_counts": true,
+   "weighted_against_formula_max_abs": 0.0,
+   "equal_numerators_equal_fitness": true
+  }
+ },
+ "weighted_evolution": {
+  "generations": 3,
+  "max_abs_against_formula": 2.220446049250313e-16,
+  "max_index": 12,
+  "rollouts": 8
+ },
+ "e5_0_arrays": {
+  "arrays": 68,
+  "old_file": "runs\\e5-0\\reference-old.npz",
+  "differ": [],
+  "identical": true
+ },
+ "ghost_against_task_n": {
+  "worlds": 512,
+  "run_seed": 1500001,
+  "rows": {
+   "S-const": {
+    "count": true,
+    "capture_tick": true,
+    "path": true,
+    "mean_task_n": 8.66015625,
+    "mean_ghost": 8.66015625
+   },
+   "oracle": {
+    "count": true,
+    "capture_tick": true,
+    "path": true,
+    "mean_task_n": 8.767578125,
+    "mean_ghost": 8.767578125
+   },
+   "e4s1 C run00": {
+    "count": true,
+    "capture_tick": true,
+    "path": true,
+    "mean_task_n": 7.44921875,
+    "mean_ghost": 7.44921875
+   },
+   "L1 carrier": {
+    "count": true,
+    "capture_tick": true,
+    "path": true,
+    "mean_task_n": 5.18359375,
+    "mean_ghost": 5.18359375
+   }
+  },
+  "differ": [],
+  "identical": true
+ },
+ "seconds": 1110.5387932998128,
+ "scoring_rows_captured": true,
+ "passed": true
+}

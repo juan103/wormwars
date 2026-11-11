@@ -714,3 +714,18 @@ both "amend and rerun", after tightening; Fable: no further round if taken as wr
   - **The cap clock:** attempt 1's 0.69 hours stay in E5-1a's cap; the diagnosis and the sabotage ran outside it
     (`runs/e5-1a-sabotage/` has its own clock).
 
+
+### 14.4 A bug in Amendment 1's code, and a correction (2026-11-11)
+
+Attempt 2 (steps 1 to 3 on `4e68da8`) passed, and its records are kept in `E5-1a/attempt-2/`. Afterwards, checking
+its numbers against the sabotage run, I found that `state_level` judged only the first copy of each genome. At the
+training shape the 16 champions are tiled 8 times (and the generation-0 genomes 32 times), each copy with its own
+input history; the other copies were measured but not judged. The code now judges every strain and records, per
+genome and shape, the worst copy, the number of copies and the number failed. The formal-shape sabotage, rerun on the
+fixed code, fails all 8 copies of the altered genome at +10⁻³ and passes at +10⁻⁵ (`runs/e5-1/amend1-sabotage-formal.txt`).
+
+**Correction of §14.3 and D391:** "CUDA is not bit-reproducible between runs here: … 0.0010, where attempt 1 had
+0.0025" is wrong. The two numbers came from different reductions: one over every strain, the other over first copies
+only. Over every strain the clean run gives 0.00254, as attempt 1 did, so no run-to-run difference was shown.
+
+Steps 1 to 3 rerun on the fixed code as attempt 3, which is the record.

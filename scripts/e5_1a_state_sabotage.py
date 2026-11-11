@@ -41,12 +41,13 @@ def main():
         r = m.state_level(env, "cuda", perturb=perturbed(size), shapes=shape, families=["E4s-1 C"])
         row = r["strains"]["e4s1 M run02 | training"]
         others = [k for k in r["failed"] if not k.startswith("e4s1 M run02")]
-        lines.append(f"{label}: run 2 passed={row['passed']} checks={row['checks']} one step={row['one step']:.3g} "
-                     f"cuda32-cpu64={row['cuda32 - cpu64']:.3g} bound={row['bound']:.3g}; other rows failing: {others}")
+        lines.append(f"{label}: run 2 passed={row['passed']} copies failed={row['copies_failed']}/{row['copies']} "
+                     f"one step={row['one step']:.3g} cuda32-cpu64={row['cuda32 - cpu64']:.3g} "
+                     f"cpu32-cpu64={row['cpu32 - cpu64']:.3g}; other rows failing: {others}")
     r = m.state_level(env, "cuda", shapes=shape, families=["E4s-1 C"])
     lines.append(f"clean: passed={r['passed']} failed={r['failed']} worst one step={r['worst_one_step']:.3g} "
                  f"worst cpu-cuda={r['worst_cpu_cuda']:.3g}")
-    lines.append(json.dumps({k: {kk: vv for kk, vv in v.items() if kk != "checks"} for k, v in r["strains"].items()}))
+    lines.append(json.dumps(r["strains"]))
     OUT.write_text("\n".join(lines) + "\n", encoding="utf-8", newline="\n")
     print("\n".join(lines[:-1]))
 

@@ -744,7 +744,9 @@ def state_level(env, device, perturb=None, shapes=None, families=None) -> dict:
     shapes, every genome at every shape (in groups of the shape's strains). Inputs: uniform on [0, 1] times each
     sensor's gain at every sensor neuron, drawn on the CPU. A non-finite state fails.
 
-    Amendment 1 (§14.3), judged per strain (each genome's largest difference over ticks, rows and neurons):
+    Amendment 1 (§14.3), judged per strain, every strain (a genome tiled into a shape has one row per copy, each with
+    its own inputs; the record per genome and shape is its worst copy), each strain's largest difference over ticks,
+    rows and neurons:
     - one step, resynchronised: every tick CUDA steps from the CPU's float32 state, and its result must lie within
       1e-4 of the CPU's step (the registered tolerance; local error is not amplified);
     - free running: CUDA float32 may be at most 1.5 times as far from a higher-precision reference (the same genome on
@@ -795,11 +797,7 @@ def state_level(env, device, perturb=None, shapes=None, families=None) -> dict:
                     m["cpu32 - cpu64"] = torch.maximum(m["cpu32 - cpu64"], per(v32n.double() - v64))
                     m["cuda32 - cpu64"] = torch.maximum(m["cuda32 - cpu64"], per(gc - v64))
                     v32 = v32n
-                seen = set()
-                for k, gi in enumerate(pick):
-                    if gi in seen:  # the padding repeats a genome: its first strain is the record
-                        continue
-                    seen.add(gi)
+                for k, gi in enumerate(pick):  # every strain: a genome's copies each have their own inputs
                     r = {key: float(v[k]) for key, v in m.items()}
                     r["bound"] = c["state_factor"] * r["cpu32 - cpu64"] + c["state_tol"]
                     checks = {"one step": r["one step"] <= c["state_tol"]}
@@ -807,11 +805,20 @@ def state_level(env, device, perturb=None, shapes=None, families=None) -> dict:
                         checks["free running, against float64"] = r["cuda32 - cpu64"] <= r["bound"]
                     else:
                         checks["free running, CPU against CUDA"] = r["cpu32 - cuda32"] <= c["state_tol"]
-                    r["checks"], r["passed"] = checks, all(checks.values())
+                    ok = all(checks.values())
                     key = f"{labels[gi]} | {shape}"
-                    rows[key] = r
-                    if not r["passed"]:
-                        failed.append(key)
+                    agg = rows.setdefault(key, {"copies": 0, "copies_failed": 0, "one step": 0.0,
+                                                "cpu32 - cuda32": 0.0, "cpu32 - cpu64": 0.0, "cuda32 - cpu64": 0.0,
+                                                "smallest margin": float("inf"), "passed": True})
+                    agg["copies"] += 1
+                    agg["copies_failed"] += int(not ok)
+                    for kk in ("one step", "cpu32 - cuda32", "cpu32 - cpu64", "cuda32 - cpu64"):
+                        agg[kk] = max(agg[kk], r[kk])
+                    margin = (r["bound"] - r["cuda32 - cpu64"]) if champion else (c["state_tol"] - r["cpu32 - cuda32"])
+                    agg["smallest margin"] = min(agg["smallest margin"], min(margin, c["state_tol"] - r["one step"]))
+                    agg["passed"] = agg["passed"] and ok
+                    if not ok:
+                        failed.append(f"{key} | strain {lo + k}")
     return {"strains": rows, "finite": finite, "failed": failed, "factor": c["state_factor"],
             "floor": c["state_tol"], "worst_cpu_cuda": max(v["cpu32 - cuda32"] for v in rows.values()),
             "worst_one_step": max(v["one step"] for v in rows.values()), "passed": bool(finite and not failed)}

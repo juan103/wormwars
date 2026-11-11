@@ -1,0 +1,2019 @@
+{
+ "provenance_at_start": {
+  "git_commit": "4e68da8fc6ab3cb96f6c71b451d7e694eb304799",
+  "branch": "roadmap",
+  "dirty": false,
+  "python": "3.13.3",
+  "numpy": "2.4.4",
+  "torch": "2.12.0+cu130",
+  "cuda": "13.0",
+  "gpu": "NVIDIA GeForce RTX 5080",
+  "connectome_cache_sha256": "43b87aa172a0042b9dce734b15bdf1c87efe3a33ac1cc0d9cd03255a60c96d4a",
+  "connectome_source_sha256": "1f4fdbf84746b69b49a8da0816f52787860ce349b638dce37924ba80f90c70c9"
+ },
+ "registered": {
+  "sd_worlds": 512,
+  "z": 54.8,
+  "unit": 512,
+  "max_worlds": 8192,
+  "margin": 0.1,
+  "precision": 0.03,
+  "path_tol": 0.001,
+  "path_share": 0.99,
+  "path_worlds": 256,
+  "trace_ticks": 30,
+  "trace_worlds": 256,
+  "respawn_worlds": 64,
+  "attack_worlds": 256,
+  "state_tol": 0.0001,
+  "state_factor": 1.5,
+  "state_ticks": 300,
+  "ghost_ids": [
+   991200000,
+   512
+  ],
+  "settings": [
+   "H1-bite",
+   "H2-0.5",
+   "H2-1",
+   "H2b-walk-0.5",
+   "H2b-wall-0.5"
+  ]
+ },
+ "score_level": {
+  "S-const | H1-bite | 1 x 512": {
+   "worlds": 1536,
+   "sd": 0.5901454211892904,
+   "worlds_required": 1536,
+   "worlds_required_uncapped": 1536,
+   "estimate": 0.008463541666666666,
+   "interval": [
+    -0.017503231537040767,
+    0.034430314870374096
+   ],
+   "half_width": 0.02596677320370743,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 0.6627604166666666,
+   "passed": true
+  },
+  "S-const | H2-0.5 | 1 x 512": {
+   "worlds": 512,
+   "sd": 0.4099424808108883,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": -0.009765625,
+   "interval": [
+    -0.038390866969948756,
+    0.01885961696994876
+   ],
+   "half_width": 0.028625241969948756,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 0.845703125,
+   "passed": true
+  },
+  "S-const | H2-1 | 1 x 512": {
+   "worlds": 1024,
+   "sd": 0.42423812221961227,
+   "worlds_required": 1024,
+   "worlds_required_uncapped": 1024,
+   "estimate": 0.0146484375,
+   "interval": [
+    -0.006249035068003169,
+    0.03554591006800317
+   ],
+   "half_width": 0.020897472568003173,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 0.849609375,
+   "passed": true
+  },
+  "S-const | H2b-walk-0.5 | 1 x 512": {
+   "worlds": 1024,
+   "sd": 0.4796773456395092,
+   "worlds_required": 1024,
+   "worlds_required_uncapped": 1024,
+   "estimate": 0.0146484375,
+   "interval": [
+    -0.010207614186408233,
+    0.03950448918640823
+   ],
+   "half_width": 0.024856051686408233,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 0.7978515625,
+   "passed": true
+  },
+  "S-const | H2b-wall-0.5 | 1 x 512": {
+   "worlds": 1024,
+   "sd": 0.5215475370614578,
+   "worlds_required": 1024,
+   "worlds_required_uncapped": 1024,
+   "estimate": 0.009765625,
+   "interval": [
+    -0.016365285614933136,
+    0.03589653561493314
+   ],
+   "half_width": 0.02613091061493314,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 0.759765625,
+   "passed": true
+  },
+  "S-const | mixed | 1 x 512": {
+   "worlds": 1536,
+   "sd": 0.6657599654302329,
+   "worlds_required": 1536,
+   "worlds_required_uncapped": 1536,
+   "estimate": 0.0027777777777777783,
+   "interval": [
+    -0.026527677368940888,
+    0.03208323292449644
+   ],
+   "half_width": 0.029305455146718666,
+   "precision_reached": true,
+   "weighted": true,
+   "share_identical": 0.7825520833333334,
+   "passed": true
+  },
+  "pursuit | H1-bite | 1 x 512": {
+   "worlds": 1536,
+   "sd": 0.617367163865693,
+   "worlds_required": 1536,
+   "worlds_required_uncapped": 1536,
+   "estimate": 0.026041666666666668,
+   "interval": [
+    -0.00023448866283623873,
+    0.05231782199616958
+   ],
+   "half_width": 0.026276155329502907,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 0.673828125,
+   "passed": true
+  },
+  "pursuit | H2-0.5 | 1 x 512": {
+   "worlds": 512,
+   "sd": 0.0,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.0,
+   "interval": [
+    0.0,
+    0.0
+   ],
+   "half_width": 0.0,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 1.0,
+   "passed": true
+  },
+  "pursuit | H2-1 | 1 x 512": {
+   "worlds": 512,
+   "sd": 0.0,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.0,
+   "interval": [
+    0.0,
+    0.0
+   ],
+   "half_width": 0.0,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 1.0,
+   "passed": true
+  },
+  "pursuit | H2b-walk-0.5 | 1 x 512": {
+   "worlds": 512,
+   "sd": 0.0,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.0,
+   "interval": [
+    0.0,
+    0.0
+   ],
+   "half_width": 0.0,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 1.0,
+   "passed": true
+  },
+  "pursuit | H2b-wall-0.5 | 1 x 512": {
+   "worlds": 512,
+   "sd": 0.06256112470898544,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.0,
+   "interval": [
+    0.0,
+    0.0
+   ],
+   "half_width": 0.0,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 1.0,
+   "passed": true
+  },
+  "pursuit | mixed | 1 x 512": {
+   "worlds": 1024,
+   "sd": 0.5694686406009254,
+   "worlds_required": 1024,
+   "worlds_required_uncapped": 1024,
+   "estimate": 0.0078125,
+   "interval": [
+    -0.022489060399836516,
+    0.038114060399836516
+   ],
+   "half_width": 0.030301560399836516,
+   "precision_reached": false,
+   "weighted": true,
+   "share_identical": 0.9580078125,
+   "passed": true
+  },
+  "L1 carrier | H1-bite | 1 x 512": {
+   "worlds": 512,
+   "sd": 0.09889850175663156,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.001953125,
+   "interval": [
+    -0.0012653144705149669,
+    0.005171564470514967
+   ],
+   "half_width": 0.0032184394705149673,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 0.998046875,
+   "passed": true
+  },
+  "L1 carrier | H2-0.5 | 1 x 512": {
+   "worlds": 512,
+   "sd": 0.062438815452783625,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": -0.001953125,
+   "interval": [
+    -0.005171564470514967,
+    0.0012653144705149669
+   ],
+   "half_width": 0.0032184394705149673,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 0.998046875,
+   "passed": true
+  },
+  "L1 carrier | H2-1 | 1 x 512": {
+   "worlds": 512,
+   "sd": 0.0,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.001953125,
+   "interval": [
+    -0.0012653144705149669,
+    0.005171564470514967
+   ],
+   "half_width": 0.0032184394705149673,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 0.998046875,
+   "passed": true
+  },
+  "L1 carrier | H2b-walk-0.5 | 1 x 512": {
+   "worlds": 512,
+   "sd": 0.04419417382415922,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.001953125,
+   "interval": [
+    -0.0012653144705149669,
+    0.005171564470514967
+   ],
+   "half_width": 0.0032184394705149673,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 0.998046875,
+   "passed": true
+  },
+  "L1 carrier | H2b-wall-0.5 | 1 x 512": {
+   "worlds": 512,
+   "sd": 0.04419417382415922,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.0,
+   "interval": [
+    -0.004556012154098425,
+    0.004556012154098425
+   ],
+   "half_width": 0.004556012154098425,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 0.99609375,
+   "passed": true
+  },
+  "L1 carrier | mixed | 1 x 512": {
+   "worlds": 512,
+   "sd": 0.023570226039551584,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.0010416666666666667,
+   "interval": [
+    -0.0006972939809445969,
+    0.00278062731427793
+   ],
+   "half_width": 0.0017389606476112636,
+   "precision_reached": true,
+   "weighted": true,
+   "share_identical": 0.998046875,
+   "passed": true
+  },
+  "e4s1 M run00 | H1-bite | 4 x 512": {
+   "worlds": 512,
+   "sd": 0.0,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.0,
+   "interval": [
+    0.0,
+    0.0
+   ],
+   "half_width": 0.0,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 1.0,
+   "passed": true
+  },
+  "e4s1 M run01 | H1-bite | 4 x 512": {
+   "worlds": 512,
+   "sd": 0.04419417382415922,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.0,
+   "interval": [
+    0.0,
+    0.0
+   ],
+   "half_width": 0.0,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 1.0,
+   "passed": true
+  },
+  "e4s1 M run02 | H1-bite | 4 x 512": {
+   "worlds": 512,
+   "sd": 0.0,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.0,
+   "interval": [
+    0.0,
+    0.0
+   ],
+   "half_width": 0.0,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 1.0,
+   "passed": true
+  },
+  "e4s1 M run03 | H1-bite | 4 x 512": {
+   "worlds": 512,
+   "sd": 0.0,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.0,
+   "interval": [
+    0.0,
+    0.0
+   ],
+   "half_width": 0.0,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 1.0,
+   "passed": true
+  },
+  "e4s1 M run00 | H2-0.5 | 4 x 512": {
+   "worlds": 512,
+   "sd": 0.0,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.0,
+   "interval": [
+    -0.004556012154098425,
+    0.004556012154098425
+   ],
+   "half_width": 0.004556012154098425,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 0.99609375,
+   "passed": true
+  },
+  "e4s1 M run01 | H2-0.5 | 4 x 512": {
+   "worlds": 512,
+   "sd": 0.0,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": -0.001953125,
+   "interval": [
+    -0.005171564470514967,
+    0.0012653144705149669
+   ],
+   "half_width": 0.0032184394705149673,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 0.998046875,
+   "passed": true
+  },
+  "e4s1 M run02 | H2-0.5 | 4 x 512": {
+   "worlds": 512,
+   "sd": 0.04419417382415922,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": -0.001953125,
+   "interval": [
+    -0.005171564470514967,
+    0.0012653144705149669
+   ],
+   "half_width": 0.0032184394705149673,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 0.998046875,
+   "passed": true
+  },
+  "e4s1 M run03 | H2-0.5 | 4 x 512": {
+   "worlds": 512,
+   "sd": 0.0,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.001953125,
+   "interval": [
+    -0.0012653144705149669,
+    0.005171564470514967
+   ],
+   "half_width": 0.0032184394705149673,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 0.998046875,
+   "passed": true
+  },
+  "e4s1 M run00 | H2-1 | 4 x 512": {
+   "worlds": 512,
+   "sd": 0.0,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": -0.00390625,
+   "interval": [
+    -0.00845335498594238,
+    0.0006408549859423804
+   ],
+   "half_width": 0.0045471049859423796,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 0.99609375,
+   "passed": true
+  },
+  "e4s1 M run01 | H2-1 | 4 x 512": {
+   "worlds": 512,
+   "sd": 0.07639661003892982,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.0,
+   "interval": [
+    0.0,
+    0.0
+   ],
+   "half_width": 0.0,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 1.0,
+   "passed": true
+  },
+  "e4s1 M run02 | H2-1 | 4 x 512": {
+   "worlds": 512,
+   "sd": 0.0,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.0,
+   "interval": [
+    0.0,
+    0.0
+   ],
+   "half_width": 0.0,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 1.0,
+   "passed": true
+  },
+  "e4s1 M run03 | H2-1 | 4 x 512": {
+   "worlds": 512,
+   "sd": 0.09889850175663156,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": -0.001953125,
+   "interval": [
+    -0.009155405619495037,
+    0.005249155619495036
+   ],
+   "half_width": 0.007202280619495037,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 0.990234375,
+   "passed": true
+  },
+  "e4s1 M run00 | H2b-walk-0.5 | 4 x 512": {
+   "worlds": 512,
+   "sd": 0.04419417382415922,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": -0.001953125,
+   "interval": [
+    -0.005171564470514967,
+    0.0012653144705149669
+   ],
+   "half_width": 0.0032184394705149673,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 0.998046875,
+   "passed": true
+  },
+  "e4s1 M run01 | H2b-walk-0.5 | 4 x 512": {
+   "worlds": 512,
+   "sd": 0.0,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": -0.001953125,
+   "interval": [
+    -0.005171564470514967,
+    0.0012653144705149669
+   ],
+   "half_width": 0.0032184394705149673,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 0.998046875,
+   "passed": true
+  },
+  "e4s1 M run02 | H2b-walk-0.5 | 4 x 512": {
+   "worlds": 512,
+   "sd": 0.0,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.0,
+   "interval": [
+    0.0,
+    0.0
+   ],
+   "half_width": 0.0,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 1.0,
+   "passed": true
+  },
+  "e4s1 M run03 | H2b-walk-0.5 | 4 x 512": {
+   "worlds": 512,
+   "sd": 0.04419417382415922,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.0,
+   "interval": [
+    0.0,
+    0.0
+   ],
+   "half_width": 0.0,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 1.0,
+   "passed": true
+  },
+  "e4s1 M run00 | H2b-wall-0.5 | 4 x 512": {
+   "worlds": 512,
+   "sd": 0.062438815452783625,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.0,
+   "interval": [
+    -0.004556012154098425,
+    0.004556012154098425
+   ],
+   "half_width": 0.004556012154098425,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 0.99609375,
+   "passed": true
+  },
+  "e4s1 M run01 | H2b-wall-0.5 | 4 x 512": {
+   "worlds": 512,
+   "sd": 0.0,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": -0.001953125,
+   "interval": [
+    -0.007531260833202813,
+    0.003625010833202813
+   ],
+   "half_width": 0.005578135833202813,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 0.994140625,
+   "passed": true
+  },
+  "e4s1 M run02 | H2b-wall-0.5 | 4 x 512": {
+   "worlds": 512,
+   "sd": 0.0,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.0,
+   "interval": [
+    0.0,
+    0.0
+   ],
+   "half_width": 0.0,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 1.0,
+   "passed": true
+  },
+  "e4s1 M run03 | H2b-wall-0.5 | 4 x 512": {
+   "worlds": 512,
+   "sd": 0.0,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.0,
+   "interval": [
+    0.0,
+    0.0
+   ],
+   "half_width": 0.0,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 1.0,
+   "passed": true
+  },
+  "e4s1 M run00 | mixed | 128 x 8": {
+   "worlds": 512,
+   "sd": 0.0,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.0010416666666666667,
+   "interval": [
+    -0.0006972939809445969,
+    0.00278062731427793
+   ],
+   "half_width": 0.0017389606476112636,
+   "precision_reached": true,
+   "weighted": true,
+   "share_identical": 0.998046875,
+   "passed": true
+  },
+  "e4s1 M run01 | mixed | 128 x 8": {
+   "worlds": 512,
+   "sd": 0.0,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.0,
+   "interval": [
+    0.0,
+    0.0
+   ],
+   "half_width": 0.0,
+   "precision_reached": true,
+   "weighted": true,
+   "share_identical": 1.0,
+   "passed": true
+  },
+  "e4s1 M run02 | mixed | 128 x 8": {
+   "worlds": 512,
+   "sd": 0.05892556509887896,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.0,
+   "interval": [
+    0.0,
+    0.0
+   ],
+   "half_width": 0.0,
+   "precision_reached": true,
+   "weighted": true,
+   "share_identical": 1.0,
+   "passed": true
+  },
+  "e4s1 M run03 | mixed | 128 x 8": {
+   "worlds": 512,
+   "sd": 0.08660254037844387,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.0020833333333333333,
+   "interval": [
+    -0.0003577126805052581,
+    0.004524379347171925
+   ],
+   "half_width": 0.0024410460138385914,
+   "precision_reached": true,
+   "weighted": true,
+   "share_identical": 0.99609375,
+   "passed": true
+  }
+ },
+ "paths": {
+  "prey H2-0.5": {
+   "worlds": 256,
+   "share_agreeing": 1.0,
+   "max_abs": 7.43865966796875e-05,
+   "passed": true
+  },
+  "prey H2b-walk-0.5": {
+   "worlds": 256,
+   "share_agreeing": 1.0,
+   "max_abs": 4.1961669921875e-05,
+   "passed": true
+  },
+  "prey H2b-wall-0.5": {
+   "worlds": 256,
+   "share_agreeing": 1.0,
+   "max_abs": 4.9591064453125e-05,
+   "passed": true
+  },
+  "pursuit trace H1-bite": {
+   "worlds": 256,
+   "ticks": 30,
+   "share_agreeing": 0.9921875,
+   "max_abs": 0.18871593475341797,
+   "passed": true
+  },
+  "pursuit trace H2-0.5": {
+   "worlds": 256,
+   "ticks": 30,
+   "share_agreeing": 1.0,
+   "max_abs": 1.430511474609375e-05,
+   "passed": true
+  }
+ },
+ "ghost_against_task_n": {
+  "S-const": {
+   "worlds": 512,
+   "sd": 0.0,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.0,
+   "interval": [
+    0.0,
+    0.0
+   ],
+   "half_width": 0.0,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 1.0,
+   "passed": true
+  },
+  "oracle": {
+   "worlds": 512,
+   "sd": 0.0,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.0,
+   "interval": [
+    0.0,
+    0.0
+   ],
+   "half_width": 0.0,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 1.0,
+   "passed": true
+  },
+  "e4s1 C run00": {
+   "worlds": 512,
+   "sd": 0.0,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.0,
+   "interval": [
+    0.0,
+    0.0
+   ],
+   "half_width": 0.0,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 1.0,
+   "passed": true
+  },
+  "L1 carrier": {
+   "worlds": 512,
+   "sd": 0.0,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.0,
+   "interval": [
+    0.0,
+    0.0
+   ],
+   "half_width": 0.0,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 1.0,
+   "passed": true
+  }
+ },
+ "attack_disabled": {
+  "H1-bite": {
+   "captures": 0,
+   "damage": 0.0,
+   "passed": true
+  },
+  "H2-0.5": {
+   "captures": 0,
+   "damage": 0.0,
+   "passed": true
+  }
+ },
+ "respawns": {
+  "H1-bite": {
+   "respawns": 289,
+   "min_distance": 6.75669002532959,
+   "required": 6.5,
+   "passed": true
+  },
+  "H2-0.5": {
+   "respawns": 311,
+   "min_distance": 6.500888824462891,
+   "required": 6.5,
+   "passed": true
+  },
+  "H2b-walk-0.5": {
+   "respawns": 286,
+   "min_distance": 6.556885242462158,
+   "required": 6.5,
+   "passed": true
+  }
+ },
+ "state_level": {
+  "strains": {
+   "e4s1 M run00 | training": {
+    "one step": 1.7881393432617188e-06,
+    "cpu32 - cuda32": 1.9073486328125e-05,
+    "cpu32 - cpu64": 0.00019831151438709504,
+    "cuda32 - cpu64": 0.00019890756083484895,
+    "bound": 0.00039746727158064256,
+    "checks": {
+     "one step": true,
+     "free running, against float64": true
+    },
+    "passed": true
+   },
+   "e4s1 M run01 | training": {
+    "one step": 1.6689300537109375e-06,
+    "cpu32 - cuda32": 0.001035388559103012,
+    "cpu32 - cpu64": 0.05364563705177475,
+    "cuda32 - cpu64": 0.05303488315792251,
+    "bound": 0.08056845557766212,
+    "checks": {
+     "one step": true,
+     "free running, against float64": true
+    },
+    "passed": true
+   },
+   "e4s1 M run02 | training": {
+    "one step": 1.430511474609375e-06,
+    "cpu32 - cuda32": 5.245208740234375e-06,
+    "cpu32 - cpu64": 5.1331052109748754e-05,
+    "cuda32 - cpu64": 5.02502235382174e-05,
+    "bound": 0.00017699657816462312,
+    "checks": {
+     "one step": true,
+     "free running, against float64": true
+    },
+    "passed": true
+   },
+   "e4s1 M run03 | training": {
+    "one step": 1.430511474609375e-06,
+    "cpu32 - cuda32": 8.106231689453125e-06,
+    "cpu32 - cpu64": 7.200868624712697e-05,
+    "cuda32 - cpu64": 7.224710482622854e-05,
+    "bound": 0.00020801302937069045,
+    "checks": {
+     "one step": true,
+     "free running, against float64": true
+    },
+    "passed": true
+   },
+   "e4s1 M run04 | training": {
+    "one step": 5.4836273193359375e-06,
+    "cpu32 - cuda32": 1.6570091247558594e-05,
+    "cpu32 - cpu64": 4.302398799671536e-05,
+    "cuda32 - cpu64": 4.4307169213553266e-05,
+    "bound": 0.00016453598199507304,
+    "checks": {
+     "one step": true,
+     "free running, against float64": true
+    },
+    "passed": true
+   },
+   "e4s1 M run05 | training": {
+    "one step": 2.86102294921875e-06,
+    "cpu32 - cuda32": 4.410743713378906e-06,
+    "cpu32 - cpu64": 4.737884310057616e-05,
+    "cuda32 - cpu64": 4.693180826476073e-05,
+    "bound": 0.00017106826465086423,
+    "checks": {
+     "one step": true,
+     "free running, against float64": true
+    },
+    "passed": true
+   },
+   "e4s1 M run06 | training": {
+    "one step": 3.337860107421875e-06,
+    "cpu32 - cuda32": 7.62939453125e-06,
+    "cpu32 - cpu64": 0.00010111505205262494,
+    "cuda32 - cpu64": 0.00010096604044068647,
+    "bound": 0.0002516725780789374,
+    "checks": {
+     "one step": true,
+     "free running, against float64": true
+    },
+    "passed": true
+   },
+   "e4s1 M run07 | training": {
+    "one step": 2.6226043701171875e-06,
+    "cpu32 - cuda32": 2.86102294921875e-06,
+    "cpu32 - cpu64": 4.392298075650558e-05,
+    "cuda32 - cpu64": 4.392298075650558e-05,
+    "bound": 0.00016588447113475836,
+    "checks": {
+     "one step": true,
+     "free running, against float64": true
+    },
+    "passed": true
+   },
+   "e4s1 M run08 | training": {
+    "one step": 1.0132789611816406e-06,
+    "cpu32 - cuda32": 2.7418136596679688e-06,
+    "cpu32 - cpu64": 5.065756333189064e-05,
+    "cuda32 - cpu64": 5.018072617368752e-05,
+    "bound": 0.00017598634499783596,
+    "checks": {
+     "one step": true,
+     "free running, against float64": true
+    },
+    "passed": true
+   },
+   "e4s1 M run09 | training": {
+    "one step": 1.7881393432617188e-06,
+    "cpu32 - cuda32": 2.86102294921875e-06,
+    "cpu32 - cpu64": 9.35007799256482e-05,
+    "cuda32 - cpu64": 9.385840779430055e-05,
+    "bound": 0.0002402511698884723,
+    "checks": {
+     "one step": true,
+     "free running, against float64": true
+    },
+    "passed": true
+   },
+   "e4s1 M run10 | training": {
+    "one step": 1.1920928955078125e-06,
+    "cpu32 - cuda32": 2.384185791015625e-06,
+    "cpu32 - cpu64": 0.0001864058952383285,
+    "cuda32 - cpu64": 0.0001864058952383285,
+    "bound": 0.00037960884285749276,
+    "checks": {
+     "one step": true,
+     "free running, against float64": true
+    },
+    "passed": true
+   },
+   "e4s1 M run11 | training": {
+    "one step": 2.5033950805664062e-06,
+    "cpu32 - cuda32": 4.231929779052734e-06,
+    "cpu32 - cpu64": 4.9358723810566385e-05,
+    "cuda32 - cpu64": 4.962694471205564e-05,
+    "bound": 0.00017403808571584957,
+    "checks": {
+     "one step": true,
+     "free running, against float64": true
+    },
+    "passed": true
+   },
+   "e4s1 M run12 | training": {
+    "one step": 1.430511474609375e-06,
+    "cpu32 - cuda32": 2.2649765014648438e-06,
+    "cpu32 - cpu64": 0.00018386025159289332,
+    "cuda32 - cpu64": 0.0001839198562376687,
+    "bound": 0.00037579037738933997,
+    "checks": {
+     "one step": true,
+     "free running, against float64": true
+    },
+    "passed": true
+   },
+   "e4s1 M run13 | training": {
+    "one step": 1.0728836059570312e-06,
+    "cpu32 - cuda32": 1.9073486328125e-06,
+    "cpu32 - cpu64": 7.583778177355782e-05,
+    "cuda32 - cpu64": 7.583778177355782e-05,
+    "bound": 0.00021375667266033672,
+    "checks": {
+     "one step": true,
+     "free running, against float64": true
+    },
+    "passed": true
+   },
+   "e4s1 M run14 | training": {
+    "one step": 1.9073486328125e-06,
+    "cpu32 - cuda32": 4.363059997558594e-05,
+    "cpu32 - cpu64": 0.0006352156472417825,
+    "cuda32 - cpu64": 0.0006788462472173684,
+    "bound": 0.0010528234708626738,
+    "checks": {
+     "one step": true,
+     "free running, against float64": true
+    },
+    "passed": true
+   },
+   "e4s1 M run15 | training": {
+    "one step": 1.430511474609375e-06,
+    "cpu32 - cuda32": 4.971027374267578e-05,
+    "cpu32 - cpu64": 0.005385968335685165,
+    "cuda32 - cpu64": 0.005336258061942489,
+    "bound": 0.008178952503527747,
+    "checks": {
+     "one step": true,
+     "free running, against float64": true
+    },
+    "passed": true
+   },
+   "e4s1 M run00 | validation": {
+    "one step": 1.9669532775878906e-06,
+    "cpu32 - cuda32": 0.0001061558723449707,
+    "cpu32 - cpu64": 0.00024580288258839456,
+    "cuda32 - cpu64": 0.00024774169605782173,
+    "bound": 0.0004687043238825918,
+    "checks": {
+     "one step": true,
+     "free running, against float64": true
+    },
+    "passed": true
+   },
+   "e4s1 M run01 | validation": {
+    "one step": 2.384185791015625e-06,
+    "cpu32 - cuda32": 0.004408150911331177,
+    "cpu32 - cpu64": 0.4580485150517407,
+    "cuda32 - cpu64": 0.45384957644357116,
+    "bound": 0.6871727725776111,
+    "checks": {
+     "one step": true,
+     "free running, against float64": true
+    },
+    "passed": true
+   },
+   "e4s1 M run02 | validation": {
+    "one step": 1.9073486328125e-06,
+    "cpu32 - cuda32": 5.543231964111328e-06,
+    "cpu32 - cpu64": 5.535093886921416e-05,
+    "cuda32 - cpu64": 5.606619460651885e-05,
+    "bound": 0.00018302640830382123,
+    "checks": {
+     "one step": true,
+     "free running, against float64": true
+    },
+    "passed": true
+   },
+   "e4s1 M run03 | validation": {
+    "one step": 1.9073486328125e-06,
+    "cpu32 - cuda32": 0.0003460049629211426,
+    "cpu32 - cpu64": 0.013258821421337497,
+    "cuda32 - cpu64": 0.012912816458416354,
+    "bound": 0.019988232132006244,
+    "checks": {
+     "one step": true,
+     "free running, against float64": true
+    },
+    "passed": true
+   },
+   "e4s1 M run04 | validation": {
+    "one step": 5.841255187988281e-06,
+    "cpu32 - cuda32": 1.7523765563964844e-05,
+    "cpu32 - cpu64": 5.21375609001673e-05,
+    "cuda32 - cpu64": 4.908918413093488e-05,
+    "bound": 0.00017820634135025094,
+    "checks": {
+     "one step": true,
+     "free running, against float64": true
+    },
+    "passed": true
+   },
+   "e4s1 M run05 | validation": {
+    "one step": 3.0994415283203125e-06,
+    "cpu32 - cuda32": 4.649162292480469e-06,
+    "cpu32 - cpu64": 5.439865562384405e-05,
+    "cuda32 - cpu64": 5.416023704474249e-05,
+    "bound": 0.00018159798343576607,
+    "checks": {
+     "one step": true,
+     "free running, against float64": true
+    },
+    "passed": true
+   },
+   "e4s1 M run06 | validation": {
+    "one step": 3.4570693969726562e-06,
+    "cpu32 - cuda32": 7.987022399902344e-06,
+    "cpu32 - cpu64": 0.000115069602280915,
+    "cuda32 - cpu64": 0.00011456296280032419,
+    "bound": 0.0002726044034213725,
+    "checks": {
+     "one step": true,
+     "free running, against float64": true
+    },
+    "passed": true
+   },
+   "e4s1 M run07 | validation": {
+    "one step": 3.0994415283203125e-06,
+    "cpu32 - cuda32": 3.0994415283203125e-06,
+    "cpu32 - cpu64": 5.033749142580035e-05,
+    "cuda32 - cpu64": 5.033749142580035e-05,
+    "bound": 0.00017550623713870052,
+    "checks": {
+     "one step": true,
+     "free running, against float64": true
+    },
+    "passed": true
+   },
+   "e4s1 M run08 | validation": {
+    "one step": 1.5497207641601562e-06,
+    "cpu32 - cuda32": 4.291534423828125e-06,
+    "cpu32 - cpu64": 0.00036130987573215756,
+    "cuda32 - cpu64": 0.000365079869514201,
+    "bound": 0.0006419648135982364,
+    "checks": {
+     "one step": true,
+     "free running, against float64": true
+    },
+    "passed": true
+   },
+   "e4s1 M run09 | validation": {
+    "one step": 1.9073486328125e-06,
+    "cpu32 - cuda32": 3.814697265625e-06,
+    "cpu32 - cpu64": 0.00013581651490746083,
+    "cuda32 - cpu64": 0.00013367074769554677,
+    "bound": 0.00030372477236119123,
+    "checks": {
+     "one step": true,
+     "free running, against float64": true
+    },
+    "passed": true
+   },
+   "e4s1 M run10 | validation": {
+    "one step": 1.9073486328125e-06,
+    "cpu32 - cuda32": 3.337860107421875e-06,
+    "cpu32 - cpu64": 0.00019520957194096855,
+    "cuda32 - cpu64": 0.00019590785710987824,
+    "bound": 0.0003928143579114528,
+    "checks": {
+     "one step": true,
+     "free running, against float64": true
+    },
+    "passed": true
+   },
+   "e4s1 M run11 | validation": {
+    "one step": 2.562999725341797e-06,
+    "cpu32 - cuda32": 5.0067901611328125e-06,
+    "cpu32 - cpu64": 6.245791975831305e-05,
+    "cuda32 - cpu64": 6.333708826875006e-05,
+    "bound": 0.00019368687963746957,
+    "checks": {
+     "one step": true,
+     "free running, against float64": true
+    },
+    "passed": true
+   },
+   "e4s1 M run12 | validation": {
+    "one step": 1.9073486328125e-06,
+    "cpu32 - cuda32": 3.2186508178710938e-06,
+    "cpu32 - cpu64": 0.0002097790066306615,
+    "cuda32 - cpu64": 0.00020945118108439686,
+    "bound": 0.00041466850994599226,
+    "checks": {
+     "one step": true,
+     "free running, against float64": true
+    },
+    "passed": true
+   },
+   "e4s1 M run13 | validation": {
+    "one step": 1.9073486328125e-06,
+    "cpu32 - cuda32": 4.291534423828125e-06,
+    "cpu32 - cpu64": 8.528604045343613e-05,
+    "cuda32 - cpu64": 8.528604045343613e-05,
+    "bound": 0.00022792906068015419,
+    "checks": {
+     "one step": true,
+     "free running, against float64": true
+    },
+    "passed": true
+   },
+   "e4s1 M run14 | validation": {
+    "one step": 2.86102294921875e-06,
+    "cpu32 - cuda32": 0.00020182132720947266,
+    "cpu32 - cpu64": 0.0019127172044582919,
+    "cuda32 - cpu64": 0.0018942397645779208,
+    "bound": 0.0029690758066874376,
+    "checks": {
+     "one step": true,
+     "free running, against float64": true
+    },
+    "passed": true
+   },
+   "e4s1 M run15 | validation": {
+    "one step": 1.9073486328125e-06,
+    "cpu32 - cuda32": 0.0003243684768676758,
+    "cpu32 - cpu64": 0.026061270590359564,
+    "cuda32 - cpu64": 0.025871847029263373,
+    "bound": 0.03919190588553935,
+    "checks": {
+     "one step": true,
+     "free running, against float64": true
+    },
+    "passed": true
+   },
+   "e4s1 M run00 | suite": {
+    "one step": 1.9669532775878906e-06,
+    "cpu32 - cuda32": 0.00022166967391967773,
+    "cpu32 - cpu64": 0.0006184678776461894,
+    "cuda32 - cpu64": 0.00039679820372651164,
+    "bound": 0.0010277018164692841,
+    "checks": {
+     "one step": true,
+     "free running, against float64": true
+    },
+    "passed": true
+   },
+   "e4s1 M run01 | suite": {
+    "one step": 2.384185791015625e-06,
+    "cpu32 - cuda32": 0.010923027992248535,
+    "cpu32 - cpu64": 0.3518168685371733,
+    "cuda32 - cpu64": 0.3412340638573027,
+    "bound": 0.52782530280576,
+    "checks": {
+     "one step": true,
+     "free running, against float64": true
+    },
+    "passed": true
+   },
+   "e4s1 M run02 | suite": {
+    "one step": 1.9073486328125e-06,
+    "cpu32 - cuda32": 5.543231964111328e-06,
+    "cpu32 - cpu64": 5.858877778441851e-05,
+    "cuda32 - cpu64": 5.8827196363520073e-05,
+    "bound": 0.00018788316667662776,
+    "checks": {
+     "one step": true,
+     "free running, against float64": true
+    },
+    "passed": true
+   },
+   "e4s1 M run03 | suite": {
+    "one step": 2.86102294921875e-06,
+    "cpu32 - cuda32": 2.6345252990722656e-05,
+    "cpu32 - cpu64": 0.0006997373705524002,
+    "cuda32 - cpu64": 0.0006868031626361404,
+    "bound": 0.0011496060558286003,
+    "checks": {
+     "one step": true,
+     "free running, against float64": true
+    },
+    "passed": true
+   },
+   "e4s1 M run04 | suite": {
+    "one step": 5.841255187988281e-06,
+    "cpu32 - cuda32": 1.7523765563964844e-05,
+    "cpu32 - cpu64": 6.282684129255145e-05,
+    "cuda32 - cpu64": 5.2666870451023584e-05,
+    "bound": 0.00019424026193882717,
+    "checks": {
+     "one step": true,
+     "free running, against float64": true
+    },
+    "passed": true
+   },
+   "e4s1 M run05 | suite": {
+    "one step": 3.2186508178710938e-06,
+    "cpu32 - cuda32": 5.0067901611328125e-06,
+    "cpu32 - cpu64": 5.842213285545128e-05,
+    "cuda32 - cpu64": 5.734924924949425e-05,
+    "bound": 0.0001876331992831769,
+    "checks": {
+     "one step": true,
+     "free running, against float64": true
+    },
+    "passed": true
+   },
+   "e4s1 M run06 | suite": {
+    "one step": 3.635883331298828e-06,
+    "cpu32 - cuda32": 8.106231689453125e-06,
+    "cpu32 - cpu64": 0.00010507107207644202,
+    "cuda32 - cpu64": 0.00010603499094116904,
+    "bound": 0.000257606608114663,
+    "checks": {
+     "one step": true,
+     "free running, against float64": true
+    },
+    "passed": true
+   },
+   "e4s1 M run07 | suite": {
+    "one step": 3.0994415283203125e-06,
+    "cpu32 - cuda32": 3.0994415283203125e-06,
+    "cpu32 - cpu64": 5.152265107000176e-05,
+    "cuda32 - cpu64": 5.152265107000176e-05,
+    "bound": 0.00017728397660500263,
+    "checks": {
+     "one step": true,
+     "free running, against float64": true
+    },
+    "passed": true
+   },
+   "e4s1 M run08 | suite": {
+    "one step": 2.384185791015625e-06,
+    "cpu32 - cuda32": 6.586313247680664e-06,
+    "cpu32 - cpu64": 0.0005555764167438637,
+    "cuda32 - cpu64": 0.0005584374396930825,
+    "bound": 0.0009333646251157956,
+    "checks": {
+     "one step": true,
+     "free running, against float64": true
+    },
+    "passed": true
+   },
+   "e4s1 M run09 | suite": {
+    "one step": 2.384185791015625e-06,
+    "cpu32 - cuda32": 4.0531158447265625e-06,
+    "cpu32 - cpu64": 0.00014908557335990835,
+    "cuda32 - cpu64": 0.00014932399193900991,
+    "bound": 0.0003236283600398625,
+    "checks": {
+     "one step": true,
+     "free running, against float64": true
+    },
+    "passed": true
+   },
+   "e4s1 M run10 | suite": {
+    "one step": 1.9073486328125e-06,
+    "cpu32 - cuda32": 3.993511199951172e-06,
+    "cpu32 - cpu64": 0.0002844603237809329,
+    "cuda32 - cpu64": 0.00028457953307048367,
+    "bound": 0.0005266904856713994,
+    "checks": {
+     "one step": true,
+     "free running, against float64": true
+    },
+    "passed": true
+   },
+   "e4s1 M run11 | suite": {
+    "one step": 2.562999725341797e-06,
+    "cpu32 - cuda32": 4.76837158203125e-06,
+    "cpu32 - cpu64": 5.94459505344723e-05,
+    "cuda32 - cpu64": 6.010625823987467e-05,
+    "bound": 0.00018916892580170844,
+    "checks": {
+     "one step": true,
+     "free running, against float64": true
+    },
+    "passed": true
+   },
+   "e4s1 M run12 | suite": {
+    "one step": 1.9073486328125e-06,
+    "cpu32 - cuda32": 3.039836883544922e-06,
+    "cpu32 - cpu64": 0.00024663076690534247,
+    "cuda32 - cpu64": 0.0002459155111680378,
+    "bound": 0.0004699461503580137,
+    "checks": {
+     "one step": true,
+     "free running, against float64": true
+    },
+    "passed": true
+   },
+   "e4s1 M run13 | suite": {
+    "one step": 1.9073486328125e-06,
+    "cpu32 - cuda32": 3.814697265625e-06,
+    "cpu32 - cpu64": 9.11798144369591e-05,
+    "cuda32 - cpu64": 9.11798144369591e-05,
+    "bound": 0.00023676972165543865,
+    "checks": {
+     "one step": true,
+     "free running, against float64": true
+    },
+    "passed": true
+   },
+   "e4s1 M run14 | suite": {
+    "one step": 2.384185791015625e-06,
+    "cpu32 - cuda32": 0.0031111836433410645,
+    "cpu32 - cpu64": 0.09098458520129449,
+    "cuda32 - cpu64": 0.0922958277817083,
+    "bound": 0.13657687780194172,
+    "checks": {
+     "one step": true,
+     "free running, against float64": true
+    },
+    "passed": true
+   },
+   "e4s1 M run15 | suite": {
+    "one step": 1.9073486328125e-06,
+    "cpu32 - cuda32": 0.0024383068084716797,
+    "cpu32 - cpu64": 0.06624899366153958,
+    "cuda32 - cpu64": 0.0638106868530679,
+    "bound": 0.09947349049230937,
+    "checks": {
+     "one step": true,
+     "free running, against float64": true
+    },
+    "passed": true
+   },
+   "SH-route-1020020 #0 | training": {
+    "one step": 1.430511474609375e-06,
+    "cpu32 - cuda32": 1.430511474609375e-06,
+    "cpu32 - cpu64": 3.786614237588637e-05,
+    "cuda32 - cpu64": 3.786614237588637e-05,
+    "bound": 0.00015679921356382954,
+    "checks": {
+     "one step": true,
+     "free running, CPU against CUDA": true
+    },
+    "passed": true
+   },
+   "SH-route-1020020 #1 | training": {
+    "one step": 9.5367431640625e-07,
+    "cpu32 - cuda32": 1.6689300537109375e-06,
+    "cpu32 - cpu64": 4.842251649739282e-05,
+    "cuda32 - cpu64": 4.842251649739282e-05,
+    "bound": 0.00017263377474608922,
+    "checks": {
+     "one step": true,
+     "free running, CPU against CUDA": true
+    },
+    "passed": true
+   },
+   "SH-route-1020020 #2 | training": {
+    "one step": 1.430511474609375e-06,
+    "cpu32 - cuda32": 1.430511474609375e-06,
+    "cpu32 - cpu64": 5.158455706366638e-05,
+    "cuda32 - cpu64": 5.158455706366638e-05,
+    "bound": 0.00017737683559549956,
+    "checks": {
+     "one step": true,
+     "free running, CPU against CUDA": true
+    },
+    "passed": true
+   },
+   "SH-route-1020020 #3 | training": {
+    "one step": 9.5367431640625e-07,
+    "cpu32 - cuda32": 1.1920928955078125e-06,
+    "cpu32 - cpu64": 3.6042187792517666e-05,
+    "cuda32 - cpu64": 3.6042187792517666e-05,
+    "bound": 0.0001540632816887765,
+    "checks": {
+     "one step": true,
+     "free running, CPU against CUDA": true
+    },
+    "passed": true
+   },
+   "SH-route-1020020 #0 | validation": {
+    "one step": 2.1457672119140625e-06,
+    "cpu32 - cuda32": 2.1457672119140625e-06,
+    "cpu32 - cpu64": 4.009469789645337e-05,
+    "cuda32 - cpu64": 4.033311647555493e-05,
+    "bound": 0.00016014204684468004,
+    "checks": {
+     "one step": true,
+     "free running, CPU against CUDA": true
+    },
+    "passed": true
+   },
+   "SH-route-1020020 #1 | validation": {
+    "one step": 1.430511474609375e-06,
+    "cpu32 - cuda32": 1.9073486328125e-06,
+    "cpu32 - cpu64": 5.091927603029234e-05,
+    "cuda32 - cpu64": 5.091927603029234e-05,
+    "bound": 0.0001763789140454385,
+    "checks": {
+     "one step": true,
+     "free running, CPU against CUDA": true
+    },
+    "passed": true
+   },
+   "SH-route-1020020 #2 | validation": {
+    "one step": 1.9073486328125e-06,
+    "cpu32 - cuda32": 2.384185791015625e-06,
+    "cpu32 - cpu64": 5.6058612715848e-05,
+    "cuda32 - cpu64": 5.6058612715848e-05,
+    "bound": 0.000184087919073772,
+    "checks": {
+     "one step": true,
+     "free running, CPU against CUDA": true
+    },
+    "passed": true
+   },
+   "SH-route-1020020 #3 | validation": {
+    "one step": 1.9073486328125e-06,
+    "cpu32 - cuda32": 2.384185791015625e-06,
+    "cpu32 - cpu64": 3.802570486532986e-05,
+    "cuda32 - cpu64": 3.7787286286228294e-05,
+    "bound": 0.00015703855729799478,
+    "checks": {
+     "one step": true,
+     "free running, CPU against CUDA": true
+    },
+    "passed": true
+   },
+   "SH-route-1020020 #0 | suite": {
+    "one step": 1.9073486328125e-06,
+    "cpu32 - cuda32": 2.86102294921875e-06,
+    "cpu32 - cpu64": 3.967495955592426e-05,
+    "cuda32 - cpu64": 3.94365409768227e-05,
+    "bound": 0.00015951243933388638,
+    "checks": {
+     "one step": true,
+     "free running, CPU against CUDA": true
+    },
+    "passed": true
+   },
+   "SH-route-1020020 #1 | suite": {
+    "one step": 1.9073486328125e-06,
+    "cpu32 - cuda32": 2.1457672119140625e-06,
+    "cpu32 - cpu64": 5.1285537800760395e-05,
+    "cuda32 - cpu64": 5.1404747090311176e-05,
+    "bound": 0.00017692830670114058,
+    "checks": {
+     "one step": true,
+     "free running, CPU against CUDA": true
+    },
+    "passed": true
+   },
+   "SH-route-1020020 #2 | suite": {
+    "one step": 1.9073486328125e-06,
+    "cpu32 - cuda32": 2.1457672119140625e-06,
+    "cpu32 - cpu64": 6.0109703075905685e-05,
+    "cuda32 - cpu64": 6.034812165500725e-05,
+    "bound": 0.00019016455461385852,
+    "checks": {
+     "one step": true,
+     "free running, CPU against CUDA": true
+    },
+    "passed": true
+   },
+   "SH-route-1020020 #3 | suite": {
+    "one step": 1.430511474609375e-06,
+    "cpu32 - cuda32": 2.1457672119140625e-06,
+    "cpu32 - cpu64": 3.7725840239755115e-05,
+    "cuda32 - cpu64": 3.7725840239755115e-05,
+    "bound": 0.00015658876035963266,
+    "checks": {
+     "one step": true,
+     "free running, CPU against CUDA": true
+    },
+    "passed": true
+   },
+   "SH-route-1020021 #0 | training": {
+    "one step": 9.5367431640625e-07,
+    "cpu32 - cuda32": 1.1920928955078125e-06,
+    "cpu32 - cpu64": 4.114399795196455e-05,
+    "cuda32 - cpu64": 4.114399795196455e-05,
+    "bound": 0.00016171599692794682,
+    "checks": {
+     "one step": true,
+     "free running, CPU against CUDA": true
+    },
+    "passed": true
+   },
+   "SH-route-1020021 #1 | training": {
+    "one step": 1.6689300537109375e-06,
+    "cpu32 - cuda32": 4.0531158447265625e-06,
+    "cpu32 - cpu64": 4.6520433189423116e-05,
+    "cuda32 - cpu64": 5.057354903414968e-05,
+    "bound": 0.00016978064978413467,
+    "checks": {
+     "one step": true,
+     "free running, CPU against CUDA": true
+    },
+    "passed": true
+   },
+   "SH-route-1020021 #2 | training": {
+    "one step": 9.5367431640625e-07,
+    "cpu32 - cuda32": 1.430511474609375e-06,
+    "cpu32 - cpu64": 3.385804192923558e-05,
+    "cuda32 - cpu64": 3.4096460508337145e-05,
+    "bound": 0.00015078706289385337,
+    "checks": {
+     "one step": true,
+     "free running, CPU against CUDA": true
+    },
+    "passed": true
+   },
+   "SH-route-1020021 #3 | training": {
+    "one step": 1.1920928955078125e-06,
+    "cpu32 - cuda32": 1.430511474609375e-06,
+    "cpu32 - cpu64": 3.804127721984685e-05,
+    "cuda32 - cpu64": 3.804127721984685e-05,
+    "bound": 0.00015706191582977026,
+    "checks": {
+     "one step": true,
+     "free running, CPU against CUDA": true
+    },
+    "passed": true
+   },
+   "SH-route-1020021 #0 | validation": {
+    "one step": 1.430511474609375e-06,
+    "cpu32 - cuda32": 1.6689300537109375e-06,
+    "cpu32 - cpu64": 4.6000749040819855e-05,
+    "cuda32 - cpu64": 4.6000749040819855e-05,
+    "bound": 0.00016900112356122977,
+    "checks": {
+     "one step": true,
+     "free running, CPU against CUDA": true
+    },
+    "passed": true
+   },
+   "SH-route-1020021 #1 | validation": {
+    "one step": 1.9073486328125e-06,
+    "cpu32 - cuda32": 4.291534423828125e-06,
+    "cpu32 - cpu64": 8.506877498493104e-05,
+    "cuda32 - cpu64": 8.208854274616151e-05,
+    "bound": 0.00022760316247739655,
+    "checks": {
+     "one step": true,
+     "free running, CPU against CUDA": true
+    },
+    "passed": true
+   },
+   "SH-route-1020021 #2 | validation": {
+    "one step": 1.430511474609375e-06,
+    "cpu32 - cuda32": 2.1457672119140625e-06,
+    "cpu32 - cpu64": 3.917423936594666e-05,
+    "cuda32 - cpu64": 4.0366332261454474e-05,
+    "bound": 0.00015876135904891998,
+    "checks": {
+     "one step": true,
+     "free running, CPU against CUDA": true
+    },
+    "passed": true
+   },
+   "SH-route-1020021 #3 | validation": {
+    "one step": 1.6689300537109375e-06,
+    "cpu32 - cuda32": 2.384185791015625e-06,
+    "cpu32 - cpu64": 3.988953949574103e-05,
+    "cuda32 - cpu64": 3.988953949574103e-05,
+    "bound": 0.00015983430924361154,
+    "checks": {
+     "one step": true,
+     "free running, CPU against CUDA": true
+    },
+    "passed": true
+   },
+   "SH-route-1020021 #0 | suite": {
+    "one step": 1.430511474609375e-06,
+    "cpu32 - cuda32": 1.6689300537109375e-06,
+    "cpu32 - cpu64": 4.627746147356504e-05,
+    "cuda32 - cpu64": 4.627746147356504e-05,
+    "bound": 0.00016941619221034755,
+    "checks": {
+     "one step": true,
+     "free running, CPU against CUDA": true
+    },
+    "passed": true
+   },
+   "SH-route-1020021 #1 | suite": {
+    "one step": 2.384185791015625e-06,
+    "cpu32 - cuda32": 9.745359420776367e-06,
+    "cpu32 - cpu64": 0.0002594673159528327,
+    "cuda32 - cpu64": 0.00025899047879462955,
+    "bound": 0.0004892009739292491,
+    "checks": {
+     "one step": true,
+     "free running, CPU against CUDA": true
+    },
+    "passed": true
+   },
+   "SH-route-1020021 #2 | suite": {
+    "one step": 1.9073486328125e-06,
+    "cpu32 - cuda32": 3.5762786865234375e-06,
+    "cpu32 - cpu64": 0.0001003376066420758,
+    "cuda32 - cpu64": 0.00010147009489280823,
+    "bound": 0.0002505064099631137,
+    "checks": {
+     "one step": true,
+     "free running, CPU against CUDA": true
+    },
+    "passed": true
+   },
+   "SH-route-1020021 #3 | suite": {
+    "one step": 2.1457672119140625e-06,
+    "cpu32 - cuda32": 2.1457672119140625e-06,
+    "cpu32 - cpu64": 4.004563113224613e-05,
+    "cuda32 - cpu64": 3.9807212553144566e-05,
+    "bound": 0.00016006844669836918,
+    "checks": {
+     "one step": true,
+     "free running, CPU against CUDA": true
+    },
+    "passed": true
+   },
+   "SH-route-1020022 #0 | training": {
+    "one step": 8.344650268554688e-07,
+    "cpu32 - cuda32": 1.430511474609375e-06,
+    "cpu32 - cpu64": 3.508185500900041e-05,
+    "cuda32 - cpu64": 3.532027358810197e-05,
+    "bound": 0.0001526227825135006,
+    "checks": {
+     "one step": true,
+     "free running, CPU against CUDA": true
+    },
+    "passed": true
+   },
+   "SH-route-1020022 #1 | training": {
+    "one step": 1.1026859283447266e-06,
+    "cpu32 - cuda32": 2.205371856689453e-06,
+    "cpu32 - cpu64": 3.3991195479199376e-05,
+    "cuda32 - cpu64": 3.3991195479199376e-05,
+    "bound": 0.00015098679321879906,
+    "checks": {
+     "one step": true,
+     "free running, CPU against CUDA": true
+    },
+    "passed": true
+   },
+   "SH-route-1020022 #2 | training": {
+    "one step": 1.430511474609375e-06,
+    "cpu32 - cuda32": 1.6689300537109375e-06,
+    "cpu32 - cpu64": 3.616849734866534e-05,
+    "cuda32 - cpu64": 3.593007876956378e-05,
+    "bound": 0.000154252746022998,
+    "checks": {
+     "one step": true,
+     "free running, CPU against CUDA": true
+    },
+    "passed": true
+   },
+   "SH-route-1020022 #3 | training": {
+    "one step": 1.430511474609375e-06,
+    "cpu32 - cuda32": 1.430511474609375e-06,
+    "cpu32 - cpu64": 4.838230297066204e-05,
+    "cuda32 - cpu64": 4.86207215497636e-05,
+    "bound": 0.00017257345445599305,
+    "checks": {
+     "one step": true,
+     "free running, CPU against CUDA": true
+    },
+    "passed": true
+   },
+   "SH-route-1020022 #0 | validation": {
+    "one step": 1.9073486328125e-06,
+    "cpu32 - cuda32": 2.1457672119140625e-06,
+    "cpu32 - cpu64": 3.7783718083161943e-05,
+    "cuda32 - cpu64": 3.730688092495882e-05,
+    "bound": 0.0001566755771247429,
+    "checks": {
+     "one step": true,
+     "free running, CPU against CUDA": true
+    },
+    "passed": true
+   },
+   "SH-route-1020022 #1 | validation": {
+    "one step": 1.9073486328125e-06,
+    "cpu32 - cuda32": 2.518296241760254e-06,
+    "cpu32 - cpu64": 4.732484406533288e-05,
+    "cuda32 - cpu64": 4.732484406533288e-05,
+    "bound": 0.00017098726609799932,
+    "checks": {
+     "one step": true,
+     "free running, CPU against CUDA": true
+    },
+    "passed": true
+   },
+   "SH-route-1020022 #2 | validation": {
+    "one step": 1.9073486328125e-06,
+    "cpu32 - cuda32": 2.1457672119140625e-06,
+    "cpu32 - cpu64": 4.3225446902273035e-05,
+    "cuda32 - cpu64": 4.34638654813746e-05,
+    "bound": 0.00016483817035340954,
+    "checks": {
+     "one step": true,
+     "free running, CPU against CUDA": true
+    },
+    "passed": true
+   },
+   "SH-route-1020022 #3 | validation": {
+    "one step": 2.384185791015625e-06,
+    "cpu32 - cuda32": 2.384185791015625e-06,
+    "cpu32 - cpu64": 4.9233785600844016e-05,
+    "cuda32 - cpu64": 4.9233785600844016e-05,
+    "bound": 0.00017385067840126601,
+    "checks": {
+     "one step": true,
+     "free running, CPU against CUDA": true
+    },
+    "passed": true
+   },
+   "SH-route-1020022 #0 | suite": {
+    "one step": 1.1920928955078125e-06,
+    "cpu32 - cuda32": 1.9073486328125e-06,
+    "cpu32 - cpu64": 4.028552862234136e-05,
+    "cuda32 - cpu64": 4.028552862234136e-05,
+    "bound": 0.00016042829293351203,
+    "checks": {
+     "one step": true,
+     "free running, CPU against CUDA": true
+    },
+    "passed": true
+   },
+   "SH-route-1020022 #1 | suite": {
+    "one step": 2.86102294921875e-06,
+    "cpu32 - cuda32": 2.9206275939941406e-06,
+    "cpu32 - cpu64": 4.363526630379866e-05,
+    "cuda32 - cpu64": 4.305085488232052e-05,
+    "bound": 0.00016545289945569798,
+    "checks": {
+     "one step": true,
+     "free running, CPU against CUDA": true
+    },
+    "passed": true
+   },
+   "SH-route-1020022 #2 | suite": {
+    "one step": 2.1457672119140625e-06,
+    "cpu32 - cuda32": 2.384185791015625e-06,
+    "cpu32 - cpu64": 4.481553546575867e-05,
+    "cuda32 - cpu64": 4.481553546575867e-05,
+    "bound": 0.000167223303198638,
+    "checks": {
+     "one step": true,
+     "free running, CPU against CUDA": true
+    },
+    "passed": true
+   },
+   "SH-route-1020022 #3 | suite": {
+    "one step": 1.9073486328125e-06,
+    "cpu32 - cuda32": 2.384185791015625e-06,
+    "cpu32 - cpu64": 4.9659541859981005e-05,
+    "cuda32 - cpu64": 4.9659541859981005e-05,
+    "bound": 0.0001744893127899715,
+    "checks": {
+     "one step": true,
+     "free running, CPU against CUDA": true
+    },
+    "passed": true
+   },
+   "SH-route-1020023 #0 | training": {
+    "one step": 1.9073486328125e-06,
+    "cpu32 - cuda32": 2.086162567138672e-06,
+    "cpu32 - cpu64": 3.650259724197191e-05,
+    "cuda32 - cpu64": 3.6860225110624256e-05,
+    "bound": 0.00015475389586295786,
+    "checks": {
+     "one step": true,
+     "free running, CPU against CUDA": true
+    },
+    "passed": true
+   },
+   "SH-route-1020023 #1 | training": {
+    "one step": 2.9802322387695312e-06,
+    "cpu32 - cuda32": 4.887580871582031e-06,
+    "cpu32 - cpu64": 3.5915758679117005e-05,
+    "cuda32 - cpu64": 3.5539099987325073e-05,
+    "bound": 0.0001538736380186755,
+    "checks": {
+     "one step": true,
+     "free running, CPU against CUDA": true
+    },
+    "passed": true
+   },
+   "SH-route-1020023 #2 | training": {
+    "one step": 1.430511474609375e-06,
+    "cpu32 - cuda32": 1.430511474609375e-06,
+    "cpu32 - cpu64": 4.694119991976997e-05,
+    "cuda32 - cpu64": 4.706040920932075e-05,
+    "bound": 0.00017041179987965495,
+    "checks": {
+     "one step": true,
+     "free running, CPU against CUDA": true
+    },
+    "passed": true
+   },
+   "SH-route-1020023 #3 | training": {
+    "one step": 1.1920928955078125e-06,
+    "cpu32 - cuda32": 1.6689300537109375e-06,
+    "cpu32 - cpu64": 3.141108925897029e-05,
+    "cuda32 - cpu64": 3.141108925897029e-05,
+    "bound": 0.00014711663388845543,
+    "checks": {
+     "one step": true,
+     "free running, CPU against CUDA": true
+    },
+    "passed": true
+   },
+   "SH-route-1020023 #0 | validation": {
+    "one step": 2.0265579223632812e-06,
+    "cpu32 - cuda32": 2.384185791015625e-06,
+    "cpu32 - cpu64": 3.7847656623624104e-05,
+    "cuda32 - cpu64": 3.772844733407332e-05,
+    "bound": 0.00015677148493543615,
+    "checks": {
+     "one step": true,
+     "free running, CPU against CUDA": true
+    },
+    "passed": true
+   },
+   "SH-route-1020023 #1 | validation": {
+    "one step": 3.337860107421875e-06,
+    "cpu32 - cuda32": 5.4836273193359375e-06,
+    "cpu32 - cpu64": 4.159643914514177e-05,
+    "cuda32 - cpu64": 4.159643914514177e-05,
+    "bound": 0.00016239465871771265,
+    "checks": {
+     "one step": true,
+     "free running, CPU against CUDA": true
+    },
+    "passed": true
+   },
+   "SH-route-1020023 #2 | validation": {
+    "one step": 1.9073486328125e-06,
+    "cpu32 - cuda32": 2.384185791015625e-06,
+    "cpu32 - cpu64": 4.821667585375167e-05,
+    "cuda32 - cpu64": 4.881272230150557e-05,
+    "bound": 0.0001723250137806275,
+    "checks": {
+     "one step": true,
+     "free running, CPU against CUDA": true
+    },
+    "passed": true
+   },
+   "SH-route-1020023 #3 | validation": {
+    "one step": 1.9073486328125e-06,
+    "cpu32 - cuda32": 1.9073486328125e-06,
+    "cpu32 - cpu64": 3.5526660046691916e-05,
+    "cuda32 - cpu64": 3.5526660046691916e-05,
+    "bound": 0.00015328999007003786,
+    "checks": {
+     "one step": true,
+     "free running, CPU against CUDA": true
+    },
+    "passed": true
+   },
+   "SH-route-1020023 #0 | suite": {
+    "one step": 2.1457672119140625e-06,
+    "cpu32 - cuda32": 2.384185791015625e-06,
+    "cpu32 - cpu64": 3.76242052084752e-05,
+    "cuda32 - cpu64": 3.7853367291118545e-05,
+    "bound": 0.0001564363078127128,
+    "checks": {
+     "one step": true,
+     "free running, CPU against CUDA": true
+    },
+    "passed": true
+   },
+   "SH-route-1020023 #1 | suite": {
+    "one step": 3.159046173095703e-06,
+    "cpu32 - cuda32": 5.602836608886719e-06,
+    "cpu32 - cpu64": 4.312142427576049e-05,
+    "cuda32 - cpu64": 4.288300569665893e-05,
+    "bound": 0.00016468213641364073,
+    "checks": {
+     "one step": true,
+     "free running, CPU against CUDA": true
+    },
+    "passed": true
+   },
+   "SH-route-1020023 #2 | suite": {
+    "one step": 1.9073486328125e-06,
+    "cpu32 - cuda32": 2.384185791015625e-06,
+    "cpu32 - cpu64": 4.838192715483913e-05,
+    "cuda32 - cpu64": 4.838192715483913e-05,
+    "bound": 0.0001725728907322587,
+    "checks": {
+     "one step": true,
+     "free running, CPU against CUDA": true
+    },
+    "passed": true
+   },
+   "SH-route-1020023 #3 | suite": {
+    "one step": 2.384185791015625e-06,
+    "cpu32 - cuda32": 2.384185791015625e-06,
+    "cpu32 - cpu64": 3.429737135451916e-05,
+    "cuda32 - cpu64": 3.4058952775417595e-05,
+    "bound": 0.00015144605703177873,
+    "checks": {
+     "one step": true,
+     "free running, CPU against CUDA": true
+    },
+    "passed": true
+   }
+  },
+  "finite": true,
+  "failed": [],
+  "factor": 1.5,
+  "floor": 0.0001,
+  "worst_cpu_cuda": 0.010923027992248535,
+  "worst_one_step": 5.841255187988281e-06,
+  "passed": true
+ },
+ "seconds": 2046.2248642998748,
+ "failed": [],
+ "passed": true,
+ "imprecise": [
+  "pursuit | mixed | 1 x 512"
+ ],
+ "ledger": "every play checked every tick at 1e-05 (a failure stops the stage)"
+}
