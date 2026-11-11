@@ -88,15 +88,24 @@ class HuntWorld(World):
     _hunt_task = True
 
     def __init__(self, cfg, iface, brain, strain_of, run_seed, world_ids=None, device="cpu", dtype=torch.float32, *,
-                 rule: str, prey_energy: float = 12.0, pinned: bool = True, hunter_attack: float = 1.0,
+                 rule: str, prey_energy: float = 12.0, pinned=True, hunter_attack: float = 1.0,
                  prey_body: bool | None = None):
+        """`pinned` is one flag for every world, or one per world (E5-1's mixed world)."""
         if cfg.world.task != "hunt":
             raise ValueError("HuntWorld plays the hunt task (wormwars.e5.hunt.hunt_config)")
         if rule not in RULES:
             raise ValueError(f"rule must be one of {RULES}")
         if int(strain_of.shape[1]) != 2:
             raise ValueError("Task H has two swarms: the hunter and the prey")
-        self.rule, self.prey_energy, self.pinned = rule, float(prey_energy), bool(pinned)
+        self.rule, self.prey_energy = rule, float(prey_energy)
+        if np.ndim(pinned) == 0:
+            self.pinned, self._pin_worlds = bool(pinned), None
+        else:
+            flags = np.asarray(pinned, dtype=bool).reshape(-1)
+            if flags.size != int(strain_of.shape[0]):
+                raise ValueError(f"{flags.size} pin flags for {int(strain_of.shape[0])} worlds")
+            self.pinned = bool(flags.all()) if flags.all() or not flags.any() else None  # None: some worlds pinned
+            self._pin_worlds = torch.as_tensor(flags, device=device) if self.pinned is None else None
         self.prey_body = (rule != "ghost") if prey_body is None else bool(prey_body)
         if rule == "ghost" and self.prey_body:
             raise ValueError("a ghost has no body (use reach)")
@@ -220,6 +229,12 @@ class HuntWorld(World):
             self.pin_push += (new[:, PREY, 0] - self.pos[:, PREY, 0]).norm(dim=-1).double()
             new = new.clone()
             new[:, PREY] = self.pos[:, PREY]
+        elif self.pinned is None:  # some worlds pinned: the same arithmetic in those, nothing in the others
+            pin = self._pin_worlds
+            push = (new[:, PREY, 0] - self.pos[:, PREY, 0]).norm(dim=-1).double()
+            self.pin_push += torch.where(pin, push, torch.zeros_like(push))
+            new = new.clone()
+            new[:, PREY] = torch.where(pin.view(-1, 1, 1), self.pos[:, PREY], new[:, PREY])
         return new
 
     # ------------------------------------------------------------- captures

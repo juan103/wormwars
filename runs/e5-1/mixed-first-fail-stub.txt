@@ -1,0 +1,282 @@
+......FFFFFFFFF                                                          [100%]
+================================== FAILURES ===================================
+_________________ test_a_per_world_pin_matches_the_single_pin _________________
+
+iface = Interface(signal_names=('food_left', 'food_right', 'food_left', 'food_right', 'food_left', 'food_right', 'ally_pheromo...minus=array([207, 208, 196, 197]), pump_neurons=array([15, 16]), pump_gain=4.0, forward_offset=0.6, lateral_offset=0.5)
+params = {'e_prey': 1.3750000298023224, 'route': {'gain': 2.0, 'reach': 1.0, 'spacing': 6.0}, 'walk': {'persistence': 0.9, 'rate': 0.4}, 'wall': {'avoid_turn': 1.0, 'seek_turn': -0.1, 'threshold': 0.5023322880268097}}
+
+    def test_a_per_world_pin_matches_the_single_pin(iface, params):
+        """Pinned columns as in an all-pinned run, unpinned as in an unpinned one, at the same composition."""
+        cfg = _cfg()
+        st = ST.BY_NAME["H2-0.6"]
+        mask = np.array([True, False] * 4)
+        runs = {}
+        for label, pin in (("mixed", mask), ("all", True), ("none", False)):
+>           runs[label] = play(cfg, iface, _pursuit(iface, cfg), _single_prey(iface, cfg, st, params), IDS, SEED,
+                               rule="bite", prey_energy=params["e_prey"], pinned=pin)
+
+tests\test_e5_mixed.py:143: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+wormwars\e5\play.py:37: in play
+    w = HuntWorld(cfg, iface, [hunter, prey], strain_of, run_seed=run_seed, world_ids=np.tile(world_ids, S),
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <wormwars.e5.hunt.HuntWorld object at 0x000001EADAC5E3C0>
+cfg = Config(brain=BrainConfig(substeps=32, tau_min=0.5, tau_max=20.0, w_max=3.0, g_max=2.0, b_max=2.0, init_w_scale=0.2, in...=2, coevo_lopsided_fraction=0.5, hof_capacity=12, suite_every=5, suite_sizes=(100, 100), suite_size=6, suite_worlds=8))
+iface = Interface(signal_names=('food_left', 'food_right', 'food_left', 'food_right', 'food_left', 'food_right', 'ally_pheromo...minus=array([207, 208, 196, 197]), pump_neurons=array([15, 16]), pump_gain=4.0, forward_offset=0.6, lateral_offset=0.5)
+brain = [<wormwars.e5.prey.PursuitBrain object at 0x000001EADAC5ECF0>, <wormwars.e5.prey.PreyBrain object at 0x000001EADAC5F4D0>]
+strain_of = tensor([[0, 0],
+        [0, 0],
+        [0, 0],
+        [0, 0],
+        [0, 0],
+        [0, 0],
+        [0, 0],
+        [0, 0]])
+run_seed = 1529001
+world_ids = array([987000000, 987000001, 987000002, 987000003, 987000004, 987000005,
+       987000006, 987000007])
+device = 'cpu', dtype = torch.float32
+
+    def __init__(self, cfg, iface, brain, strain_of, run_seed, world_ids=None, device="cpu", dtype=torch.float32, *,
+                 rule: str, prey_energy: float = 12.0, pinned: bool = True, hunter_attack: float = 1.0,
+                 prey_body: bool | None = None):
+        if cfg.world.task != "hunt":
+            raise ValueError("HuntWorld plays the hunt task (wormwars.e5.hunt.hunt_config)")
+        if rule not in RULES:
+            raise ValueError(f"rule must be one of {RULES}")
+        if int(strain_of.shape[1]) != 2:
+            raise ValueError("Task H has two swarms: the hunter and the prey")
+>       self.rule, self.prey_energy, self.pinned = rule, float(prey_energy), bool(pinned)
+                                                                             ^^^^^^^^^^^^
+E       ValueError: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
+
+wormwars\e5\hunt.py:99: ValueError
+_____________ test_a_mixed_prey_of_one_kind_is_the_prey[H1-bite] ______________
+
+iface = Interface(signal_names=('food_left', 'food_right', 'food_left', 'food_right', 'food_left', 'food_right', 'ally_pheromo...minus=array([207, 208, 196, 197]), pump_neurons=array([15, 16]), pump_gain=4.0, forward_offset=0.6, lateral_offset=0.5)
+params = {'e_prey': 1.3750000298023224, 'route': {'gain': 2.0, 'reach': 1.0, 'spacing': 6.0}, 'walk': {'persistence': 0.9, 'rate': 0.4}, 'wall': {'avoid_turn': 1.0, 'seek_turn': -0.1, 'threshold': 0.5023322880268097}}
+name = 'H1-bite'
+
+    @pytest.mark.parametrize("name", ["H1-bite", "H2-0.6", "H2b-walk-0.5", "H2b-wall-0.5"])
+    def test_a_mixed_prey_of_one_kind_is_the_prey(iface, params, name):
+        cfg = _cfg()
+        st = ST.BY_NAME[name]
+        a = play(cfg, iface, _pursuit(iface, cfg), _single_prey(iface, cfg, st, params), IDS, SEED, rule="bite",
+                 prey_energy=params["e_prey"], pinned=st["pinned"])
+>       b = play(cfg, iface, _pursuit(iface, cfg), MX.prey(iface, cfg, [name] * len(IDS), params), IDS, SEED,
+                                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                 rule="bite", prey_energy=params["e_prey"], pinned=st["pinned"])
+
+tests\test_e5_mixed.py:158: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+a = (Interface(signal_names=('food_left', 'food_right', 'food_left', 'food_right', 'food_left', 'food_right', 'ally_pherom...': {'persistence': 0.9, 'rate': 0.4}, 'wall': {'avoid_turn': 1.0, 'seek_turn': -0.1, 'threshold': 0.5023322880268097}})
+k = {}
+
+    def prey(*a, **k):
+>       raise NotImplementedError
+E       NotImplementedError
+
+wormwars\e5\mixed.py:2: NotImplementedError
+______________ test_a_mixed_prey_of_one_kind_is_the_prey[H2-0.6] ______________
+
+iface = Interface(signal_names=('food_left', 'food_right', 'food_left', 'food_right', 'food_left', 'food_right', 'ally_pheromo...minus=array([207, 208, 196, 197]), pump_neurons=array([15, 16]), pump_gain=4.0, forward_offset=0.6, lateral_offset=0.5)
+params = {'e_prey': 1.3750000298023224, 'route': {'gain': 2.0, 'reach': 1.0, 'spacing': 6.0}, 'walk': {'persistence': 0.9, 'rate': 0.4}, 'wall': {'avoid_turn': 1.0, 'seek_turn': -0.1, 'threshold': 0.5023322880268097}}
+name = 'H2-0.6'
+
+    @pytest.mark.parametrize("name", ["H1-bite", "H2-0.6", "H2b-walk-0.5", "H2b-wall-0.5"])
+    def test_a_mixed_prey_of_one_kind_is_the_prey(iface, params, name):
+        cfg = _cfg()
+        st = ST.BY_NAME[name]
+        a = play(cfg, iface, _pursuit(iface, cfg), _single_prey(iface, cfg, st, params), IDS, SEED, rule="bite",
+                 prey_energy=params["e_prey"], pinned=st["pinned"])
+>       b = play(cfg, iface, _pursuit(iface, cfg), MX.prey(iface, cfg, [name] * len(IDS), params), IDS, SEED,
+                                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                 rule="bite", prey_energy=params["e_prey"], pinned=st["pinned"])
+
+tests\test_e5_mixed.py:158: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+a = (Interface(signal_names=('food_left', 'food_right', 'food_left', 'food_right', 'food_left', 'food_right', 'ally_pherom...': {'persistence': 0.9, 'rate': 0.4}, 'wall': {'avoid_turn': 1.0, 'seek_turn': -0.1, 'threshold': 0.5023322880268097}})
+k = {}
+
+    def prey(*a, **k):
+>       raise NotImplementedError
+E       NotImplementedError
+
+wormwars\e5\mixed.py:2: NotImplementedError
+___________ test_a_mixed_prey_of_one_kind_is_the_prey[H2b-walk-0.5] ___________
+
+iface = Interface(signal_names=('food_left', 'food_right', 'food_left', 'food_right', 'food_left', 'food_right', 'ally_pheromo...minus=array([207, 208, 196, 197]), pump_neurons=array([15, 16]), pump_gain=4.0, forward_offset=0.6, lateral_offset=0.5)
+params = {'e_prey': 1.3750000298023224, 'route': {'gain': 2.0, 'reach': 1.0, 'spacing': 6.0}, 'walk': {'persistence': 0.9, 'rate': 0.4}, 'wall': {'avoid_turn': 1.0, 'seek_turn': -0.1, 'threshold': 0.5023322880268097}}
+name = 'H2b-walk-0.5'
+
+    @pytest.mark.parametrize("name", ["H1-bite", "H2-0.6", "H2b-walk-0.5", "H2b-wall-0.5"])
+    def test_a_mixed_prey_of_one_kind_is_the_prey(iface, params, name):
+        cfg = _cfg()
+        st = ST.BY_NAME[name]
+        a = play(cfg, iface, _pursuit(iface, cfg), _single_prey(iface, cfg, st, params), IDS, SEED, rule="bite",
+                 prey_energy=params["e_prey"], pinned=st["pinned"])
+>       b = play(cfg, iface, _pursuit(iface, cfg), MX.prey(iface, cfg, [name] * len(IDS), params), IDS, SEED,
+                                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                 rule="bite", prey_energy=params["e_prey"], pinned=st["pinned"])
+
+tests\test_e5_mixed.py:158: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+a = (Interface(signal_names=('food_left', 'food_right', 'food_left', 'food_right', 'food_left', 'food_right', 'ally_pherom...': {'persistence': 0.9, 'rate': 0.4}, 'wall': {'avoid_turn': 1.0, 'seek_turn': -0.1, 'threshold': 0.5023322880268097}})
+k = {}
+
+    def prey(*a, **k):
+>       raise NotImplementedError
+E       NotImplementedError
+
+wormwars\e5\mixed.py:2: NotImplementedError
+___________ test_a_mixed_prey_of_one_kind_is_the_prey[H2b-wall-0.5] ___________
+
+iface = Interface(signal_names=('food_left', 'food_right', 'food_left', 'food_right', 'food_left', 'food_right', 'ally_pheromo...minus=array([207, 208, 196, 197]), pump_neurons=array([15, 16]), pump_gain=4.0, forward_offset=0.6, lateral_offset=0.5)
+params = {'e_prey': 1.3750000298023224, 'route': {'gain': 2.0, 'reach': 1.0, 'spacing': 6.0}, 'walk': {'persistence': 0.9, 'rate': 0.4}, 'wall': {'avoid_turn': 1.0, 'seek_turn': -0.1, 'threshold': 0.5023322880268097}}
+name = 'H2b-wall-0.5'
+
+    @pytest.mark.parametrize("name", ["H1-bite", "H2-0.6", "H2b-walk-0.5", "H2b-wall-0.5"])
+    def test_a_mixed_prey_of_one_kind_is_the_prey(iface, params, name):
+        cfg = _cfg()
+        st = ST.BY_NAME[name]
+        a = play(cfg, iface, _pursuit(iface, cfg), _single_prey(iface, cfg, st, params), IDS, SEED, rule="bite",
+                 prey_energy=params["e_prey"], pinned=st["pinned"])
+>       b = play(cfg, iface, _pursuit(iface, cfg), MX.prey(iface, cfg, [name] * len(IDS), params), IDS, SEED,
+                                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                 rule="bite", prey_energy=params["e_prey"], pinned=st["pinned"])
+
+tests\test_e5_mixed.py:158: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+a = (Interface(signal_names=('food_left', 'food_right', 'food_left', 'food_right', 'food_left', 'food_right', 'ally_pherom...': {'persistence': 0.9, 'rate': 0.4}, 'wall': {'avoid_turn': 1.0, 'seek_turn': -0.1, 'threshold': 0.5023322880268097}})
+k = {}
+
+    def prey(*a, **k):
+>       raise NotImplementedError
+E       NotImplementedError
+
+wormwars\e5\mixed.py:2: NotImplementedError
+___________________ test_the_mixed_world_is_each_slot_alone ___________________
+
+iface = Interface(signal_names=('food_left', 'food_right', 'food_left', 'food_right', 'food_left', 'food_right', 'ally_pheromo...minus=array([207, 208, 196, 197]), pump_neurons=array([15, 16]), pump_gain=4.0, forward_offset=0.6, lateral_offset=0.5)
+params = {'e_prey': 1.3750000298023224, 'route': {'gain': 2.0, 'reach': 1.0, 'spacing': 6.0}, 'walk': {'persistence': 0.9, 'rate': 0.4}, 'wall': {'avoid_turn': 1.0, 'seek_turn': -0.1, 'threshold': 0.5023322880268097}}
+
+    def test_the_mixed_world_is_each_slot_alone(iface, params):
+        """The 8 training slots in one world, against each slot's setting in every column, same composition: identical in
+        the slot's column. A scripted pursuit and a neural hunter of 3 strains, each strain on its own worlds."""
+        cfg = _cfg()
+        con = load_connectome()
+        hunters = [("pursuit", lambda: _pursuit(iface, cfg), IDS),
+                   ("neural", lambda: Brain(Genome.random(BrainSpec.from_connectome(con), BrainConfig(), 3,
+                                                          generator=torch.Generator().manual_seed(5))),
+                    np.stack([IDS, IDS + 8, IDS + 16]))]
+        for label, make, ids in hunters:
+>           mixed = MX.play_settings(cfg, iface, make(), list(ST.TRAINING), ids, SEED, params)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_e5_mixed.py:174: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+a = (Config(brain=BrainConfig(substeps=32, tau_min=0.5, tau_max=20.0, w_max=3.0, g_max=2.0, b_max=2.0, init_w_scale=0.2, i..., array([987000000, 987000001, 987000002, 987000003, 987000004, 987000005,
+       987000006, 987000007]), 1529001, ...)
+k = {}
+
+    def play_settings(*a, **k):
+>       raise NotImplementedError
+E       NotImplementedError
+
+wormwars\e5\mixed.py:6: NotImplementedError
+__________________ test_two_dimensional_ids_equal_shared_ids __________________
+
+iface = Interface(signal_names=('food_left', 'food_right', 'food_left', 'food_right', 'food_left', 'food_right', 'ally_pheromo...minus=array([207, 208, 196, 197]), pump_neurons=array([15, 16]), pump_gain=4.0, forward_offset=0.6, lateral_offset=0.5)
+params = {'e_prey': 1.3750000298023224, 'route': {'gain': 2.0, 'reach': 1.0, 'spacing': 6.0}, 'walk': {'persistence': 0.9, 'rate': 0.4}, 'wall': {'avoid_turn': 1.0, 'seek_turn': -0.1, 'threshold': 0.5023322880268097}}
+con = Connectome(names=('I1L', 'I1R', 'I2L', 'I2R', 'I3', 'I4', 'I5', 'I6', 'M1', 'M2L', 'M2R', 'M3L', 'M3R', 'M4', 'M5', 'M...ly isolated neurons (0): [] -- kept in the 302 regardless, so the node set is identical across N2/SH/RD']}, label='N2')
+
+    def test_two_dimensional_ids_equal_shared_ids(iface, params, con):
+        cfg = _cfg(120)
+        g = Genome.random(BrainSpec.from_connectome(con), BrainConfig(), 2, generator=torch.Generator().manual_seed(6))
+>       a = MX.play_settings(cfg, iface, Brain(g), list(ST.TRAINING), IDS, SEED, params)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_e5_mixed.py:186: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+a = (Config(brain=BrainConfig(substeps=32, tau_min=0.5, tau_max=20.0, w_max=3.0, g_max=2.0, b_max=2.0, init_w_scale=0.2, i..., array([987000000, 987000001, 987000002, 987000003, 987000004, 987000005,
+       987000006, 987000007]), 1529001, ...)
+k = {}
+
+    def play_settings(*a, **k):
+>       raise NotImplementedError
+E       NotImplementedError
+
+wormwars\e5\mixed.py:6: NotImplementedError
+___________________ test_play_settings_refuses_mixed_rules ____________________
+
+iface = Interface(signal_names=('food_left', 'food_right', 'food_left', 'food_right', 'food_left', 'food_right', 'ally_pheromo...minus=array([207, 208, 196, 197]), pump_neurons=array([15, 16]), pump_gain=4.0, forward_offset=0.6, lateral_offset=0.5)
+params = {'e_prey': 1.3750000298023224, 'route': {'gain': 2.0, 'reach': 1.0, 'spacing': 6.0}, 'walk': {'persistence': 0.9, 'rate': 0.4}, 'wall': {'avoid_turn': 1.0, 'seek_turn': -0.1, 'threshold': 0.5023322880268097}}
+
+    def test_play_settings_refuses_mixed_rules(iface, params):
+        cfg = _cfg(10)
+        with pytest.raises(ValueError, match="rule"):
+>           MX.play_settings(cfg, iface, _pursuit(iface, cfg), ["H1-ghost", "H1-bite"], IDS[:2], SEED, params)
+
+tests\test_e5_mixed.py:194: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+a = (Config(brain=BrainConfig(substeps=32, tau_min=0.5, tau_max=20.0, w_max=3.0, g_max=2.0, b_max=2.0, init_w_scale=0.2, i....prey.PursuitBrain object at 0x000001EADBCECB90>, ['H1-ghost', 'H1-bite'], array([987000000, 987000001]), 1529001, ...)
+k = {}
+
+    def play_settings(*a, **k):
+>       raise NotImplementedError
+E       NotImplementedError
+
+wormwars\e5\mixed.py:6: NotImplementedError
+_________________ test_the_route_cache_draws_e5_0s_waypoints __________________
+
+iface = Interface(signal_names=('food_left', 'food_right', 'food_left', 'food_right', 'food_left', 'food_right', 'ally_pheromo...minus=array([207, 208, 196, 197]), pump_neurons=array([15, 16]), pump_gain=4.0, forward_offset=0.6, lateral_offset=0.5)
+params = {'e_prey': 1.3750000298023224, 'route': {'gain': 2.0, 'reach': 1.0, 'spacing': 6.0}, 'walk': {'persistence': 0.9, 'rate': 0.4}, 'wall': {'avoid_turn': 1.0, 'seek_turn': -0.1, 'threshold': 0.5023322880268097}}
+
+    def test_the_route_cache_draws_e5_0s_waypoints(iface, params):
+        """Every life a route prey lived, in a world with many captures, has E5-0's waypoints; so does a later lookup of
+        the same (world, life), which the cache serves."""
+        cfg = _cfg(300)
+        st = ST.BY_NAME["H2-0.2"]
+        prey = _single_prey(iface, cfg, st, params)
+        seen = []
+        orig = prey._route_for
+    
+        def spy(worlds):
+            orig(worlds)
+            for i in np.flatnonzero(worlds.cpu().numpy()):
+                seen.append((int(i), int(prey.world.life[i]), prey.waypoints[i].clone()))
+    
+        prey._route_for = spy
+        hunter = _pursuit(iface, cfg)
+        w = HuntWorld(cfg, iface, [hunter, prey], torch.zeros(len(IDS), 2, dtype=torch.long), run_seed=SEED,
+                      world_ids=IDS, rule="bite", prey_energy=params["e_prey"], pinned=False)
+        for i in range(len(IDS)):  # life 0, drawn at attach before the spy
+            seen.append((i, 0, prey.waypoints[i].clone()))
+        w.run()
+        assert int(w.captures.sum()) >= 8
+        for i, life, got in seen:
+            assert torch.equal(got, _old_route(w, i, life, params["route"]["spacing"])), (i, life)
+        # a cached lookup returns the same arrays
+>       again = [prey.routes.get(w, i, life) for i, life, _ in seen[:4]]
+                 ^^^^^^^^^^^
+E       AttributeError: 'PreyBrain' object has no attribute 'routes'
+
+tests\test_e5_mixed.py:242: AttributeError
+=========================== short test summary info ===========================
+FAILED tests/test_e5_mixed.py::test_a_per_world_pin_matches_the_single_pin - ...
+FAILED tests/test_e5_mixed.py::test_a_mixed_prey_of_one_kind_is_the_prey[H1-bite]
+FAILED tests/test_e5_mixed.py::test_a_mixed_prey_of_one_kind_is_the_prey[H2-0.6]
+FAILED tests/test_e5_mixed.py::test_a_mixed_prey_of_one_kind_is_the_prey[H2b-walk-0.5]
+FAILED tests/test_e5_mixed.py::test_a_mixed_prey_of_one_kind_is_the_prey[H2b-wall-0.5]
+FAILED tests/test_e5_mixed.py::test_the_mixed_world_is_each_slot_alone - NotI...
+FAILED tests/test_e5_mixed.py::test_two_dimensional_ids_equal_shared_ids - No...
+FAILED tests/test_e5_mixed.py::test_play_settings_refuses_mixed_rules - NotIm...
+FAILED tests/test_e5_mixed.py::test_the_route_cache_draws_e5_0s_waypoints - A...

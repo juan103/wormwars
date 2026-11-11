@@ -1,0 +1,18 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+__________________ test_a_non_finite_state_stops_the_rollout __________________
+
+iface = Interface(signal_names=('food_left', 'food_right', 'food_left', 'food_right', 'food_left', 'food_right', 'ally_pheromo...minus=array([207, 208, 196, 197]), pump_neurons=array([15, 16]), pump_gain=4.0, forward_offset=0.6, lateral_offset=0.5)
+
+    def test_a_non_finite_state_stops_the_rollout(iface):
+        cfg = _hcfg(30)
+        params = ST.prey_params()
+        g = Genome.random(BrainSpec.from_connectome(load_connectome()), BrainConfig(), 1,
+                          generator=torch.Generator().manual_seed(1))
+>       with pytest.raises(FloatingPointError, match="non-finite"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'FloatingPointError'>
+
+tests\test_e5_ga.py:199: Failed
+=========================== short test summary info ===========================
+FAILED tests/test_e5_ga.py::test_a_non_finite_state_stops_the_rollout - Faile...

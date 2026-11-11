@@ -519,3 +519,121 @@ Genome files stay local (rule 1). Null graph files are never committed: they car
 | "Every E4s-1 number below is C's" | Restricted to the reused hunters | Astra 23 |
 | — | A statistic for whether the gap is still closing; C's generation; N2's between-batch SD as a placebo; the fitness weighting's noise cost; P against SH-route's caps | Fable 7, 9, 10, 12 |
 | D389 cited, absent | Written with this draft | both |
+
+## 14. E5-1a's code, and the numbers it fixes (added 2026-11-11, D390)
+
+The owner answered "Yes and build" (2026-11-11) to §11's two questions: E5-1a may run on the GPU (it stops at the
+bench, where they set the cap), and B stays in E5-1. §9's code is written test-first (tests seen failing before the
+code existed are logged in `runs/e5-1/*first-fail*.txt`; the rest are seen failing under sabotage,
+`scripts/e5_1_sabotage.py` → `runs/e5-1/sabotage_log.txt`):
+
+- **Guards:** `Genome.cat` and `Genome.assign` refuse genomes on different specs (`BrainSpec.same_as`: node count,
+  label, weight kind, edge lists and anatomical weights) or with different brain configurations. The `init_*` fields
+  are exempt: they decide how a genome is drawn, never how it runs, and 02's frozen opponent suite spreads them on
+  purpose (`make_frozen_suite`, which the first version of the guard refused).
+- **The mixed world:** `HuntWorld` takes one pin per world; `MixedPrey` gives each world its own kind and speed;
+  `wormwars/e5/mixed.py` plays named settings, one per column.
+- **The route cache:** `RouteTable`, keyed by (world seed, sequence index), with the spacing, drawing box and start in
+  the key. It is filled on first use and kept, not pre-drawn for every index: drawing 64 routes for every world of
+  every generation would cost more than it saves. The draw is E5-0's, and a life's waypoints are written in one step.
+- **The GA rollout:** `wormwars/e5/ga.py`'s `TaskHRollout`, with the overflow (`SequenceOverflow`) and ledger
+  (`LedgerError`, 1e-5) checks on every rollout and the highest sequence index kept; `evolve_batch` takes integer
+  `weights` for the fitness and validation (off by default, which changes nothing).
+- **The publication guard:** labels of 03's ensembles, N2permK, N2-rev and pilotSH, with or without a module, are an
+  offence (`tests/test_publication_hygiene.py`, `NULL_GRAPH`); 01's SH1-SH5 and RD1-RD5 stay checked by proportion.
+- **The fixed numbers:** `wormwars/e5/plan.py` (seeds, id blocks, graphs, admission), `settings.py`, `graphs.py`,
+  `arms.py`; a test scans every tracked Python file for literals near E5-1's id and seed blocks.
+
+**Numbers the design left open, fixed here before E5-1a runs** (`scripts/e5_1a.py`, `REGISTERED`):
+
+- E5-1a's own cap: 6 hours, every stage and device together.
+- Seeds for checks and the bench (never a reading): 1 517 000 + i; the mutation streams of step 8: 1 517 500 + k.
+- Step 1: the old engine is `7d25460`, E5-0's formal code (Task H is unchanged from it to `a9ad7d9`); 18 settings ×
+  3 hunters (the pursuit, E4s-1 run 0's C, L1 on its carrier) on the first 64 ids of the check block, with per-tick
+  traces of 8 worlds per setting. The training shape is checked on 4 generation-0 G-N2-construction populations
+  from the check seeds; the validation shape on E4s-1 runs 0 to 3's C over 256 ids. The weighted fitness and
+  validation must equal the design's formula within 1e-12, with the same ranking.
+- Step 3: σd from 512 of the SD block's 1 024 worlds per check. The scripted hunters play on the worm's interface, as
+  in E5-0. Prey paths (a motionless hunter, 256 worlds per kind at route 0.5, walk 0.5 and wall 0.5) and the
+  pursuit's first 30 ticks (64 worlds, H1-bite and route 0.5) agree if a world's largest absolute difference is at
+  most 10⁻³ cells; a check passes if 99% of worlds agree. H1-ghost against Task N on CUDA passes within ±0.10 (the
+  bitwise share is reported). Attack disabled: 256 worlds at H1-bite and route 0.5. Respawns: 64 worlds at
+  H1-bite, route 0.5 and walk 0.5. State level: inputs uniform on [0, 1] times each sensor's gain at every sensor
+  neuron, 300 ticks.
+- Step 4: 6 generations (checkpoints at 0 and 5) of an N2 batch and of `SH-route-1020022` (a pilot graph the pilot
+  does not evolve); the evaluation rate from 8 E4s-1 C genomes × 512 worlds at H1-bite, route 0.5 and walk 0.5.
+- Step 5: the contrast is the score-weighted mean of per-world differences, with a normal 90% interval (z = 1.645)
+  from the per-slot variances. The winner is chosen on generation 0's batch of pilot-training worlds.
+- Step 6: the null graphs' signal is measured on generation 0 of run 0 per pilot graph (seeds 1 518 000 + 4j).
+- Step 7: the suite chunk is checked at the four probe settings. In the batch shapes the genomes are tiled; the
+  reference plays one strain × 512.
+- Step 8: every parent's mutants are drawn at G-N2's scales (the module at 0.25, the host at 1).
+
+### 14.1 After the code review (round 1, 2026-11-11; both "fix then run"; `docs/reviews/20261111-E5-1a-code/`)
+
+Every fix taken. What changes from §14 above (kept as written; this replaces it where they differ):
+
+- **Corrections of §14's text:** "18 settings" should read 19: E5-0 has 19 settings (`scripts/e5_0.py`'s
+  `settings()`, and the 19 entries of `experiments/E5-hunter/E5-0/reading.json`), and the reference script plays all
+  19. (§2's "18 read settings" is checked against E5-0's records before the pre-registration.) Step 5's interval is no
+  longer normal: see below.
+- **Old against new is now always against 7d25460**, in a smoke too (the first smoke compared the working tree with
+  itself; Fable, Astra). The smoke's reference worlds are smoke ids at a 40-tick horizon; the formal run uses the
+  check block's first 64 ids at 300 ticks.
+- **Non-finite states stop Task H** (`play` checks positions, headings, energies and brain states; Fable): captures
+  are integers and Task H has no progress, so nothing else in the GA would show a NaN.
+- **Every comparison of per-world counts** (CPU against CUDA, H1-ghost against Task N on CUDA, the batch shapes
+  against one strain × 512) is sized and judged the same way:
+  - the SD comes from 512 SD-block worlds, per hunter or genome;
+  - the check uses the largest required count over them (Astra), and records whether the half-width reached 0.03;
+  - on mixed worlds, the estimate is the score-weighted mean with a stratified interval (t, Welch–Satterthwaite
+    degrees of freedom), and the sizing uses the weighted mean's SD (Astra: a plain mean lets slot differences cancel);
+  - every genome plays every world (Fable, Astra: the first composition code gave most genomes few or none);
+  - plays hold at most 4 096 worlds, the suite chunk's 8 × 512 (the CUDA stage's largest is 4 × 512; corrected in
+    round 2, where this line said 1 024).
+- **The training-shape CUDA check and the ghost check are sized like the others** (Fable). Before, one was a single
+  batch and the other a fixed 512 worlds.
+- **Prey paths:** the motionless hunter has its attack disabled. The engine has no ghost mode for a hunter, so its
+  body stays, alike on both devices. Path and trace checks use 256 worlds each, so "99%" allows two differing worlds.
+- **Respawns** must occur (a check with none fails). Hand-stepped worlds check the ledger, the overflow and
+  finiteness.
+- **State level:** every genome at every shape (in groups of the shape's strains); a non-finite state fails.
+- **Step 5's interval:** the stratified t interval above, which is conservative where one static slot carries a third
+  of the weight (Fable).
+- **The bench:**
+  - It times a scoring batch (B's construction, 32 copies of a C champion per run) as well as generation 0, since
+    captures drive respawns and host syncs (Fable).
+  - The projection gives a low and a high total for every cut level. Each cut is recomputed from what it removes
+    (§8's itemised evaluation; the first code subtracted 8 times the suite's episodes for cut 4; both).
+  - The owner's cap is judged on the high projection. It covers the formal run, its evaluation and the 15% reserve;
+    E5-1a runs under its own 6 hours.
+  - The cap record is bound to the bench record. Later stages refuse a cap that nothing fits, and accept an earlier
+    stage only if it explicitly passed or completed (Astra).
+- **E5-1a's cap is checked before every play** and in every loop (Fable, Astra).
+- **Equal integer numerators give exactly equal fitness** (checked), in place of a ranking comparison that a
+  last-bit difference in the formula could break (Fable). The training-shape equivalence also runs the C champions,
+  for frequent captures (Fable).
+- **P's stage checks `g`** as well as `w` (Fable). `PL.GA` is pinned to E2's registered GA by a test (Fable).
+- **For the pre-registration** (not E5-1a): `evolve_batch` also checkpoints generation 499, so §5's "last
+  checkpoint (475)" and the candidate set must be fixed there (both). §9's formal readers, O0 at calibrated gains and
+  P's routing comparison are not written yet; they come with the pre-registration and its review (Astra).
+
+### 14.2 After round 2 (2026-11-11; Astra "fix first", Fable "fix first, no third round needed")
+
+- **The 0.03 half-width is not guaranteed.** The design caps a check at 8 192 worlds, and with a large SD the cap
+  binds. Each check records the uncapped requirement and whether the 0.03 was reached. Passing is the design's rule:
+  the interval lies within ±0.10 (Astra).
+- **The projection's high end** takes the larger of the generation-0 and scoring rates for every part. O0 counts both
+  gain conditions per retained test run (2 × 32 × 64 episodes). That gives 458 752 episodes, or 393 216 with 16
+  graphs; **§8's 229 376 counted one condition** (Astra).
+- **E5-1a's own cap:**
+  - The old-against-new child gets what is left of it and checks it before every play.
+  - The bench projects E5-1a's remaining stages, the null champions' CPU sides included, and records whether they fit
+    (Fable).
+  - **If E5-1a's cap stops a stage midway, E5-1a stops and comes back to the owner.** The stage's start marker
+    blocks a rerun until a dated amendment, with the owner's word, says what reruns.
+- **The C-champion equivalence rows must capture** something. The null champions' CPU-against-CUDA checks include the
+  mixed training shape (Fable).
+- The reference worktree is checked before the equivalence stage's start marker (Fable). The pilot's record says that
+  its null signal plays one population's shapes, not N2's four (Fable).
+

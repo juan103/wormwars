@@ -1,0 +1,14 @@
+F.                                                                       [100%]
+================================== FAILURES ===================================
+___________________ test_a_null_graph_genome_is_an_offence ____________________
+
+    def test_a_null_graph_genome_is_an_offence():
+        for label in NULL_LABELS:
+            found = genome_offences(label, np.zeros((1, 3)), np.zeros((1, 3)), {"N2": None, "SH1": None})
+>           assert found and "null graph" in found[0], label
+E           AssertionError: SH-route-1020000+comparator-L1
+E           assert ([])
+
+tests\test_publication_hygiene.py:526: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_publication_hygiene.py::test_a_null_graph_genome_is_an_offence

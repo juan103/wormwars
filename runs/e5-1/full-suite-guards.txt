@@ -1,0 +1,95 @@
+........................................................................ [  3%]
+........................................................................ [  6%]
+........................................................................ [  9%]
+........................................................................ [ 12%]
+........................................................................ [ 15%]
+........................................................................ [ 18%]
+........................................................................ [ 21%]
+........................................................................ [ 24%]
+........................................................................ [ 27%]
+........................................................................ [ 30%]
+........................................................................ [ 33%]
+........................................................................ [ 36%]
+........................................................................ [ 39%]
+........................................................................ [ 42%]
+........................................................................ [ 45%]
+........................................................................ [ 48%]
+........................................................................ [ 51%]
+........................................................................ [ 54%]
+........................................................................ [ 57%]
+........................................................................ [ 61%]
+........................................................................ [ 64%]
+........................................................................ [ 67%]
+........................................................................ [ 70%]
+........................................................................ [ 73%]
+........................................................................ [ 76%]
+........................................................................ [ 79%]
+........................................................................ [ 82%]
+........................................................................ [ 85%]
+........................................................................ [ 88%]
+........................................................................ [ 91%]
+........................................................................ [ 94%]
+........................................................................ [ 97%]
+.......................................................                  [100%]
+============================== warnings summary ===============================
+tests/test_e03a_script.py::test_every_stage_completes
+  D:\Claude\random\wormWars\scripts\e03a.py:1233: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+    rho = np.array([spearmanr(sw[k], r_mean[k]).statistic for k in range(len(sets))], dtype=float)
+
+tests/test_e3c_stages.py::test_an_unusable_p_fixed_mean_is_a_registered_outcome
+  D:\Claude\random\wormWars\scripts\e3c.py:1599: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+    "spearman_with_seed": (float(st.spearmanr(_visits(r["intact"]), seed_pm).correlation)
+
+tests/test_exp02_report.py::test_missing_sh_first_runs_withhold_the_verdict_even_with_second_runs_present
+tests/test_exp03_report_rules.py::test_no_valid_p3_reference_withholds_instead_of_crashing
+  C:\Users\gonza\AppData\Local\Programs\Python\Python313\Lib\site-packages\numpy\lib\_nanfunctions_impl.py:1573: RuntimeWarning: All-NaN slice encountered
+    return _nanquantile_unchecked(
+
+tests/test_exp03r_replication.py::test_ensembles_too_small_for_statistics_keep_their_rows_and_n2_is_not_called_invalid
+  C:\Users\gonza\AppData\Local\Programs\Python\Python313\Lib\site-packages\numpy\_core\_methods.py:219: RuntimeWarning: Degrees of freedom <= 0 for slice
+    ret = _var(a, axis=axis, dtype=dtype, out=out, ddof=ddof,
+
+tests/test_exp03r_replication.py::test_ensembles_too_small_for_statistics_keep_their_rows_and_n2_is_not_called_invalid
+  C:\Users\gonza\AppData\Local\Programs\Python\Python313\Lib\site-packages\numpy\_core\_methods.py:211: RuntimeWarning: invalid value encountered in scalar divide
+    ret = ret.dtype.type(ret / rcount)
+
+tests/test_exp03r_replication.py::test_ensembles_too_small_for_statistics_keep_their_rows_and_n2_is_not_called_invalid
+  C:\Users\gonza\AppData\Local\Programs\Python\Python313\Lib\site-packages\numpy\_core\_methods.py:178: RuntimeWarning: invalid value encountered in divide
+    arrmean = um.true_divide(arrmean, div, out=arrmean,
+
+tests/test_exp03r_replication.py::test_ensembles_too_small_for_statistics_keep_their_rows_and_n2_is_not_called_invalid
+  D:\Claude\random\wormWars\wormwars\exp03\report.py:82: RuntimeWarning: Mean of empty slice
+    return [float(x.mean()), float(x.mean() - q * se), float(x.mean() + q * se)]
+
+tests/test_exp03r_replication.py::test_ensembles_too_small_for_statistics_keep_their_rows_and_n2_is_not_called_invalid
+tests/test_memory_m1.py::test_the_summary_runs_with_a_reference_panel_below_b3s_minimum
+  C:\Users\gonza\AppData\Local\Programs\Python\Python313\Lib\site-packages\numpy\_core\_methods.py:142: RuntimeWarning: invalid value encountered in scalar divide
+    ret = ret.dtype.type(ret / rcount)
+
+tests/test_exp03r_replication.py::test_ensembles_too_small_for_statistics_keep_their_rows_and_n2_is_not_called_invalid
+  C:\Users\gonza\AppData\Local\Programs\Python\Python313\Lib\site-packages\numpy\lib\_nanfunctions_impl.py:1592: RuntimeWarning: Mean of empty slice
+    return np.nanmean(a, axis, out=out, keepdims=keepdims)
+
+tests/test_memory_m1.py::test_part_a_guards_a_zero_baseline_and_missing_support
+  D:\Claude\random\wormWars\scripts\memory_m1\accounting.py:90: RuntimeWarning: invalid value encountered in scalar divide
+    "dropped_numerator_frac": float(nums[n][~inside].sum() / nums[n].sum()),
+
+tests/test_memory_m1.py::test_part_a_guards_a_zero_baseline_and_missing_support
+  D:\Claude\random\wormWars\scripts\memory_m1\accounting.py:94: RuntimeWarning: invalid value encountered in scalar divide
+    "stratum_numerator_frac": [float(nums[n][b[n] == k].sum() / nums[n].sum()) for k in range(K)],
+
+tests/test_memory_m1.py::test_part_a_guards_a_zero_baseline_and_missing_support
+  D:\Claude\random\wormWars\scripts\memory_m1\accounting.py:102: RuntimeWarning: All-NaN slice encountered
+    med_a = [float(np.nanmedian([o["stratum_mean_a"][k] for o in others])) for k in range(K)]
+
+tests/test_memory_m1.py::test_the_summary_runs_with_a_reference_panel_below_b3s_minimum
+  C:\Users\gonza\AppData\Local\Programs\Python\Python313\Lib\site-packages\numpy\_core\fromnumeric.py:3824: RuntimeWarning: Mean of empty slice
+    return _methods._mean(a, axis=axis, dtype=dtype,
+
+tests/test_t1_equivalence_script.py::test_matching_non_finite_values_do_not_pass[inf]
+  D:\Claude\random\wormWars\scripts\t1_equivalence.py:205: RuntimeWarning: invalid value encountered in subtract
+    diff = np.abs(a.astype(np.float64) - b.astype(np.float64))
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+2359 passed, 3 deselected, 16 warnings in 5453.30s (1:30:53)
+rc=0

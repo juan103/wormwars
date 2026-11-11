@@ -1,0 +1,111 @@
+FFFFF                                                                    [100%]
+================================== FAILURES ===================================
+____________ test_weights_drive_selection_and_the_validation_score ____________
+
+    def test_weights_drive_selection_and_the_validation_score():
+        cfg = _cfg()
+        cfg.brain.b_max = 1000.0  # so the kind markers survive the clamp
+        spec = _small_spec()
+        runs = [EV.RunSpec(0, 11, 0.0)]
+        common = dict(generations=2, checkpoint_every=1, validation_ids=np.arange(16), world_seed=1, id_base=0,
+                      id_span=100, rollout_fn=_fake_rollout(_kind), initial=_initial(spec, cfg.brain, 4))
+        plain = EV.evolve_batch(cfg, None, spec, runs, **common)[0]
+>       weighted = EV.evolve_batch(cfg, None, spec, runs, weights=(TRAIN_W, VAL_W), **common)[0]
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: evolve_batch() got an unexpected keyword argument 'weights'
+
+tests\test_e5_ga.py:101: TypeError
+____________ test_weights_need_unshaped_runs_and_matching_columns _____________
+
+    def test_weights_need_unshaped_runs_and_matching_columns():
+        cfg = _cfg()
+        spec = _small_spec()
+        common = dict(generations=1, checkpoint_every=1, validation_ids=np.arange(16), world_seed=1, id_base=0,
+                      id_span=100, rollout_fn=_fake_rollout(_kind))
+        with pytest.raises(ValueError, match="unshaped"):
+>           EV.evolve_batch(cfg, None, spec, [EV.RunSpec(0, 1, 0.5)], weights=(TRAIN_W, VAL_W), **common)
+E           TypeError: evolve_batch() got an unexpected keyword argument 'weights'
+
+tests\test_e5_ga.py:120: TypeError
+___________ test_the_rollout_is_play_settings_with_the_slot_layouts ___________
+
+con = Connectome(names=('I1L', 'I1R', 'I2L', 'I2R', 'I3', 'I4', 'I5', 'I6', 'M1', 'M2L', 'M2R', 'M3L', 'M3R', 'M4', 'M5', 'M...ly isolated neurons (0): [] -- kept in the 302 regardless, so the node set is identical across N2/SH/RD']}, label='N2')
+iface = Interface(signal_names=('food_left', 'food_right', 'food_left', 'food_right', 'food_left', 'food_right', 'ally_pheromo...minus=array([207, 208, 196, 197]), pump_neurons=array([15, 16]), pump_gain=4.0, forward_offset=0.6, lateral_offset=0.5)
+
+    def test_the_rollout_is_play_settings_with_the_slot_layouts(con, iface):
+        cfg = _hcfg()
+        params = ST.prey_params()
+        g = Genome.random(BrainSpec.from_connectome(con), BrainConfig(), 2, generator=torch.Generator().manual_seed(4))
+>       roll = GA.TaskHRollout(params, prey_iface=iface, validation_per_slot=2)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_e5_ga.py:138: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <wormwars.e5.ga.TaskHRollout object at 0x000001D677C03380>
+a = ({'e_prey': 1.3750000298023224, 'route': {'gain': 2.0, 'reach': 1.0, 'spacing': 6.0}, 'walk': {'persistence': 0.9, 'rate': 0.4}, 'wall': {'avoid_turn': 1.0, 'seek_turn': -0.1, 'threshold': 0.5023322880268097}},)
+k = {'prey_iface': Interface(signal_names=('food_left', 'food_right', 'food_left', 'food_right', 'food_left', 'food_right'... 197]), pump_neurons=array([15, 16]), pump_gain=4.0, forward_offset=0.6, lateral_offset=0.5), 'validation_per_slot': 2}
+
+    def __init__(self, *a, **k):
+>       raise NotImplementedError
+E       NotImplementedError
+
+wormwars\e5\ga.py:3: NotImplementedError
+___________ test_the_rollout_refuses_other_shapes_and_split_chunks ____________
+
+con = Connectome(names=('I1L', 'I1R', 'I2L', 'I2R', 'I3', 'I4', 'I5', 'I6', 'M1', 'M2L', 'M2R', 'M3L', 'M3R', 'M4', 'M5', 'M...ly isolated neurons (0): [] -- kept in the 302 regardless, so the node set is identical across N2/SH/RD']}, label='N2')
+iface = Interface(signal_names=('food_left', 'food_right', 'food_left', 'food_right', 'food_left', 'food_right', 'ally_pheromo...minus=array([207, 208, 196, 197]), pump_neurons=array([15, 16]), pump_gain=4.0, forward_offset=0.6, lateral_offset=0.5)
+
+    def test_the_rollout_refuses_other_shapes_and_split_chunks(con, iface):
+        cfg = _hcfg(5)
+        g = Genome.random(BrainSpec.from_connectome(con), BrainConfig(), 2, generator=torch.Generator().manual_seed(4))
+>       roll = GA.TaskHRollout(ST.prey_params(), prey_iface=iface, validation_per_slot=2)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_e5_ga.py:155: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <wormwars.e5.ga.TaskHRollout object at 0x000001D677C33250>
+a = ({'e_prey': 1.3750000298023224, 'route': {'gain': 2.0, 'reach': 1.0, 'spacing': 6.0}, 'walk': {'persistence': 0.9, 'rate': 0.4}, 'wall': {'avoid_turn': 1.0, 'seek_turn': -0.1, 'threshold': 0.5023322880268097}},)
+k = {'prey_iface': Interface(signal_names=('food_left', 'food_right', 'food_left', 'food_right', 'food_left', 'food_right'... 197]), pump_neurons=array([15, 16]), pump_gain=4.0, forward_offset=0.6, lateral_offset=0.5), 'validation_per_slot': 2}
+
+    def __init__(self, *a, **k):
+>       raise NotImplementedError
+E       NotImplementedError
+
+wormwars\e5\ga.py:3: NotImplementedError
+________ test_the_rollout_stops_on_sequence_overflow_and_on_the_ledger ________
+
+iface = Interface(signal_names=('food_left', 'food_right', 'food_left', 'food_right', 'food_left', 'food_right', 'ally_pheromo...minus=array([207, 208, 196, 197]), pump_neurons=array([15, 16]), pump_gain=4.0, forward_offset=0.6, lateral_offset=0.5)
+
+    def test_the_rollout_stops_on_sequence_overflow_and_on_the_ledger(iface):
+        """A pursuit hunter on a sequence of 2 centres exhausts it; a ledger tolerance below zero always trips."""
+        cfg = _hcfg(300)
+        cfg.world.target_sequence_length = 2
+        params = ST.prey_params()
+        pursuit = lambda genome: GA.pursuit_hunter(iface, cfg, genome.n_strains)  # noqa: E731
+        g = Genome.random(BrainSpec.from_connectome(load_connectome()), BrainConfig(), 1,
+                          generator=torch.Generator().manual_seed(1))
+        with pytest.raises(GA.SequenceOverflow):
+>           GA.TaskHRollout(params, prey_iface=iface, validation_per_slot=2, make_hunter=pursuit)(
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                cfg, iface, g, IDS, SEED, "cpu")
+
+tests\test_e5_ga.py:171: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <wormwars.e5.ga.TaskHRollout object at 0x000001D677C32490>
+a = ({'e_prey': 1.3750000298023224, 'route': {'gain': 2.0, 'reach': 1.0, 'spacing': 6.0}, 'walk': {'persistence': 0.9, 'rate': 0.4}, 'wall': {'avoid_turn': 1.0, 'seek_turn': -0.1, 'threshold': 0.5023322880268097}},)
+k = {'make_hunter': <function test_the_rollout_stops_on_sequence_overflow_and_on_the_ledger.<locals>.<lambda> at 0x000001D... 197]), pump_neurons=array([15, 16]), pump_gain=4.0, forward_offset=0.6, lateral_offset=0.5), 'validation_per_slot': 2}
+
+    def __init__(self, *a, **k):
+>       raise NotImplementedError
+E       NotImplementedError
+
+wormwars\e5\ga.py:3: NotImplementedError
+=========================== short test summary info ===========================
+FAILED tests/test_e5_ga.py::test_weights_drive_selection_and_the_validation_score
+FAILED tests/test_e5_ga.py::test_weights_need_unshaped_runs_and_matching_columns
+FAILED tests/test_e5_ga.py::test_the_rollout_is_play_settings_with_the_slot_layouts
+FAILED tests/test_e5_ga.py::test_the_rollout_refuses_other_shapes_and_split_chunks
+FAILED tests/test_e5_ga.py::test_the_rollout_stops_on_sequence_overflow_and_on_the_ledger

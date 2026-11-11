@@ -9,6 +9,7 @@ and the frozen opponent suite is unevolved (DECISIONS.md D028).
 from __future__ import annotations
 
 import json
+import re
 import subprocess
 from pathlib import Path
 
@@ -56,6 +57,9 @@ def proportional_fraction(values, reference):
 
 
 PROPORTIONAL_LIMIT = 0.01  # 1%: the worst committed genome measures 0.46% under either normalisation
+# 03's ensembles (SH, SH-route, SH-class, SH-mirror, SH-recip, each "<kind>-<seed>"), 02's N2permK, 03's N2-rev and its
+# pilot's pilotSH graphs; 01's SH1-SH5 and RD1-RD5 are in the anatomical references and checked instead
+NULL_GRAPH = re.compile(r"^(SH(-route|-class|-mirror|-recip)?-\d+|N2perm\d+|N2-rev|pilotSH\d+|RD\d+|SH\d+)$")
 
 
 def genome_offences(label, w, g, anat) -> list[str]:
@@ -63,6 +67,10 @@ def genome_offences(label, w, g, anat) -> list[str]:
     on its worm block, rebuilt from the registered module; an unregistered module is itself an offence.
     Labels of no known graph are not checked (an unknown graph carries no N2 weights)."""
     w, g = np.atleast_2d(w), np.atleast_2d(g)
+    base_label = (label or "").split("+", 1)[0]
+    if base_label not in anat and NULL_GRAPH.match(base_label):
+        return [f"{label}: a genome on a null graph, whose permuted anatomical weights it can carry; null-graph "
+                "genomes are never committed (E5-1)"]
     if label and "+" in label:
         base, name = label.split("+", 1)
         if base not in anat:
@@ -509,3 +517,30 @@ def test_only_per_maze_outcome_lists_are_exempt():
     assert not is_per_maze_outcome_list(".per_maze.real_first", [[1, 0, 1], [0, 1, 0]])  # not pairs
     edges = np.stack([np.arange(300), np.arange(1, 301)], axis=1)
     assert not is_per_maze_outcome_list(".per_maze.real_first", edges)
+
+
+# ----------------------------------------------------------------------------- null-graph genomes (E5-1)
+# A genome on one of 03's null graphs ("SH-route-1020000+comparator-L1", "N2perm4", ...) has no entry in the
+# anatomical references, so the proportionality check above would pass it silently; but its graph carries permuted
+# anatomical weights, and an unevolved genome on it reproduces them. Such genomes are never committed (Astra, E5-1
+# design review, D389).
+NULL_LABELS = ("SH-route-1020000+comparator-L1", "SH-route-1020000", "SH-1010003", "SH-mirror-1040003+comparator-L1",
+               "SH-class-1030001", "SH-recip-1050000", "N2perm4", "N2perm4+comparator-L1", "N2-rev", "pilotSH5")
+
+
+def test_a_null_graph_genome_is_an_offence():
+    for label in NULL_LABELS:
+        found = genome_offences(label, np.zeros((1, 3)), np.zeros((1, 3)), {"N2": None, "SH1": None})
+        assert found and "null graph" in found[0], label
+
+
+def test_the_null_graph_prohibition_spares_01s_checked_controls():
+    from wormwars.connectome.loader import DEFAULT_CACHE
+
+    if not DEFAULT_CACHE.exists():
+        pytest.skip("connectome not fetched; run scripts/fetch_connectome.py")
+    anat = anatomical_references()
+    rng = np.random.default_rng(3)
+    for label in ("SH1", "RD5", "N2"):
+        n_c, n_g = anat[label][0].size, anat[label][1].size
+        assert genome_offences(label, rng.normal(size=(1, n_c)), np.abs(rng.normal(size=(1, n_g))), anat) == []

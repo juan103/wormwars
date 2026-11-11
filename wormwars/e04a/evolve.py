@@ -124,7 +124,7 @@ def _stack_ids(per_run: list[np.ndarray], population: int) -> np.ndarray:
 def evolve_batch(cfg, iface, spec: BrainSpec, runs: list[RunSpec], *, generations: int, checkpoint_every: int,
                  validation_ids: np.ndarray, world_seed: int, id_base: int, id_span: int, device="cpu",
                  rollout_fn=rollout, check=None, category=None, on_checkpoint=None, initial=None,
-                 mutation_scales=None, snapshot_at=(), random_ties: bool = False) -> list[RunRecord]:
+                 mutation_scales=None, snapshot_at=(), random_ties: bool = False, weights=None) -> list[RunRecord]:
     """Evolve every run in `runs` for `generations` generations, in lockstep.
 
     `check()` is called before every rollout (the cap); `category(name)` returns a context manager
@@ -141,10 +141,22 @@ def evolve_batch(cfg, iface, spec: BrainSpec, runs: list[RunSpec], *, generation
     which changes nothing. A non-finite score names its runs: the `FloatingPointError` carries `runs`.
 
     The evolutionary E4-D's flag: `random_ties` orders exact fitness ties by each run's own stream
-    (`tie_rng`, keyed by the run seed); off by default, which changes nothing."""
+    (`tie_rng`, keyed by the run seed); off by default, which changes nothing.
+
+    E5-1's hook: `weights`, a pair of integer arrays (one weight per training column, one per validation column), makes
+    the fitness and the validation score weighted means, (counts @ w) / sum(w), exact for integer counts; the raw counts
+    are recorded as before. It needs unshaped runs. None, the default, changes nothing."""
     if len({r.run for r in runs}) != len(runs) or len({r.run_seed for r in runs}) != len(runs):
         raise ValueError("every run in a batch needs its own run number and run seed")
     P, W = cfg.evo.population, cfg.evo.worlds_per_strain
+    if weights is not None:
+        w_train, w_val = (np.asarray(x) for x in weights)
+        if any(r.shaping != 0.0 for r in runs):
+            raise ValueError("weighted fitness is for unshaped runs (c = 0)")
+        if w_train.shape != (W,) or w_val.shape != (len(validation_ids),):
+            raise ValueError("weights: one per training world and one per validation world")
+        if not all(np.issubdtype(x.dtype, np.integer) and (x >= 0).all() and x.sum() > 0 for x in (w_train, w_val)):
+            raise ValueError("weights are non-negative integers with a positive sum")
     check = check or (lambda: None)
     category = category or (lambda name: _Null())
     validation_ids = np.asarray(validation_ids, dtype=np.int64)
@@ -178,7 +190,7 @@ def evolve_batch(cfg, iface, spec: BrainSpec, runs: list[RunSpec], *, generation
         fits = []
         for i, rec in enumerate(records):
             c_i, p_i = count[i * P:(i + 1) * P], progress[i * P:(i + 1) * P]
-            fit = fitness(c_i, p_i, rec.spec.shaping)
+            fit = fitness(c_i, p_i, rec.spec.shaping) if weights is None else _weighted(c_i, w_train)
             fits.append(fit)
             best = int(np.argmax(fit))
             per_strain_count = c_i.mean(axis=1)
@@ -208,7 +220,8 @@ def evolve_batch(cfg, iface, spec: BrainSpec, runs: list[RunSpec], *, generation
                 err.runs = bad
                 raise err
             for i, rec in enumerate(records):
-                rec.checkpoints.append({"generation": g, "validation_mean": float(v.score[i].mean()),
+                v_mean = float(v.score[i].mean()) if weights is None else float(_weighted(v.score[i:i + 1], w_val)[0])
+                rec.checkpoints.append({"generation": g, "validation_mean": v_mean,
                                         "validation_counts": _counts(v.score[i]),
                                         "sha256": genome_hash(cands[i], 0)})
                 rec.candidates.append(moved(cands[i].clone(), "cpu"))
@@ -222,6 +235,11 @@ def evolve_batch(cfg, iface, spec: BrainSpec, runs: list[RunSpec], *, generation
     for i, rec in enumerate(records):
         rec.final = moved(pops[i], "cpu")
     return records
+
+
+def _weighted(counts: np.ndarray, w: np.ndarray) -> np.ndarray:
+    """[strains]: (counts @ w) / sum(w), in float64."""
+    return (np.asarray(counts, dtype=np.float64) @ w.astype(np.float64)) / float(w.sum())
 
 
 class _Null:

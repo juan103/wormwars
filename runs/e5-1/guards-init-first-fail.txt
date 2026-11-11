@@ -1,0 +1,37 @@
+.......F                                                                 [100%]
+================================== FAILURES ===================================
+________ test_configurations_differing_only_in_initialisation_combine _________
+
+    def test_configurations_differing_only_in_initialisation_combine():
+        """The frozen opponent suite (`make_frozen_suite`) spreads its initialisation scales: the init_* fields only decide
+        how a genome is drawn, never how it runs."""
+        a = _genome(_toy(A_EDGES))
+        other = dataclasses.replace(BrainConfig(), init_w_scale=BrainConfig().init_w_scale * 2, init_bias_std=0.5,
+                                    init_chem_magnitude="permuted", init_permutation_seed=4)
+        b = a.with_params(cfg=other)
+>       assert Genome.cat([a, b]).n_strains == 4
+               ^^^^^^^^^^^^^^^^^^
+
+tests\test_e5_genome_guards.py:102: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+wormwars\brain.py:185: in cat
+    base._require_compatible(p)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = Genome(spec=BrainSpec(n=6, chem_i=tensor([0, 1, 2, 3]), chem_j=tensor([1, 2, 3, 4]), chem_anat=tensor([1., 1., 1., 1.]... -0.4283,  0.5503, -0.5356,  0.0614],
+        [-0.2832,  0.1866, -0.4460, -0.7546,  0.1852,  0.7283]]), dale_sign=None)
+other = Genome(spec=BrainSpec(n=6, chem_i=tensor([0, 1, 2, 3]), chem_j=tensor([1, 2, 3, 4]), chem_anat=tensor([1., 1., 1., 1.]... -0.4283,  0.5503, -0.5356,  0.0614],
+        [-0.2832,  0.1866, -0.4460, -0.7546,  0.1852,  0.7283]]), dale_sign=None)
+
+    def _require_compatible(self, other: "Genome") -> None:
+        """One graph and one brain configuration (E5-1, §9): a genome on another graph of the same size would otherwise
+        be read on this one's edges."""
+        if not self.spec.same_as(other.spec):
+            raise ValueError(f"genomes on different specs ({self.spec.label} and {other.spec.label}, compared by value)")
+        if self.cfg != other.cfg:
+>           raise ValueError("genomes with different brain configurations")
+E           ValueError: genomes with different brain configurations
+
+wormwars\brain.py:177: ValueError
+=========================== short test summary info ===========================
+FAILED tests/test_e5_genome_guards.py::test_configurations_differing_only_in_initialisation_combine

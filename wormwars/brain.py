@@ -55,6 +55,12 @@ def _apply_magnitude_mode(mag: Tensor, mode: str, scale: float, seed: int, salt:
     raise ValueError(f"init magnitude mode must be one of {MAGNITUDE_MODES}, got {mode!r}")
 
 
+def _running_fields(cfg) -> dict:
+    """A brain configuration without its init_* fields, which only decide how a genome is drawn (the frozen opponent
+    suite spreads them on purpose)."""
+    return {k: v for k, v in vars(cfg).items() if not k.startswith("init_")}
+
+
 @dataclass(frozen=True)
 class BrainSpec:
     """The fixed part: which edges exist, and their anatomical weights.
@@ -100,6 +106,17 @@ class BrainSpec:
             label=self.label,
             weight_kind=self.weight_kind,
         )
+
+    def same_as(self, other: "BrainSpec") -> bool:
+        """The same graph, by value: node count, label, weight kind, edge lists and anatomical weights (E5-1; spec
+        objects differ for one graph after `to` or `moved`)."""
+        if self is other:
+            return True
+        if (self.n, self.label, self.weight_kind, self.n_chem, self.n_gap) != (
+                other.n, other.label, other.weight_kind, other.n_chem, other.n_gap):
+            return False
+        return all(torch.equal(getattr(self, k), getattr(other, k).to(self.device))
+                   for k in ("chem_i", "chem_j", "chem_anat", "gap_i", "gap_j", "gap_anat"))
 
     @staticmethod
     def from_connectome(con: Connectome, device="cpu") -> "BrainSpec":
@@ -157,10 +174,21 @@ class Genome:
         new = {k: None if src[k] is None else src[k].clone() for k in self.PARAMS}
         return Genome(self.spec if spec is None else spec, self.cfg if cfg is None else cfg, **new)
 
+    def _require_compatible(self, other: "Genome") -> None:
+        """One graph and one brain configuration (E5-1, §9): a genome on another graph of the same size would otherwise
+        be read on this one's edges."""
+        if not self.spec.same_as(other.spec):
+            raise ValueError(f"genomes on different specs ({self.spec.label} and {other.spec.label}, compared by value)")
+        if _running_fields(self.cfg) != _running_fields(other.cfg):
+            raise ValueError("genomes with different brain configurations")
+
     @staticmethod
     def cat(parts: list, cfg=None) -> "Genome":
-        """Strains of several genomes on one spec, in order. Every parameter is concatenated."""
+        """Strains of several genomes on one spec and configuration, in order. Every parameter is concatenated. `cfg`,
+        if given, becomes the result's configuration."""
         base = parts[0]
+        for p in parts[1:]:
+            base._require_compatible(p)
         dales = [p.dale_sign is None for p in parts]
         if any(dales) and not all(dales):
             raise ValueError("cannot concatenate genomes with and without Dale signs")
@@ -174,6 +202,7 @@ class Genome:
         idx = torch.as_tensor(idx, dtype=torch.long, device=self.device).reshape(-1)
         if src.n_strains != len(idx):  # a one-strain source would broadcast silently (D067)
             raise ValueError(f"assigning {src.n_strains} strains to {len(idx)} slots")
+        self._require_compatible(src)
         if (self.dale_sign is None) != (src.dale_sign is None):
             raise ValueError("cannot assign between genomes with and without Dale signs")
         out = self.clone()

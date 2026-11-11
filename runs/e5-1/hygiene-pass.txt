@@ -1,0 +1,48 @@
+.....F.........                                                          [100%]
+================================== FAILURES ===================================
+_____________ test_the_frozen_suite_regenerates_deterministically _____________
+
+    def test_the_frozen_suite_regenerates_deterministically():
+        from wormwars.connectome.loader import DEFAULT_CACHE
+    
+        if not DEFAULT_CACHE.exists():
+            pytest.skip("connectome not fetched; run scripts/fetch_connectome.py")
+    
+        import torch
+    
+        from wormwars.brain import BrainSpec
+        from wormwars.config import Config
+        from wormwars.connectome import load_connectome
+        from wormwars.evo.coevolve import make_frozen_suite
+    
+        spec = BrainSpec.from_connectome(load_connectome())
+        cfg = Config()
+>       a, meta_a = make_frozen_suite(spec, cfg, n=6)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_publication_hygiene.py:411: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+wormwars\evo\coevolve.py:273: in make_frozen_suite
+    suite = Genome.cat(parts, cfg=cfg.brain)  # every parameter, Dale signs included (D066)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+wormwars\brain.py:185: in cat
+    base._require_compatible(p)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = Genome(spec=BrainSpec(n=302, chem_i=tensor([  0,   0,   0,  ..., 299, 299, 299]), chem_j=tensor([  2,   4,   6,  ..., ...,  0.4997, -0.1019, -0.0655,  0.1494,
+          0.3748,  0.5294,  0.1803,  0.1262, -0.0168,  0.2571]]), dale_sign=None)
+other = Genome(spec=BrainSpec(n=302, chem_i=tensor([  0,   0,   0,  ..., 299, 299, 299]), chem_j=tensor([  2,   4,   6,  ..., ...  9.9827e-01, -7.5646e-01,  4.4600e-01, -6.2147e-01, -3.2849e-01,
+         -4.3904e-01, -3.1866e-01]]), dale_sign=None)
+
+    def _require_compatible(self, other: "Genome") -> None:
+        """One graph and one brain configuration (E5-1, §9): a genome on another graph of the same size would otherwise
+        be read on this one's edges."""
+        if not self.spec.same_as(other.spec):
+            raise ValueError(f"genomes on different specs ({self.spec.label} and {other.spec.label}, compared by value)")
+        if self.cfg != other.cfg:
+>           raise ValueError("genomes with different brain configurations")
+E           ValueError: genomes with different brain configurations
+
+wormwars\brain.py:177: ValueError
+=========================== short test summary info ===========================
+FAILED tests/test_publication_hygiene.py::test_the_frozen_suite_regenerates_deterministically

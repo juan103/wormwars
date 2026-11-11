@@ -12690,3 +12690,59 @@ fixes to be checked at the pre-registration's review):
 unreachable, and the design says so.
 
 **Next:** the owner's word on E5-1a (the GPU) and on whether B stays in E5-1. `main` still lacks D385 onwards.
+
+## D390 — E5-1's code and E5-1a's driver, after two review rounds; the owner's word for E5-1a (2026-11-11)
+
+**The owner** answered "Yes and build" (2026-11-11) to D389's two questions: E5-1a may run on the GPU (it stops at
+the bench, where they set the cap), and B stays in E5-1.
+
+**The code** (design §9; `docs/E5/E5-1-DESIGN.md` §14, §14.1, §14.2 list it and every number it fixes):
+- **Guards:** `Genome.cat` and `Genome.assign` refuse genomes on another spec (`BrainSpec.same_as`, by value) or
+  another brain configuration. The `init_*` fields are exempt: the guard's first version refused 02's frozen
+  opponent suite, which spreads them on purpose.
+- **Task H's mixed world:** one pin per world in `HuntWorld`, `MixedPrey`, and `wormwars/e5/mixed.py`. Per-strain
+  world ids in `play`. A non-finite state now raises.
+- **The route cache** (`RouteTable`): E5-0's draw, kept by (world seed, sequence index).
+- **The GA:** `evolve_batch(weights=...)`, integer weights for fitness and validation, off by default; and
+  `wormwars/e5/ga.py`'s `TaskHRollout`, with overflow, ledger and finiteness stops and the highest sequence index.
+- **E5-1's fixed numbers, hosts and arms:** `plan.py`, `settings.py`, `graphs.py` (SH-route rebuilt and checked
+  against 03r's content manifest), `arms.py` (A0, A0r, P, B, the lesion).
+- **The publication guard** prohibits null-graph genomes (`NULL_GRAPH`).
+- **The E5-1a driver** is `scripts/e5_1a.py`, with `scripts/e5_1_reference.py` for its old-against-new side.
+- Tests: `tests/test_e5_genome_guards.py`, `test_e5_mixed.py`, `test_e5_ga.py`, `test_e5_arms.py`. New behaviour
+  was seen failing first (`runs/e5-1/*first-fail*.txt`). Code written before its tests was seen failing under 28
+  sabotages (`scripts/e5_1_sabotage.py`, `runs/e5-1/sabotage_log.txt`, all caught). The whole CPU suite passes
+  (`runs/e5-1/full-suite-guards.txt`).
+
+**Review** (`docs/reviews/20261111-E5-1a-code/`): round 1 both "fix then run", round 2 both "fix first" with short
+lists (Fable: no third round). Every fix taken.
+- **Both** caught that my first smoke of old against new compared the working tree with itself. The smoke now runs
+  the 7d25460 worktree: 1 045 arrays identical, 530 captures. **Correction:** I had told the owner "old against new
+  identical over 1 045 arrays" from the first smoke; that showed only that the run repeats.
+- **Both** caught: the composition check gave most genomes few or no worlds and could crash at formal size; the cut
+  projection removed 8 times the suite's episodes for cut 4; the cap was enforced in one stage only.
+- **Astra** caught:
+  - a state-level check that passed on NaN, and covered only some champions at two shapes;
+  - SDs pooled across strains, then judged per strain;
+  - plain means on mixed worlds, where slot differences can cancel (now score-weighted, stratified);
+  - unchecked ledgers and overflow in hand-stepped worlds;
+  - a cap record that later stages accepted even when nothing fit;
+  - the 0.03 precision silently lost at the 8 192-world cap;
+  - O0 counted at one gain condition, in §8's cost too;
+  - the reference child bypassing the cap;
+  - a false "1 024 worlds" bound.
+- **Fable** caught:
+  - the training-shape and ghost CUDA checks not sized from the SD;
+  - a bench timing only generation 0, whose few captures hardly exercise respawns;
+  - no finiteness stop in Task H;
+  - a ranking comparison that a last-bit difference could break;
+  - "scoring" equivalence rows that could pass on zeros;
+  - the null champions' missing mixed check;
+  - E5-1a's remainder not compared with its cap;
+  - the worktree checked after the start marker.
+- **Both, for the pre-registration:** `evolve_batch` also checkpoints generation 499, so the closing-gap statistic's
+  "last checkpoint (475)" must be fixed there. §9's formal readers (O0 at calibrated gains, P's routing comparison)
+  are not written yet.
+
+**Next:** commit, push and CI; then E5-1a's equivalence, graphs, cuda and bench stages; then the bench goes to the
+owner, who sets the cap before the selection signal, the null pilot, the composition check and mutational sensitivity.

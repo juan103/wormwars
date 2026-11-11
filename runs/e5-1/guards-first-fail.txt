@@ -1,0 +1,47 @@
+FF..FF.                                                                  [100%]
+================================== FAILURES ===================================
+____________ test_cat_refuses_equal_sized_graphs_wired_differently ____________
+
+    def test_cat_refuses_equal_sized_graphs_wired_differently():
+        a, b = _genome(_toy(A_EDGES)), _genome(_toy(B_EDGES))
+        assert a.w.shape == b.w.shape  # the old code would have concatenated them silently
+>       with pytest.raises(ValueError, match="spec"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'ValueError'>
+
+tests\test_e5_genome_guards.py:44: Failed
+________________ test_assign_refuses_a_genome_on_another_graph ________________
+
+    def test_assign_refuses_a_genome_on_another_graph():
+        a, b = _genome(_toy(A_EDGES)), _genome(_toy(B_EDGES), n=1)
+>       with pytest.raises(ValueError, match="spec"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'ValueError'>
+
+tests\test_e5_genome_guards.py:50: Failed
+_____________ test_cat_refuses_other_anatomical_weights_or_labels _____________
+
+    def test_cat_refuses_other_anatomical_weights_or_labels():
+        a = _genome(_toy(A_EDGES))
+>       with pytest.raises(ValueError, match="spec"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'ValueError'>
+
+tests\test_e5_genome_guards.py:72: Failed
+___________ test_cat_and_assign_refuse_another_brain_configuration ____________
+
+    def test_cat_and_assign_refuse_another_brain_configuration():
+        con = _toy(A_EDGES)
+        a = _genome(con)
+        other = dataclasses.replace(BrainConfig(), substeps=BrainConfig().substeps * 2)
+        b = a.with_params(cfg=other)
+>       with pytest.raises(ValueError, match="configuration"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'ValueError'>
+
+tests\test_e5_genome_guards.py:83: Failed
+=========================== short test summary info ===========================
+FAILED tests/test_e5_genome_guards.py::test_cat_refuses_equal_sized_graphs_wired_differently
+FAILED tests/test_e5_genome_guards.py::test_assign_refuses_a_genome_on_another_graph
+FAILED tests/test_e5_genome_guards.py::test_cat_refuses_other_anatomical_weights_or_labels
+FAILED tests/test_e5_genome_guards.py::test_cat_and_assign_refuse_another_brain_configuration
