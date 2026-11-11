@@ -12799,3 +12799,36 @@ gives 0.00254, as attempt 1 did. Found by me, after the reviews.
 
 **Next:** attempt 3 of steps 1 to 3 on the fixed code (the record); then the bench and the owner's cap. E5-1a has
 spent 1.59 of its 6 hours.
+
+## D393 — E5-1a's attempt 3 and bench; the owner's caps: 50 GPU-hours for E5-1, 11 hours for E5-1a (2026-11-11)
+
+**Attempt 3** of steps 1 to 3 (on `f427a8f`, records committed in `db73795`) passed:
+- equivalence and graphs as before;
+- CUDA: every copy judged, none failed. The worst one step is 5.8e-6. The worst CPU-CUDA difference is 0.0109 at
+  the suite shape, 0.0044 at validation and 0.00254 at training, the same at every shape as attempt 1. Apart from the
+  state check and timings, the record equals attempt 2's.
+
+**The bench** (on `db73795`, committed in `278eedc`):
+- About 1.0 hour per batch of 4 runs × 500 generations, alike for N2 generation 0, B's scoring batch and a null
+  graph. The low and high projections therefore agree.
+- **The formal run:** 48.9 GPU-hours with every arm and the 15% rerun reserve. Cuts 1 to 4 give 43.9, 40.1, 39.3
+  and 34.4.
+- **E5-1a:** 2.57 hours spent, up to 6.57 left, so it does not fit its own 6-hour cap.
+
+**The owner** (2026-11-11):
+- Set the formal cap at "50 GPU-h", which keeps B, as they asked in D390.
+- Raised E5-1a's cap: first "Raise it to 10 h", then "11 h". The second answer came after I told them that the
+  change reruns steps 1 to 3 and the bench (about 0.98 hours, 10.1 in all). My first recommendation had missed that
+  cost.
+
+Amendment 2 (`docs/E5/E5-1-DESIGN.md` §14.5) records it. Attempt 3's records move to `E5-1a/attempt-3/`.
+
+**My miss:** the 6 hours were too low even without the two superseded attempts (about 7.5). The reviews' sizing of
+the composition check was not carried into E5-1a's cap.
+
+**Checked for the pre-registration:** §2's "18 read settings" is right. E5-0's `reading.json` has 19 settings, and
+H1-ghost is the bridge, with no solvability reading.
+
+**Next:** attempt 4 of steps 1 to 3 and the bench on this commit, once the owner has finished using the GPU; then the
+`cap` stage with the owner's 50 GPU-hours; then the signal, the null pilot, composition and sensitivity. No code
+commits while E5-1a runs, since each stage requires the code of the stage before it.

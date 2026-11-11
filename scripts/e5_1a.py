@@ -84,7 +84,8 @@ AFTER_CAP = ("signal", "pilot", "composition", "sensitivity")
 SMOKE_TICKS = 40
 
 REGISTERED = {
-    "cap_hours": 6.0,  # E5-1a's own cap: every stage, CPU and GPU time together
+    "cap_hours": 11.0,  # E5-1a's own cap: every stage, CPU and GPU time together (6 h until the owner's word at
+    # the bench, 2026-11-11, D393; design §14.5)
     "ledger_tol": 1e-5,  # T0's
     "check_seed": PL.SEED_BASE["check"],  # generation-0 genomes for the checks and the bench, never a reading
     "equivalence": {"shape_runs": 4, "formula_tol": 1e-12},
@@ -1049,7 +1050,7 @@ def stage_bench(args):
                                    "e5_1a_fits_its_cap": bool(spent + sum(remainder.values())
                                                               <= REGISTERED["cap_hours"]),
                                    "note": "the owner's cap covers the formal run (training, evaluation, the 15% "
-                                           "rerun reserve); E5-1a runs under its own 6-hour cap"}
+                                           f"rerun reserve); E5-1a runs under its own {REGISTERED['cap_hours']:g}-hour cap"}
     doc["capture_rates"] = {"note": "mean weighted fitness per generation of each benched batch; E5-0's pursuit "
                                     "reference is in experiments/E5-hunter/E5-0/evaluation.json",
                             **{k: doc[k]["mean_fitness_by_generation"] for k in ("n2_batch", "b_batch", "null_batch")}}

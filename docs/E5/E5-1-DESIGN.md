@@ -729,3 +729,24 @@ fixed code, fails all 8 copies of the altered genome at +10⁻³ and passes at +
 only. Over every strain the clean run gives 0.00254, as attempt 1 did, so no run-to-run difference was shown.
 
 Steps 1 to 3 rerun on the fixed code as attempt 3, which is the record.
+
+
+### 14.5 Amendment 2: E5-1a's own cap, 6 to 11 hours (2026-11-11, the owner's word at the bench; D393)
+
+Attempt 3 of steps 1 to 3 (on `f427a8f`) passed, and the bench ran on `db73795`
+(`experiments/E5-hunter/E5-1/E5-1a/attempt-3/`). The bench projects E5-1a's remaining stages at up to 6.57 hours
+(the composition check 4.06 GPU-hours and its CPU sides 1.91 hours; the null pilot 0.40; sensitivity 0.20; the
+signal 0.002), with 2.57 hours already spent. That is 9.1 hours against §14's "E5-1a's own cap: 6 hours". Without
+attempts 1 and 2 it would still be about 7.5, so the 6 hours were too low: the reviews' sizing of the composition
+check (§14.1, §14.2) was not carried into the cap.
+
+**The owner** chose to raise it (2026-11-11), answering two questions in turn: first "Raise it to 10 h"; then, told
+that the change is a code change, so steps 1 to 3 and the bench must rerun first (about 0.98 hours, which puts the
+upper projection at 10.1), "11 h". `REGISTERED["cap_hours"]` is now 11. The clock still counts every earlier attempt.
+
+**What changes:** the cap only. Every stage, check and tolerance is unchanged. Steps 1 to 3 and the bench rerun on
+the new commit as attempt 4, which is the record; attempt 3's records are kept.
+
+**The formal cap:** the owner set 50 GPU-hours ("50 GPU-h", 2026-11-11), against the bench's 48.9 with every arm,
+B included, and the 15% rerun reserve. It is written with the `cap` stage on attempt 4's bench, since `cap.json` is
+bound to the bench record it was set on.
