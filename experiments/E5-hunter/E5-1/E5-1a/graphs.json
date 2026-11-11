@@ -1,0 +1,778 @@
+{
+ "provenance_at_start": {
+  "git_commit": "f427a8f31a21b6317c6db464e50b2a4c3175df16",
+  "branch": "roadmap",
+  "dirty": false,
+  "python": "3.13.3",
+  "numpy": "2.4.4",
+  "torch": "2.12.0+cu130",
+  "cuda": "13.0",
+  "gpu": "NVIDIA GeForce RTX 5080",
+  "connectome_cache_sha256": "43b87aa172a0042b9dce734b15bdf1c87efe3a33ac1cc0d9cd03255a60c96d4a",
+  "connectome_source_sha256": "1f4fdbf84746b69b49a8da0816f52787860ce349b638dce37924ba80f90c70c9"
+ },
+ "graphs": {
+  "SH-route-1020000": {
+   "name": "SH-route-1020000",
+   "seed": 1020000,
+   "passes": 20,
+   "content_sha256": "3ae9271a9c594d9df6f086b761ce214a4ae6db3eab564eb327f1027ad8c0b42c",
+   "matches_content_manifest": true,
+   "raw_sha256_rebuilt": "7887c52291c280555b79f034c427351342be6b7a661fe5684a937a9ca513651b",
+   "raw_matches_manifest": true,
+   "local_file_arrays_equal": true,
+   "local_file_raw_matches_manifest": true,
+   "grafted": {
+    "arm": "G-SHr",
+    "run": 0,
+    "run_seed": 0,
+    "graph": "SH-route-1020000",
+    "label": "SH-route-1020000+comparator-L1",
+    "edge_sha256": "b8ad92b501bcc4e568f3db53ca91c4fcd1ea5886f9650e6924067b6e69d7c83d",
+    "n": 306,
+    "n_chem": 3729,
+    "n_gap": 1091
+   },
+   "03r": {
+    "P4_turn": 0.8865549076926129,
+    "P4_forward": 0.8749759656851305,
+    "forward_gain": 4.802920641494417,
+    "turn_gain": 2.965190525009423
+   }
+  },
+  "SH-route-1020001": {
+   "name": "SH-route-1020001",
+   "seed": 1020001,
+   "passes": 20,
+   "content_sha256": "9ffe5fc50c6c589c64f525cec453f412ae914bd0843599fcd9b7b905f86b4164",
+   "matches_content_manifest": true,
+   "raw_sha256_rebuilt": "5581be8cb3c07c2182bee1282deca5a9b3ef2f113105d743f013bbc29ef7f8f2",
+   "raw_matches_manifest": true,
+   "local_file_arrays_equal": true,
+   "local_file_raw_matches_manifest": true,
+   "grafted": {
+    "arm": "G-SHr",
+    "run": 0,
+    "run_seed": 0,
+    "graph": "SH-route-1020001",
+    "label": "SH-route-1020001+comparator-L1",
+    "edge_sha256": "a12f03d13f874898ba870174523dc2a042c24dc2738b67abbf31ce185343105e",
+    "n": 306,
+    "n_chem": 3729,
+    "n_gap": 1091
+   },
+   "03r": {
+    "P4_turn": 0.8068237778011411,
+    "P4_forward": 0.8208049235265973,
+    "forward_gain": 4.581986789010498,
+    "turn_gain": 2.6685311971502244
+   }
+  },
+  "SH-route-1020002": {
+   "name": "SH-route-1020002",
+   "seed": 1020002,
+   "passes": 20,
+   "content_sha256": "e86d0d8cd3a649398935a00afbf5f4d85fb1a31863e901dfdb266afe3358f70e",
+   "matches_content_manifest": true,
+   "raw_sha256_rebuilt": "3bce1128037f9d1739bfb6f033cebb1bf82940597616651612d793ce6d67f6f8",
+   "raw_matches_manifest": true,
+   "local_file_arrays_equal": true,
+   "local_file_raw_matches_manifest": true,
+   "grafted": {
+    "arm": "G-SHr",
+    "run": 0,
+    "run_seed": 0,
+    "graph": "SH-route-1020002",
+    "label": "SH-route-1020002+comparator-L1",
+    "edge_sha256": "a181700614074fd03536a351653c65028093d5068a0441b4fb4000cf592d4ea1",
+    "n": 306,
+    "n_chem": 3729,
+    "n_gap": 1091
+   },
+   "03r": {
+    "P4_turn": 0.8523240562153576,
+    "P4_forward": 0.7560156043765077,
+    "forward_gain": 4.391769168070967,
+    "turn_gain": 2.929602709763408
+   }
+  },
+  "SH-route-1020003": {
+   "name": "SH-route-1020003",
+   "seed": 1020003,
+   "passes": 20,
+   "content_sha256": "67f9a4c94d164c450e940e40e19bbc470abb152c5ee7b156cd8d3d87761287ee",
+   "matches_content_manifest": true,
+   "raw_sha256_rebuilt": "9da9cd71e6691e9e7a37dea009caf4d848664d9c5678e3a2a250436ea509c4a4",
+   "raw_matches_manifest": true,
+   "local_file_arrays_equal": true,
+   "local_file_raw_matches_manifest": true,
+   "grafted": {
+    "arm": "G-SHr",
+    "run": 0,
+    "run_seed": 0,
+    "graph": "SH-route-1020003",
+    "label": "SH-route-1020003+comparator-L1",
+    "edge_sha256": "47ff9bcae8e637d61d7109d81d9ac76a6c39cceca180f8f3af9f0fe892fb16b4",
+    "n": 306,
+    "n_chem": 3729,
+    "n_gap": 1091
+   },
+   "03r": {
+    "P4_turn": 0.8432976689805318,
+    "P4_forward": 0.8487039788541846,
+    "forward_gain": 4.429231843807313,
+    "turn_gain": 2.942644293726916
+   }
+  },
+  "SH-route-1020004": {
+   "name": "SH-route-1020004",
+   "seed": 1020004,
+   "passes": 20,
+   "content_sha256": "a46768b8e15698ef40db3e562cca2cf799de93eefc7478e70cf45e3a605849a0",
+   "matches_content_manifest": true,
+   "raw_sha256_rebuilt": "fd563634cb948a9053454395ac6590923520d464f4ac1d704a9dd43a65118583",
+   "raw_matches_manifest": true,
+   "local_file_arrays_equal": true,
+   "local_file_raw_matches_manifest": true,
+   "grafted": {
+    "arm": "G-SHr",
+    "run": 0,
+    "run_seed": 0,
+    "graph": "SH-route-1020004",
+    "label": "SH-route-1020004+comparator-L1",
+    "edge_sha256": "cb9fcb4efcb16221097e56b50dabba685257d8fc48ae93840c38e22e1e2b006f",
+    "n": 306,
+    "n_chem": 3729,
+    "n_gap": 1091
+   },
+   "03r": {
+    "P4_turn": 0.8928709585267298,
+    "P4_forward": 0.8459255125706515,
+    "forward_gain": 4.955863308694046,
+    "turn_gain": 2.8398957910733915
+   }
+  },
+  "SH-route-1020005": {
+   "name": "SH-route-1020005",
+   "seed": 1020005,
+   "passes": 20,
+   "content_sha256": "84bffc9b56f54ef0a980400e162034c102424a75c5fb5f912cfc1289ac9a90b8",
+   "matches_content_manifest": true,
+   "raw_sha256_rebuilt": "6c58e1b7568d658167b11de2052d06b1fe32a2012eab978861949b299e4b5282",
+   "raw_matches_manifest": true,
+   "local_file_arrays_equal": true,
+   "local_file_raw_matches_manifest": true,
+   "grafted": {
+    "arm": "G-SHr",
+    "run": 0,
+    "run_seed": 0,
+    "graph": "SH-route-1020005",
+    "label": "SH-route-1020005+comparator-L1",
+    "edge_sha256": "c199d579ad9c98d21b56888d2d711d92080a5bacacd89797d67861050099ff92",
+    "n": 306,
+    "n_chem": 3729,
+    "n_gap": 1091
+   },
+   "03r": {
+    "P4_turn": 0.796421200793305,
+    "P4_forward": 0.7860483373239309,
+    "forward_gain": 4.858878027472679,
+    "turn_gain": 3.081730126377349
+   }
+  },
+  "SH-route-1020006": {
+   "name": "SH-route-1020006",
+   "seed": 1020006,
+   "passes": 20,
+   "content_sha256": "609e5919d7c238e5401e844b4e0e9c2c0dc8e30a88ab02a35b8c5df1146defb0",
+   "matches_content_manifest": true,
+   "raw_sha256_rebuilt": "17be9fc63353cb09dc29982596b8e8692e64edc15f66070f2d8061fd23b3a692",
+   "raw_matches_manifest": true,
+   "local_file_arrays_equal": true,
+   "local_file_raw_matches_manifest": true,
+   "grafted": {
+    "arm": "G-SHr",
+    "run": 0,
+    "run_seed": 0,
+    "graph": "SH-route-1020006",
+    "label": "SH-route-1020006+comparator-L1",
+    "edge_sha256": "6343b2a12a489b28ac5b5ac0f37d6d8cbfa0a63f1d39ae9ba4136cb675df145d",
+    "n": 306,
+    "n_chem": 3729,
+    "n_gap": 1091
+   },
+   "03r": {
+    "P4_turn": 0.8848009269691193,
+    "P4_forward": 0.8633556815892438,
+    "forward_gain": 4.581533073171804,
+    "turn_gain": 3.0833261791499535
+   }
+  },
+  "SH-route-1020007": {
+   "name": "SH-route-1020007",
+   "seed": 1020007,
+   "passes": 20,
+   "content_sha256": "0775ea95cd7c59cad3c80c82aba96fbdd686edef45c0d51f0f1dce017532601a",
+   "matches_content_manifest": true,
+   "raw_sha256_rebuilt": "a94fedf7b246bf75cd16e11d82c84bd526eef08e91a6d2a77598a9c5ee7f7596",
+   "raw_matches_manifest": true,
+   "local_file_arrays_equal": true,
+   "local_file_raw_matches_manifest": true,
+   "grafted": {
+    "arm": "G-SHr",
+    "run": 0,
+    "run_seed": 0,
+    "graph": "SH-route-1020007",
+    "label": "SH-route-1020007+comparator-L1",
+    "edge_sha256": "f62821b745d9ca1ba22347ac0f27613b4dd8a6bec74c156eb2b5a81536fb9665",
+    "n": 306,
+    "n_chem": 3729,
+    "n_gap": 1091
+   },
+   "03r": {
+    "P4_turn": 0.7886129832520284,
+    "P4_forward": 0.8102193286358164,
+    "forward_gain": 4.913643809961114,
+    "turn_gain": 2.721528904056411
+   }
+  },
+  "SH-route-1020008": {
+   "name": "SH-route-1020008",
+   "seed": 1020008,
+   "passes": 20,
+   "content_sha256": "e0f37ccf6bee369a50f53d76a858e50016d76b3051991876dd6439a86264e2fe",
+   "matches_content_manifest": true,
+   "raw_sha256_rebuilt": "279b19588c7784843ddc7de56ba5d54f8f7e5cbdcefc471266fd21a0ff6409f6",
+   "raw_matches_manifest": true,
+   "local_file_arrays_equal": true,
+   "local_file_raw_matches_manifest": true,
+   "grafted": {
+    "arm": "G-SHr",
+    "run": 0,
+    "run_seed": 0,
+    "graph": "SH-route-1020008",
+    "label": "SH-route-1020008+comparator-L1",
+    "edge_sha256": "e244487e7ea799d61eaf5f314e99f1788f17878183f9df57875fda06db033167",
+    "n": 306,
+    "n_chem": 3729,
+    "n_gap": 1091
+   },
+   "03r": {
+    "P4_turn": 0.8653888566119663,
+    "P4_forward": 0.8140171806911822,
+    "forward_gain": 4.55615110295665,
+    "turn_gain": 3.08023399973309
+   }
+  },
+  "SH-route-1020009": {
+   "name": "SH-route-1020009",
+   "seed": 1020009,
+   "passes": 20,
+   "content_sha256": "f1090e3de71b09d1372cf5e7c3eef18ef5eaaae28cda4b28577ca98b3f5c671e",
+   "matches_content_manifest": true,
+   "raw_sha256_rebuilt": "545646d332114515005a3626aa36bbe206e04c19c0ca2cf3a68cfdfdf5fc29ac",
+   "raw_matches_manifest": true,
+   "local_file_arrays_equal": true,
+   "local_file_raw_matches_manifest": true,
+   "grafted": {
+    "arm": "G-SHr",
+    "run": 0,
+    "run_seed": 0,
+    "graph": "SH-route-1020009",
+    "label": "SH-route-1020009+comparator-L1",
+    "edge_sha256": "aed899e99ebfd2d12c9d6252af89baa2ad8e937ad8b37dbf46b1a09173b54902",
+    "n": 306,
+    "n_chem": 3729,
+    "n_gap": 1091
+   },
+   "03r": {
+    "P4_turn": 0.8123530234309538,
+    "P4_forward": 0.7932904920678858,
+    "forward_gain": 4.358162736590445,
+    "turn_gain": 2.705666093857936
+   }
+  },
+  "SH-route-1020010": {
+   "name": "SH-route-1020010",
+   "seed": 1020010,
+   "passes": 20,
+   "content_sha256": "c6981f52e20bf63cf1178e5941fd85932f5079e9f825356696fe3463870292b2",
+   "matches_content_manifest": true,
+   "raw_sha256_rebuilt": "8bd3576d2dc58a2f94ab0252c4be8acaede1398ccffdfb22224c733af203421a",
+   "raw_matches_manifest": true,
+   "local_file_arrays_equal": true,
+   "local_file_raw_matches_manifest": true,
+   "grafted": {
+    "arm": "G-SHr",
+    "run": 0,
+    "run_seed": 0,
+    "graph": "SH-route-1020010",
+    "label": "SH-route-1020010+comparator-L1",
+    "edge_sha256": "4e0d8a91948b2746292cd99df027b84d0fbd4e622a8a69d862ce192c1b8cdb27",
+    "n": 306,
+    "n_chem": 3729,
+    "n_gap": 1091
+   },
+   "03r": {
+    "P4_turn": 0.8537392252205224,
+    "P4_forward": 0.8199419050473066,
+    "forward_gain": 4.439821729134281,
+    "turn_gain": 2.7469942504570195
+   }
+  },
+  "SH-route-1020011": {
+   "name": "SH-route-1020011",
+   "seed": 1020011,
+   "passes": 20,
+   "content_sha256": "627d86303254b0f4aa48964170dba86760c8cf3af54309f7c3d9344401b0833d",
+   "matches_content_manifest": true,
+   "raw_sha256_rebuilt": "8e3975e094d35c0aa291c5836d469103f6ce354c3b6ed4a59b4a634541f1ad7f",
+   "raw_matches_manifest": true,
+   "local_file_arrays_equal": true,
+   "local_file_raw_matches_manifest": true,
+   "grafted": {
+    "arm": "G-SHr",
+    "run": 0,
+    "run_seed": 0,
+    "graph": "SH-route-1020011",
+    "label": "SH-route-1020011+comparator-L1",
+    "edge_sha256": "2133dcd9b70d7f5dc384b9cfd6770817f3e4bd72bbb878c73c6cf583b259838f",
+    "n": 306,
+    "n_chem": 3729,
+    "n_gap": 1091
+   },
+   "03r": {
+    "P4_turn": 0.7675860065866543,
+    "P4_forward": 0.8336880844945261,
+    "forward_gain": 4.740713780316439,
+    "turn_gain": 3.3085084488153456
+   }
+  },
+  "SH-route-1020012": {
+   "name": "SH-route-1020012",
+   "seed": 1020012,
+   "passes": 20,
+   "content_sha256": "e3432568d2edb18d96f31fb97ed4c6d2b1e1d4c1cc76f69c4f3948ff519002d7",
+   "matches_content_manifest": true,
+   "raw_sha256_rebuilt": "0ccc475aea044013f867c3618b603debca823ba559ad0078075d855b1bef9154",
+   "raw_matches_manifest": true,
+   "local_file_arrays_equal": true,
+   "local_file_raw_matches_manifest": true,
+   "grafted": {
+    "arm": "G-SHr",
+    "run": 0,
+    "run_seed": 0,
+    "graph": "SH-route-1020012",
+    "label": "SH-route-1020012+comparator-L1",
+    "edge_sha256": "8017a9c07a28efc44e5af80afb4212a6d4fcf0e57dda3fd87646650f0ef04976",
+    "n": 306,
+    "n_chem": 3729,
+    "n_gap": 1091
+   },
+   "03r": {
+    "P4_turn": 0.8297719770520173,
+    "P4_forward": 0.810654952765294,
+    "forward_gain": 4.780029742702989,
+    "turn_gain": 2.797161090006831
+   }
+  },
+  "SH-route-1020013": {
+   "name": "SH-route-1020013",
+   "seed": 1020013,
+   "passes": 20,
+   "content_sha256": "8eb89393d06cd9093c29119759d419317c530a01d27a15bd414a0eda1bfb67d5",
+   "matches_content_manifest": true,
+   "raw_sha256_rebuilt": "d592361ac0721d7ce0f40e5f8c24c5ef62ec2ce681928990e2757acd87055822",
+   "raw_matches_manifest": true,
+   "local_file_arrays_equal": true,
+   "local_file_raw_matches_manifest": true,
+   "grafted": {
+    "arm": "G-SHr",
+    "run": 0,
+    "run_seed": 0,
+    "graph": "SH-route-1020013",
+    "label": "SH-route-1020013+comparator-L1",
+    "edge_sha256": "02657333c723eac715a71b49d03014832537732c2d2d4b22e1ca05c83365ec22",
+    "n": 306,
+    "n_chem": 3729,
+    "n_gap": 1091
+   },
+   "03r": {
+    "P4_turn": 0.8659446040774985,
+    "P4_forward": 0.8373002976799813,
+    "forward_gain": 4.251429528575256,
+    "turn_gain": 3.033228545023695
+   }
+  },
+  "SH-route-1020014": {
+   "name": "SH-route-1020014",
+   "seed": 1020014,
+   "passes": 20,
+   "content_sha256": "2865d5074cf40a225ea34d630b8b36df9c10e31ab153938566ba8835f126b04f",
+   "matches_content_manifest": true,
+   "raw_sha256_rebuilt": "751cefe1523e881a5d53da339c852a29b46831aad834de8684db3cfbe2a47dc2",
+   "raw_matches_manifest": true,
+   "local_file_arrays_equal": true,
+   "local_file_raw_matches_manifest": true,
+   "grafted": {
+    "arm": "G-SHr",
+    "run": 0,
+    "run_seed": 0,
+    "graph": "SH-route-1020014",
+    "label": "SH-route-1020014+comparator-L1",
+    "edge_sha256": "7da45bc8c2bb8f821728662521ef9f0c574546062f6d4dddc04527478e3852d3",
+    "n": 306,
+    "n_chem": 3729,
+    "n_gap": 1091
+   },
+   "03r": {
+    "P4_turn": 0.8269060071473742,
+    "P4_forward": 0.8204342526191215,
+    "forward_gain": 5.029784566267694,
+    "turn_gain": 2.965580672194693
+   }
+  },
+  "SH-route-1020015": {
+   "name": "SH-route-1020015",
+   "seed": 1020015,
+   "passes": 20,
+   "content_sha256": "99c803d13bfcda130a2d067b91258e4cda507a216141f8e90698b45fc9c3e65c",
+   "matches_content_manifest": true,
+   "raw_sha256_rebuilt": "10fd9a60e8aadd957489e2fcc699f5c9f945d8b165dfa3b530da0e4f9455b53a",
+   "raw_matches_manifest": true,
+   "local_file_arrays_equal": true,
+   "local_file_raw_matches_manifest": true,
+   "grafted": {
+    "arm": "G-SHr",
+    "run": 0,
+    "run_seed": 0,
+    "graph": "SH-route-1020015",
+    "label": "SH-route-1020015+comparator-L1",
+    "edge_sha256": "830c4b3c1b3fbc7fd4c04eb56ea1b04b58c5d51bd2e1055af925ab47daa85eb3",
+    "n": 306,
+    "n_chem": 3729,
+    "n_gap": 1091
+   },
+   "03r": {
+    "P4_turn": 0.8393335749897353,
+    "P4_forward": 0.7704034065832555,
+    "forward_gain": 4.87233737605839,
+    "turn_gain": 2.729017677992397
+   }
+  },
+  "SH-route-1020016": {
+   "name": "SH-route-1020016",
+   "seed": 1020016,
+   "passes": 20,
+   "content_sha256": "b9cd346541805e2e5bc1fd00b9334db994af515cfdc9fc8a10ceaaea167b9638",
+   "matches_content_manifest": true,
+   "raw_sha256_rebuilt": "757c226bfe85afca57af8ad0ee15fb0aecb7b58f057bdf24f8cfd16c39db7302",
+   "raw_matches_manifest": true,
+   "local_file_arrays_equal": true,
+   "local_file_raw_matches_manifest": true,
+   "grafted": {
+    "arm": "G-SHr",
+    "run": 0,
+    "run_seed": 0,
+    "graph": "SH-route-1020016",
+    "label": "SH-route-1020016+comparator-L1",
+    "edge_sha256": "e2ed4b384f0816769d89d5b13815aff627a4f6d36344de678a42ffbe96029aa8",
+    "n": 306,
+    "n_chem": 3729,
+    "n_gap": 1091
+   },
+   "03r": {
+    "P4_turn": 0.8460161880296969,
+    "P4_forward": 0.8031144747465515,
+    "forward_gain": 4.662296546299863,
+    "turn_gain": 2.9635688533238564
+   }
+  },
+  "SH-route-1020017": {
+   "name": "SH-route-1020017",
+   "seed": 1020017,
+   "passes": 20,
+   "content_sha256": "97c3ad580dfa7b5353b657d056c7800edf8585ab84859b7644ade17fce40e9ac",
+   "matches_content_manifest": true,
+   "raw_sha256_rebuilt": "0fd3212670496199ab7ac7addea2e9536efec04e20c24a09b4f5a5486d8b4715",
+   "raw_matches_manifest": true,
+   "local_file_arrays_equal": true,
+   "local_file_raw_matches_manifest": true,
+   "grafted": {
+    "arm": "G-SHr",
+    "run": 0,
+    "run_seed": 0,
+    "graph": "SH-route-1020017",
+    "label": "SH-route-1020017+comparator-L1",
+    "edge_sha256": "faca268be14c168c083f7af61f1c9a4000e6d924a5486a8e55c4192ca58406fa",
+    "n": 306,
+    "n_chem": 3729,
+    "n_gap": 1091
+   },
+   "03r": {
+    "P4_turn": 0.8271052845984073,
+    "P4_forward": 0.7633350639532049,
+    "forward_gain": 4.724337840764261,
+    "turn_gain": 3.1495803041669337
+   }
+  },
+  "SH-route-1020018": {
+   "name": "SH-route-1020018",
+   "seed": 1020018,
+   "passes": 20,
+   "content_sha256": "3d1f2630d7a99bff621ce23e81aa3b12ff643afab9671945a5110168d8456096",
+   "matches_content_manifest": true,
+   "raw_sha256_rebuilt": "fbf839b79d834826d8c0c5ac6f86d0bf7d2f30c51df813aa9f7d95efa630249d",
+   "raw_matches_manifest": true,
+   "local_file_arrays_equal": true,
+   "local_file_raw_matches_manifest": true,
+   "grafted": {
+    "arm": "G-SHr",
+    "run": 0,
+    "run_seed": 0,
+    "graph": "SH-route-1020018",
+    "label": "SH-route-1020018+comparator-L1",
+    "edge_sha256": "34f2029e5ed8111e28e7667183aa27912db520afa6062e2d4ef742bad8af9528",
+    "n": 306,
+    "n_chem": 3729,
+    "n_gap": 1091
+   },
+   "03r": {
+    "P4_turn": 0.8209817824539102,
+    "P4_forward": 0.8433640742549255,
+    "forward_gain": 4.706497729569604,
+    "turn_gain": 2.8232511397311852
+   }
+  },
+  "SH-route-1020019": {
+   "name": "SH-route-1020019",
+   "seed": 1020019,
+   "passes": 20,
+   "content_sha256": "8e9f5dd0aeddb1554a131bba3c0eb11e5c61259b3cce0b4a438eb5f3d1ccfa9d",
+   "matches_content_manifest": true,
+   "raw_sha256_rebuilt": "c94b8808ca5a86bba4699124d09b9998d0378fd9ab895ad6e86423b0fcbaacd4",
+   "raw_matches_manifest": true,
+   "local_file_arrays_equal": true,
+   "local_file_raw_matches_manifest": true,
+   "grafted": {
+    "arm": "G-SHr",
+    "run": 0,
+    "run_seed": 0,
+    "graph": "SH-route-1020019",
+    "label": "SH-route-1020019+comparator-L1",
+    "edge_sha256": "b8f86f3c9112a6b96826330180aa6db4b107ee035a220810b64d20c9cd1fa113",
+    "n": 306,
+    "n_chem": 3729,
+    "n_gap": 1091
+   },
+   "03r": {
+    "P4_turn": 0.7592889062690422,
+    "P4_forward": 0.7977107021189616,
+    "forward_gain": 5.125067213140393,
+    "turn_gain": 2.879316182815756
+   }
+  },
+  "SH-route-1020020": {
+   "name": "SH-route-1020020",
+   "seed": 1020020,
+   "passes": 20,
+   "content_sha256": "4fd59f591fe1f82c0960733b9f3946b3dc6a46f546367c2c1bf4899800e88674",
+   "matches_content_manifest": true,
+   "raw_sha256_rebuilt": "f072b56fb792b80c5fc2a8b943ba66073dc2e8ad4851e5cac098b4925acb156a",
+   "raw_matches_manifest": true,
+   "local_file_arrays_equal": true,
+   "local_file_raw_matches_manifest": true,
+   "grafted": {
+    "arm": "G-SHr",
+    "run": 0,
+    "run_seed": 0,
+    "graph": "SH-route-1020020",
+    "label": "SH-route-1020020+comparator-L1",
+    "edge_sha256": "57fe5cbafe501982abab872643bbc1809b79261cfecf330eb7771652e07d6e24",
+    "n": 306,
+    "n_chem": 3729,
+    "n_gap": 1091
+   },
+   "03r": {
+    "P4_turn": 0.831228013471145,
+    "P4_forward": 0.8236966339948637,
+    "forward_gain": 4.612646462405814,
+    "turn_gain": 2.9418327304746223
+   }
+  },
+  "SH-route-1020021": {
+   "name": "SH-route-1020021",
+   "seed": 1020021,
+   "passes": 20,
+   "content_sha256": "6de045271ebe262e17c59e6a20e4541bfa852217c8750751bb1111819915ce75",
+   "matches_content_manifest": true,
+   "raw_sha256_rebuilt": "011b5c90b9c952d18a62dbe551f7411f405628da5b025bcce2b2b85c7eeb686e",
+   "raw_matches_manifest": true,
+   "local_file_arrays_equal": true,
+   "local_file_raw_matches_manifest": true,
+   "grafted": {
+    "arm": "G-SHr",
+    "run": 0,
+    "run_seed": 0,
+    "graph": "SH-route-1020021",
+    "label": "SH-route-1020021+comparator-L1",
+    "edge_sha256": "8a83794b41d6c4a1b7443e03cf782f30b426c872a1c9028891d5f471e23b0b44",
+    "n": 306,
+    "n_chem": 3729,
+    "n_gap": 1091
+   },
+   "03r": {
+    "P4_turn": 0.820820314220959,
+    "P4_forward": 0.8228201757948223,
+    "forward_gain": 4.728823588273385,
+    "turn_gain": 2.740427772179768
+   }
+  },
+  "SH-route-1020022": {
+   "name": "SH-route-1020022",
+   "seed": 1020022,
+   "passes": 20,
+   "content_sha256": "0da012a80370288ba5b5025e8a4660730b990a38210e5582fb97a0f50fba61dc",
+   "matches_content_manifest": true,
+   "raw_sha256_rebuilt": "53f1deeadd0b539d547f47c06638acbfff4c5227144a53970cebaba89ba8827d",
+   "raw_matches_manifest": true,
+   "local_file_arrays_equal": true,
+   "local_file_raw_matches_manifest": true,
+   "grafted": {
+    "arm": "G-SHr",
+    "run": 0,
+    "run_seed": 0,
+    "graph": "SH-route-1020022",
+    "label": "SH-route-1020022+comparator-L1",
+    "edge_sha256": "f23e0ce210179b1cf0a4fe61a299b9671670dee205ac077e97033e65f3432681",
+    "n": 306,
+    "n_chem": 3729,
+    "n_gap": 1091
+   },
+   "03r": {
+    "P4_turn": 0.81106383768785,
+    "P4_forward": 0.8668275424557059,
+    "forward_gain": 4.267322164560093,
+    "turn_gain": 2.7406159531995278
+   }
+  },
+  "SH-route-1020023": {
+   "name": "SH-route-1020023",
+   "seed": 1020023,
+   "passes": 20,
+   "content_sha256": "0ba669aa359aab89f2c33c4e949e8961e574e60a98ce85a3c4ea3bded6b02ca7",
+   "matches_content_manifest": true,
+   "raw_sha256_rebuilt": "99565dca8f9d0d0093f9ceb90a9e02c7fb6da036fab3de5781b91b30d28453a9",
+   "raw_matches_manifest": true,
+   "local_file_arrays_equal": true,
+   "local_file_raw_matches_manifest": true,
+   "grafted": {
+    "arm": "G-SHr",
+    "run": 0,
+    "run_seed": 0,
+    "graph": "SH-route-1020023",
+    "label": "SH-route-1020023+comparator-L1",
+    "edge_sha256": "9396c4e3ef21c0631333a00d1c6cf07faab6e36121cbb31014dca32bff5bf0f9",
+    "n": 306,
+    "n_chem": 3729,
+    "n_gap": 1091
+   },
+   "03r": {
+    "P4_turn": 0.856692441574996,
+    "P4_forward": 0.8721852490422866,
+    "forward_gain": 4.543614258515909,
+    "turn_gain": 2.790651543681653
+   }
+  }
+ },
+ "n2": {
+  "arm": "G-N2",
+  "run": 0,
+  "run_seed": 0,
+  "graph": "N2",
+  "label": "N2+comparator-L1",
+  "edge_sha256": "5055774c6377882bec9128546f477b5fd770333eec68e6c001e5143fcb6de4d9",
+  "n": 306,
+  "n_chem": 3729,
+  "n_gap": 1091
+ },
+ "p": {
+  "N2perm4": {
+   "permutation_seed": 4,
+   "configuration": {
+    "init_chem_magnitude": "permuted",
+    "init_gap_magnitude": "permuted",
+    "init_permutation_seed": 4
+   },
+   "run0_seed": 1513000,
+   "host_magnitude_sha256_run0_strain0": "adb7d9806147a559bf5a01c9ec69c914b744c6c2bf84796def7f59916c611c14",
+   "g_n2_same_seed_sha256": "d6ef0c4ff9b18c71998c473bc6102e2bce7b1dacec577147b18630a6396ed403",
+   "checks": {
+    "same_edges_as_g_n2": true,
+    "module_equals_l1": true,
+    "host_w_magnitudes_differ": true,
+    "host_w_magnitudes_permuted": true,
+    "host_g_differ": true,
+    "host_g_permuted": true,
+    "standard_configuration": true
+   },
+   "03r": {
+    "forward_gain": 4.68253272712732,
+    "turn_gain": 3.067255964693303
+   }
+  },
+  "N2perm5": {
+   "permutation_seed": 5,
+   "configuration": {
+    "init_chem_magnitude": "permuted",
+    "init_gap_magnitude": "permuted",
+    "init_permutation_seed": 5
+   },
+   "run0_seed": 1513004,
+   "host_magnitude_sha256_run0_strain0": "21f5069e436cf29f8c11e5308ee904c08478c8a30798cdf6d94a239f6d333c3d",
+   "g_n2_same_seed_sha256": "d6ef0c4ff9b18c71998c473bc6102e2bce7b1dacec577147b18630a6396ed403",
+   "checks": {
+    "same_edges_as_g_n2": true,
+    "module_equals_l1": true,
+    "host_w_magnitudes_differ": true,
+    "host_w_magnitudes_permuted": true,
+    "host_g_differ": true,
+    "host_g_permuted": true,
+    "standard_configuration": true
+   },
+   "03r": {
+    "forward_gain": 4.827690363258025,
+    "turn_gain": 2.91834855070044
+   }
+  },
+  "N2perm6": {
+   "permutation_seed": 6,
+   "configuration": {
+    "init_chem_magnitude": "permuted",
+    "init_gap_magnitude": "permuted",
+    "init_permutation_seed": 6
+   },
+   "run0_seed": 1513008,
+   "host_magnitude_sha256_run0_strain0": "9965a5785d2da71dbdc2c16ea982ba9354b77c89f1ad41d07a81e69a981813c8",
+   "g_n2_same_seed_sha256": "d6ef0c4ff9b18c71998c473bc6102e2bce7b1dacec577147b18630a6396ed403",
+   "checks": {
+    "same_edges_as_g_n2": true,
+    "module_equals_l1": true,
+    "host_w_magnitudes_differ": true,
+    "host_w_magnitudes_permuted": true,
+    "host_g_differ": true,
+    "host_g_permuted": true,
+    "standard_configuration": true
+   },
+   "03r": {
+    "forward_gain": 4.365161577050398,
+    "turn_gain": 3.040368834770572
+   }
+  }
+ },
+ "failed": [],
+ "raw_matches": 24,
+ "note": "content (arrays) must match 03r's content manifest (a stop); raw bytes are reported, D106",
+ "seconds": 105.40591959981248,
+ "passed": true
+}

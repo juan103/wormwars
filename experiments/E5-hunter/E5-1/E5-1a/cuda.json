@@ -1,0 +1,1827 @@
+{
+ "provenance_at_start": {
+  "git_commit": "f427a8f31a21b6317c6db464e50b2a4c3175df16",
+  "branch": "roadmap",
+  "dirty": false,
+  "python": "3.13.3",
+  "numpy": "2.4.4",
+  "torch": "2.12.0+cu130",
+  "cuda": "13.0",
+  "gpu": "NVIDIA GeForce RTX 5080",
+  "connectome_cache_sha256": "43b87aa172a0042b9dce734b15bdf1c87efe3a33ac1cc0d9cd03255a60c96d4a",
+  "connectome_source_sha256": "1f4fdbf84746b69b49a8da0816f52787860ce349b638dce37924ba80f90c70c9"
+ },
+ "registered": {
+  "sd_worlds": 512,
+  "z": 54.8,
+  "unit": 512,
+  "max_worlds": 8192,
+  "margin": 0.1,
+  "precision": 0.03,
+  "path_tol": 0.001,
+  "path_share": 0.99,
+  "path_worlds": 256,
+  "trace_ticks": 30,
+  "trace_worlds": 256,
+  "respawn_worlds": 64,
+  "attack_worlds": 256,
+  "state_tol": 0.0001,
+  "state_factor": 1.5,
+  "state_ticks": 300,
+  "ghost_ids": [
+   991200000,
+   512
+  ],
+  "settings": [
+   "H1-bite",
+   "H2-0.5",
+   "H2-1",
+   "H2b-walk-0.5",
+   "H2b-wall-0.5"
+  ]
+ },
+ "score_level": {
+  "S-const | H1-bite | 1 x 512": {
+   "worlds": 1536,
+   "sd": 0.5901454211892904,
+   "worlds_required": 1536,
+   "worlds_required_uncapped": 1536,
+   "estimate": 0.008463541666666666,
+   "interval": [
+    -0.017503231537040767,
+    0.034430314870374096
+   ],
+   "half_width": 0.02596677320370743,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 0.6627604166666666,
+   "passed": true
+  },
+  "S-const | H2-0.5 | 1 x 512": {
+   "worlds": 512,
+   "sd": 0.4099424808108883,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": -0.009765625,
+   "interval": [
+    -0.038390866969948756,
+    0.01885961696994876
+   ],
+   "half_width": 0.028625241969948756,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 0.845703125,
+   "passed": true
+  },
+  "S-const | H2-1 | 1 x 512": {
+   "worlds": 1024,
+   "sd": 0.42423812221961227,
+   "worlds_required": 1024,
+   "worlds_required_uncapped": 1024,
+   "estimate": 0.0146484375,
+   "interval": [
+    -0.006249035068003169,
+    0.03554591006800317
+   ],
+   "half_width": 0.020897472568003173,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 0.849609375,
+   "passed": true
+  },
+  "S-const | H2b-walk-0.5 | 1 x 512": {
+   "worlds": 1024,
+   "sd": 0.4796773456395092,
+   "worlds_required": 1024,
+   "worlds_required_uncapped": 1024,
+   "estimate": 0.0146484375,
+   "interval": [
+    -0.010207614186408233,
+    0.03950448918640823
+   ],
+   "half_width": 0.024856051686408233,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 0.7978515625,
+   "passed": true
+  },
+  "S-const | H2b-wall-0.5 | 1 x 512": {
+   "worlds": 1024,
+   "sd": 0.5215475370614578,
+   "worlds_required": 1024,
+   "worlds_required_uncapped": 1024,
+   "estimate": 0.009765625,
+   "interval": [
+    -0.016365285614933136,
+    0.03589653561493314
+   ],
+   "half_width": 0.02613091061493314,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 0.759765625,
+   "passed": true
+  },
+  "S-const | mixed | 1 x 512": {
+   "worlds": 1536,
+   "sd": 0.6657599654302329,
+   "worlds_required": 1536,
+   "worlds_required_uncapped": 1536,
+   "estimate": 0.0027777777777777783,
+   "interval": [
+    -0.026527677368940888,
+    0.03208323292449644
+   ],
+   "half_width": 0.029305455146718666,
+   "precision_reached": true,
+   "weighted": true,
+   "share_identical": 0.7825520833333334,
+   "passed": true
+  },
+  "pursuit | H1-bite | 1 x 512": {
+   "worlds": 1536,
+   "sd": 0.617367163865693,
+   "worlds_required": 1536,
+   "worlds_required_uncapped": 1536,
+   "estimate": 0.026041666666666668,
+   "interval": [
+    -0.00023448866283623873,
+    0.05231782199616958
+   ],
+   "half_width": 0.026276155329502907,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 0.673828125,
+   "passed": true
+  },
+  "pursuit | H2-0.5 | 1 x 512": {
+   "worlds": 512,
+   "sd": 0.0,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.0,
+   "interval": [
+    0.0,
+    0.0
+   ],
+   "half_width": 0.0,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 1.0,
+   "passed": true
+  },
+  "pursuit | H2-1 | 1 x 512": {
+   "worlds": 512,
+   "sd": 0.0,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.0,
+   "interval": [
+    0.0,
+    0.0
+   ],
+   "half_width": 0.0,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 1.0,
+   "passed": true
+  },
+  "pursuit | H2b-walk-0.5 | 1 x 512": {
+   "worlds": 512,
+   "sd": 0.0,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.0,
+   "interval": [
+    0.0,
+    0.0
+   ],
+   "half_width": 0.0,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 1.0,
+   "passed": true
+  },
+  "pursuit | H2b-wall-0.5 | 1 x 512": {
+   "worlds": 512,
+   "sd": 0.06256112470898544,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.0,
+   "interval": [
+    0.0,
+    0.0
+   ],
+   "half_width": 0.0,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 1.0,
+   "passed": true
+  },
+  "pursuit | mixed | 1 x 512": {
+   "worlds": 1024,
+   "sd": 0.5694686406009254,
+   "worlds_required": 1024,
+   "worlds_required_uncapped": 1024,
+   "estimate": 0.0078125,
+   "interval": [
+    -0.022489060399836516,
+    0.038114060399836516
+   ],
+   "half_width": 0.030301560399836516,
+   "precision_reached": false,
+   "weighted": true,
+   "share_identical": 0.9580078125,
+   "passed": true
+  },
+  "L1 carrier | H1-bite | 1 x 512": {
+   "worlds": 512,
+   "sd": 0.09889850175663156,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.001953125,
+   "interval": [
+    -0.0012653144705149669,
+    0.005171564470514967
+   ],
+   "half_width": 0.0032184394705149673,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 0.998046875,
+   "passed": true
+  },
+  "L1 carrier | H2-0.5 | 1 x 512": {
+   "worlds": 512,
+   "sd": 0.062438815452783625,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": -0.001953125,
+   "interval": [
+    -0.005171564470514967,
+    0.0012653144705149669
+   ],
+   "half_width": 0.0032184394705149673,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 0.998046875,
+   "passed": true
+  },
+  "L1 carrier | H2-1 | 1 x 512": {
+   "worlds": 512,
+   "sd": 0.0,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.001953125,
+   "interval": [
+    -0.0012653144705149669,
+    0.005171564470514967
+   ],
+   "half_width": 0.0032184394705149673,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 0.998046875,
+   "passed": true
+  },
+  "L1 carrier | H2b-walk-0.5 | 1 x 512": {
+   "worlds": 512,
+   "sd": 0.04419417382415922,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.001953125,
+   "interval": [
+    -0.0012653144705149669,
+    0.005171564470514967
+   ],
+   "half_width": 0.0032184394705149673,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 0.998046875,
+   "passed": true
+  },
+  "L1 carrier | H2b-wall-0.5 | 1 x 512": {
+   "worlds": 512,
+   "sd": 0.04419417382415922,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.0,
+   "interval": [
+    -0.004556012154098425,
+    0.004556012154098425
+   ],
+   "half_width": 0.004556012154098425,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 0.99609375,
+   "passed": true
+  },
+  "L1 carrier | mixed | 1 x 512": {
+   "worlds": 512,
+   "sd": 0.023570226039551584,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.0010416666666666667,
+   "interval": [
+    -0.0006972939809445969,
+    0.00278062731427793
+   ],
+   "half_width": 0.0017389606476112636,
+   "precision_reached": true,
+   "weighted": true,
+   "share_identical": 0.998046875,
+   "passed": true
+  },
+  "e4s1 M run00 | H1-bite | 4 x 512": {
+   "worlds": 512,
+   "sd": 0.0,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.0,
+   "interval": [
+    0.0,
+    0.0
+   ],
+   "half_width": 0.0,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 1.0,
+   "passed": true
+  },
+  "e4s1 M run01 | H1-bite | 4 x 512": {
+   "worlds": 512,
+   "sd": 0.04419417382415922,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.0,
+   "interval": [
+    0.0,
+    0.0
+   ],
+   "half_width": 0.0,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 1.0,
+   "passed": true
+  },
+  "e4s1 M run02 | H1-bite | 4 x 512": {
+   "worlds": 512,
+   "sd": 0.0,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.0,
+   "interval": [
+    0.0,
+    0.0
+   ],
+   "half_width": 0.0,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 1.0,
+   "passed": true
+  },
+  "e4s1 M run03 | H1-bite | 4 x 512": {
+   "worlds": 512,
+   "sd": 0.0,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.0,
+   "interval": [
+    0.0,
+    0.0
+   ],
+   "half_width": 0.0,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 1.0,
+   "passed": true
+  },
+  "e4s1 M run00 | H2-0.5 | 4 x 512": {
+   "worlds": 512,
+   "sd": 0.0,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.0,
+   "interval": [
+    -0.004556012154098425,
+    0.004556012154098425
+   ],
+   "half_width": 0.004556012154098425,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 0.99609375,
+   "passed": true
+  },
+  "e4s1 M run01 | H2-0.5 | 4 x 512": {
+   "worlds": 512,
+   "sd": 0.0,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": -0.001953125,
+   "interval": [
+    -0.005171564470514967,
+    0.0012653144705149669
+   ],
+   "half_width": 0.0032184394705149673,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 0.998046875,
+   "passed": true
+  },
+  "e4s1 M run02 | H2-0.5 | 4 x 512": {
+   "worlds": 512,
+   "sd": 0.04419417382415922,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": -0.001953125,
+   "interval": [
+    -0.005171564470514967,
+    0.0012653144705149669
+   ],
+   "half_width": 0.0032184394705149673,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 0.998046875,
+   "passed": true
+  },
+  "e4s1 M run03 | H2-0.5 | 4 x 512": {
+   "worlds": 512,
+   "sd": 0.0,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.001953125,
+   "interval": [
+    -0.0012653144705149669,
+    0.005171564470514967
+   ],
+   "half_width": 0.0032184394705149673,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 0.998046875,
+   "passed": true
+  },
+  "e4s1 M run00 | H2-1 | 4 x 512": {
+   "worlds": 512,
+   "sd": 0.0,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": -0.00390625,
+   "interval": [
+    -0.00845335498594238,
+    0.0006408549859423804
+   ],
+   "half_width": 0.0045471049859423796,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 0.99609375,
+   "passed": true
+  },
+  "e4s1 M run01 | H2-1 | 4 x 512": {
+   "worlds": 512,
+   "sd": 0.07639661003892982,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.0,
+   "interval": [
+    0.0,
+    0.0
+   ],
+   "half_width": 0.0,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 1.0,
+   "passed": true
+  },
+  "e4s1 M run02 | H2-1 | 4 x 512": {
+   "worlds": 512,
+   "sd": 0.0,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.0,
+   "interval": [
+    0.0,
+    0.0
+   ],
+   "half_width": 0.0,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 1.0,
+   "passed": true
+  },
+  "e4s1 M run03 | H2-1 | 4 x 512": {
+   "worlds": 512,
+   "sd": 0.09889850175663156,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": -0.001953125,
+   "interval": [
+    -0.009155405619495037,
+    0.005249155619495036
+   ],
+   "half_width": 0.007202280619495037,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 0.990234375,
+   "passed": true
+  },
+  "e4s1 M run00 | H2b-walk-0.5 | 4 x 512": {
+   "worlds": 512,
+   "sd": 0.04419417382415922,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": -0.001953125,
+   "interval": [
+    -0.005171564470514967,
+    0.0012653144705149669
+   ],
+   "half_width": 0.0032184394705149673,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 0.998046875,
+   "passed": true
+  },
+  "e4s1 M run01 | H2b-walk-0.5 | 4 x 512": {
+   "worlds": 512,
+   "sd": 0.0,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": -0.001953125,
+   "interval": [
+    -0.005171564470514967,
+    0.0012653144705149669
+   ],
+   "half_width": 0.0032184394705149673,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 0.998046875,
+   "passed": true
+  },
+  "e4s1 M run02 | H2b-walk-0.5 | 4 x 512": {
+   "worlds": 512,
+   "sd": 0.0,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.0,
+   "interval": [
+    0.0,
+    0.0
+   ],
+   "half_width": 0.0,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 1.0,
+   "passed": true
+  },
+  "e4s1 M run03 | H2b-walk-0.5 | 4 x 512": {
+   "worlds": 512,
+   "sd": 0.04419417382415922,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.0,
+   "interval": [
+    0.0,
+    0.0
+   ],
+   "half_width": 0.0,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 1.0,
+   "passed": true
+  },
+  "e4s1 M run00 | H2b-wall-0.5 | 4 x 512": {
+   "worlds": 512,
+   "sd": 0.062438815452783625,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.0,
+   "interval": [
+    -0.004556012154098425,
+    0.004556012154098425
+   ],
+   "half_width": 0.004556012154098425,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 0.99609375,
+   "passed": true
+  },
+  "e4s1 M run01 | H2b-wall-0.5 | 4 x 512": {
+   "worlds": 512,
+   "sd": 0.0,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": -0.001953125,
+   "interval": [
+    -0.007531260833202813,
+    0.003625010833202813
+   ],
+   "half_width": 0.005578135833202813,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 0.994140625,
+   "passed": true
+  },
+  "e4s1 M run02 | H2b-wall-0.5 | 4 x 512": {
+   "worlds": 512,
+   "sd": 0.0,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.0,
+   "interval": [
+    0.0,
+    0.0
+   ],
+   "half_width": 0.0,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 1.0,
+   "passed": true
+  },
+  "e4s1 M run03 | H2b-wall-0.5 | 4 x 512": {
+   "worlds": 512,
+   "sd": 0.0,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.0,
+   "interval": [
+    0.0,
+    0.0
+   ],
+   "half_width": 0.0,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 1.0,
+   "passed": true
+  },
+  "e4s1 M run00 | mixed | 128 x 8": {
+   "worlds": 512,
+   "sd": 0.0,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.0010416666666666667,
+   "interval": [
+    -0.0006972939809445969,
+    0.00278062731427793
+   ],
+   "half_width": 0.0017389606476112636,
+   "precision_reached": true,
+   "weighted": true,
+   "share_identical": 0.998046875,
+   "passed": true
+  },
+  "e4s1 M run01 | mixed | 128 x 8": {
+   "worlds": 512,
+   "sd": 0.0,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.0,
+   "interval": [
+    0.0,
+    0.0
+   ],
+   "half_width": 0.0,
+   "precision_reached": true,
+   "weighted": true,
+   "share_identical": 1.0,
+   "passed": true
+  },
+  "e4s1 M run02 | mixed | 128 x 8": {
+   "worlds": 512,
+   "sd": 0.05892556509887896,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.0,
+   "interval": [
+    0.0,
+    0.0
+   ],
+   "half_width": 0.0,
+   "precision_reached": true,
+   "weighted": true,
+   "share_identical": 1.0,
+   "passed": true
+  },
+  "e4s1 M run03 | mixed | 128 x 8": {
+   "worlds": 512,
+   "sd": 0.08660254037844387,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.0020833333333333333,
+   "interval": [
+    -0.0003577126805052581,
+    0.004524379347171925
+   ],
+   "half_width": 0.0024410460138385914,
+   "precision_reached": true,
+   "weighted": true,
+   "share_identical": 0.99609375,
+   "passed": true
+  }
+ },
+ "paths": {
+  "prey H2-0.5": {
+   "worlds": 256,
+   "share_agreeing": 1.0,
+   "max_abs": 7.43865966796875e-05,
+   "passed": true
+  },
+  "prey H2b-walk-0.5": {
+   "worlds": 256,
+   "share_agreeing": 1.0,
+   "max_abs": 4.1961669921875e-05,
+   "passed": true
+  },
+  "prey H2b-wall-0.5": {
+   "worlds": 256,
+   "share_agreeing": 1.0,
+   "max_abs": 4.9591064453125e-05,
+   "passed": true
+  },
+  "pursuit trace H1-bite": {
+   "worlds": 256,
+   "ticks": 30,
+   "share_agreeing": 0.9921875,
+   "max_abs": 0.18871593475341797,
+   "passed": true
+  },
+  "pursuit trace H2-0.5": {
+   "worlds": 256,
+   "ticks": 30,
+   "share_agreeing": 1.0,
+   "max_abs": 1.430511474609375e-05,
+   "passed": true
+  }
+ },
+ "ghost_against_task_n": {
+  "S-const": {
+   "worlds": 512,
+   "sd": 0.0,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.0,
+   "interval": [
+    0.0,
+    0.0
+   ],
+   "half_width": 0.0,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 1.0,
+   "passed": true
+  },
+  "oracle": {
+   "worlds": 512,
+   "sd": 0.0,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.0,
+   "interval": [
+    0.0,
+    0.0
+   ],
+   "half_width": 0.0,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 1.0,
+   "passed": true
+  },
+  "e4s1 C run00": {
+   "worlds": 512,
+   "sd": 0.0,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.0,
+   "interval": [
+    0.0,
+    0.0
+   ],
+   "half_width": 0.0,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 1.0,
+   "passed": true
+  },
+  "L1 carrier": {
+   "worlds": 512,
+   "sd": 0.0,
+   "worlds_required": 512,
+   "worlds_required_uncapped": 512,
+   "estimate": 0.0,
+   "interval": [
+    0.0,
+    0.0
+   ],
+   "half_width": 0.0,
+   "precision_reached": true,
+   "weighted": false,
+   "share_identical": 1.0,
+   "passed": true
+  }
+ },
+ "attack_disabled": {
+  "H1-bite": {
+   "captures": 0,
+   "damage": 0.0,
+   "passed": true
+  },
+  "H2-0.5": {
+   "captures": 0,
+   "damage": 0.0,
+   "passed": true
+  }
+ },
+ "respawns": {
+  "H1-bite": {
+   "respawns": 289,
+   "min_distance": 6.75669002532959,
+   "required": 6.5,
+   "passed": true
+  },
+  "H2-0.5": {
+   "respawns": 311,
+   "min_distance": 6.500888824462891,
+   "required": 6.5,
+   "passed": true
+  },
+  "H2b-walk-0.5": {
+   "respawns": 286,
+   "min_distance": 6.556885242462158,
+   "required": 6.5,
+   "passed": true
+  }
+ },
+ "state_level": {
+  "strains": {
+   "e4s1 M run00 | training": {
+    "copies": 8,
+    "copies_failed": 0,
+    "one step": 1.8477439880371094e-06,
+    "cpu32 - cuda32": 2.7477741241455078e-05,
+    "cpu32 - cpu64": 0.00025213669518497905,
+    "cuda32 - cpu64": 0.0002555341599371763,
+    "smallest margin": 9.81522560119629e-05,
+    "passed": true
+   },
+   "e4s1 M run01 | training": {
+    "copies": 8,
+    "copies_failed": 0,
+    "one step": 2.1457672119140625e-06,
+    "cpu32 - cuda32": 0.002537637948989868,
+    "cpu32 - cpu64": 0.14588227625215333,
+    "cuda32 - cpu64": 0.14573840554082673,
+    "smallest margin": 9.785423278808594e-05,
+    "passed": true
+   },
+   "e4s1 M run02 | training": {
+    "copies": 8,
+    "copies_failed": 0,
+    "one step": 1.9073486328125e-06,
+    "cpu32 - cuda32": 5.4836273193359375e-06,
+    "cpu32 - cpu64": 5.535093886921416e-05,
+    "cuda32 - cpu64": 5.606619460651885e-05,
+    "smallest margin": 9.80926513671875e-05,
+    "passed": true
+   },
+   "e4s1 M run03 | training": {
+    "copies": 8,
+    "copies_failed": 0,
+    "one step": 2.384185791015625e-06,
+    "cpu32 - cuda32": 0.0005437135696411133,
+    "cpu32 - cpu64": 0.01325882142138568,
+    "cuda32 - cpu64": 0.012715107851744567,
+    "smallest margin": 9.761581420898438e-05,
+    "passed": true
+   },
+   "e4s1 M run04 | training": {
+    "copies": 8,
+    "copies_failed": 0,
+    "one step": 5.7220458984375e-06,
+    "cpu32 - cuda32": 1.7404556274414062e-05,
+    "cpu32 - cpu64": 5.690204662345266e-05,
+    "cuda32 - cpu64": 4.8557396354897975e-05,
+    "smallest margin": 9.42779541015625e-05,
+    "passed": true
+   },
+   "e4s1 M run05 | training": {
+    "copies": 8,
+    "copies_failed": 0,
+    "one step": 3.0994415283203125e-06,
+    "cpu32 - cuda32": 4.649162292480469e-06,
+    "cpu32 - cpu64": 5.2383236594927274e-05,
+    "cuda32 - cpu64": 5.151896924568411e-05,
+    "smallest margin": 9.690055847167969e-05,
+    "passed": true
+   },
+   "e4s1 M run06 | training": {
+    "copies": 8,
+    "copies_failed": 0,
+    "one step": 3.3974647521972656e-06,
+    "cpu32 - cuda32": 7.62939453125e-06,
+    "cpu32 - cpu64": 0.00010452996231770373,
+    "cuda32 - cpu64": 0.00010512600876545763,
+    "smallest margin": 9.660253524780274e-05,
+    "passed": true
+   },
+   "e4s1 M run07 | training": {
+    "copies": 8,
+    "copies_failed": 0,
+    "one step": 2.86102294921875e-06,
+    "cpu32 - cuda32": 2.86102294921875e-06,
+    "cpu32 - cpu64": 4.760835031447641e-05,
+    "cuda32 - cpu64": 4.760835031447641e-05,
+    "smallest margin": 9.713897705078125e-05,
+    "passed": true
+   },
+   "e4s1 M run08 | training": {
+    "copies": 8,
+    "copies_failed": 0,
+    "one step": 1.1920928955078125e-06,
+    "cpu32 - cuda32": 3.4570693969726562e-06,
+    "cpu32 - cpu64": 5.264994052001093e-05,
+    "cuda32 - cpu64": 5.241152194090937e-05,
+    "smallest margin": 9.880790710449219e-05,
+    "passed": true
+   },
+   "e4s1 M run09 | training": {
+    "copies": 8,
+    "copies_failed": 0,
+    "one step": 1.9073486328125e-06,
+    "cpu32 - cuda32": 3.814697265625e-06,
+    "cpu32 - cpu64": 0.00010966224887054565,
+    "cuda32 - cpu64": 0.00010990066744964722,
+    "smallest margin": 9.80926513671875e-05,
+    "passed": true
+   },
+   "e4s1 M run10 | training": {
+    "copies": 8,
+    "copies_failed": 0,
+    "one step": 1.430511474609375e-06,
+    "cpu32 - cuda32": 2.86102294921875e-06,
+    "cpu32 - cpu64": 0.0001864058952383285,
+    "cuda32 - cpu64": 0.0001864058952383285,
+    "smallest margin": 9.856948852539063e-05,
+    "passed": true
+   },
+   "e4s1 M run11 | training": {
+    "copies": 8,
+    "copies_failed": 0,
+    "one step": 2.6226043701171875e-06,
+    "cpu32 - cuda32": 5.0067901611328125e-06,
+    "cpu32 - cpu64": 5.5520395966539814e-05,
+    "cuda32 - cpu64": 5.647220763779683e-05,
+    "smallest margin": 9.737739562988282e-05,
+    "passed": true
+   },
+   "e4s1 M run12 | training": {
+    "copies": 8,
+    "copies_failed": 0,
+    "one step": 2.384185791015625e-06,
+    "cpu32 - cuda32": 3.0994415283203125e-06,
+    "cpu32 - cpu64": 0.0002024453390732095,
+    "cuda32 - cpu64": 0.0002017300833359048,
+    "smallest margin": 9.761581420898438e-05,
+    "passed": true
+   },
+   "e4s1 M run13 | training": {
+    "copies": 8,
+    "copies_failed": 0,
+    "one step": 1.6689300537109375e-06,
+    "cpu32 - cuda32": 1.9073486328125e-06,
+    "cpu32 - cpu64": 8.362528461569596e-05,
+    "cuda32 - cpu64": 8.362528461569596e-05,
+    "smallest margin": 9.833106994628907e-05,
+    "passed": true
+   },
+   "e4s1 M run14 | training": {
+    "copies": 8,
+    "copies_failed": 0,
+    "one step": 1.9073486328125e-06,
+    "cpu32 - cuda32": 0.0009152889251708984,
+    "cpu32 - cpu64": 0.006111490605566927,
+    "cuda32 - cpu64": 0.006660978096024284,
+    "smallest margin": 9.80926513671875e-05,
+    "passed": true
+   },
+   "e4s1 M run15 | training": {
+    "copies": 8,
+    "copies_failed": 0,
+    "one step": 1.9073486328125e-06,
+    "cpu32 - cuda32": 0.00010013580322265625,
+    "cpu32 - cpu64": 0.012356791830033131,
+    "cuda32 - cpu64": 0.012414012289017506,
+    "smallest margin": 9.80926513671875e-05,
+    "passed": true
+   },
+   "e4s1 M run00 | validation": {
+    "copies": 1,
+    "copies_failed": 0,
+    "one step": 1.9669532775878906e-06,
+    "cpu32 - cuda32": 0.0001061558723449707,
+    "cpu32 - cpu64": 0.00024580288258839456,
+    "cuda32 - cpu64": 0.00024774169605782173,
+    "smallest margin": 9.803304672241211e-05,
+    "passed": true
+   },
+   "e4s1 M run01 | validation": {
+    "copies": 1,
+    "copies_failed": 0,
+    "one step": 2.384185791015625e-06,
+    "cpu32 - cuda32": 0.004408150911331177,
+    "cpu32 - cpu64": 0.4580485150517407,
+    "cuda32 - cpu64": 0.45384957644357116,
+    "smallest margin": 9.761581420898438e-05,
+    "passed": true
+   },
+   "e4s1 M run02 | validation": {
+    "copies": 1,
+    "copies_failed": 0,
+    "one step": 1.9073486328125e-06,
+    "cpu32 - cuda32": 5.543231964111328e-06,
+    "cpu32 - cpu64": 5.535093886921416e-05,
+    "cuda32 - cpu64": 5.606619460651885e-05,
+    "smallest margin": 9.80926513671875e-05,
+    "passed": true
+   },
+   "e4s1 M run03 | validation": {
+    "copies": 1,
+    "copies_failed": 0,
+    "one step": 1.9073486328125e-06,
+    "cpu32 - cuda32": 0.0003460049629211426,
+    "cpu32 - cpu64": 0.013258821421337497,
+    "cuda32 - cpu64": 0.012912816458416354,
+    "smallest margin": 9.80926513671875e-05,
+    "passed": true
+   },
+   "e4s1 M run04 | validation": {
+    "copies": 1,
+    "copies_failed": 0,
+    "one step": 5.841255187988281e-06,
+    "cpu32 - cuda32": 1.7523765563964844e-05,
+    "cpu32 - cpu64": 5.21375609001673e-05,
+    "cuda32 - cpu64": 4.908918413093488e-05,
+    "smallest margin": 9.415874481201172e-05,
+    "passed": true
+   },
+   "e4s1 M run05 | validation": {
+    "copies": 1,
+    "copies_failed": 0,
+    "one step": 3.0994415283203125e-06,
+    "cpu32 - cuda32": 4.649162292480469e-06,
+    "cpu32 - cpu64": 5.439865562384405e-05,
+    "cuda32 - cpu64": 5.416023704474249e-05,
+    "smallest margin": 9.690055847167969e-05,
+    "passed": true
+   },
+   "e4s1 M run06 | validation": {
+    "copies": 1,
+    "copies_failed": 0,
+    "one step": 3.4570693969726562e-06,
+    "cpu32 - cuda32": 7.987022399902344e-06,
+    "cpu32 - cpu64": 0.000115069602280915,
+    "cuda32 - cpu64": 0.00011456296280032419,
+    "smallest margin": 9.654293060302735e-05,
+    "passed": true
+   },
+   "e4s1 M run07 | validation": {
+    "copies": 1,
+    "copies_failed": 0,
+    "one step": 3.0994415283203125e-06,
+    "cpu32 - cuda32": 3.0994415283203125e-06,
+    "cpu32 - cpu64": 5.033749142580035e-05,
+    "cuda32 - cpu64": 5.033749142580035e-05,
+    "smallest margin": 9.690055847167969e-05,
+    "passed": true
+   },
+   "e4s1 M run08 | validation": {
+    "copies": 1,
+    "copies_failed": 0,
+    "one step": 1.5497207641601562e-06,
+    "cpu32 - cuda32": 4.291534423828125e-06,
+    "cpu32 - cpu64": 0.00036130987573215756,
+    "cuda32 - cpu64": 0.000365079869514201,
+    "smallest margin": 9.845027923583985e-05,
+    "passed": true
+   },
+   "e4s1 M run09 | validation": {
+    "copies": 1,
+    "copies_failed": 0,
+    "one step": 1.9073486328125e-06,
+    "cpu32 - cuda32": 3.814697265625e-06,
+    "cpu32 - cpu64": 0.00013581651490746083,
+    "cuda32 - cpu64": 0.00013367074769554677,
+    "smallest margin": 9.80926513671875e-05,
+    "passed": true
+   },
+   "e4s1 M run10 | validation": {
+    "copies": 1,
+    "copies_failed": 0,
+    "one step": 1.9073486328125e-06,
+    "cpu32 - cuda32": 3.337860107421875e-06,
+    "cpu32 - cpu64": 0.00019520957194096855,
+    "cuda32 - cpu64": 0.00019590785710987824,
+    "smallest margin": 9.80926513671875e-05,
+    "passed": true
+   },
+   "e4s1 M run11 | validation": {
+    "copies": 1,
+    "copies_failed": 0,
+    "one step": 2.562999725341797e-06,
+    "cpu32 - cuda32": 5.0067901611328125e-06,
+    "cpu32 - cpu64": 6.245791975831305e-05,
+    "cuda32 - cpu64": 6.333708826875006e-05,
+    "smallest margin": 9.743700027465821e-05,
+    "passed": true
+   },
+   "e4s1 M run12 | validation": {
+    "copies": 1,
+    "copies_failed": 0,
+    "one step": 1.9073486328125e-06,
+    "cpu32 - cuda32": 3.2186508178710938e-06,
+    "cpu32 - cpu64": 0.0002097790066306615,
+    "cuda32 - cpu64": 0.00020945118108439686,
+    "smallest margin": 9.80926513671875e-05,
+    "passed": true
+   },
+   "e4s1 M run13 | validation": {
+    "copies": 1,
+    "copies_failed": 0,
+    "one step": 1.9073486328125e-06,
+    "cpu32 - cuda32": 4.291534423828125e-06,
+    "cpu32 - cpu64": 8.528604045343613e-05,
+    "cuda32 - cpu64": 8.528604045343613e-05,
+    "smallest margin": 9.80926513671875e-05,
+    "passed": true
+   },
+   "e4s1 M run14 | validation": {
+    "copies": 1,
+    "copies_failed": 0,
+    "one step": 2.86102294921875e-06,
+    "cpu32 - cuda32": 0.00020182132720947266,
+    "cpu32 - cpu64": 0.0019127172044582919,
+    "cuda32 - cpu64": 0.0018942397645779208,
+    "smallest margin": 9.713897705078125e-05,
+    "passed": true
+   },
+   "e4s1 M run15 | validation": {
+    "copies": 1,
+    "copies_failed": 0,
+    "one step": 1.9073486328125e-06,
+    "cpu32 - cuda32": 0.0003243684768676758,
+    "cpu32 - cpu64": 0.026061270590359564,
+    "cuda32 - cpu64": 0.025871847029263373,
+    "smallest margin": 9.80926513671875e-05,
+    "passed": true
+   },
+   "e4s1 M run00 | suite": {
+    "copies": 1,
+    "copies_failed": 0,
+    "one step": 1.9669532775878906e-06,
+    "cpu32 - cuda32": 0.00022166967391967773,
+    "cpu32 - cpu64": 0.0006184678776461894,
+    "cuda32 - cpu64": 0.00039679820372651164,
+    "smallest margin": 9.803304672241211e-05,
+    "passed": true
+   },
+   "e4s1 M run01 | suite": {
+    "copies": 1,
+    "copies_failed": 0,
+    "one step": 2.384185791015625e-06,
+    "cpu32 - cuda32": 0.010923027992248535,
+    "cpu32 - cpu64": 0.3518168685371733,
+    "cuda32 - cpu64": 0.3412340638573027,
+    "smallest margin": 9.761581420898438e-05,
+    "passed": true
+   },
+   "e4s1 M run02 | suite": {
+    "copies": 1,
+    "copies_failed": 0,
+    "one step": 1.9073486328125e-06,
+    "cpu32 - cuda32": 5.543231964111328e-06,
+    "cpu32 - cpu64": 5.858877778441851e-05,
+    "cuda32 - cpu64": 5.8827196363520073e-05,
+    "smallest margin": 9.80926513671875e-05,
+    "passed": true
+   },
+   "e4s1 M run03 | suite": {
+    "copies": 1,
+    "copies_failed": 0,
+    "one step": 2.86102294921875e-06,
+    "cpu32 - cuda32": 2.6345252990722656e-05,
+    "cpu32 - cpu64": 0.0006997373705524002,
+    "cuda32 - cpu64": 0.0006868031626361404,
+    "smallest margin": 9.713897705078125e-05,
+    "passed": true
+   },
+   "e4s1 M run04 | suite": {
+    "copies": 1,
+    "copies_failed": 0,
+    "one step": 5.841255187988281e-06,
+    "cpu32 - cuda32": 1.7523765563964844e-05,
+    "cpu32 - cpu64": 6.282684129255145e-05,
+    "cuda32 - cpu64": 5.2666870451023584e-05,
+    "smallest margin": 9.415874481201172e-05,
+    "passed": true
+   },
+   "e4s1 M run05 | suite": {
+    "copies": 1,
+    "copies_failed": 0,
+    "one step": 3.2186508178710938e-06,
+    "cpu32 - cuda32": 5.0067901611328125e-06,
+    "cpu32 - cpu64": 5.842213285545128e-05,
+    "cuda32 - cpu64": 5.734924924949425e-05,
+    "smallest margin": 9.678134918212891e-05,
+    "passed": true
+   },
+   "e4s1 M run06 | suite": {
+    "copies": 1,
+    "copies_failed": 0,
+    "one step": 3.635883331298828e-06,
+    "cpu32 - cuda32": 8.106231689453125e-06,
+    "cpu32 - cpu64": 0.00010507107207644202,
+    "cuda32 - cpu64": 0.00010603499094116904,
+    "smallest margin": 9.636411666870118e-05,
+    "passed": true
+   },
+   "e4s1 M run07 | suite": {
+    "copies": 1,
+    "copies_failed": 0,
+    "one step": 3.0994415283203125e-06,
+    "cpu32 - cuda32": 3.0994415283203125e-06,
+    "cpu32 - cpu64": 5.152265107000176e-05,
+    "cuda32 - cpu64": 5.152265107000176e-05,
+    "smallest margin": 9.690055847167969e-05,
+    "passed": true
+   },
+   "e4s1 M run08 | suite": {
+    "copies": 1,
+    "copies_failed": 0,
+    "one step": 2.384185791015625e-06,
+    "cpu32 - cuda32": 6.586313247680664e-06,
+    "cpu32 - cpu64": 0.0005555764167438637,
+    "cuda32 - cpu64": 0.0005584374396930825,
+    "smallest margin": 9.761581420898438e-05,
+    "passed": true
+   },
+   "e4s1 M run09 | suite": {
+    "copies": 1,
+    "copies_failed": 0,
+    "one step": 2.384185791015625e-06,
+    "cpu32 - cuda32": 4.0531158447265625e-06,
+    "cpu32 - cpu64": 0.00014908557335990835,
+    "cuda32 - cpu64": 0.00014932399193900991,
+    "smallest margin": 9.761581420898438e-05,
+    "passed": true
+   },
+   "e4s1 M run10 | suite": {
+    "copies": 1,
+    "copies_failed": 0,
+    "one step": 1.9073486328125e-06,
+    "cpu32 - cuda32": 3.993511199951172e-06,
+    "cpu32 - cpu64": 0.0002844603237809329,
+    "cuda32 - cpu64": 0.00028457953307048367,
+    "smallest margin": 9.80926513671875e-05,
+    "passed": true
+   },
+   "e4s1 M run11 | suite": {
+    "copies": 1,
+    "copies_failed": 0,
+    "one step": 2.562999725341797e-06,
+    "cpu32 - cuda32": 4.76837158203125e-06,
+    "cpu32 - cpu64": 5.94459505344723e-05,
+    "cuda32 - cpu64": 6.010625823987467e-05,
+    "smallest margin": 9.743700027465821e-05,
+    "passed": true
+   },
+   "e4s1 M run12 | suite": {
+    "copies": 1,
+    "copies_failed": 0,
+    "one step": 1.9073486328125e-06,
+    "cpu32 - cuda32": 3.039836883544922e-06,
+    "cpu32 - cpu64": 0.00024663076690534247,
+    "cuda32 - cpu64": 0.0002459155111680378,
+    "smallest margin": 9.80926513671875e-05,
+    "passed": true
+   },
+   "e4s1 M run13 | suite": {
+    "copies": 1,
+    "copies_failed": 0,
+    "one step": 1.9073486328125e-06,
+    "cpu32 - cuda32": 3.814697265625e-06,
+    "cpu32 - cpu64": 9.11798144369591e-05,
+    "cuda32 - cpu64": 9.11798144369591e-05,
+    "smallest margin": 9.80926513671875e-05,
+    "passed": true
+   },
+   "e4s1 M run14 | suite": {
+    "copies": 1,
+    "copies_failed": 0,
+    "one step": 2.384185791015625e-06,
+    "cpu32 - cuda32": 0.0031111836433410645,
+    "cpu32 - cpu64": 0.09098458520129449,
+    "cuda32 - cpu64": 0.0922958277817083,
+    "smallest margin": 9.761581420898438e-05,
+    "passed": true
+   },
+   "e4s1 M run15 | suite": {
+    "copies": 1,
+    "copies_failed": 0,
+    "one step": 1.9073486328125e-06,
+    "cpu32 - cuda32": 0.0024383068084716797,
+    "cpu32 - cpu64": 0.06624899366153958,
+    "cuda32 - cpu64": 0.0638106868530679,
+    "smallest margin": 9.80926513671875e-05,
+    "passed": true
+   },
+   "SH-route-1020020 #0 | training": {
+    "copies": 32,
+    "copies_failed": 0,
+    "one step": 2.384185791015625e-06,
+    "cpu32 - cuda32": 2.86102294921875e-06,
+    "cpu32 - cpu64": 3.9787520543566046e-05,
+    "cuda32 - cpu64": 4.002593912266761e-05,
+    "smallest margin": 9.713897705078125e-05,
+    "passed": true
+   },
+   "SH-route-1020020 #1 | training": {
+    "copies": 32,
+    "copies_failed": 0,
+    "one step": 1.9073486328125e-06,
+    "cpu32 - cuda32": 2.384185791015625e-06,
+    "cpu32 - cpu64": 5.198618718527115e-05,
+    "cuda32 - cpu64": 5.198618718527115e-05,
+    "smallest margin": 9.761581420898438e-05,
+    "passed": true
+   },
+   "SH-route-1020020 #2 | training": {
+    "copies": 32,
+    "copies_failed": 0,
+    "one step": 1.9073486328125e-06,
+    "cpu32 - cuda32": 2.6226043701171875e-06,
+    "cpu32 - cpu64": 5.308655957936281e-05,
+    "cuda32 - cpu64": 5.2907004807423164e-05,
+    "smallest margin": 9.737739562988282e-05,
+    "passed": true
+   },
+   "SH-route-1020020 #3 | training": {
+    "copies": 32,
+    "copies_failed": 0,
+    "one step": 1.430511474609375e-06,
+    "cpu32 - cuda32": 1.9073486328125e-06,
+    "cpu32 - cpu64": 3.8339990998004225e-05,
+    "cuda32 - cpu64": 3.8339990998004225e-05,
+    "smallest margin": 9.80926513671875e-05,
+    "passed": true
+   },
+   "SH-route-1020020 #0 | validation": {
+    "copies": 1,
+    "copies_failed": 0,
+    "one step": 2.1457672119140625e-06,
+    "cpu32 - cuda32": 2.1457672119140625e-06,
+    "cpu32 - cpu64": 4.009469789645337e-05,
+    "cuda32 - cpu64": 4.033311647555493e-05,
+    "smallest margin": 9.785423278808594e-05,
+    "passed": true
+   },
+   "SH-route-1020020 #1 | validation": {
+    "copies": 1,
+    "copies_failed": 0,
+    "one step": 1.430511474609375e-06,
+    "cpu32 - cuda32": 1.9073486328125e-06,
+    "cpu32 - cpu64": 5.091927603029234e-05,
+    "cuda32 - cpu64": 5.091927603029234e-05,
+    "smallest margin": 9.80926513671875e-05,
+    "passed": true
+   },
+   "SH-route-1020020 #2 | validation": {
+    "copies": 1,
+    "copies_failed": 0,
+    "one step": 1.9073486328125e-06,
+    "cpu32 - cuda32": 2.384185791015625e-06,
+    "cpu32 - cpu64": 5.6058612715848e-05,
+    "cuda32 - cpu64": 5.6058612715848e-05,
+    "smallest margin": 9.761581420898438e-05,
+    "passed": true
+   },
+   "SH-route-1020020 #3 | validation": {
+    "copies": 1,
+    "copies_failed": 0,
+    "one step": 1.9073486328125e-06,
+    "cpu32 - cuda32": 2.384185791015625e-06,
+    "cpu32 - cpu64": 3.802570486532986e-05,
+    "cuda32 - cpu64": 3.7787286286228294e-05,
+    "smallest margin": 9.761581420898438e-05,
+    "passed": true
+   },
+   "SH-route-1020020 #0 | suite": {
+    "copies": 2,
+    "copies_failed": 0,
+    "one step": 2.1457672119140625e-06,
+    "cpu32 - cuda32": 2.86102294921875e-06,
+    "cpu32 - cpu64": 3.967495955592426e-05,
+    "cuda32 - cpu64": 3.94365409768227e-05,
+    "smallest margin": 9.713897705078125e-05,
+    "passed": true
+   },
+   "SH-route-1020020 #1 | suite": {
+    "copies": 2,
+    "copies_failed": 0,
+    "one step": 1.9073486328125e-06,
+    "cpu32 - cuda32": 2.384185791015625e-06,
+    "cpu32 - cpu64": 5.356359883612605e-05,
+    "cuda32 - cpu64": 5.356359883612605e-05,
+    "smallest margin": 9.761581420898438e-05,
+    "passed": true
+   },
+   "SH-route-1020020 #2 | suite": {
+    "copies": 2,
+    "copies_failed": 0,
+    "one step": 2.1457672119140625e-06,
+    "cpu32 - cuda32": 2.1457672119140625e-06,
+    "cpu32 - cpu64": 6.0109703075905685e-05,
+    "cuda32 - cpu64": 6.034812165500725e-05,
+    "smallest margin": 9.785423278808594e-05,
+    "passed": true
+   },
+   "SH-route-1020020 #3 | suite": {
+    "copies": 2,
+    "copies_failed": 0,
+    "one step": 1.430511474609375e-06,
+    "cpu32 - cuda32": 2.1457672119140625e-06,
+    "cpu32 - cpu64": 3.8414368014105804e-05,
+    "cuda32 - cpu64": 3.8414368014105804e-05,
+    "smallest margin": 9.785423278808594e-05,
+    "passed": true
+   },
+   "SH-route-1020021 #0 | training": {
+    "copies": 32,
+    "copies_failed": 0,
+    "one step": 1.430511474609375e-06,
+    "cpu32 - cuda32": 2.384185791015625e-06,
+    "cpu32 - cpu64": 4.634555675853136e-05,
+    "cuda32 - cpu64": 4.6107138179429796e-05,
+    "smallest margin": 9.761581420898438e-05,
+    "passed": true
+   },
+   "SH-route-1020021 #1 | training": {
+    "copies": 32,
+    "copies_failed": 0,
+    "one step": 2.86102294921875e-06,
+    "cpu32 - cuda32": 4.410743713378906e-06,
+    "cpu32 - cpu64": 7.628611518589734e-05,
+    "cuda32 - cpu64": 7.563046409336804e-05,
+    "smallest margin": 9.55892562866211e-05,
+    "passed": true
+   },
+   "SH-route-1020021 #2 | training": {
+    "copies": 32,
+    "copies_failed": 0,
+    "one step": 1.430511474609375e-06,
+    "cpu32 - cuda32": 2.384185791015625e-06,
+    "cpu32 - cpu64": 5.3914673851296335e-05,
+    "cuda32 - cpu64": 5.364645294980708e-05,
+    "smallest margin": 9.761581420898438e-05,
+    "passed": true
+   },
+   "SH-route-1020021 #3 | training": {
+    "copies": 32,
+    "copies_failed": 0,
+    "one step": 1.6689300537109375e-06,
+    "cpu32 - cuda32": 1.9073486328125e-06,
+    "cpu32 - cpu64": 3.974358368874498e-05,
+    "cuda32 - cpu64": 3.963529760908635e-05,
+    "smallest margin": 9.80926513671875e-05,
+    "passed": true
+   },
+   "SH-route-1020021 #0 | validation": {
+    "copies": 1,
+    "copies_failed": 0,
+    "one step": 1.430511474609375e-06,
+    "cpu32 - cuda32": 1.6689300537109375e-06,
+    "cpu32 - cpu64": 4.6000749040819855e-05,
+    "cuda32 - cpu64": 4.6000749040819855e-05,
+    "smallest margin": 9.833106994628907e-05,
+    "passed": true
+   },
+   "SH-route-1020021 #1 | validation": {
+    "copies": 1,
+    "copies_failed": 0,
+    "one step": 1.9073486328125e-06,
+    "cpu32 - cuda32": 4.291534423828125e-06,
+    "cpu32 - cpu64": 8.506877498493104e-05,
+    "cuda32 - cpu64": 8.208854274616151e-05,
+    "smallest margin": 9.570846557617188e-05,
+    "passed": true
+   },
+   "SH-route-1020021 #2 | validation": {
+    "copies": 1,
+    "copies_failed": 0,
+    "one step": 1.430511474609375e-06,
+    "cpu32 - cuda32": 2.1457672119140625e-06,
+    "cpu32 - cpu64": 3.917423936594666e-05,
+    "cuda32 - cpu64": 4.0366332261454474e-05,
+    "smallest margin": 9.785423278808594e-05,
+    "passed": true
+   },
+   "SH-route-1020021 #3 | validation": {
+    "copies": 1,
+    "copies_failed": 0,
+    "one step": 1.6689300537109375e-06,
+    "cpu32 - cuda32": 2.384185791015625e-06,
+    "cpu32 - cpu64": 3.988953949574103e-05,
+    "cuda32 - cpu64": 3.988953949574103e-05,
+    "smallest margin": 9.761581420898438e-05,
+    "passed": true
+   },
+   "SH-route-1020021 #0 | suite": {
+    "copies": 2,
+    "copies_failed": 0,
+    "one step": 1.430511474609375e-06,
+    "cpu32 - cuda32": 2.0265579223632812e-06,
+    "cpu32 - cpu64": 4.86853664010134e-05,
+    "cuda32 - cpu64": 4.86853664010134e-05,
+    "smallest margin": 9.797344207763672e-05,
+    "passed": true
+   },
+   "SH-route-1020021 #1 | suite": {
+    "copies": 2,
+    "copies_failed": 0,
+    "one step": 2.6226043701171875e-06,
+    "cpu32 - cuda32": 9.745359420776367e-06,
+    "cpu32 - cpu64": 0.0002594673159528327,
+    "cuda32 - cpu64": 0.00025899047879462955,
+    "smallest margin": 9.025464057922364e-05,
+    "passed": true
+   },
+   "SH-route-1020021 #2 | suite": {
+    "copies": 2,
+    "copies_failed": 0,
+    "one step": 1.9073486328125e-06,
+    "cpu32 - cuda32": 3.5762786865234375e-06,
+    "cpu32 - cpu64": 0.0001003376066420758,
+    "cuda32 - cpu64": 0.00010147009489280823,
+    "smallest margin": 9.642372131347657e-05,
+    "passed": true
+   },
+   "SH-route-1020021 #3 | suite": {
+    "copies": 2,
+    "copies_failed": 0,
+    "one step": 2.1457672119140625e-06,
+    "cpu32 - cuda32": 2.1457672119140625e-06,
+    "cpu32 - cpu64": 4.004563113224613e-05,
+    "cuda32 - cpu64": 3.982615637854181e-05,
+    "smallest margin": 9.785423278808594e-05,
+    "passed": true
+   },
+   "SH-route-1020022 #0 | training": {
+    "copies": 32,
+    "copies_failed": 0,
+    "one step": 1.1920928955078125e-06,
+    "cpu32 - cuda32": 1.9073486328125e-06,
+    "cpu32 - cpu64": 3.791261038710303e-05,
+    "cuda32 - cpu64": 3.791261038710303e-05,
+    "smallest margin": 9.80926513671875e-05,
+    "passed": true
+   },
+   "SH-route-1020022 #1 | training": {
+    "copies": 32,
+    "copies_failed": 0,
+    "one step": 1.9073486328125e-06,
+    "cpu32 - cuda32": 2.4437904357910156e-06,
+    "cpu32 - cpu64": 4.297450840340389e-05,
+    "cuda32 - cpu64": 4.2736089824302326e-05,
+    "smallest margin": 9.755620956420899e-05,
+    "passed": true
+   },
+   "SH-route-1020022 #2 | training": {
+    "copies": 32,
+    "copies_failed": 0,
+    "one step": 1.9073486328125e-06,
+    "cpu32 - cuda32": 1.9669532775878906e-06,
+    "cpu32 - cpu64": 4.2929306578010085e-05,
+    "cuda32 - cpu64": 4.340614373621321e-05,
+    "smallest margin": 9.803304672241211e-05,
+    "passed": true
+   },
+   "SH-route-1020022 #3 | training": {
+    "copies": 32,
+    "copies_failed": 0,
+    "one step": 2.384185791015625e-06,
+    "cpu32 - cuda32": 2.384185791015625e-06,
+    "cpu32 - cpu64": 4.9221641712282604e-05,
+    "cuda32 - cpu64": 4.937500376378523e-05,
+    "smallest margin": 9.761581420898438e-05,
+    "passed": true
+   },
+   "SH-route-1020022 #0 | validation": {
+    "copies": 1,
+    "copies_failed": 0,
+    "one step": 1.9073486328125e-06,
+    "cpu32 - cuda32": 2.1457672119140625e-06,
+    "cpu32 - cpu64": 3.7783718083161943e-05,
+    "cuda32 - cpu64": 3.730688092495882e-05,
+    "smallest margin": 9.785423278808594e-05,
+    "passed": true
+   },
+   "SH-route-1020022 #1 | validation": {
+    "copies": 1,
+    "copies_failed": 0,
+    "one step": 1.9073486328125e-06,
+    "cpu32 - cuda32": 2.518296241760254e-06,
+    "cpu32 - cpu64": 4.732484406533288e-05,
+    "cuda32 - cpu64": 4.732484406533288e-05,
+    "smallest margin": 9.748170375823975e-05,
+    "passed": true
+   },
+   "SH-route-1020022 #2 | validation": {
+    "copies": 1,
+    "copies_failed": 0,
+    "one step": 1.9073486328125e-06,
+    "cpu32 - cuda32": 2.1457672119140625e-06,
+    "cpu32 - cpu64": 4.3225446902273035e-05,
+    "cuda32 - cpu64": 4.34638654813746e-05,
+    "smallest margin": 9.785423278808594e-05,
+    "passed": true
+   },
+   "SH-route-1020022 #3 | validation": {
+    "copies": 1,
+    "copies_failed": 0,
+    "one step": 2.384185791015625e-06,
+    "cpu32 - cuda32": 2.384185791015625e-06,
+    "cpu32 - cpu64": 4.9233785600844016e-05,
+    "cuda32 - cpu64": 4.9233785600844016e-05,
+    "smallest margin": 9.761581420898438e-05,
+    "passed": true
+   },
+   "SH-route-1020022 #0 | suite": {
+    "copies": 2,
+    "copies_failed": 0,
+    "one step": 1.1920928955078125e-06,
+    "cpu32 - cuda32": 1.9073486328125e-06,
+    "cpu32 - cpu64": 4.028552862234136e-05,
+    "cuda32 - cpu64": 4.028552862234136e-05,
+    "smallest margin": 9.80926513671875e-05,
+    "passed": true
+   },
+   "SH-route-1020022 #1 | suite": {
+    "copies": 2,
+    "copies_failed": 0,
+    "one step": 2.86102294921875e-06,
+    "cpu32 - cuda32": 2.9373914003372192e-06,
+    "cpu32 - cpu64": 4.472835756076654e-05,
+    "cuda32 - cpu64": 4.3081779248846375e-05,
+    "smallest margin": 9.706260859966279e-05,
+    "passed": true
+   },
+   "SH-route-1020022 #2 | suite": {
+    "copies": 2,
+    "copies_failed": 0,
+    "one step": 2.1457672119140625e-06,
+    "cpu32 - cuda32": 2.384185791015625e-06,
+    "cpu32 - cpu64": 4.481553546575867e-05,
+    "cuda32 - cpu64": 4.481553546575867e-05,
+    "smallest margin": 9.761581420898438e-05,
+    "passed": true
+   },
+   "SH-route-1020022 #3 | suite": {
+    "copies": 2,
+    "copies_failed": 0,
+    "one step": 1.9073486328125e-06,
+    "cpu32 - cuda32": 2.6226043701171875e-06,
+    "cpu32 - cpu64": 5.054379485613936e-05,
+    "cuda32 - cpu64": 5.054379485613936e-05,
+    "smallest margin": 9.737739562988282e-05,
+    "passed": true
+   },
+   "SH-route-1020023 #0 | training": {
+    "copies": 32,
+    "copies_failed": 0,
+    "one step": 2.1457672119140625e-06,
+    "cpu32 - cuda32": 2.86102294921875e-06,
+    "cpu32 - cpu64": 3.784765662384615e-05,
+    "cuda32 - cpu64": 3.784765662384615e-05,
+    "smallest margin": 9.713897705078125e-05,
+    "passed": true
+   },
+   "SH-route-1020023 #1 | training": {
+    "copies": 32,
+    "copies_failed": 0,
+    "one step": 3.159046173095703e-06,
+    "cpu32 - cuda32": 5.364418029785156e-06,
+    "cpu32 - cpu64": 4.061935089127999e-05,
+    "cuda32 - cpu64": 4.038093231217843e-05,
+    "smallest margin": 9.463558197021485e-05,
+    "passed": true
+   },
+   "SH-route-1020023 #2 | training": {
+    "copies": 32,
+    "copies_failed": 0,
+    "one step": 1.9073486328125e-06,
+    "cpu32 - cuda32": 1.9073486328125e-06,
+    "cpu32 - cpu64": 4.82838370778893e-05,
+    "cuda32 - cpu64": 4.82838370778893e-05,
+    "smallest margin": 9.80926513671875e-05,
+    "passed": true
+   },
+   "SH-route-1020023 #3 | training": {
+    "copies": 32,
+    "copies_failed": 0,
+    "one step": 2.86102294921875e-06,
+    "cpu32 - cuda32": 2.86102294921875e-06,
+    "cpu32 - cpu64": 3.245123526429694e-05,
+    "cuda32 - cpu64": 3.2816563515503105e-05,
+    "smallest margin": 9.713897705078125e-05,
+    "passed": true
+   },
+   "SH-route-1020023 #0 | validation": {
+    "copies": 1,
+    "copies_failed": 0,
+    "one step": 2.0265579223632812e-06,
+    "cpu32 - cuda32": 2.384185791015625e-06,
+    "cpu32 - cpu64": 3.7847656623624104e-05,
+    "cuda32 - cpu64": 3.772844733407332e-05,
+    "smallest margin": 9.761581420898438e-05,
+    "passed": true
+   },
+   "SH-route-1020023 #1 | validation": {
+    "copies": 1,
+    "copies_failed": 0,
+    "one step": 3.337860107421875e-06,
+    "cpu32 - cuda32": 5.4836273193359375e-06,
+    "cpu32 - cpu64": 4.159643914514177e-05,
+    "cuda32 - cpu64": 4.159643914514177e-05,
+    "smallest margin": 9.451637268066407e-05,
+    "passed": true
+   },
+   "SH-route-1020023 #2 | validation": {
+    "copies": 1,
+    "copies_failed": 0,
+    "one step": 1.9073486328125e-06,
+    "cpu32 - cuda32": 2.384185791015625e-06,
+    "cpu32 - cpu64": 4.821667585375167e-05,
+    "cuda32 - cpu64": 4.881272230150557e-05,
+    "smallest margin": 9.761581420898438e-05,
+    "passed": true
+   },
+   "SH-route-1020023 #3 | validation": {
+    "copies": 1,
+    "copies_failed": 0,
+    "one step": 1.9073486328125e-06,
+    "cpu32 - cuda32": 1.9073486328125e-06,
+    "cpu32 - cpu64": 3.5526660046691916e-05,
+    "cuda32 - cpu64": 3.5526660046691916e-05,
+    "smallest margin": 9.80926513671875e-05,
+    "passed": true
+   },
+   "SH-route-1020023 #0 | suite": {
+    "copies": 2,
+    "copies_failed": 0,
+    "one step": 2.1457672119140625e-06,
+    "cpu32 - cuda32": 2.384185791015625e-06,
+    "cpu32 - cpu64": 3.763197654449435e-05,
+    "cuda32 - cpu64": 3.787039512359591e-05,
+    "smallest margin": 9.761581420898438e-05,
+    "passed": true
+   },
+   "SH-route-1020023 #1 | suite": {
+    "copies": 2,
+    "copies_failed": 0,
+    "one step": 3.2782554626464844e-06,
+    "cpu32 - cuda32": 5.602836608886719e-06,
+    "cpu32 - cpu64": 4.419580120096356e-05,
+    "cuda32 - cpu64": 4.3957382621861996e-05,
+    "smallest margin": 9.439716339111329e-05,
+    "passed": true
+   },
+   "SH-route-1020023 #2 | suite": {
+    "copies": 2,
+    "copies_failed": 0,
+    "one step": 1.9073486328125e-06,
+    "cpu32 - cuda32": 2.384185791015625e-06,
+    "cpu32 - cpu64": 4.838192715483913e-05,
+    "cuda32 - cpu64": 4.838192715483913e-05,
+    "smallest margin": 9.761581420898438e-05,
+    "passed": true
+   },
+   "SH-route-1020023 #3 | suite": {
+    "copies": 2,
+    "copies_failed": 0,
+    "one step": 2.384185791015625e-06,
+    "cpu32 - cuda32": 2.384185791015625e-06,
+    "cpu32 - cpu64": 3.583015547414803e-05,
+    "cuda32 - cpu64": 3.606857405324959e-05,
+    "smallest margin": 9.761581420898438e-05,
+    "passed": true
+   }
+  },
+  "finite": true,
+  "failed": [],
+  "factor": 1.5,
+  "floor": 0.0001,
+  "worst_cpu_cuda": 0.010923027992248535,
+  "worst_one_step": 5.841255187988281e-06,
+  "passed": true
+ },
+ "seconds": 2118.9049895000644,
+ "failed": [],
+ "passed": true,
+ "imprecise": [
+  "pursuit | mixed | 1 x 512"
+ ],
+ "ledger": "every play checked every tick at 1e-05 (a failure stops the stage)"
+}
